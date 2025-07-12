@@ -102,6 +102,11 @@ TURSO_AUTH_TOKEN="your-turso-auth-token-if-using-turso"
 - Only required if using Turso as your database provider
 - Get this from your Turso dashboard
 
+**NEXT_PUBLIC_SPOTIFY_API_URL** (Optional)
+- URL endpoint for Spotify "Now Playing" API integration
+- Used to display currently playing music on the homepage
+- Expected JSON format: `{ "isPlaying": boolean, "title": string, "artist": string, "album": string, "songUrl": string }`
+
 #### Email/Password Authentication
 
 Better Auth handles email/password authentication automatically with secure defaults:

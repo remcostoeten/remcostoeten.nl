@@ -15,21 +15,21 @@ type TSpotifyTrack = {
 async function getCurrentlyPlaying(): Promise<TSpotifyTrack | null> {
 	try {
 		const spotifyApiUrl = process.env.NEXT_PUBLIC_SPOTIFY_API_URL;
-		
+
 		if (!spotifyApiUrl) {
 			console.warn("NEXT_PUBLIC_SPOTIFY_API_URL not configured");
 			return null;
 		}
 
 		const response = await fetch(spotifyApiUrl);
-		
+
 		if (!response.ok) {
 			console.error("Failed to fetch Spotify data:", response.status);
 			return null;
 		}
 
 		const data = await response.json();
-		
+
 		if (!data.isPlaying) {
 			return null;
 		}
@@ -66,9 +66,7 @@ export function NowPlaying({ refreshInterval = 30000 }: TProps) {
 
 	if (isLoading) {
 		return (
-			<div className="text-xs text-muted-foreground">
-				Loading music...
-			</div>
+			<div className="text-xs text-muted-foreground">Loading music...</div>
 		);
 	}
 
