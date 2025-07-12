@@ -17,13 +17,14 @@ function useKeyboardShortcuts(shortcuts: TShortcuts, deps: any[] = []) {
       return;
     }
 
-    const { key, metaKey, ctrlKey, shiftKey, altKey } = event;
+    const { key, metaKey, ctrlKey, shiftKey, altKey, getModifierState } = event;
     
     // Build shortcut string
     let shortcut = '';
     if (metaKey || ctrlKey) shortcut += 'cmd+';
     if (shiftKey) shortcut += 'shift+';
     if (altKey) shortcut += 'alt+';
+    if (getModifierState('CapsLock')) shortcut += 'capslock+';
     shortcut += key.toLowerCase();
 
     if (shortcuts[shortcut]) {

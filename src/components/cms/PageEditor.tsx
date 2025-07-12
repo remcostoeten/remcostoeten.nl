@@ -3,6 +3,7 @@ import { Page, ContentBlock } from '@/types/cms';
 import { ArrowLeft, Save, Eye, Plus, GripVertical } from 'lucide-react';
 import BlockEditor from './BlockEditor';
 import PagePreview from './PagePreview';
+import { motion, Reorder } from 'framer-motion';
 
 interface PageEditorProps {
   page: Page;
@@ -13,7 +14,6 @@ interface PageEditorProps {
 export default function PageEditor({ page, onSave, onBack }: PageEditorProps) {
   const [editingPage, setEditingPage] = useState<Page>(page);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
-  const [draggedBlock, setDraggedBlock] = useState<string | null>(null);
 
   const handlePageInfoChange = (field: keyof Pick<Page, 'title' | 'slug' | 'description' | 'isPublished'>, value: string | boolean) => {
     setEditingPage(prev => ({
@@ -60,37 +60,13 @@ export default function PageEditor({ page, onSave, onBack }: PageEditorProps) {
     }));
   };
 
-  const handleDragStart = (blockId: string) => {
-    setDraggedBlock(blockId);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (targetBlockId: string) => {
-    if (!draggedBlock || draggedBlock === targetBlockId) return;
-
-    const blocks = [...editingPage.blocks];
-    const draggedIndex = blocks.findIndex(b => b.id === draggedBlock);
-    const targetIndex = blocks.findIndex(b => b.id === targetBlockId);
-
-    const [draggedBlockData] = blocks.splice(draggedIndex, 1);
-    blocks.splice(targetIndex, 0, draggedBlockData);
-
-    // Update order
-    const reorderedBlocks = blocks.map((block, index) => ({
-      ...block,
-      order: index
-    }));
-
+  const handleReorderBlocks = (newOrder: string[]) => {
+    const reorderedBlocks = newOrder.map(id => editingPage.blocks.find(block => block.id === id)!);
     setEditingPage(prev => ({
       ...prev,
-      blocks: reorderedBlocks,
+      blocks: reorderedBlocks.map((block, index) => ({ ...block, order: index })),
       updatedAt: new Date()
     }));
-
-    setDraggedBlock(null);
   };
 
   const handleSave = () => {
@@ -180,27 +156,24 @@ export default function PageEditor({ page, onSave, onBack }: PageEditorProps) {
 
         {/* Content Blocks */}
         <div className="flex-1 overflow-y-auto bg-background p-6">
-          <div className="space-y-4">
+          <Reorder.Group axis="y" onReorder={handleReorderBlocks} values={editingPage.blocks.map(block => block.id)} className="space-y-4">
             {editingPage.blocks
               .sort((a, b) => a.order - b.order)
               .map((block) => (
-                <div
+                <Reorder.Item
                   key={block.id}
-                  draggable
-                  onDragStart={() => handleDragStart(block.id)}
-                  onDragOver={handleDragOver}
-                  onDrop={() => handleDrop(block.id)}
+                  value={block.id}
                   className="group relative bg-card rounded-lg border border-border hover:border-accent/50 transition-colors"
                 >
                   <div className="absolute left-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <GripVertical className="w-4 h-4 text-muted-foreground cursor-move" />
+                    <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
                   </div>
                   <BlockEditor
                     block={block}
                     onChange={(updatedBlock) => handleBlockChange(block.id, updatedBlock)}
                     onDelete={() => handleDeleteBlock(block.id)}
                   />
-                </div>
+                </Reorder.Item>
               ))}
             
             {/* Add Block Buttons */}
@@ -220,7 +193,7 @@ export default function PageEditor({ page, onSave, onBack }: PageEditorProps) {
                 Add Paragraph
               </button>
             </div>
-          </div>
+          </Reorder.Group>
         </div>
       </div>
 

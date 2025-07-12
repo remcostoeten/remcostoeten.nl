@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Page, ContentSegment } from '@/types/cms';
-import { ArrowLeft, Edit3 } from 'lucide-react';
+import { ArrowLeft, Edit3, Eye } from 'lucide-react';
 
 type TProps = {
   page: Page;
@@ -113,32 +113,59 @@ function renderBlock(block: any) {
 }
 
 export default function LivePageRenderer({ page, onBack, onEdit }: TProps) {
+  const [showPreview, setShowPreview] = useState(false);
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
-      {/* Floating Edit Controls */}
-      <div className="fixed top-4 left-4 z-50 flex items-center space-x-2">
-        <button
-          onClick={onBack}
-          className="p-2 bg-card border border-border rounded-lg text-muted-foreground hover:text-foreground transition-colors shadow-lg"
-          title="Back to pages"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <button
-          onClick={onEdit}
-          className="px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors flex items-center gap-2 shadow-lg"
-        >
-          <Edit3 className="w-4 h-4" />
-          Edit
-        </button>
+    <>
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
+        {/* Floating Edit Controls */}
+        <div className="fixed top-4 left-4 z-50 flex items-center space-x-2">
+          <button
+            onClick={onBack}
+            className="p-2 bg-card border border-border rounded-lg text-muted-foreground hover:text-foreground transition-colors shadow-lg"
+            title="Back to pages"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <button
+            onClick={onEdit}
+            className="px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors flex items-center gap-2 shadow-lg"
+          >
+            <Edit3 className="w-4 h-4" />
+            Edit
+          </button>
+          <button
+            onClick={() => setShowPreview(true)}
+            className="px-4 py-2 bg-card border border-border rounded-lg text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 shadow-lg"
+          >
+            <Eye className="w-4 h-4" />
+            Preview
+          </button>
+        </div>
+
+        {/* Live Page Content */}
+        <div className="max-w-2xl w-full space-y-8">
+          {page.blocks
+            .sort((a, b) => a.order - b.order)
+            .map(renderBlock)}
+        </div>
       </div>
 
-      {/* Live Page Content */}
-      <div className="max-w-2xl w-full space-y-8">
-        {page.blocks
-          .sort((a, b) => a.order - b.order)
-          .map(renderBlock)}
-      </div>
-    </div>
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setShowPreview(false)}>
+          <div className="bg-background rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <h2 className="text-2xl font-bold mb-4">{page.title}</h2>
+              <div className="space-y-8">
+                {page.blocks
+                  .sort((a, b) => a.order - b.order)
+                  .map(renderBlock)}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

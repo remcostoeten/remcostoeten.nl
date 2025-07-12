@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ContentBlock, ContentSegment } from '@/types/cms';
 import { Trash2, Plus, Type, Highlighter as Highlight, Link, Package } from 'lucide-react';
 import SegmentEditor from './SegmentEditor';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface BlockEditorProps {
   block: ContentBlock;
@@ -74,35 +75,43 @@ export default function BlockEditor({ block, onChange, onDelete }: BlockEditorPr
         </button>
       </div>
 
-      {isExpanded && (
-        <>
-          <div className="space-y-3 mb-4">
-            {block.content.map((segment) => (
-              <SegmentEditor
-                key={segment.id}
-                segment={segment}
-                onChange={(updatedSegment) => handleSegmentChange(segment.id, updatedSegment)}
-                onDelete={() => handleDeleteSegment(segment.id)}
-              />
-            ))}
-          </div>
-
-          <div className="border-t border-border pt-3">
-            <div className="flex flex-wrap gap-2">
-              {segmentTypes.map(({ type, icon: Icon, label }) => (
-                <button
-                  key={type}
-                  onClick={() => handleAddSegment(type)}
-                  className="flex items-center px-2 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors"
-                >
-                  <Icon className="w-3 h-3 mr-1" />
-                  {label}
-                </button>
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-3 mb-4">
+              {block.content.map((segment) => (
+                <SegmentEditor
+                  key={segment.id}
+                  segment={segment}
+                  onChange={(updatedSegment) => handleSegmentChange(segment.id, updatedSegment)}
+                  onDelete={() => handleDeleteSegment(segment.id)}
+                />
               ))}
             </div>
-          </div>
-        </>
-      )}
+
+            <div className="border-t border-border pt-3">
+              <div className="flex flex-wrap gap-2">
+                {segmentTypes.map(({ type, icon: Icon, label }) => (
+                  <button
+                    key={type}
+                    onClick={() => handleAddSegment(type)}
+                    className="flex items-center px-2 py-1 text-xs bg-muted hover:bg-muted/80 rounded transition-colors"
+                  >
+                    <Icon className="w-3 h-3 mr-1" />
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

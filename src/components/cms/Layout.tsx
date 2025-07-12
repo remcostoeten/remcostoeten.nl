@@ -44,16 +44,7 @@ export default function CMSLayout({ children, currentView, onNavigate }: CMSLayo
             );
           })}
           
-          <div className="border-t border-border mt-6 pt-6">
-            <button
-              onClick={handleGoHome}
-              className="w-full flex items-center px-6 py-3 text-left transition-colors text-muted-foreground hover:bg-muted hover:text-foreground"
-            >
-              <Home className="w-5 h-5 mr-3" />
-              View Site
-              <ExternalLink className="w-3 h-3 ml-auto" />
-            </button>
-          </div>
+          
         </nav>
       </div>
       

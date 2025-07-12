@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ContentBlock, ContentSegment } from '@/types/cms';
 import InlineEditor from './InlineEditor';
 import { Plus, GripVertical, Trash2, Settings } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface InlineBlockProps {
   block: ContentBlock;
@@ -156,66 +157,74 @@ export default function InlineBlock({
       </div>
 
       {/* Block Settings Panel */}
-      {showBlockSettings && isEditing && (
-        <div className="absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-4 z-50 min-w-64">
-          <h4 className="text-sm font-medium text-foreground mb-3">Block Settings</h4>
-          
-          <div className="space-y-3">
-            {/* Spacing */}
-            <div>
-              <label className="block text-xs font-medium text-foreground mb-2">Spacing</label>
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="text"
-                  placeholder="Margin top"
-                  value={block.styles?.marginTop || ''}
-                  onChange={(e) => handleBlockStylesChange({ ...block.styles, marginTop: e.target.value })}
-                  className="px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-                />
-                <input
-                  type="text"
-                  placeholder="Margin bottom"
-                  value={block.styles?.marginBottom || ''}
-                  onChange={(e) => handleBlockStylesChange({ ...block.styles, marginBottom: e.target.value })}
-                  className="px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-                />
+      <AnimatePresence>
+        {showBlockSettings && isEditing && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden absolute top-full left-0 mt-2 bg-card border border-border rounded-lg shadow-lg p-4 z-50 min-w-64"
+          >
+            <h4 className="text-sm font-medium text-foreground mb-3">Block Settings</h4>
+            
+            <div className="space-y-3">
+              {/* Spacing */}
+              <div>
+                <label className="block text-xs font-medium text-foreground mb-2">Spacing</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    placeholder="Margin top"
+                    value={block.styles?.marginTop || ''}
+                    onChange={(e) => handleBlockStylesChange({ ...block.styles, marginTop: e.target.value })}
+                    className="px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Margin bottom"
+                    value={block.styles?.marginBottom || ''}
+                    onChange={(e) => handleBlockStylesChange({ ...block.styles, marginBottom: e.target.value })}
+                    className="px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+                  />
+                </div>
+              </div>
+
+              {/* Borders */}
+              <div>
+                <label className="block text-xs font-medium text-foreground mb-2">Borders</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['borderTop', 'borderBottom', 'borderLeft', 'borderRight'].map((border) => (
+                    <label key={border} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        checked={block.styles?.[border as keyof typeof block.styles] || false}
+                        onChange={(e) => handleBlockStylesChange({ 
+                          ...block.styles, 
+                          [border]: e.target.checked 
+                        })}
+                        className="rounded border-input"
+                      />
+                      <span className="text-xs text-foreground capitalize">
+                        {border.replace('border', '')}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Borders */}
-            <div>
-              <label className="block text-xs font-medium text-foreground mb-2">Borders</label>
-              <div className="grid grid-cols-2 gap-2">
-                {['borderTop', 'borderBottom', 'borderLeft', 'borderRight'].map((border) => (
-                  <label key={border} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={block.styles?.[border as keyof typeof block.styles] || false}
-                      onChange={(e) => handleBlockStylesChange({ 
-                        ...block.styles, 
-                        [border]: e.target.checked 
-                      })}
-                      className="rounded border-input"
-                    />
-                    <span className="text-xs text-foreground capitalize">
-                      {border.replace('border', '')}
-                    </span>
-                  </label>
-                ))}
-              </div>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowBlockSettings(false)}
+                className="px-3 py-1 text-xs bg-accent text-accent-foreground rounded hover:bg-accent/90 transition-colors"
+              >
+                Done
+              </button>
             </div>
-          </div>
-
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={() => setShowBlockSettings(false)}
-              className="px-3 py-1 text-xs bg-accent text-accent-foreground rounded hover:bg-accent/90 transition-colors"
-            >
-              Done
-            </button>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
