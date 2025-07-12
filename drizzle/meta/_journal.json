@@ -1,20 +1,20 @@
 {
-  "version": "7",
-  "dialect": "sqlite",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "6",
-      "when": 1752338608021,
-      "tag": "0000_bored_hitman",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1752338724395,
-      "tag": "0001_omniscient_mercury",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "sqlite",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "6",
+			"when": 1752338608021,
+			"tag": "0000_bored_hitman",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1752338724395,
+			"tag": "0001_omniscient_mercury",
+			"breakpoints": true
+		}
+	]
 }

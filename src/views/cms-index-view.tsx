@@ -1,54 +1,58 @@
-'use client'
+"use client";
 
-import type React from 'react'
-import { useState, useEffect } from 'react'
-import { Page, ContentSegment } from '@/types/cms'
-import { CMSStore } from '@/lib/cms-store'
-import { ProjectCard } from '@/components/project-card'
-import { ContactForm } from '@/components/contact-form'
+import type React from "react";
+import { useEffect, useState } from "react";
+import { ContactForm } from "@/components/contact-form";
+import { ProjectCard } from "@/components/project-card";
+import { CMSStore } from "@/lib/cms-store";
+import { ContentSegment, Page } from "@/types/cms";
 
 function getFormattedTime() {
-	const now = new Date()
-	const utcTime = now.getTime() + now.getTimezoneOffset() * 60000
-	const utcPlus1 = new Date(utcTime + 1 * 3600000)
-	return utcPlus1.toTimeString().split(' ')[0]
+	const now = new Date();
+	const utcTime = now.getTime() + now.getTimezoneOffset() * 60000;
+	const utcPlus1 = new Date(utcTime + 1 * 3600000);
+	return utcPlus1.toTimeString().split(" ")[0];
 }
 
 function renderSegment(segment: ContentSegment) {
 	switch (segment.type) {
-		case 'highlighted':
+		case "highlighted":
 			return (
 				<span
 					key={segment.id}
 					className="font-medium px-1 py-0.5 rounded"
 					style={{
-						backgroundColor: segment.data?.backgroundColor || 'hsl(var(--highlight-frontend) / 0.2)',
-						color: segment.data?.hslColor ? `hsl(${segment.data.hslColor})` : 'hsl(var(--highlight-frontend))'
+						backgroundColor:
+							segment.data?.backgroundColor ||
+							"hsl(var(--highlight-frontend) / 0.2)",
+						color: segment.data?.hslColor
+							? `hsl(${segment.data.hslColor})`
+							: "hsl(var(--highlight-frontend))",
 					}}
 				>
 					{segment.content}
 				</span>
-			)
+			);
 
-		case 'link':
+		case "link":
 			return (
 				<a
 					key={segment.id}
-					href={segment.data?.url || '#'}
+					href={segment.data?.url || "#"}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-accent hover:underline font-medium"
 				>
 					{segment.content} ↗
 				</a>
-			)
+			);
 
-		case 'project-card':
+		case "project-card": {
 			// For project cards, we need to map them to the actual ProjectCard component
 			// This is a simplified approach - you might want to store more project data in the CMS
-			const isAuth = segment.content.includes('Authentication')
-			const isTurso = segment.content.includes('Turso')
-			
+			const isAuth = segment.content.includes("Authentication");
+			const isTurso = segment.content.includes("Turso");
+
 			if (isAuth) {
 				return (
 					<ProjectCard
@@ -60,24 +64,24 @@ function renderSegment(segment: ContentSegment) {
 						stars={0}
 						branches={34}
 						technologies={[
-							'Next.js 15',
-							'TypeScript',
-							'PostgreSQL',
-							'JWT',
-							'Tailwind CSS'
+							"Next.js 15",
+							"TypeScript",
+							"PostgreSQL",
+							"JWT",
+							"Tailwind CSS",
 						]}
 						lastUpdated="recently"
 						highlights={[
-							'JWT authentication without external services',
-							'Secure PostgreSQL user storage',
-							'Admin role management system',
-							'Configurable onboarding flows',
-							'Modern Next.js 15 features'
+							"JWT authentication without external services",
+							"Secure PostgreSQL user storage",
+							"Admin role management system",
+							"Configurable onboarding flows",
+							"Modern Next.js 15 features",
 						]}
 					/>
-				)
+				);
 			}
-			
+
 			if (isTurso) {
 				return (
 					<ProjectCard
@@ -88,103 +92,102 @@ function renderSegment(segment: ContentSegment) {
 						stars={1}
 						branches={5}
 						technologies={[
-							'CLI',
-							'Node.js',
-							'Turso',
-							'SQLite',
-							'Shell Scripts'
+							"CLI",
+							"Node.js",
+							"Turso",
+							"SQLite",
+							"Shell Scripts",
 						]}
 						lastUpdated="recently"
 						highlights={[
-							'One-command database creation',
-							'Automatic credential management',
-							'Clipboard integration with .env format',
-							'Smart credential overwriting',
-							'Sub-10 second deployment workflow'
+							"One-command database creation",
+							"Automatic credential management",
+							"Clipboard integration with .env format",
+							"Smart credential overwriting",
+							"Sub-10 second deployment workflow",
 						]}
 					/>
-				)
+				);
 			}
-			
+
 			// Fallback for other project cards
 			return (
 				<span
 					key={segment.id}
 					className="font-medium px-1 py-0.5 rounded"
 					style={{
-						backgroundColor: 'hsl(var(--highlight-product) / 0.2)',
-						color: 'hsl(var(--highlight-product))'
+						backgroundColor: "hsl(var(--highlight-product) / 0.2)",
+						color: "hsl(var(--highlight-product))",
 					}}
 				>
 					{segment.content}
 				</span>
-			)
+			);
+		}
 
 		default:
-			return <span key={segment.id}>{segment.content}</span>
+			return <span key={segment.id}>{segment.content}</span>;
 	}
 }
 
 export const CMSIndexView = () => {
-	const [currentTime, setCurrentTime] = useState<string>(getFormattedTime())
-	const [isContactHovered, setIsContactHovered] = useState(false)
-	const [shouldOpenAbove, setShouldOpenAbove] = useState(false)
-	const [homePageContent, setHomePageContent] = useState<Page | null>(null)
+	const [currentTime, setCurrentTime] = useState<string>(getFormattedTime());
+	const [isContactHovered, setIsContactHovered] = useState(false);
+	const [shouldOpenAbove, setShouldOpenAbove] = useState(false);
+	const [homePageContent, setHomePageContent] = useState<Page | null>(null);
 
 	useEffect(() => {
 		const updateTime = () => {
-			setCurrentTime(getFormattedTime())
-		}
+			setCurrentTime(getFormattedTime());
+		};
 
-		const interval = setInterval(updateTime, 1000)
-		return () => clearInterval(interval)
-	}, [])
+		const interval = setInterval(updateTime, 1000);
+		return () => clearInterval(interval);
+	}, []);
 
 	useEffect(() => {
 		// Load home page content from CMS
 		const loadHomeContent = () => {
-			const content = CMSStore.getHomePageContent()
+			const content = CMSStore.getHomePageContent();
 			if (content) {
-				setHomePageContent(content)
+				setHomePageContent(content);
 			} else {
 				// Initialize default if none exists
-				const defaultHome = CMSStore.initializeDefaultHomePage()
-				setHomePageContent(defaultHome)
+				const defaultHome = CMSStore.initializeDefaultHomePage();
+				setHomePageContent(defaultHome);
 			}
-		}
+		};
 
-		loadHomeContent()
+		loadHomeContent();
 
 		// Listen for localStorage changes (when CMS updates)
 		const handleStorageChange = () => {
-			loadHomeContent()
-		}
+			loadHomeContent();
+		};
 
-		window.addEventListener('storage', handleStorageChange)
-		return () => window.removeEventListener('storage', handleStorageChange)
-	}, [])
+		window.addEventListener("storage", handleStorageChange);
+		return () => window.removeEventListener("storage", handleStorageChange);
+	}, []);
 
 	const handleContactHover = (e: React.MouseEvent<HTMLDivElement>) => {
-		const rect = e.currentTarget.getBoundingClientRect()
-		const viewportHeight = window.innerHeight
-		const spaceBelow = viewportHeight - rect.bottom
-		const formHeight = 400
+		const rect = e.currentTarget.getBoundingClientRect();
+		const viewportHeight = window.innerHeight;
+		const spaceBelow = viewportHeight - rect.bottom;
+		const formHeight = 400;
 
-		setShouldOpenAbove(spaceBelow < formHeight)
-		setIsContactHovered(true)
-	}
+		setShouldOpenAbove(spaceBelow < formHeight);
+		setIsContactHovered(true);
+	};
 
 	// If no content is loaded yet, show loading or fallback
 	if (!homePageContent) {
 		return (
 			<div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
 				<div className="max-w-2xl w-full space-y-8">
-					<h1 className="text-xl font-medium text-foreground">
-						Loading...
-					</h1>
+					<h1 className="text-xl font-medium text-foreground">Loading...</h1>
 				</div>
 			</div>
-		)
+		);
 	}
 
 	return (
@@ -194,26 +197,32 @@ export const CMSIndexView = () => {
 				{homePageContent.blocks
 					.sort((a, b) => a.order - b.order)
 					.map((block) => {
-						const content = block.content.map(renderSegment)
-						
-						if (block.type === 'heading') {
+						const content = block.content.map(renderSegment);
+
+						if (block.type === "heading") {
 							return (
-								<h1 key={block.id} className="text-xl font-medium text-foreground">
+								<h1
+									key={block.id}
+									className="text-xl font-medium text-foreground"
+								>
 									{content}
 								</h1>
-							)
+							);
 						}
 
 						return (
-							<div key={block.id} className="text-foreground leading-relaxed text-base">
+							<div
+								key={block.id}
+								className="text-foreground leading-relaxed text-base"
+							>
 								{content}
 							</div>
-						)
+						);
 					})}
 
 				{/* Static contact and timezone info - these could also be moved to CMS later */}
 				<p className="text-foreground leading-relaxed text-base">
-					Find me on{' '}
+					Find me on{" "}
 					<a
 						href="https://github.com/remcostoeten"
 						target="_blank"
@@ -221,8 +230,8 @@ export const CMSIndexView = () => {
 						className="text-accent hover:underline font-medium"
 					>
 						GitHub ↗
-					</a>{' '}
-					and{' '}
+					</a>{" "}
+					and{" "}
 					<a
 						href="https://nl.linkedin.com/in/remco-stoeten"
 						target="_blank"
@@ -230,8 +239,8 @@ export const CMSIndexView = () => {
 						className="text-accent hover:underline font-medium"
 					>
 						LinkedIn ↗
-					</a>{' '}
-					or contact me via{' '}
+					</a>{" "}
+					or contact me via{" "}
 					<span
 						className="relative inline-block"
 						onMouseEnter={handleContactHover}
@@ -244,8 +253,8 @@ export const CMSIndexView = () => {
 							isVisible={isContactHovered}
 							openAbove={shouldOpenAbove}
 						/>
-					</span>{' '}
-					or check out my{' '}
+					</span>{" "}
+					or check out my{" "}
 					<a
 						href="https://remcostoeten.nl"
 						target="_blank"
@@ -258,18 +267,20 @@ export const CMSIndexView = () => {
 				</p>
 
 				<p className="text-foreground leading-relaxed text-base">
-					My current timezone is{' '}
-					<span className="font-medium">CET</span> which includes
-					countries like{' '}
-					<span className="font-medium">Netherlands</span>,{' '}
-					<span className="font-medium">Germany</span> and{' '}
-					<span className="font-medium">France</span>. Right now it is{' '}
-					<span className="font-medium font-mono" style={{ minWidth: '8ch', display: 'inline-block' }}>
-						{currentTime || '00:00:00'}
+					My current timezone is <span className="font-medium">CET</span> which
+					includes countries like{" "}
+					<span className="font-medium">Netherlands</span>,{" "}
+					<span className="font-medium">Germany</span> and{" "}
+					<span className="font-medium">France</span>. Right now it is{" "}
+					<span
+						className="font-medium font-mono"
+						style={{ minWidth: "8ch", display: "inline-block" }}
+					>
+						{currentTime || "00:00:00"}
 					</span>
 					.
 				</p>
 			</div>
 		</div>
-	)
-}
+	);
+};

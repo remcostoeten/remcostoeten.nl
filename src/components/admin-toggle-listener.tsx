@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import useAdminToggle from '@/hooks/use-admin-toggle';
+import useAdminToggle from "@/hooks/use-admin-toggle";
 
 function AdminToggleListener() {
-  useAdminToggle();
-  return null;
+	useAdminToggle();
+	return null;
 }
 
 export default AdminToggleListener;
