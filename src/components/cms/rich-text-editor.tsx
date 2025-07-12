@@ -69,50 +69,67 @@ function convertTextToSegments(text: string): ContentSegment[] {
 }
 
 function insertHighlightInSegments(
-  segments: ContentSegment[], 
-  startOffset: number, 
-  endOffset: number, 
+  segments: ContentSegment[],
+  selectionStart: number,
+  selectionEnd: number,
   highlightStyle: THighlightStyle
 ): ContentSegment[] {
-  const fullText = convertSegmentsToText(segments)
-  const beforeText = fullText.slice(0, startOffset)
-  const highlightedText = fullText.slice(startOffset, endOffset)
-  const afterText = fullText.slice(endOffset)
-
   const newSegments: ContentSegment[] = []
+  let currentOffset = 0
 
-  // Add before text if exists
-  if (beforeText) {
-    newSegments.push({
-      id: generateId(),
-      type: 'text',
-      content: beforeText
-    })
-  }
+  segments.forEach(segment => {
+    const segmentStart = currentOffset
+    const segmentEnd = currentOffset + segment.content.length
 
-  // Add highlighted text
-  if (highlightedText) {
-    newSegments.push({
-      id: generateId(),
-      type: 'highlighted',
-      content: highlightedText,
-      data: {
-        hslColor: highlightStyle.hslColor,
-        backgroundColor: highlightStyle.backgroundColor
+    // Case 1: Segment is completely before the selection
+    if (segmentEnd <= selectionStart) {
+      newSegments.push(segment)
+    }
+    // Case 2: Segment is completely after the selection
+    else if (segmentStart >= selectionEnd) {
+      newSegments.push(segment)
+    }
+    // Case 3: Segment overlaps with the selection
+    else {
+      // Part before the selection
+      if (segmentStart < selectionStart) {
+        newSegments.push({
+          ...segment,
+          id: generateId(),
+          content: segment.content.substring(0, selectionStart - segmentStart)
+        })
       }
-    })
-  }
 
-  // Add after text if exists
-  if (afterText) {
-    newSegments.push({
-      id: generateId(),
-      type: 'text',
-      content: afterText
-    })
-  }
+      // Part within the selection (highlighted)
+      const highlightContentStart = Math.max(0, selectionStart - segmentStart)
+      const highlightContentEnd = Math.min(segment.content.length, selectionEnd - segmentStart)
+      const highlightedContent = segment.content.substring(highlightContentStart, highlightContentEnd)
 
-  return newSegments.length > 0 ? newSegments : segments
+      if (highlightedContent.length > 0) {
+        newSegments.push({
+          id: generateId(),
+          type: 'highlighted',
+          content: highlightedContent,
+          data: {
+            hslColor: highlightStyle.hslColor,
+            backgroundColor: highlightStyle.backgroundColor
+          }
+        })
+      }
+
+      // Part after the selection
+      if (segmentEnd > selectionEnd) {
+        newSegments.push({
+          ...segment,
+          id: generateId(),
+          content: segment.content.substring(selectionEnd - segmentStart)
+        })
+      }
+    }
+    currentOffset = segmentEnd
+  })
+
+  return newSegments
 }
 
 export function RichTextEditor({ initialContent, onChange, placeholder = 'Start typing...' }: TProps) {
