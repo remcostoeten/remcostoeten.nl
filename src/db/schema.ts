@@ -92,9 +92,13 @@ export const accounts = sqliteTable("accounts", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
 });
 
+// Import CMS schema
+import { cmsSchema } from './cms-schema';
+
 export const tables = {
   users,
   sessions,
   verificationTokens,
   accounts,
+  ...cmsSchema,
 };
