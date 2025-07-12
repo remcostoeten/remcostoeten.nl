@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Toaster as Sonner } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { QueryProvider } from "@/components/providers/query-provider"
+import AdminToggleListener from "@/components/admin-toggle-listener"
 import "@/styles/globals.css"
 
 export default function RootLayout({
@@ -39,6 +40,7 @@ export default function RootLayout({
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <AdminToggleListener />
             {children}
           </TooltipProvider>
         </QueryProvider>

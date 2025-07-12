@@ -1,5 +1,10 @@
 'use client';
 
+// Admin CMS Interface
+// This component requires NEXT_PUBLIC_ADMIN_TOGGLE="true" in .env.local to be accessible
+// The value must be exactly the string "true" (including quotes) for security
+// Any other value will render the admin feature inert
+
 import React, { useState, useEffect } from 'react';
 import { Page, CMSState } from '@/types/cms';
 import { createNewPage, generateId, generateSlug } from '@/utils/cms-data';
@@ -118,22 +123,16 @@ export default function CMSApp() {
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
-    'cmd+n': handleCreatePage,
-    'cmd+s': () => {
+    'capslock+s': () => {
       if (state.currentPage) {
         // This will be handled by the InlinePageEditor
         return;
       }
     },
-    'escape': () => {
-      if (state.currentPage) {
-        handleBackToPages();
-      }
-    },
-    'cmd+shift+s': () => {
-      toast.info('Keyboard Shortcuts', 'Cmd+N: New Page, Cmd+S: Save, Esc: Back, Cmd+Shift+S: Show shortcuts');
+    'capslock+z': () => {
+      // Revert logic here
     }
-  }, [state.currentPage, handleCreatePage, handleBackToPages, toast]);
+  }, [state.currentPage]);
 
   if (state.currentPage) {
     return (

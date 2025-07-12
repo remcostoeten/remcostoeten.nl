@@ -5,6 +5,7 @@ import LivePageRenderer from './LivePageRenderer';
 import { generateSlug } from '@/utils/cms-data';
 import useKeyboardShortcuts from '@/hooks/use-keyboard-shortcuts';
 import { Edit3, Eye, Save, ArrowLeft, Plus, Type, FileText, Check, Clock, Settings } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface InlinePageEditorProps {
   page: Page;
@@ -165,37 +166,15 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
 
   // Keyboard shortcuts for editor
   useKeyboardShortcuts({
-    'cmd+s': () => {
+    'capslock+s': () => {
       if (isEditing && hasUnsavedChanges) {
         handleSave();
       }
     },
-    'escape': () => {
-      if (isEditing) {
-        handleToggleEdit();
-      } else {
-        onBack();
-      }
-    },
-    'cmd+e': () => {
-      handleToggleEdit();
-    },
-    'cmd+shift+h': () => {
-      if (isEditing) {
-        handleAddBlock('heading');
-      }
-    },
-    'cmd+shift+p': () => {
-      if (isEditing) {
-        handleAddBlock('paragraph');
-      }
-    },
-    'cmd+shift+s': () => {
-      if (isEditing) {
-        setShowMetadata(!showMetadata);
-      }
+    'capslock+z': () => {
+      // Revert logic here
     }
-  }, [isEditing, hasUnsavedChanges, showMetadata, handleSave, handleToggleEdit, onBack]);
+  }, [isEditing, hasUnsavedChanges, handleSave]);
 
   if (!isEditing) {
     return <LivePageRenderer page={editingPage} onBack={onBack} onEdit={() => setIsEditing(true)} />;
@@ -235,6 +214,10 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
                   <span>/{editingPage.slug}</span>
                   <span>•</span>
                   <span>Updated {editingPage.updatedAt.toLocaleString()}</span>
+                  <span>•</span>
+                  <div className="text-xs text-muted-foreground">
+                    <kbd>CapsLock</kbd> + <kbd>S</kbd> to save, <kbd>CapsLock</kbd> + <kbd>Z</kbd> to revert
+                  </div>
                 </div>
               </div>
             </div>
@@ -304,57 +287,67 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
       </div>
 
       {/* Page Metadata */}
-      {isEditing && showMetadata && (
-        <div className="bg-card border-b border-border">
-          <div className="max-w-4xl mx-auto px-6 py-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Page Settings</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Page Title
-                </label>
-                <input
-                  type="text"
-                  value={editingPage.title}
-                  onChange={(e) => handleTitleChange(e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                  placeholder="Enter page title"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  URL Slug {editingPage.slug === 'home' && '(Cannot be changed for home page)'}
-                </label>
-                <div className="flex items-center">
-                  <span className="text-sm text-muted-foreground mr-1">/</span>
-                  <input
-                    type="text"
-                    value={editingPage.slug}
-                    onChange={(e) => handleSlugChange(e.target.value)}
-                    disabled={editingPage.slug === 'home'}
-                    className={`flex-1 px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent ${
-                      editingPage.slug === 'home' ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    placeholder="page-url"
-                  />
+      <AnimatePresence>
+        {isEditing && showMetadata && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            <div className="bg-card border-b border-border">
+              <div className="max-w-4xl mx-auto px-6 py-6">
+                <h3 className="text-lg font-semibold text-foreground mb-4">Page Settings</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Page Title
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPage.title}
+                      onChange={(e) => handleTitleChange(e.target.value)}
+                      className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                      placeholder="Enter page title"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      URL Slug {editingPage.slug === 'home' && '(Cannot be changed for home page)'}
+                    </label>
+                    <div className="flex items-center">
+                      <span className="text-sm text-muted-foreground mr-1">/</span>
+                      <input
+                        type="text"
+                        value={editingPage.slug}
+                        onChange={(e) => handleSlugChange(e.target.value)}
+                        disabled={editingPage.slug === 'home'}
+                        className={`flex-1 px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent ${
+                          editingPage.slug === 'home' ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                        placeholder="page-url"
+                      />
+                    </div>
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={editingPage.description}
+                      onChange={(e) => handleDescriptionChange(e.target.value)}
+                      className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                      placeholder="Brief description of the page"
+                      rows={2}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Description
-                </label>
-                <textarea
-                  value={editingPage.description}
-                  onChange={(e) => handleDescriptionChange(e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
-                  placeholder="Brief description of the page"
-                  rows={2}
-                />
-              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-12">
@@ -377,24 +370,34 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
             ))}
 
           {/* Add Block Buttons */}
-          {isEditing && (
-            <div className="flex gap-4 pt-8 border-t border-border">
-              <button
-                onClick={() => handleAddBlock('heading')}
-                className="flex items-center gap-2 px-4 py-3 bg-card border border-border rounded-lg hover:bg-muted transition-colors text-foreground"
+          <AnimatePresence>
+            {isEditing && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="overflow-hidden"
               >
-                <Type className="w-5 h-5" />
-                Add Heading
-              </button>
-              <button
-                onClick={() => handleAddBlock('paragraph')}
-                className="flex items-center gap-2 px-4 py-3 bg-card border border-border rounded-lg hover:bg-muted transition-colors text-foreground"
-              >
-                <FileText className="w-5 h-5" />
-                Add Paragraph
-              </button>
-            </div>
-          )}
+                <div className="flex gap-4 pt-8 border-t border-border">
+                  <button
+                    onClick={() => handleAddBlock('heading')}
+                    className="flex items-center gap-2 px-4 py-3 bg-card border border-border rounded-lg hover:bg-muted transition-colors text-foreground"
+                  >
+                    <Type className="w-5 h-5" />
+                    Add Heading
+                  </button>
+                  <button
+                    onClick={() => handleAddBlock('paragraph')}
+                    className="flex items-center gap-2 px-4 py-3 bg-card border border-border rounded-lg hover:bg-muted transition-colors text-foreground"
+                  >
+                    <FileText className="w-5 h-5" />
+                    Add Paragraph
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
