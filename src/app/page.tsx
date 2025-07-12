@@ -1,5 +1,5 @@
-import { IndexView } from '@/src/views/index-view'
+import { CMSIndexView } from '@/src/views/cms-index-view'
 
 export default function HomePage() {
-	return <IndexView />
+	return <CMSIndexView />
 }

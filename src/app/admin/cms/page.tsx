@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Page, CMSState } from '@/types/cms';
-import { mockPages, createNewPage, generateId } from '@/utils/cms-data';
+import { createNewPage, generateId } from '@/utils/cms-data';
+import { CMSStore } from '@/lib/cms-store';
 import CMSLayout from '@/components/cms/Layout';
 import PagesList from '@/components/cms/PagesList';
 import InlinePageEditor from '@/components/cms/InlinePageEditor';
@@ -10,12 +11,29 @@ import InlinePageEditor from '@/components/cms/InlinePageEditor';
 export default function CMSApp() {
   const [state, setState] = useState<CMSState>({
     currentPage: null,
-    pages: mockPages,
+    pages: [],
     user: null,
     isAuthenticated: true,
     isPreviewMode: false,
     editingSegment: null
   });
+
+  // Load pages from CMSStore on component mount
+  useEffect(() => {
+    const loadPages = () => {
+      let pages = CMSStore.getPages();
+      
+      // If no pages exist, initialize with default home page
+      if (pages.length === 0) {
+        const defaultHome = CMSStore.initializeDefaultHomePage();
+        pages = [defaultHome];
+      }
+      
+      setState(prev => ({ ...prev, pages }));
+    };
+    
+    loadPages();
+  }, []);
 
   const [currentView, setCurrentView] = useState('pages');
 
@@ -27,6 +45,10 @@ export default function CMSApp() {
   };
 
   const handleSavePage = (updatedPage: Page) => {
+    // Update in CMSStore
+    CMSStore.updatePage(updatedPage.id, updatedPage);
+    
+    // Update local state
     setState(prev => ({
       ...prev,
       pages: prev.pages.map(p => p.id === updatedPage.id ? updatedPage : p),
@@ -40,6 +62,9 @@ export default function CMSApp() {
       id: generateId()
     };
     
+    // Add to CMSStore
+    CMSStore.addPage(newPage);
+    
     setState(prev => ({
       ...prev,
       pages: [...prev.pages, newPage],
@@ -49,6 +74,9 @@ export default function CMSApp() {
 
   const handleDeletePage = (pageId: string) => {
     if (confirm('Are you sure you want to delete this page?')) {
+      // Delete from CMSStore
+      CMSStore.deletePage(pageId);
+      
       setState(prev => ({
         ...prev,
         pages: prev.pages.filter(p => p.id !== pageId)
@@ -57,13 +85,18 @@ export default function CMSApp() {
   };
 
   const handleTogglePublish = (pageId: string) => {
+    const updatedPages = state.pages.map(p => 
+      p.id === pageId 
+        ? { ...p, isPublished: !p.isPublished, updatedAt: new Date() }
+        : p
+    );
+    
+    // Update CMSStore with all pages
+    CMSStore.savePages(updatedPages);
+    
     setState(prev => ({
       ...prev,
-      pages: prev.pages.map(p => 
-        p.id === pageId 
-          ? { ...p, isPublished: !p.isPublished, updatedAt: new Date() }
-          : p
-      )
+      pages: updatedPages
     }));
   };
 
