@@ -60,7 +60,7 @@ export function IndexView() {
         </p>
 
         {/* Projects paragraph */}
-        <p className="text-foreground leading-relaxed text-base">
+        <div className="text-foreground leading-relaxed text-base">
           Recently I've been working on{" "}
           <ProjectCard
             title="Roll Your Own Authentication"
@@ -106,10 +106,10 @@ export function IndexView() {
             GitHub ↗
           </a>
           .
-        </p>
+        </div>
 
         {/* Contact paragraph */}
-        <p className="text-foreground leading-relaxed text-base">
+        <div className="text-foreground leading-relaxed text-base">
           Connect with me on{" "}
           <a 
             href="https://nl.linkedin.com/in/remco-stoeten" 
@@ -138,7 +138,7 @@ export function IndexView() {
             @exactonoline
           </span>
           .
-        </p>
+        </div>
 
         {/* Timezone paragraph */}
         <p className="text-foreground leading-relaxed text-base">
