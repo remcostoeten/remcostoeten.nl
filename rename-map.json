@@ -1,0 +1,21 @@
+{
+  "replacements": [
+    {
+      "search": "remcostoeten.nl",
+      "replace": "remcostoeten.nl",
+      "caseSensitive": true,
+      "description": "Project name replacement"
+    },
+    {
+      "search": "@remcostoeten",
+      "replace": "@remcostoeten",
+      "caseSensitive": true,
+      "description": "Twitter/X handle and Open Graph replacement"
+    }
+  ],
+  "metadata": {
+    "created": "2024-12-19",
+    "purpose": "Definitive replacement matrix for project renaming",
+    "version": "1.0.0"
+  }
+}

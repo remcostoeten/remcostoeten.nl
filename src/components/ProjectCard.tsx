@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Star, GitBranch, Eye, Calendar, Code2 } from "lucide-react";
 
 interface ProjectCardProps {
@@ -33,29 +32,22 @@ export const ProjectCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <motion.a
+      <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium cursor-pointer border-2 border-dotted border-accent/30 hover:border-accent/60 px-1 rounded transition-colors duration-200"
-        whileHover={{ scale: 1.02 }}
-        transition={{ duration: 0.2 }}
+        className="text-accent hover:underline font-medium cursor-pointer border-2 border-dotted border-accent/30 hover:border-accent/60 px-1 rounded"
       >
         {title} ↗
-      </motion.a>
+      </a>
 
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute z-50 w-80 p-4 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg shadow-xl left-0 top-full"
-            style={{
-              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-            }}
-          >
+      {isHovered && (
+        <div
+          className="absolute z-50 w-80 p-4 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg shadow-xl left-0 top-full"
+          style={{
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+          }}
+        >
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div>
@@ -74,27 +66,23 @@ export const ProjectCard = ({
                 </div>
               </div>
               <div className="flex gap-2">
-                <motion.a
+                <a
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-1 hover:bg-muted rounded"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
                 >
                   <Code2 className="w-3 h-3 text-muted-foreground" />
-                </motion.a>
+                </a>
                 {demoUrl && (
-                  <motion.a
+                  <a
                     href={demoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-1 hover:bg-muted rounded"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
                   >
                     <Eye className="w-3 h-3 text-muted-foreground" />
-                  </motion.a>
+                  </a>
                 )}
               </div>
             </div>
@@ -141,9 +129,8 @@ export const ProjectCard = ({
               </div>
               <ExternalLink className="w-3 h-3" />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )
     </div>
   );
 };

@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
 
 import { ProjectCard } from "@/components/ProjectCard"
 import { ContactForm } from "@/components/ContactForm"
@@ -44,40 +43,32 @@ export const Index = () => {
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
       <div className="max-w-2xl w-full space-y-8">
         {/* Main heading */}
-        <motion.h1
-          className="text-xl font-medium text-foreground"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
-          I build digital things.
-        </motion.h1>
+        <h1 className="text-xl font-medium text-foreground">
+          I craft digital experiences.
+        </h1>
 
         {/* Introduction paragraph */}
-        <motion.p
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-        >
-          I'm a{" "}
+        <p className="text-foreground leading-relaxed text-base">
+          With extensive experience in{" "}
           <span
             className="font-medium px-1 py-0.5 rounded"
             style={{ backgroundColor: "hsl(var(--highlight-frontend) / 0.2)", color: "hsl(var(--highlight-frontend))" }}
           >
-            Frontend Developer
-          </span>{" "}
-          focused on creating efficient and maintainable web applications. I work remotely from Lemmer, Netherlands.
-        </motion.p>
+            TypeScript and React & Next.js
+          </span>
+          , I specialize in building scalable web applications, from Magento shops to modern SaaS platforms. Currently working on an{" "}
+          <span
+            className="font-medium px-1 py-0.5 rounded"
+            style={{ backgroundColor: "hsl(var(--highlight-product) / 0.2)", color: "hsl(var(--highlight-product))" }}
+          >
+            LMS system for Dutch MBO students
+          </span>
+          .
+        </p>
 
         {/* Projects paragraph */}
-        <motion.p
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-        >
-          Recently I've been working on{" "}
+        <p className="text-foreground leading-relaxed text-base">
+          Recently I've been building{" "}
           <ProjectCard
             title="Roll Your Own Authentication"
             description="A comprehensive Next.js 15 authentication system showcasing how to implement JWT-based auth without external services like Lucia, NextAuth, or Clerk. Features secure PostgreSQL storage, admin roles, onboarding flows, and more."
@@ -111,8 +102,15 @@ export const Index = () => {
               "Smart credential overwriting",
               "Sub-10 second deployment workflow",
             ]}
-          />
-          . You can explore more of my work on{" "}
+          />{" "}
+          and various{" "}
+          <span
+            className="font-medium px-1 py-0.5 rounded"
+            style={{ backgroundColor: "hsl(var(--highlight-frontend) / 0.2)", color: "hsl(var(--highlight-frontend))" }}
+          >
+            CLI tools & automation scripts
+          </span>
+          . More projects and experiments can be found on{" "}
           <a
             href="https://github.com/remcostoeten"
             target="_blank"
@@ -122,16 +120,20 @@ export const Index = () => {
             GitHub ↗
           </a>
           .
-        </motion.p>
+        </p>
 
         {/* Contact paragraph */}
-        <motion.p
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-        >
-          Connect with me on{" "}
+        <p className="text-foreground leading-relaxed text-base">
+          Find me on{" "}
+          <a
+            href="https://github.com/remcostoeten"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline font-medium"
+          >
+            GitHub ↗
+          </a>{" "}
+          and{" "}
           <a
             href="https://nl.linkedin.com/in/remco-stoeten"
             target="_blank"
@@ -140,47 +142,39 @@ export const Index = () => {
           >
             LinkedIn ↗
           </a>{" "}
-          or through{" "}
+          or contact me via{" "}
           <div
             className="relative inline-block"
             onMouseEnter={handleContactHover}
             onMouseLeave={() => setIsContactHovered(false)}
           >
-            <button className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60 transition-colors duration-200">
-              my website
+            <button className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60">
+              Email ↗
             </button>
             <ContactForm isVisible={isContactHovered} openAbove={shouldOpenAbove} />
-          </div>
-          . I'm currently working at{" "}
-          <span
-            className="font-medium px-1 py-0.5 rounded"
-            style={{ backgroundColor: "hsl(var(--highlight-product) / 0.2)", color: "hsl(var(--highlight-product))" }}
+          </div>{" "}
+          or check out my{" "}
+          <a
+            href="https://remcostoeten.nl"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline font-medium"
           >
-            @exactonoline
-          </span>
+            website ↗
+          </a>
           .
-        </motion.p>
+        </p>
 
         {/* Timezone paragraph */}
-        <motion.p
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-        >
-          My current timezone is <span className="font-medium">UTC+1</span> which includes countries like{" "}
-          <span className="font-medium">Ireland</span>, <span className="font-medium">Morocco</span> and{" "}
-          <span className="font-medium">Portugal</span>. Right now it is{" "}
-          <motion.span
-            className="font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-          >
+        <p className="text-foreground leading-relaxed text-base">
+          My current timezone is <span className="font-medium">CET</span> which includes countries like{" "}
+          <span className="font-medium">Netherlands</span>, <span className="font-medium">Germany</span> and{" "}
+          <span className="font-medium">France</span>. Right now it is{" "}
+          <span className="font-medium">
             {currentTime}
-          </motion.span>
+          </span>
           .
-        </motion.p>
+        </p>
       </div>
     </div>
   )

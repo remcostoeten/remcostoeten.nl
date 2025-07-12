@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Send, User, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,16 +45,9 @@ export const ContactForm = ({ isVisible, openAbove = false }: ContactFormProps) 
   };
 
   return (
-    <AnimatePresence>
+    <>
       {isVisible && (
-        <motion.div
-          initial={{ opacity: 0, y: openAbove ? -10 : 10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: openAbove ? -10 : 10, scale: 0.95 }}
-          transition={{ 
-            duration: 0.3, 
-            ease: [0.4, 0.0, 0.2, 1] // Custom bezier curve for smooth animation
-          }}
+        <div
           className={`absolute z-50 w-80 p-4 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg shadow-xl left-0 ${
             openAbove ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
@@ -78,21 +70,18 @@ export const ContactForm = ({ isVisible, openAbove = false }: ContactFormProps) 
             </Label>
             <div className="flex gap-2">
               {emojis.map((emoji) => (
-                <motion.button
+                <button
                   key={emoji}
                   type="button"
                   onClick={() => handleEmojiSelect(emoji)}
-                  className={`text-lg p-2 rounded-md transition-colors ${
+                  className={`text-lg p-2 rounded-md ${
                     selectedEmoji === emoji 
                       ? 'bg-accent/20 border border-accent/50' 
                       : 'hover:bg-muted/50 border border-transparent'
                   }`}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
                 >
                   {emoji}
-                </motion.button>
+                </button>
               ))}
             </div>
           </div>
@@ -152,8 +141,8 @@ export const ContactForm = ({ isVisible, openAbove = false }: ContactFormProps) 
               This is just a demo - no feedback will actually be sent
             </p>
           </div>
-        </motion.div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };

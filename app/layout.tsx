@@ -28,11 +28,11 @@ export default function RootLayout({
           content="Frontend Developer focused on creating efficient and maintainable web applications. Working remotely from Lemmer, Netherlands."
         />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+        <meta property="og:image" content="/og-image.png" />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:site" content="@lovable_dev" />
-        <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+        <meta name="twitter:site" content="@remcostoeten" />
+        <meta name="twitter:image" content="/og-image.png" />
       </head>
       <body>
         <QueryProvider>
@@ -48,5 +48,5 @@ export default function RootLayout({
 }
 
 export const metadata = {
-      generator: 'v0.dev'
+      generator: 'Next.js'
     };

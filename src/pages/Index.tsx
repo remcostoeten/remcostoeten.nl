@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Star, GitBranch, Eye } from "lucide-react";
 
 import { ProjectCard } from "@/components/ProjectCard";
@@ -9,10 +8,8 @@ const Index = () => {
   const [currentTime, setCurrentTime] = useState<string>("");
   const [isContactHovered, setIsContactHovered] = useState(false);
   const [shouldOpenAbove, setShouldOpenAbove] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-
   useEffect(() => {
-    setIsLoaded(true);
+
     const updateTime = () => {
       const now = new Date();
       const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
@@ -25,7 +22,9 @@ const Index = () => {
     updateTime();
     const interval = setInterval(updateTime, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   const handleContactHover = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -40,42 +39,26 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
-      {isLoaded && (
       <div className="max-w-2xl w-full space-y-8">
         {/* Main heading */}
-        <motion.h1 
-          className="text-xl font-medium text-foreground"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
+        <h1 className="text-xl font-medium text-foreground">
           I build digital things.
-        </motion.h1>
+        </h1>
 
         {/* Introduction paragraph */}
-        <motion.p 
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-        >
+        <p className="text-foreground leading-relaxed text-base">
           I'm a{" "}
           <span 
             className="font-medium px-1 py-0.5 rounded"
             style={{ backgroundColor: 'hsl(var(--highlight-frontend) / 0.2)', color: 'hsl(var(--highlight-frontend))' }}
           >
             Frontend Developer
-          </span>{" "}
+          </span>
           focused on creating efficient and maintainable web applications. I work remotely from Lemmer, Netherlands.
-        </motion.p>
+        </p>
 
         {/* Projects paragraph */}
-        <motion.p 
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-        >
+        <p className="text-foreground leading-relaxed text-base">
           Recently I've been working on{" "}
           <ProjectCard
             title="Roll Your Own Authentication"
@@ -121,15 +104,10 @@ const Index = () => {
             GitHub ↗
           </a>
           .
-        </motion.p>
+        </p>
 
         {/* Contact paragraph */}
-        <motion.p 
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-        >
+        <p className="text-foreground leading-relaxed text-base">
           Connect with me on{" "}
           <a 
             href="https://nl.linkedin.com/in/remco-stoeten" 
@@ -145,7 +123,7 @@ const Index = () => {
             onMouseEnter={handleContactHover}
             onMouseLeave={() => setIsContactHovered(false)}
           >
-            <button className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60 transition-colors duration-200">
+            <button className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60">
               my website
             </button>
             <ContactForm isVisible={isContactHovered} openAbove={shouldOpenAbove} />
@@ -158,15 +136,10 @@ const Index = () => {
             @exactonoline
           </span>
           .
-        </motion.p>
+        </p>
 
         {/* Timezone paragraph */}
-        <motion.p 
-          className="text-foreground leading-relaxed text-base"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-        >
+        <p className="text-foreground leading-relaxed text-base">
           My current timezone is{" "}
           <span className="font-medium">UTC+1</span>{" "}
           which includes countries like{" "}
@@ -175,17 +148,11 @@ const Index = () => {
           and{" "}
           <span className="font-medium">Portugal</span>
           . Right now it is{" "}
-          <motion.span 
-            className="font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
-          >
+          <span className="font-medium">
             {currentTime}
-        </motion.span>.
-      </motion.p>
+          </span>.
+        </p>
     </div>
-      )}
   </div>
 );
 };
