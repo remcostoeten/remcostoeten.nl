@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ContentSegment } from '../../types/cms';
-import { Trash2, ExternalLink, Palette } from 'lucide-react';
+import { ContentSegment } from '@/types/cms';
+import { Trash2, ExternalLink, Palette, Edit3 } from 'lucide-react';
+import { RichTextEditor } from './rich-text-editor';
 
 interface SegmentEditorProps {
   segment: ContentSegment;

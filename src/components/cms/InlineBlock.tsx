@@ -39,6 +39,25 @@ export default function InlineBlock({
     onSegmentSave(segmentId, updatedSegment);
   };
 
+  const handleSegmentSplit = (segmentId: string, newSegments: ContentSegment[]) => {
+    const segmentIndex = block.content.findIndex(seg => seg.id === segmentId);
+    if (segmentIndex === -1) return;
+
+    const updatedContent = [
+      ...block.content.slice(0, segmentIndex),
+      ...newSegments,
+      ...block.content.slice(segmentIndex + 1)
+    ];
+
+    const updatedBlock = {
+      ...block,
+      content: updatedContent
+    };
+    
+    onBlockChange(updatedBlock);
+    onSegmentCancel(); // Close editing mode
+  };
+
   const handleBlockStylesChange = (styles: any) => {
     onBlockChange({
       ...block,
@@ -115,6 +134,7 @@ export default function InlineBlock({
               onEdit={() => onSegmentEdit(segment.id)}
               onSave={(updatedSegment) => handleSegmentSave(segment.id, updatedSegment)}
               onCancel={onSegmentCancel}
+              onSplitSegment={(newSegments) => handleSegmentSplit(segment.id, newSegments)}
               blockStyles={block.styles}
               onBlockStylesChange={handleBlockStylesChange}
             />

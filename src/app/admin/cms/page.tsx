@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Page, CMSState } from '@/types/cms';
-import { createNewPage, generateId } from '@/utils/cms-data';
+import { createNewPage, generateId, generateSlug } from '@/utils/cms-data';
 import { CMSStore } from '@/lib/cms-store';
+import { useCMSToast, CMSToastContainer } from '@/hooks/use-cms-toast';
+import useKeyboardShortcuts from '@/hooks/use-keyboard-shortcuts';
 import CMSLayout from '@/components/cms/Layout';
 import PagesList from '@/components/cms/PagesList';
 import InlinePageEditor from '@/components/cms/InlinePageEditor';
@@ -17,6 +19,8 @@ export default function CMSApp() {
     isPreviewMode: false,
     editingSegment: null
   });
+  
+  const toast = useCMSToast();
 
   // Load pages from CMSStore on component mount
   useEffect(() => {
@@ -45,60 +49,65 @@ export default function CMSApp() {
   };
 
   const handleSavePage = (updatedPage: Page) => {
-    // Update in CMSStore
-    CMSStore.updatePage(updatedPage.id, updatedPage);
-    
-    // Update local state
-    setState(prev => ({
-      ...prev,
-      pages: prev.pages.map(p => p.id === updatedPage.id ? updatedPage : p),
-      currentPage: null
-    }));
+    try {
+      // Update in CMSStore
+      CMSStore.updatePage(updatedPage.id, updatedPage);
+      
+      // Update local state
+      setState(prev => ({
+        ...prev,
+        pages: prev.pages.map(p => p.id === updatedPage.id ? updatedPage : p),
+        currentPage: null
+      }));
+      
+      toast.success('Page saved successfully', 'Your changes are now live!');
+    } catch (error) {
+      toast.error('Failed to save page', 'Please try again.');
+    }
   };
 
   const handleCreatePage = () => {
-    const newPage: Page = {
-      ...createNewPage(),
-      id: generateId()
-    };
-    
-    // Add to CMSStore
-    CMSStore.addPage(newPage);
-    
-    setState(prev => ({
-      ...prev,
-      pages: [...prev.pages, newPage],
-      currentPage: newPage
-    }));
+    try {
+      const baseNewPage = createNewPage();
+      const newPage: Page = {
+        ...baseNewPage,
+        id: generateId(),
+        slug: generateSlug(baseNewPage.title)
+      };
+      
+      // Add to CMSStore
+      CMSStore.addPage(newPage);
+      
+      setState(prev => ({
+        ...prev,
+        pages: [...prev.pages, newPage],
+        currentPage: newPage
+      }));
+      
+      toast.success('Page created', 'New page ready for editing!');
+    } catch (error) {
+      toast.error('Failed to create page', 'Please try again.');
+    }
   };
 
   const handleDeletePage = (pageId: string) => {
     if (confirm('Are you sure you want to delete this page?')) {
-      // Delete from CMSStore
-      CMSStore.deletePage(pageId);
-      
-      setState(prev => ({
-        ...prev,
-        pages: prev.pages.filter(p => p.id !== pageId)
-      }));
+      try {
+        // Delete from CMSStore
+        CMSStore.deletePage(pageId);
+        
+        setState(prev => ({
+          ...prev,
+          pages: prev.pages.filter(p => p.id !== pageId)
+        }));
+        
+        toast.success('Page deleted', 'Page has been removed.');
+      } catch (error) {
+        toast.error('Failed to delete page', 'Please try again.');
+      }
     }
   };
 
-  const handleTogglePublish = (pageId: string) => {
-    const updatedPages = state.pages.map(p => 
-      p.id === pageId 
-        ? { ...p, isPublished: !p.isPublished, updatedAt: new Date() }
-        : p
-    );
-    
-    // Update CMSStore with all pages
-    CMSStore.savePages(updatedPages);
-    
-    setState(prev => ({
-      ...prev,
-      pages: updatedPages
-    }));
-  };
 
   const handleBackToPages = () => {
     setState(prev => ({
@@ -107,42 +116,52 @@ export default function CMSApp() {
     }));
   };
 
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    'cmd+n': handleCreatePage,
+    'cmd+s': () => {
+      if (state.currentPage) {
+        // This will be handled by the InlinePageEditor
+        return;
+      }
+    },
+    'escape': () => {
+      if (state.currentPage) {
+        handleBackToPages();
+      }
+    },
+    'cmd+shift+s': () => {
+      toast.info('Keyboard Shortcuts', 'Cmd+N: New Page, Cmd+S: Save, Esc: Back, Cmd+Shift+S: Show shortcuts');
+    }
+  }, [state.currentPage, handleCreatePage, handleBackToPages, toast]);
+
   if (state.currentPage) {
     return (
-      <InlinePageEditor
-        page={state.currentPage}
-        onSave={handleSavePage}
-        onBack={handleBackToPages}
-      />
+      <>
+        <InlinePageEditor
+          page={state.currentPage}
+          onSave={handleSavePage}
+          onBack={handleBackToPages}
+        />
+        <CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
+      </>
     );
   }
 
   return (
-    <CMSLayout
-      currentView={currentView}
-      onNavigate={setCurrentView}
-    >
-      {currentView === 'pages' && (
+    <>
+      <CMSLayout
+        currentView={currentView}
+        onNavigate={setCurrentView}
+      >
         <PagesList
           pages={state.pages}
           onEdit={handleEditPage}
           onCreate={handleCreatePage}
           onDelete={handleDeletePage}
-          onTogglePublish={handleTogglePublish}
         />
-      )}
-      {currentView === 'users' && (
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Users</h2>
-          <p className="text-muted-foreground">User management coming soon...</p>
-        </div>
-      )}
-      {currentView === 'settings' && (
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Settings</h2>
-          <p className="text-muted-foreground">Settings panel coming soon...</p>
-        </div>
-      )}
-    </CMSLayout>
+      </CMSLayout>
+      <CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
+    </>
   );
 }

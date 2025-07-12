@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Page, ContentBlock, ContentSegment } from '@/types/cms';
 import InlineBlock from './InlineBlock';
 import LivePageRenderer from './LivePageRenderer';
-import { Edit3, Eye, Save, ArrowLeft, Plus, Type, FileText, Check, Clock } from 'lucide-react';
+import { generateSlug } from '@/utils/cms-data';
+import useKeyboardShortcuts from '@/hooks/use-keyboard-shortcuts';
+import { Edit3, Eye, Save, ArrowLeft, Plus, Type, FileText, Check, Clock, Settings } from 'lucide-react';
 
 interface InlinePageEditorProps {
   page: Page;
@@ -16,6 +18,7 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
   const [editingSegment, setEditingSegment] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showMetadata, setShowMetadata] = useState(false);
 
   const handleToggleEdit = () => {
     setIsEditing(!isEditing);
@@ -118,6 +121,82 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
     setEditingSegment(null);
   };
 
+  const handleTitleChange = (newTitle: string) => {
+    const newSlug = page.slug === 'home' ? 'home' : generateSlug(newTitle);
+    setEditingPage(prev => ({
+      ...prev,
+      title: newTitle,
+      slug: newSlug,
+      updatedAt: new Date()
+    }));
+    setHasUnsavedChanges(true);
+    setSaveStatus('idle');
+  };
+
+  const handleDescriptionChange = (newDescription: string) => {
+    setEditingPage(prev => ({
+      ...prev,
+      description: newDescription,
+      updatedAt: new Date()
+    }));
+    setHasUnsavedChanges(true);
+    setSaveStatus('idle');
+  };
+
+  const handleSlugChange = (newSlug: string) => {
+    // Don't allow changing the home page slug
+    if (page.slug === 'home') return;
+    
+    const cleanSlug = newSlug
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+      
+    setEditingPage(prev => ({
+      ...prev,
+      slug: cleanSlug,
+      updatedAt: new Date()
+    }));
+    setHasUnsavedChanges(true);
+    setSaveStatus('idle');
+  };
+
+  // Keyboard shortcuts for editor
+  useKeyboardShortcuts({
+    'cmd+s': () => {
+      if (isEditing && hasUnsavedChanges) {
+        handleSave();
+      }
+    },
+    'escape': () => {
+      if (isEditing) {
+        handleToggleEdit();
+      } else {
+        onBack();
+      }
+    },
+    'cmd+e': () => {
+      handleToggleEdit();
+    },
+    'cmd+shift+h': () => {
+      if (isEditing) {
+        handleAddBlock('heading');
+      }
+    },
+    'cmd+shift+p': () => {
+      if (isEditing) {
+        handleAddBlock('paragraph');
+      }
+    },
+    'cmd+shift+s': () => {
+      if (isEditing) {
+        setShowMetadata(!showMetadata);
+      }
+    }
+  }, [isEditing, hasUnsavedChanges, showMetadata, handleSave, handleToggleEdit, onBack]);
+
   if (!isEditing) {
     return <LivePageRenderer page={editingPage} onBack={onBack} onEdit={() => setIsEditing(true)} />;
   }
@@ -161,6 +240,20 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
             </div>
             
             <div className="flex items-center space-x-2">
+              {isEditing && (
+                <button
+                  onClick={() => setShowMetadata(!showMetadata)}
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                    showMetadata 
+                      ? 'bg-accent/20 text-accent' 
+                      : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  Settings
+                </button>
+              )}
+              
               <button
                 onClick={handleToggleEdit}
                 className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
@@ -209,6 +302,59 @@ export default function InlinePageEditor({ page, onSave, onBack }: InlinePageEdi
           </div>
         </div>
       </div>
+
+      {/* Page Metadata */}
+      {isEditing && showMetadata && (
+        <div className="bg-card border-b border-border">
+          <div className="max-w-4xl mx-auto px-6 py-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Page Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Page Title
+                </label>
+                <input
+                  type="text"
+                  value={editingPage.title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Enter page title"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  URL Slug {editingPage.slug === 'home' && '(Cannot be changed for home page)'}
+                </label>
+                <div className="flex items-center">
+                  <span className="text-sm text-muted-foreground mr-1">/</span>
+                  <input
+                    type="text"
+                    value={editingPage.slug}
+                    onChange={(e) => handleSlugChange(e.target.value)}
+                    disabled={editingPage.slug === 'home'}
+                    className={`flex-1 px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent ${
+                      editingPage.slug === 'home' ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                    placeholder="page-url"
+                  />
+                </div>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={editingPage.description}
+                  onChange={(e) => handleDescriptionChange(e.target.value)}
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                  placeholder="Brief description of the page"
+                  rows={2}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-6 py-12">
