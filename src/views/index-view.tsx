@@ -7,23 +7,23 @@ import { useState, useEffect } from 'react'
 import { ProjectCard } from '@/components/project-card'
 import { ContactForm } from '@/components/contact-form'
 
+function getFormattedTime() {
+		const now = new Date()
+		const utcTime = now.getTime() + now.getTimezoneOffset() * 60000
+		const utcPlus1 = new Date(utcTime + 1 * 3600000)
+		return utcPlus1.toTimeString().split(' ')[0]
+	}
+
 export const IndexView = () => {
-	const [currentTime, setCurrentTime] = useState<string>('')
+	const [currentTime, setCurrentTime] = useState<string>(getFormattedTime())
 	const [isContactHovered, setIsContactHovered] = useState(false)
 	const [shouldOpenAbove, setShouldOpenAbove] = useState(false)
 
 	useEffect(() => {
 		const updateTime = () => {
-			const now = new Date()
-			// Convert to UTC+1 timezone
-			const utcTime = now.getTime() + now.getTimezoneOffset() * 60000
-			const utcPlus1 = new Date(utcTime + 1 * 3600000)
-
-			const timeString = utcPlus1.toTimeString().split(' ')[0]
-			setCurrentTime(timeString)
+			setCurrentTime(getFormattedTime())
 		}
 
-		updateTime()
 		const interval = setInterval(updateTime, 1000)
 
 		return () => clearInterval(interval)
@@ -197,12 +197,12 @@ export const IndexView = () => {
 				{/* Timezone paragraph */}
 				<p className='text-foreground leading-relaxed text-base'>
 					My current timezone is{' '}
-					<span className='font-medium'>CET</span> which includes
-					countries like{' '}
-					<span className='font-medium'>Netherlands</span>,{' '}
-					<span className='font-medium'>Germany</span> and{' '}
-					<span className='font-medium'>France</span>. Right now it is{' '}
-					<span className='font-medium'>{currentTime}</span>.
+				<span className='font-medium'>CET</span> which includes
+				countries like{' '}
+				<span className='font-medium'>Netherlands</span>,{' '}
+				<span className='font-medium'>Germany</span> and{' '}
+				<span className='font-medium'>France</span>. Right now it is{' '}
+				<span className='font-medium font-mono' style={{ minWidth: '8ch', display: 'inline-block' }}>{currentTime || '00:00:00'}</span>.
 				</p>
 			</div>
 		</div>

@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, primaryKey } from "drizzle-orm/sqlite-core";
-
+export * from '@/db/cms-schema'
 type TUser = {
   id: string;
   email: string;
