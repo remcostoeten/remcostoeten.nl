@@ -45,3 +45,6 @@ CREATE TABLE `style_presets` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `style_presets_name_unique` ON `style_presets` (`name`);
+--0; statement-breakpoint
+CREATE INDEX idx_blocks_page_order ON content_blocks(page_id, `order`);
+CREATE INDEX idx_segments_block_order ON content_segments(block_id, `order`);

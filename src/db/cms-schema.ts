@@ -1,4 +1,5 @@
 import {
+	index,
 	integer,
 	primaryKey,
 	sqliteTable,
@@ -17,7 +18,9 @@ export const contentBlocks = sqliteTable("content_blocks", {
 	updatedAt: integer("updated_at", { mode: "timestamp" })
 		.notNull()
 		.$defaultFn(() => new Date()),
-});
+}, (table) => ({
+	idxBlocksPageOrder: index("idx_blocks_page_order").on(table.pageId, table.order),
+}));
 
 // Content Segments - individual pieces of text with their own styling
 export const contentSegments = sqliteTable("content_segments", {
@@ -39,7 +42,9 @@ export const contentSegments = sqliteTable("content_segments", {
 	updatedAt: integer("updated_at", { mode: "timestamp" })
 		.notNull()
 		.$defaultFn(() => new Date()),
-});
+}, (table) => ({
+	idxSegmentsBlockOrder: index("idx_segments_block_order").on(table.blockId, table.order),
+}));
 
 // Style Presets for common text styles
 export const stylePresets = sqliteTable("style_presets", {
