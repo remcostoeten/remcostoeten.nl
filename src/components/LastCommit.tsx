@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { GitHub } from "gheasy";
 
 type TProps = {
@@ -35,14 +38,29 @@ async function getLastCommit(repo: string): Promise<TCommitData | null> {
 	}
 }
 
-export async function LastCommit({
-	repo = "remco-stoeten/remcostoeten.nl",
-}: TProps) {
-	const commitData = await getLastCommit(repo);
+export function LastCommit({ repo = "remco-stoeten/remcostoeten.nl" }: TProps) {
+	const [commitData, setCommitData] = useState<TCommitData | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		async function fetchCommit() {
+			const data = await getLastCommit(repo);
+			setCommitData(data);
+			setIsLoading(false);
+		}
+
+		fetchCommit();
+	}, [repo]);
+
+	if (isLoading) {
+		return (
+			<div className="text-xs text-muted-foreground">Loading commit...</div>
+		);
+	}
 
 	if (!commitData) {
 		return (
-			<div className="text-muted-foreground text-sm">
+			<div className="text-xs text-muted-foreground">
 				Unable to load commit information
 			</div>
 		);
