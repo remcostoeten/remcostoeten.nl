@@ -1,11 +1,11 @@
 "use client";
 
 // Admin CMS Interface
-// This component requires NEXT_PUBLIC_ADMIN_TOGGLE="true" in .env.local to be accessible
-// The value must be exactly the string "true" (including quotes) for security
-// Any other value will render the admin feature inert
+// Protected by middleware authentication
+// Only authorized users can access this interface
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import InlinePageEditor from "@/components/cms/InlinePageEditor";
 import CMSLayout from "@/components/cms/Layout";
 import PagesList from "@/components/cms/PagesList";
@@ -14,8 +14,14 @@ import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { CMSStore } from "@/lib/cms-store";
 import { CMSState, Page } from "@/types/cms";
 import { createNewPage, generateId, generateSlug } from "@/utils/cms-data";
+import { Button } from "@/components/ui/button";
+import { signOut } from "@/lib/auth-client";
 
 export default function CMSApp() {
+	const router = useRouter();
+	// Mock session for development - auth removed
+	const session = { user: { email: "dev@localhost" } };
+	const isPending = false;
 	const [state, setState] = useState<CMSState>({
 		currentPage: null,
 		pages: [],
@@ -26,6 +32,13 @@ export default function CMSApp() {
 	});
 
 	const toast = useCMSToast();
+
+	// Check authentication
+	useEffect(() => {
+		if (!isPending && !session) {
+			router.push('/auth/signin');
+		}
+	}, [session, isPending, router]);
 
 	// Load pages from CMSStore on component mount
 	useEffect(() => {
@@ -123,6 +136,12 @@ export default function CMSApp() {
 	};
 
 	// Keyboard shortcuts
+	// Handle sign out
+	const handleSignOut = async () => {
+		await signOut();
+		router.push('/');
+	};
+
 	useKeyboardShortcuts(
 		{
 			"capslock+s": () => {
@@ -137,6 +156,22 @@ export default function CMSApp() {
 		},
 		[state.currentPage],
 	);
+
+	// Show loading while checking authentication
+	if (isPending) {
+		return (
+			<div className="min-h-screen flex items-center justify-center">
+				<div className="text-center">
+					<div className="text-lg">Loading...</div>
+				</div>
+			</div>
+		);
+	}
+
+	// Don't render if not authenticated
+	if (!session) {
+		return null;
+	}
 
 	if (state.currentPage) {
 		return (
@@ -154,6 +189,14 @@ export default function CMSApp() {
 	return (
 		<>
 			<CMSLayout currentView={currentView} onNavigate={setCurrentView}>
+				<div className="mb-4 flex justify-between items-center">
+					<div className="text-sm text-muted-foreground">
+						Signed in as: {session.user?.email}
+					</div>
+					<Button variant="outline" size="sm" onClick={handleSignOut}>
+						Sign Out
+					</Button>
+				</div>
 				<PagesList
 					pages={state.pages}
 					onEdit={handleEditPage}

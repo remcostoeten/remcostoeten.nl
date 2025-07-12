@@ -3,6 +3,8 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { ContactForm } from "@/components/contact-form";
+import { LastCommit } from "@/components/LastCommit";
+import { NowPlaying } from "@/components/NowPlaying";
 import { ProjectCard } from "@/components/project-card";
 import { CMSStore } from "@/lib/cms-store";
 import { ContentSegment, Page } from "@/types/cms";
@@ -280,6 +282,12 @@ export const CMSIndexView = () => {
 					</span>
 					.
 				</p>
+
+				{/* Last commit and music information */}
+				<div className="pt-4 border-t border-border/20 space-y-2">
+					<LastCommit />
+					<NowPlaying />
+				</div>
 			</div>
 		</div>
 	);

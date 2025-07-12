@@ -4,6 +4,7 @@ import type React from "react";
 
 import { useEffect, useState } from "react";
 import { ContactForm } from "@/components/contact-form";
+import { LastCommit } from "@/components/LastCommit";
 import { ProjectCard } from "@/components/project-card";
 
 function getFormattedTime() {
@@ -204,6 +205,11 @@ export const IndexView = () => {
 					</span>
 					.
 				</p>
+
+				{/* Last commit information */}
+				<div className="pt-4 border-t border-border/20">
+					<LastCommit />
+				</div>
 			</div>
 		</div>
 	);
