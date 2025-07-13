@@ -11,9 +11,8 @@ import {
 } from 'lucide-react'
 import React from 'react'
 import { Page } from '@/types/cms'
-import { Badge } from '@/components/ui/badge'
 
-interface PagesListProps {
+type TPageProps = {
 	pages: Page[]
 	onEdit: (page: Page) => void
 	onCreate: () => void
@@ -43,7 +42,7 @@ export default function PagesList({
 	onEdit,
 	onCreate,
 	onDelete
-}: PagesListProps) {
+}: TPageProps) {
 	const totalPages = pages.length
 
 	if (totalPages === 0) {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db/client";
+import { db } from "@/db/db";
 import {
 	createErrorResponse,
 	createSuccessResponse,
@@ -51,16 +51,16 @@ export async function PATCH(request: NextRequest, { params }: TRouteParams) {
 		const { content } = validationResult.data;
 
 		// Check if segment exists
-		const existingSegment = await getContentSegmentById(db(), id);
+		const existingSegment = await getContentSegmentById(db, id);
 		if (!existingSegment) {
 			return createErrorResponse("Segment not found", 404);
 		}
 
 		// Update segment
-		await updateSegmentText(db(), id, content);
+		await updateSegmentText(db, id, content);
 
 		// Get updated segment
-		const updatedSegment = await getContentSegmentById(db(), id);
+		const updatedSegment = await getContentSegmentById(db, id);
 
 		const response: TUpdateSegmentResponse = {
 			success: true,

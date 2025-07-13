@@ -1,0 +1,149 @@
+# accounts
+columns:
+  - id: serial PRIMARY KEY
+  - userId: integer NOT NULL
+  - type: text NOT NULL
+  - provider: text NOT NULL
+  - providerAccountId: text NOT NULL
+  - refreshToken: text
+  - accessToken: text
+  - expiresAt: integer
+  - tokenType: text
+  - scope: text
+  - idToken: text
+  - sessionState: text
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+relationships:
+  - userId ➜ users.id (onDelete: cascade)
+
+# content_blocks
+columns:
+  - id: serial PRIMARY KEY
+  - pageId: text NOT NULL
+  - blockType: text NOT NULL
+  - order: integer NOT NULL DEFAULT 0
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+relationships:
+  - (none)
+
+# content_segments
+columns:
+  - id: serial PRIMARY KEY
+  - blockId: integer NOT NULL
+  - order: integer NOT NULL DEFAULT 0
+  - text: text NOT NULL
+  - type: text NOT NULL DEFAULT 'text'
+  - href: text
+  - target: text
+  - className: text
+  - style: text
+  - metadata: text
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+relationships:
+  - blockId ➜ content_blocks.id (onDelete: cascade)
+
+# feedback
+columns:
+  - id: serial PRIMARY KEY
+  - name: text NOT NULL
+  - message: text NOT NULL
+  - emoji: text NOT NULL
+  - userAgent: text
+  - ipAddress: text
+  - referrer: text
+  - browser: text
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+relationships:
+  - (none)
+
+# pages
+columns:
+  - id: serial PRIMARY KEY
+  - slug: text NOT NULL UNIQUE
+  - title: text NOT NULL
+  - description: text
+  - isPublished: boolean NOT NULL DEFAULT true
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+relationships:
+  - (none)
+
+# sessions
+columns:
+  - id: text PRIMARY KEY
+  - userId: integer NOT NULL
+  - expiresAt: timestamp with time zone NOT NULL
+  - token: text NOT NULL UNIQUE
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+  - ipAddress: text
+  - userAgent: text
+relationships:
+  - userId ➜ users.id (onDelete: cascade)
+
+# style_presets
+columns:
+  - id: serial PRIMARY KEY
+  - name: text NOT NULL UNIQUE
+  - type: text NOT NULL
+  - className: text
+  - style: text
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+relationships:
+  - (none)
+
+# users
+columns:
+  - id: serial PRIMARY KEY
+  - email: text NOT NULL UNIQUE
+  - name: text
+  - emailVerified: timestamp with time zone
+  - image: text
+  - createdAt: timestamp with time zone NOT NULL DEFAULT now()
+  - updatedAt: timestamp with time zone NOT NULL DEFAULT now()
+relationships:
+  - (none)
+
+# verification_tokens
+columns:
+  - identifier: text NOT NULL
+  - token: text NOT NULL
+  - expires: timestamp with time zone NOT NULL
+relationships:
+  - (none)
+  - PRIMARY KEY: composite (identifier, token)
+
+# High-level ER diagram notes
+
+## One-to-Many Relationships
+- users ➜ accounts: A user can have multiple OAuth accounts (GitHub, Google, etc.)
+- users ➜ sessions: A user can have multiple active sessions across different devices
+- content_blocks ➜ content_segments: Each content block can contain multiple text segments with different styling
+
+## Many-to-Many Relationships
+- (none currently in the schema)
+
+## Authentication & Authorization Flow
+- users table stores the core user information
+- accounts table stores OAuth provider connections (GitHub, Google, etc.)
+- sessions table manages user authentication sessions with expiration
+- verification_tokens table handles email verification and password reset tokens
+
+## Content Management System
+- pages table defines the available pages with metadata
+- content_blocks table organizes content into structured blocks per page
+- content_segments table stores individual pieces of text with styling information
+- style_presets table provides reusable styling configurations
+
+## User Data & Feedback
+- feedback table stores user feedback submissions with browser/device information
+- No direct relationship to users table (anonymous feedback)
+
+## Indexes
+- idx_blocks_page_order: Optimizes content block retrieval by page and order
+- idx_segments_block_order: Optimizes content segment retrieval by block and order

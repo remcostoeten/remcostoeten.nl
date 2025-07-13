@@ -1,6 +1,5 @@
 import { eq, desc } from "drizzle-orm";
-import { nanoid } from "nanoid";
-import { getDb } from "@/db/client";
+import { db } from "@/db/db";
 import { feedback } from "@/db/feedback-schema";
 import type { TBaseEntity } from "@/db/types";
 
@@ -25,15 +24,11 @@ type TFeedbackCreateInput = {
 };
 
 export function createFeedbackFactory() {
-  const db = getDb();
 
   async function create(data: TFeedbackCreateInput): Promise<TFeedbackEntity> {
-    const feedbackId = nanoid();
-    
     const newFeedback = await db
       .insert(feedback)
       .values({
-        id: feedbackId,
         name: data.name,
         message: data.message,
         emoji: data.emoji,
@@ -58,7 +53,7 @@ export function createFeedbackFactory() {
     return feedbacks as TFeedbackEntity[];
   }
 
-  async function destroy(id: string): Promise<void> {
+  async function destroy(id: number): Promise<void> {
     await db.delete(feedback).where(eq(feedback.id, id)).execute();
   }
 

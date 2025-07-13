@@ -1,6 +1,5 @@
 import { eq, asc } from "drizzle-orm";
-import { nanoid } from "nanoid";
-import { getDb } from "@/db/client";
+import { db } from "@/db/db";
 import { contentBlocks, contentSegments, pages } from "@/db/cms-schema";
 import type { TBaseEntity, TTimestamps } from "@/db/types";
 
@@ -35,7 +34,7 @@ type TBlockCreateInput = {
 type TBlockUpdateInput = Partial<Pick<TBlockEntity, "blockType" | "order">>;
 
 type TSegmentEntity = TBaseEntity & {
-  blockId: string;
+  blockId: number;
   order: number;
   text: string;
   type: string;
@@ -47,7 +46,7 @@ type TSegmentEntity = TBaseEntity & {
 };
 
 type TSegmentCreateInput = {
-  blockId: string;
+  blockId: number;
   order: number;
   text: string;
   type: string;
@@ -61,15 +60,11 @@ type TSegmentCreateInput = {
 type TSegmentUpdateInput = Partial<Omit<TSegmentEntity, "id" | "createdAt" | "updatedAt">>;
 
 export function createPagesFactory() {
-  const db = getDb();
 
   async function create(data: TPageCreateInput): Promise<TPageEntity> {
-    const pageId = nanoid();
-    
     const newPage = await db
       .insert(pages)
       .values({
-        id: pageId,
         slug: data.slug,
         title: data.title,
         description: data.description || null,
@@ -92,7 +87,7 @@ export function createPagesFactory() {
     return page[0] as TPageEntity || null;
   }
 
-  async function update(id: string, data: TPageUpdateInput): Promise<TPageEntity> {
+  async function update(id: number, data: TPageUpdateInput): Promise<TPageEntity> {
     const updatedPage = await db
       .update(pages)
       .set({
@@ -106,7 +101,7 @@ export function createPagesFactory() {
     return updatedPage[0] as TPageEntity;
   }
 
-  async function destroy(id: string): Promise<void> {
+  async function destroy(id: number): Promise<void> {
     await db.delete(pages).where(eq(pages.id, id)).execute();
   }
 
@@ -119,15 +114,11 @@ export function createPagesFactory() {
 }
 
 export function createBlocksFactory() {
-  const db = getDb();
 
   async function create(data: TBlockCreateInput): Promise<TBlockEntity> {
-    const blockId = nanoid();
-    
     const newBlock = await db
       .insert(contentBlocks)
       .values({
-        id: blockId,
         pageId: data.pageId,
         blockType: data.blockType,
         order: data.order,
@@ -138,7 +129,7 @@ export function createBlocksFactory() {
     return newBlock[0] as TBlockEntity;
   }
 
-  async function read(id: string): Promise<TBlockEntity | null> {
+  async function read(id: number): Promise<TBlockEntity | null> {
     const block = await db
       .select()
       .from(contentBlocks)
@@ -149,7 +140,7 @@ export function createBlocksFactory() {
     return block[0] as TBlockEntity || null;
   }
 
-  async function update(id: string, data: TBlockUpdateInput): Promise<TBlockEntity> {
+  async function update(id: number, data: TBlockUpdateInput): Promise<TBlockEntity> {
     const updatedBlock = await db
       .update(contentBlocks)
       .set({
@@ -163,7 +154,7 @@ export function createBlocksFactory() {
     return updatedBlock[0] as TBlockEntity;
   }
 
-  async function destroy(id: string): Promise<void> {
+  async function destroy(id: number): Promise<void> {
     await db.delete(contentBlocks).where(eq(contentBlocks.id, id)).execute();
   }
 
@@ -176,15 +167,11 @@ export function createBlocksFactory() {
 }
 
 export function createSegmentsFactory() {
-  const db = getDb();
 
   async function create(data: TSegmentCreateInput): Promise<TSegmentEntity> {
-    const segmentId = nanoid();
-    
     const newSegment = await db
       .insert(contentSegments)
       .values({
-        id: segmentId,
         blockId: data.blockId,
         order: data.order,
         text: data.text,
@@ -201,7 +188,7 @@ export function createSegmentsFactory() {
     return newSegment[0] as TSegmentEntity;
   }
 
-  async function read(id: string): Promise<TSegmentEntity | null> {
+  async function read(id: number): Promise<TSegmentEntity | null> {
     const segment = await db
       .select()
       .from(contentSegments)
@@ -212,7 +199,7 @@ export function createSegmentsFactory() {
     return segment[0] as TSegmentEntity || null;
   }
 
-  async function update(id: string, data: TSegmentUpdateInput): Promise<TSegmentEntity> {
+  async function update(id: number, data: TSegmentUpdateInput): Promise<TSegmentEntity> {
     const updatedSegment = await db
       .update(contentSegments)
       .set({
@@ -226,7 +213,7 @@ export function createSegmentsFactory() {
     return updatedSegment[0] as TSegmentEntity;
   }
 
-  async function destroy(id: string): Promise<void> {
+  async function destroy(id: number): Promise<void> {
     await db.delete(contentSegments).where(eq(contentSegments.id, id)).execute();
   }
 
