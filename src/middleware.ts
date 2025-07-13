@@ -1,31 +1,34 @@
-import { NextFetchEvent, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest, event: NextFetchEvent) {
-  // Get the current session or authentication data
-  const token = request.headers.get('authorization');
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
   
-  // If token doesn't exist, redirect to login
-  if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  // Only protect admin routes with env check
+  if (pathname.startsWith('/admin')) {
+    // Simple env-based protection
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.redirect(new URL('/auth/unauthorized', request.url));
+    }
   }
-
-  // Simple token validation
-  const isTokenValid = validateToken(token);
-
-  if (!isTokenValid) {
-    return NextResponse.redirect(new URL('/login', request.url));
+  
+  // Protect CMS API routes with env check
+  if (pathname.startsWith('/api/cms')) {
+    if (process.env.NODE_ENV === 'production') {
+      return new NextResponse(
+        JSON.stringify({ success: false, message: 'Access denied' }), 
+        { status: 403, headers: { 'content-type': 'application/json' } }
+      );
+    }
   }
-
+  
   return NextResponse.next();
 }
 
-function validateToken(token: string | null): boolean {
-  // Mock validation function
-  return token === "valid-token";
-}
-
 export const config = {
-  matcher: ['/admin/:path*', '/api/:path*'],
+  matcher: [
+    '/admin/:path*',
+    '/api/cms/:path*'
+  ],
 };
 

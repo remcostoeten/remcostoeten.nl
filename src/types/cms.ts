@@ -30,7 +30,7 @@ export interface BlockStyles {
 
 export interface ContentSegment {
 	id: string;
-	type: "text" | "highlighted" | "link" | "project-card";
+	type: "text" | "highlighted" | "link" | "project-card" | "github-commits" | "spotify-now-playing" | "api-endpoint";
 	content: string;
 	data?: {
 		url?: string;
@@ -47,6 +47,13 @@ export interface ContentSegment {
 			url?: string;
 			github?: string;
 		};
+		// GitHub commits data
+		repo?: string;
+		perPage?: number;
+		// API endpoint data
+		endpointUrl?: string;
+		refreshInterval?: number;
+		template?: string;
 	};
 }
 

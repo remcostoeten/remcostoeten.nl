@@ -17,7 +17,7 @@ A Next.js portfolio and CMS application built with TypeScript, Tailwind CSS, and
 bun install
 ```
 
-3. Set up environment variables (see [Environment Variables](#environment-variables) section)
+3. Create a `.env.local` file with required environment variables (see [Environment Variables](#environment-variables) section)
 
 4. Run the development server:
 ```bash
@@ -39,7 +39,7 @@ The admin CMS interface is controlled by the `NEXT_PUBLIC_ADMIN_TOGGLE` environm
 NEXT_PUBLIC_ADMIN_TOGGLE="true"
 ```
 
-**Security & Safety Notes**:
+**Security  Safety Notes**:
 - The value must be exactly the string `"true"` (including quotes) for the feature to be active
 - Any other value (including `true`, `"false"`, `1`, `0`, empty string, or undefined) will render the feature inert
 - This strict string matching provides an additional safety layer to prevent accidental exposure of admin functionality
@@ -57,6 +57,64 @@ NEXT_PUBLIC_ADMIN_TOGGLE="1"
 NEXT_PUBLIC_ADMIN_TOGGLE=""
 # NEXT_PUBLIC_ADMIN_TOGGLE not set
 ```
+
+### Authentication Variables
+
+Add the following to your `.env.local` file for authentication setup:
+
+```env
+AUTH_SECRET="your-secret-key-here-generate-a-random-32-character-string"
+
+# GitHub OAuth
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+
+# Better Auth Configuration
+NEXT_PUBLIC_BETTER_AUTH_URL="http://localhost:3000"
+
+# Database Configuration
+DATABASE_URL="file:local.db"
+TURSO_AUTH_TOKEN="your-turso-auth-token-if-using-turso"
+```
+
+#### Required Authentication Variables
+
+**AUTH_SECRET** (Required)
+- A random 32-character string used to sign JWT tokens
+- Generate one using: `openssl rand -hex 32` or an online generator
+- Keep this secret and never commit it to version control
+
+**GITHUB_CLIENT_ID** and **GITHUB_CLIENT_SECRET** (Required for GitHub OAuth)
+- Create a GitHub OAuth App at: https://github.com/settings/developers
+- Set Authorization callback URL to: `http://localhost:3000/api/auth/callback/github`
+- Copy the Client ID and Client Secret from your GitHub OAuth App
+
+**NEXT_PUBLIC_BETTER_AUTH_URL** (Optional)
+- The base URL for Better Auth API calls
+- Defaults to `http://localhost:3000` for local development
+- Set to your production domain for deployed environments
+
+**DATABASE_URL** (Required)
+- For local development: `file:local.db` (SQLite)
+- For Turso: Your Turso database URL
+
+**TURSO_AUTH_TOKEN** (Optional)
+- Only required if using Turso as your database provider
+- Get this from your Turso dashboard
+
+**NEXT_PUBLIC_SPOTIFY_API_URL** (Optional)
+- URL endpoint for Spotify "Now Playing" API integration
+- Used to display currently playing music on the homepage
+- Expected JSON format: `{ "isPlaying": boolean, "title": string, "artist": string, "album": string, "songUrl": string }`
+
+#### Email/Password Authentication
+
+Better Auth handles email/password authentication automatically with secure defaults:
+- Passwords are hashed using bcrypt
+- No additional salt configuration is required
+- The library handles all security aspects internally
+
+Ensure to replace placeholder values with the actual credentials.
 
 ## Project Structure
 

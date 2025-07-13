@@ -74,7 +74,7 @@ export default function BlockEditor({
 	];
 
 	return (
-		<div className="p-4">
+		<div className="p-4 text-base text-foreground leading-relaxed">
 			<div className="flex items-center justify-between mb-4">
 				<div className="flex items-center space-x-2">
 					<button

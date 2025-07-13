@@ -13,9 +13,13 @@ function createDatabase() {
 		throw new Error("DATABASE_URL environment variable is required");
 	}
 
+	// Handle both local SQLite and Turso URLs
+	const isLocalDb = process.env.DATABASE_URL.startsWith("file:");
+	
 	const client = createClient({
 		url: process.env.DATABASE_URL,
-		authToken: process.env.TURSO_AUTH_TOKEN!,
+		// Only use auth token for Turso (remote) databases
+		authToken: isLocalDb ? undefined : process.env.TURSO_AUTH_TOKEN,
 	});
 
 	return drizzle(client, { schema: tables });

@@ -1,6 +1,7 @@
 import { ArrowLeft, Edit3, Eye } from "lucide-react";
 import React, { useState } from "react";
 import { ContentSegment, Page } from "@/types/cms";
+import { LastCommit, SpotifyNowPlaying, APIEndpoint } from "@/components/api";
 
 type TProps = {
 	page: Page;
@@ -49,7 +50,7 @@ function renderSegment(segment: ContentSegment) {
 				</a>
 			);
 
-		case "project-card":
+	case "project-card":
 			// For now, we'll render project cards as simple text
 			// You can expand this later to match the ProjectCard component
 			return (
@@ -62,6 +63,30 @@ function renderSegment(segment: ContentSegment) {
 					}}
 				>
 					{segment.content}
+				</span>
+			);
+
+		case "github-commits":
+			return (
+				<span key={segment.id}>
+					<LastCommit repo={segment.data?.repo} />
+				</span>
+			);
+
+		case "spotify-now-playing":
+			return (
+				<span key={segment.id}>
+					<SpotifyNowPlaying />
+				</span>
+			);
+
+		case "api-endpoint":
+			return (
+				<span key={segment.id}>
+					<APIEndpoint
+						endpointUrl={segment.data?.endpointUrl || ""}
+						refreshInterval={segment.data?.refreshInterval}
+					/>
 				</span>
 			);
 
