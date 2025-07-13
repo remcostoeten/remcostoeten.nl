@@ -52,7 +52,7 @@ export function ProjectCard({
 
 			{isHovered && (
 				<div
-					className="absolute z-50 w-80 p-4 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg shadow-xl left-0 top-full"
+					className="absolute z-50 w-80 p-4 bg-popover text-popover-foreground backdrop-blur-lg border border-border rounded-lg shadow-2xl left-0 top-full"
 					style={{
 						boxShadow:
 							"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",

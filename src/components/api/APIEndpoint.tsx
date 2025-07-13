@@ -1,25 +1,27 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { FadeIn } from "../ui/FadeIn";
+import { Spinner } from "../ui/Spinner";
 
-interface APIEndpointProps {
+type TProps = {
   endpointUrl: string;
   refreshInterval?: number;
   render?: (data: any) => React.ReactNode;
-}
+};
 
-interface APIState {
+type TAPIState = {
   data: any;
   loading: boolean;
   error: string | null;
-}
+};
 
-export default function APIEndpoint({ 
+export function APIEndpoint({ 
   endpointUrl, 
   refreshInterval, 
   render 
-}: APIEndpointProps) {
-  const [state, setState] = useState<APIState>({
+}: TProps) {
+  const [state, setState] = useState<TAPIState>({
     data: null,
     loading: true,
     error: null
@@ -67,34 +69,40 @@ export default function APIEndpoint({
   // Render loading state
   if (state.loading) {
     return (
-      <div className="text-base text-foreground leading-relaxed">
-        Loading...
-      </div>
+      <FadeIn>
+        <Spinner />
+      </FadeIn>
     );
   }
 
   // Render error state
   if (state.error) {
     return (
-      <div className="text-base text-foreground leading-relaxed">
-        Error: {state.error}
-      </div>
+      <FadeIn>
+        <div className="text-base text-foreground leading-relaxed">
+          Error: {state.error}
+        </div>
+      </FadeIn>
     );
   }
 
   // Render with custom render function if provided
   if (render) {
     return (
-      <div className="text-base text-foreground leading-relaxed">
-        {render(state.data)}
-      </div>
+      <FadeIn>
+        <div className="text-base text-foreground leading-relaxed">
+          {render(state.data)}
+        </div>
+      </FadeIn>
     );
   }
 
   // Fallback to JSON pretty print
   return (
-    <pre className="text-base text-foreground leading-relaxed">
-      {JSON.stringify(state.data, null, 2)}
-    </pre>
+    <FadeIn>
+      <pre className="text-base text-foreground leading-relaxed">
+        {JSON.stringify(state.data, null, 2)}
+      </pre>
+    </FadeIn>
   );
 }

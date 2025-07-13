@@ -1,4 +1,9 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Music } from "lucide-react";
+import { FadeIn } from "@/components/ui/FadeIn";
+import { Spinner } from "@/components/ui/Spinner";
+import { TextSkeleton } from "@/components/ui/TextSkeleton";
 
 type TProps = {
 	refreshInterval?: number;
@@ -14,14 +19,7 @@ type TSpotifyTrack = {
 
 async function getCurrentlyPlaying(): Promise<TSpotifyTrack | null> {
 	try {
-		const spotifyApiUrl = process.env.NEXT_PUBLIC_SPOTIFY_API_URL;
-
-		if (!spotifyApiUrl) {
-			console.warn("NEXT_PUBLIC_SPOTIFY_API_URL not configured");
-			return null;
-		}
-
-		const response = await fetch(spotifyApiUrl);
+		const response = await fetch("/api/spotify/now-playing");
 
 		if (!response.ok) {
 			console.error("Failed to fetch Spotify data:", response.status);
@@ -35,10 +33,10 @@ async function getCurrentlyPlaying(): Promise<TSpotifyTrack | null> {
 		}
 
 		return {
-			name: data.title || data.name,
+			name: data.title,
 			artist: data.artist,
 			album: data.album,
-			url: data.songUrl || data.url,
+			url: data.songUrl,
 			isPlaying: data.isPlaying,
 		};
 	} catch (error) {
@@ -49,47 +47,49 @@ async function getCurrentlyPlaying(): Promise<TSpotifyTrack | null> {
 
 export function NowPlaying({ refreshInterval = 30000 }: TProps) {
 	const [track, setTrack] = useState<TSpotifyTrack | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
+useEffect(function setupSpotifyFetch() {
+    async function fetchTrack() {
+        const currentTrack = await getCurrentlyPlaying();
+        setTrack(currentTrack);
+    }
 
-	useEffect(() => {
-		async function fetchTrack() {
-			const currentTrack = await getCurrentlyPlaying();
-			setTrack(currentTrack);
-			setIsLoading(false);
-		}
+    fetchTrack();
 
-		fetchTrack();
+    const interval = setInterval(fetchTrack, refreshInterval);
+    return function cleanup() {
+        clearInterval(interval);
+    };
+}, [refreshInterval]);
 
-		const interval = setInterval(fetchTrack, refreshInterval);
-		return () => clearInterval(interval);
-	}, [refreshInterval]);
-
-	if (isLoading) {
-		return (
-			<div className="text-foreground leading-relaxed text-base">Loading music...</div>
-		);
-	}
-
-	if (!track) {
-		return (
-			<div className="text-foreground leading-relaxed text-base">
-				Not listening to anything right now
-			</div>
-		);
-	}
-
-	return (
-		<div className="text-foreground leading-relaxed text-base">
-			Currently listening to{" "}
-			<a
-				href={track.url}
-				target="_blank"
-				rel="noreferrer"
-				className="text-accent hover:underline font-medium"
-			>
-				{track.name}
-			</a>{" "}
-			by {track.artist}
-		</div>
-	);
+return (
+    <div className="text-foreground leading-relaxed text-base">
+        Currently listening to {" "}
+        {track ? (
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={track.name}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    <a
+                        href={track.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-accent hover:underline font-medium"
+                    >
+                        {track.name}
+                    </a>{" "}
+                    by {track.artist}
+                </motion.div>
+            </AnimatePresence>
+        ) : (
+            <div className="flex flex-col">
+                <TextSkeleton width="160px" />
+                <TextSkeleton width="120px" />
+            </div>
+        )}
+    </div>
+);
 }

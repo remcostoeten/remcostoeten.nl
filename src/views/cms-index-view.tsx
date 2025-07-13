@@ -22,15 +22,7 @@ function renderSegment(segment: ContentSegment) {
 			return (
 				<span
 					key={segment.id}
-					className="font-medium px-1 py-0.5 rounded"
-					style={{
-						backgroundColor:
-							segment.data?.backgroundColor ||
-							"hsl(var(--highlight-frontend) / 0.2)",
-						color: segment.data?.hslColor
-							? `hsl(${segment.data.hslColor})`
-							: "hsl(var(--highlight-frontend))",
-					}}
+					className="font-medium text-accent"
 				>
 					{segment.content}
 				</span>
@@ -116,11 +108,7 @@ function renderSegment(segment: ContentSegment) {
 			return (
 				<span
 					key={segment.id}
-					className="font-medium px-1 py-0.5 rounded"
-					style={{
-						backgroundColor: "hsl(var(--highlight-product) / 0.2)",
-						color: "hsl(var(--highlight-product))",
-					}}
+					className="font-medium text-accent"
 				>
 					{segment.content}
 				</span>
@@ -132,46 +120,53 @@ function renderSegment(segment: ContentSegment) {
 	}
 }
 
-export const CMSIndexView = () => {
+function getInitialHomeContent(): Page {
+	const content = CMSStore.getHomePageContent();
+	if (content) {
+		return content;
+	}
+	return CMSStore.initializeDefaultHomePage();
+}
+
+export function CMSIndexView() {
 	const [currentTime, setCurrentTime] = useState<string>(getFormattedTime());
 	const [isContactHovered, setIsContactHovered] = useState(false);
 	const [shouldOpenAbove, setShouldOpenAbove] = useState(false);
-	const [homePageContent, setHomePageContent] = useState<Page | null>(null);
+	const [homePageContent, setHomePageContent] = useState<Page>(getInitialHomeContent);
 
-	useEffect(() => {
-		const updateTime = () => {
+	useEffect(function setupTimeInterval() {
+		function updateTime() {
 			setCurrentTime(getFormattedTime());
-		};
+		}
 
 		const interval = setInterval(updateTime, 1000);
-		return () => clearInterval(interval);
+		return function cleanup() {
+			clearInterval(interval);
+		};
 	}, []);
 
-	useEffect(() => {
-		// Load home page content from CMS
-		const loadHomeContent = () => {
+	useEffect(function setupHomeContentListener() {
+		function loadHomeContent() {
 			const content = CMSStore.getHomePageContent();
 			if (content) {
 				setHomePageContent(content);
 			} else {
-				// Initialize default if none exists
 				const defaultHome = CMSStore.initializeDefaultHomePage();
 				setHomePageContent(defaultHome);
 			}
-		};
+		}
 
-		loadHomeContent();
-
-		// Listen for localStorage changes (when CMS updates)
-		const handleStorageChange = () => {
+		function handleStorageChange() {
 			loadHomeContent();
-		};
+		}
 
 		window.addEventListener("storage", handleStorageChange);
-		return () => window.removeEventListener("storage", handleStorageChange);
+		return function cleanup() {
+			window.removeEventListener("storage", handleStorageChange);
+		};
 	}, []);
 
-	const handleContactHover = (e: React.MouseEvent<HTMLDivElement>) => {
+	function handleContactHover(e: React.MouseEvent<HTMLDivElement>) {
 		const rect = e.currentTarget.getBoundingClientRect();
 		const viewportHeight = window.innerHeight;
 		const spaceBelow = viewportHeight - rect.bottom;
@@ -179,7 +174,7 @@ export const CMSIndexView = () => {
 
 		setShouldOpenAbove(spaceBelow < formHeight);
 		setIsContactHovered(true);
-	};
+	}
 
 	// If no content is loaded yet, show loading or fallback
 	if (!homePageContent) {
@@ -197,8 +192,10 @@ export const CMSIndexView = () => {
 			<div className="max-w-2xl w-full space-y-8">
 				{/* Render CMS content blocks */}
 				{homePageContent.blocks
-					.sort((a, b) => a.order - b.order)
-					.map((block) => {
+					.sort(function sortByOrder(a, b) {
+						return a.order - b.order;
+					})
+					.map(function renderBlock(block) {
 						const content = block.content.map(renderSegment);
 
 						if (block.type === "heading") {
@@ -246,7 +243,9 @@ export const CMSIndexView = () => {
 					<span
 						className="relative inline-block"
 						onMouseEnter={handleContactHover}
-						onMouseLeave={() => setIsContactHovered(false)}
+						onMouseLeave={function handleContactLeave() {
+							setIsContactHovered(false);
+						}}
 					>
 						<button className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60">
 							Email ↗

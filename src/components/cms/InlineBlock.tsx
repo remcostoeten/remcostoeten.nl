@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { GripVertical, Plus, Settings, Trash2, ChevronDown, Type, Code, Github, Music, Link } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { ContentBlock, ContentSegment } from "@/types/cms";
@@ -91,10 +91,8 @@ export default function InlineBlock({
 	};
 
 	const getBlockClasses = () => {
-		// Use consistent typography when not editing, highlight when editing
-		const baseClasses = isEditing
-			? "text-base text-foreground leading-relaxed border border-accent bg-accent/5 rounded-md p-2"
-			: "text-base text-foreground leading-relaxed";
+		// Use consistent typography for both editing and non-editing states
+		const baseClasses = "text-base text-foreground leading-relaxed";
 
 		let borderClasses = "";
 		if (block.styles?.borderTop) borderClasses += " border-t border-border";
@@ -102,7 +100,7 @@ export default function InlineBlock({
 		if (block.styles?.borderLeft) borderClasses += " border-l border-border";
 		if (block.styles?.borderRight) borderClasses += " border-r border-border";
 
-		return `${baseClasses} ${borderClasses} transition-all duration-200`;
+		return `${baseClasses} ${borderClasses}`;
 	};
 
 	const getBlockStyles = () => {
@@ -115,7 +113,8 @@ export default function InlineBlock({
 	};
 
 	return (
-		<div className="group relative">
+		<LayoutGroup>
+			<div className="group relative">
 			{/* Block Controls */}
 			{isEditing && (
 				<div className="absolute -left-12 top-0 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
@@ -180,11 +179,11 @@ export default function InlineBlock({
 							<AnimatePresence>
 								{showAddDropdown && (
 									<motion.div
-										initial={{ opacity: 0, y: -10 }}
-										animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: -10 }}
-										transition={{ duration: 0.15 }}
-										className="absolute mt-1 left-0 w-48 bg-card border border-border rounded-lg shadow-lg z-10 overflow-hidden"
+										layout
+										initial={{ opacity: 0, scale: 0.95 }}
+										animate={{ opacity: 1, scale: 1 }}
+										exit={{ opacity: 0, scale: 0.95 }}
+										className="absolute mt-1 left-0 w-48 bg-card border border-border rounded-lg shadow-lg z-10 overflow-hidden p-0"
 									>
 										<div className="py-1">
 											<button 
@@ -239,7 +238,7 @@ export default function InlineBlock({
 												}} 
 												className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
 											>
-												<Code className="w-4 h-4 mr-3 text-muted-foreground" /> Project Card
+													<Code className="w-4 h-4 mr-3 text-muted-foreground" /> Project Card
 											</button>
 										</div>
 									</motion.div>
@@ -344,6 +343,7 @@ export default function InlineBlock({
 					</motion.div>
 				)}
 			</AnimatePresence>
-		</div>
+			</div>
+		</LayoutGroup>
 	);
 }

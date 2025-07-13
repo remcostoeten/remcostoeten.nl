@@ -6,6 +6,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 
 export * from "@/db/cms-schema";
+export * from "@/db/feedback-schema";
 
 type TUser = {
 	id: string;
@@ -121,11 +122,13 @@ export const accounts = sqliteTable("accounts", {
 
 // Import CMS schema
 import { cmsSchema } from "./cms-schema";
+import { feedback } from "./feedback-schema";
 
 export const tables = {
 	users,
 	sessions,
 	verificationTokens,
 	accounts,
+	feedback,
 	...cmsSchema,
 };

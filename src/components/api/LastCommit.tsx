@@ -1,49 +1,153 @@
 "use client";
 
-import APIEndpoint from "./APIEndpoint";
+import { useEffect, useState, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { formatTimeAgo } from "@/lib/utils";
+import { TextSkeleton } from "../ui/TextSkeleton";
 
-interface LastCommitProps {
+type TProps = {
   repo?: string;
-}
+  refreshInterval?: number;
+};
 
-interface CommitData {
+type TCommitData = {
   sha: string;
-  html_url: string;
   date: string;
-}
+  html_url: string;
+};
 
-export default function LastCommit({ repo = "remcostoeten/remcostoeten.nl" }: LastCommitProps) {
-  const renderCommitData = (data: CommitData) => {
-    if (!data) {
-      return "Unable to load commit information";
+type TAPIState = {
+  data: TCommitData | null;
+  loading: boolean;
+  error: string | null;
+};
+
+export function LastCommit({ 
+  repo = "remcostoeten/remcostoeten.nl",
+  refreshInterval = 60000
+}: TProps) {
+  const [state, setState] = useState<TAPIState>({
+    data: null,
+    loading: true,
+    error: null
+  });
+
+  const fetchData = useCallback(async () => {
+    try {
+      setState(prev => ({ ...prev, loading: true, error: null }));
+      
+      const response = await fetch(`/api/github/commits?repo=${repo}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      setState({
+        data,
+        loading: false,
+        error: null
+      });
+    } catch (error) {
+      setState({
+        data: null,
+        loading: false,
+        error: error instanceof Error ? error.message : 'An error occurred'
+      });
     }
+  }, [repo]);
 
-    const formatted = Intl.DateTimeFormat("en-GB", {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }).format(new Date(data.date));
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
+  useEffect(() => {
+    if (!refreshInterval) return;
+
+    const interval = setInterval(fetchData, refreshInterval);
+    return () => clearInterval(interval);
+  }, [fetchData, refreshInterval]);
+
+  if (state.error) {
     return (
-      <>
-        The last commit I've pushed was{" "}
-        <a
-          href={data.html_url}
-          target="_blank"
-          rel="noreferrer"
-          className="text-accent hover:underline font-medium"
-        >
-          {data.sha.slice(0, 7)}
-        </a>{" "}
-        at {formatted}
-      </>
+      <div className="text-base text-foreground leading-relaxed">
+        Error: {state.error}
+      </div>
     );
-  };
+  }
+
+  if (!state.data && !state.loading) {
+    return (
+      <div className="text-base text-foreground leading-relaxed">
+        No recent commits found
+      </div>
+    );
+  }
+
+  const commitHash = state.data?.sha?.substring(0, 7) || "latest";
+  const timeAgo = state.data?.date ? formatTimeAgo(new Date(state.data.date)) : "";
 
   return (
-    <APIEndpoint
-      endpointUrl={`/api/github/commits?repo=${encodeURIComponent(repo)}`}
-      refreshInterval={300000} // Refresh every 5 minutes
-      render={renderCommitData}
-    />
+    <div className="text-base text-foreground leading-relaxed">
+      The last commit I've pushed was{" "}
+      <AnimatePresence mode="wait">
+        {state.loading ? (
+          <motion.span
+            key="hash-skeleton"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="inline-block"
+          >
+            <TextSkeleton width="56px" height="1rem" className="inline-block" />
+          </motion.span>
+        ) : (
+          <motion.a
+            key="hash-link"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            href={state.data?.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline font-medium inline-block"
+            style={{ width: "56px" }}
+          >
+            {commitHash}
+          </motion.a>
+        )}
+      </AnimatePresence>
+      {" "}
+      <AnimatePresence mode="wait">
+        {state.loading ? (
+          <motion.span
+            key="time-skeleton"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="inline-block"
+          >
+            <TextSkeleton width="70px" height="1rem" className="inline-block" />
+          </motion.span>
+        ) : (
+          <motion.span
+            key="time-text"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="inline-block"
+            style={{ width: "70px" }}
+          >
+            {timeAgo}
+          </motion.span>
+        )}
+      </AnimatePresence>
+      {" ago"}
+    </div>
   );
 }

@@ -189,7 +189,7 @@ export default function LivePageRenderer({ page, onBack, onEdit }: TProps) {
 					onClick={() => setShowPreview(false)}
 				>
 					<div
-						className="bg-background rounded-lg shadow-xl w-full max-w-4xl h-full max-h-[90vh] overflow-y-auto"
+						className="bg-popover text-popover-foreground rounded-lg shadow-2xl w-full max-w-4xl h-full max-h-[90vh] overflow-y-auto backdrop-blur-lg border border-border"
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="p-6">

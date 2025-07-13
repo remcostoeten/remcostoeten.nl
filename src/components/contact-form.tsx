@@ -1,66 +1,92 @@
-import { MessageSquare, Send, User } from "lucide-react";
+import { MessageSquare, Send, User, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { AnimatePresence, motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { popoverTransition } from "@/lib/animations";
 
 const emojis = ["😊", "🔥", "💡", "👏", "❤️", "🚀"];
 
-interface ContactFormProps {
+type TSubmissionState = 'idle' | 'loading' | 'success' | 'error';
+
+type TProps = {
 	isVisible: boolean;
 	openAbove?: boolean;
-}
+};
 
 export function ContactForm({
 	isVisible,
 	openAbove = false,
-}: ContactFormProps) {
+}: TProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		feedback: "",
 		emoji: "",
 	});
 
-	const [selectedEmoji, setSelectedEmoji] = useState<string>("");
+const [selectedEmoji, setSelectedEmoji] = useState<string>("");
+	const [submissionState, setSubmissionState] = useState<TSubmissionState>('idle');
 
-	const handleSubmit = (e: React.FormEvent) => {
+async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
-		// This is a dummy form - just reset the form
-		setFormData({ name: "", feedback: "", emoji: "" });
-		setSelectedEmoji("");
-		console.log("Feedback submitted:", formData);
-	};
+		setSubmissionState('loading');
+		try {
+			const response = await fetch('/api/feedback', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData),
+			});
 
-	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-	) => {
+			if (response.ok) {
+				setSubmissionState('success');
+				setFormData({ name: "", feedback: "", emoji: "" });
+				setSelectedEmoji("");
+				setTimeout(() => setSubmissionState('idle'), 2000);
+			} else {
+				setSubmissionState('error');
+			}
+		} catch (error) {
+			setSubmissionState('error');
+		}
+	}
+
+	function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
 		setFormData({
 			...formData,
 			[e.target.name]: e.target.value,
 		});
-	};
+	}
 
-	const handleEmojiSelect = (emoji: string) => {
+	function handleEmojiSelect(emoji: string) {
 		setSelectedEmoji(emoji);
 		setFormData({
 			...formData,
 			emoji: emoji,
 		});
-	};
+	}
 
 	return (
 		<>
-			{isVisible && (
-				<div
-					className={`absolute z-50 w-80 p-4 bg-background/95 backdrop-blur-sm border border-border/50 rounded-lg shadow-xl left-0 ${
-						openAbove ? "bottom-full mb-2" : "top-full mt-2"
-					}`}
-					style={{
-						boxShadow:
-							"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-					}}
-				>
+			<AnimatePresence initial={false}>
+				{isVisible && (
+					<motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95, y: openAbove ? 10 : -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: openAbove ? 10 : -10 }}
+                transition={popoverTransition}
+                className={`absolute z-50 w-80 p-4 bg-popover text-popover-foreground backdrop-blur-lg border border-border rounded-lg shadow-2xl left-0 ${
+                    openAbove ? "bottom-full mb-2" : "top-full mt-2"
+                }`}
+                style={{
+                    boxShadow:
+                        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                }}
+            >
 					{/* Header */}
 					<div className="mb-4">
 						<h3 className="font-semibold text-foreground text-sm mb-1">
@@ -77,20 +103,24 @@ export function ContactForm({
 							How are you feeling?
 						</Label>
 						<div className="flex gap-2">
-							{emojis.map((emoji) => (
-								<button
-									key={emoji}
-									type="button"
-									onClick={() => handleEmojiSelect(emoji)}
-									className={`text-lg p-2 rounded-md ${
-										selectedEmoji === emoji
-											? "bg-accent/20 border border-accent/50"
-											: "hover:bg-muted/50 border border-transparent"
-									}`}
-								>
-									{emoji}
-								</button>
-							))}
+							{emojis.map(function renderEmoji(emoji) {
+								return (
+									<button
+										key={emoji}
+										type="button"
+										onClick={function selectEmoji() {
+											handleEmojiSelect(emoji);
+										}}
+										className={`text-lg p-2 rounded-md ${
+											selectedEmoji === emoji
+												? "bg-accent/20 border border-accent/50"
+												: "hover:bg-muted/50 border border-transparent"
+										}`}
+									>
+										{emoji}
+									</button>
+								);
+							})}
 						</div>
 					</div>
 
@@ -139,10 +169,13 @@ export function ContactForm({
 							</div>
 						</div>
 
-						<Button type="submit" className="w-full h-8 text-xs mt-6" size="sm">
-							<Send className="w-3 h-3 mr-1" />
-							Send feedback
-						</Button>
+<Button type="submit" className="w-full h-8 text-xs mt-6 flex justify-center items-center">
+	{submissionState === 'loading' && <Loader2 className="animate-spin w-3 h-3 mr-2" />}
+	{submissionState === 'success' && <CheckCircle className="text-green-500 w-3 h-3 mr-2" />}
+	{submissionState === 'error' && <AlertCircle className="text-red-500 w-3 h-3 mr-2" />}
+	{submissionState === 'idle' && <Send className="w-3 h-3 mr-1" />}
+	{submissionState === 'idle' ? 'Send feedback' : submissionState === 'loading' ? 'Sending...' : submissionState === 'success' ? 'Success' : 'Error'}
+</Button>
 					</form>
 
 					{/* Footer */}
@@ -151,8 +184,9 @@ export function ContactForm({
 							This is just a demo - no feedback will actually be sent
 						</p>
 					</div>
-				</div>
+				</motion.div>
 			)}
-		</>
+</AnimatePresence>
+        </>
 	);
 }

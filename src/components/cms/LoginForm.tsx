@@ -1,12 +1,14 @@
 import { LogIn } from "lucide-react";
 import React, { useState } from "react";
+import { Spinner } from "../ui/Spinner";
+import { FadeIn } from "../ui/FadeIn";
 import { User } from "../../types/cms";
 
-interface LoginFormProps {
+type TProps = {
 	onLogin: (user: User) => void;
-}
+};
 
-export default function LoginForm({ onLogin }: LoginFormProps) {
+export default function LoginForm({ onLogin }: TProps) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
@@ -28,10 +30,11 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 		}, 1000);
 	};
 
-	return (
-		<div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-			<div className="max-w-md w-full space-y-8">
-				<div>
+return (
+		<FadeIn>
+			<div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+				<div className="max-w-md w-full space-y-8">
+					<div>
 					<div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-green-100">
 						<LogIn className="h-6 w-6 text-green-600" />
 					</div>
@@ -90,7 +93,10 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 							disabled={isLoading}
 							className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 						>
-							{isLoading ? "Signing in..." : "Sign in"}
+<div className="flex items-center">
+							{isLoading ? <Spinner className="h-4 w-4 mr-2" size={16} color="#fff" /> : null}
+							{isLoading ? "Signing in…" : "Sign in"}
+						</div>
 						</button>
 					</div>
 
@@ -102,5 +108,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
 				</form>
 			</div>
 		</div>
-	);
+				</div>
+			</FadeIn>
+		);
 }

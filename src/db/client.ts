@@ -1,10 +1,6 @@
 import { createClient } from "@libsql/client";
-import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/libsql";
 import { tables } from "./schema";
-
-// Load environment variables
-config();
 
 let _db: ReturnType<typeof drizzle> | null = null;
 

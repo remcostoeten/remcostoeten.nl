@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1752338608021,
-      "tag": "0000_bored_hitman",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1752338724395,
-      "tag": "0001_omniscient_mercury",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1752357890218,
-      "tag": "0002_real_surge",
+      "when": 1752423910014,
+      "tag": "0000_spotty_the_hand",
       "breakpoints": true
     }
   ]

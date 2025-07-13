@@ -8,21 +8,24 @@ import type { TPageContent } from "./types";
 export function createCmsFactory() {
 	const db = getDb();
 
-	async function createPage(data: { slug: string; title: string; description?: string }) {
-		const pageId = nanoid();
-		const newPage = await db
-			.insert(pages)
-			.values({
-				id: pageId,
-				slug: data.slug,
-				title: data.title,
-				description: data.description || null,
-			})
-			.returning()
-			.execute();
-		
-		return newPage[0];
-	}
+async function createPage(data: { slug: string; title: string; description?: string }) {
+	const pageId = nanoid();
+	console.log(`[CMS Factory] Creating new page:`, { pageId, ...data });
+
+	const newPage = await db
+		.insert(pages)
+		.values({
+			id: pageId,
+			slug: data.slug,
+			title: data.title,
+			description: data.description || null,
+		})
+		.returning()
+		.execute();
+
+	console.log(`[CMS Factory] Successfully created page:`, newPage[0]);
+	return newPage[0];
+}
 
 	async function readPage(slug: string): Promise<TDbPageWithBlocks | null> {
 		const page = await db
@@ -64,19 +67,22 @@ export function createCmsFactory() {
 		};
 	}
 
-	async function updatePage(id: string, data: Partial<Pick<TDbPage, "title" | "description" | "isPublished">>) {
-		const updatedPage = await db
-			.update(pages)
-			.set({
-				...data,
-				updatedAt: new Date(),
-			})
-			.where(eq(pages.id, id))
-			.returning()
-			.execute();
+async function updatePage(id: string, data: Partial<Pick<TDbPage, "title" | "description" | "isPublished">>) {
+	console.log(`[CMS Factory] Updating page ${id} with data:`, data);
 
-		return updatedPage[0];
-	}
+	const updatedPage = await db
+		.update(pages)
+		.set({
+			...data,
+			updatedAt: new Date(),
+		})
+		.where(eq(pages.id, id))
+		.returning()
+		.execute();
+
+	console.log(`[CMS Factory] Successfully updated page:`, updatedPage[0]);
+	return updatedPage[0];
+}
 
 	async function destroyPage(id: string) {
 		await db.delete(pages).where(eq(pages.id, id)).execute();
@@ -204,37 +210,55 @@ export function createCmsFactory() {
 		await db.delete(contentSegments).where(eq(contentSegments.id, id)).execute();
 	}
 
-	async function savePageContent(pageId: string, pageContent: TPageContent) {
-		return await db.transaction(async (tx) => {
-			await tx.delete(contentBlocks).where(eq(contentBlocks.pageId, pageId));
+async function savePageContent(pageId: string, pageContent: TPageContent) {
+	console.log(`[CMS Factory] Starting savePageContent for pageId: ${pageId}`);
+	console.log(`[CMS Factory] Page content to save:`, pageContent);
 
-			for (const [blockIndex, block] of pageContent.blocks.entries()) {
-				const blockId = block.id || nanoid();
-				await tx.insert(contentBlocks).values({
-					id: blockId,
-					pageId,
-					blockType: block.blockType || "section",
-					order: block.order || blockIndex + 1,
+	return await db.transaction(async (tx) => {
+		console.log(`[CMS Factory] Deleting existing blocks for pageId: ${pageId}`);
+		await tx.delete(contentBlocks).where(eq(contentBlocks.pageId, pageId));
+
+		for (const [blockIndex, block] of pageContent.blocks.entries()) {
+			const blockId = block.id || nanoid();
+			console.log(`[CMS Factory] Creating block ${blockIndex + 1}/${pageContent.blocks.length}:`, {
+				blockId,
+				blockType: block.blockType || "section",
+				order: block.order || blockIndex + 1
+			});
+
+			await tx.insert(contentBlocks).values({
+				id: blockId,
+				pageId,
+				blockType: block.blockType || "section",
+				order: block.order || blockIndex + 1,
+			});
+
+			for (const [segmentIndex, segment] of block.segments.entries()) {
+				const segmentId = segment.id || nanoid();
+				console.log(`[CMS Factory] Creating segment ${segmentIndex + 1}/${block.segments.length} for block ${blockId}:`, {
+					segmentId,
+					type: segment.type,
+					content: segment.content?.substring(0, 50) + (segment.content?.length > 50 ? '...' : '')
 				});
 
-				for (const [segmentIndex, segment] of block.segments.entries()) {
-					const segmentId = segment.id || nanoid();
-					await tx.insert(contentSegments).values({
-						id: segmentId,
-						blockId,
-						order: segment.order || segmentIndex + 1,
-						text: segment.content,
-						type: segment.type,
-						href: segment.href || null,
-						target: segment.target || null,
-						className: segment.className || null,
-						style: segment.style || null,
-						metadata: segment.metadata || null,
-					});
-				}
+				await tx.insert(contentSegments).values({
+					id: segmentId,
+					blockId,
+					order: segment.order || segmentIndex + 1,
+					text: segment.content,
+					type: segment.type,
+					href: segment.href || null,
+					target: segment.target || null,
+					className: segment.className || null,
+					style: segment.style || null,
+					metadata: segment.metadata || null,
+				});
 			}
-		});
-	}
+		}
+
+		console.log(`[CMS Factory] Successfully saved page content for pageId: ${pageId}`);
+	});
+}
 
 	return {
 		createPage,
