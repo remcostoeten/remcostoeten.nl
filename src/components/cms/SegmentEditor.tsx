@@ -109,7 +109,8 @@ export default function SegmentEditor({
 	};
 
 	return (
-		<div className="border border-border rounded-lg p-3 bg-muted/30">
+		<div className="text-base text-foreground leading-relaxed">
+			<div className="border border-border rounded-lg p-3 bg-muted/30 hover:border-accent hover:bg-accent/10 transition-colors">
 			<div className="flex items-center justify-between mb-2">
 				<button
 					onClick={() => setIsExpanded(!isExpanded)}
@@ -148,6 +149,7 @@ export default function SegmentEditor({
 			</div>
 
 			{isExpanded && renderDataEditor()}
+			</div>
 		</div>
 	);
 }

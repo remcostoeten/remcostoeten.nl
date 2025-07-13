@@ -66,26 +66,26 @@ export function NowPlaying({ refreshInterval = 30000 }: TProps) {
 
 	if (isLoading) {
 		return (
-			<div className="text-xs text-muted-foreground">Loading music...</div>
+			<div className="text-foreground leading-relaxed text-base">Loading music...</div>
 		);
 	}
 
 	if (!track) {
 		return (
-			<div className="text-xs text-muted-foreground">
+			<div className="text-foreground leading-relaxed text-base">
 				Not listening to anything right now
 			</div>
 		);
 	}
 
 	return (
-		<div className="text-xs text-muted-foreground">
+		<div className="text-foreground leading-relaxed text-base">
 			Currently listening to{" "}
 			<a
 				href={track.url}
 				target="_blank"
 				rel="noreferrer"
-				className="hover:underline"
+				className="text-accent hover:underline font-medium"
 			>
 				{track.name}
 			</a>{" "}

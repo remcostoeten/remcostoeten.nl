@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { GripVertical, Plus, Settings, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import { GripVertical, Plus, Settings, Trash2, ChevronDown, Type, Code, Github, Music, Link } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
 import { ContentBlock, ContentSegment } from "@/types/cms";
 import InlineEditor from "./InlineEditor";
 
@@ -13,7 +13,7 @@ interface InlineBlockProps {
 	onSegmentCancel: () => void;
 	onBlockChange: (block: ContentBlock) => void;
 	onBlockDelete: () => void;
-	onAddSegment: () => void;
+	onAddSegment: (segmentType: ContentSegment['type']) => void;
 }
 
 export default function InlineBlock({
@@ -28,6 +28,24 @@ export default function InlineBlock({
 	onAddSegment,
 }: InlineBlockProps) {
 	const [showBlockSettings, setShowBlockSettings] = useState(false);
+	const [showAddDropdown, setShowAddDropdown] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement>(null);
+
+	// Close dropdown when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+				setShowAddDropdown(false);
+			}
+		};
+
+		if (showAddDropdown) {
+			document.addEventListener('mousedown', handleClickOutside);
+			return () => {
+				document.removeEventListener('mousedown', handleClickOutside);
+			};
+		}
+	}, [showAddDropdown]);
 
 	const handleSegmentSave = (
 		segmentId: string,
@@ -73,14 +91,10 @@ export default function InlineBlock({
 	};
 
 	const getBlockClasses = () => {
-		// Use live page styling when not editing
+		// Use consistent typography when not editing, highlight when editing
 		const baseClasses = isEditing
-			? block.type === "heading"
-				? "text-4xl font-light leading-tight mb-8"
-				: "text-lg leading-relaxed mb-6"
-			: block.type === "heading"
-				? "text-xl font-medium text-foreground"
-				: "text-foreground leading-relaxed text-base";
+			? "text-base text-foreground leading-relaxed border border-accent bg-accent/5 rounded-md p-2"
+			: "text-base text-foreground leading-relaxed";
 
 		let borderClasses = "";
 		if (block.styles?.borderTop) borderClasses += " border-t border-border";
@@ -88,7 +102,7 @@ export default function InlineBlock({
 		if (block.styles?.borderLeft) borderClasses += " border-l border-border";
 		if (block.styles?.borderRight) borderClasses += " border-r border-border";
 
-		return `${baseClasses}${borderClasses} transition-all duration-200`;
+		return `${baseClasses} ${borderClasses} transition-all duration-200`;
 	};
 
 	const getBlockStyles = () => {
@@ -150,16 +164,89 @@ export default function InlineBlock({
 					</React.Fragment>
 				))}
 
-				{/* Add Segment Button */}
+{/* Add Segment Dropdown */}
 				{isEditing && (
-					<button
-						onClick={onAddSegment}
-						className="inline-flex items-center ml-2 px-2 py-1 text-xs bg-muted hover:bg-muted/80 text-muted-foreground hover:text-accent rounded transition-colors"
-						title="Add text segment"
-					>
-						<Plus className="w-3 h-3 mr-1" />
-						Add
-					</button>
+					<div className="inline-flex items-center ml-2">
+						<div className="relative" ref={dropdownRef}>
+							<button
+								onClick={() => setShowAddDropdown(!showAddDropdown)}
+								className="flex items-center px-2 py-1 text-xs bg-muted hover:bg-muted/80 text-muted-foreground hover:text-accent rounded transition-colors"
+								title="Add new segment"
+							>
+								<Plus className="w-3 h-3 mr-1" />
+								Add...
+								<ChevronDown className={`w-3 h-3 ml-1 transition-transform ${showAddDropdown ? 'rotate-180' : ''}`} />
+							</button>
+							<AnimatePresence>
+								{showAddDropdown && (
+									<motion.div
+										initial={{ opacity: 0, y: -10 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -10 }}
+										transition={{ duration: 0.15 }}
+										className="absolute mt-1 left-0 w-48 bg-card border border-border rounded-lg shadow-lg z-10 overflow-hidden"
+									>
+										<div className="py-1">
+											<button 
+												onClick={() => { 
+													onAddSegment("text");
+													setShowAddDropdown(false);
+												}} 
+												className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
+											>
+												<Type className="w-4 h-4 mr-3 text-muted-foreground" /> Text
+											</button>
+											<button 
+												onClick={() => { 
+													onAddSegment("api-endpoint");
+													setShowAddDropdown(false);
+												}} 
+												className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
+											>
+												<Code className="w-4 h-4 mr-3 text-muted-foreground" /> API Endpoint
+											</button>
+											<button 
+												onClick={() => { 
+													onAddSegment("github-commits");
+													setShowAddDropdown(false);
+												}} 
+												className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
+											>
+												<Github className="w-4 h-4 mr-3 text-muted-foreground" /> GitHub Commits
+											</button>
+											<button 
+												onClick={() => { 
+													onAddSegment("spotify-now-playing");
+													setShowAddDropdown(false);
+												}} 
+												className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
+											>
+												<Music className="w-4 h-4 mr-3 text-muted-foreground" /> Spotify Now Playing
+											</button>
+											<button 
+												onClick={() => { 
+													onAddSegment("link");
+													setShowAddDropdown(false);
+												}} 
+												className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
+											>
+												<Link className="w-4 h-4 mr-3 text-muted-foreground" /> Link
+											</button>
+											<button 
+												onClick={() => { 
+													onAddSegment("project-card");
+													setShowAddDropdown(false);
+												}} 
+												className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
+											>
+												<Code className="w-4 h-4 mr-3 text-muted-foreground" /> Project Card
+											</button>
+										</div>
+									</motion.div>
+								)}
+							</AnimatePresence>
+						</div>
+					</div>
 				)}
 			</div>
 
