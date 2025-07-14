@@ -2,7 +2,7 @@ import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { GripVertical, Plus, Settings, Trash2, ChevronDown, Type, Code, Github, Music, Link } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { ContentBlock, ContentSegment } from "@/types/cms";
-import InlineEditor from "./InlineEditor";
+import InlineEditor from "./inline-editor";
 
 interface InlineBlockProps {
 	block: ContentBlock;

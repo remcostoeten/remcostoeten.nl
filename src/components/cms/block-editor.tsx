@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import React, { useState } from "react";
 import { ContentBlock, ContentSegment } from "@/types/cms";
-import SegmentEditor from "./SegmentEditor";
+import SegmentEditor from "./segment-editor";
 
 interface BlockEditorProps {
 	block: ContentBlock;

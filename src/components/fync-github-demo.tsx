@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 // import { GitHub } from "@remcostoeten/fync-github"; // Temporarily disabled due to build issues
 import { formatTimeAgo } from "@/lib/utils";
-import { TextSkeleton } from "./ui/TextSkeleton";
+import { TextSkeleton } from "./ui/text-skeleton";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 

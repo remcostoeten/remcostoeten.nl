@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { FadeIn } from "../ui/FadeIn";
-import { Spinner } from "../ui/Spinner";
+import { FadeIn } from "../ui/fade-in";
+import { Spinner } from "../ui/spinner";
 
 type TProps = {
   endpointUrl: string;

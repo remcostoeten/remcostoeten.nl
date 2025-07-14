@@ -6,26 +6,14 @@ import { ArrowLeft, Home, Settings, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
-import { CMSSection } from "@/components/admin/cms/CMSSection";
+import { CMSSection } from "@/components/admin/cms/cms-section";
+import { FeedbackManagement } from "@/components/admin/feedback-management";
 
 type TProps = {
     showBackButton?: boolean;
     onBack?: () => void;
 };
 
-function FeedbackManagement() {
-    return (
-        <div className="space-y-6">
-            <div className="text-center py-12">
-                <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Feedback Management</h3>
-                <p className="text-muted-foreground">
-                    User feedback and contact form management will be available here.
-                </p>
-            </div>
-        </div>
-    );
-}
 
 export default function AdminLayout({ showBackButton = false, onBack = () => {} }: TProps) {
     const router = useRouter();

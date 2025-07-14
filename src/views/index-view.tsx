@@ -4,9 +4,9 @@ import type React from 'react'
 
 import { useEffect, useState } from 'react'
 import { ContactForm } from '@/components/contact-form'
-import { LastCommit } from '@/components/api/LastCommit'
+import { LastCommit } from '@/components/dynamic-data/last-commit'
 import { ProjectCard } from '@/components/project-card'
-import { FyncGithubDemo } from '@/components/FyncGithubDemo'
+import { FyncGithubDemo } from '@/components/fync-github-demo'
 
 function getFormattedTime() {
 	const now = new Date()

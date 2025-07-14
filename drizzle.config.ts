@@ -6,7 +6,7 @@ const config = {
 	dialect: 'turso',
 	dbCredentials: {
 		url: process.env.DATABASE_URL!,
-		authToken:process.env.AUTH_TOKEN!,
+		authToken: process.env.TURSO_AUTH_TOKEN!,
 	}
 } satisfies Config
 

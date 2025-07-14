@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Music } from "lucide-react";
-import { FadeIn } from "@/components/ui/FadeIn";
-import { Spinner } from "@/components/ui/Spinner";
-import { TextSkeleton } from "@/components/ui/TextSkeleton";
+import { FadeIn } from "@/components/ui/fade-in";
+import { Spinner } from "@/components/ui/spinner";
+import { TextSkeleton } from "@/components/ui/text-skeleton";
+import { TrackPopover } from "./track-popover";
 
 type TProps = {
 	refreshInterval?: number;
@@ -73,14 +74,11 @@ return (
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <a
-                        href={track.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-accent hover:underline font-medium"
-                    >
-                        {track.name}
-                    </a>{" "}
+                    <TrackPopover track={track}>
+                        <button className="text-accent hover:underline font-medium cursor-pointer">
+                            {track.name}
+                        </button>
+                    </TrackPopover>{" "}
                     by {track.artist}
                 </motion.div>
             </AnimatePresence>

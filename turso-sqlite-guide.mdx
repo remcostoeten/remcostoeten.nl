@@ -1,0 +1,760 @@
+---
+title: "Turso SQLite Guide"
+description: "Complete guide to setting up and using Turso with SQLite, Drizzle ORM, and Next.js"
+date: "2024-01-15"
+author: "Remco Stoeten"
+tags: ["turso", "sqlite", "drizzle", "database", "nextjs"]
+---
+
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Info, AlertCircle, Check, Zap } from "lucide-react";
+
+# Turso SQLite Guide
+
+## Introduction
+
+Turso is a powerful edge database platform that extends SQLite with global distribution capabilities. This guide will walk you through setting up Turso with Drizzle ORM in a Next.js application, providing you with a scalable and performant database solution.
+
+<Alert>
+  <Info className="h-4 w-4" />
+  <AlertTitle>What is Turso?</AlertTitle>
+  <AlertDescription>
+    Turso is a serverless database platform built on LibSQL, a SQLite-compatible fork. It offers global distribution, edge computing capabilities, and seamless scaling while maintaining SQLite's simplicity and performance.
+  </AlertDescription>
+</Alert>
+
+### Benefits of using Turso with SQLite
+
+- **Global Distribution**: Deploy your database closer to users worldwide
+- **SQLite Compatibility**: Use familiar SQLite syntax and features
+- **Serverless Architecture**: No infrastructure management required
+- **Edge Computing**: Reduced latency with edge locations
+- **Cost-Effective**: Pay only for what you use
+- **Developer Experience**: Simple setup and excellent tooling
+
+## Prerequisites & Package Installation
+
+Before starting, ensure you have the following prerequisites installed:
+
+### Required Software
+
+- Node.js (version 18 or higher)
+- npm or yarn package manager
+- Git (for version control)
+
+### Package Installation
+
+Install the required packages for Turso and Drizzle ORM:
+
+```bash
+# Install Turso client and Drizzle ORM
+npm install @libsql/client drizzle-orm
+
+# Install Drizzle development tools
+npm install -D drizzle-kit
+
+# Install additional dependencies
+npm install dotenv
+```
+
+<Alert>
+  <AlertCircle className="h-4 w-4" />
+  <AlertTitle>Version Compatibility</AlertTitle>
+  <AlertDescription>
+    Ensure you're using compatible versions of @libsql/client and drizzle-orm. Check the official documentation for the latest compatibility matrix.
+  </AlertDescription>
+</Alert>
+
+## Creating `drizzle.config.ts`
+
+The `drizzle.config.ts` file is essential for configuring Drizzle ORM with Turso. Create this file in your project root:
+
+```typescript
+import { defineConfig } from "drizzle-kit";
+
+export default defineConfig({
+  schema: "./src/db/schema/index.ts",
+  out: "./src/db/migrations",
+  dialect: "sqlite",
+  driver: "turso",
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+    authToken: process.env.DATABASE_AUTH_TOKEN!,
+  },
+  verbose: true,
+  strict: true,
+});
+```
+
+### Configuration Options Explained
+
+- **schema**: Path to your schema files
+- **out**: Directory for generated migrations
+- **dialect**: Database dialect (sqlite for Turso)
+- **driver**: Specify "turso" for Turso connections
+- **dbCredentials**: Connection details from environment variables
+- **verbose**: Enable detailed logging
+- **strict**: Enable strict mode for better type safety
+
+<Alert>
+  <Zap className="h-4 w-4" />
+  <AlertTitle>Environment Variables</AlertTitle>
+  <AlertDescription>
+    Never commit your DATABASE_URL and DATABASE_AUTH_TOKEN to version control. Always use environment variables for sensitive credentials.
+  </AlertDescription>
+</Alert>
+
+## Modular Schema Setup
+
+Organize your database schema using a modular approach for better maintainability:
+
+### Directory Structure
+
+```
+src/
+├── db/
+│   ├── schema/
+│   │   ├── index.ts
+│   │   ├── users.ts
+│   │   ├── posts.ts
+│   │   └── comments.ts
+│   └── client.ts
+```
+
+### Creating the Index Barrel File
+
+Create `src/db/schema/index.ts`:
+
+```typescript
+export * from "./users";
+export * from "./posts";
+export * from "./comments";
+```
+
+### Example Schema Files
+
+#### Users Schema (`src/db/schema/users.ts`)
+
+```typescript
+import { sql } from "drizzle-orm";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  email: text("email").unique().notNull(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: text("updated_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+```
+
+#### Posts Schema (`src/db/schema/posts.ts`)
+
+```typescript
+import { sql } from "drizzle-orm";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { users } from "./users";
+
+export const posts = sqliteTable("posts", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  userId: integer("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  createdAt: text("created_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: text("updated_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+});
+
+export type Post = typeof posts.$inferSelect;
+export type NewPost = typeof posts.$inferInsert;
+```
+
+## Client Connection File
+
+Create a database client connection file at `src/db/client.ts`:
+
+```typescript
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import * as schema from "./schema";
+
+function createDatabaseClient() {
+  const url = process.env.DATABASE_URL;
+  const authToken = process.env.DATABASE_AUTH_TOKEN;
+
+  if (!url) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+
+  if (!authToken) {
+    throw new Error("DATABASE_AUTH_TOKEN environment variable is not set");
+  }
+
+  const client = createClient({
+    url,
+    authToken,
+  });
+
+  return drizzle(client, { schema });
+}
+
+export const db = createDatabaseClient();
+export type Database = typeof db;
+```
+
+<Alert>
+  <AlertCircle className="h-4 w-4" />
+  <AlertTitle>Environment Variables</AlertTitle>
+  <AlertDescription>
+    Create a .env.local file in your project root with your Turso credentials. Never commit this file to version control.
+  </AlertDescription>
+</Alert>
+
+### Environment Variables Setup
+
+Create `.env.local` in your project root:
+
+```env
+DATABASE_URL="libsql://your-database-url.turso.io"
+DATABASE_AUTH_TOKEN="your-auth-token-here"
+```
+
+## Local SQLite Workflow
+
+For development, you might want to use a local SQLite database before connecting to Turso:
+
+### Local Development Setup
+
+Create a separate configuration for local development:
+
+```typescript
+// src/db/client.local.ts
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import * as schema from "./schema";
+
+function createLocalDatabaseClient() {
+  const client = createClient({
+    url: "file:./local.db",
+  });
+
+  return drizzle(client, { schema });
+}
+
+export const db = createLocalDatabaseClient();
+```
+
+### Development Scripts
+
+Add these scripts to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  }
+}
+```
+
+<Alert>
+  <Check className="h-4 w-4" />
+  <AlertTitle>Development Tip</AlertTitle>
+  <AlertDescription>
+    Use `npm run db:studio` to open Drizzle Studio, a visual database browser for exploring your schema and data during development.
+  </AlertDescription>
+</Alert>
+
+## Turso Account & Remote DB Setup
+
+### Creating a Turso Account
+
+1. Visit [https://turso.tech](https://turso.tech) and sign up for an account
+2. Install the Turso CLI:
+
+```bash
+# Install Turso CLI
+curl -sSfL https://get.tur.so/install.sh | bash
+
+# Or using npm
+npm install -g @turso/cli
+```
+
+3. Authenticate with Turso:
+
+```bash
+turso auth login
+```
+
+### Setting Up a Remote Database
+
+Create a new database on Turso:
+
+```bash
+# Create a new database
+turso db create your-database-name
+
+# Create an auth token
+turso db tokens create your-database-name
+
+# Get database URL
+turso db show your-database-name
+```
+
+### Database Configuration
+
+After creating your database, you'll receive:
+- Database URL (e.g., `libsql://your-database-name.turso.io`)
+- Authentication token
+
+<Alert>
+  <AlertCircle className="h-4 w-4" />
+  <AlertTitle>Security Notice</AlertTitle>
+  <AlertDescription>
+    Store your authentication token securely. It provides full access to your database and should be treated like a password.
+  </AlertDescription>
+</Alert>
+
+## Switching `DATABASE_URL` to Turso
+
+Update your environment variables to use Turso:
+
+### Production Environment
+
+```env
+DATABASE_URL="libsql://your-database-name.turso.io"
+DATABASE_AUTH_TOKEN="your-auth-token-here"
+```
+
+### Environment-Specific Configuration
+
+Create different environment files:
+
+```env
+# .env.local (development)
+DATABASE_URL="file:./local.db"
+
+# .env.production (production)
+DATABASE_URL="libsql://your-database-name.turso.io"
+DATABASE_AUTH_TOKEN="your-auth-token-here"
+```
+
+### Dynamic Configuration
+
+Create a configuration helper:
+
+```typescript
+// src/lib/config.ts
+function getDatabaseConfig() {
+  const isProduction = process.env.NODE_ENV === "production";
+  
+  if (isProduction) {
+    return {
+      url: process.env.DATABASE_URL!,
+      authToken: process.env.DATABASE_AUTH_TOKEN!,
+    };
+  }
+  
+  return {
+    url: "file:./local.db",
+  };
+}
+
+export const databaseConfig = getDatabaseConfig();
+```
+
+## Running Migrations
+
+### Generate Migrations
+
+Generate migration files based on your schema:
+
+```bash
+npm run db:generate
+```
+
+This creates migration files in your configured output directory.
+
+### Apply Migrations
+
+Apply migrations to your database:
+
+```bash
+# Apply migrations
+npm run db:migrate
+
+# Or push schema directly (development only)
+npm run db:push
+```
+
+### Migration Example
+
+A generated migration might look like:
+
+```sql
+-- migrations/0001_create_users_table.sql
+CREATE TABLE `users` (
+  `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  `name` text NOT NULL,
+  `email` text NOT NULL,
+  `created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  `updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE UNIQUE INDEX `users_email_unique` ON `users` (`email`);
+```
+
+<Alert>
+  <Zap className="h-4 w-4" />
+  <AlertTitle>Migration Best Practices</AlertTitle>
+  <AlertDescription>
+    Always review generated migrations before applying them. Consider the impact on existing data and plan for rollback strategies.
+  </AlertDescription>
+</Alert>
+
+## Testing Queries (Read/Write Examples)
+
+### Basic CRUD Operations
+
+Create a service layer for database operations:
+
+```typescript
+// src/lib/user-service.ts
+import { eq } from "drizzle-orm";
+import { db } from "@/db/client";
+import { users, type NewUser } from "@/db/schema/users";
+
+export async function createUser(userData: NewUser) {
+  const [user] = await db
+    .insert(users)
+    .values(userData)
+    .returning();
+  
+  return user;
+}
+
+export async function getUserById(id: number) {
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, id))
+    .limit(1);
+  
+  return user[0];
+}
+
+export async function updateUser(id: number, userData: Partial<NewUser>) {
+  const [updatedUser] = await db
+    .update(users)
+    .set(userData)
+    .where(eq(users.id, id))
+    .returning();
+  
+  return updatedUser;
+}
+
+export async function deleteUser(id: number) {
+  await db
+    .delete(users)
+    .where(eq(users.id, id));
+}
+
+export async function getAllUsers() {
+  return await db.select().from(users);
+}
+```
+
+### Advanced Query Examples
+
+#### Joins and Relations
+
+```typescript
+// src/lib/post-service.ts
+import { eq } from "drizzle-orm";
+import { db } from "@/db/client";
+import { posts, users } from "@/db/schema";
+
+export async function getPostsWithAuthors() {
+  return await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      content: posts.content,
+      createdAt: posts.createdAt,
+      author: {
+        id: users.id,
+        name: users.name,
+        email: users.email,
+      },
+    })
+    .from(posts)
+    .leftJoin(users, eq(posts.userId, users.id));
+}
+
+export async function getUserWithPosts(userId: number) {
+  const user = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (!user[0]) return null;
+
+  const userPosts = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.userId, userId));
+
+  return {
+    ...user[0],
+    posts: userPosts,
+  };
+}
+```
+
+#### Transactions
+
+```typescript
+// src/lib/transaction-example.ts
+import { db } from "@/db/client";
+import { users, posts } from "@/db/schema";
+
+export async function createUserWithPost(
+  userData: NewUser,
+  postData: Omit<NewPost, "userId">
+) {
+  return await db.transaction(async (tx) => {
+    const [user] = await tx
+      .insert(users)
+      .values(userData)
+      .returning();
+
+    const [post] = await tx
+      .insert(posts)
+      .values({
+        ...postData,
+        userId: user.id,
+      })
+      .returning();
+
+    return { user, post };
+  });
+}
+```
+
+### Testing Your Setup
+
+Create a test script to verify your setup:
+
+```typescript
+// scripts/test-db.ts
+import { db } from "@/db/client";
+import { users } from "@/db/schema";
+
+async function testDatabaseConnection() {
+  try {
+    console.log("Testing database connection...");
+    
+    // Test connection
+    const result = await db.select().from(users).limit(1);
+    console.log("✅ Database connection successful");
+    
+    // Test write operation
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        name: "Test User",
+        email: "test@example.com",
+      })
+      .returning();
+    
+    console.log("✅ Write operation successful:", newUser);
+    
+    // Test read operation
+    const allUsers = await db.select().from(users);
+    console.log("✅ Read operation successful:", allUsers.length, "users found");
+    
+  } catch (error) {
+    console.error("❌ Database test failed:", error);
+  }
+}
+
+testDatabaseConnection();
+```
+
+Run the test:
+
+```bash
+npx tsx scripts/test-db.ts
+```
+
+## Best Practices & Troubleshooting
+
+### Performance Optimization
+
+#### Connection Pooling
+
+```typescript
+// src/db/client.ts (optimized version)
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
+import * as schema from "./schema";
+
+function createOptimizedDatabaseClient() {
+  const client = createClient({
+    url: process.env.DATABASE_URL!,
+    authToken: process.env.DATABASE_AUTH_TOKEN!,
+    // Connection pooling options
+    syncUrl: process.env.DATABASE_SYNC_URL,
+    syncInterval: 60, // seconds
+  });
+
+  return drizzle(client, { 
+    schema,
+    logger: process.env.NODE_ENV === "development",
+  });
+}
+
+export const db = createOptimizedDatabaseClient();
+```
+
+#### Query Optimization
+
+```typescript
+// Use indexes for frequently queried columns
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  email: text("email").unique().notNull(),
+  createdAt: text("created_at").notNull(),
+}, (table) => ({
+  emailIdx: index("email_idx").on(table.email),
+  createdAtIdx: index("created_at_idx").on(table.createdAt),
+}));
+```
+
+### Error Handling
+
+```typescript
+// src/lib/db-error-handler.ts
+import { LibsqlError } from "@libsql/client";
+
+export function handleDatabaseError(error: unknown) {
+  if (error instanceof LibsqlError) {
+    switch (error.code) {
+      case "SQLITE_CONSTRAINT_UNIQUE":
+        throw new Error("Record already exists");
+      case "SQLITE_CONSTRAINT_FOREIGNKEY":
+        throw new Error("Foreign key constraint failed");
+      default:
+        throw new Error(`Database error: ${error.message}`);
+    }
+  }
+  
+  throw error;
+}
+```
+
+### Common Issues and Solutions
+
+<Alert>
+  <AlertCircle className="h-4 w-4" />
+  <AlertTitle>Common Issues</AlertTitle>
+  <AlertDescription>
+    <ul className="list-disc pl-4 space-y-1">
+      <li><strong>Connection Timeout:</strong> Check your network connection and Turso service status</li>
+      <li><strong>Authentication Failed:</strong> Verify your auth token is correct and not expired</li>
+      <li><strong>Schema Mismatch:</strong> Ensure migrations are applied to both local and remote databases</li>
+      <li><strong>Type Errors:</strong> Update TypeScript types after schema changes</li>
+    </ul>
+  </AlertDescription>
+</Alert>
+
+### Debugging Tools
+
+```typescript
+// src/lib/debug-queries.ts
+import { db } from "@/db/client";
+
+// Enable query logging in development
+if (process.env.NODE_ENV === "development") {
+  // Log all queries
+  db.$logger = {
+    logQuery: (query, params) => {
+      console.log("🔍 Query:", query);
+      console.log("📊 Params:", params);
+    },
+  };
+}
+```
+
+### Monitoring and Logging
+
+```typescript
+// src/lib/monitoring.ts
+import { db } from "@/db/client";
+
+export async function healthCheck() {
+  try {
+    const start = Date.now();
+    await db.select().from(users).limit(1);
+    const duration = Date.now() - start;
+    
+    return {
+      status: "healthy",
+      latency: duration,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error) {
+    return {
+      status: "unhealthy",
+      error: error instanceof Error ? error.message : "Unknown error",
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+```
+
+## Resources and Next Steps
+
+### Official Documentation
+
+- [Turso Documentation](https://docs.turso.tech/)
+- [Drizzle ORM Documentation](https://orm.drizzle.team/)
+- [LibSQL Documentation](https://github.com/libsql/libsql)
+
+### Community Resources
+
+- [Turso Discord Community](https://discord.gg/turso)
+- [Drizzle Discord Community](https://discord.gg/drizzle)
+- [SQLite Forum](https://sqlite.org/forum/forum)
+
+### Advanced Topics
+
+- **Database Replication**: Set up multi-region databases
+- **Edge Functions**: Deploy database logic closer to users
+- **Performance Monitoring**: Implement comprehensive monitoring
+- **Backup Strategies**: Automated backup and restore procedures
+
+<Alert>
+  <Check className="h-4 w-4" />
+  <AlertTitle>Congratulations!</AlertTitle>
+  <AlertDescription>
+    You've successfully set up Turso with SQLite and Drizzle ORM. Your application now has a scalable, globally distributed database solution ready for production use.
+  </AlertDescription>
+</Alert>
+
+This guide provides a solid foundation for building applications with Turso and SQLite. As you grow your application, consider implementing additional features like caching, advanced indexing, and performance monitoring to optimize your database operations.

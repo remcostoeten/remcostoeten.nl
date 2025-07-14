@@ -2,8 +2,8 @@ import { motion, Reorder } from "framer-motion";
 import { ArrowLeft, Eye, GripVertical, Plus, Save } from "lucide-react";
 import React, { useState } from "react";
 import { ContentBlock, Page } from "@/types/cms";
-import BlockEditor from "./BlockEditor";
-import PagePreview from "./PagePreview";
+import BlockEditor from "./block-editor";
+import PagePreview from "./page-preview";
 
 interface PageEditorProps {
 	page: Page;

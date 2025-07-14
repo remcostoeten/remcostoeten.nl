@@ -1,17 +1,9 @@
 import { eq, desc } from "drizzle-orm";
 import { db } from "@/db/db";
 import { feedback } from "@/db/schema";
-import type { TBaseEntity } from "@/db/types";
+import type { InferSelectModel } from "drizzle-orm";
 
-type TFeedbackEntity = TBaseEntity & {
-	name: string;
-	message: string;
-	emoji: string;
-	userAgent: string | null;
-	ipAddress: string | null;
-	referrer: string | null;
-	browser: string | null;
-};
+type TFeedbackEntity = InferSelectModel<typeof feedback>;
 
 type TFeedbackCreateInput = {
 	name: string;
@@ -22,6 +14,8 @@ type TFeedbackCreateInput = {
 	referrer?: string;
 	browser?: string;
 };
+
+type TFeedbackUpdateInput = Partial<TFeedbackCreateInput>;
 
 export function createFeedbackFactory() {
 
@@ -53,6 +47,20 @@ export function createFeedbackFactory() {
 		return feedbacks as TFeedbackEntity[];
 	}
 
+	async function update(id: number, data: TFeedbackUpdateInput): Promise<TFeedbackEntity> {
+		const updatedFeedback = await db
+			.update(feedback)
+			.set({
+				...data,
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(feedback.id, id))
+			.returning()
+			.execute();
+
+		return updatedFeedback[0] as TFeedbackEntity;
+	}
+
 	async function destroy(id: number): Promise<void> {
 		await db.delete(feedback).where(eq(feedback.id, id)).execute();
 	}
@@ -60,6 +68,7 @@ export function createFeedbackFactory() {
 	return {
 		create,
 		read,
+		update,
 		destroy,
 	};
 }

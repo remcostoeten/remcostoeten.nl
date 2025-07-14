@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { formatTimeAgo } from '@/lib/utils'
-import { TextSkeleton } from '../ui/TextSkeleton'
+import { TextSkeleton } from '../ui/text-skeleton'
 
 type TProps = {
 	repo?: string

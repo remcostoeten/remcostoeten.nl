@@ -34,11 +34,31 @@ export async function readFeedbacksAction() {
   }
 }
 
+export async function updateFeedbackAction(id: string, data: {
+  name?: string;
+  message?: string;
+  emoji?: string;
+  userAgent?: string;
+  ipAddress?: string;
+  referrer?: string;
+  browser?: string;
+}) {
+  const feedbackFactory = createFeedbackFactory();
+  
+  try {
+    const updatedFeedback = await feedbackFactory.update(parseInt(id), data);
+    return { success: true, data: updatedFeedback };
+  } catch (error) {
+    console.error("Failed to update feedback:", error);
+    return { success: false, error: "Failed to update feedback" };
+  }
+}
+
 export async function deleteFeedbackAction(id: string) {
   const feedbackFactory = createFeedbackFactory();
   
   try {
-    await feedbackFactory.destroy(id);
+    await feedbackFactory.destroy(parseInt(id));
     return { success: true };
   } catch (error) {
     console.error("Failed to delete feedback:", error);

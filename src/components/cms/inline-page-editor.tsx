@@ -15,8 +15,8 @@ import React, { useEffect, useState } from "react";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { ContentBlock, ContentSegment, Page } from "@/types/cms";
 import { generateSlug } from "@/utils/cms-data";
-import InlineBlock from "./InlineBlock";
-import LivePageRenderer from "./LivePageRenderer";
+import InlineBlock from "./inline-block";
+import LivePageRenderer from "./live-page-renderer";
 
 interface InlinePageEditorProps {
 	page: Page;

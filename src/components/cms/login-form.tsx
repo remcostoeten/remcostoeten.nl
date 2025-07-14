@@ -1,7 +1,7 @@
 import { LogIn } from "lucide-react";
 import React, { useState } from "react";
-import { Spinner } from "../ui/Spinner";
-import { FadeIn } from "../ui/FadeIn";
+import { Spinner } from "../ui/spinner";
+import { FadeIn } from "../ui/fade-in";
 import { User } from "../../types/cms";
 
 type TProps = {
@@ -106,9 +106,8 @@ return (
 						</p>
 					</div>
 				</form>
-			</div>
-		</div>
 				</div>
-			</FadeIn>
-		);
+			</div>
+		</FadeIn>
+	);
 }

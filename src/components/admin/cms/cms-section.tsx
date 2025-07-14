@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import InlinePageEditor from "@/components/cms/InlinePageEditor";
-import PagesList from "@/components/cms/PagesList";
+import InlinePageEditor from "@/components/cms/inline-page-editor";
+import { PagesList } from "@/components/cms/pages-list";
 import { CMSToastContainer, useCMSToast } from "@/hooks/use-cms-toast";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { CMSStore } from "@/lib/cms-store";
@@ -28,15 +28,15 @@ export function CMSSection() {
 		function loadPages() {
 			let pages = CMSStore.getPages();
 
-			if (pages.length === 0) {
-				const defaultHome = CMSStore.initializeDefaultHomePage();
-				pages = [defaultHome];
-			}
-
+			// Check if homepage exists
 			const homePageExists = pages.some(page => page.slug === "home");
+			
 			if (!homePageExists) {
+				// Create and add homepage
 				const defaultHome = CMSStore.initializeDefaultHomePage();
 				pages = [defaultHome, ...pages];
+				// Save the updated pages array
+				CMSStore.savePages(pages);
 			}
 
 			setState(function updatePages(prev) {
@@ -107,6 +107,23 @@ export function CMSSection() {
 		}
 	}
 
+	function handleCreateHomepage() {
+		try {
+			const homePage = CMSStore.initializeDefaultHomePage();
+			const updatedPages = [homePage, ...state.pages];
+			CMSStore.savePages(updatedPages);
+
+			setState((prev) => ({
+				...prev,
+				pages: updatedPages,
+			}));
+
+			toast.success("Homepage created", "Homepage is now available in the CMS!");
+		} catch (error) {
+			toast.error("Failed to create homepage", "Please try again.");
+		}
+	}
+
 	function handleDeletePage(pageId: string) {
 		if (confirm("Are you sure you want to delete this page?")) {
 			try {
@@ -164,6 +181,7 @@ export function CMSSection() {
 				pages={state.pages}
 				onEdit={handleEditPage}
 				onCreate={handleCreatePage}
+				onCreateHomepage={handleCreateHomepage}
 				onDelete={handleDeletePage}
 			/>
 			<CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />

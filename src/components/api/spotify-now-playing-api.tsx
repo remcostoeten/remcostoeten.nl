@@ -1,6 +1,6 @@
 "use client";
 
-import { APIEndpoint } from "./APIEndpoint";
+import { APIEndpoint } from "./api-endpoint";
 
 interface SpotifyTrack {
   name: string;
