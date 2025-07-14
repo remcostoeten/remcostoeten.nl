@@ -7,7 +7,8 @@ import {
 	Home,
 	Calendar,
 	FileText,
-	Command
+	Command,
+	RotateCcw
 } from 'lucide-react'
 import { memo, useCallback, useMemo } from 'react'
 import { Page } from '@/types/cms'
@@ -18,6 +19,7 @@ type TProps = {
 	onCreate: () => void
 	onCreateHomepage?: () => void
 	onDelete: (pageId: string) => void
+	onRefresh?: () => void
 }
 
 function formatTimeAgo(date: Date): string {
@@ -227,7 +229,8 @@ function PagesList({
 	onEdit,
 	onCreate,
 	onCreateHomepage,
-	onDelete
+	onDelete,
+	onRefresh
 }: TProps) {
 	const totalPages = pages.length
 
@@ -240,6 +243,12 @@ function PagesList({
 	const pageCountText = useMemo(() =>
 		`${totalPages} ${totalPages === 1 ? 'page' : 'pages'}`,
 		[totalPages]
+	)
+
+	// Sort pages by updated date (most recent first)
+	const sortedPages = useMemo(() =>
+		[...pages].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()),
+		[pages]
 	)
 
 	if (totalPages === 0) {
@@ -258,6 +267,16 @@ function PagesList({
 					</div>
 				</div>
 				<div className='flex items-center gap-2'>
+					{onRefresh && (
+						<motion.button
+							onClick={onRefresh}
+							className='flex items-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200 border border-border'
+							title='Refresh CMS data (development)'
+						>
+							<RotateCcw className='w-4 h-4 mr-2' />
+							Refresh
+						</motion.button>
+					)}
 					{onCreateHomepage && !hasHomepage && (
 						<motion.button
 							onClick={onCreateHomepage}
@@ -283,19 +302,19 @@ function PagesList({
 				animate='visible'
 				className='bg-popover text-popover-foreground rounded-xl border border-border overflow-hidden backdrop-blur-lg shadow-2xl'
 			>
-				<div className='divide-y divide-border'>
-					<AnimatePresence mode='popLayout'>
-						{pages.map((page, index) => (
-							<MemoizedPageItem
-								key={page.id}
-								page={page}
-								index={index}
-								onEdit={onEdit}
-								onDelete={onDelete}
-							/>
-						))}
-					</AnimatePresence>
-				</div>
+					<div className='divide-y divide-border'>
+						<AnimatePresence mode='popLayout'>
+							{sortedPages.map((page, index) => (
+								<MemoizedPageItem
+									key={page.id}
+									page={page}
+									index={index}
+									onEdit={onEdit}
+									onDelete={onDelete}
+								/>
+							))}
+						</AnimatePresence>
+					</div>
 			</motion.div>
 		</div>
 	)

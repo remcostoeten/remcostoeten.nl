@@ -1,83 +1,33 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import InlinePageEditor from "@/components/cms/inline-page-editor";
 import { PagesList } from "@/components/cms/pages-list";
 import { CMSToastContainer, useCMSToast } from "@/hooks/use-cms-toast";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
-import { CMSStore } from "@/lib/cms-store";
-import { CMSState, Page } from "@/types/cms";
-import { createNewPage, generateId, generateSlug } from "@/utils/cms-data";
-import { createCmsFactory } from "@/lib/cms/cms-factory";
-import { TPageContent } from "@/lib/cms/types";
+import { usePagesState } from "@/hooks/use-pages-state";
+import { Page } from "@/types/cms";
 
 export function CMSSection() {
-	const [state, setState] = useState<CMSState>({
-		currentPage: null,
-		pages: [],
-		user: null,
-		isAuthenticated: true,
-		isPreviewMode: false,
-		editingSegment: null,
-	});
-
+	const { pages, currentPage, isLoading, error, actions, computed } = usePagesState();
 	const toast = useCMSToast();
-	const cmsFactory = createCmsFactory();
 
-	useEffect(function loadInitialPages() {
-		function loadPages() {
-			let pages = CMSStore.getPages();
-
-			// Check if homepage exists
-			const homePageExists = pages.some(page => page.slug === "home");
-			
-			if (!homePageExists) {
-				// Create and add homepage
-				const defaultHome = CMSStore.initializeDefaultHomePage();
-				pages = [defaultHome, ...pages];
-				// Save the updated pages array
-				CMSStore.savePages(pages);
-			}
-
-			setState(function updatePages(prev) {
-				return { ...prev, pages };
-			});
+	// Initialize homepage if it doesn't exist
+	useEffect(() => {
+		if (!computed.hasHomepage && pages.length === 0) {
+			actions.createHomepage();
 		}
-
-		loadPages();
-	}, []);
+	}, [pages.length, computed.hasHomepage, actions]);
 
 	function handleEditPage(page: Page) {
-		setState((prev) => ({
-			...prev,
-			currentPage: page,
-		}));
+		actions.setCurrentPage(page);
 	}
 
 	async function handleSavePage(updatedPage: Page) {
 		try {
 			console.log("Saving page to database:", updatedPage);
-
-			const pageContent: TPageContent = { 
-				blocks: updatedPage.blocks.map(block => ({ 
-					...block, 
-					blockType: block.type, 
-					segments: block.content 
-				})) 
-			};
-			await cmsFactory.savePageContent(updatedPage.id, pageContent);
+			await actions.updatePage(updatedPage.id, updatedPage);
 			console.log("Page saved successfully to database:", updatedPage);
-
-			CMSStore.updatePage(updatedPage.id, updatedPage);
-
-			setState((prev) => ({
-				...prev,
-				pages: prev.pages.map((p) =>
-					p.id === updatedPage.id ? updatedPage : p,
-				),
-				currentPage: null,
-			}));
-
 			toast.success("Page saved successfully", "Your changes are now live!");
 		} catch (error) {
 			toast.error("Failed to save page", "Please try again.");
@@ -86,21 +36,7 @@ export function CMSSection() {
 
 	function handleCreatePage() {
 		try {
-			const baseNewPage = createNewPage();
-			const newPage: Page = {
-				...baseNewPage,
-				id: generateId(),
-				slug: generateSlug(baseNewPage.title),
-			};
-
-			CMSStore.addPage(newPage);
-
-			setState((prev) => ({
-				...prev,
-				pages: [...prev.pages, newPage],
-				currentPage: newPage,
-			}));
-
+			actions.createPage();
 			toast.success("Page created", "New page ready for editing!");
 		} catch (error) {
 			toast.error("Failed to create page", "Please try again.");
@@ -109,31 +45,28 @@ export function CMSSection() {
 
 	function handleCreateHomepage() {
 		try {
-			const homePage = CMSStore.initializeDefaultHomePage();
-			const updatedPages = [homePage, ...state.pages];
-			CMSStore.savePages(updatedPages);
-
-			setState((prev) => ({
-				...prev,
-				pages: updatedPages,
-			}));
-
+			actions.createHomepage();
 			toast.success("Homepage created", "Homepage is now available in the CMS!");
 		} catch (error) {
 			toast.error("Failed to create homepage", "Please try again.");
 		}
 	}
 
+	function handleRefreshCMSData() {
+		if (confirm("This will clear all CMS data and reload with fresh data. Are you sure?")) {
+			try {
+				actions.refreshData();
+				toast.success("CMS data refreshed", "All data has been reset with fresh content!");
+			} catch (error) {
+				toast.error("Failed to refresh CMS data", "Please try again.");
+			}
+		}
+	}
+
 	function handleDeletePage(pageId: string) {
 		if (confirm("Are you sure you want to delete this page?")) {
 			try {
-				CMSStore.deletePage(pageId);
-
-				setState((prev) => ({
-					...prev,
-					pages: prev.pages.filter((p) => p.id !== pageId),
-				}));
-
+				actions.deletePage(pageId);
 				toast.success("Page deleted", "Page has been removed.");
 			} catch (error) {
 				toast.error("Failed to delete page", "Please try again.");
@@ -142,16 +75,13 @@ export function CMSSection() {
 	}
 
 	function handleBackToPages() {
-		setState((prev) => ({
-			...prev,
-			currentPage: null,
-		}));
+		actions.setCurrentPage(null);
 	}
 
 	useKeyboardShortcuts(
 		{
 			"capslock+s": () => {
-				if (state.currentPage) {
+				if (currentPage) {
 					return;
 				}
 			},
@@ -159,14 +89,43 @@ export function CMSSection() {
 				// Revert logic here
 			},
 		},
-		[state.currentPage],
+		[currentPage],
 	);
 
-	if (state.currentPage) {
+	// Loading state
+	if (isLoading) {
+		return (
+			<div className="flex items-center justify-center p-8">
+				<div className="text-center">
+					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+					<p className="text-muted-foreground">Loading pages...</p>
+				</div>
+			</div>
+		);
+	}
+
+	// Error state
+	if (error) {
+		return (
+			<div className="flex items-center justify-center p-8">
+				<div className="text-center">
+					<p className="text-destructive mb-2">Error: {error}</p>
+					<button 
+						onClick={() => actions.clearError()}
+						className="px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80"
+					>
+						Try Again
+					</button>
+				</div>
+			</div>
+		);
+	}
+
+	if (currentPage) {
 		return (
 			<>
 				<InlinePageEditor
-					page={state.currentPage}
+					page={currentPage}
 					onSave={handleSavePage}
 					onBack={handleBackToPages}
 				/>
@@ -178,11 +137,12 @@ export function CMSSection() {
 	return (
 		<>
 			<PagesList
-				pages={state.pages}
+				pages={pages}
 				onEdit={handleEditPage}
 				onCreate={handleCreatePage}
 				onCreateHomepage={handleCreateHomepage}
 				onDelete={handleDeletePage}
+				onRefresh={handleRefreshCMSData}
 			/>
 			<CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 		</>

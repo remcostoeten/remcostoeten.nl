@@ -3,7 +3,7 @@ import type { TDbContentBlock, TDbContentSegment, TDbPage } from "@/db/types";
 
 // Define TypeScript types that align with database schema
 export type TContentSegment = {
-	id: string;
+	id: number;
 	type: string;
 	content: string;
 	order?: number;
@@ -15,7 +15,7 @@ export type TContentSegment = {
 };
 
 export type TContentBlock = {
-	id: string;
+	id: number;
 	blockType?: string;
 	order?: number;
 	segments: TContentSegment[];
@@ -36,7 +36,7 @@ export type TDbPageWithBlocks = TDbPage & {
 
 // Create Zod schemas for runtime validation
 export const ContentSegmentSchema = z.object({
-	id: z.string(),
+	id: z.number(),
 	type: z.string(),
 	content: z.string(),
 	order: z.number().optional(),
@@ -48,7 +48,7 @@ export const ContentSegmentSchema = z.object({
 });
 
 export const ContentBlockSchema = z.object({
-	id: z.string(),
+	id: z.number(),
 	blockType: z.string().optional(),
 	order: z.number().optional(),
 	segments: z.array(ContentSegmentSchema),

@@ -1,3 +1,21 @@
+export const homePage = {
+  blocks: [
+    {
+      id: 1,
+      blockType: "heading",
+      order: 0,
+      segments: [
+        {
+          id: 1,
+          type: "text",
+          content: "Welcome to My Page",
+          order: 0
+        }
+      ]
+    }
+  ]
+};
+
 import { ContentBlock, ContentSegment, Page } from "@/types/cms";
 
 // Mock data for demonstration

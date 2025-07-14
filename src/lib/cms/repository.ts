@@ -21,6 +21,12 @@ export async function getHomePageContent(
 					id: contentSegments.id,
 					type: contentSegments.type,
 					content: contentSegments.text,
+					order: contentSegments.order,
+					href: contentSegments.href,
+					target: contentSegments.target,
+					className: contentSegments.className,
+					style: contentSegments.style,
+					metadata: contentSegments.metadata,
 				})
 				.from(contentSegments)
 				.where(eq(contentSegments.blockId, block.id))
@@ -28,6 +34,8 @@ export async function getHomePageContent(
 
 			return {
 				id: block.id,
+				blockType: block.blockType,
+				order: block.order,
 				segments: segments as TContentSegment[],
 			};
 		}),
@@ -55,6 +63,12 @@ export async function getPageContent(
 					id: contentSegments.id,
 					type: contentSegments.type,
 					content: contentSegments.text,
+					order: contentSegments.order,
+					href: contentSegments.href,
+					target: contentSegments.target,
+					className: contentSegments.className,
+					style: contentSegments.style,
+					metadata: contentSegments.metadata,
 				})
 				.from(contentSegments)
 				.where(eq(contentSegments.blockId, block.id))
@@ -62,6 +76,8 @@ export async function getPageContent(
 
 			return {
 				id: block.id,
+				blockType: block.blockType,
+				order: block.order,
 				segments: segments as TContentSegment[],
 			};
 		}),
@@ -177,6 +193,12 @@ export async function getContentSegmentById(
 			id: contentSegments.id,
 			type: contentSegments.type,
 			content: contentSegments.text,
+			order: contentSegments.order,
+			href: contentSegments.href,
+			target: contentSegments.target,
+			className: contentSegments.className,
+			style: contentSegments.style,
+			metadata: contentSegments.metadata,
 		})
 		.from(contentSegments)
 		.where(eq(contentSegments.id, segmentId))

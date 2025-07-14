@@ -12,6 +12,7 @@ export const users = sqliteTable(
 		email: text('email').notNull(),
 		name: text('name'),
 		emailVerified: text('email_verified'),
+		password: text('password').notNull(),
 		image: text('image'),
 		createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
 		updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP')

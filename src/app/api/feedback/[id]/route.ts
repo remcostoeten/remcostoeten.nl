@@ -3,10 +3,11 @@ import { deleteFeedbackAction } from "@/lib/feedback/server-actions";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const result = await deleteFeedbackAction(params.id);
+    const { id } = await params;
+    const result = await deleteFeedbackAction(id);
     
     if (result.success) {
       return NextResponse.json({ message: "Feedback deleted successfully" }, { status: 200 });

@@ -1,9 +1,8 @@
 import type React from "react";
 import AdminToggleListener from "@/components/admin-toggle-listener";
-import { QueryProvider } from "@/components/providers/query-provider";
+import { Providers } from "@/components/providers";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import "@/styles/globals.css";
 
 export default function RootLayout({
@@ -36,14 +35,12 @@ export default function RootLayout({
 				<meta name="twitter:image" content="/og-image.png" />
 			</head>
 			<body>
-				<QueryProvider>
-					<TooltipProvider>
-						<Toaster />
-						<Sonner />
-						<AdminToggleListener />
-						{children}
-					</TooltipProvider>
-				</QueryProvider>
+				<Providers>
+					<Toaster />
+					<Sonner />
+					<AdminToggleListener />
+					{children}
+				</Providers>
 			</body>
 		</html>
 	);

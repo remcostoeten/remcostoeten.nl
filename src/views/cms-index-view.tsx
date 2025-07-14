@@ -3,12 +3,9 @@
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import { ContactForm } from '@/components/contact-form'
-import { NowPlaying } from '@/components/dynamic-data/now-playing'
-import { ProjectCard } from '@/components/project-card'
 import { FyncGithubDemo } from '@/components/fync-github-demo'
-import { CMSStore } from '@/lib/cms-store'
-import { ContentSegment, Page } from '@/types/cms'
-import { LastCommit } from '@/components/dynamic-data/last-commit'
+import { TContentBlock, TPageContent, TContentSegment } from '@/lib/cms/types'
+import { renderSegment } from '@/lib/cms/renderSegment'
 
 function getFormattedTime() {
 	const now = new Date()
@@ -17,119 +14,30 @@ function getFormattedTime() {
 	return utcPlus1.toTimeString().split(' ')[0]
 }
 
-function renderSegment(segment: ContentSegment) {
-	switch (segment.type) {
-		case 'highlighted':
-			return (
-				<span key={segment.id} className='font-medium text-accent'>
-					{segment.content}
-				</span>
-			)
-
-		case 'link':
-			return (
-				<a
-					key={segment.id}
-					href={segment.data?.url || '#'}
-					target='_blank'
-					rel='noopener noreferrer'
-					className='text-accent hover:underline font-medium'
-				>
-					{segment.content} ↗
-				</a>
-			)
-
-		case 'project-card': {
-			// For project cards, we need to map them to the actual ProjectCard component
-			// This is a simplified approach - you might want to store more project data in the CMS
-			const isAuth = segment.content.includes('Authentication')
-			const isTurso = segment.content.includes('Turso')
-
-			if (isAuth) {
-				return (
-					<ProjectCard
-						key={segment.id}
-						title='Roll Your Own Authentication'
-						description='A comprehensive Next.js 15 authentication system showcasing how to implement JWT-based auth without external services like Lucia, NextAuth, or Clerk. Features secure PostgreSQL storage, admin roles, onboarding flows, and more.'
-						url='https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication'
-						demoUrl='https://ryoa.vercel.app/'
-						stars={0}
-						branches={34}
-						technologies={[
-							'Next.js 15',
-							'TypeScript',
-							'PostgreSQL',
-							'JWT',
-							'Tailwind CSS'
-						]}
-						lastUpdated='recently'
-						highlights={[
-							'JWT authentication without external services',
-							'Secure PostgreSQL user storage',
-							'Admin role management system',
-							'Configurable onboarding flows',
-							'Modern Next.js 15 features'
-						]}
-					/>
-				)
-			}
-
-			if (isTurso) {
-				return (
-					<ProjectCard
-						key={segment.id}
-						title='Turso DB Creator CLI'
-						description='A powerful CLI tool for Turso (turso.tech) that automates SQLite database creation and credential management. Automatically copies URLs and auth tokens to clipboard with .env syntax, includes --overwrite flag for seamless credential updates.'
-						url='https://github.com/remcostoeten/Turso-db-creator-auto-retrieve-env-credentials'
-						stars={1}
-						branches={5}
-						technologies={[
-							'CLI',
-							'Node.js',
-							'Turso',
-							'SQLite',
-							'Shell Scripts'
-						]}
-						lastUpdated='recently'
-						highlights={[
-							'One-command database creation',
-							'Automatic credential management',
-							'Clipboard integration with .env format',
-							'Smart credential overwriting',
-							'Sub-10 second deployment workflow'
-						]}
-					/>
-				)
-			}
-
-			// Fallback for other project cards
-			return (
-				<span key={segment.id} className='font-medium text-accent'>
-					{segment.content}
-				</span>
-			)
+async function fetchHomePageContent(): Promise<TPageContent | null> {
+	try {
+		const response = await fetch('/api/cms/home')
+		if (!response.ok) {
+			throw new Error('Failed to fetch home page content')
 		}
-
-		default:
-			return <span key={segment.id}>{segment.content}</span>
+		const result = await response.json()
+		if (result.success && result.data) {
+			return result.data
+		}
+		return null
+	} catch (error) {
+		console.error('Error fetching home page content:', error)
+		return null
 	}
-}
-
-function getInitialHomeContent(): Page {
-	const content = CMSStore.getHomePageContent()
-	if (content) {
-		return content
-	}
-	return CMSStore.initializeDefaultHomePage()
 }
 
 export function CMSIndexView() {
 	const [currentTime, setCurrentTime] = useState<string>(getFormattedTime())
 	const [isContactHovered, setIsContactHovered] = useState(false)
 	const [shouldOpenAbove, setShouldOpenAbove] = useState(false)
-	const [homePageContent, setHomePageContent] = useState<Page>(
-		getInitialHomeContent
-	)
+	const [homePageContent, setHomePageContent] = useState<TPageContent | null>(null)
+	const [isLoading, setIsLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
 
 	useEffect(function setupTimeInterval() {
 		function updateTime() {
@@ -142,25 +50,27 @@ export function CMSIndexView() {
 		}
 	}, [])
 
-	useEffect(function setupHomeContentListener() {
-		function loadHomeContent() {
-			const content = CMSStore.getHomePageContent()
-			if (content) {
-				setHomePageContent(content)
-			} else {
-				const defaultHome = CMSStore.initializeDefaultHomePage()
-				setHomePageContent(defaultHome)
+	useEffect(function loadHomePageContent() {
+		async function loadContent() {
+			setIsLoading(true)
+			setError(null)
+			
+			try {
+				const content = await fetchHomePageContent()
+				if (content) {
+					setHomePageContent(content)
+				} else {
+					setError('No content available')
+				}
+			} catch (err) {
+				setError('Failed to load content')
+				console.error('Error loading home page content:', err)
+			} finally {
+				setIsLoading(false)
 			}
 		}
 
-		function handleStorageChange() {
-			loadHomeContent()
-		}
-
-		window.addEventListener('storage', handleStorageChange)
-		return function cleanup() {
-			window.removeEventListener('storage', handleStorageChange)
-		}
+		loadContent()
 	}, [])
 
 	function handleContactHover(e: React.MouseEvent<HTMLDivElement>) {
@@ -173,14 +83,30 @@ export function CMSIndexView() {
 		setIsContactHovered(true)
 	}
 
-	// If no content is loaded yet, show loading or fallback
-	if (!homePageContent) {
+	// Loading state
+	if (isLoading) {
 		return (
 			<div className='min-h-screen bg-background text-foreground flex items-center justify-center px-6'>
 				<div className='max-w-2xl w-full space-y-8'>
 					<h1 className='text-xl font-medium text-foreground'>
 						Loading...
 					</h1>
+				</div>
+			</div>
+		)
+	}
+
+	// Error state
+	if (error || !homePageContent) {
+		return (
+			<div className='min-h-screen bg-background text-foreground flex items-center justify-center px-6'>
+				<div className='max-w-2xl w-full space-y-8'>
+					<h1 className='text-xl font-medium text-foreground'>
+						Error loading content
+					</h1>
+					<p className='text-muted-foreground'>
+						{error || 'Content not available'}
+					</p>
 				</div>
 			</div>
 		)
@@ -195,9 +121,9 @@ export function CMSIndexView() {
 						return a.order - b.order
 					})
 					.map(function renderBlock(block) {
-						const content = block.content.map(renderSegment)
+						const content = block.segments.map(renderSegment)
 
-						if (block.type === 'heading') {
+						if (block.blockType === 'heading') {
 							return (
 								<h1
 									key={block.id}
@@ -209,89 +135,14 @@ export function CMSIndexView() {
 						}
 
 						return (
-							<div
+							<p
 								key={block.id}
 								className='text-foreground leading-relaxed text-base'
 							>
 								{content}
-							</div>
+							</p>
 						)
 					})}
-
-				{/* Static contact and timezone info - these could also be moved to CMS later */}
-				<p className='text-foreground leading-relaxed text-base'>
-					Find me on{' '}
-					<a
-						href='https://github.com/remcostoeten'
-						target='_blank'
-						rel='noopener noreferrer'
-						className='text-accent hover:underline font-medium'
-					>
-						GitHub ↗
-					</a>{' '}
-					and{' '}
-					<a
-						href='https://nl.linkedin.com/in/remco-stoeten'
-						target='_blank'
-						rel='noopener noreferrer'
-						className='text-accent hover:underline font-medium'
-					>
-						LinkedIn ↗
-					</a>{' '}
-					or contact me via{' '}
-					<span
-						className='relative inline-block'
-						onMouseEnter={handleContactHover}
-						onMouseLeave={function handleContactLeave() {
-							setIsContactHovered(false)
-						}}
-					>
-						<button className='text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60'>
-							Email ↗
-						</button>
-						<ContactForm
-							isVisible={isContactHovered}
-							openAbove={shouldOpenAbove}
-						/>
-					</span>{' '}
-					or check out my{' '}
-					<a
-						href='https://remcostoeten.nl'
-						target='_blank'
-						rel='noopener noreferrer'
-						className='text-accent hover:underline font-medium'
-					>
-						website ↗
-					</a>
-					.
-				</p>
-
-				<p className='text-foreground leading-relaxed text-base'>
-					My current timezone is{' '}
-					<span className='font-medium'>CET</span> which includes
-					countries like{' '}
-					<span className='font-medium'>Netherlands</span>,{' '}
-					<span className='font-medium'>Germany</span> and{' '}
-					<span className='font-medium'>France</span>. Right now it is{' '}
-					<span
-						className='font-medium font-mono'
-						style={{ minWidth: '8ch', display: 'inline-block' }}
-					>
-						{currentTime || '00:00:00'}
-					</span>
-					.
-				</p>
-
-				{/* Last commit and music information */}
-				<div className='pt-4 border-t border-border/20 space-y-2'>
-					<LastCommit />
-					<NowPlaying />
-				</div>
-
-				{/* GitHub Activity Demo */}
-				<div className='pt-8 border-t border-border/20'>
-					<FyncGithubDemo />
-				</div>
 			</div>
 		</div>
 	)

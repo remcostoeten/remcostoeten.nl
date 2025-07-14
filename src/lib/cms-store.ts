@@ -1,4 +1,5 @@
 import { Page } from "@/types/cms";
+import { homePage } from "@/utils/cms-data";
 
 const CMS_STORAGE_KEY = "cms_pages";
 const HOME_PAGE_KEY = "home_page";
@@ -58,131 +59,9 @@ export class CMSStore {
 	// Initialize with default home page if none exists
 	static initializeDefaultHomePage(): Page {
 		const defaultHomePage: Page = {
-			id: "home",
-			slug: "home",
-			title: "Home",
-			description: "Home page content",
-			isPublished: true,
+			...homePage,
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			blocks: [
-				{
-					id: "block-1",
-					type: "heading",
-					order: 0,
-					content: [
-						{
-							id: "seg-1",
-							type: "text",
-							content: "I craft digital experiences.",
-						},
-					],
-				},
-				{
-					id: "block-2",
-					type: "paragraph",
-					order: 1,
-					content: [
-						{
-							id: "seg-2",
-							type: "text",
-							content: "With extensive experience in ",
-						},
-						{
-							id: "seg-3",
-							type: "highlighted",
-							content: "TypeScript and React & Next.js",
-							data: {
-								hslColor: "var(--highlight-frontend)",
-								backgroundColor: "hsl(var(--highlight-frontend) / 0.2)",
-							},
-						},
-						{
-							id: "seg-4",
-							type: "text",
-							content:
-								", I specialize in building scalable web applications, from Magento shops to modern SaaS platforms. Currently working on an ",
-						},
-						{
-							id: "seg-5",
-							type: "highlighted",
-							content: "LMS system for Dutch MBO students",
-							data: {
-								hslColor: "var(--highlight-product)",
-								backgroundColor: "hsl(var(--highlight-product) / 0.2)",
-							},
-						},
-						{
-							id: "seg-6",
-							type: "text",
-							content: ".",
-						},
-					],
-				},
-				{
-					id: "block-3",
-					type: "paragraph",
-					order: 2,
-					content: [
-						{
-							id: "seg-7",
-							type: "text",
-							content: "Recently I've been building ",
-						},
-						{
-							id: "seg-8",
-							type: "project-card",
-							content: "Roll Your Own Authentication",
-							data: {
-								url: "https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication",
-							},
-						},
-						{
-							id: "seg-9",
-							type: "text",
-							content: " and ",
-						},
-						{
-							id: "seg-10",
-							type: "project-card",
-							content: "Turso DB Creator CLI",
-							data: {
-								url: "https://github.com/remcostoeten/Turso-db-creator-auto-retrieve-env-credentials",
-							},
-						},
-						{
-							id: "seg-11",
-							type: "text",
-							content: " and various ",
-						},
-						{
-							id: "seg-12",
-							type: "highlighted",
-							content: "CLI tools & automation scripts",
-							data: {
-								hslColor: "var(--highlight-frontend)",
-								backgroundColor: "hsl(var(--highlight-frontend) / 0.2)",
-							},
-						},
-						{
-							id: "seg-13",
-							type: "text",
-							content: ". More projects and experiments can be found on ",
-						},
-						{
-							id: "seg-14",
-							type: "link",
-							content: "GitHub",
-							data: { url: "https://github.com/remcostoeten" },
-						},
-						{
-							id: "seg-15",
-							type: "text",
-							content: ".",
-						},
-					],
-				},
-			],
 		};
 
 		// Save as both a page and home content
@@ -220,5 +99,12 @@ export class CMSStore {
 		const pages = this.getPages();
 		const filteredPages = pages.filter((p) => p.id !== pageId);
 		this.savePages(filteredPages);
+	}
+
+	// Clear all CMS data (for development/testing)
+	static clearAll(): void {
+		if (typeof window === "undefined") return;
+		localStorage.removeItem(CMS_STORAGE_KEY);
+		localStorage.removeItem(HOME_PAGE_KEY);
 	}
 }
