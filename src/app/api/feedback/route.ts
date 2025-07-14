@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createFeedbackAction } from "@/lib/feedback/server-actions";
+import { createFeedbackAction, readFeedbacksAction } from "@/lib/feedback/server-actions";
 
 function extractBrowserFromUserAgent(userAgent: string): string {
   const ua = userAgent.toLowerCase();
@@ -21,6 +21,21 @@ function extractBrowserFromUserAgent(userAgent: string): string {
   }
   
   return "Unknown";
+}
+
+export async function GET() {
+  try {
+    const result = await readFeedbacksAction();
+    
+    if (result.success) {
+      return NextResponse.json(result.data, { status: 200 });
+    } else {
+      return NextResponse.json({ error: result.error }, { status: 500 });
+    }
+  } catch (error) {
+    console.error("Error fetching feedback:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
 
 export async function POST(request: NextRequest) {

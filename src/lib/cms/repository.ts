@@ -1,9 +1,9 @@
 import { and, asc, eq } from "drizzle-orm";
-import { getDb } from "@/db/client";
+import { db } from "@/db/db";
 import { contentBlocks, contentSegments } from "@/db/schema";
 import type { TContentBlock, TContentSegment, TPageContent } from "./types";
 
-type TDatabase = ReturnType<typeof getDb>;
+type TDatabase = typeof db;
 
 export async function getHomePageContent(
 	database: TDatabase,

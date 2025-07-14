@@ -22,7 +22,7 @@ export function ContactForm({
 }: TProps) {
 	const [formData, setFormData] = useState({
 		name: "",
-		feedback: "",
+		message: "",
 		emoji: "",
 	});
 
@@ -43,7 +43,7 @@ async function handleSubmit(e: React.FormEvent) {
 
 			if (response.ok) {
 				setSubmissionState('success');
-				setFormData({ name: "", feedback: "", emoji: "" });
+			setFormData({ name: "", message: "", emoji: "" });
 				setSelectedEmoji("");
 				setTimeout(() => setSubmissionState('idle'), 2000);
 			} else {
@@ -150,7 +150,7 @@ async function handleSubmit(e: React.FormEvent) {
 
 						<div>
 							<Label
-								htmlFor="feedback"
+									htmlFor="message"
 								className="text-xs font-medium text-foreground"
 							>
 								What's on your mind?
@@ -158,9 +158,9 @@ async function handleSubmit(e: React.FormEvent) {
 							<div className="relative mt-1">
 								<MessageSquare className="absolute left-0 top-2 w-3 h-3 text-muted-foreground" />
 								<Textarea
-									id="feedback"
-									name="feedback"
-									value={formData.feedback}
+										id="message"
+										name="message"
+										value={formData.message}
 									onChange={handleChange}
 									className="pl-6 text-xs min-h-[60px] resize-none bg-transparent border-0 border-b border-border rounded-none focus:border-accent focus:ring-0"
 									placeholder="Share your thoughts, ideas, or just say hello..."
@@ -178,12 +178,6 @@ async function handleSubmit(e: React.FormEvent) {
 </Button>
 					</form>
 
-					{/* Footer */}
-					<div className="mt-3 pt-3 border-t border-border/30">
-						<p className="text-xs text-muted-foreground text-center">
-							This is just a demo - no feedback will actually be sent
-						</p>
-					</div>
 				</motion.div>
 			)}
 </AnimatePresence>

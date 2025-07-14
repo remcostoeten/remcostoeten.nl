@@ -1,3 +1,3 @@
-export { APIEndpoint } from "./APIEndpoint";
-export { default as SpotifyNowPlaying } from "./SpotifyNowPlaying";
-export { LastCommit } from "./LastCommit";
+export { APIEndpoint } from "./api-endpoint";
+export { default as SpotifyNowPlaying } from "./spotify-now-playing-api";
+export { LastCommit } from "../dynamic-data/last-commit";

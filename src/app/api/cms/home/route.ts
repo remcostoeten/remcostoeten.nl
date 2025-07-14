@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db/client";
+import { db } from "@/db/db";
 import {
 	createErrorResponse,
 	createSuccessResponse,
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 		}
 
 		// Get home page content from repository
-		const pageContent = await getHomePageContent(db());
+		const pageContent = await getHomePageContent(db);
 
 		// Validate the page content with Zod
 		const contentValidation = validateResponseData(

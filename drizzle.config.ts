@@ -1,16 +1,14 @@
-import { defineConfig } from 'drizzle-kit'
+import type { Config } from 'drizzle-kit'
 
-if (!process.env.DATABASE_URL) {
-	throw new Error('DATABASE_URL is not set')
-}
-
-export default defineConfig({
+const config = {
 	schema: './src/db/schema.ts',
-	out: './drizzle',
+	out: './src/db/migrations',
 	dialect: 'turso',
 	dbCredentials: {
 		url: process.env.DATABASE_URL!,
-
-		authToken: process.env.TURSO_AUTH_TOKEN || ''
+		authToken: process.env.TURSO_AUTH_TOKEN!,
 	}
-})
+} satisfies Config
+
+export default config
+

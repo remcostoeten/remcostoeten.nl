@@ -134,9 +134,39 @@ src/
 └── utils/             # Utility functions
 ```
 
-## Database
+# Database
 
-This project uses Drizzle ORM with SQLite.
+This project uses Drizzle ORM with PostgreSQL for local development.
+
+## Docker Setup for Development
+
+We've set up Docker to handle running a PostgreSQL database locally. Here’s how you can set it up:
+
+1. **Start Docker Services:**
+   Run the following command to start Docker services including PostgreSQL:
+   ```bash
+   npm run docker:up
+   ```
+
+2. **Access Database with Adminer:**
+   Optionally, access your PostgreSQL instance via [Adminer](http://localhost:8080) using the following credentials:
+   - **System:** PostgreSQL
+   - **Server:** postgres
+   - **Username:** postgres
+   - **Password:** password
+   - **Database:** myapp
+
+3. **Stop Docker Services:**
+   To stop the Docker services, use:
+   ```bash
+   npm run docker:down
+   ```
+
+4. **Reset Docker Services:**
+   To reset the database, stopping all containers and removing data, then restart them:
+   ```bash
+   npm run docker:reset
+   ```
 
 ### Available Commands
 
