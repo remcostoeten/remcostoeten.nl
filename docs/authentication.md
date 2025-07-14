@@ -15,7 +15,6 @@ The CMS is now protected with better-auth authentication and middleware-based ro
 
 **Features:**
 - Email/password authentication
-- GitHub OAuth (optional)
 - Email-based authorization (only specific emails allowed)
 - Session management
 
@@ -48,13 +47,29 @@ Required in `.env.local`:
 AUTH_SECRET="your-long-random-secret-key-here-at-least-32-characters"
 NEXT_PUBLIC_BETTER_AUTH_URL="http://localhost:3000"
 
-# GitHub OAuth (optional)
-GITHUB_CLIENT_ID=""
-GITHUB_CLIENT_SECRET=""
-
 # Admin Toggle (for development)
 NEXT_PUBLIC_ADMIN_TOGGLE="true"
+
+# Email Configuration
+ADMIN_EMAIL="your-admin-email@example.com"
+TEST_USER_EMAIL="test@example.com"
+TEST_USER_PASSWORD="password123"
 ```
+
+### 5. Registration Control
+
+**Security Feature:** The `ENABLE_REGISTER` environment variable controls user registration:
+
+- **`ENABLE_REGISTER="false"`** (default): Registration is disabled
+  - Sign-up page shows disabled form with appropriate messaging
+  - API endpoint returns 403 error for registration attempts
+  - Sign-in page hides the "Sign up" link
+  - Recommended for production with existing users
+
+- **`ENABLE_REGISTER="true"`**: Registration is enabled
+  - Full sign-up functionality available
+  - Useful for fresh database setups or development
+  - Should be set to `false` after initial user creation
 
 ## Usage
 
@@ -65,7 +80,7 @@ NEXT_PUBLIC_ADMIN_TOGGLE="true"
    - You'll be redirected to `/auth/signin` if not authenticated
 
 2. **Sign In:**
-   - Use email/password or GitHub OAuth
+   - Use email/password authentication
    - Only authorized emails can access the CMS
 
 3. **Sign Out:**
@@ -81,11 +96,16 @@ NEXT_PUBLIC_ADMIN_TOGGLE="true"
    ];
    ```
 
-2. **Set Up GitHub OAuth:**
-   - Create GitHub OAuth app
-   - Add `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` to `.env.local`
+2. **Enable/Disable Registration:**
+   ```bash
+   # For fresh database setup (enable registration temporarily)
+   ENABLE_REGISTER="true"
+   
+   # After creating initial users (disable for security)
+   ENABLE_REGISTER="false"
+   ```
 
-3. **Database Setup:**
+4. **Database Setup:**
    - Ensure auth tables exist in your database
    - Better-auth will create them automatically on first run
 
@@ -99,8 +119,6 @@ NEXT_PUBLIC_ADMIN_TOGGLE="true"
 
 ## Current Limitations
 
-- Session validation in middleware is basic (for demo purposes)
-- Some client-side session management is mocked
 - Production deployment would need enhanced security measures
 
 ## Next Steps

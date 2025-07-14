@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Home, Settings, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LogoutButton } from "@/components/logout-button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { CMSSection } from "@/components/admin/cms/cms-section";
@@ -81,6 +82,7 @@ export default function AdminLayout({ showBackButton = false, onBack = () => {} 
                                 Back
                             </Button>
                         )}
+                        <LogoutButton variant="outline" size="sm" />
                     </div>
                 </div>
                 

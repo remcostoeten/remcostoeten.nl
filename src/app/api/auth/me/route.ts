@@ -6,12 +6,22 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    const auth = verifyAuthFromRequest(request);
+    const auth = await verifyAuthFromRequest(request);
     
-    if (!auth) {
+    if (!auth || !auth.userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Ensure userId is a number for the database query
+    const userId = typeof auth.userId === 'string' ? parseInt(auth.userId, 10) : auth.userId;
+    
+    if (isNaN(userId)) {
+      return NextResponse.json(
+        { error: 'Invalid user ID' },
+        { status: 400 }
       );
     }
 
@@ -27,7 +37,7 @@ export async function GET(request: NextRequest) {
         updatedAt: users.updatedAt,
       })
       .from(users)
-      .where(eq(users.id, auth.userId))
+      .where(eq(users.id, userId))
       .limit(1);
 
     if (!user) {

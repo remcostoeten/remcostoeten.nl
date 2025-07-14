@@ -25,9 +25,7 @@ export function CMSSection() {
 
 	async function handleSavePage(updatedPage: Page) {
 		try {
-			console.log("Saving page to database:", updatedPage);
 			await actions.updatePage(updatedPage.id, updatedPage);
-			console.log("Page saved successfully to database:", updatedPage);
 			toast.success("Page saved successfully", "Your changes are now live!");
 		} catch (error) {
 			toast.error("Failed to save page", "Please try again.");

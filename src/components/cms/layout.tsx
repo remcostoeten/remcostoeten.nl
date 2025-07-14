@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LogoutButton } from "@/components/logout-button";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 
 type TProps = {
@@ -49,6 +50,7 @@ export default function CMSLayout({ children, showBackButton = false, onBack = (
 								Back
 							</Button>
 						)}
+                        <LogoutButton variant="outline" size="sm" />
 					</div>
 				</div>
 				<div className="bg-card rounded-lg border border-border p-6">

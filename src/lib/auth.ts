@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
@@ -14,14 +14,19 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return await bcrypt.compare(password, hash);
 }
 
-export function generateToken(payload: { userId: number; email: string }): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' });
+export async function generateToken(payload: { userId: number; email: string }): Promise<string> {
+  const encoder = new TextEncoder();
+  return new SignJWT({ ...payload })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setExpirationTime('7d')
+    .sign(encoder.encode(JWT_SECRET));
 }
 
-export function verifyToken(token: string): { userId: number; email: string } | null {
+export async function verifyToken(token: string): Promise<{ userId: number; email: string } | null> {
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as { userId: number; email: string };
-    return payload;
+    const encoder = new TextEncoder();
+    const { payload } = await jwtVerify(token, encoder.encode(JWT_SECRET));
+    return payload as { userId: number; email: string };
   } catch (error) {
     return null;
   }
@@ -54,20 +59,20 @@ export function clearAuthCookie() {
   });
 }
 
-export function getCurrentUser(): { userId: number; email: string } | null {
+export async function getCurrentUser(): Promise<{ userId: number; email: string } | null> {
   const token = getAuthToken();
   if (!token) return null;
   
-  return verifyToken(token);
+  return await verifyToken(token);
 }
 
 export function getAuthTokenFromRequest(request: NextRequest): string | null {
   return request.cookies.get('auth-token')?.value || null;
 }
 
-export function verifyAuthFromRequest(request: NextRequest): { userId: number; email: string } | null {
+export async function verifyAuthFromRequest(request: NextRequest): Promise<{ userId: number; email: string } | null> {
   const token = getAuthTokenFromRequest(request);
   if (!token) return null;
   
-  return verifyToken(token);
+  return await verifyToken(token);
 }

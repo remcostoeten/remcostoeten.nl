@@ -1,23 +1,89 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+// Custom JWT-based authentication middleware
+// Protects admin routes and API endpoints
+
+function getAuthorizedEmails(): string[] {
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (!adminEmail) {
+    console.warn('ADMIN_EMAIL environment variable not set');
+    return [];
+  }
+  return [adminEmail];
+}
+
+async function isAuthenticated(request: NextRequest): Promise<boolean> {
+  // Check for auth token cookie (this is what the signin API sets)
+  const authCookie = request.cookies.get('auth-token');
+  const authHeader = request.headers.get('Authorization');
   
-  // Only protect admin routes with env check
-  if (pathname.startsWith('/admin')) {
-    // Simple env-based protection
-    if (process.env.NODE_ENV === 'production') {
-      return NextResponse.redirect(new URL('/auth/unauthorized', request.url));
+  // If we have a token cookie, validate it
+  if (authCookie?.value) {
+    try {
+      // Import the auth functions
+      const { verifyToken } = await import('@/lib/auth');
+      const tokenData = await verifyToken(authCookie.value);
+      
+      const authorizedEmails = getAuthorizedEmails();
+      if (tokenData && authorizedEmails.includes(tokenData.email)) {
+        return true;
+      }
+    } catch (error) {
+      // Token verification failed, continue to fallback
     }
   }
   
-  // Protect CMS API routes with env check
+  // Fallback: Check for valid session from auth API
+  try {
+    const response = await fetch(new URL('/api/auth/me', request.url), {
+      headers: {
+        Cookie: request.headers.get('Cookie') || '',
+      },
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      const user = result.user;
+      const authorizedEmails = getAuthorizedEmails();
+      if (user && authorizedEmails.includes(user.email)) {
+        return true;
+      }
+    }
+  } catch (error) {
+    // API auth check failed, user is not authenticated
+  }
+  return false;
+}
+
+export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  
+  // Protect admin routes
+  if (pathname.startsWith('/admin')) {
+    const authenticated = await isAuthenticated(request);
+    
+    if (!authenticated) {
+      // Redirect to signin with return URL
+      const signinUrl = new URL('/auth/signin', request.url);
+      signinUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signinUrl);
+    }
+  }
+  
+  // Protect CMS API routes (except public read-only routes)
   if (pathname.startsWith('/api/cms')) {
-    if (process.env.NODE_ENV === 'production') {
+    // Allow public access to home page content
+    if (pathname === '/api/cms/home' && request.method === 'GET') {
+      return NextResponse.next();
+    }
+    
+    const authenticated = await isAuthenticated(request);
+    
+    if (!authenticated) {
       return new NextResponse(
-        JSON.stringify({ success: false, message: 'Access denied' }), 
-        { status: 403, headers: { 'content-type': 'application/json' } }
+        JSON.stringify({ success: false, message: 'Authentication required' }),
+        { status: 401, headers: { 'content-type': 'application/json' } }
       );
     }
   }

@@ -17,17 +17,36 @@ export default function LoginForm({ onLogin }: TProps) {
 		e.preventDefault();
 		setIsLoading(true);
 
-		// Simulate authentication
-		setTimeout(() => {
-			const user: User = {
-				id: "1",
-				email: email,
-				name: "Demo User",
-				role: "admin",
-			};
-			onLogin(user);
+		try {
+			const response = await fetch("/api/auth/sign-in/email", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					email,
+					password,
+				}),
+			});
+
+			const result = await response.json();
+
+			if (response.ok) {
+				const user: User = {
+					id: result.user.id.toString(),
+					email: result.user.email,
+					name: result.user.name,
+					role: "admin",
+				};
+				onLogin(user);
+			} else {
+				alert(result.error || "Authentication failed");
+			}
+		} catch (error) {
+			alert("An error occurred during authentication");
+		} finally {
 			setIsLoading(false);
-		}, 1000);
+		}
 	};
 
 return (
@@ -102,7 +121,7 @@ return (
 
 					<div className="text-center">
 						<p className="text-xs text-gray-500">
-							Demo credentials: any email and password
+							Access restricted to authorized users only
 						</p>
 					</div>
 				</form>

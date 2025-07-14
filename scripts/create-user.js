@@ -11,9 +11,14 @@ async function createUser() {
     authToken: process.env.TURSO_AUTH_TOKEN,
   });
 
-  const email = "remcostoeten@hotmail.com";
+  const email = process.env.ADMIN_EMAIL;
   const password = "admin123456"; // Change this to your preferred password
   const name = "Remco Stoeten";
+
+  if (!email) {
+    console.error("❌ ADMIN_EMAIL environment variable is required");
+    process.exit(1);
+  }
 
   try {
     // Hash the password

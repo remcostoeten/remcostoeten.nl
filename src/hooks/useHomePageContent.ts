@@ -12,6 +12,7 @@ export function useHomePageContent(): TUseHomePageContentReturn {
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["home-page-content"],
 		queryFn: async (): Promise<THomePageResponse> => {
+			console.log('[useHomePageContent] Fetching home page content...');
 			try {
 				const response = await fetch("/api/cms/home");
 				
@@ -41,8 +42,11 @@ export function useHomePageContent(): TUseHomePageContentReturn {
 				throw fetchError;
 			}
 		},
-		staleTime: 60 * 1000,
-		gcTime: 5 * 60 * 1000,
+		staleTime: 5 * 60 * 1000, // 5 minutes
+		gcTime: 10 * 60 * 1000, // 10 minutes
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
 		retry: (failureCount, error) => {
 			if (error.message.includes('unreachable')) {
 				return failureCount < 2;
