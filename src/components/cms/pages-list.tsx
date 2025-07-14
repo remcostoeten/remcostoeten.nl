@@ -43,7 +43,7 @@ function formatTimeAgo(date: Date): string {
 const listItemVariants = {
 	hidden: { opacity: 0, y: -10 },
 	visible: { opacity: 1, y: 0 },
-	exit: { opacity: 0, x: -20, scale: 0.95 }
+	exit: { opacity: 0, x: -20 }
 }
 
 const containerVariants = {
@@ -61,8 +61,8 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
 				<p className='text-muted-foreground mt-1'>Manage your website pages</p>
 			</div>
 			<motion.button
-				whileHover={{ scale: 1.02 }}
-				whileTap={{ scale: 0.98 }}
+				whileHover={{ opacity: 0.8 }}
+				whileTap={{ opacity: 0.6 }}
 				onClick={onCreate}
 				className='flex items-center px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 border border-border'
 			>
@@ -85,8 +85,8 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
 				Get started by creating your first page. You can add content, customize layouts, and manage everything from here.
 			</p>
 			<motion.button
-				whileHover={{ scale: 1.05 }}
-				whileTap={{ scale: 0.95 }}
+				whileHover={{ opacity: 0.8 }}
+				whileTap={{ opacity: 0.6 }}
 				onClick={onCreate}
 				className='inline-flex items-center px-6 py-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors font-medium border border-border'
 			>
@@ -167,8 +167,8 @@ function PageItem({
 
 				<div className='flex items-center gap-2 lg:flex-shrink-0'>
 					<motion.button
-						whileHover={{ scale: 1.05 }}
-						whileTap={{ scale: 0.95 }}
+						whileHover={{ opacity: 0.8 }}
+						whileTap={{ opacity: 0.6 }}
 						onClick={handleEdit}
 						className='flex items-center px-4 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 text-sm font-medium border border-border'
 					>
@@ -177,8 +177,8 @@ function PageItem({
 					</motion.button>
 					{page.slug !== 'home' && (
 						<motion.button
-							whileHover={{ scale: 1.1 }}
-							whileTap={{ scale: 0.9 }}
+							whileHover={{ opacity: 0.8 }}
+							whileTap={{ opacity: 0.6 }}
 							onClick={handleDelete}
 							className='p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all duration-200 border border-transparent hover:border-destructive/20'
 							title='Delete page'
@@ -270,7 +270,7 @@ function PagesList({
 					{onRefresh && (
 						<motion.button
 							onClick={onRefresh}
-							className='flex items-center px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all duration-200 border border-border'
+							className='flex items-center px-4 py-2.5 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg transition-all duration-200 border border-border'
 							title='Refresh CMS data (development)'
 						>
 							<RotateCcw className='w-4 h-4 mr-2' />

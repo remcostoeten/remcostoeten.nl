@@ -75,9 +75,9 @@ async function handleSubmit(e: React.FormEvent) {
 				{isVisible && (
 					<motion.div
                 layout
-                initial={{ opacity: 0, scale: 0.95, y: openAbove ? 10 : -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: openAbove ? 10 : -10 }}
+                initial={{ opacity: 0, y: openAbove ? 10 : -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: openAbove ? 10 : -10 }}
                 transition={popoverTransition}
                 className={`absolute z-50 w-80 p-4 bg-popover text-popover-foreground backdrop-blur-lg border border-border rounded-lg shadow-2xl left-0 ${
                     openAbove ? "bottom-full mb-2" : "top-full mt-2"

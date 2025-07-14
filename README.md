@@ -1,217 +1,29 @@
-# remcostoeten.nl
+## remcostoeten.nl
 
-A Next.js portfolio and CMS application built with TypeScript, Tailwind CSS, and Drizzle ORM.
+My personal site. After about 50 iterations over the past few years, I’ve come to the conclusion that minimalism is the way to go for personal websites.
 
-## Getting Started
+From an engineering perspective, I may have over-engineered it a little—but that’s never hurt anyone, right?
 
-### Prerequisites
+Both the front-end and back-end are built with Next.js for confidence.  
+**Back-end?** For those couple of paragraphs on the front page?  
+Yes. I could’ve finished this site in a few hours, but I chose to roll my own CMS—because why not?
 
-- Node.js 18+ or Bun
-- SQLite database
+It’s protected by [nextjs-15-roll-your-own-authentication](https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication), which I also built from scratch.
 
-### Installation
+The front-end includes a small survey/contact form (accessible via the contact link), which displays inside the CMS.
 
-1. Clone the repository
-2. Install dependencies:
-```bash
-bun install
-```
+I'm also in the process of building my own analytics system with a long-term goal of releasing an SDK. This data will also be queried and displayed inside the CMS/admin panel.
 
-3. Create a `.env.local` file with required environment variables (see [Environment Variables](#environment-variables) section)
+Lastly—and maybe the best part—is [Fync](https://github.com/remcostoeten/fync), a package that provides most of the methods you’d need when working with the GitHub and Spotify APIs. It’s still under construction, and I plan to add support for additional providers like GitLab, Notion, Vercel, Jira, and more.
 
-4. Run the development server:
-```bash
-bun run dev
-```
+_Someday I’ll insert a video demo of the CMS here._
 
-## Environment Variables
+### Stack
 
-### Client-Side Variables
+- Next.js 15 / React 19
+- LibSQL (SQLite via Turso) with API routes
+- `jose` (JWT), `bcrypt` (encryption), `drizzle` (ORM), [`fync`](https://github.com/remcostoeten/fync) (GitHub & Spotify API provider)
 
-**IMPORTANT**: Client-side environment variables in Next.js must be prefixed with `NEXT_PUBLIC_` to be accessible in the browser.
+xxx,
 
-### Admin Toggle Feature
-
-The admin CMS interface is controlled by the `NEXT_PUBLIC_ADMIN_TOGGLE` environment variable.
-
-**Setup**: Add the following to your `.env.local` file:
-```env
-NEXT_PUBLIC_ADMIN_TOGGLE="true"
-```
-
-**Security  Safety Notes**:
-- The value must be exactly the string `"true"` (including quotes) for the feature to be active
-- Any other value (including `true`, `"false"`, `1`, `0`, empty string, or undefined) will render the feature inert
-- This strict string matching provides an additional safety layer to prevent accidental exposure of admin functionality
-- Since this is a client-side variable, it will be visible in the browser - ensure you understand the security implications for your use case
-
-**Examples**:
-```env
-# ✅ ACTIVE - Admin feature enabled
-NEXT_PUBLIC_ADMIN_TOGGLE="true"
-
-# ❌ INACTIVE - All other values disable the feature
-NEXT_PUBLIC_ADMIN_TOGGLE=true
-NEXT_PUBLIC_ADMIN_TOGGLE="false"
-NEXT_PUBLIC_ADMIN_TOGGLE="1"
-NEXT_PUBLIC_ADMIN_TOGGLE=""
-# NEXT_PUBLIC_ADMIN_TOGGLE not set
-```
-
-### Authentication Variables
-
-Add the following to your `.env.local` file for authentication setup:
-
-```env
-AUTH_SECRET="your-secret-key-here-generate-a-random-32-character-string"
-
-# GitHub OAuth
-GITHUB_CLIENT_ID="your-github-client-id"
-GITHUB_CLIENT_SECRET="your-github-client-secret"
-
-# Better Auth Configuration
-NEXT_PUBLIC_BETTER_AUTH_URL="http://localhost:3000"
-
-# Database Configuration
-DATABASE_URL="file:local.db"
-TURSO_AUTH_TOKEN="your-turso-auth-token-if-using-turso"
-```
-
-#### Required Authentication Variables
-
-**AUTH_SECRET** (Required)
-- A random 32-character string used to sign JWT tokens
-- Generate one using: `openssl rand -hex 32` or an online generator
-- Keep this secret and never commit it to version control
-
-**GITHUB_CLIENT_ID** and **GITHUB_CLIENT_SECRET** (Required for GitHub OAuth)
-- Create a GitHub OAuth App at: https://github.com/settings/developers
-- Set Authorization callback URL to: `http://localhost:3000/api/auth/callback/github`
-- Copy the Client ID and Client Secret from your GitHub OAuth App
-
-**NEXT_PUBLIC_BETTER_AUTH_URL** (Optional)
-- The base URL for Better Auth API calls
-- Defaults to `http://localhost:3000` for local development
-- Set to your production domain for deployed environments
-
-**DATABASE_URL** (Required)
-- For local development: `file:local.db` (SQLite)
-- For Turso: Your Turso database URL
-
-**TURSO_AUTH_TOKEN** (Optional)
-- Only required if using Turso as your database provider
-- Get this from your Turso dashboard
-
-**NEXT_PUBLIC_SPOTIFY_API_URL** (Optional)
-- URL endpoint for Spotify "Now Playing" API integration
-- Used to display currently playing music on the homepage
-- Expected JSON format: `{ "isPlaying": boolean, "title": string, "artist": string, "album": string, "songUrl": string }`
-
-#### Email/Password Authentication
-
-Better Auth handles email/password authentication automatically with secure defaults:
-- Passwords are hashed using bcrypt
-- No additional salt configuration is required
-- The library handles all security aspects internally
-
-Ensure to replace placeholder values with the actual credentials.
-
-## Project Structure
-
-```
-src/
-├── app/                 # Next.js app directory
-│   ├── admin/cms/      # Admin CMS interface
-│   ├── api/cms/        # CMS API routes
-│   └── ...
-├── components/         # Reusable React components
-│   ├── cms/           # CMS-specific components
-│   └── ui/            # UI components
-├── db/                # Database schema and utilities
-├── lib/               # Utility libraries
-├── hooks/             # Custom React hooks
-├── types/             # TypeScript type definitions
-└── utils/             # Utility functions
-```
-
-# Database
-
-This project uses Drizzle ORM with PostgreSQL for local development.
-
-## Docker Setup for Development
-
-We've set up Docker to handle running a PostgreSQL database locally. Here’s how you can set it up:
-
-1. **Start Docker Services:**
-   Run the following command to start Docker services including PostgreSQL:
-   ```bash
-   npm run docker:up
-   ```
-
-2. **Access Database with Adminer:**
-   Optionally, access your PostgreSQL instance via [Adminer](http://localhost:8080) using the following credentials:
-   - **System:** PostgreSQL
-   - **Server:** postgres
-   - **Username:** postgres
-   - **Password:** password
-   - **Database:** myapp
-
-3. **Stop Docker Services:**
-   To stop the Docker services, use:
-   ```bash
-   npm run docker:down
-   ```
-
-4. **Reset Docker Services:**
-   To reset the database, stopping all containers and removing data, then restart them:
-   ```bash
-   npm run docker:reset
-   ```
-
-### Available Commands
-
-- `bun run db:push` - Push schema changes to database
-- `bun run db:pull` - Pull schema from database
-- `bun run db:generate` - Generate migrations
-- `bun run db:migrate` - Run migrations
-- `bun run db:studio` - Open Drizzle Studio
-- `bun run db:seed` - Seed the database
-
-## Development
-
-### Scripts
-
-- `bun run dev` - Start development server
-- `bun run build` - Build for production
-- `bun run start` - Start production server
-- `bun run lint` - Run ESLint
-
-### CMS Features
-
-- Inline page editing
-- Block-based content management
-- Real-time preview
-- Keyboard shortcuts (Cmd+N: New Page, Cmd+S: Save, Esc: Back)
-
-## Technologies Used
-
-- **Framework**: Next.js 15 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Database**: SQLite with Drizzle ORM
-- **UI Components**: Radix UI primitives
-- **State Management**: React hooks and context
-- **Authentication**: Better Auth
-- **Package Manager**: Bun
-
-## Contributing
-
-1. Follow the existing code style and patterns
-2. Use kebab-case for file names
-3. Prefer pure functions over classes
-4. Use proper TypeScript types
-5. Test your changes thoroughly
-
-## License
-
-Private project - All rights reserved.
+Remco stoeten

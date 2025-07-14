@@ -15,7 +15,9 @@ type TFeedbackCreateInput = {
 	browser?: string;
 };
 
-type TFeedbackUpdateInput = Partial<TFeedbackCreateInput>;
+type TFeedbackUpdateInput = Partial<TFeedbackCreateInput> & {
+	isRead?: boolean;
+};
 
 export function createFeedbackFactory() {
 
@@ -65,10 +67,36 @@ export function createFeedbackFactory() {
 		await db.delete(feedback).where(eq(feedback.id, id)).execute();
 	}
 
+	async function markAsRead(id: number): Promise<TFeedbackEntity> {
+		const updatedFeedback = await db
+			.update(feedback)
+			.set({
+				isRead: true,
+				updatedAt: new Date().toISOString(),
+			})
+			.where(eq(feedback.id, id))
+			.returning()
+			.execute();
+
+		return updatedFeedback[0] as TFeedbackEntity;
+	}
+
+	async function getUnreadCount(): Promise<number> {
+		const result = await db
+			.select({ count: feedback.id })
+			.from(feedback)
+			.where(eq(feedback.isRead, false))
+			.execute();
+
+		return result.length;
+	}
+
 	return {
 		create,
 		read,
 		update,
 		destroy,
+		markAsRead,
+		getUnreadCount,
 	};
 }

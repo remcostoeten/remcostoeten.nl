@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { GridButton, importingFrames } from "@/components/grid-button";
 
 type TRegistrationStatus = {
   enabled: boolean;
@@ -187,9 +187,16 @@ export default function SignUpPage() {
                 {success}
               </div>
             )}
-            <Button type="submit" className="w-full" disabled={isLoading || !registrationStatus?.enabled}>
-              {isLoading ? "Creating account..." : registrationStatus?.enabled ? "Create Account" : "Registration Disabled"}
-            </Button>
+            <GridButton 
+              type="submit" 
+              gridSize={[5, 5]}
+              frames={importingFrames}
+              isLoading={isLoading}
+              disabled={!registrationStatus?.enabled}
+              className="w-full"
+            >
+              {registrationStatus?.enabled ? "Create Account" : "Registration Disabled"}
+            </GridButton>
           </form>
           
           <div className="text-center text-sm">

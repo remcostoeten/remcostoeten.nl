@@ -9,6 +9,7 @@ export const feedback = sqliteTable('feedback', {
 	ipAddress: text('ip_address'),
 	referrer: text('referrer'),
 	browser: text('browser'),
+	isRead: integer('is_read', { mode: 'boolean' }).notNull().default(false),
 	createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
 	updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP')
 })

@@ -14,9 +14,9 @@ type TProps = ButtonProps & {
 
 export const AnimatedButton = forwardRef<HTMLButtonElement, TProps>(
   ({ 
-    whileTap = { scale: 0.95 },
-    whileHover = { scale: 1.05 },
-    whileLoading = { scale: 0.98, opacity: 0.7 },
+    whileTap = { opacity: 0.6 },
+    whileHover = { opacity: 0.8 },
+    whileLoading = { opacity: 0.7 },
     isLoading = false,
     children,
     disabled,

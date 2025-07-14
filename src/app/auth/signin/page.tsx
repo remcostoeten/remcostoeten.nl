@@ -3,10 +3,13 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GridButton, importingFrames } from "@/components/grid-button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { saveCredentials, getSavedCredentials, clearSavedCredentials, isRememberMeEnabled } from "@/lib/remember-me";
+import { motion } from "framer-motion";
 
 type TRegistrationStatus = {
   enabled: boolean;
@@ -18,8 +21,18 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState<TRegistrationStatus | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const saved = getSavedCredentials();
+    if (saved) {
+      setEmail(saved.email);
+      setPassword(saved.password);
+      setRememberMe(isRememberMeEnabled());
+    }
+  }, []);
 
   useEffect(() => {
     async function checkRegistrationStatus() {
@@ -37,6 +50,13 @@ export default function SignInPage() {
 
   async function handleEmailSignIn(e: React.FormEvent) {
     e.preventDefault();
+    
+    if (rememberMe) {
+      saveCredentials(email, password);
+    } else {
+      clearSavedCredentials();
+    }
+    
     setIsLoading(true);
     setError("");
 
@@ -100,14 +120,36 @@ export default function SignInPage() {
                 required
               />
             </div>
+            <motion.div 
+              className="flex items-center space-x-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              whileHover={{ x: 2 }}
+            >
+              <Checkbox 
+                id="remember-me"
+                checked={rememberMe} 
+                onCheckedChange={(checked) => setRememberMe(checked === true)}
+              />
+              <label htmlFor="remember-me" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
+                Remember me
+              </label>
+            </motion.div>
             {error && (
               <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
                 {error}
               </div>
             )}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
-            </Button>
+            <GridButton 
+              type="submit" 
+              gridSize={[5, 5]}
+              frames={importingFrames}
+              isLoading={isLoading}
+              className="w-full"
+            >
+              Sign in
+            </GridButton>
           </form>
           
           {registrationStatus?.enabled && (

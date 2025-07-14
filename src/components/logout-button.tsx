@@ -2,8 +2,8 @@
 
 import { LogOut } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-client";
+import { GridButton, importingFrames } from "./grid-button";
 
 type TProps = {
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
@@ -33,15 +33,17 @@ export function LogoutButton({
   }
 
   return (
-    <Button
+    <GridButton
+      onClick={handleLogout}
+      gridSize={[5, 5]}
+      frames={importingFrames}
+      isLoading={isLoggingOut}
       variant={variant}
       size={size}
-      onClick={handleLogout}
-      disabled={isLoggingOut}
-      className={className}
+      className={`min-w-[120px] whitespace-nowrap ${className || ''}`}
     >
-      {showIcon && <LogOut />}
+      {showIcon && <LogOut className="w-4 h-4" />}
       {isLoggingOut ? "Signing Out..." : children}
-    </Button>
+    </GridButton>
   );
 }
