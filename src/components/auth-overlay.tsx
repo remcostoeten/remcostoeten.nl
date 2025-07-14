@@ -6,14 +6,25 @@
 
 'use client'
 
+import { useState, useEffect } from 'react'
 import { isAuthenticated } from '@/lib/auth-client'
 
 export function AuthOverlay({ children }: { children: React.ReactNode }) {
-	if (!isAuthenticated()) console.warn('no session')
+	const [isHydrated, setIsHydrated] = useState(false)
+	const [authenticated, setAuthenticated] = useState(false)
+
+	useEffect(() => {
+		setIsHydrated(true)
+		setAuthenticated(isAuthenticated())
+	}, [])
+
+	if (!authenticated && isHydrated) {
+		console.warn('no session')
+	}
 
 	return (
 		<>
-			{isAuthenticated() && (
+			{isHydrated && authenticated && (
 				<div className='fixed inset-0 pointer-events-none'>
 					<div className='absolute top-2 right-2 w-3 h-3 bg-green-500/20 rounded-full border border-green-500/40' />
 					<div className='absolute bottom-2 left-2 w-3 h-3 bg-green-500/20 rounded-full border border-green-500/40' />

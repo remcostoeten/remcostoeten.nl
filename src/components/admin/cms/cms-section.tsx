@@ -12,12 +12,12 @@ export function CMSSection() {
 	const { pages, currentPage, isLoading, error, actions, computed } = usePagesState();
 	const toast = useCMSToast();
 
-	// Initialize homepage if it doesn't exist
+	// Initialize homepage if it doesn't exist (only on first load)
 	useEffect(() => {
-		if (!computed.hasHomepage && pages.length === 0) {
+		if (!isLoading && pages.length === 0 && !computed.hasHomepage) {
 			actions.createHomepage();
 		}
-	}, [pages.length, computed.hasHomepage, actions]);
+	}, [isLoading, pages.length, computed.hasHomepage]);
 
 	function handleEditPage(page: Page) {
 		actions.setCurrentPage(page);

@@ -32,11 +32,14 @@ The CMS is now protected with better-auth authentication and middleware-based ro
 ### 3. Authorization
 
 **Allowed Users:**
-- `remcostoeten@hotmail.com`
-- Any email ending with `@remcostoeten`
+- Configured via `AUTHORIZED_EMAILS` environment variable
+- Defaults to `remcostoeten@hotmail.com` if not set
 
 **Configuration:**
-Update `ALLOWED_EMAILS` array in `src/middleware.ts` to add more authorized users.
+Set the `AUTHORIZED_EMAILS` environment variable with comma-separated email addresses:
+```env
+AUTHORIZED_EMAILS=remcostoeten@hotmail.com,another@email.com,third@example.com
+```
 
 ### 4. Environment Variables
 
@@ -46,6 +49,9 @@ Required in `.env.local`:
 # Better Auth
 AUTH_SECRET="your-long-random-secret-key-here-at-least-32-characters"
 NEXT_PUBLIC_BETTER_AUTH_URL="http://localhost:3000"
+
+# Authorized emails for CMS access (comma-separated)
+AUTHORIZED_EMAILS="remcostoeten@hotmail.com,another@email.com"
 
 # Admin Toggle (for development)
 NEXT_PUBLIC_ADMIN_TOGGLE="true"
@@ -89,11 +95,9 @@ TEST_USER_PASSWORD="password123"
 ### For Developers
 
 1. **Add New Authorized User:**
-   ```typescript
-   const ALLOWED_EMAILS = [
-     "remcostoeten@hotmail.com",
-     "newuser@example.com", // Add here
-   ];
+   Add the new email to the `AUTHORIZED_EMAILS` environment variable:
+   ```env
+   AUTHORIZED_EMAILS=remcostoeten@hotmail.com,newuser@example.com
    ```
 
 2. **Enable/Disable Registration:**

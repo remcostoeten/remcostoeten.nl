@@ -5,13 +5,15 @@ import type { NextRequest } from "next/server";
 // Protects admin routes and API endpoints
 
 function getAuthorizedEmails(): string[] {
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (!adminEmail) {
-    console.warn('ADMIN_EMAIL environment variable not set');
-    return [];
+  const envEmails = process.env.AUTHORIZED_EMAILS;
+  if (!envEmails) {
+    console.warn('AUTHORIZED_EMAILS environment variable not set, falling back to default');
+    return ['remcostoeten@hotmail.com'];
   }
-  return [adminEmail];
+  return envEmails.split(',').map(email => email.trim());
 }
+
+const AUTHORIZED_EMAILS = getAuthorizedEmails();
 
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
   // Check for auth token cookie (this is what the signin API sets)
@@ -25,8 +27,7 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
       const { verifyToken } = await import('@/lib/auth');
       const tokenData = await verifyToken(authCookie.value);
       
-      const authorizedEmails = getAuthorizedEmails();
-      if (tokenData && authorizedEmails.includes(tokenData.email)) {
+      if (tokenData && AUTHORIZED_EMAILS.includes(tokenData.email)) {
         return true;
       }
     } catch (error) {
@@ -45,8 +46,7 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
     if (response.ok) {
       const result = await response.json();
       const user = result.user;
-      const authorizedEmails = getAuthorizedEmails();
-      if (user && authorizedEmails.includes(user.email)) {
+      if (user && AUTHORIZED_EMAILS.includes(user.email)) {
         return true;
       }
     }
@@ -71,13 +71,8 @@ export async function middleware(request: NextRequest) {
     }
   }
   
-  // Protect CMS API routes (except public read-only routes)
+  // Protect CMS API routes
   if (pathname.startsWith('/api/cms')) {
-    // Allow public access to home page content
-    if (pathname === '/api/cms/home' && request.method === 'GET') {
-      return NextResponse.next();
-    }
-    
     const authenticated = await isAuthenticated(request);
     
     if (!authenticated) {

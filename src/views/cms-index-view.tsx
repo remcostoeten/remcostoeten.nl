@@ -14,30 +14,15 @@ function getFormattedTime() {
 	return utcPlus1.toTimeString().split(' ')[0]
 }
 
-async function fetchHomePageContent(): Promise<TPageContent | null> {
-	try {
-		const response = await fetch('/api/cms/home')
-		if (!response.ok) {
-			throw new Error('Failed to fetch home page content')
-		}
-		const result = await response.json()
-		if (result.success && result.data) {
-			return result.data
-		}
-		return null
-	} catch (error) {
-		console.error('Error fetching home page content:', error)
-		return null
-	}
+type TProps = {
+	initialContent: TPageContent
 }
 
-export function CMSIndexView() {
+export function CMSIndexView({ initialContent }: TProps) {
 	const [currentTime, setCurrentTime] = useState<string>(getFormattedTime())
 	const [isContactHovered, setIsContactHovered] = useState(false)
 	const [shouldOpenAbove, setShouldOpenAbove] = useState(false)
-	const [homePageContent, setHomePageContent] = useState<TPageContent | null>(null)
-	const [isLoading, setIsLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+	const [homePageContent] = useState<TPageContent>(initialContent)
 
 	useEffect(function setupTimeInterval() {
 		function updateTime() {
@@ -50,29 +35,6 @@ export function CMSIndexView() {
 		}
 	}, [])
 
-	useEffect(function loadHomePageContent() {
-		async function loadContent() {
-			setIsLoading(true)
-			setError(null)
-			
-			try {
-				const content = await fetchHomePageContent()
-				if (content) {
-					setHomePageContent(content)
-				} else {
-					setError('No content available')
-				}
-			} catch (err) {
-				setError('Failed to load content')
-				console.error('Error loading home page content:', err)
-			} finally {
-				setIsLoading(false)
-			}
-		}
-
-		loadContent()
-	}, [])
-
 	function handleContactHover(e: React.MouseEvent<HTMLDivElement>) {
 		const rect = e.currentTarget.getBoundingClientRect()
 		const viewportHeight = window.innerHeight
@@ -83,34 +45,6 @@ export function CMSIndexView() {
 		setIsContactHovered(true)
 	}
 
-	// Loading state
-	if (isLoading) {
-		return (
-			<div className='min-h-screen bg-background text-foreground flex items-center justify-center px-6'>
-				<div className='max-w-2xl w-full space-y-8'>
-					<h1 className='text-xl font-medium text-foreground'>
-						Loading...
-					</h1>
-				</div>
-			</div>
-		)
-	}
-
-	// Error state
-	if (error || !homePageContent) {
-		return (
-			<div className='min-h-screen bg-background text-foreground flex items-center justify-center px-6'>
-				<div className='max-w-2xl w-full space-y-8'>
-					<h1 className='text-xl font-medium text-foreground'>
-						Error loading content
-					</h1>
-					<p className='text-muted-foreground'>
-						{error || 'Content not available'}
-					</p>
-				</div>
-			</div>
-		)
-	}
 
 	return (
 		<div className='min-h-screen bg-background text-foreground flex items-center justify-center px-6'>

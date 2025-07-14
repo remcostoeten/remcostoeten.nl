@@ -18,8 +18,13 @@ type TFeedbackEntry = {
     ipAddress: string | null;
     referrer: string | null;
     browser: string | null;
+    isRead: boolean;
     createdAt: string;
     updatedAt: string;
+};
+
+type TProps = {
+    onUnreadCountChange?: () => void;
 };
 
 function formatDate(dateString: string): string {
@@ -56,7 +61,7 @@ function formatDate(dateString: string): string {
     });
 }
 
-export function FeedbackManagement() {
+export function FeedbackManagement({ onUnreadCountChange }: TProps) {
     const [feedbacks, setFeedbacks] = useState<TFeedbackEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -77,6 +82,9 @@ export function FeedbackManagement() {
             }
             const data = await response.json();
             setFeedbacks(data);
+            if (isRefresh) {
+                onUnreadCountChange?.();
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch feedback');
         } finally {
@@ -103,6 +111,7 @@ export function FeedbackManagement() {
             await new Promise(resolve => setTimeout(resolve, 300));
             
             setFeedbacks(feedbacks.filter(f => f.id !== id));
+            onUnreadCountChange?.();
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to delete feedback');
         } finally {
@@ -111,6 +120,25 @@ export function FeedbackManagement() {
                 newSet.delete(id);
                 return newSet;
             });
+        }
+    }
+
+    async function markAsRead(id: number) {
+        try {
+            const response = await fetch(`/api/feedback/${id}/mark-read`, {
+                method: 'PATCH'
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to mark feedback as read');
+            }
+            
+            setFeedbacks(prev => prev.map(f => 
+                f.id === id ? { ...f, isRead: true } : f
+            ));
+            onUnreadCountChange?.();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to mark feedback as read');
         }
     }
 
@@ -226,13 +254,11 @@ export function FeedbackManagement() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ 
                                     opacity: isDeleting ? 0.5 : 1, 
-                                    y: 0,
-                                    scale: isDeleting ? 0.95 : 1
+                                    y: 0
                                 }}
                                 exit={{ 
                                     opacity: 0, 
-                                    y: -20, 
-                                    scale: 0.9,
+                                    y: -20,
                                     transition: { duration: 0.3 }
                                 }}
                                 transition={{ 
@@ -241,7 +267,14 @@ export function FeedbackManagement() {
                                     damping: 30 
                                 }}
                             >
-                                <Card className="relative overflow-hidden">
+                                <Card 
+                                    className={`relative overflow-hidden cursor-pointer transition-all duration-200 ${
+                                        !feedback.isRead 
+                                            ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-900/10' 
+                                            : 'hover:bg-gray-50 dark:hover:bg-gray-900/50'
+                                    }`}
+                                    onClick={() => !feedback.isRead && markAsRead(feedback.id)}
+                                >
                                     {isDeleting && (
                                         <div className="absolute inset-0 bg-red-500/10 z-10 flex items-center justify-center">
                                             <Loader2 className="h-6 w-6 animate-spin text-red-500" />
@@ -253,6 +286,9 @@ export function FeedbackManagement() {
                                         <div className="flex items-center gap-2">
                                             <User className="h-4 w-4 text-muted-foreground" />
                                             <CardTitle className="text-base">{feedback.name}</CardTitle>
+                                            {!feedback.isRead && (
+                                                <div className="w-2 h-2 bg-blue-500 rounded-full" title="Unread" />
+                                            )}
                                         </div>
                                         {feedback.emoji && (
                                             <Badge variant="secondary" className="text-lg px-2 py-1">

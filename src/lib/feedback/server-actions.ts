@@ -22,6 +22,30 @@ export async function createFeedbackAction(data: {
   }
 }
 
+export async function markFeedbackAsReadAction(id: string) {
+  const feedbackFactory = createFeedbackFactory();
+
+  try {
+    const updatedFeedback = await feedbackFactory.markAsRead(parseInt(id));
+    return { success: true, data: updatedFeedback };
+  } catch (error) {
+    console.error("Failed to mark feedback as read:", error);
+    return { success: false, error: "Failed to mark feedback as read" };
+  }
+}
+
+export async function getUnreadFeedbackCountAction() {
+  const feedbackFactory = createFeedbackFactory();
+
+  try {
+    const unreadCount = await feedbackFactory.getUnreadCount();
+    return { success: true, data: unreadCount };
+  } catch (error) {
+    console.error("Failed to get unread feedback count:", error);
+    return { success: false, error: "Failed to get unread feedback count" };
+  }
+}
+
 export async function readFeedbacksAction() {
   const feedbackFactory = createFeedbackFactory();
   

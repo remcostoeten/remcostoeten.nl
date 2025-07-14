@@ -161,30 +161,36 @@ export function usePagesState() {
       }
     }, []),
 
-    // Create homepage
-    createHomepage: useCallback(() => {
-      dispatch({ type: 'CLEAR_ERROR' })
-      
-      try {
-        const homePage: Page = {
-          id: generateId(),
-          title: 'Home',
-          slug: 'home',
-          description: 'Welcome to my website',
-          isPublished: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          blocks: []
-        }
-        
-        dispatch({ type: 'ADD_PAGE', payload: homePage })
-        
-        return homePage
-      } catch (error) {
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to create homepage' })
-        throw error
-      }
-    }, []),
+	// Create homepage
+	createHomepage: useCallback(() => {
+		dispatch({ type: 'CLEAR_ERROR' })
+		
+		try {
+			// Check if homepage already exists
+			const existingHomepage = state.pages.find(p => p.slug === 'home')
+			if (existingHomepage) {
+				return existingHomepage
+			}
+			
+			const homePage: Page = {
+				id: generateId(),
+				title: 'Home',
+				slug: 'home',
+				description: 'Welcome to my website',
+				isPublished: true,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				blocks: []
+			}
+			
+			dispatch({ type: 'ADD_PAGE', payload: homePage })
+			
+			return homePage
+		} catch (error) {
+			dispatch({ type: 'SET_ERROR', payload: 'Failed to create homepage' })
+			throw error
+		}
+	}, [state.pages]),
 
     // Update a page
     updatePage: useCallback(async (pageId: string, updatedPage: Page) => {
@@ -233,31 +239,18 @@ export function usePagesState() {
       dispatch({ type: 'SET_CURRENT_PAGE', payload: page })
     }, []),
 
-    // Refresh all data
-    refreshData: useCallback(() => {
-      dispatch({ type: 'CLEAR_ERROR' })
-      
-      try {
-        PagesStorage.clearAll()
-        
-        // Create default homepage
-        const homePage: Page = {
-          id: generateId(),
-          title: 'Home',
-          slug: 'home',
-          description: 'Welcome to my website',
-          isPublished: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          blocks: []
-        }
-        
-        dispatch({ type: 'SET_PAGES', payload: [homePage] })
-      } catch (error) {
-        dispatch({ type: 'SET_ERROR', payload: 'Failed to refresh data' })
-        throw error
-      }
-    }, []),
+	// Refresh all data
+	refreshData: useCallback(() => {
+		dispatch({ type: 'CLEAR_ERROR' })
+		
+		try {
+			PagesStorage.clearAll()
+			dispatch({ type: 'SET_PAGES', payload: [] })
+		} catch (error) {
+			dispatch({ type: 'SET_ERROR', payload: 'Failed to refresh data' })
+			throw error
+		}
+	}, []),
 
     // Clear error
     clearError: useCallback(() => {

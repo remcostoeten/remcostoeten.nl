@@ -19,6 +19,23 @@ type TProps = {
 export default function AdminLayout({ showBackButton = false, onBack = () => {} }: TProps) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState("content");
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    async function fetchUnreadCount() {
+        try {
+            const response = await fetch('/api/feedback/unread-count');
+            if (response.ok) {
+                const data = await response.json();
+                setUnreadCount(data.count);
+            }
+        } catch (error) {
+            console.error('Failed to fetch unread count:', error);
+        }
+    }
+
+    useEffect(function loadUnreadCount() {
+        fetchUnreadCount();
+    }, []);
 
     useEffect(function handleHashRouting() {
         function updateTabFromHash() {
@@ -96,6 +113,11 @@ export default function AdminLayout({ showBackButton = false, onBack = () => {} 
                             <TabsTrigger value="feedback" className="flex items-center gap-2">
                                 <MessageSquare className="w-4 h-4" />
                                 Feedback Management
+                                {unreadCount > 0 && (
+                                    <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] h-5 flex items-center justify-center">
+                                        {unreadCount}
+                                    </span>
+                                )}
                             </TabsTrigger>
                         </TabsList>
                         
@@ -104,7 +126,7 @@ export default function AdminLayout({ showBackButton = false, onBack = () => {} 
                         </TabsContent>
                         
                         <TabsContent value="feedback" className="mt-6">
-                            <FeedbackManagement />
+                            <FeedbackManagement onUnreadCountChange={fetchUnreadCount} />
                         </TabsContent>
                     </Tabs>
                 </div>
