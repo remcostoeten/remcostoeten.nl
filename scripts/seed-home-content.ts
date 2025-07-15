@@ -105,11 +105,23 @@ async function seedHomeContent() {
 			{
 				blockId: projectsBlock.id,
 				order: 6,
-				text: "GitHub ↗",
-				type: "link",
-				className: "text-green-400 underline",
-				href: "https://github.com/remcostoeten",
-				target: "_blank",
+				text: "GitHub",
+				type: "project-card",
+				metadata: JSON.stringify({
+					title: "GitHub",
+					description: "Explore my open-source projects and contributions. I work on various full-stack applications, CLI tools, and Next.js projects.",
+					url: "https://github.com/remcostoeten",
+					stars: 47,
+					branches: 23,
+					technologies: ["TypeScript", "Next.js", "React", "Node.js", "Tailwind CSS", "Drizzle ORM"],
+					lastUpdated: "2 hours ago",
+					highlights: [
+						"15+ public repositories",
+						"Full-stack web applications",
+						"CLI tools and utilities",
+						"Modern TypeScript patterns"
+					]
+				})
 			},
 			{
 				blockId: projectsBlock.id,
