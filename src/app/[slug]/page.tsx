@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { db } from "@/db/db";
 import { getPageContent } from "@/lib/cms/repository";
-import { CMSPageView } from "@/views/cms-page-view";
+import CMSPageView from "@/views/cms-page-view";
 import { createCmsFactory } from "@/lib/cms/cms-factory";
 
 type TProps = {
