@@ -20,8 +20,8 @@ type TProps = {
 };
 
 export function LogoutButton({
-	variant = "outline",
-	size = "default",
+	variant = "ghost",
+	size = "lg",
 	showIcon = true,
 	children = "Sign Out",
 	className,
@@ -46,7 +46,7 @@ export function LogoutButton({
 			isLoading={isLoggingOut}
 			variant={variant}
 			size={size}
-			className={`min-w-[120px] whitespace-nowrap flex items-center ${className || ""}`}
+			className={`min-w-[140px] px-6 whitespace-nowrap flex items-center ${className || ""}`}
 		>
 			<div className="flex items-center">
 				{showIcon && <LogOut className="w-4 h-4 mr-2" />}

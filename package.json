@@ -15,7 +15,8 @@
 		"studio": "drizzle-kit studio",
 		"seed": "tsx src/db/seed-home.ts",
 		"seed:home": "tsx scripts/seed-home-content.ts",
-		"test": "tsx src/hooks/__tests__/use-pages-state.test.ts"
+		"test": "tsx src/hooks/__tests__/use-pages-state.test.ts",
+		"clean:redundant": "tsx scripts/cleanup-redundant-files.ts"
 	},
 	"dependencies": {
 		"@emotion/is-prop-valid": "latest",
@@ -59,6 +60,7 @@
 		"dotenv": "^17.2.0",
 		"drizzle-orm": "^0.44.2",
 		"embla-carousel-react": "latest",
+		"fast-glob": "^3.3.3",
 		"framer-motion": "^12.23.3",
 		"gheasy": "^1.0.0",
 		"husky": "^9.1.7",

@@ -42,9 +42,9 @@ export default function CMSLayout({
 					<div className="flex items-center gap-3">
 						<Button
 							variant="outline"
-							size="sm"
+							size="default"
 							onClick={() => router.push("/")}
-							className="flex items-center"
+							className="flex items-center min-w-[120px]"
 							title="Go back to index page (Backspace 3x + Space 3x)"
 						>
 							<Home className="w-4 h-4 mr-1" />
@@ -61,7 +61,7 @@ export default function CMSLayout({
 								Back
 							</Button>
 						)}
-						<LogoutButton variant="outline" size="sm" />
+						<LogoutButton variant="outline" size="default" />
 					</div>
 				</div>
 				<div className="bg-card rounded-lg border border-border p-6">

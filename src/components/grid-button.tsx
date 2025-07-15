@@ -675,8 +675,8 @@ export function GridButton({
 		>
 			<motion.button
 				layout
-				whileHover={{ scale: 1.05 }}
-				whileTap={{ scale: 0.95 }}
+				whileHover={{ opacity: 0.9 }}
+				whileTap={{ opacity: 0.8 }}
 				className="relative w-full h-full flex items-center justify-center"
 			>
 				{/* Grid background */}
