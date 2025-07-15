@@ -7,7 +7,7 @@ import {
 	Send,
 	User,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, type Ref } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,9 +21,18 @@ type TSubmissionState = "idle" | "loading" | "success" | "error";
 type TProps = {
 	isVisible: boolean;
 	openAbove?: boolean;
+	containerRef?: Ref<HTMLDivElement>;
+	onMouseEnter?: () => void;
+	onMouseLeave?: () => void;
 };
 
-export function ContactForm({ isVisible, openAbove = false }: TProps) {
+export function ContactForm({
+	isVisible,
+	openAbove = false,
+	containerRef,
+	onMouseEnter,
+	onMouseLeave,
+}: TProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		message: "",
@@ -81,11 +90,14 @@ export function ContactForm({ isVisible, openAbove = false }: TProps) {
 			<AnimatePresence initial={false}>
 				{isVisible && (
 					<motion.div
+						ref={containerRef}
 						layout
 						initial={{ opacity: 0, y: openAbove ? 10 : -10 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: openAbove ? 10 : -10 }}
 						transition={popoverTransition}
+						onMouseEnter={onMouseEnter}
+						onMouseLeave={onMouseLeave}
 						className={`absolute z-50 w-80 p-4 bg-popover text-popover-foreground backdrop-blur-lg border border-border rounded-lg shadow-2xl left-0 ${
 							openAbove ? "bottom-full mb-2" : "top-full mt-2"
 						}`}

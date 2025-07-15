@@ -30,12 +30,8 @@ export default function RootLayout({
 				/>
 				<meta property="og:type" content="website" />
 				<meta property="og:image" content="/og-image.png" />
-
-				<meta name="twitter:card" content="summary_large_image" />
-				<meta name="twitter:site" content="@remcostoeten" />
-				<meta name="twitter:image" content="/og-image.png" />
 			</head>
-			<body>
+			<body className="text-balance antialiased">
 				<AuthOverlay>
 					<Providers>
 						<Toaster />

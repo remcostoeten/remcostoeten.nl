@@ -33,7 +33,6 @@
         "@radix-ui/react-toggle": "latest",
         "@radix-ui/react-toggle-group": "latest",
         "@radix-ui/react-tooltip": "latest",
-        "@remcostoeten/fync-github": "^3.0.0",
         "@t3-oss/env-nextjs": "^0.13.8",
         "@tanstack/react-query": "latest",
         "@types/bcryptjs": "^2.4.6",
@@ -434,10 +433,6 @@
     "@radix-ui/rect": ["@radix-ui/rect@1.1.1", "", {}, "sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw=="],
 
     "@reduxjs/toolkit": ["@reduxjs/toolkit@2.8.2", "", { "dependencies": { "@standard-schema/spec": "^1.0.0", "@standard-schema/utils": "^0.3.0", "immer": "^10.0.3", "redux": "^5.0.1", "redux-thunk": "^3.1.0", "reselect": "^5.1.0" }, "peerDependencies": { "react": "^16.9.0 || ^17.0.0 || ^18 || ^19", "react-redux": "^7.2.1 || ^8.1.3 || ^9.0.0" }, "optionalPeers": ["react", "react-redux"] }, "sha512-MYlOhQ0sLdw4ud48FoC5w0dH9VfWQjtCjreKwYTT3l+r427qYC5Y8PihNutepr8XrNaBUDQo9khWUwQxZaqt5A=="],
-
-    "@remcostoeten/fync-core": ["@remcostoeten/fync-core@3.0.0", "", { "peerDependencies": { "undici": "^6.0.0" }, "optionalPeers": ["undici"] }, "sha512-dbx3KP3H98G3cT7Bf2z55iXHdLAtZunecQrG1aYY8LcuQ+CxLQh1pi39iihZYm5GY7DCVQjVnpvREuJcuKza8g=="],
-
-    "@remcostoeten/fync-github": ["@remcostoeten/fync-github@3.0.0", "", { "dependencies": { "@remcostoeten/fync-core": "*" } }, "sha512-jLOx3VePRmeWNJv1xU9EEW7A5xNH1IK4dakzE80baLeeXOtxM67/Zrm0pXD6FHjDizTATP33X2mfTYoisMWdIA=="],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.0.0", "", {}, "sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA=="],
 

@@ -131,13 +131,7 @@ export default function SignInPage() {
 								required
 							/>
 						</div>
-						<motion.div
-							className="flex items-center space-x-2"
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.3, delay: 0.1 }}
-							whileHover={{ x: 2 }}
-						>
+						<div className="flex items-center space-x-2">
 							<Checkbox
 								id="remember-me"
 								checked={rememberMe}
@@ -149,7 +143,7 @@ export default function SignInPage() {
 							>
 								Remember me
 							</label>
-						</motion.div>
+						</div>
 						{error && (
 							<div className="text-sm text-red-600 bg-red-50 p-2 rounded">
 								{error}

@@ -156,12 +156,9 @@ export function FeedbackManagement({ onUnreadCountChange }: TProps) {
 		}
 	}
 
-	useEffect(
-		function loadFeedbacks() {
-			fetchFeedbacks();
-		},
-		[fetchFeedbacks],
-	);
+	useEffect(function loadFeedbacks() {
+		fetchFeedbacks();
+	}, []);
 
 	if (loading) {
 		return (

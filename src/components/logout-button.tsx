@@ -46,10 +46,12 @@ export function LogoutButton({
 			isLoading={isLoggingOut}
 			variant={variant}
 			size={size}
-			className={`min-w-[120px] whitespace-nowrap ${className || ""}`}
+			className={`min-w-[120px] whitespace-nowrap flex items-center ${className || ""}`}
 		>
-			{showIcon && <LogOut className="w-4 h-4" />}
-			{isLoggingOut ? "Signing Out..." : children}
+			<div className="flex items-center">
+				{showIcon && <LogOut className="w-4 h-4 mr-2" />}
+				<span>{isLoggingOut ? "Signing Out..." : children}</span>
+			</div>
 		</GridButton>
 	);
 }

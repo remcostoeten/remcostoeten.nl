@@ -4,6 +4,7 @@ import {
 	Link,
 	Package,
 	Plus,
+	Repeat,
 	Trash2,
 	Type,
 } from "lucide-react";
@@ -50,7 +51,13 @@ export default function BlockEditor({
 							? {
 									projectData: { title: "", description: "", technologies: [] },
 								}
-							: undefined,
+							: type === "swapping-word-effect"
+								? {
+										words: ["word1", "word2", "word3"],
+										interval: 3000,
+										initialWord: "word1",
+									}
+								: undefined,
 		};
 
 		onChange({
@@ -71,6 +78,11 @@ export default function BlockEditor({
 		{ type: "highlighted" as const, icon: Highlight, label: "Highlight" },
 		{ type: "link" as const, icon: Link, label: "Link" },
 		{ type: "project-card" as const, icon: Package, label: "Project Card" },
+		{
+			type: "swapping-word-effect" as const,
+			icon: Repeat,
+			label: "Swapping Words",
+		},
 	];
 
 	return (

@@ -1,10 +1,5 @@
 import { InferSelectModel } from "drizzle-orm";
-import {
-	contentBlocks,
-	contentSegments,
-	pages,
-	stylePresets,
-} from "./cms-schema";
+import { contentBlocks, contentSegments, pages, stylePresets } from "./schema";
 
 export type TDbPage = InferSelectModel<typeof pages>;
 export type TDbContentBlock = InferSelectModel<typeof contentBlocks>;

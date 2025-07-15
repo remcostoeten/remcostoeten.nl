@@ -9,7 +9,7 @@ type TProps = {
 	content: TPageContent;
 };
 
-export function CMSPageView({ page, content }: TProps) {
+export default function CMSPageView({ page, content }: TProps) {
 	return (
 		<div className="min-h-screen bg-background">
 			<div className="max-w-4xl mx-auto px-4 py-8">
@@ -18,22 +18,24 @@ export function CMSPageView({ page, content }: TProps) {
 						{page.title}
 					</h1>
 					{page.description && (
-						<p className="text-lg text-muted-foreground">
-							{page.description}
-						</p>
+						<p className="text-lg text-muted-foreground">{page.description}</p>
 					)}
 				</header>
 
 				<main className="prose prose-neutral dark:prose-invert max-w-none">
-					{content.blocks.map((block) => (
-						<div key={block.id} className="mb-6">
-							{block.segments.map((segment) => (
-								<span key={segment.id} className="inline">
-									{renderSegment(segment)}
-								</span>
-							))}
-						</div>
-					))}
+					{content.blocks.map(function (block) {
+						return (
+							<div key={block.id} className="mb-6">
+								{block.segments.map(function (segment) {
+									return (
+										<span key={segment.id} className="inline">
+											{renderSegment(segment)}
+										</span>
+									);
+								})}
+							</div>
+						);
+					})}
 				</main>
 			</div>
 		</div>
