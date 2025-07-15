@@ -10,15 +10,20 @@ async function seedHomeContent() {
 
 	try {
 		// Clear existing home content
-		await db.delete(contentBlocks).where(eq(contentBlocks.pageId, homePageSlug));
-		
+		await db
+			.delete(contentBlocks)
+			.where(eq(contentBlocks.pageId, homePageSlug));
+
 		// Insert main heading block
-		const [headingBlock] = await db.insert(contentBlocks).values({
-			pageId: homePageSlug,
-			blockType: "heading",
-			order: 1,
-		}).returning();
-		
+		const [headingBlock] = await db
+			.insert(contentBlocks)
+			.values({
+				pageId: homePageSlug,
+				blockType: "heading",
+				order: 1,
+			})
+			.returning();
+
 		// Insert heading text
 		await db.insert(contentSegments).values({
 			blockId: headingBlock.id,
@@ -26,14 +31,17 @@ async function seedHomeContent() {
 			text: "I build digital things.",
 			type: "text",
 		});
-		
+
 		// Insert introduction paragraph block
-		const [introBlock] = await db.insert(contentBlocks).values({
-			pageId: homePageSlug,
-			blockType: "paragraph",
-			order: 2,
-		}).returning();
-		
+		const [introBlock] = await db
+			.insert(contentBlocks)
+			.values({
+				pageId: homePageSlug,
+				blockType: "paragraph",
+				order: 2,
+			})
+			.returning();
+
 		// Insert introduction text segments
 		await db.insert(contentSegments).values([
 			{
@@ -56,14 +64,17 @@ async function seedHomeContent() {
 				type: "text",
 			},
 		]);
-		
+
 		// Insert projects paragraph block
-		const [projectsBlock] = await db.insert(contentBlocks).values({
-			pageId: homePageSlug,
-			blockType: "paragraph",
-			order: 3,
-		}).returning();
-		
+		const [projectsBlock] = await db
+			.insert(contentBlocks)
+			.values({
+				pageId: homePageSlug,
+				blockType: "paragraph",
+				order: 3,
+			})
+			.returning();
+
 		// Insert projects text segments
 		await db.insert(contentSegments).values([
 			{
@@ -75,7 +86,7 @@ async function seedHomeContent() {
 			{
 				blockId: projectsBlock.id,
 				order: 2,
-				text: "Roll Your Own Authentication ↗",
+				text: "Roll Your Own Authentication",
 				type: "link",
 				className: "text-green-400 underline",
 				href: "https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication",
@@ -90,7 +101,7 @@ async function seedHomeContent() {
 			{
 				blockId: projectsBlock.id,
 				order: 4,
-				text: "Turso DB Creator CLI ↗",
+				text: "Turso DB Creator CLI",
 				type: "link",
 				className: "text-green-400 underline",
 				href: "https://github.com/remcostoeten/turso-db-creator-cli",
@@ -109,19 +120,27 @@ async function seedHomeContent() {
 				type: "project-card",
 				metadata: JSON.stringify({
 					title: "GitHub",
-					description: "Explore my open-source projects and contributions. I work on various full-stack applications, CLI tools, and Next.js projects.",
+					description:
+						"Explore my open-source projects and contributions. I work on various full-stack applications, CLI tools, and Next.js projects.",
 					url: "https://github.com/remcostoeten",
 					stars: 47,
 					branches: 23,
-					technologies: ["TypeScript", "Next.js", "React", "Node.js", "Tailwind CSS", "Drizzle ORM"],
+					technologies: [
+						"TypeScript",
+						"Next.js",
+						"React",
+						"Node.js",
+						"Tailwind CSS",
+						"Drizzle ORM",
+					],
 					lastUpdated: "2 hours ago",
 					highlights: [
 						"15+ public repositories",
 						"Full-stack web applications",
 						"CLI tools and utilities",
-						"Modern TypeScript patterns"
-					]
-				})
+						"Modern TypeScript patterns",
+					],
+				}),
 			},
 			{
 				blockId: projectsBlock.id,
@@ -130,14 +149,17 @@ async function seedHomeContent() {
 				type: "text",
 			},
 		]);
-		
+
 		// Insert contact paragraph block
-		const [contactBlock] = await db.insert(contentBlocks).values({
-			pageId: homePageSlug,
-			blockType: "paragraph",
-			order: 4,
-		}).returning();
-		
+		const [contactBlock] = await db
+			.insert(contentBlocks)
+			.values({
+				pageId: homePageSlug,
+				blockType: "paragraph",
+				order: 4,
+			})
+			.returning();
+
 		// Insert contact text segments
 		await db.insert(contentSegments).values([
 			{
@@ -149,7 +171,7 @@ async function seedHomeContent() {
 			{
 				blockId: contactBlock.id,
 				order: 2,
-				text: "LinkedIn ↗",
+				text: "LinkedIn",
 				type: "link",
 				className: "text-green-400 underline",
 				href: "https://linkedin.com/in/remcostoeten",
@@ -190,14 +212,17 @@ async function seedHomeContent() {
 				type: "text",
 			},
 		]);
-		
+
 		// Insert timezone paragraph block
-		const [timezoneBlock] = await db.insert(contentBlocks).values({
-			pageId: homePageSlug,
-			blockType: "paragraph",
-			order: 5,
-		}).returning();
-		
+		const [timezoneBlock] = await db
+			.insert(contentBlocks)
+			.values({
+				pageId: homePageSlug,
+				blockType: "paragraph",
+				order: 5,
+			})
+			.returning();
+
 		// Insert timezone text segments
 		await db.insert(contentSegments).values([
 			{
@@ -220,7 +245,7 @@ async function seedHomeContent() {
 				type: "text",
 			},
 		]);
-		
+
 		console.log("✅ Home content seeded successfully!");
 	} catch (error) {
 		console.error("❌ Error seeding home content:", error);

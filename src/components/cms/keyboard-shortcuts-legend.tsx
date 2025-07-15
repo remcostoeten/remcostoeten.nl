@@ -42,13 +42,13 @@ const shortcuts: TShortcut[] = [
 	{
 		keys: ["Backspace", "×3", "Space", "×3"],
 		description: "Return to homepage",
-		context: "CMS layout"
+		context: "CMS layout",
 	},
 	{
 		keys: ["?"],
 		description: "Show/hide keyboard shortcuts",
-		context: "Global"
-	}
+		context: "Global",
+	},
 ];
 
 function KeyboardShortcut({ shortcut }: { shortcut: TShortcut }) {
@@ -85,17 +85,17 @@ export default function KeyboardShortcutsLegend() {
 	// Handle keyboard shortcuts for the legend itself
 	useEffect(() => {
 		function handleKeyDown(event: KeyboardEvent) {
-			if (event.key === '?' && !isOpen) {
+			if (event.key === "?" && !isOpen) {
 				event.preventDefault();
 				setIsOpen(true);
-			} else if (event.key === 'Escape' && isOpen) {
+			} else if (event.key === "Escape" && isOpen) {
 				event.preventDefault();
 				setIsOpen(false);
 			}
 		}
 
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
 	}, [isOpen]);
 
 	return (
@@ -149,21 +149,23 @@ export default function KeyboardShortcutsLegend() {
 								))}
 							</div>
 
-																								<div className="sticky bottom-0 bg-popover border-t border-border p-6">
-																									<div className="flex items-center justify-between text-sm text-muted-foreground">
-																										<div className="flex items-center gap-2">
-																											<span>Press</span>
-																											<kbd className="px-2 py-1 bg-muted border border-border rounded text-xs font-mono">?</kbd>
-																											<span>to toggle this help</span>
-																										</div>
-																										<div className="flex items-center gap-2">
-																											<kbd className="px-2 py-1 bg-muted border border-border rounded text-xs font-mono">
-																												Esc
-																											</kbd>
-																											<span>to close</span>
-																										</div>
-																									</div>
-																								</div>
+							<div className="sticky bottom-0 bg-popover border-t border-border p-6">
+								<div className="flex items-center justify-between text-sm text-muted-foreground">
+									<div className="flex items-center gap-2">
+										<span>Press</span>
+										<kbd className="px-2 py-1 bg-muted border border-border rounded text-xs font-mono">
+											?
+										</kbd>
+										<span>to toggle this help</span>
+									</div>
+									<div className="flex items-center gap-2">
+										<kbd className="px-2 py-1 bg-muted border border-border rounded text-xs font-mono">
+											Esc
+										</kbd>
+										<span>to close</span>
+									</div>
+								</div>
+							</div>
 						</motion.div>
 					</motion.div>
 				)}

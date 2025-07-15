@@ -35,12 +35,9 @@ export default function AdminLayout({
 		}
 	}
 
-	useEffect(
-		function loadUnreadCount() {
-			fetchUnreadCount();
-		},
-		[fetchUnreadCount],
-	);
+	useEffect(function loadUnreadCount() {
+		fetchUnreadCount();
+	}, []);
 
 	useEffect(function handleHashRouting() {
 		function updateTabFromHash() {

@@ -7,6 +7,7 @@ import {
 	Link,
 	Music,
 	Plus,
+	Repeat,
 	Settings,
 	Trash2,
 	Type,
@@ -261,6 +262,16 @@ export default function InlineBlock({
 												>
 													<Code className="w-4 h-4 mr-3 text-muted-foreground" />{" "}
 													Project Card
+												</button>
+												<button
+													onClick={() => {
+														onAddSegment("swapping-word-effect");
+														setShowAddDropdown(false);
+													}}
+													className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
+												>
+													<Repeat className="w-4 h-4 mr-3 text-muted-foreground" />{" "}
+													Swapping Words
 												</button>
 											</div>
 										</motion.div>

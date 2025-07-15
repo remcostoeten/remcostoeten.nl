@@ -2,7 +2,9 @@
 
 ## Overview
 
-This implementation adopts a JSON schema inside the `metadata` key for link segments, providing a standardized and flexible way to configure link behavior while maintaining database consistency with previous conventions.
+This implementation adopts a JSON schema inside the `metadata` key for link segments, providing a
+standardized and flexible way to configure link behavior while maintaining database consistency with
+previous conventions.
 
 ## JSON Schema
 
@@ -87,13 +89,15 @@ const linkSegment = createExternalLinkSegment({
 INSERT INTO content_segments (type, text, metadata) VALUES (
   'link',
   'Visit GitHub',
-  '{"href": "https://github.com", "target": "_blank", "rel": "noopener noreferrer", "className": "external-link", "suffix": " ↗"}'
+  '{"href": "https://github.com", "target": "_blank", "rel": "noopener noreferrer",
+  "className": "external-link", "suffix": " ↗"}'
 );
 ```
 
 ## Benefits
 
-1. **Renderer Flexibility**: The renderer can read `suffix` to append the arrow, keeping the DB consistent with previous conventions
+1. **Renderer Flexibility**: The renderer can read `suffix` to append the arrow, keeping the DB
+   consistent with previous conventions
 2. **Type Safety**: Full TypeScript support with runtime validation
 3. **Maintainability**: Easy to update link styling and behavior without code changes
 4. **Consistency**: Standardized format across the database
@@ -116,4 +120,6 @@ The implementation provides a seamless migration path:
 4. **Helper Functions**: Provides convenience functions for common link types
 5. **Fallback Strategy**: Graceful degradation for links without metadata
 
-This implementation successfully addresses the requirement to adopt a JSON schema inside the `metadata` key while allowing the renderer to read the `suffix` to append the arrow, keeping the database consistent with previous conventions.
+This implementation successfully addresses the requirement to adopt a JSON schema inside the
+`metadata` key while allowing the renderer to read the `suffix` to append the arrow, keeping the
+database consistent with previous conventions.

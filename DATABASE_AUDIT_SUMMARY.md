@@ -5,7 +5,8 @@
 ### 1. Database Schema Verification
 - **✅ `pages` table**: Contains all required fields (id, slug, title, description, isPublished, timestamps)
 - **✅ `contentBlocks` table**: Contains required fields (id, pageId, blockType, order, timestamps)
-- **✅ `contentSegments` table**: Contains all required fields (id, blockId, order, text, type, href, target, className, style, metadata, timestamps)
+- **✅ `contentSegments` table**: Contains all required fields (id, blockId, order, text, type,
+  href, target, className, style, metadata, timestamps)
 - **✅ `stylePresets` table**: Contains required fields (id, name, type, className, style, timestamps)
 
 ### 2. Missing Columns Added
@@ -84,4 +85,5 @@ The database is now optimized for instant page loading:
 - **Efficient factory methods** for data operations
 - **Transaction support** for consistent updates
 
-The CMS editor can now store and retrieve content from the database with optimal performance for the initial index page load.
+The CMS editor can now store and retrieve content from the database with optimal performance for
+the initial index page load.
