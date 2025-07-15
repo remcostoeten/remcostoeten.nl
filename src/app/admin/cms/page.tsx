@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Settings, ChevronRight } from "lucide-react";
+import { ChevronRight, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function CMSRedirectPage() {
 	const router = useRouter();
 
-	useEffect(function redirectToCMSTab() {
-		router.replace("/admin#cms");
-	}, [router]);
+	useEffect(
+		function redirectToCMSTab() {
+			router.replace("/admin#cms");
+		},
+		[router],
+	);
 
 	return (
 		<div className="flex items-center justify-center min-h-screen bg-background">
@@ -28,7 +31,7 @@ export default function CMSRedirectPage() {
 				>
 					<Settings className="w-5 h-5 text-primary" />
 				</motion.div>
-				
+
 				<div className="flex-1">
 					<motion.div
 						initial={{ opacity: 0, x: 10 }}
@@ -49,7 +52,7 @@ export default function CMSRedirectPage() {
 						<span>CMS</span>
 					</motion.div>
 				</div>
-				
+
 				<motion.div
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
@@ -64,7 +67,7 @@ export default function CMSRedirectPage() {
 								repeat: Infinity,
 								duration: 1.5,
 								delay: i * 0.2,
-								ease: "easeInOut"
+								ease: "easeInOut",
 							}}
 							className="w-1.5 h-1.5 bg-primary rounded-full"
 						/>

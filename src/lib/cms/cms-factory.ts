@@ -1,12 +1,20 @@
-import { eq, asc } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { contentBlocks, contentSegments, pages } from "@/db/schema";
-import type { TDbContentBlock, TDbContentSegment, TDbPage, TDbPageWithBlocks } from "@/db/types";
+import type {
+	TDbContentBlock,
+	TDbContentSegment,
+	TDbPage,
+	TDbPageWithBlocks,
+} from "@/db/types";
 import type { TPageContent } from "./types";
 
 export function createCmsFactory() {
-
-	async function createPage(data: { slug: string; title: string; description?: string }) {
+	async function createPage(data: {
+		slug: string;
+		title: string;
+		description?: string;
+	}) {
 		console.log(`[CMS Factory] Creating new page:`, data);
 
 		const newPage = await db
@@ -54,7 +62,7 @@ export function createCmsFactory() {
 					...block,
 					segments,
 				};
-			})
+			}),
 		);
 
 		return {
@@ -63,7 +71,10 @@ export function createCmsFactory() {
 		};
 	}
 
-	async function updatePage(id: number, data: Partial<Pick<TDbPage, "title" | "description" | "isPublished">>) {
+	async function updatePage(
+		id: number,
+		data: Partial<Pick<TDbPage, "title" | "description" | "isPublished">>,
+	) {
 		console.log(`[CMS Factory] Updating page ${id} with data:`, data);
 
 		const updatedPage = await db
@@ -125,7 +136,10 @@ export function createCmsFactory() {
 		};
 	}
 
-	async function updateBlock(id: number, data: Partial<Pick<TDbContentBlock, "blockType" | "order">>) {
+	async function updateBlock(
+		id: number,
+		data: Partial<Pick<TDbContentBlock, "blockType" | "order">>,
+	) {
 		const updatedBlock = await db
 			.update(contentBlocks)
 			.set({
@@ -199,7 +213,10 @@ export function createCmsFactory() {
 	}
 
 	async function destroySegment(id: number) {
-		await db.delete(contentSegments).where(eq(contentSegments.id, id)).execute();
+		await db
+			.delete(contentSegments)
+			.where(eq(contentSegments.id, id))
+			.execute();
 	}
 
 	async function savePageContent(pageId: string, pageContent: TPageContent) {
@@ -207,28 +224,41 @@ export function createCmsFactory() {
 		console.log(`[CMS Factory] Page content to save:`, pageContent);
 
 		return await db.transaction(async (tx) => {
-			console.log(`[CMS Factory] Deleting existing blocks for pageId: ${pageId}`);
+			console.log(
+				`[CMS Factory] Deleting existing blocks for pageId: ${pageId}`,
+			);
 			await tx.delete(contentBlocks).where(eq(contentBlocks.pageId, pageId));
 
 			for (const [blockIndex, block] of pageContent.blocks.entries()) {
-				console.log(`[CMS Factory] Creating block ${blockIndex + 1}/${pageContent.blocks.length}:`, {
-					blockType: block.blockType || "section",
-					order: block.order || blockIndex + 1
-				});
+				console.log(
+					`[CMS Factory] Creating block ${blockIndex + 1}/${pageContent.blocks.length}:`,
+					{
+						blockType: block.blockType || "section",
+						order: block.order || blockIndex + 1,
+					},
+				);
 
-				const [createdBlock] = await tx.insert(contentBlocks).values({
-					pageId,
-					blockType: block.blockType || "section",
-					order: block.order || blockIndex + 1,
-				}).returning();
+				const [createdBlock] = await tx
+					.insert(contentBlocks)
+					.values({
+						pageId,
+						blockType: block.blockType || "section",
+						order: block.order || blockIndex + 1,
+					})
+					.returning();
 
 				const blockId = createdBlock.id;
 
 				for (const [segmentIndex, segment] of block.segments.entries()) {
-					console.log(`[CMS Factory] Creating segment ${segmentIndex + 1}/${block.segments.length} for block ${blockId}:`, {
-						type: segment.type,
-						content: segment.content?.substring(0, 50) + (segment.content?.length > 50 ? '...' : '')
-					});
+					console.log(
+						`[CMS Factory] Creating segment ${segmentIndex + 1}/${block.segments.length} for block ${blockId}:`,
+						{
+							type: segment.type,
+							content:
+								segment.content?.substring(0, 50) +
+								(segment.content?.length > 50 ? "..." : ""),
+						},
+					);
 
 					await tx.insert(contentSegments).values({
 						blockId,
@@ -244,7 +274,9 @@ export function createCmsFactory() {
 				}
 			}
 
-			console.log(`[CMS Factory] Successfully saved page content for pageId: ${pageId}`);
+			console.log(
+				`[CMS Factory] Successfully saved page content for pageId: ${pageId}`,
+			);
 		});
 	}
 

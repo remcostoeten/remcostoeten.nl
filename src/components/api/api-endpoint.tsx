@@ -1,108 +1,104 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FadeIn } from "../ui/fade-in";
 import { Spinner } from "../ui/spinner";
 
 type TProps = {
-  endpointUrl: string;
-  refreshInterval?: number;
-  render?: (data: any) => React.ReactNode;
+	endpointUrl: string;
+	refreshInterval?: number;
+	render?: (data: any) => React.ReactNode;
 };
 
 type TAPIState = {
-  data: any;
-  loading: boolean;
-  error: string | null;
+	data: any;
+	loading: boolean;
+	error: string | null;
 };
 
-export function APIEndpoint({ 
-  endpointUrl, 
-  refreshInterval, 
-  render 
-}: TProps) {
-  const [state, setState] = useState<TAPIState>({
-    data: null,
-    loading: true,
-    error: null
-  });
+export function APIEndpoint({ endpointUrl, refreshInterval, render }: TProps) {
+	const [state, setState] = useState<TAPIState>({
+		data: null,
+		loading: true,
+		error: null,
+	});
 
-  const fetchData = useCallback(async () => {
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }));
-      
-      const response = await fetch(endpointUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      setState({
-        data,
-        loading: false,
-        error: null
-      });
-    } catch (error) {
-      setState({
-        data: null,
-        loading: false,
-        error: error instanceof Error ? error.message : 'An error occurred'
-      });
-    }
-  }, [endpointUrl]);
+	const fetchData = useCallback(async () => {
+		try {
+			setState((prev) => ({ ...prev, loading: true, error: null }));
 
-  // Fetch on mount
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+			const response = await fetch(endpointUrl);
 
-  // Set up interval refresh if specified
-  useEffect(() => {
-    if (!refreshInterval) return;
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
+			}
 
-    const interval = setInterval(fetchData, refreshInterval);
-    return () => clearInterval(interval);
-  }, [fetchData, refreshInterval]);
+			const data = await response.json();
 
-  // Render loading state
-  if (state.loading) {
-    return (
-      <FadeIn>
-        <Spinner />
-      </FadeIn>
-    );
-  }
+			setState({
+				data,
+				loading: false,
+				error: null,
+			});
+		} catch (error) {
+			setState({
+				data: null,
+				loading: false,
+				error: error instanceof Error ? error.message : "An error occurred",
+			});
+		}
+	}, [endpointUrl]);
 
-  // Render error state
-  if (state.error) {
-    return (
-      <FadeIn>
-        <div className="text-base text-foreground leading-relaxed">
-          Error: {state.error}
-        </div>
-      </FadeIn>
-    );
-  }
+	// Fetch on mount
+	useEffect(() => {
+		fetchData();
+	}, [fetchData]);
 
-  // Render with custom render function if provided
-  if (render) {
-    return (
-      <FadeIn>
-        <div className="text-base text-foreground leading-relaxed">
-          {render(state.data)}
-        </div>
-      </FadeIn>
-    );
-  }
+	// Set up interval refresh if specified
+	useEffect(() => {
+		if (!refreshInterval) return;
 
-  // Fallback to JSON pretty print
-  return (
-    <FadeIn>
-      <pre className="text-base text-foreground leading-relaxed">
-        {JSON.stringify(state.data, null, 2)}
-      </pre>
-    </FadeIn>
-  );
+		const interval = setInterval(fetchData, refreshInterval);
+		return () => clearInterval(interval);
+	}, [fetchData, refreshInterval]);
+
+	// Render loading state
+	if (state.loading) {
+		return (
+			<FadeIn>
+				<Spinner />
+			</FadeIn>
+		);
+	}
+
+	// Render error state
+	if (state.error) {
+		return (
+			<FadeIn>
+				<div className="text-base text-foreground leading-relaxed">
+					Error: {state.error}
+				</div>
+			</FadeIn>
+		);
+	}
+
+	// Render with custom render function if provided
+	if (render) {
+		return (
+			<FadeIn>
+				<div className="text-base text-foreground leading-relaxed">
+					{render(state.data)}
+				</div>
+			</FadeIn>
+		);
+	}
+
+	// Fallback to JSON pretty print
+	return (
+		<FadeIn>
+			<pre className="text-base text-foreground leading-relaxed">
+				{JSON.stringify(state.data, null, 2)}
+			</pre>
+		</FadeIn>
+	);
 }

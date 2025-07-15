@@ -1,7 +1,7 @@
 import { ArrowLeft, Edit3, Eye } from "lucide-react";
 import React, { useState } from "react";
+import { APIEndpoint, LastCommit, SpotifyNowPlaying } from "@/components/api";
 import { ContentSegment, Page } from "@/types/cms";
-import { LastCommit, SpotifyNowPlaying, APIEndpoint } from "@/components/api";
 
 type TProps = {
 	page: Page;
@@ -50,7 +50,7 @@ function renderSegment(segment: ContentSegment) {
 				</a>
 			);
 
-	case "project-card":
+		case "project-card":
 			// For now, we'll render project cards as simple text
 			// You can expand this later to match the ProjectCard component
 			return (

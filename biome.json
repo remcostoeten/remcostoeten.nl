@@ -1,12 +1,15 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
 	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
-	"files": { "ignoreUnknown": false },
+	"files": {
+		"ignoreUnknown": false,
+		"includes": ["**", "!.next/**", "!dist/**"]
+	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
 	"linter": {
 		"enabled": true,
 		"rules": { "recommended": false },
-		"includes": ["**", "!dist"]
+		"includes": ["**", "!dist", "!.next/**"]
 	},
 	"javascript": { "formatter": { "quoteStyle": "double" } },
 	"overrides": [

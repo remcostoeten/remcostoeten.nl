@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import InlinePageEditor from "@/components/cms/inline-page-editor";
 import { PagesList } from "@/components/cms/pages-list";
+import KeyboardShortcutsLegend from "@/components/cms/keyboard-shortcuts-legend";
 import { CMSToastContainer, useCMSToast } from "@/hooks/use-cms-toast";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { usePagesState } from "@/hooks/use-pages-state";
@@ -86,8 +87,34 @@ export function CMSSection() {
 			"capslock+z": () => {
 				// Revert logic here
 			},
+			"cmd+h": () => {
+				// Edit homepage
+				const homePage = pages.find(p => p.slug === 'home');
+				if (homePage) {
+					handleEditPage(homePage);
+				}
+			},
+			"cmd+s": async () => {
+				// Save current page
+				if (currentPage) {
+					await handleSavePage(currentPage);
+				}
+			},
+			"cmd+p": () => {
+				// Preview page
+				if (currentPage) {
+					const url = currentPage.slug === 'home' ? '/' : `/${currentPage.slug}`;
+					window.open(url, '_blank');
+				}
+			},
+			"cmd+e": () => {
+				// Return to editing without saving
+				if (currentPage) {
+					actions.setCurrentPage(null);
+				}
+			},
 		},
-		[currentPage],
+		[currentPage, pages],
 	);
 
 	// Loading state
@@ -127,6 +154,7 @@ export function CMSSection() {
 					onSave={handleSavePage}
 					onBack={handleBackToPages}
 				/>
+				<KeyboardShortcutsLegend />
 				<CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 			</>
 		);
@@ -142,6 +170,7 @@ export function CMSSection() {
 				onDelete={handleDeletePage}
 				onRefresh={handleRefreshCMSData}
 			/>
+			<KeyboardShortcutsLegend />
 			<CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 		</>
 	);

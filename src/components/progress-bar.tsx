@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useProgress } from '@/hooks/use-progress';
+import { useEffect } from "react";
+import { useProgress } from "@/hooks/use-progress";
 
 type TProps = {
-  children: React.ReactNode;
+	children: React.ReactNode;
 };
 
 export function ProgressBar({ children }: TProps) {
-  const { isActive } = useProgress();
+	const { isActive } = useProgress();
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const style = document.createElement('style');
-      style.textContent = `
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			const style = document.createElement("style");
+			style.textContent = `
         #nprogress {
           pointer-events: none;
         }
@@ -63,13 +63,13 @@ export function ProgressBar({ children }: TProps) {
           100% { transform: rotate(360deg); }
         }
       `;
-      document.head.appendChild(style);
+			document.head.appendChild(style);
 
-      return () => {
-        document.head.removeChild(style);
-      };
-    }
-  }, []);
+			return () => {
+				document.head.removeChild(style);
+			};
+		}
+	}, []);
 
-  return <>{children}</>;
+	return <>{children}</>;
 }

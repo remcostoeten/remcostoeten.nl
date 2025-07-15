@@ -1,4 +1,4 @@
-import { eq, asc } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { contentBlocks, contentSegments, pages } from "@/db/schema";
 import type { TBaseEntity, TTimestamps } from "@/db/types";
@@ -17,7 +17,9 @@ type TPageCreateInput = {
 	isPublished?: boolean;
 };
 
-type TPageUpdateInput = Partial<Pick<TPageEntity, "title" | "description" | "isPublished">>;
+type TPageUpdateInput = Partial<
+	Pick<TPageEntity, "title" | "description" | "isPublished">
+>;
 
 type TBlockEntity = TBaseEntity & {
 	pageId: string;
@@ -57,10 +59,11 @@ type TSegmentCreateInput = {
 	metadata?: string;
 };
 
-type TSegmentUpdateInput = Partial<Omit<TSegmentEntity, "id" | "createdAt" | "updatedAt">>;
+type TSegmentUpdateInput = Partial<
+	Omit<TSegmentEntity, "id" | "createdAt" | "updatedAt">
+>;
 
 export function createPagesFactory() {
-
 	async function create(data: TPageCreateInput): Promise<TPageEntity> {
 		const newPage = await db
 			.insert(pages)
@@ -84,10 +87,13 @@ export function createPagesFactory() {
 			.limit(1)
 			.execute();
 
-		return page[0] as TPageEntity || null;
+		return (page[0] as TPageEntity) || null;
 	}
 
-	async function update(id: number, data: TPageUpdateInput): Promise<TPageEntity> {
+	async function update(
+		id: number,
+		data: TPageUpdateInput,
+	): Promise<TPageEntity> {
 		const updatedPage = await db
 			.update(pages)
 			.set({
@@ -114,7 +120,6 @@ export function createPagesFactory() {
 }
 
 export function createBlocksFactory() {
-
 	async function create(data: TBlockCreateInput): Promise<TBlockEntity> {
 		const newBlock = await db
 			.insert(contentBlocks)
@@ -137,10 +142,13 @@ export function createBlocksFactory() {
 			.limit(1)
 			.execute();
 
-		return block[0] as TBlockEntity || null;
+		return (block[0] as TBlockEntity) || null;
 	}
 
-	async function update(id: number, data: TBlockUpdateInput): Promise<TBlockEntity> {
+	async function update(
+		id: number,
+		data: TBlockUpdateInput,
+	): Promise<TBlockEntity> {
 		const updatedBlock = await db
 			.update(contentBlocks)
 			.set({
@@ -167,7 +175,6 @@ export function createBlocksFactory() {
 }
 
 export function createSegmentsFactory() {
-
 	async function create(data: TSegmentCreateInput): Promise<TSegmentEntity> {
 		const newSegment = await db
 			.insert(contentSegments)
@@ -196,10 +203,13 @@ export function createSegmentsFactory() {
 			.limit(1)
 			.execute();
 
-		return segment[0] as TSegmentEntity || null;
+		return (segment[0] as TSegmentEntity) || null;
 	}
 
-	async function update(id: number, data: TSegmentUpdateInput): Promise<TSegmentEntity> {
+	async function update(
+		id: number,
+		data: TSegmentUpdateInput,
+	): Promise<TSegmentEntity> {
 		const updatedSegment = await db
 			.update(contentSegments)
 			.set({
@@ -214,7 +224,10 @@ export function createSegmentsFactory() {
 	}
 
 	async function destroy(id: number): Promise<void> {
-		await db.delete(contentSegments).where(eq(contentSegments.id, id)).execute();
+		await db
+			.delete(contentSegments)
+			.where(eq(contentSegments.id, id))
+			.execute();
 	}
 
 	return {

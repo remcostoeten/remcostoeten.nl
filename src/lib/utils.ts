@@ -15,7 +15,7 @@ export function formatTimeAgo(date: Date): string {
 
 	const diffInMinutes = Math.floor(diffInSeconds / 60);
 	if (diffInMinutes < 60) {
-		return `${diffInMinutes} ${diffInMinutes === 1 ? 'minute' : 'minutes'}`;
+		return `${diffInMinutes} ${diffInMinutes === 1 ? "minute" : "minutes"}`;
 	}
 
 	const diffInHours = Math.floor(diffInMinutes / 60);

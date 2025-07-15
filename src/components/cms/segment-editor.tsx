@@ -111,44 +111,44 @@ export default function SegmentEditor({
 	return (
 		<div className="text-base text-foreground leading-relaxed">
 			<div className="border border-border rounded-lg p-3 bg-muted/30 hover:border-accent hover:bg-accent/10 transition-colors">
-			<div className="flex items-center justify-between mb-2">
-				<button
-					onClick={() => setIsExpanded(!isExpanded)}
-					className="flex items-center space-x-2 text-xs font-medium text-foreground hover:text-accent"
-				>
-					<span>{getSegmentIcon()}</span>
-					<span className="capitalize">{segment.type}</span>
-					{segment.type === "link" && segment.data?.url && (
-						<span className="text-accent truncate max-w-20">
-							{segment.data.url}
-						</span>
+				<div className="flex items-center justify-between mb-2">
+					<button
+						onClick={() => setIsExpanded(!isExpanded)}
+						className="flex items-center space-x-2 text-xs font-medium text-foreground hover:text-accent"
+					>
+						<span>{getSegmentIcon()}</span>
+						<span className="capitalize">{segment.type}</span>
+						{segment.type === "link" && segment.data?.url && (
+							<span className="text-accent truncate max-w-20">
+								{segment.data.url}
+							</span>
+						)}
+					</button>
+					<button
+						onClick={onDelete}
+						className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+					>
+						<Trash2 className="w-3 h-3" />
+					</button>
+				</div>
+
+				<div className="mb-2">
+					{segment.type === "project-card" ? (
+						<div className="text-xs text-muted-foreground font-mono bg-background p-2 rounded border border-border">
+							{segment.content || "{}"}
+						</div>
+					) : (
+						<input
+							type="text"
+							value={segment.content}
+							onChange={(e) => handleContentChange(e.target.value)}
+							className="w-full px-2 py-1 text-sm border border-input rounded bg-background text-foreground focus:ring-1 focus:ring-ring focus:border-transparent"
+							placeholder="Enter content..."
+						/>
 					)}
-				</button>
-				<button
-					onClick={onDelete}
-					className="p-1 text-muted-foreground hover:text-destructive transition-colors"
-				>
-					<Trash2 className="w-3 h-3" />
-				</button>
-			</div>
+				</div>
 
-			<div className="mb-2">
-				{segment.type === "project-card" ? (
-					<div className="text-xs text-muted-foreground font-mono bg-background p-2 rounded border border-border">
-						{segment.content || "{}"}
-					</div>
-				) : (
-					<input
-						type="text"
-						value={segment.content}
-						onChange={(e) => handleContentChange(e.target.value)}
-						className="w-full px-2 py-1 text-sm border border-input rounded bg-background text-foreground focus:ring-1 focus:ring-ring focus:border-transparent"
-						placeholder="Enter content..."
-					/>
-				)}
-			</div>
-
-			{isExpanded && renderDataEditor()}
+				{isExpanded && renderDataEditor()}
 			</div>
 		</div>
 	);

@@ -1,5 +1,10 @@
 import { InferSelectModel } from "drizzle-orm";
-import { contentBlocks, contentSegments, pages, stylePresets } from "./cms-schema";
+import {
+	contentBlocks,
+	contentSegments,
+	pages,
+	stylePresets,
+} from "./cms-schema";
 
 export type TDbPage = InferSelectModel<typeof pages>;
 export type TDbContentBlock = InferSelectModel<typeof contentBlocks>;
@@ -49,7 +54,9 @@ type TDrizzlePageContent = {
 	blocks: TDbContentBlockWithSegments[];
 };
 
-export function transformDbPageToPageContent(dbPage: TDbPageWithBlocks): TPageContent {
+export function transformDbPageToPageContent(
+	dbPage: TDbPageWithBlocks,
+): TPageContent {
 	return {
 		blocks: dbPage.blocks.map((block) => ({
 			id: block.id,
@@ -62,7 +69,10 @@ export function transformDbPageToPageContent(dbPage: TDbPageWithBlocks): TPageCo
 	};
 }
 
-export function transformPageContentToDb(pageContent: TPageContent, pageId: string): {
+export function transformPageContentToDb(
+	pageContent: TPageContent,
+	pageId: string,
+): {
 	blocks: Omit<TDbContentBlock, "createdAt" | "updatedAt">[];
 	segments: Omit<TDbContentSegment, "createdAt" | "updatedAt">[];
 } {
@@ -95,4 +105,3 @@ export function transformPageContentToDb(pageContent: TPageContent, pageId: stri
 
 	return { blocks, segments };
 }
-

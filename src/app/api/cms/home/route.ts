@@ -10,16 +10,22 @@ import { PageContentSchema, type THomePageResponse } from "@/lib/cms/types";
 
 export async function GET(request: NextRequest) {
 	try {
-		console.log('[CMS Home API] Fetching home page content...');
-		
+		console.log("[CMS Home API] Fetching home page content...");
+
 		// Check if we're in build mode and return early
-		if (process.env.NODE_ENV === 'production' && !process.env.TURSO_DATABASE_URL) {
+		if (
+			process.env.NODE_ENV === "production" &&
+			!process.env.TURSO_DATABASE_URL
+		) {
 			return createErrorResponse("Database not configured", 503);
 		}
 
 		// Get home page content from repository
 		const pageContent = await getHomePageContent(db);
-		console.log('[CMS Home API] Retrieved content blocks:', pageContent.blocks.length);
+		console.log(
+			"[CMS Home API] Retrieved content blocks:",
+			pageContent.blocks.length,
+		);
 
 		// Validate the page content with Zod
 		const contentValidation = validateResponseData(

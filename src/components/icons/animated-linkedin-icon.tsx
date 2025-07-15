@@ -1,18 +1,18 @@
-'use client'
+"use client";
 
-import { motion, useAnimation } from 'motion/react'
-import type { Variants } from 'motion/react'
-import type { HTMLAttributes } from 'react'
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
-import { cn } from '@/lib/utils'
+import type { Variants } from "motion/react";
+import { motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface LinkedinIconHandle {
-	startAnimation: () => void
-	stopAnimation: () => void
+	startAnimation: () => void;
+	stopAnimation: () => void;
 }
 
 interface LinkedinIconProps extends HTMLAttributes<HTMLDivElement> {
-	size?: number
+	size?: number;
 }
 
 const pathVariants: Variants = {
@@ -22,8 +22,8 @@ const pathVariants: Variants = {
 		pathOffset: 0,
 		transition: {
 			duration: 0.4,
-			opacity: { duration: 0.1 }
-		}
+			opacity: { duration: 0.1 },
+		},
 	},
 	animate: {
 		opacity: [0, 1],
@@ -31,11 +31,11 @@ const pathVariants: Variants = {
 		pathOffset: [1, 0],
 		transition: {
 			duration: 0.6,
-			ease: 'linear',
-			opacity: { duration: 0.1 }
-		}
-	}
-}
+			ease: "linear",
+			opacity: { duration: 0.1 },
+		},
+	},
+};
 
 const rectVariants: Variants = {
 	normal: {
@@ -44,8 +44,8 @@ const rectVariants: Variants = {
 		pathOffset: 0,
 		transition: {
 			duration: 0.4,
-			opacity: { duration: 0.1 }
-		}
+			opacity: { duration: 0.1 },
+		},
 	},
 	animate: {
 		opacity: [0, 1],
@@ -53,11 +53,11 @@ const rectVariants: Variants = {
 		pathOffset: [1, 0],
 		transition: {
 			duration: 0.6,
-			ease: 'linear',
-			opacity: { duration: 0.1 }
-		}
-	}
-}
+			ease: "linear",
+			opacity: { duration: 0.1 },
+		},
+	},
+};
 
 const circleVariants: Variants = {
 	normal: {
@@ -66,8 +66,8 @@ const circleVariants: Variants = {
 		pathOffset: 0,
 		transition: {
 			duration: 0.4,
-			opacity: { duration: 0.1 }
-		}
+			opacity: { duration: 0.1 },
+		},
 	},
 	animate: {
 		opacity: [0, 1],
@@ -75,62 +75,62 @@ const circleVariants: Variants = {
 		pathOffset: [1, 0],
 		transition: {
 			duration: 0.6,
-			ease: 'linear',
-			opacity: { duration: 0.1 }
-		}
-	}
-}
+			ease: "linear",
+			opacity: { duration: 0.1 },
+		},
+	},
+};
 
 const LinkedinIcon = forwardRef<LinkedinIconHandle, LinkedinIconProps>(
 	({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-		const pathControls = useAnimation()
-		const rectControls = useAnimation()
-		const circleControls = useAnimation()
+		const pathControls = useAnimation();
+		const rectControls = useAnimation();
+		const circleControls = useAnimation();
 
-		const isControlledRef = useRef(false)
+		const isControlledRef = useRef(false);
 
 		useImperativeHandle(ref, () => {
-			isControlledRef.current = true
+			isControlledRef.current = true;
 
 			return {
 				startAnimation: () => {
-					pathControls.start('animate')
-					rectControls.start('animate')
-					circleControls.start('animate')
+					pathControls.start("animate");
+					rectControls.start("animate");
+					circleControls.start("animate");
 				},
 				stopAnimation: () => {
-					pathControls.start('normal')
-					rectControls.start('normal')
-					circleControls.start('normal')
-				}
-			}
-		})
+					pathControls.start("normal");
+					rectControls.start("normal");
+					circleControls.start("normal");
+				},
+			};
+		});
 
 		const handleMouseEnter = useCallback(
 			(e: React.MouseEvent<HTMLDivElement>) => {
 				if (!isControlledRef.current) {
-					pathControls.start('animate')
-					rectControls.start('animate')
-					circleControls.start('animate')
+					pathControls.start("animate");
+					rectControls.start("animate");
+					circleControls.start("animate");
 				} else {
-					onMouseEnter?.(e)
+					onMouseEnter?.(e);
 				}
 			},
-			[circleControls, onMouseEnter, pathControls, rectControls]
-		)
+			[circleControls, onMouseEnter, pathControls, rectControls],
+		);
 
 		const handleMouseLeave = useCallback(
 			(e: React.MouseEvent<HTMLDivElement>) => {
 				if (!isControlledRef.current) {
-					pathControls.start('normal')
-					rectControls.start('normal')
-					circleControls.start('normal')
+					pathControls.start("normal");
+					rectControls.start("normal");
+					circleControls.start("normal");
 				} else {
-					onMouseLeave?.(e)
+					onMouseLeave?.(e);
 				}
 			},
-			[pathControls, rectControls, circleControls, onMouseLeave]
-		)
+			[pathControls, rectControls, circleControls, onMouseLeave],
+		);
 
 		return (
 			<div
@@ -140,45 +140,45 @@ const LinkedinIcon = forwardRef<LinkedinIconHandle, LinkedinIconProps>(
 				{...props}
 			>
 				<svg
-					xmlns='http://www.w3.org/2000/svg'
+					xmlns="http://www.w3.org/2000/svg"
 					width={size}
 					height={size}
-					fill='none'
-					stroke='currentColor'
-					strokeWidth='2'
-					strokeLinecap='round'
-					strokeLinejoin='round'
-					viewBox='0 0 24 24'
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					viewBox="0 0 24 24"
 				>
 					<motion.path
 						variants={pathVariants}
-						initial='normal'
+						initial="normal"
 						animate={pathControls}
-						d='M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z'
+						d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"
 					/>
 					<motion.rect
 						variants={rectVariants}
-						initial='normal'
+						initial="normal"
 						animate={rectControls}
-						x='2'
-						y='9'
-						width='4'
-						height='12'
+						x="2"
+						y="9"
+						width="4"
+						height="12"
 					/>
 					<motion.circle
 						variants={circleVariants}
-						initial='normal'
+						initial="normal"
 						animate={circleControls}
-						cx='4'
-						cy='4'
-						r='2'
+						cx="4"
+						cy="4"
+						r="2"
 					/>
 				</svg>
 			</div>
-		)
-	}
-)
+		);
+	},
+);
 
-LinkedinIcon.displayName = 'LinkedinIcon'
+LinkedinIcon.displayName = "LinkedinIcon";
 
-export { LinkedinIcon }
+export { LinkedinIcon };

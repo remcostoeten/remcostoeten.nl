@@ -1,19 +1,17 @@
+export { ProgressBar } from "../../components/progress-bar";
+export { useProgress } from "../../hooks/use-progress";
 export {
-  createProgressIndicator,
-  startProgress,
-  stopProgress,
-  incrementProgress,
-  setProgress
-} from '../progress-indicator';
-
+	createProgressIndicator,
+	incrementProgress,
+	setProgress,
+	startProgress,
+	stopProgress,
+} from "../progress-indicator";
 export {
-  withProgress,
-  withProgressSteps,
-  simulateProgress,
-  progressForSaving,
-  progressForDeleting,
-  progressForPageLoad
-} from '../progress-utils';
-
-export { useProgress } from '../../hooks/use-progress';
-export { ProgressBar } from '../../components/progress-bar';
+	progressForDeleting,
+	progressForPageLoad,
+	progressForSaving,
+	simulateProgress,
+	withProgress,
+	withProgressSteps,
+} from "../progress-utils";

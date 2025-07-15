@@ -1,10 +1,10 @@
 "use client";
 
 type TProps = {
-  children: React.ReactNode;
+	children: React.ReactNode;
 };
 
 export function AuthProvider({ children }: TProps) {
-  // No-op auth provider - just returns children
-  return <>{children}</>;
+	// No-op auth provider - just returns children
+	return <>{children}</>;
 }

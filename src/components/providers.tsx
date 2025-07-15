@@ -1,21 +1,19 @@
-'use client';
+"use client";
 
-import { QueryProvider } from '@/components/providers/query-provider';
-import { ProgressBar } from '@/components/progress-bar';
-import { TooltipProvider } from '@/components/ui/tooltip';
+import { ProgressBar } from "@/components/progress-bar";
+import { QueryProvider } from "@/components/providers/query-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 type TProps = {
-  children: React.ReactNode;
+	children: React.ReactNode;
 };
 
 export function Providers({ children }: TProps) {
-  return (
-    <QueryProvider>
-      <ProgressBar>
-        <TooltipProvider>
-          {children}
-        </TooltipProvider>
-      </ProgressBar>
-    </QueryProvider>
-  );
+	return (
+		<QueryProvider>
+			<ProgressBar>
+				<TooltipProvider>{children}</TooltipProvider>
+			</ProgressBar>
+		</QueryProvider>
+	);
 }

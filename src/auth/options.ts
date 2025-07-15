@@ -3,7 +3,7 @@
 // This file is kept for backwards compatibility
 
 export const authOptions = {
-  // Placeholder for any components that might still import this
-  providers: [],
-  callbacks: {},
+	// Placeholder for any components that might still import this
+	providers: [],
+	callbacks: {},
 };

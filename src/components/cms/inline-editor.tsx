@@ -373,7 +373,14 @@ export default function InlineEditor({
 								Type
 							</label>
 							<div className="flex gap-2">
-								{["text", "highlighted", "link", "github-commits", "spotify-now-playing", "api-endpoint"].map((type) => (
+								{[
+									"text",
+									"highlighted",
+									"link",
+									"github-commits",
+									"spotify-now-playing",
+									"api-endpoint",
+								].map((type) => (
 									<button
 										key={type}
 										onClick={() => {
@@ -390,11 +397,22 @@ export default function InlineEditor({
 														: type === "link"
 															? { url: "", ...prev.data }
 															: type === "github-commits"
-																? { repo: "remco-stoeten/remcostoeten.nl", ...prev.data }
-															: type === "api-endpoint"
-																	? { endpointUrl: "", refreshInterval: 60000, ...prev.data }
+																? {
+																		repo: "remco-stoeten/remcostoeten.nl",
+																		...prev.data,
+																	}
+																: type === "api-endpoint"
+																	? {
+																			endpointUrl: "",
+																			refreshInterval: 60000,
+																			...prev.data,
+																		}
 																	: type === "spotify-now-playing"
-																		? { endpointUrl: "/api/spotify/now-playing", refreshInterval: 30000, ...prev.data }
+																		? {
+																				endpointUrl: "/api/spotify/now-playing",
+																				refreshInterval: 30000,
+																				...prev.data,
+																			}
 																		: prev.data,
 											}));
 										}}
@@ -467,7 +485,10 @@ export default function InlineEditor({
 									</label>
 									<input
 										type="text"
-										value={editingSegment.data?.repo || "remco-stoeten/remcostoeten.nl"}
+										value={
+											editingSegment.data?.repo ||
+											"remco-stoeten/remcostoeten.nl"
+										}
 										onChange={(e) => updateSegmentData("repo", e.target.value)}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="owner/repository"
@@ -480,7 +501,12 @@ export default function InlineEditor({
 									<input
 										type="number"
 										value={editingSegment.data?.refreshInterval || 60000}
-										onChange={(e) => updateSegmentData("refreshInterval", parseInt(e.target.value))}
+										onChange={(e) =>
+											updateSegmentData(
+												"refreshInterval",
+												parseInt(e.target.value),
+											)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="60000"
 									/>
@@ -491,13 +517,17 @@ export default function InlineEditor({
 									</label>
 									<textarea
 										value={editingSegment.data?.template || ""}
-										onChange={(e) => updateSegmentData("template", e.target.value)}
+										onChange={(e) =>
+											updateSegmentData("template", e.target.value)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="Template string"
 									/>
 								</div>
 								<button
-									onClick={() => alert('Preview Mode: GitHub Commits - Not yet implemented')}
+									onClick={() =>
+										alert("Preview Mode: GitHub Commits - Not yet implemented")
+									}
 									className="px-3 py-1 text-xs bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors"
 								>
 									Preview
@@ -506,51 +536,60 @@ export default function InlineEditor({
 						)}
 
 						{/* API Endpoint configuration */}
-{editingSegment.type === "api-endpoint" && (
-                <div className="space-y-3">
-                    <div>
-                        <label className="block text-xs font-medium text-foreground mb-2">
-                            Endpoint URL
-                        </label>
-                        <input
-                            type="url"
-                            value={editingSegment.data?.endpointUrl || ""}
-                            onChange={(e) => updateSegmentData("endpointUrl", e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-                            placeholder="/api/your-endpoint"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-foreground mb-2">
-                            Refresh Interval (ms)
-                        </label>
-                        <input
-                            type="number"
-                            value={editingSegment.data?.refreshInterval || 60000}
-                            onChange={(e) => updateSegmentData("refreshInterval", parseInt(e.target.value))}
-                            className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-                            placeholder="60000"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-xs font-medium text-foreground mb-2">
-                            Template (optional)
-                        </label>
-                        <textarea
-                            value={editingSegment.data?.template || ""}
-                            onChange={(e) => updateSegmentData("template", e.target.value)}
-                            className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-                            placeholder="Template string"
-                        />
-                    </div>
-                    <button
-                        onClick={() => alert('Preview Mode: Not yet implemented')}
-                        className="px-3 py-1 text-xs bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors"
-                    >
-                        Preview
-                    </button>
-                </div>
-            )}
+						{editingSegment.type === "api-endpoint" && (
+							<div className="space-y-3">
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Endpoint URL
+									</label>
+									<input
+										type="url"
+										value={editingSegment.data?.endpointUrl || ""}
+										onChange={(e) =>
+											updateSegmentData("endpointUrl", e.target.value)
+										}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="/api/your-endpoint"
+									/>
+								</div>
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Refresh Interval (ms)
+									</label>
+									<input
+										type="number"
+										value={editingSegment.data?.refreshInterval || 60000}
+										onChange={(e) =>
+											updateSegmentData(
+												"refreshInterval",
+												parseInt(e.target.value),
+											)
+										}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="60000"
+									/>
+								</div>
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Template (optional)
+									</label>
+									<textarea
+										value={editingSegment.data?.template || ""}
+										onChange={(e) =>
+											updateSegmentData("template", e.target.value)
+										}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="Template string"
+									/>
+								</div>
+								<button
+									onClick={() => alert("Preview Mode: Not yet implemented")}
+									className="px-3 py-1 text-xs bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors"
+								>
+									Preview
+								</button>
+							</div>
+						)}
 
 						{/* Spotify Now Playing configuration */}
 						{editingSegment.type === "spotify-now-playing" && (
@@ -561,8 +600,13 @@ export default function InlineEditor({
 									</label>
 									<input
 										type="url"
-										value={editingSegment.data?.endpointUrl || "/api/spotify/now-playing"}
-										onChange={(e) => updateSegmentData("endpointUrl", e.target.value)}
+										value={
+											editingSegment.data?.endpointUrl ||
+											"/api/spotify/now-playing"
+										}
+										onChange={(e) =>
+											updateSegmentData("endpointUrl", e.target.value)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="/api/spotify/now-playing"
 									/>
@@ -574,7 +618,12 @@ export default function InlineEditor({
 									<input
 										type="number"
 										value={editingSegment.data?.refreshInterval || 30000}
-										onChange={(e) => updateSegmentData("refreshInterval", parseInt(e.target.value))}
+										onChange={(e) =>
+											updateSegmentData(
+												"refreshInterval",
+												parseInt(e.target.value),
+											)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="30000"
 									/>
@@ -585,13 +634,19 @@ export default function InlineEditor({
 									</label>
 									<textarea
 										value={editingSegment.data?.template || ""}
-										onChange={(e) => updateSegmentData("template", e.target.value)}
+										onChange={(e) =>
+											updateSegmentData("template", e.target.value)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="Template string"
 									/>
 								</div>
 								<button
-									onClick={() => alert('Preview Mode: Spotify Now Playing - Not yet implemented')}
+									onClick={() =>
+										alert(
+											"Preview Mode: Spotify Now Playing - Not yet implemented",
+										)
+									}
 									className="px-3 py-1 text-xs bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors"
 								>
 									Preview

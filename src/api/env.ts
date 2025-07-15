@@ -1,5 +1,5 @@
-import { createEnv } from '@t3-oss/env-nextjs'
-import { z } from 'zod'
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
 	server: {
@@ -15,15 +15,13 @@ export const env = createEnv({
 
 		// Node Environment
 		NODE_ENV: z
-			.enum(['development', 'production', 'test'])
-			.default('development'),
-
+			.enum(["development", "production", "test"])
+			.default("development"),
 
 		// Spotify API (Optional)
 		SPOTIFY_CLIENT_ID: z.string().optional(),
 		SPOTIFY_CLIENT_SECRET: z.string().optional(),
 		SPOTIFY_REFRESH_TOKEN: z.string().optional(),
-
 	},
 	client: {
 		// Public App URL
@@ -32,9 +30,8 @@ export const env = createEnv({
 		// Admin Toggle
 		NEXT_PUBLIC_ADMIN_TOGGLE: z.string().optional(),
 
-
 		// Spotify API URL (Optional)
-		NEXT_PUBLIC_SPOTIFY_API_URL: z.string().url().optional()
+		NEXT_PUBLIC_SPOTIFY_API_URL: z.string().url().optional(),
 	},
 	runtimeEnv: {
 		// Server variables (Required)
@@ -44,7 +41,7 @@ export const env = createEnv({
 		ADMIN_EMAIL: process.env.ADMIN_EMAIL,
 		TEST_USER_EMAIL: process.env.TEST_USER_EMAIL || undefined,
 		TEST_USER_PASSWORD: process.env.TEST_USER_PASSWORD || undefined,
-		NODE_ENV: process.env.NODE_ENV || 'development',
+		NODE_ENV: process.env.NODE_ENV || "development",
 
 		// Server variables (Optional)
 		SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID || undefined,
@@ -55,10 +52,9 @@ export const env = createEnv({
 		NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
 
 		// Client variables (Optional)
-		NEXT_PUBLIC_ADMIN_TOGGLE:
-			process.env.NEXT_PUBLIC_ADMIN_TOGGLE || undefined,
+		NEXT_PUBLIC_ADMIN_TOGGLE: process.env.NEXT_PUBLIC_ADMIN_TOGGLE || undefined,
 		NEXT_PUBLIC_SPOTIFY_API_URL:
-			process.env.NEXT_PUBLIC_SPOTIFY_API_URL || undefined
+			process.env.NEXT_PUBLIC_SPOTIFY_API_URL || undefined,
 	},
-	skipValidation: !!process.env.SKIP_ENV_VALIDATION
-})
+	skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+});

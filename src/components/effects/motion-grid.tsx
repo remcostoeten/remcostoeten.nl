@@ -1,24 +1,24 @@
-'use client'
+"use client";
 
-import * as React from 'react'
-import { type HTMLMotionProps, motion } from 'framer-motion'
+import { type HTMLMotionProps, motion } from "framer-motion";
+import * as React from "react";
 
-import { cn } from '@/lib/utils'
+import { cn } from "@/lib/utils";
 
-type FrameDot = [number, number]
-type Frame = FrameDot[]
-type Frames = Frame[]
+type FrameDot = [number, number];
+type Frame = FrameDot[];
+type Frames = Frame[];
 
 type MotionGridProps = {
-	gridSize: [number, number]
-	frames: Frames
-	duration?: number
-	animate?: boolean
-	cellClassName?: string
-	cellProps?: HTMLMotionProps<'div'>
-	cellActiveClassName?: string
-	cellInactiveClassName?: string
-} & React.ComponentProps<'div'>
+	gridSize: [number, number];
+	frames: Frames;
+	duration?: number;
+	animate?: boolean;
+	cellClassName?: string;
+	cellProps?: HTMLMotionProps<"div">;
+	cellActiveClassName?: string;
+	cellInactiveClassName?: string;
+} & React.ComponentProps<"div">;
 
 const MotionGrid = ({
 	gridSize,
@@ -33,31 +33,31 @@ const MotionGrid = ({
 	style,
 	...props
 }: MotionGridProps) => {
-	const [index, setIndex] = React.useState(0)
-	const intervalRef = React.useRef<NodeJS.Timeout | null>(null)
+	const [index, setIndex] = React.useState(0);
+	const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
 	React.useEffect(() => {
-		if (!animate || frames.length === 0) return
+		if (!animate || frames.length === 0) return;
 		intervalRef.current = setInterval(
-			() => setIndex(i => (i + 1) % frames.length),
-			duration
-		)
-		return () => clearInterval(intervalRef.current!)
-	}, [frames.length, duration, animate])
+			() => setIndex((i) => (i + 1) % frames.length),
+			duration,
+		);
+		return () => clearInterval(intervalRef.current!);
+	}, [frames.length, duration, animate]);
 
-	const [cols, rows] = gridSize
+	const [cols, rows] = gridSize;
 
 	const active = new Set<number>(
-		frames[index]?.map(([x, y]) => y * cols + x) ?? []
-	)
+		frames[index]?.map(([x, y]) => y * cols + x) ?? [],
+	);
 
 	return (
 		<div
-			className={cn('grid w-fit gap-0.5', className)}
+			className={cn("grid w-fit gap-0.5", className)}
 			style={{
 				...style,
 				gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-				gridAutoRows: '1fr'
+				gridAutoRows: "1fr",
 			}}
 			{...props}
 		>
@@ -65,24 +65,24 @@ const MotionGrid = ({
 				<motion.div
 					key={i}
 					className={cn(
-						'size-3 rounded-full aspect-square',
+						"size-3 rounded-full aspect-square",
 						active.has(i)
-							? cn('bg-primary scale-110', cellActiveClassName)
-							: cn('bg-muted scale-100', cellInactiveClassName),
-						cellClassName
+							? cn("bg-primary scale-110", cellActiveClassName)
+							: cn("bg-muted scale-100", cellInactiveClassName),
+						cellClassName,
 					)}
 					{...cellProps}
-					transition={{ duration, ease: 'easeInOut' }}
+					transition={{ duration, ease: "easeInOut" }}
 				/>
 			))}
 		</div>
-	)
-}
+	);
+};
 
 export {
 	MotionGrid,
 	type MotionGridProps,
 	type FrameDot,
 	type Frame,
-	type Frames
-}
+	type Frames,
+};

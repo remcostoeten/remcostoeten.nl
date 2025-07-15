@@ -1,7 +1,7 @@
-import { eq, desc } from "drizzle-orm";
+import type { InferSelectModel } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { feedback } from "@/db/schema";
-import type { InferSelectModel } from "drizzle-orm";
 
 type TFeedbackEntity = InferSelectModel<typeof feedback>;
 
@@ -20,7 +20,6 @@ type TFeedbackUpdateInput = Partial<TFeedbackCreateInput> & {
 };
 
 export function createFeedbackFactory() {
-
 	async function create(data: TFeedbackCreateInput): Promise<TFeedbackEntity> {
 		const newFeedback = await db
 			.insert(feedback)
@@ -49,7 +48,10 @@ export function createFeedbackFactory() {
 		return feedbacks as TFeedbackEntity[];
 	}
 
-	async function update(id: number, data: TFeedbackUpdateInput): Promise<TFeedbackEntity> {
+	async function update(
+		id: number,
+		data: TFeedbackUpdateInput,
+	): Promise<TFeedbackEntity> {
 		const updatedFeedback = await db
 			.update(feedback)
 			.set({

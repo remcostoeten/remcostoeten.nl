@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Music } from "lucide-react";
+import { useEffect, useState } from "react";
 import { FadeIn } from "@/components/ui/fade-in";
 import { Spinner } from "@/components/ui/spinner";
 import { TextSkeleton } from "@/components/ui/text-skeleton";
@@ -48,46 +48,49 @@ async function getCurrentlyPlaying(): Promise<TSpotifyTrack | null> {
 
 export function NowPlaying({ refreshInterval = 30000 }: TProps) {
 	const [track, setTrack] = useState<TSpotifyTrack | null>(null);
-useEffect(function setupSpotifyFetch() {
-    async function fetchTrack() {
-        const currentTrack = await getCurrentlyPlaying();
-        setTrack(currentTrack);
-    }
+	useEffect(
+		function setupSpotifyFetch() {
+			async function fetchTrack() {
+				const currentTrack = await getCurrentlyPlaying();
+				setTrack(currentTrack);
+			}
 
-    fetchTrack();
+			fetchTrack();
 
-    const interval = setInterval(fetchTrack, refreshInterval);
-    return function cleanup() {
-        clearInterval(interval);
-    };
-}, [refreshInterval]);
+			const interval = setInterval(fetchTrack, refreshInterval);
+			return function cleanup() {
+				clearInterval(interval);
+			};
+		},
+		[refreshInterval],
+	);
 
-return (
-    <div className="text-foreground leading-relaxed text-base">
-        Currently listening to {" "}
-        {track ? (
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={track.name}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                >
-                    <TrackPopover track={track}>
-                        <button className="text-accent hover:underline font-medium cursor-pointer">
-                            {track.name}
-                        </button>
-                    </TrackPopover>{" "}
-                    by {track.artist}
-                </motion.div>
-            </AnimatePresence>
-        ) : (
-            <div className="flex flex-col">
-                <TextSkeleton width="160px" />
-                <TextSkeleton width="120px" />
-            </div>
-        )}
-    </div>
-);
+	return (
+		<div className="text-foreground leading-relaxed text-base">
+			Currently listening to{" "}
+			{track ? (
+				<AnimatePresence mode="wait">
+					<motion.div
+						key={track.name}
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -10 }}
+						transition={{ duration: 0.3 }}
+					>
+						<TrackPopover track={track}>
+							<button className="text-accent hover:underline font-medium cursor-pointer">
+								{track.name}
+							</button>
+						</TrackPopover>{" "}
+						by {track.artist}
+					</motion.div>
+				</AnimatePresence>
+			) : (
+				<div className="flex flex-col">
+					<TextSkeleton width="160px" />
+					<TextSkeleton width="120px" />
+				</div>
+			)}
+		</div>
+	);
 }

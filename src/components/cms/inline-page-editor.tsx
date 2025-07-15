@@ -110,29 +110,37 @@ export default function InlinePageEditor({
 		}
 	};
 
-	const handleAddSegment = (blockId: string, segmentType: ContentSegment['type']) => {
-	const newSegment: ContentSegment = {
-		id: `seg-${Date.now()}`,
-		type: segmentType,
-		content: segmentType === "text" ? "new text" : "",
-		data: segmentType === "api-endpoint" ? { endpointUrl: "https://api.example.com" } :
-			segmentType === "github-commits" ? { repo: "user/repo", perPage: 5 } :
-			segmentType === "spotify-now-playing" ? { } : undefined,
-	};
+	const handleAddSegment = (
+		blockId: string,
+		segmentType: ContentSegment["type"],
+	) => {
+		const newSegment: ContentSegment = {
+			id: `seg-${Date.now()}`,
+			type: segmentType,
+			content: segmentType === "text" ? "new text" : "",
+			data:
+				segmentType === "api-endpoint"
+					? { endpointUrl: "https://api.example.com" }
+					: segmentType === "github-commits"
+						? { repo: "user/repo", perPage: 5 }
+						: segmentType === "spotify-now-playing"
+							? {}
+							: undefined,
+		};
 
-	setEditingPage((prev) => ({
-		...prev,
-		blocks: prev.blocks.map((block) =>
-			block.id === blockId
-				? { ...block, content: [...block.content, newSegment] }
-				: block,
-		),
-		updatedAt: new Date(),
-	}));
-	setHasUnsavedChanges(true);
-	setSaveStatus("idle");
-	setEditingSegment(newSegment.id);
-};
+		setEditingPage((prev) => ({
+			...prev,
+			blocks: prev.blocks.map((block) =>
+				block.id === blockId
+					? { ...block, content: [...block.content, newSegment] }
+					: block,
+			),
+			updatedAt: new Date(),
+		}));
+		setHasUnsavedChanges(true);
+		setSaveStatus("idle");
+		setEditingSegment(newSegment.id);
+	};
 
 	const handleSegmentEdit = (segmentId: string) => {
 		setEditingSegment(segmentId);
@@ -296,9 +304,9 @@ export default function InlinePageEditor({
 									className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
 										saveStatus === "saving"
 											? "bg-muted text-muted-foreground cursor-not-allowed"
-										: saveStatus === "saved"
-											? "bg-accent text-accent-foreground"
-											: hasUnsavedChanges
+											: saveStatus === "saved"
+												? "bg-accent text-accent-foreground"
+												: hasUnsavedChanges
 													? "bg-accent text-accent-foreground hover:bg-accent/90"
 													: "bg-muted text-muted-foreground"
 									}`}
@@ -415,7 +423,9 @@ export default function InlinePageEditor({
 									handleBlockChange(block.id, updatedBlock)
 								}
 								onBlockDelete={() => handleDeleteBlock(block.id)}
-								onAddSegment={(segmentType) => handleAddSegment(block.id, segmentType)}
+								onAddSegment={(segmentType) =>
+									handleAddSegment(block.id, segmentType)
+								}
 							/>
 						))}
 

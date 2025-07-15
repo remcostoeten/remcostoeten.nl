@@ -1,21 +1,21 @@
 import {
 	integer,
-	text,
 	sqliteTable,
-	uniqueIndex
-} from 'drizzle-orm/sqlite-core'
+	text,
+	uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable(
-	'users',
+	"users",
 	{
-		id: integer('id').primaryKey({ autoIncrement: true }),
-		email: text('email').notNull(),
-		name: text('name'),
-		emailVerified: text('email_verified'),
-		password: text('password').notNull(),
-		image: text('image'),
-		createdAt: text('created_at').notNull().default('CURRENT_TIMESTAMP'),
-		updatedAt: text('updated_at').notNull().default('CURRENT_TIMESTAMP')
+		id: integer("id").primaryKey({ autoIncrement: true }),
+		email: text("email").notNull(),
+		name: text("name"),
+		emailVerified: text("email_verified"),
+		password: text("password").notNull(),
+		image: text("image"),
+		createdAt: text("created_at").notNull().default("CURRENT_TIMESTAMP"),
+		updatedAt: text("updated_at").notNull().default("CURRENT_TIMESTAMP"),
 	},
-	table => [uniqueIndex('users_email_unique').on(table.email)]
-)
+	(table) => [uniqueIndex("users_email_unique").on(table.email)],
+);

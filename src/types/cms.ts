@@ -30,7 +30,14 @@ export interface BlockStyles {
 
 export interface ContentSegment {
 	id: string;
-	type: "text" | "highlighted" | "link" | "project-card" | "github-commits" | "spotify-now-playing" | "api-endpoint";
+	type:
+		| "text"
+		| "highlighted"
+		| "link"
+		| "project-card"
+		| "github-commits"
+		| "spotify-now-playing"
+		| "api-endpoint";
 	content: string;
 	data?: {
 		url?: string;

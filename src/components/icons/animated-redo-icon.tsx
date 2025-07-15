@@ -1,55 +1,55 @@
-'use client'
+"use client";
 
-import { cubicBezier, motion, useAnimation } from 'motion/react'
-import type { HTMLAttributes } from 'react'
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react'
-import { cn } from '@/lib/utils'
+import { cubicBezier, motion, useAnimation } from "motion/react";
+import type { HTMLAttributes } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import { cn } from "@/lib/utils";
 
 export interface RedoIconHandle {
-	startAnimation: () => void
-	stopAnimation: () => void
+	startAnimation: () => void;
+	stopAnimation: () => void;
 }
 
 interface RedoIconProps extends HTMLAttributes<HTMLDivElement> {
-	size?: number
+	size?: number;
 }
 
-const customEasing = cubicBezier(0.25, 0.1, 0.25, 1)
+const customEasing = cubicBezier(0.25, 0.1, 0.25, 1);
 
 const RedoIcon = forwardRef<RedoIconHandle, RedoIconProps>(
 	({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
-		const controls = useAnimation()
-		const isControlledRef = useRef(false)
+		const controls = useAnimation();
+		const isControlledRef = useRef(false);
 
 		useImperativeHandle(ref, () => {
-			isControlledRef.current = true
+			isControlledRef.current = true;
 			return {
-				startAnimation: () => controls.start('animate'),
-				stopAnimation: () => controls.start('normal')
-			}
-		})
+				startAnimation: () => controls.start("animate"),
+				stopAnimation: () => controls.start("normal"),
+			};
+		});
 
 		const handleMouseEnter = useCallback(
 			(e: React.MouseEvent<HTMLDivElement>) => {
 				if (!isControlledRef.current) {
-					controls.start('animate')
+					controls.start("animate");
 				} else {
-					onMouseEnter?.(e)
+					onMouseEnter?.(e);
 				}
 			},
-			[controls, onMouseEnter]
-		)
+			[controls, onMouseEnter],
+		);
 
 		const handleMouseLeave = useCallback(
 			(e: React.MouseEvent<HTMLDivElement>) => {
 				if (!isControlledRef.current) {
-					controls.start('normal')
+					controls.start("normal");
 				} else {
-					onMouseLeave?.(e)
+					onMouseLeave?.(e);
 				}
 			},
-			[controls, onMouseLeave]
-		)
+			[controls, onMouseLeave],
+		);
 
 		return (
 			<div
@@ -59,15 +59,15 @@ const RedoIcon = forwardRef<RedoIconHandle, RedoIconProps>(
 				{...props}
 			>
 				<svg
-					xmlns='http://www.w3.org/2000/svg'
+					xmlns="http://www.w3.org/2000/svg"
 					width={size}
 					height={size}
-					viewBox='0 0 24 24'
-					fill='none'
-					stroke='currentColor'
-					strokeWidth='2'
-					strokeLinecap='round'
-					strokeLinejoin='round'
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				>
 					<motion.path
 						transition={{ duration: 0.6, ease: customEasing }}
@@ -76,27 +76,27 @@ const RedoIcon = forwardRef<RedoIconHandle, RedoIconProps>(
 							animate: {
 								translateX: [0, -2.1, 0],
 								translateY: [0, -1.4, 0],
-								rotate: [0, -12, 0]
-							}
+								rotate: [0, -12, 0],
+							},
 						}}
 						animate={controls}
-						d='M21 7v6h-6'
+						d="M21 7v6h-6"
 					/>
 					<motion.path
 						transition={{ duration: 0.6, ease: customEasing }}
 						variants={{
 							normal: { pathLength: 1 },
-							animate: { pathLength: [1, 0.8, 1] }
+							animate: { pathLength: [1, 0.8, 1] },
 						}}
 						animate={controls}
-						d='M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7'
+						d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"
 					/>
 				</svg>
 			</div>
-		)
-	}
-)
+		);
+	},
+);
 
-RedoIcon.displayName = 'RedoIcon'
+RedoIcon.displayName = "RedoIcon";
 
-export { RedoIcon }
+export { RedoIcon };

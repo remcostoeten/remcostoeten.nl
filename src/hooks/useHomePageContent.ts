@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { HomePageResponseSchema, type THomePageResponse } from "@/lib/cms/types";
+import {
+	HomePageResponseSchema,
+	type THomePageResponse,
+} from "@/lib/cms/types";
 
 type TUseHomePageContentReturn = {
 	data: THomePageResponse | undefined;
@@ -12,30 +15,40 @@ export function useHomePageContent(): TUseHomePageContentReturn {
 	const { data, isLoading, isError, error } = useQuery({
 		queryKey: ["home-page-content"],
 		queryFn: async (): Promise<THomePageResponse> => {
-			console.log('[useHomePageContent] Fetching home page content...');
+			console.log("[useHomePageContent] Fetching home page content...");
 			try {
 				const response = await fetch("/api/cms/home");
-				
+
 				if (!response.ok) {
 					const errorMessage = `CMS API error! status: ${response.status}`;
-					console.error(errorMessage, { status: response.status, statusText: response.statusText });
+					console.error(errorMessage, {
+						status: response.status,
+						statusText: response.statusText,
+					});
 					throw new Error(errorMessage);
 				}
 
 				const jsonData = await response.json();
-				
+
 				const validatedData = HomePageResponseSchema.safeParse(jsonData);
-				
+
 				if (!validatedData.success) {
 					const errorMessage = "Invalid response format from CMS server";
-					console.error(errorMessage, { errors: validatedData.error.errors, receivedData: jsonData });
+					console.error(errorMessage, {
+						errors: validatedData.error.errors,
+						receivedData: jsonData,
+					});
 					throw new Error(errorMessage);
 				}
 
 				return validatedData.data;
 			} catch (fetchError) {
-				if (fetchError instanceof TypeError && fetchError.message.includes('fetch')) {
-					const networkError = "CMS is currently unreachable. Please check your connection.";
+				if (
+					fetchError instanceof TypeError &&
+					fetchError.message.includes("fetch")
+				) {
+					const networkError =
+						"CMS is currently unreachable. Please check your connection.";
 					console.error(networkError, fetchError);
 					throw new Error(networkError);
 				}
@@ -48,7 +61,7 @@ export function useHomePageContent(): TUseHomePageContentReturn {
 		refetchOnWindowFocus: false,
 		refetchOnReconnect: false,
 		retry: (failureCount, error) => {
-			if (error.message.includes('unreachable')) {
+			if (error.message.includes("unreachable")) {
 				return failureCount < 2;
 			}
 			return failureCount < 1;

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { TDbContentBlock, TDbContentSegment, TDbPage } from "@/db/types";
+import { LinkMetadataSchema, type TLinkMetadata } from "./link-metadata";
 
 // Define TypeScript types that align with database schema
 export type TContentSegment = {
@@ -12,6 +13,7 @@ export type TContentSegment = {
 	className?: string | null;
 	style?: string | null;
 	metadata?: string | null;
+	linkMetadata?: TLinkMetadata | null;
 };
 
 export type TContentBlock = {
@@ -45,6 +47,7 @@ export const ContentSegmentSchema = z.object({
 	className: z.string().nullable().optional(),
 	style: z.string().nullable().optional(),
 	metadata: z.string().nullable().optional(),
+	linkMetadata: LinkMetadataSchema.nullable().optional(),
 });
 
 export const ContentBlockSchema = z.object({

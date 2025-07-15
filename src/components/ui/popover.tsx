@@ -1,9 +1,8 @@
 import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { LayoutGroup, motion } from "framer-motion";
 import * as React from "react";
-import { motion, LayoutGroup } from "framer-motion";
-
-import { cn } from "@/lib/utils";
 import { popoverTransition } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 
 const Popover = PopoverPrimitive.Root;
 
@@ -28,7 +27,9 @@ const PopoverContent = React.forwardRef<
 ));
 PopoverContent.displayName = PopoverPrimitive.Content.displayName;
 
-type TMotionPopoverContentProps = React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
+type TMotionPopoverContentProps = React.ComponentPropsWithoutRef<
+	typeof PopoverPrimitive.Content
+> & {
 	layout?: boolean;
 	initial?: any;
 	animate?: any;
@@ -38,28 +39,42 @@ type TMotionPopoverContentProps = React.ComponentPropsWithoutRef<typeof PopoverP
 const MotionPopoverContent = React.forwardRef<
 	React.ElementRef<typeof PopoverPrimitive.Content>,
 	TMotionPopoverContentProps
->(({ className, align = "center", sideOffset = 4, layout = true, initial, animate, exit, ...props }, ref) => (
-	<PopoverPrimitive.Portal>
-		<motion.div
-			layout={layout}
-			initial={initial || { opacity: 0, scale: 0.95 }}
-			animate={animate || { opacity: 1, scale: 1 }}
-			exit={exit || { opacity: 0, scale: 0.95 }}
-			transition={popoverTransition}
-		>
-			<PopoverPrimitive.Content
-				ref={ref}
-				align={align}
-				sideOffset={sideOffset}
-				className={cn(
-					"z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-2xl backdrop-blur-lg outline-none",
-					className,
-				)}
-				{...props}
-			/>
-		</motion.div>
-	</PopoverPrimitive.Portal>
-));
+>(
+	(
+		{
+			className,
+			align = "center",
+			sideOffset = 4,
+			layout = true,
+			initial,
+			animate,
+			exit,
+			...props
+		},
+		ref,
+	) => (
+		<PopoverPrimitive.Portal>
+			<motion.div
+				layout={layout}
+				initial={initial || { opacity: 0, scale: 0.95 }}
+				animate={animate || { opacity: 1, scale: 1 }}
+				exit={exit || { opacity: 0, scale: 0.95 }}
+				transition={popoverTransition}
+			>
+				<PopoverPrimitive.Content
+					ref={ref}
+					align={align}
+					sideOffset={sideOffset}
+					className={cn(
+						"z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-2xl backdrop-blur-lg outline-none",
+						className,
+					)}
+					{...props}
+				/>
+			</motion.div>
+		</PopoverPrimitive.Portal>
+	),
+);
 MotionPopoverContent.displayName = "MotionPopoverContent";
 
 export { Popover, PopoverTrigger, PopoverContent, MotionPopoverContent };

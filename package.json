@@ -13,7 +13,8 @@
 		"push": "drizzle-kit push",
 		"gen": "drizzle-kit generate",
 		"studio": "drizzle-kit studio",
-		"seed": "tsx src/db/seed-home.ts"
+		"seed": "tsx src/db/seed-home.ts",
+		"seed:home": "tsx scripts/seed-home-content.ts"
 	},
 	"dependencies": {
 		"@emotion/is-prop-valid": "latest",

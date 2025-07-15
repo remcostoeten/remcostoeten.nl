@@ -1,27 +1,29 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { motion } from 'framer-motion'
-
-import { Button } from '@/components/ui/button'
-import {
-	type Frames,
-	MotionGrid
-} from '@/components/effects/motion-grid'
+import { motion } from "framer-motion";
+import { type ReactNode, useEffect, useState } from "react";
+import { type Frames, MotionGrid } from "@/components/effects/motion-grid";
+import { Button } from "@/components/ui/button";
 
 type TGridButtonProps = {
-	onClick?: () => void
-	gridSize: [number, number]
-	frames: Frames
-	cellClassName?: string
-	cellActiveClassName?: string
-	cellInactiveClassName?: string
-	isLoading?: boolean
-	children: ReactNode
-	disabled?: boolean
-	type?: 'button' | 'submit' | 'reset'
-	variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
-	size?: 'default' | 'sm' | 'lg' | 'icon'
-	className?: string
-}
+	onClick?: () => void;
+	gridSize: [number, number];
+	frames: Frames;
+	cellClassName?: string;
+	cellActiveClassName?: string;
+	cellInactiveClassName?: string;
+	isLoading?: boolean;
+	children: ReactNode;
+	disabled?: boolean;
+	type?: "button" | "submit" | "reset";
+	variant?:
+		| "default"
+		| "destructive"
+		| "outline"
+		| "secondary"
+		| "ghost"
+		| "link";
+	size?: "default" | "sm" | "lg" | "icon";
+	className?: string;
+};
 
 const importingFrames = [
 	[[2, 2]],
@@ -29,7 +31,7 @@ const importingFrames = [
 		[1, 2],
 		[2, 1],
 		[2, 3],
-		[3, 2]
+		[3, 2],
 	],
 	[
 		[2, 2],
@@ -40,7 +42,7 @@ const importingFrames = [
 		[2, 4],
 		[3, 1],
 		[3, 3],
-		[4, 2]
+		[4, 2],
 	],
 	[
 		[0, 1],
@@ -54,7 +56,7 @@ const importingFrames = [
 		[3, 2],
 		[3, 4],
 		[4, 1],
-		[4, 3]
+		[4, 3],
 	],
 	[
 		[0, 0],
@@ -69,7 +71,7 @@ const importingFrames = [
 		[3, 3],
 		[4, 0],
 		[4, 2],
-		[4, 4]
+		[4, 4],
 	],
 	[
 		[0, 1],
@@ -83,7 +85,7 @@ const importingFrames = [
 		[3, 2],
 		[3, 4],
 		[4, 1],
-		[4, 3]
+		[4, 3],
 	],
 	[
 		[0, 0],
@@ -97,7 +99,7 @@ const importingFrames = [
 		[3, 3],
 		[4, 0],
 		[4, 2],
-		[4, 4]
+		[4, 4],
 	],
 	[
 		[0, 1],
@@ -107,16 +109,16 @@ const importingFrames = [
 		[0, 3],
 		[1, 4],
 		[3, 4],
-		[4, 3]
+		[4, 3],
 	],
 	[
 		[0, 0],
 		[0, 4],
 		[4, 0],
-		[4, 4]
+		[4, 4],
 	],
-	[]
-] as Frames
+	[],
+] as Frames;
 
 const arrowDownFrames = [
 	[[2, 0]],
@@ -124,14 +126,14 @@ const arrowDownFrames = [
 		[1, 0],
 		[2, 0],
 		[3, 0],
-		[2, 1]
+		[2, 1],
 	],
 	[
 		[2, 0],
 		[1, 1],
 		[2, 1],
 		[3, 1],
-		[2, 2]
+		[2, 2],
 	],
 	[
 		[2, 0],
@@ -139,7 +141,7 @@ const arrowDownFrames = [
 		[1, 2],
 		[2, 2],
 		[3, 2],
-		[2, 3]
+		[2, 3],
 	],
 	[
 		[2, 1],
@@ -147,22 +149,22 @@ const arrowDownFrames = [
 		[1, 3],
 		[2, 3],
 		[3, 3],
-		[2, 4]
+		[2, 4],
 	],
 	[
 		[2, 2],
 		[2, 3],
 		[1, 4],
 		[2, 4],
-		[3, 4]
+		[3, 4],
 	],
 	[
 		[2, 3],
-		[2, 4]
+		[2, 4],
 	],
 	[[2, 4]],
-	[]
-] as Frames
+	[],
+] as Frames;
 
 const arrowUpFrames = [
 	[[2, 4]],
@@ -170,14 +172,14 @@ const arrowUpFrames = [
 		[1, 4],
 		[2, 4],
 		[3, 4],
-		[2, 3]
+		[2, 3],
 	],
 	[
 		[2, 4],
 		[1, 3],
 		[2, 3],
 		[3, 3],
-		[2, 2]
+		[2, 2],
 	],
 	[
 		[2, 4],
@@ -185,7 +187,7 @@ const arrowUpFrames = [
 		[1, 2],
 		[2, 2],
 		[3, 2],
-		[2, 1]
+		[2, 1],
 	],
 	[
 		[2, 3],
@@ -193,24 +195,24 @@ const arrowUpFrames = [
 		[1, 1],
 		[2, 1],
 		[3, 1],
-		[2, 0]
+		[2, 0],
 	],
 	[
 		[2, 2],
 		[2, 1],
 		[1, 0],
 		[2, 0],
-		[3, 0]
+		[3, 0],
 	],
 	[
 		[2, 1],
-		[2, 0]
+		[2, 0],
 	],
 	[[2, 0]],
-	[]
-] as Frames
+	[],
+] as Frames;
 
-const syncingFrames = [...arrowDownFrames, ...arrowUpFrames] as Frames
+const syncingFrames = [...arrowDownFrames, ...arrowUpFrames] as Frames;
 
 const searchingFrames = [
 	[
@@ -218,42 +220,42 @@ const searchingFrames = [
 		[0, 1],
 		[1, 1],
 		[2, 1],
-		[1, 2]
+		[1, 2],
 	],
 	[
 		[2, 0],
 		[1, 1],
 		[2, 1],
 		[3, 1],
-		[2, 2]
+		[2, 2],
 	],
 	[
 		[3, 0],
 		[2, 1],
 		[3, 1],
 		[4, 1],
-		[3, 2]
+		[3, 2],
 	],
 	[
 		[3, 1],
 		[2, 2],
 		[3, 2],
 		[4, 2],
-		[3, 3]
+		[3, 3],
 	],
 	[
 		[3, 2],
 		[2, 3],
 		[3, 3],
 		[4, 3],
-		[3, 4]
+		[3, 4],
 	],
 	[
 		[1, 2],
 		[0, 3],
 		[1, 3],
 		[2, 3],
-		[1, 4]
+		[1, 4],
 	],
 	[
 		[0, 0],
@@ -263,10 +265,10 @@ const searchingFrames = [
 		[1, 2],
 		[2, 0],
 		[2, 1],
-		[2, 2]
+		[2, 2],
 	],
-	[]
-] as Frames
+	[],
+] as Frames;
 
 const busyFrames = [
 	[
@@ -276,7 +278,7 @@ const busyFrames = [
 		[1, 2],
 		[4, 1],
 		[4, 2],
-		[4, 3]
+		[4, 3],
 	],
 	[
 		[0, 1],
@@ -285,7 +287,7 @@ const busyFrames = [
 		[2, 3],
 		[4, 2],
 		[4, 3],
-		[4, 4]
+		[4, 4],
 	],
 	[
 		[0, 1],
@@ -294,7 +296,7 @@ const busyFrames = [
 		[3, 4],
 		[4, 2],
 		[4, 3],
-		[4, 4]
+		[4, 4],
 	],
 	[
 		[0, 1],
@@ -303,7 +305,7 @@ const busyFrames = [
 		[2, 3],
 		[4, 2],
 		[4, 3],
-		[4, 4]
+		[4, 4],
 	],
 	[
 		[0, 0],
@@ -312,7 +314,7 @@ const busyFrames = [
 		[1, 2],
 		[4, 2],
 		[4, 3],
-		[4, 4]
+		[4, 4],
 	],
 	[
 		[0, 0],
@@ -321,7 +323,7 @@ const busyFrames = [
 		[2, 1],
 		[4, 1],
 		[4, 2],
-		[4, 3]
+		[4, 3],
 	],
 	[
 		[0, 0],
@@ -330,7 +332,7 @@ const busyFrames = [
 		[3, 0],
 		[4, 0],
 		[4, 1],
-		[4, 2]
+		[4, 2],
 	],
 	[
 		[0, 1],
@@ -339,9 +341,9 @@ const busyFrames = [
 		[2, 1],
 		[4, 0],
 		[4, 1],
-		[4, 2]
-	]
-] as Frames
+		[4, 2],
+	],
+] as Frames;
 
 const savingFrames = [
 	[
@@ -367,7 +369,7 @@ const savingFrames = [
 		[4, 1],
 		[4, 2],
 		[4, 3],
-		[4, 4]
+		[4, 4],
 	],
 	[
 		[0, 0],
@@ -387,7 +389,7 @@ const savingFrames = [
 		[4, 0],
 		[4, 1],
 		[4, 2],
-		[4, 3]
+		[4, 3],
 	],
 	[
 		[0, 0],
@@ -407,7 +409,7 @@ const savingFrames = [
 		[3, 4],
 		[2, 4],
 		[1, 4],
-		[0, 4]
+		[0, 4],
 	],
 	[
 		[0, 0],
@@ -427,7 +429,7 @@ const savingFrames = [
 		[3, 4],
 		[2, 4],
 		[1, 4],
-		[0, 4]
+		[0, 4],
 	],
 	[
 		[0, 0],
@@ -447,34 +449,7 @@ const savingFrames = [
 		[3, 4],
 		[2, 4],
 		[1, 4],
-		[0, 4]
-	],
-	[
-		[0, 0],
-		[1, 0],
-		[2, 0],
-		[3, 0],
-		[4, 0],
-		[4, 1],
-		[3, 1],
-		[2, 1],
-		[1, 1],
-		[0, 1],
-		[4, 2],
-		[3, 2],
-		[2, 2],
-		[1, 2],
-		[0, 2],
-		[4, 3],
-		[3, 3],
-		[2, 3],
-		[1, 3],
-		[0, 3],
-		[4, 4],
-		[3, 4],
-		[2, 4],
-		[1, 4],
-		[0, 4]
+		[0, 4],
 	],
 	[
 		[0, 0],
@@ -501,7 +476,7 @@ const savingFrames = [
 		[3, 4],
 		[2, 4],
 		[1, 4],
-		[0, 4]
+		[0, 4],
 	],
 	[
 		[0, 0],
@@ -528,24 +503,42 @@ const savingFrames = [
 		[3, 4],
 		[2, 4],
 		[1, 4],
-		[0, 4]
-	]
-] as Frames
+		[0, 4],
+	],
+	[
+		[0, 0],
+		[1, 0],
+		[2, 0],
+		[3, 0],
+		[4, 0],
+		[4, 1],
+		[3, 1],
+		[2, 1],
+		[1, 1],
+		[0, 1],
+		[4, 2],
+		[3, 2],
+		[2, 2],
+		[1, 2],
+		[0, 2],
+		[4, 3],
+		[3, 3],
+		[2, 3],
+		[1, 3],
+		[0, 3],
+		[4, 4],
+		[3, 4],
+		[2, 4],
+		[1, 4],
+		[0, 4],
+	],
+] as Frames;
 
 const initializingFrames = [
 	[],
 	[
 		[1, 0],
-		[3, 0]
-	],
-	[
-		[1, 0],
 		[3, 0],
-		[0, 1],
-		[1, 1],
-		[2, 1],
-		[3, 1],
-		[4, 1]
 	],
 	[
 		[1, 0],
@@ -555,11 +548,6 @@ const initializingFrames = [
 		[2, 1],
 		[3, 1],
 		[4, 1],
-		[0, 2],
-		[1, 2],
-		[2, 2],
-		[3, 2],
-		[4, 2]
 	],
 	[
 		[1, 0],
@@ -574,9 +562,6 @@ const initializingFrames = [
 		[2, 2],
 		[3, 2],
 		[4, 2],
-		[1, 3],
-		[2, 3],
-		[3, 3]
 	],
 	[
 		[1, 0],
@@ -594,74 +579,98 @@ const initializingFrames = [
 		[1, 3],
 		[2, 3],
 		[3, 3],
-		[2, 4]
+	],
+	[
+		[1, 0],
+		[3, 0],
+		[0, 1],
+		[1, 1],
+		[2, 1],
+		[3, 1],
+		[4, 1],
+		[0, 2],
+		[1, 2],
+		[2, 2],
+		[3, 2],
+		[4, 2],
+		[1, 3],
+		[2, 3],
+		[3, 3],
+		[2, 4],
 	],
 	[
 		[1, 2],
 		[2, 1],
 		[2, 2],
 		[2, 3],
-		[3, 2]
+		[3, 2],
 	],
 	[[2, 2]],
-	[]
-] as Frames
+	[],
+] as Frames;
 
 const states = {
 	importing: {
 		frames: importingFrames,
-		label: 'Importing'
+		label: "Importing",
 	},
 	syncing: {
 		frames: syncingFrames,
-		label: 'Syncing'
+		label: "Syncing",
 	},
 	searching: {
 		frames: searchingFrames,
-		label: 'Searching'
+		label: "Searching",
 	},
 	busy: {
 		frames: busyFrames,
-		label: 'Busy'
+		label: "Busy",
 	},
 	saving: {
 		frames: savingFrames,
-		label: 'Saving'
+		label: "Saving",
 	},
 	initializing: {
 		frames: initializingFrames,
-		label: 'Initializing'
-	}
-}
+		label: "Initializing",
+	},
+};
 
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Export frame types for use in other components
-export { importingFrames, syncingFrames, searchingFrames, busyFrames, savingFrames, initializingFrames }
+export {
+	importingFrames,
+	syncingFrames,
+	searchingFrames,
+	busyFrames,
+	savingFrames,
+	initializingFrames,
+};
 
-export function GridButton({ 
-	onClick, 
-	gridSize, 
-	frames, 
-	cellClassName, 
-	cellActiveClassName, 
-	cellInactiveClassName, 
-	isLoading, 
-	children, 
-	disabled, 
-	type = 'button', 
-	variant = 'default', 
-	size = 'default', 
-	className 
+export function GridButton({
+	onClick,
+	gridSize,
+	frames,
+	cellClassName,
+	cellActiveClassName,
+	cellInactiveClassName,
+	isLoading,
+	children,
+	disabled,
+	type = "button",
+	variant = "default",
+	size = "default",
+	className,
 }: TGridButtonProps) {
 	return (
-		<Button 
+		<Button
 			onClick={onClick}
 			disabled={disabled || isLoading}
 			type={type}
 			variant={variant}
 			size={size}
-				className={`px-4 h-11 gap-x-3 relative ${className || ''}`}
+			className={`px-4 h-11 gap-x-3 relative ${className || ""}`}
 			asChild
 		>
 			<motion.button
@@ -669,64 +678,62 @@ export function GridButton({
 				whileHover={{ scale: 1.05 }}
 				whileTap={{ scale: 0.95 }}
 			>
-				<motion.div layout='preserve-aspect'>
+				<motion.div layout="preserve-aspect">
 					<MotionGrid
 						gridSize={gridSize}
 						frames={frames}
-						cellClassName={cellClassName || 'size-[3px]'}
-						cellActiveClassName={cellActiveClassName || 'bg-white/70 dark:bg-black/70'}
-						cellInactiveClassName={cellInactiveClassName || 'bg-white/20 dark:bg-black/20'}
+						cellClassName={cellClassName || "size-[3px]"}
+						cellActiveClassName={
+							cellActiveClassName || "bg-white/70 dark:bg-black/70"
+						}
+						cellInactiveClassName={
+							cellInactiveClassName || "bg-white/20 dark:bg-black/20"
+						}
 						animate={isLoading}
 					/>
 				</motion.div>
-				
-				<span className='ml-2'>
-					{isLoading ? 'Processing...' : children}
-				</span>
+
+				<span className="ml-2">{isLoading ? "Processing..." : children}</span>
 			</motion.button>
 		</Button>
-	)
+	);
 }
 
 export const MotionGridDemo = () => {
-	const [state, setState] = useState<keyof typeof states>('importing')
+	const [state, setState] = useState<keyof typeof states>("importing");
 
 	const runStates = async () => {
 		while (true) {
-			for (const state of Object.keys(
-				states
-			) as (keyof typeof states)[]) {
-				setState(state)
-				await sleep(3000)
+			for (const state of Object.keys(states) as (keyof typeof states)[]) {
+				setState(state);
+				await sleep(3000);
 			}
 		}
-	}
+	};
 
 	useEffect(() => {
-		runStates()
-	}, [])
+		runStates();
+	}, [runStates]);
 
 	return (
-		<Button size='lg' className='px-3 h-11 gap-x-3 relative' asChild>
+		<Button size="lg" className="px-3 h-11 gap-x-3 relative" asChild>
 			<motion.button
 				layout
 				whileHover={{ opacity: 0.8 }}
 				whileTap={{ opacity: 0.6 }}
 			>
-				<motion.div layout='preserve-aspect'>
+				<motion.div layout="preserve-aspect">
 					<MotionGrid
 						gridSize={[5, 5]}
 						frames={states[state].frames}
-						cellClassName='size-[3px]'
-						cellActiveClassName='bg-white/70 dark:bg-black/70'
-						cellInactiveClassName='bg-white/20 dark:bg-black/20'
+						cellClassName="size-[3px]"
+						cellActiveClassName="bg-white/70 dark:bg-black/70"
+						cellInactiveClassName="bg-white/20 dark:bg-black/20"
 					/>
 				</motion.div>
 
-				<span className='ml-2'>
-					{states[state].label}
-				</span>
+				<span className="ml-2">{states[state].label}</span>
 			</motion.button>
 		</Button>
-	)
-}
+	);
+};

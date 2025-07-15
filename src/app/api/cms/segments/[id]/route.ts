@@ -20,7 +20,7 @@ type TRouteParams = {
 export async function PATCH(request: NextRequest, { params }: TRouteParams) {
 	try {
 		// Check if we're in build mode and return early
-		if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
+		if (process.env.NODE_ENV === "production" && !process.env.DATABASE_URL) {
 			return createErrorResponse("Database not configured", 503);
 		}
 
