@@ -1,4 +1,5 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 
 export const feedback = sqliteTable("feedback", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
@@ -10,6 +11,6 @@ export const feedback = sqliteTable("feedback", {
 	referrer: text("referrer"),
 	browser: text("browser"),
 	isRead: integer("is_read", { mode: "boolean" }).notNull().default(false),
-	createdAt: text("created_at").notNull().default("CURRENT_TIMESTAMP"),
-	updatedAt: text("updated_at").notNull().default("CURRENT_TIMESTAMP"),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
