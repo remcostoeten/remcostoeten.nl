@@ -3,6 +3,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { ContactForm } from "@/components/contact-form";
+import { LastCommit } from "@/components/dynamic-data/last-commit";
 import { FyncGithubDemo } from "@/components/fync-github-demo";
 import { renderSegment } from "@/lib/cms/renderSegment";
 import { TContentBlock, TContentSegment, TPageContent } from "@/lib/cms/types";
@@ -35,7 +36,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 		};
 	}, []);
 
-	function handleContactHover(e: React.MouseEvent<HTMLDivElement>) {
+	function handleContactHover(e: React.MouseEvent<HTMLSpanElement>) {
 		const rect = e.currentTarget.getBoundingClientRect();
 		const viewportHeight = window.innerHeight;
 		const spaceBelow = viewportHeight - rect.bottom;
@@ -76,6 +77,58 @@ export function CMSIndexView({ initialContent }: TProps) {
 							</p>
 						);
 					})}
+
+				{/* Contact form */}
+				<p className="text-foreground leading-relaxed text-base">
+					or contact me via{" "}
+					<span
+						className="relative inline-block"
+						onMouseEnter={handleContactHover}
+						onMouseLeave={function handleContactLeave() {
+							setIsContactHovered(false);
+						}}
+					>
+						<button className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60">
+							Email ↗
+						</button>
+						<ContactForm
+							isVisible={isContactHovered}
+							openAbove={shouldOpenAbove}
+						/>
+					</span>{" "}
+					or check out my{" "}
+					<a
+						href="https://remcostoeten.nl"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-accent hover:underline font-medium"
+					>
+						website ↗
+					</a>
+					.
+				</p>
+
+				{/* Dynamic current time */}
+				<p className="text-foreground leading-relaxed text-base">
+					Right now it is{" "}
+					<span
+						className="font-medium font-mono"
+						style={{ minWidth: "8ch", display: "inline-block" }}
+					>
+						{currentTime || "00:00:00"}
+					</span>
+					.
+				</p>
+
+				{/* Last commit information */}
+				<div className="pt-4 border-t border-border/20">
+					<LastCommit />
+				</div>
+
+				{/* GitHub Activity Demo */}
+				<div className="pt-8 border-t border-border/20">
+					<FyncGithubDemo />
+				</div>
 			</div>
 		</div>
 	);
