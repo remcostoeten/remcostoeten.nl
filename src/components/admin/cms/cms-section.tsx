@@ -91,6 +91,18 @@ export function CMSSection() {
 		}
 	}
 
+	async function handleBulkDeletePages(pageIds: string[]) {
+		try {
+			await actions.bulkDeletePages(pageIds);
+			toast.success(
+				"Pages deleted",
+				`${pageIds.length} page${pageIds.length === 1 ? '' : 's'} have been removed.`
+			);
+		} catch (error) {
+			toast.error("Failed to delete pages", "Please try again.");
+		}
+	}
+
 	function handleBackToPages() {
 		actions.setCurrentPage(null);
 	}
@@ -130,6 +142,19 @@ export function CMSSection() {
 				// Return to editing without saving
 				if (currentPage) {
 					actions.setCurrentPage(null);
+				}
+			},
+			"cmd+a": (e) => {
+				// Select all pages (when not in editor)
+				if (!currentPage) {
+					e.preventDefault();
+					// This will be handled in the PagesList component
+				}
+			},
+			"delete": () => {
+				// Delete selected pages (when not in editor)
+				if (!currentPage) {
+					// This will be handled in the PagesList component
 				}
 			},
 		},
@@ -188,6 +213,7 @@ export function CMSSection() {
 				onCreateHomepage={handleCreateHomepage}
 				onDelete={handleDeletePage}
 				onRefresh={handleRefreshCMSData}
+				onBulkDelete={handleBulkDeletePages}
 			/>
 			<KeyboardShortcutsLegend />
 			<CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />

@@ -33,10 +33,12 @@ export default function SegmentEditor({
 				return "🟢";
 			case "link":
 				return "🔗";
-			case "project-card":
-				return "📦";
-			default:
-				return "📝";
+		case "project-card":
+			return "📦";
+		case "time-widget":
+			return "🕐";
+		default:
+			return "📝";
 		}
 	};
 
@@ -99,6 +101,35 @@ export default function SegmentEditor({
 							rows={4}
 							className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground focus:ring-1 focus:ring-ring focus:border-transparent font-mono"
 							placeholder='{"title": "Project Name", "description": "Description", "technologies": ["React", "TypeScript"]}'
+						/>
+					</div>
+				);
+
+			case "time-widget":
+				return (
+					<div className="mt-2 space-y-2">
+						<label className="block text-xs font-medium text-foreground">
+							Time Widget Configuration (JSON)
+						</label>
+						<textarea
+							value={JSON.stringify(segment.data?.timeWidgetConfig || {
+								id: "widget-1",
+								timezone: "Europe/Amsterdam",
+								format: "24h",
+								showSeconds: true,
+								label: "CEST"
+							}, null, 2)}
+							onChange={(e) => {
+								try {
+									const timeWidgetConfig = JSON.parse(e.target.value);
+									handleDataChange("timeWidgetConfig", timeWidgetConfig);
+								} catch {
+									// Invalid JSON, don't update
+								}
+							}}
+							rows={6}
+							className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground focus:ring-1 focus:ring-ring focus:border-transparent font-mono"
+							placeholder='{"id": "widget-1", "timezone": "Europe/Amsterdam", "format": "24h", "showSeconds": true, "label": "CEST"}'
 						/>
 					</div>
 				);

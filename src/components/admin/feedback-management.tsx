@@ -247,7 +247,7 @@ export function FeedbackManagement({ onUnreadCountChange }: TProps) {
 				</div>
 				<Button
 					onClick={() => fetchFeedbacks(true)}
-					variant="outline"
+					variant="ghost"
 					size="sm"
 					disabled={refreshing}
 				>

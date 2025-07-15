@@ -1,5 +1,6 @@
 import { NowPlaying } from "@/components/dynamic-data/now-playing";
 import { ProjectCard } from "@/components/project-card";
+import { TimeWidget } from "@/components/time-widget";
 import { parseLinkMetadata } from "./link-metadata";
 import { TContentSegment } from "./types";
 
@@ -91,12 +92,19 @@ export function renderSegment(segment: TContentSegment) {
 			);
 		}
 
-		case "spotify-now-playing":
-			return (
-				<span key={segment.id}>
-					<NowPlaying />
-				</span>
-			);
+	case "time-widget":
+		return (
+			<span key={segment.id}>
+				<TimeWidget config={segment.value} />
+			</span>
+		);
+
+	case "spotify-now-playing":
+		return (
+			<span key={segment.id}>
+				<NowPlaying />
+			</span>
+		);
 
 		case "api-endpoint":
 			return <span key={segment.id}>{segment.content}</span>;

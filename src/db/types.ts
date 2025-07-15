@@ -25,23 +25,25 @@ export type TBaseEntity = {
 
 export type TPageContent = {
 	blocks: Array<{
-		id: string;
+		id: number;
 		segments: Array<{
-			id: string;
-			type: string;
-			content: string;
-		}>;
+			id: number;
+		} & (
+			| { type: 'text'; content: string }
+			| { type: 'time-widget'; value: any }
+		)>;
 	}>;
 };
 
 export type TContentSegment = {
-	id: string;
-	type: string;
-	content: string;
-};
+	id: number;
+} & (
+	| { type: 'text'; content: string }
+	| { type: 'time-widget'; value: any }
+);
 
 export type TContentBlock = {
-	id: string;
+	id: number;
 	segments: TContentSegment[];
 };
 
@@ -55,11 +57,21 @@ export function transformDbPageToPageContent(
 	return {
 		blocks: dbPage.blocks.map((block) => ({
 			id: block.id,
-			segments: block.segments.map((segment) => ({
-				id: segment.id,
-				type: segment.type,
-				content: segment.text,
-			})),
+			segments: block.segments.map((segment) => {
+				if (segment.type === 'time-widget') {
+					const metadata = segment.metadata ? JSON.parse(segment.metadata) : {};
+					return {
+						id: segment.id,
+						type: 'time-widget' as const,
+						value: metadata,
+					};
+				}
+				return {
+					id: segment.id,
+					type: 'text' as const,
+					content: segment.text,
+				};
+			}),
 		})),
 	};
 }
@@ -82,12 +94,26 @@ export function transformPageContentToDb(
 			order: blockIndex + 1,
 		});
 
-		block.segments.forEach((segment, segmentIndex) => {
+	block.segments.forEach((segment, segmentIndex) => {
+		if (segment.type === 'time-widget') {
 			segments.push({
 				id: segment.id,
 				blockId: block.id,
 				order: segmentIndex + 1,
-				text: segment.content,
+				text: "",
+				type: segment.type,
+				href: null,
+				target: null,
+				className: null,
+				style: null,
+				metadata: JSON.stringify((segment as any).value || {}),
+			});
+		} else {
+			segments.push({
+				id: segment.id,
+				blockId: block.id,
+				order: segmentIndex + 1,
+				text: (segment as any).content || "",
 				type: segment.type,
 				href: null,
 				target: null,
@@ -95,7 +121,8 @@ export function transformPageContentToDb(
 				style: null,
 				metadata: null,
 			});
-		});
+		}
+	});
 	});
 
 	return { blocks, segments };

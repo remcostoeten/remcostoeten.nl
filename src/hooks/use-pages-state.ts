@@ -268,6 +268,21 @@ export function usePagesState() {
 		}
 	}, []);
 
+	const bulkDeletePages = useCallback(async (pageIds: string[]) => {
+		dispatch({ type: "CLEAR_ERROR" });
+		dispatch({ type: "SET_LOADING", payload: true });
+
+		try {
+			await cmsApiClient.bulkDeletePages(pageIds);
+			dispatch({ type: "DELETE_PAGES_BULK", payload: pageIds });
+		} catch (error) {
+			dispatch({ type: "SET_ERROR", payload: "Failed to bulk delete pages" });
+			throw error;
+		} finally {
+			dispatch({ type: "SET_LOADING", payload: false });
+		}
+	}, []);
+
 	const setCurrentPage = useCallback((page: Page | null) => {
 		dispatch({ type: "SET_CURRENT_PAGE", payload: page });
 	}, []);
@@ -294,6 +309,7 @@ export function usePagesState() {
 			createHomepage,
 			updatePage,
 			deletePage,
+			bulkDeletePages,
 			setCurrentPage,
 			refreshData,
 			clearError,
@@ -303,6 +319,7 @@ export function usePagesState() {
 			createHomepage,
 			updatePage,
 			deletePage,
+			bulkDeletePages,
 			setCurrentPage,
 			refreshData,
 			clearError,

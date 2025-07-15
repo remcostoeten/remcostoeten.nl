@@ -10,7 +10,7 @@ import {
 	RotateCcw,
 	Trash2,
 } from "lucide-react";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { Page } from "@/types/cms";
 
 type TProps = {
@@ -20,6 +20,7 @@ type TProps = {
 	onCreateHomepage?: () => void;
 	onDelete: (pageId: string) => void;
 	onRefresh?: () => void;
+	onBulkDelete?: (pageIds: string[]) => void;
 };
 
 function formatTimeAgo(date: Date): string {
@@ -108,17 +109,31 @@ function PageItem({
 	index,
 	onEdit,
 	onDelete,
+	onSelect,
+	selected,
 }: {
 	page: Page;
 	index: number;
 	onEdit: (page: Page) => void;
 	onDelete: (pageId: string) => void;
+	onSelect: (pageId: string, selected: boolean) => void;
+	selected: boolean;
 }) {
 	const handleEdit = useCallback(() => onEdit(page), [onEdit, page]);
 	const handleDelete = useCallback(
 		() => onDelete(page.id),
 		[onDelete, page.id],
 	);
+	const handleSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+		onSelect(page.id, e.target.checked);
+	}, [onSelect, page.id]);
+
+	const handleRowClick = useCallback((e: React.MouseEvent) => {
+		if (e.altKey && page.slug !== "home") {
+			e.preventDefault();
+			onSelect(page.id, !selected);
+		}
+	}, [onSelect, page.id, page.slug, selected]);
 
 	const timeAgo = useMemo(
 		() => formatTimeAgo(page.updatedAt),
@@ -131,7 +146,8 @@ function PageItem({
 
 	return (
 		<motion.div
-			className="group hover:bg-secondary/30 transition-all duration-200"
+			onClick={handleRowClick}
+			className="group hover:bg-secondary/30 transition-all duration-200 cursor-pointer"
 			variants={listItemVariants}
 			initial="hidden"
 			animate="visible"
@@ -146,6 +162,16 @@ function PageItem({
 			<div className="p-6 flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6">
 				<div className="flex-1 min-w-0">
 					<div className="flex items-start gap-4">
+						{page.slug !== "home" && (
+							<div className="flex-shrink-0 mt-1">
+								<input
+									type="checkbox"
+									checked={selected}
+									onChange={handleSelect}
+									className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+								/>
+							</div>
+						)}
 						<div className="flex-shrink-0 w-10 h-10 bg-secondary rounded-lg flex items-center justify-center border border-border">
 							<FileText className="w-5 h-5 text-muted-foreground" />
 						</div>
@@ -246,8 +272,10 @@ function PagesList({
 	onCreateHomepage,
 	onDelete,
 	onRefresh,
+	onBulkDelete,
 }: TProps) {
 	const totalPages = pages.length;
+	const [selectedPages, setSelectedPages] = useState<string[]>([]);
 
 	// Memoize computed values
 	const hasHomepage = useMemo(
@@ -266,6 +294,34 @@ function PagesList({
 			[...pages].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()),
 		[pages],
 	);
+
+	const handleSelect = useCallback((pageId: string, selected: boolean) => {
+		setSelectedPages(prev => {
+			if (selected) {
+				return [...prev, pageId];
+			} else {
+				return prev.filter(id => id !== pageId);
+			}
+		});
+	}, []);
+
+	const handleBulkDelete = useCallback(() => {
+		if (selectedPages.length > 0 && onBulkDelete) {
+			if (confirm(`Are you sure you want to delete ${selectedPages.length} selected pages?`)) {
+				onBulkDelete(selectedPages);
+				setSelectedPages([]);
+			}
+		}
+	}, [selectedPages, onBulkDelete]);
+
+	const handleSelectAll = useCallback((selected: boolean) => {
+		if (selected) {
+			const selectablePages = pages.filter(p => p.slug !== "home").map(p => p.id);
+			setSelectedPages(selectablePages);
+		} else {
+			setSelectedPages([]);
+		}
+	}, [pages]);
 
 	if (totalPages === 0) {
 		return <EmptyState onCreate={onCreate} />;
@@ -286,7 +342,7 @@ function PagesList({
 					{onRefresh && (
 						<motion.button
 							onClick={onRefresh}
-							className="flex items-center px-4 py-2.5 bg-accent hover:bg-accent/90 text-accent-foreground rounded-lg transition-all duration-200 border border-border"
+					className="flex items-center px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 border border-border"
 							title="Refresh CMS data (development)"
 						>
 							<RotateCcw className="w-4 h-4 mr-2" />
@@ -296,7 +352,7 @@ function PagesList({
 					{onCreateHomepage && !hasHomepage && (
 						<motion.button
 							onClick={onCreateHomepage}
-							className="flex items-center px-4 py-2.5 bg-accent hover:bg-accent/80 text-accent-foreground rounded-lg transition-all duration-200 border border-border"
+					className="flex items-center px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 border border-border"
 						>
 							<Home className="w-4 h-4 mr-2" />
 							Create Homepage
@@ -311,6 +367,40 @@ function PagesList({
 					</motion.button>
 				</div>
 			</div>
+
+			{/* Bulk Actions */}
+			{selectedPages.length > 0 && (
+				<div className="flex items-center justify-between bg-secondary/20 border border-border rounded-lg p-4 mb-4">
+					<div className="flex items-center gap-3">
+						<input
+							type="checkbox"
+							checked={selectedPages.length === pages.filter(p => p.slug !== "home").length}
+							onChange={(e) => handleSelectAll(e.target.checked)}
+							className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
+						/>
+						<span className="text-sm font-medium">
+							{selectedPages.length} page{selectedPages.length === 1 ? '' : 's'} selected
+						</span>
+					</div>
+					<div className="flex items-center gap-2">
+						<motion.button
+							whileHover={{ opacity: 0.8 }}
+							whileTap={{ opacity: 0.6 }}
+							onClick={handleBulkDelete}
+							className="flex items-center px-3 py-1.5 bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors text-sm font-medium"
+						>
+							<Trash2 className="w-4 h-4 mr-1" />
+							Delete Selected
+						</motion.button>
+						<button
+							onClick={() => setSelectedPages([])}
+							className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+						>
+							Clear
+						</button>
+					</div>
+				</div>
+			)}
 
 			<motion.div
 				variants={containerVariants}
@@ -327,6 +417,8 @@ function PagesList({
 								index={index}
 								onEdit={onEdit}
 								onDelete={onDelete}
+								onSelect={handleSelect}
+								selected={selectedPages.includes(page.id)}
 							/>
 						))}
 					</AnimatePresence>
