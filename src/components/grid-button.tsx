@@ -670,30 +670,38 @@ export function GridButton({
 			type={type}
 			variant={variant}
 			size={size}
-			className={`px-4 h-11 gap-x-3 relative ${className || ""}`}
+			className={`px-4 h-11 gap-x-3 relative bg-opacity-50 ${className || ""}`}
 			asChild
 		>
 			<motion.button
 				layout
-				whileHover={{ scale: 1.05 }}
-				whileTap={{ scale: 0.95 }}
+				whileHover={{ opacity: 0.9 }}
+				whileTap={{ opacity: 0.8 }}
+				className="relative w-full h-full flex items-center justify-center"
 			>
-				<motion.div layout="preserve-aspect">
+				{/* Grid background */}
+				<motion.div
+					layout="preserve-aspect"
+					className="absolute inset-0 flex items-center justify-start pl-4 pointer-events-none"
+				>
 					<MotionGrid
 						gridSize={gridSize}
 						frames={frames}
-						cellClassName={cellClassName || "size-[3px]"}
+						cellClassName={cellClassName || "size-[2px]"}
 						cellActiveClassName={
-							cellActiveClassName || "bg-white/70 dark:bg-black/70"
+							cellActiveClassName || "bg-white/40 dark:bg-black/40"
 						}
 						cellInactiveClassName={
-							cellInactiveClassName || "bg-white/20 dark:bg-black/20"
+							cellInactiveClassName || "bg-white/10 dark:bg-black/10"
 						}
 						animate={isLoading}
 					/>
 				</motion.div>
 
-				<span className="ml-2">{isLoading ? "Processing..." : children}</span>
+				{/* Content */}
+				<div className="relative z-10 flex items-center justify-center w-full">
+					{isLoading ? "Processing..." : children}
+				</div>
 			</motion.button>
 		</Button>
 	);
@@ -732,7 +740,7 @@ export const MotionGridDemo = () => {
 					/>
 				</motion.div>
 
-				<span className="ml-2">{states[state].label}</span>
+				<article className="ml-2">{states[state].label}</article>
 			</motion.button>
 		</Button>
 	);

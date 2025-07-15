@@ -1,6 +1,7 @@
 # Global Progress Indicator System
 
-This system provides a global progress indicator using `nprogress` with React hooks and utility functions for common async operations.
+This system provides a global progress indicator using `nprogress` with React hooks and utility
+functions for common async operations.
 
 ## Features
 
@@ -11,7 +12,8 @@ This system provides a global progress indicator using `nprogress` with React ho
 
 ## Installation
 
-The system is already installed and configured. The `nprogress` package is installed and the system is integrated into the app layout.
+The system is already installed and configured. The `nprogress` package is installed and the
+system is integrated into the app layout.
 
 ## Usage
 
@@ -166,7 +168,8 @@ The progress bar appears at the top of the page with a subtle glow effect.
 
 ## Integration
 
-The system is automatically integrated into your app layout via the `<Providers>` component, which includes the `<ProgressBar>` component that handles the visual progress indicator.
+The system is automatically integrated into your app layout via the `<Providers>` component,
+which includes the `<ProgressBar>` component that handles the visual progress indicator.
 
 ## Examples
 

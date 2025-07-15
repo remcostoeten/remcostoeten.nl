@@ -1,0 +1,30 @@
+{
+  "patterns": [
+    "**/*.log",
+    "**/*.tmp",
+    "**/temp/**",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/*.backup",
+    "**/*.bak",
+    "**/*.cache",
+    "**/coverage/**",
+    "**/.nyc_output/**"
+  ],
+  "allowlist": [
+    "node_modules/**",
+    ".git/**",
+    ".next/**",
+    "dist/**",
+    "build/**",
+    "public/**",
+    "src/**",
+    "scripts/**",
+    "*.md",
+    "*.json",
+    "*.js",
+    "*.ts",
+    "*.tsx",
+    "*.jsx"
+  ]
+}

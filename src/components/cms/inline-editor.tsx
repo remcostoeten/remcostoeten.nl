@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { BlockStyles, ContentSegment } from "@/types/cms";
+import { SwappingWordEffect } from "@/components/swapping-word-effect";
 
 interface InlineEditorProps {
 	segment: ContentSegment;
@@ -191,20 +192,30 @@ export default function InlineEditor({
 					</span>
 				);
 
-			case "project-card":
-				return (
-					<span
-						className={`${baseClasses} font-medium px-1 py-0.5 rounded`}
-						style={{
-							backgroundColor: "hsl(var(--highlight-product) / 0.2)",
-							color: "hsl(var(--highlight-product))",
-						}}
-					>
-						{segment.content}
-					</span>
-				);
+		case "project-card":
+			return (
+				<span
+					className={`${baseClasses} font-medium px-1 py-0.5 rounded`}
+					style={{
+						backgroundColor: "hsl(var(--highlight-product) / 0.2)",
+						color: "hsl(var(--highlight-product))",
+					}}
+				>
+					{segment.content}
+				</span>
+			);
 
-			default:
+		case "swapping-word-effect":
+			return (
+				<SwappingWordEffect
+					words={segment.data?.words || ["word1", "word2", "word3"]}
+					interval={segment.data?.interval || 3000}
+					initialWord={segment.data?.initialWord}
+					className={baseClasses}
+				/>
+			);
+
+		default:
 				return (
 					<span
 						className={baseClasses}
@@ -373,13 +384,13 @@ export default function InlineEditor({
 								Type
 							</label>
 							<div className="flex gap-2">
-								{[
+								[
 									"text",
 									"highlighted",
 									"link",
-									"github-commits",
 									"spotify-now-playing",
 									"api-endpoint",
+									"swapping-word-effect",
 								].map((type) => (
 									<button
 										key={type}
@@ -396,12 +407,7 @@ export default function InlineEditor({
 															}
 														: type === "link"
 															? { url: "", ...prev.data }
-															: type === "github-commits"
-																? {
-																		repo: "remco-stoeten/remcostoeten.nl",
-																		...prev.data,
-																	}
-																: type === "api-endpoint"
+															: type === "api-endpoint"
 																	? {
 																			endpointUrl: "",
 																			refreshInterval: 60000,
@@ -413,7 +419,14 @@ export default function InlineEditor({
 																				refreshInterval: 30000,
 																				...prev.data,
 																			}
-																		: prev.data,
+																		: type === "swapping-word-effect"
+																			? {
+																					words: ["word1", "word2", "word3"],
+																					interval: 3000,
+																					initialWord: "word1",
+																					...prev.data,
+																				}
+																			: prev.data,
 											}));
 										}}
 										className={`px-3 py-1 text-xs rounded transition-colors ${
@@ -473,65 +486,6 @@ export default function InlineEditor({
 									className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 									placeholder="https://example.com"
 								/>
-							</div>
-						)}
-
-						{/* Repository for github-commits */}
-						{editingSegment.type === "github-commits" && (
-							<div className="space-y-3">
-								<div>
-									<label className="block text-xs font-medium text-foreground mb-2">
-										Repository
-									</label>
-									<input
-										type="text"
-										value={
-											editingSegment.data?.repo ||
-											"remco-stoeten/remcostoeten.nl"
-										}
-										onChange={(e) => updateSegmentData("repo", e.target.value)}
-										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-										placeholder="owner/repository"
-									/>
-								</div>
-								<div>
-									<label className="block text-xs font-medium text-foreground mb-2">
-										Refresh Interval (ms)
-									</label>
-									<input
-										type="number"
-										value={editingSegment.data?.refreshInterval || 60000}
-										onChange={(e) =>
-											updateSegmentData(
-												"refreshInterval",
-												parseInt(e.target.value),
-											)
-										}
-										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-										placeholder="60000"
-									/>
-								</div>
-								<div>
-									<label className="block text-xs font-medium text-foreground mb-2">
-										Template (optional)
-									</label>
-									<textarea
-										value={editingSegment.data?.template || ""}
-										onChange={(e) =>
-											updateSegmentData("template", e.target.value)
-										}
-										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
-										placeholder="Template string"
-									/>
-								</div>
-								<button
-									onClick={() =>
-										alert("Preview Mode: GitHub Commits - Not yet implemented")
-									}
-									className="px-3 py-1 text-xs bg-muted text-muted-foreground rounded hover:bg-muted/80 transition-colors"
-								>
-									Preview
-								</button>
 							</div>
 						)}
 
@@ -651,6 +605,54 @@ export default function InlineEditor({
 								>
 									Preview
 								</button>
+							</div>
+						)}
+
+						{/* Swapping Word Effect configuration */}
+						{editingSegment.type === "swapping-word-effect" && (
+							<div className="space-y-3">
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Words (comma-separated)
+									</label>
+									<input
+										type="text"
+										value={editingSegment.data?.words?.join(", ") || ""}
+										onChange={(e) =>
+											updateSegmentData("words", e.target.value.split(", ").map(w => w.trim()))
+										}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="developer, designer, creator"
+									/>
+								</div>
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Swap Interval (ms)
+									</label>
+									<input
+										type="number"
+										value={editingSegment.data?.interval || 3000}
+										onChange={(e) =>
+											updateSegmentData("interval", parseInt(e.target.value))
+										}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="3000"
+									/>
+								</div>
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Initial Word
+									</label>
+									<input
+										type="text"
+										value={editingSegment.data?.initialWord || ""}
+										onChange={(e) =>
+											updateSegmentData("initialWord", e.target.value)
+										}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="Leave empty to start with first word"
+									/>
+								</div>
 							</div>
 						)}
 

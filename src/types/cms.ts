@@ -35,9 +35,9 @@ export interface ContentSegment {
 		| "highlighted"
 		| "link"
 		| "project-card"
-		| "github-commits"
 		| "spotify-now-playing"
-		| "api-endpoint";
+		| "api-endpoint"
+		| "swapping-word-effect";
 	content: string;
 	data?: {
 		url?: string;
@@ -54,13 +54,14 @@ export interface ContentSegment {
 			url?: string;
 			github?: string;
 		};
-		// GitHub commits data
-		repo?: string;
-		perPage?: number;
 		// API endpoint data
 		endpointUrl?: string;
 		refreshInterval?: number;
 		template?: string;
+		// Swapping word effect data
+		words?: string[];
+		interval?: number;
+		initialWord?: string;
 	};
 }
 

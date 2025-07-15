@@ -36,6 +36,46 @@ export class CmsApiClient {
 		return response.json();
 	}
 
+	async getHomePage() {
+		const response = await fetch(`${this.baseUrl}/home`);
+
+		if (!response.ok) {
+			throw new Error(
+				`Failed to fetch homepage content: ${response.statusText}`,
+			);
+		}
+
+		const result = await response.json();
+
+		// Handle the API response format
+		if (result.success && result.data) {
+			return result.data;
+		}
+
+		throw new Error("Invalid homepage content response format");
+	}
+
+	async ensureHomepageContent() {
+		const response = await fetch(`${this.baseUrl}/home`, {
+			method: "POST",
+		});
+
+		if (!response.ok) {
+			throw new Error(
+				`Failed to ensure homepage content: ${response.statusText}`,
+			);
+		}
+
+		const result = await response.json();
+
+		// Handle the API response format
+		if (result.success && result.data) {
+			return result.data;
+		}
+
+		throw new Error("Invalid homepage content response format");
+	}
+
 	async updatePage(slug: string, content: TPageContent) {
 		const response = await fetch(`${this.baseUrl}/pages/${slug}`, {
 			method: "PUT",
@@ -69,6 +109,22 @@ export class CmsApiClient {
 
 		if (!response.ok) {
 			throw new Error(`Failed to fetch pages: ${response.statusText}`);
+		}
+
+		return response.json();
+	}
+
+	async bulkDeletePages(pageIds: string[]) {
+		const response = await fetch(`${this.baseUrl}/pages/bulk-delete`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ pageIds }),
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to bulk delete pages: ${response.statusText}`);
 		}
 
 		return response.json();

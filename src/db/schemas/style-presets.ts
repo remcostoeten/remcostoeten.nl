@@ -4,6 +4,7 @@ import {
 	text,
 	uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 
 export const stylePresets = sqliteTable(
 	"style_presets",
@@ -13,8 +14,8 @@ export const stylePresets = sqliteTable(
 		type: text("type").notNull(),
 		className: text("class_name"),
 		style: text("style"),
-		createdAt: text("created_at").notNull().default("CURRENT_TIMESTAMP"),
-		updatedAt: text("updated_at").notNull().default("CURRENT_TIMESTAMP"),
+		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
 	(table) => [uniqueIndex("style_presets_name_unique").on(table.name)],
 );

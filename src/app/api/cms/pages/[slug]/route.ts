@@ -3,11 +3,12 @@ import { createCmsFactory } from "@/lib/cms/cms-factory";
 
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: { slug: string } },
+	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	try {
+		const { slug } = await params;
 		const cmsFactory = createCmsFactory();
-		const page = await cmsFactory.readPage(params.slug);
+		const page = await cmsFactory.readPage(slug);
 
 		if (!page) {
 			return NextResponse.json({ error: "Page not found" }, { status: 404 });
@@ -25,15 +26,16 @@ export async function GET(
 
 export async function PUT(
 	request: NextRequest,
-	{ params }: { params: { slug: string } },
+	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	try {
+		const { slug } = await params;
 		const data = await request.json();
 		const cmsFactory = createCmsFactory();
 
 		// Save page content
 		if (data.content) {
-			await cmsFactory.savePageContent(params.slug, data.content);
+			await cmsFactory.savePageContent(slug, data.content);
 		}
 
 		return NextResponse.json({ success: true });
@@ -48,13 +50,14 @@ export async function PUT(
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: { slug: string } },
+	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	try {
+		const { slug } = await params;
 		const cmsFactory = createCmsFactory();
 
 		// First get the page to find its ID
-		const page = await cmsFactory.readPage(params.slug);
+		const page = await cmsFactory.readPage(slug);
 		if (!page) {
 			return NextResponse.json({ error: "Page not found" }, { status: 404 });
 		}

@@ -50,3 +50,54 @@ export async function GET(request: NextRequest) {
 		return createErrorResponse("Internal server error", 500);
 	}
 }
+
+export async function POST(request: NextRequest) {
+	try {
+		console.log("[CMS Home API] Ensuring home page content exists...");
+
+		// Check if we're in build mode and return early
+		if (
+			process.env.NODE_ENV === "production" &&
+			!process.env.TURSO_DATABASE_URL
+		) {
+			return createErrorResponse("Database not configured", 503);
+		}
+
+		// Import the seeding function
+		const { ensureHomeContentBlocks } = await import(
+			"@/lib/cms/seed-home-content"
+		);
+
+		// Ensure homepage content exists (will seed if needed)
+		await ensureHomeContentBlocks();
+
+		// Get the updated content
+		const pageContent = await getHomePageContent(db);
+		console.log(
+			"[CMS Home API] Ensured content blocks:",
+			pageContent.blocks.length,
+		);
+
+		// Validate the page content with Zod
+		const contentValidation = validateResponseData(
+			pageContent,
+			PageContentSchema,
+		);
+		if (!contentValidation.success) {
+			return createErrorResponse(
+				contentValidation.error || "Validation failed",
+				500,
+			);
+		}
+
+		const response: THomePageResponse = {
+			success: true,
+			data: contentValidation.data,
+		};
+
+		return NextResponse.json(response, { status: 200 });
+	} catch (error) {
+		console.error("Error ensuring home page content:", error);
+		return createErrorResponse("Internal server error", 500);
+	}
+}

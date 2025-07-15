@@ -1,6 +1,6 @@
 import { ArrowLeft, Edit3, Eye } from "lucide-react";
 import React, { useState } from "react";
-import { APIEndpoint, LastCommit, SpotifyNowPlaying } from "@/components/api";
+import { APIEndpoint, SpotifyNowPlaying } from "@/components/api";
 import { ContentSegment, Page } from "@/types/cms";
 
 type TProps = {
@@ -63,13 +63,6 @@ function renderSegment(segment: ContentSegment) {
 					}}
 				>
 					{segment.content}
-				</span>
-			);
-
-		case "github-commits":
-			return (
-				<span key={segment.id}>
-					<LastCommit repo={segment.data?.repo} />
 				</span>
 			);
 

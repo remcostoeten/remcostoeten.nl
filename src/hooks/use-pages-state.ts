@@ -1,21 +1,20 @@
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useMemo } from "react";
 import { cmsApiClient } from "@/lib/cms/api-client";
 import { TPageContent } from "@/lib/cms/types";
 import { Page } from "@/types/cms";
 import { createNewPage, generateId, generateSlug } from "@/utils/cms-data";
 
-// Action types
 type PagesAction =
 	| { type: "SET_PAGES"; payload: Page[] }
 	| { type: "ADD_PAGE"; payload: Page }
 	| { type: "UPDATE_PAGE"; payload: { id: string; page: Page } }
 	| { type: "DELETE_PAGE"; payload: string }
+	| { type: "DELETE_PAGES_BULK"; payload: string[] }
 	| { type: "SET_CURRENT_PAGE"; payload: Page | null }
 	| { type: "SET_LOADING"; payload: boolean }
 	| { type: "SET_ERROR"; payload: string | null }
 	| { type: "CLEAR_ERROR" };
 
-// State type
 interface PagesState {
 	pages: Page[];
 	currentPage: Page | null;
@@ -23,7 +22,6 @@ interface PagesState {
 	error: string | null;
 }
 
-// Initial state
 const initialState: PagesState = {
 	pages: [],
 	currentPage: null,
@@ -31,7 +29,6 @@ const initialState: PagesState = {
 	error: null,
 };
 
-// Reducer function
 function pagesReducer(state: PagesState, action: PagesAction): PagesState {
 	switch (action.type) {
 		case "SET_PAGES":
@@ -52,6 +49,21 @@ function pagesReducer(state: PagesState, action: PagesAction): PagesState {
 				pages: state.pages.filter((page) => page.id !== action.payload),
 				currentPage:
 					state.currentPage?.id === action.payload ? null : state.currentPage,
+				error: null,
+			};
+		case "DELETE_PAGES_BULK":
+			return {
+				...state,
+				pages: state.pages.filter((page) => {
+					if (page.slug === "home") {
+						return true;
+					}
+					return !action.payload.includes(page.id);
+				}),
+				currentPage:
+					state.currentPage && action.payload.includes(state.currentPage.id)
+						? null
+						: state.currentPage,
 				error: null,
 			};
 		case "SET_CURRENT_PAGE":
@@ -138,137 +150,192 @@ export function usePagesState() {
 		}
 	}, [state.pages]);
 
-	// Actions
-	const actions = {
-		// Create a new page
-		createPage: useCallback(() => {
-			dispatch({ type: "CLEAR_ERROR" });
+	// Actions - separate useCallback hooks to maintain hook order
+	const createPage = useCallback(() => {
+		dispatch({ type: "CLEAR_ERROR" });
 
-			try {
-				const baseNewPage = createNewPage();
-				const newPage: Page = {
-					...baseNewPage,
-					id: generateId(),
-					slug: generateSlug(baseNewPage.title),
-				};
+		try {
+			const baseNewPage = createNewPage();
+			const newPage: Page = {
+				...baseNewPage,
+				id: generateId(),
+				slug: generateSlug(baseNewPage.title),
+			};
 
-				dispatch({ type: "ADD_PAGE", payload: newPage });
-				dispatch({ type: "SET_CURRENT_PAGE", payload: newPage });
+			dispatch({ type: "ADD_PAGE", payload: newPage });
+			dispatch({ type: "SET_CURRENT_PAGE", payload: newPage });
 
-				return newPage;
-			} catch (error) {
-				dispatch({ type: "SET_ERROR", payload: "Failed to create page" });
-				throw error;
-			}
-		}, []),
+			return newPage;
+		} catch (error) {
+			dispatch({ type: "SET_ERROR", payload: "Failed to create page" });
+			throw error;
+		}
+	}, []);
 
-		// Create homepage
-		createHomepage: useCallback(() => {
-			dispatch({ type: "CLEAR_ERROR" });
+	const createHomepage = useCallback(async () => {
+		dispatch({ type: "CLEAR_ERROR" });
+		dispatch({ type: "SET_LOADING", payload: true });
 
-			try {
-				// Check if homepage already exists
-				const existingHomepage = state.pages.find((p) => p.slug === "home");
-				if (existingHomepage) {
-					return existingHomepage;
-				}
-
-				const homePage: Page = {
-					id: generateId(),
-					title: "Home",
-					slug: "home",
-					description: "Welcome to my website",
-					isPublished: true,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					blocks: [],
-				};
-
-				dispatch({ type: "ADD_PAGE", payload: homePage });
-
-				return homePage;
-			} catch (error) {
-				dispatch({ type: "SET_ERROR", payload: "Failed to create homepage" });
-				throw error;
-			}
-		}, [state.pages]),
-
-		// Update a page
-		updatePage: useCallback(async (pageId: string, updatedPage: Page) => {
-			dispatch({ type: "CLEAR_ERROR" });
-			dispatch({ type: "SET_LOADING", payload: true });
-
-			try {
-				// Save to database via API
-				const pageContent: TPageContent = {
-					blocks: updatedPage.blocks.map((block) => ({
-						...block,
-						blockType: block.type,
-						segments: block.content,
-					})),
-				};
-
-				await cmsApiClient.updatePage(updatedPage.slug, pageContent);
-
-				// Update local state
-				dispatch({
-					type: "UPDATE_PAGE",
-					payload: { id: pageId, page: updatedPage },
-				});
-				dispatch({ type: "SET_CURRENT_PAGE", payload: null });
-
-				return updatedPage;
-			} catch (error) {
-				dispatch({ type: "SET_ERROR", payload: "Failed to save page" });
-				throw error;
-			} finally {
+		try {
+			const existingHomepage = state.pages.find((p) => p.slug === "home");
+			if (existingHomepage) {
 				dispatch({ type: "SET_LOADING", payload: false });
+				return existingHomepage;
 			}
-		}, []),
 
-		// Delete a page
-		deletePage: useCallback((pageId: string) => {
-			dispatch({ type: "CLEAR_ERROR" });
+			// First, ensure the homepage content exists in the database
+			await cmsApiClient.ensureHomepageContent();
 
-			try {
-				dispatch({ type: "DELETE_PAGE", payload: pageId });
-			} catch (error) {
-				dispatch({ type: "SET_ERROR", payload: "Failed to delete page" });
-				throw error;
-			}
-		}, []),
+			// Load the homepage content from the database
+			const homePageContent = await cmsApiClient.getHomePage();
 
-		// Set current page for editing
-		setCurrentPage: useCallback((page: Page | null) => {
-			dispatch({ type: "SET_CURRENT_PAGE", payload: page });
-		}, []),
+			// Convert database content to frontend page format
+			const homePage: Page = {
+				id: generateId(),
+				title: "Home",
+				slug: "home",
+				description: "Welcome to my website",
+				isPublished: true,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				blocks: homePageContent.blocks.map((block) => ({
+					id: block.id.toString(),
+					type: block.blockType,
+					order: block.order,
+					content: block.segments.map((segment) => ({
+						id: segment.id.toString(),
+						type: segment.type,
+						content: segment.content,
+						order: segment.order,
+						href: segment.href || undefined,
+						target: segment.target || undefined,
+						className: segment.className || undefined,
+						style: segment.style || undefined,
+						metadata: segment.metadata || undefined,
+					})),
+				})),
+			};
 
-		// Refresh all data
-		refreshData: useCallback(() => {
-			dispatch({ type: "CLEAR_ERROR" });
+			dispatch({ type: "ADD_PAGE", payload: homePage });
+			dispatch({ type: "SET_LOADING", payload: false });
 
-			try {
-				PagesStorage.clearAll();
-				dispatch({ type: "SET_PAGES", payload: [] });
-			} catch (error) {
-				dispatch({ type: "SET_ERROR", payload: "Failed to refresh data" });
-				throw error;
-			}
-		}, []),
+			return homePage;
+		} catch (error) {
+			dispatch({ type: "SET_ERROR", payload: "Failed to create homepage" });
+			dispatch({ type: "SET_LOADING", payload: false });
+			throw error;
+		}
+	}, [state.pages]);
 
-		// Clear error
-		clearError: useCallback(() => {
-			dispatch({ type: "CLEAR_ERROR" });
-		}, []),
-	};
+	const updatePage = useCallback(async (pageId: string, updatedPage: Page) => {
+		dispatch({ type: "CLEAR_ERROR" });
+		dispatch({ type: "SET_LOADING", payload: true });
+
+		try {
+			const pageContent: TPageContent = {
+				blocks: updatedPage.blocks.map((block) => ({
+					...block,
+					blockType: block.type,
+					segments: block.content,
+				})),
+			};
+
+			await cmsApiClient.updatePage(updatedPage.slug, pageContent);
+
+			dispatch({
+				type: "UPDATE_PAGE",
+				payload: { id: pageId, page: updatedPage },
+			});
+			dispatch({ type: "SET_CURRENT_PAGE", payload: null });
+
+			return updatedPage;
+		} catch (error) {
+			dispatch({ type: "SET_ERROR", payload: "Failed to save page" });
+			throw error;
+		} finally {
+			dispatch({ type: "SET_LOADING", payload: false });
+		}
+	}, []);
+
+	const deletePage = useCallback((pageId: string) => {
+		dispatch({ type: "CLEAR_ERROR" });
+
+		try {
+			dispatch({ type: "DELETE_PAGE", payload: pageId });
+		} catch (error) {
+			dispatch({ type: "SET_ERROR", payload: "Failed to delete page" });
+			throw error;
+		}
+	}, []);
+
+	const bulkDeletePages = useCallback(async (pageIds: string[]) => {
+		dispatch({ type: "CLEAR_ERROR" });
+		dispatch({ type: "SET_LOADING", payload: true });
+
+		try {
+			await cmsApiClient.bulkDeletePages(pageIds);
+			dispatch({ type: "DELETE_PAGES_BULK", payload: pageIds });
+		} catch (error) {
+			dispatch({ type: "SET_ERROR", payload: "Failed to bulk delete pages" });
+			throw error;
+		} finally {
+			dispatch({ type: "SET_LOADING", payload: false });
+		}
+	}, []);
+
+	const setCurrentPage = useCallback((page: Page | null) => {
+		dispatch({ type: "SET_CURRENT_PAGE", payload: page });
+	}, []);
+
+	const refreshData = useCallback(() => {
+		dispatch({ type: "CLEAR_ERROR" });
+
+		try {
+			PagesStorage.clearAll();
+			dispatch({ type: "SET_PAGES", payload: [] });
+		} catch (error) {
+			dispatch({ type: "SET_ERROR", payload: "Failed to refresh data" });
+			throw error;
+		}
+	}, []);
+
+	const clearError = useCallback(() => {
+		dispatch({ type: "CLEAR_ERROR" });
+	}, []);
+
+	const actions = useMemo(
+		() => ({
+			createPage,
+			createHomepage,
+			updatePage,
+			deletePage,
+			bulkDeletePages,
+			setCurrentPage,
+			refreshData,
+			clearError,
+		}),
+		[
+			createPage,
+			createHomepage,
+			updatePage,
+			deletePage,
+			bulkDeletePages,
+			setCurrentPage,
+			refreshData,
+			clearError,
+		],
+	);
 
 	// Computed values
-	const computed = {
-		totalPages: state.pages.length,
-		hasHomepage: state.pages.some((p) => p.slug === "home"),
-		publishedPages: state.pages.filter((p) => p.isPublished),
-		pageCountText: `${state.pages.length} ${state.pages.length === 1 ? "page" : "pages"}`,
-	};
+	const computed = useMemo(
+		() => ({
+			totalPages: state.pages.length,
+			hasHomepage: state.pages.some((p) => p.slug === "home"),
+			publishedPages: state.pages.filter((p) => p.isPublished),
+			pageCountText: `${state.pages.length} ${state.pages.length === 1 ? "page" : "pages"}`,
+		}),
+		[state.pages],
+	);
 
 	return {
 		...state,

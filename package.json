@@ -14,7 +14,9 @@
 		"gen": "drizzle-kit generate",
 		"studio": "drizzle-kit studio",
 		"seed": "tsx src/db/seed-home.ts",
-		"seed:home": "tsx scripts/seed-home-content.ts"
+		"seed:home": "tsx scripts/seed-home-content.ts",
+		"test": "tsx src/hooks/__tests__/use-pages-state.test.ts",
+		"clean:redundant": "tsx scripts/cleanup-redundant-files.ts"
 	},
 	"dependencies": {
 		"@emotion/is-prop-valid": "latest",
@@ -46,11 +48,9 @@
 		"@radix-ui/react-toggle": "latest",
 		"@radix-ui/react-toggle-group": "latest",
 		"@radix-ui/react-tooltip": "latest",
-		"@remcostoeten/fync-github": "^3.0.0",
 		"@t3-oss/env-nextjs": "^0.13.8",
 		"@tanstack/react-query": "latest",
 		"@types/bcryptjs": "^2.4.6",
-		"@types/jsonwebtoken": "^9.0.10",
 		"@types/nprogress": "^0.2.3",
 		"bcryptjs": "^3.0.2",
 		"class-variance-authority": "^0.7.1",
@@ -60,6 +60,7 @@
 		"dotenv": "^17.2.0",
 		"drizzle-orm": "^0.44.2",
 		"embla-carousel-react": "latest",
+		"fast-glob": "^3.3.3",
 		"framer-motion": "^12.23.3",
 		"gheasy": "^1.0.0",
 		"husky": "^9.1.7",
@@ -87,7 +88,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.1.1",
 		"@types/node": "^22",
-		"@types/pg": "^8.10.0",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"drizzle-kit": "^0.31.4",

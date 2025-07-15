@@ -156,12 +156,9 @@ export function FeedbackManagement({ onUnreadCountChange }: TProps) {
 		}
 	}
 
-	useEffect(
-		function loadFeedbacks() {
-			fetchFeedbacks();
-		},
-		[fetchFeedbacks],
-	);
+	useEffect(function loadFeedbacks() {
+		fetchFeedbacks();
+	}, []);
 
 	if (loading) {
 		return (
@@ -250,7 +247,7 @@ export function FeedbackManagement({ onUnreadCountChange }: TProps) {
 				</div>
 				<Button
 					onClick={() => fetchFeedbacks(true)}
-					variant="outline"
+					variant="ghost"
 					size="sm"
 					disabled={refreshing}
 				>

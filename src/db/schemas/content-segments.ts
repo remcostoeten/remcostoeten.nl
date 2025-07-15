@@ -1,4 +1,5 @@
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 
 export const contentSegments = sqliteTable("content_segments", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
@@ -11,7 +12,7 @@ export const contentSegments = sqliteTable("content_segments", {
 	className: text("class_name"),
 	style: text("style"),
 	metadata: text("metadata"),
-	createdAt: text("created_at").notNull().default("CURRENT_TIMESTAMP"),
-	updatedAt: text("updated_at").notNull().default("CURRENT_TIMESTAMP"),
+	createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+	updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 // Add foreign key in migration: blockId ➜ content_blocks.id ON DELETE CASCADE

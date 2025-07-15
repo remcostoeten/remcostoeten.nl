@@ -17,7 +17,20 @@ const REQUIRED_BLOCK_TYPES = [
 const DEFAULT_CONTENT = [
 	{
 		blockType: "heading",
-		segments: [{ type: "text", content: "Welcome to My Portfolio" }],
+		segments: [
+			{ type: "text", content: "Welcome to My Portfolio" },
+			{ 
+				type: "time-widget", 
+				content: "",
+				metadata: JSON.stringify({
+					id: "tw-header",
+					timezone: "America/New_York",
+					format: "12h",
+					showSeconds: false,
+					label: "Current Time"
+				})
+			}
+		],
 	},
 	{
 		blockType: "paragraph",
@@ -159,7 +172,7 @@ async function seedContentBlocks() {
 				.execute();
 
 			for (let j = 0; j < blockData.segments.length; j++) {
-				const segmentData = blockData.segments[j];
+				const segmentData = blockData.segments[j] as any;
 				const segmentOrder = j + 1;
 
 				console.log(
@@ -171,13 +184,13 @@ async function seedContentBlocks() {
 					.values({
 						blockId: createdBlock.id,
 						order: segmentOrder,
-						text: segmentData.content,
+						text: segmentData.content || "",
 						type: segmentData.type,
 						href: null,
 						target: null,
 						className: null,
 						style: null,
-						metadata: null,
+						metadata: segmentData.metadata || null,
 					})
 					.execute();
 			}

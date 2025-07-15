@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import InlinePageEditor from "@/components/cms/inline-page-editor";
 import { PagesList } from "@/components/cms/pages-list";
 import KeyboardShortcutsLegend from "@/components/cms/keyboard-shortcuts-legend";
@@ -10,15 +10,23 @@ import { usePagesState } from "@/hooks/use-pages-state";
 import { Page } from "@/types/cms";
 
 export function CMSSection() {
-	const { pages, currentPage, isLoading, error, actions, computed } = usePagesState();
+	const { pages, currentPage, isLoading, error, actions, computed } =
+		usePagesState();
 	const toast = useCMSToast();
+	const homepageCreatedRef = useRef(false);
 
 	// Initialize homepage if it doesn't exist (only on first load)
-	useEffect(() => {
-		if (!isLoading && pages.length === 0 && !computed.hasHomepage) {
-			actions.createHomepage();
-		}
-	}, [isLoading, pages.length, computed.hasHomepage]);
+	// DISABLED: Automatic homepage creation to prevent duplicates on refresh
+	// useEffect(() => {
+	// 	if (!isLoading && pages.length === 0 && !computed.hasHomepage && !homepageCreatedRef.current) {
+	// 		homepageCreatedRef.current = true;
+	// 		actions.createHomepage().catch((error) => {
+	// 			console.error('Failed to create homepage:', error);
+	// 			toast.error('Failed to create homepage', 'Please try again.');
+	// 			homepageCreatedRef.current = false;
+	// 		});
+	// 	}
+	// }, [isLoading, pages.length, computed.hasHomepage, actions, toast]);
 
 	function handleEditPage(page: Page) {
 		actions.setCurrentPage(page);
@@ -42,20 +50,30 @@ export function CMSSection() {
 		}
 	}
 
-	function handleCreateHomepage() {
+	async function handleCreateHomepage() {
 		try {
-			actions.createHomepage();
-			toast.success("Homepage created", "Homepage is now available in the CMS!");
+			await actions.createHomepage();
+			toast.success(
+				"Homepage created",
+				"Homepage is now available in the CMS!",
+			);
 		} catch (error) {
 			toast.error("Failed to create homepage", "Please try again.");
 		}
 	}
 
 	function handleRefreshCMSData() {
-		if (confirm("This will clear all CMS data and reload with fresh data. Are you sure?")) {
+		if (
+			confirm(
+				"This will clear all CMS data and reload with fresh data. Are you sure?",
+			)
+		) {
 			try {
 				actions.refreshData();
-				toast.success("CMS data refreshed", "All data has been reset with fresh content!");
+				toast.success(
+					"CMS data refreshed",
+					"All data has been reset with fresh content!",
+				);
 			} catch (error) {
 				toast.error("Failed to refresh CMS data", "Please try again.");
 			}
@@ -70,6 +88,18 @@ export function CMSSection() {
 			} catch (error) {
 				toast.error("Failed to delete page", "Please try again.");
 			}
+		}
+	}
+
+	async function handleBulkDeletePages(pageIds: string[]) {
+		try {
+			await actions.bulkDeletePages(pageIds);
+			toast.success(
+				"Pages deleted",
+				`${pageIds.length} page${pageIds.length === 1 ? '' : 's'} have been removed.`
+			);
+		} catch (error) {
+			toast.error("Failed to delete pages", "Please try again.");
 		}
 	}
 
@@ -89,7 +119,7 @@ export function CMSSection() {
 			},
 			"cmd+h": () => {
 				// Edit homepage
-				const homePage = pages.find(p => p.slug === 'home');
+				const homePage = pages.find((p) => p.slug === "home");
 				if (homePage) {
 					handleEditPage(homePage);
 				}
@@ -103,14 +133,28 @@ export function CMSSection() {
 			"cmd+p": () => {
 				// Preview page
 				if (currentPage) {
-					const url = currentPage.slug === 'home' ? '/' : `/${currentPage.slug}`;
-					window.open(url, '_blank');
+					const url =
+						currentPage.slug === "home" ? "/" : `/${currentPage.slug}`;
+					window.open(url, "_blank");
 				}
 			},
 			"cmd+e": () => {
 				// Return to editing without saving
 				if (currentPage) {
 					actions.setCurrentPage(null);
+				}
+			},
+			"cmd+a": (e) => {
+				// Select all pages (when not in editor)
+				if (!currentPage) {
+					e.preventDefault();
+					// This will be handled in the PagesList component
+				}
+			},
+			"delete": () => {
+				// Delete selected pages (when not in editor)
+				if (!currentPage) {
+					// This will be handled in the PagesList component
 				}
 			},
 		},
@@ -135,7 +179,7 @@ export function CMSSection() {
 			<div className="flex items-center justify-center p-8">
 				<div className="text-center">
 					<p className="text-destructive mb-2">Error: {error}</p>
-					<button 
+					<button
 						onClick={() => actions.clearError()}
 						className="px-4 py-2 bg-secondary text-secondary-foreground rounded hover:bg-secondary/80"
 					>
@@ -169,6 +213,7 @@ export function CMSSection() {
 				onCreateHomepage={handleCreateHomepage}
 				onDelete={handleDeletePage}
 				onRefresh={handleRefreshCMSData}
+				onBulkDelete={handleBulkDeletePages}
 			/>
 			<KeyboardShortcutsLegend />
 			<CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />

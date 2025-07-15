@@ -3,7 +3,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import { ContactForm } from "@/components/contact-form";
-import { FyncGithubDemo } from "@/components/fync-github-demo";
+import { useContactPopover } from "@/hooks/useContactPopover";
 import { renderSegment } from "@/lib/cms/renderSegment";
 import { TContentBlock, TContentSegment, TPageContent } from "@/lib/cms/types";
 
@@ -19,36 +19,37 @@ type TProps = {
 };
 
 export function CMSIndexView({ initialContent }: TProps) {
-	const [currentTime, setCurrentTime] = useState<string>(getFormattedTime());
-	const [isContactHovered, setIsContactHovered] = useState(false);
-	const [shouldOpenAbove, setShouldOpenAbove] = useState(false);
+	const [currentTime, setCurrentTime] = useState<string>("");
+	const {
+		isVisible,
+		shouldOpenAbove,
+		handleMouseEnter,
+		handleMouseLeave,
+		handleClick,
+		handlePopoverMouseEnter,
+		handlePopoverMouseLeave,
+		popoverRootRef,
+	} = useContactPopover();
 	const [homePageContent] = useState<TPageContent>(initialContent);
+
+	useEffect(function initTime() {
+		setCurrentTime(getFormattedTime());
+	}, []);
 
 	useEffect(function setupTimeInterval() {
 		function updateTime() {
 			setCurrentTime(getFormattedTime());
 		}
 
-		const interval = setInterval(updateTime, 1000);
+		const interval = setInterval(updateTime, 600);
 		return function cleanup() {
 			clearInterval(interval);
 		};
 	}, []);
 
-	function handleContactHover(e: React.MouseEvent<HTMLDivElement>) {
-		const rect = e.currentTarget.getBoundingClientRect();
-		const viewportHeight = window.innerHeight;
-		const spaceBelow = viewportHeight - rect.bottom;
-		const formHeight = 400;
-
-		setShouldOpenAbove(spaceBelow < formHeight);
-		setIsContactHovered(true);
-	}
-
 	return (
 		<div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
 			<div className="max-w-2xl w-full space-y-8">
-				{/* Render CMS content blocks */}
 				{homePageContent.blocks
 					.sort(function sortByOrder(a, b) {
 						return a.order - b.order;
@@ -67,6 +68,21 @@ export function CMSIndexView({ initialContent }: TProps) {
 							);
 						}
 
+						const hasProjectCard = block.segments.some(function (segment) {
+							return segment.type === "project-card";
+						});
+
+						if (hasProjectCard) {
+							return (
+								<div
+									key={block.id}
+									className="text-foreground leading-relaxed text-base"
+								>
+									{content}
+								</div>
+							);
+						}
+
 						return (
 							<p
 								key={block.id}
@@ -76,6 +92,53 @@ export function CMSIndexView({ initialContent }: TProps) {
 							</p>
 						);
 					})}
+
+				<div className="relative">
+					<p className="text-foreground leading-relaxed text-base">
+						or contact me via{" "}
+						<span
+							className="relative inline-block"
+							ref={popoverRootRef}
+							onMouseEnter={handleMouseEnter}
+							onMouseLeave={handleMouseLeave}
+						>
+							<button
+								className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60"
+								onClick={handleClick}
+							>
+								Email ↗
+							</button>
+						</span>{" "}
+						or check out my{" "}
+						<a
+							href="https://remcostoeten.nl"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-accent hover:underline font-medium"
+						>
+							website ↗
+						</a>
+						.
+					</p>
+					<ContactForm
+						isVisible={isVisible}
+						openAbove={shouldOpenAbove}
+						containerRef={popoverRootRef}
+						onMouseEnter={handlePopoverMouseEnter}
+						onMouseLeave={handlePopoverMouseLeave}
+					/>
+				</div>
+
+				<p className="text-foreground leading-relaxed text-base">
+					Right now it is{" "}
+					<span
+						className="font-medium font-mono"
+						style={{ minWidth: "8ch", display: "inline-block" }}
+					>
+						{currentTime || "--:--"}
+					</span>
+					.
+				</p>
 			</div>
 		</div>
 	);

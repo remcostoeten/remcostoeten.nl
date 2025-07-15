@@ -3,9 +3,18 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import { env } from "@/api/env";
 
-const client = createClient({
-	url: env.TURSO_DATABASE_URL!,
-	authToken: env.TURSO_AUTH_TOKEN!,
-});
+function createDatabaseClient() {
+	try {
+		const client = createClient({
+			url: env.TURSO_DATABASE_URL!,
+			authToken: env.TURSO_AUTH_TOKEN!,
+		});
 
-export const db = drizzle({ client });
+		return drizzle({ client });
+	} catch (error) {
+		console.error("Failed to create database client:", error);
+		throw error;
+	}
+}
+
+export const db = createDatabaseClient();

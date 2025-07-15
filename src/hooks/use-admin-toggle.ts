@@ -44,7 +44,7 @@ function useAdminToggle() {
 				if (state.index >= expectedPattern.length) {
 					router.push("/admin/cms");
 					state.index = 0;
-					toast({ title: "Navigating to admin" });
+					toast({ title: "→ Admin" });
 					return;
 				}
 
