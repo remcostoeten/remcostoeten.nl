@@ -1,5 +1,27 @@
 import { NextResponse } from "next/server";
 
+type TSpotifyArtist = {
+	name: string;
+	id: string;
+};
+
+type TSpotifyAlbum = {
+	name: string;
+	images: { url: string }[];
+};
+
+type TSpotifyTrack = {
+	name: string;
+	artists: TSpotifyArtist[];
+	album: TSpotifyAlbum;
+	external_urls: { spotify: string };
+};
+
+type TSpotifyResponse = {
+	is_playing: boolean;
+	item: TSpotifyTrack | null;
+};
+
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN;
@@ -43,7 +65,7 @@ export async function GET() {
 			return NextResponse.json({ isPlaying: false });
 		}
 
-		const song = await response.json();
+		const song: TSpotifyResponse = await response.json();
 
 		if (!song.item) {
 			return NextResponse.json({ isPlaying: false });
@@ -51,8 +73,8 @@ export async function GET() {
 
 		const isPlaying = song.is_playing;
 		const title = song.item.name;
-		const artist = song.item.artists
-			.map((_artist: any) => _artist.name)
+	const artist = song.item.artists
+			.map((artist: TSpotifyArtist) => artist.name)
 			.join(", ");
 		const album = song.item.album.name;
 		const albumImageUrl = song.item.album.images[0]?.url;
@@ -67,7 +89,6 @@ export async function GET() {
 			title,
 		});
 	} catch (error) {
-		console.error("Error fetching Spotify data:", error);
 		return NextResponse.json({ isPlaying: false });
 	}
 }

@@ -35,7 +35,7 @@ export async function withProgress<T>(
 }
 
 export async function withProgressSteps<T>(
-	steps: Array<() => Promise<any>>,
+	steps: Array<() => Promise<unknown>>,
 	finalStep: () => Promise<T>,
 ): Promise<T> {
 	try {

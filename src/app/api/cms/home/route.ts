@@ -10,7 +10,6 @@ import { PageContentSchema, type THomePageResponse } from "@/lib/cms/types";
 
 export async function GET(request: NextRequest) {
 	try {
-		console.log("[CMS Home API] Fetching home page content...");
 
 		// Check if we're in build mode and return early
 		if (
@@ -22,10 +21,6 @@ export async function GET(request: NextRequest) {
 
 		// Get home page content from repository
 		const pageContent = await getHomePageContent(db);
-		console.log(
-			"[CMS Home API] Retrieved content blocks:",
-			pageContent.blocks.length,
-		);
 
 		// Validate the page content with Zod
 		const contentValidation = validateResponseData(
@@ -53,7 +48,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
-		console.log("[CMS Home API] Ensuring home page content exists...");
 
 		// Check if we're in build mode and return early
 		if (
@@ -73,10 +67,6 @@ export async function POST(request: NextRequest) {
 
 		// Get the updated content
 		const pageContent = await getHomePageContent(db);
-		console.log(
-			"[CMS Home API] Ensured content blocks:",
-			pageContent.blocks.length,
-		);
 
 		// Validate the page content with Zod
 		const contentValidation = validateResponseData(

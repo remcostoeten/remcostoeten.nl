@@ -20,7 +20,7 @@ export default function SegmentEditor({
 		onChange({ ...segment, content });
 	};
 
-	const handleDataChange = (key: string, value: any) => {
+	const handleDataChange = (key: string, value: unknown) => {
 		onChange({
 			...segment,
 			data: { ...segment.data, [key]: value },

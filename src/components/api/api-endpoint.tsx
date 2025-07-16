@@ -4,20 +4,20 @@ import { useCallback, useEffect, useState } from "react";
 import { FadeIn } from "../ui/fade-in";
 import { Spinner } from "../ui/spinner";
 
-type TProps = {
+type TProps<T = unknown> = {
 	endpointUrl: string;
 	refreshInterval?: number;
-	render?: (data: any) => React.ReactNode;
+	render?: (data: T) => React.ReactNode;
 };
 
-type TAPIState = {
-	data: any;
+type TAPIState<T = unknown> = {
+	data: T | null;
 	loading: boolean;
 	error: string | null;
 };
 
-export function APIEndpoint({ endpointUrl, refreshInterval, render }: TProps) {
-	const [state, setState] = useState<TAPIState>({
+export function APIEndpoint<T = unknown>({ endpointUrl, refreshInterval, render }: TProps<T>) {
+	const [state, setState] = useState<TAPIState<T>>({
 		data: null,
 		loading: true,
 		error: null,
