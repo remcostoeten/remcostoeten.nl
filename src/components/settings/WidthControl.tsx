@@ -9,21 +9,32 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { Monitor, Tablet, Smartphone, Save, RotateCcw } from 'lucide-react';
 
+type TWidthUnit = 'px' | 'vw' | '%';
+
+type TWidthValue = {
+  value: number;
+  unit: TWidthUnit;
+};
+
 type TProps = {
-  initialWidth?: number;
+  initialWidth?: TWidthValue;
   pageId?: number;
   global?: boolean;
-  onWidthChange?: (width: number) => void;
+  onWidthChange?: (width: TWidthValue) => void;
 };
 
 const PRESET_WIDTHS = {
-  mobile: 375,
-  tablet: 768,
-  desktop: 1200,
-  wide: 1920,
+  mobile: { value: 375, unit: 'px' as TWidthUnit },
+  tablet: { value: 768, unit: 'px' as TWidthUnit },
+  desktop: { value: 1200, unit: 'px' as TWidthUnit },
+  wide: { value: 1920, unit: 'px' as TWidthUnit },
+  fluid25: { value: 25, unit: 'vw' as TWidthUnit },
+  fluid50: { value: 50, unit: 'vw' as TWidthUnit },
+  fluid75: { value: 75, unit: 'vw' as TWidthUnit },
+  fluid100: { value: 100, unit: 'vw' as TWidthUnit },
 };
 
-const DEFAULT_WIDTH = 672; // Current max-w-2xl equivalent
+const DEFAULT_WIDTH: TWidthValue = { value: 672, unit: 'px' }; // Current max-w-2xl equivalent
 
 export default function WidthControl({ 
   initialWidth = DEFAULT_WIDTH, 
@@ -32,41 +43,69 @@ export default function WidthControl({
   onWidthChange 
 }: TProps) {
   const [width, setWidth] = useState(initialWidth);
-  const [inputWidth, setInputWidth] = useState(initialWidth.toString());
+  const [inputWidth, setInputWidth] = useState(initialWidth.value.toString());
+  const [selectedUnit, setSelectedUnit] = useState<TWidthUnit>(initialWidth.unit);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
     setWidth(initialWidth);
-    setInputWidth(initialWidth.toString());
+    setInputWidth(initialWidth.value.toString());
+    setSelectedUnit(initialWidth.unit);
   }, [initialWidth]);
 
   const handleSliderChange = useCallback((value: number[]) => {
-    const newWidth = value[0];
+    const newValue = value[0];
+    const newWidth = { value: newValue, unit: selectedUnit };
     setWidth(newWidth);
-    setInputWidth(newWidth.toString());
-    setHasUnsavedChanges(newWidth !== initialWidth);
+    setInputWidth(newValue.toString());
+    setHasUnsavedChanges(newValue !== initialWidth.value || selectedUnit !== initialWidth.unit);
     onWidthChange?.(newWidth);
-  }, [initialWidth, onWidthChange]);
+  }, [initialWidth, selectedUnit, onWidthChange]);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputWidth(value);
     
-    const numericValue = parseInt(value, 10);
-    if (!isNaN(numericValue) && numericValue >= 300 && numericValue <= 1920) {
-      setWidth(numericValue);
-      setHasUnsavedChanges(numericValue !== initialWidth);
-      onWidthChange?.(numericValue);
+    const numericValue = parseFloat(value);
+    const minValue = selectedUnit === 'px' ? 300 : 1;
+    const maxValue = selectedUnit === 'px' ? 1920 : 100;
+    
+    if (!isNaN(numericValue) && numericValue >= minValue && numericValue <= maxValue) {
+      const newWidth = { value: numericValue, unit: selectedUnit };
+      setWidth(newWidth);
+      setHasUnsavedChanges(numericValue !== initialWidth.value || selectedUnit !== initialWidth.unit);
+      onWidthChange?.(newWidth);
     }
-  }, [initialWidth, onWidthChange]);
+  }, [initialWidth, selectedUnit, onWidthChange]);
 
-  const handlePresetClick = useCallback((presetWidth: number) => {
+  const handlePresetClick = useCallback((presetWidth: TWidthValue) => {
     setWidth(presetWidth);
-    setInputWidth(presetWidth.toString());
-    setHasUnsavedChanges(presetWidth !== initialWidth);
+    setInputWidth(presetWidth.value.toString());
+    setSelectedUnit(presetWidth.unit);
+    setHasUnsavedChanges(presetWidth.value !== initialWidth.value || presetWidth.unit !== initialWidth.unit);
     onWidthChange?.(presetWidth);
   }, [initialWidth, onWidthChange]);
+
+  const handleUnitChange = useCallback((newUnit: TWidthUnit) => {
+    setSelectedUnit(newUnit);
+    
+    // Convert values when switching units
+    let newValue = width.value;
+    if (width.unit === 'px' && (newUnit === 'vw' || newUnit === '%')) {
+      // Convert px to approximate vw (assuming 1920px = 100vw)
+      newValue = Math.round((width.value / 1920) * 100);
+    } else if ((width.unit === 'vw' || width.unit === '%') && newUnit === 'px') {
+      // Convert vw/% to approximate px
+      newValue = Math.round((width.value / 100) * 1920);
+    }
+    
+    const newWidth = { value: newValue, unit: newUnit };
+    setWidth(newWidth);
+    setInputWidth(newValue.toString());
+    setHasUnsavedChanges(newValue !== initialWidth.value || newUnit !== initialWidth.unit);
+    onWidthChange?.(newWidth);
+  }, [width, initialWidth, onWidthChange]);
 
   const handleSave = async () => {
     if (!pageId && !global) {
@@ -88,8 +127,8 @@ export default function WidthControl({
         body: JSON.stringify({
           pageId: global ? undefined : pageId,
           settingKey: 'containerWidth',
-          settingValue: width,
-          settingType: 'number',
+          settingValue: JSON.stringify(width),
+          settingType: 'json',
           description: 'Container width setting for content layout',
           global,
         }),
@@ -104,7 +143,7 @@ export default function WidthControl({
       if (result.success) {
         toast({
           title: 'Success',
-          description: `Container width saved: ${width}px`,
+          description: `Container width saved: ${width.value}${width.unit}`,
         });
         setHasUnsavedChanges(false);
       } else {
@@ -124,10 +163,25 @@ export default function WidthControl({
 
   const handleReset = () => {
     setWidth(initialWidth);
-    setInputWidth(initialWidth.toString());
+    setInputWidth(initialWidth.value.toString());
+    setSelectedUnit(initialWidth.unit);
     setHasUnsavedChanges(false);
     onWidthChange?.(initialWidth);
   };
+
+  const getSliderConfig = () => {
+    switch (selectedUnit) {
+      case 'px':
+        return { min: 300, max: 1920, step: 10 };
+      case 'vw':
+      case '%':
+        return { min: 1, max: 100, step: 1 };
+      default:
+        return { min: 1, max: 100, step: 1 };
+    }
+  };
+
+  const sliderConfig = getSliderConfig();
 
   return (
     <Card className="w-full">
@@ -141,10 +195,38 @@ export default function WidthControl({
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Unit Switcher */}
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">Unit</Label>
+          <div className="flex gap-2">
+            <Button
+              variant={selectedUnit === 'px' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleUnitChange('px')}
+            >
+              Pixels (px)
+            </Button>
+            <Button
+              variant={selectedUnit === 'vw' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleUnitChange('vw')}
+            >
+              Viewport Width (vw)
+            </Button>
+            <Button
+              variant={selectedUnit === '%' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handleUnitChange('%')}
+            >
+              Percentage (%)
+            </Button>
+          </div>
+        </div>
+
         {/* Preset Buttons */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Quick Presets</Label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2 mb-4">
             <Button
               variant="outline"
               size="sm"
@@ -182,40 +264,80 @@ export default function WidthControl({
               Wide
             </Button>
           </div>
+          <div className="grid grid-cols-4 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePresetClick(PRESET_WIDTHS.fluid25)}
+              className="flex items-center gap-2"
+            >
+              25vw
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePresetClick(PRESET_WIDTHS.fluid50)}
+              className="flex items-center gap-2"
+            >
+              50vw
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePresetClick(PRESET_WIDTHS.fluid75)}
+              className="flex items-center gap-2"
+            >
+              75vw
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePresetClick(PRESET_WIDTHS.fluid100)}
+              className="flex items-center gap-2"
+            >
+              100vw
+            </Button>
+          </div>
         </div>
 
         {/* Slider Control */}
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Width: {width}px</Label>
+          <Label className="text-sm font-medium">Width: {width.value}{width.unit}</Label>
           <Slider
-            value={[width]}
+            value={[width.value]}
             onValueChange={handleSliderChange}
-            min={300}
-            max={1920}
-            step={10}
+            min={sliderConfig.min}
+            max={sliderConfig.max}
+            step={sliderConfig.step}
             className="w-full"
           />
           <div className="flex justify-between text-xs text-muted-foreground">
-            <span>300px</span>
-            <span>1920px</span>
+            <span>{sliderConfig.min}{selectedUnit}</span>
+            <span>{sliderConfig.max}{selectedUnit}</span>
           </div>
         </div>
 
         {/* Input Control */}
         <div className="space-y-2">
           <Label htmlFor="width-input" className="text-sm font-medium">
-            Exact Width (px)
+            Exact Width ({selectedUnit})
           </Label>
-          <Input
-            id="width-input"
-            type="number"
-            min={300}
-            max={1920}
-            value={inputWidth}
-            onChange={handleInputChange}
-            className="w-full"
-            placeholder="Enter width in pixels"
-          />
+          <div className="flex gap-2">
+            <Input
+              id="width-input"
+              type="number"
+              min={sliderConfig.min}
+              max={sliderConfig.max}
+              step={sliderConfig.step}
+              value={inputWidth}
+              onChange={handleInputChange}
+              className="flex-1"
+              placeholder={`Enter width in ${selectedUnit}`}
+            />
+            <span className="flex items-center px-3 text-sm text-muted-foreground bg-muted rounded">
+              {selectedUnit}
+            </span>
+          </div>
         </div>
 
         {/* Visual Preview */}
@@ -224,10 +346,13 @@ export default function WidthControl({
           <div className="w-full bg-muted rounded p-4">
             <div 
               className="bg-background border border-border rounded h-12 transition-all duration-200"
-              style={{ width: `${Math.min(width, 400)}px`, maxWidth: '100%' }}
+              style={{ 
+                width: selectedUnit === 'px' ? `${Math.min(width.value, 400)}px` : `${Math.min(width.value, 100)}${width.unit}`,
+                maxWidth: '100%' 
+              }}
             >
               <div className="p-3 text-xs text-muted-foreground text-center">
-                {width}px container
+                {width.value}{width.unit} container
               </div>
             </div>
           </div>

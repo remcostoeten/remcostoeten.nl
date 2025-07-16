@@ -51,7 +51,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 
 	return (
 		<div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
-			<div className="w-full space-y-8" style={{ maxWidth: `${containerWidth}px` }}>
+			<div className="w-full space-y-8" style={{ maxWidth: `${containerWidth.value}${containerWidth.unit}` }}>
 				{homePageContent.blocks
 					.sort(function sortByOrder(a, b) {
 						return a.order - b.order;

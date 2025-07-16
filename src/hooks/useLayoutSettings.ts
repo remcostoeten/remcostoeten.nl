@@ -162,13 +162,19 @@ export function useLayoutSettings(pageId?: number, global = false) {
   };
 }
 
+export type TWidthValue = {
+  value: number;
+  unit: 'px' | 'vw' | '%';
+};
+
 export function useContainerWidth(pageId?: number, global = false) {
   const { getSetting, updateSetting, isLoading } = useLayoutSettings(pageId, global);
   
-  const containerWidth = getSetting('containerWidth', 672); // Default to max-w-2xl equivalent
+  const defaultWidth: TWidthValue = { value: 672, unit: 'px' };
+  const containerWidth = getSetting('containerWidth', defaultWidth); // Default to max-w-2xl equivalent
   
-  const setContainerWidth = useCallback(async (width: number) => {
-    return updateSetting('containerWidth', width, 'number', 'Container width setting for content layout');
+  const setContainerWidth = useCallback(async (width: TWidthValue) => {
+    return updateSetting('containerWidth', width, 'json', 'Container width setting for content layout');
   }, [updateSetting]);
 
   return {
