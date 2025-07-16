@@ -165,8 +165,8 @@ export function CMSIndexView({ initialContent }: TProps) {
 							>
 								{content}
 							</p>
-						);
-					})
+					});
+					})}
 			</div>
 		</div>
 	);

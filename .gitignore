@@ -35,3 +35,30 @@ next-env.d.ts
 **/temp/**
 **/.DS_Store
 **/Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Cache directories
+.npm
+.yarn
+.cache
+.parcel-cache
+.nyc_output
+
+# Bundle analyzer
+.next-bundle-analyzer
+
+# Testing
+coverage/
+
+# Misc
+*.tgz
+*.tar.gz

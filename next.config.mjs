@@ -1,6 +1,10 @@
 import { resolve } from "path";
 import { fileURLToPath } from "url";
 
+const withBundleAnalyzer = process.env.ANALYZE === "true" ? 
+	require("@next/bundle-analyzer")({ enabled: true }) : 
+	(config) => config;
+
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 /** @type {import('next').NextConfig} */
@@ -65,7 +69,7 @@ const nextConfig = {
 		// Optimize imports
 		config.resolve.alias = {
 			...config.resolve.alias,
-			"@": resolve(__dirname, "./"),
+			"@": resolve(__dirname, "./src"),
 		};
 
 		return config;
@@ -103,13 +107,13 @@ const nextConfig = {
 		];
 	},
 
-	// Added updates
+	// Build validation
 	eslint: {
-		ignoreDuringBuilds: true,
+		ignoreDuringBuilds: false,
 	},
 	typescript: {
-		ignoreBuildErrors: true,
+		ignoreBuildErrors: false,
 	},
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
