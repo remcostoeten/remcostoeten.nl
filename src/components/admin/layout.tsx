@@ -2,7 +2,7 @@
 
 import { ArrowLeft, Home, MessageSquare, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { CMSSection } from "@/components/admin/cms/cms-section";
 import { FeedbackManagement } from "@/components/admin/feedback-management";
 import { LogoutButton } from "@/components/logout-button";
@@ -17,13 +17,15 @@ type TProps = {
 
 export default function AdminLayout({
 	showBackButton = false,
-	onBack = () => {},
+	onBack = () => {
+		// Intentionally empty - default no-op callback
+	},
 }: TProps) {
 	const router = useRouter();
 	const [activeTab, setActiveTab] = useState("content");
 	const [unreadCount, setUnreadCount] = useState(0);
 
-	async function fetchUnreadCount() {
+	const fetchUnreadCount = useCallback(async function fetchUnreadCount() {
 		try {
 			const response = await fetch("/api/feedback/unread-count");
 			if (response.ok) {
@@ -33,11 +35,14 @@ export default function AdminLayout({
 		} catch (error) {
 			console.error("Failed to fetch unread count:", error);
 		}
-	}
-
-	useEffect(function loadUnreadCount() {
-		fetchUnreadCount();
 	}, []);
+
+	useEffect(
+		function loadUnreadCount() {
+			fetchUnreadCount();
+		},
+		[fetchUnreadCount],
+	);
 
 	useEffect(function handleHashRouting() {
 		function updateTabFromHash() {

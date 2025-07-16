@@ -1,12 +1,16 @@
 import { z } from "zod";
-import type { TDbContentBlock, TDbContentSegment, TDbPage } from "../../db/types";
+import type {
+	TDbContentBlock,
+	TDbContentSegment,
+	TDbPage,
+} from "../../db/types";
 import { LinkMetadataSchema, type TLinkMetadata } from "./link-metadata";
 
 // Time widget configuration type
 export type TTimeWidgetConfig = {
 	id: string;
 	timezone: string;
-	format: '12h' | '24h';
+	format: "12h" | "24h";
 	showSeconds: boolean;
 	label?: string;
 };
@@ -22,8 +26,8 @@ export type TContentSegment = {
 	metadata?: string | null;
 	linkMetadata?: TLinkMetadata | null;
 } & (
-	| { type: 'text'; content: string }
-	| { type: 'time-widget'; value: TTimeWidgetConfig }
+	| { type: "text"; content: string }
+	| { type: "time-widget"; value: TTimeWidgetConfig }
 );
 
 export type TContentBlock = {
@@ -50,7 +54,7 @@ export type TDbPageWithBlocks = TDbPage & {
 export const TTimeWidgetConfigSchema = z.object({
 	id: z.string(),
 	timezone: z.string(),
-	format: z.enum(['12h', '24h']),
+	format: z.enum(["12h", "24h"]),
 	showSeconds: z.boolean(),
 	label: z.string().optional(),
 });
@@ -66,16 +70,16 @@ export const ContentSegmentSchema = z.intersection(
 		metadata: z.string().nullable().optional(),
 		linkMetadata: LinkMetadataSchema.nullable().optional(),
 	}),
-	z.discriminatedUnion('type', [
+	z.discriminatedUnion("type", [
 		z.object({
-			type: z.literal('text'),
+			type: z.literal("text"),
 			content: z.string(),
 		}),
 		z.object({
-			type: z.literal('time-widget'),
+			type: z.literal("time-widget"),
 			value: TTimeWidgetConfigSchema,
 		}),
-	])
+	]),
 );
 
 export const ContentBlockSchema = z.object({
@@ -90,13 +94,13 @@ export const PageContentSchema = z.object({
 });
 
 // API request/response schemas
-export const UpdateSegmentRequestSchema = z.discriminatedUnion('type', [
+export const UpdateSegmentRequestSchema = z.discriminatedUnion("type", [
 	z.object({
-		type: z.literal('text'),
+		type: z.literal("text"),
 		content: z.string().min(1, "Content cannot be empty"),
 	}),
 	z.object({
-		type: z.literal('time-widget'),
+		type: z.literal("time-widget"),
 		value: TTimeWidgetConfigSchema,
 	}),
 ]);

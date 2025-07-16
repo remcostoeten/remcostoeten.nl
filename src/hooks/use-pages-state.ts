@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { cmsApiClient } from "@/lib/cms/api-client";
 import { TPageContent } from "@/lib/cms/types";
 import { Page } from "@/types/cms";
@@ -257,45 +257,51 @@ export function usePagesState() {
 		}
 	}, []);
 
-const deletePage = useCallback(async (pageId: string) => {
-	dispatch({ type: "CLEAR_ERROR" });
-	dispatch({ type: "SET_LOADING", payload: true });
+	const deletePage = useCallback(
+		async (pageId: string) => {
+			dispatch({ type: "CLEAR_ERROR" });
+			dispatch({ type: "SET_LOADING", payload: true });
 
-	try {
-		// Find the page to get its slug
-		const pageToDelete = state.pages.find(p => p.id === pageId);
-		if (!pageToDelete) {
-			throw new Error("Page not found");
-		}
+			try {
+				// Find the page to get its slug
+				const pageToDelete = state.pages.find((p) => p.id === pageId);
+				if (!pageToDelete) {
+					throw new Error("Page not found");
+				}
 
-		await cmsApiClient.deletePage(pageToDelete.slug);
-		dispatch({ type: "DELETE_PAGE", payload: pageId });
-	} catch (error) {
-		dispatch({ type: "SET_ERROR", payload: "Failed to delete page" });
-		throw error;
-	} finally {
-		dispatch({ type: "SET_LOADING", payload: false });
-	}
-}, [state.pages]);
+				await cmsApiClient.deletePage(pageToDelete.slug);
+				dispatch({ type: "DELETE_PAGE", payload: pageId });
+			} catch (error) {
+				dispatch({ type: "SET_ERROR", payload: "Failed to delete page" });
+				throw error;
+			} finally {
+				dispatch({ type: "SET_LOADING", payload: false });
+			}
+		},
+		[state.pages],
+	);
 
-const bulkDeletePages = useCallback(async (pageIds: string[]) => {
-	dispatch({ type: "CLEAR_ERROR" });
-	dispatch({ type: "SET_LOADING", payload: true });
+	const bulkDeletePages = useCallback(
+		async (pageIds: string[]) => {
+			dispatch({ type: "CLEAR_ERROR" });
+			dispatch({ type: "SET_LOADING", payload: true });
 
-	try {
-		// Convert page IDs to slugs for the API call
-		const pagesToDelete = state.pages.filter(p => pageIds.includes(p.id));
-		const slugsToDelete = pagesToDelete.map(p => p.slug);
-		
-		await cmsApiClient.bulkDeletePages(slugsToDelete);
-		dispatch({ type: "DELETE_PAGES_BULK", payload: pageIds });
-	} catch (error) {
-		dispatch({ type: "SET_ERROR", payload: "Failed to bulk delete pages" });
-		throw error;
-	} finally {
-		dispatch({ type: "SET_LOADING", payload: false });
-	}
-}, [state.pages]);
+			try {
+				// Convert page IDs to slugs for the API call
+				const pagesToDelete = state.pages.filter((p) => pageIds.includes(p.id));
+				const slugsToDelete = pagesToDelete.map((p) => p.slug);
+
+				await cmsApiClient.bulkDeletePages(slugsToDelete);
+				dispatch({ type: "DELETE_PAGES_BULK", payload: pageIds });
+			} catch (error) {
+				dispatch({ type: "SET_ERROR", payload: "Failed to bulk delete pages" });
+				throw error;
+			} finally {
+				dispatch({ type: "SET_LOADING", payload: false });
+			}
+		},
+		[state.pages],
+	);
 
 	const setCurrentPage = useCallback((page: Page | null) => {
 		dispatch({ type: "SET_CURRENT_PAGE", payload: page });

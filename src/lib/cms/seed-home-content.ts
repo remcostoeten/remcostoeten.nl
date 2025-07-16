@@ -18,17 +18,17 @@ const DEFAULT_CONTENT = [
 		blockType: "heading",
 		segments: [
 			{ type: "text", content: "Welcome to My Portfolio" },
-			{ 
-				type: "time-widget", 
+			{
+				type: "time-widget",
 				content: "",
 				metadata: JSON.stringify({
 					id: "tw-header",
 					timezone: "America/New_York",
 					format: "12h",
 					showSeconds: false,
-					label: "Current Time"
-				})
-			}
+					label: "Current Time",
+				}),
+			},
 		],
 	},
 	{

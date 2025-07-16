@@ -96,7 +96,7 @@ export function createPagesFactory() {
 			.orderBy(asc(pages.title))
 			.execute();
 
-		return allPages.map(page => ({
+		return allPages.map((page) => ({
 			...page,
 			isPublished: Boolean(page.isPublished),
 			isHomepage: Boolean(page.isHomepage),
@@ -134,9 +134,12 @@ export function createPagesFactory() {
 		};
 
 		if (data.title !== undefined) updateData.title = data.title;
-		if (data.description !== undefined) updateData.description = data.description;
-		if (data.isPublished !== undefined) updateData.isPublished = data.isPublished ? 1 : 0;
-		if (data.isHomepage !== undefined) updateData.isHomepage = data.isHomepage ? 1 : 0;
+		if (data.description !== undefined)
+			updateData.description = data.description;
+		if (data.isPublished !== undefined)
+			updateData.isPublished = data.isPublished ? 1 : 0;
+		if (data.isHomepage !== undefined)
+			updateData.isHomepage = data.isHomepage ? 1 : 0;
 
 		const updatedPage = await db
 			.update(pages)

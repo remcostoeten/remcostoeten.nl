@@ -7,7 +7,7 @@ import {
 	Send,
 	User,
 } from "lucide-react";
-import { useState, type Ref } from "react";
+import { type Ref, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

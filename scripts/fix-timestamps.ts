@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
+import { eq, sql } from "drizzle-orm";
 import { db } from "../src/db/db";
 import {
-	pages,
 	contentBlocks,
 	contentSegments,
 	feedback,
-	users,
+	pages,
 	stylePresets,
+	users,
 } from "../src/db/schema";
-import { eq, sql } from "drizzle-orm";
 
 async function fixTimestamps() {
 	console.log("🔧 Fixing timestamp data...");

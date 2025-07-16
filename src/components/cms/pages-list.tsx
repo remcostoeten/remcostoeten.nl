@@ -124,16 +124,22 @@ function PageItem({
 		() => onDelete(page.id),
 		[onDelete, page.id],
 	);
-	const handleSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		onSelect(page.id, e.target.checked);
-	}, [onSelect, page.id]);
+	const handleSelect = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			onSelect(page.id, e.target.checked);
+		},
+		[onSelect, page.id],
+	);
 
-	const handleRowClick = useCallback((e: React.MouseEvent) => {
-		if (e.altKey && page.slug !== "home") {
-			e.preventDefault();
-			onSelect(page.id, !selected);
-		}
-	}, [onSelect, page.id, page.slug, selected]);
+	const handleRowClick = useCallback(
+		(e: React.MouseEvent) => {
+			if (e.altKey && page.slug !== "home") {
+				e.preventDefault();
+				onSelect(page.id, !selected);
+			}
+		},
+		[onSelect, page.id, page.slug, selected],
+	);
 
 	const timeAgo = useMemo(
 		() => formatTimeAgo(page.updatedAt),
@@ -296,32 +302,41 @@ function PagesList({
 	);
 
 	const handleSelect = useCallback((pageId: string, selected: boolean) => {
-		setSelectedPages(prev => {
+		setSelectedPages((prev) => {
 			if (selected) {
 				return [...prev, pageId];
 			} else {
-				return prev.filter(id => id !== pageId);
+				return prev.filter((id) => id !== pageId);
 			}
 		});
 	}, []);
 
 	const handleBulkDelete = useCallback(() => {
 		if (selectedPages.length > 0 && onBulkDelete) {
-			if (confirm(`Are you sure you want to delete ${selectedPages.length} selected pages?`)) {
+			if (
+				confirm(
+					`Are you sure you want to delete ${selectedPages.length} selected pages?`,
+				)
+			) {
 				onBulkDelete(selectedPages);
 				setSelectedPages([]);
 			}
 		}
 	}, [selectedPages, onBulkDelete]);
 
-	const handleSelectAll = useCallback((selected: boolean) => {
-		if (selected) {
-			const selectablePages = pages.filter(p => p.slug !== "home").map(p => p.id);
-			setSelectedPages(selectablePages);
-		} else {
-			setSelectedPages([]);
-		}
-	}, [pages]);
+	const handleSelectAll = useCallback(
+		(selected: boolean) => {
+			if (selected) {
+				const selectablePages = pages
+					.filter((p) => p.slug !== "home")
+					.map((p) => p.id);
+				setSelectedPages(selectablePages);
+			} else {
+				setSelectedPages([]);
+			}
+		},
+		[pages],
+	);
 
 	if (totalPages === 0) {
 		return <EmptyState onCreate={onCreate} />;
@@ -342,7 +357,7 @@ function PagesList({
 					{onRefresh && (
 						<motion.button
 							onClick={onRefresh}
-					className="flex items-center px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 border border-border"
+							className="flex items-center px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 border border-border"
 							title="Refresh CMS data (development)"
 						>
 							<RotateCcw className="w-4 h-4 mr-2" />
@@ -352,7 +367,7 @@ function PagesList({
 					{onCreateHomepage && !hasHomepage && (
 						<motion.button
 							onClick={onCreateHomepage}
-					className="flex items-center px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 border border-border"
+							className="flex items-center px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-lg transition-all duration-200 border border-border"
 						>
 							<Home className="w-4 h-4 mr-2" />
 							Create Homepage
@@ -374,12 +389,16 @@ function PagesList({
 					<div className="flex items-center gap-3">
 						<input
 							type="checkbox"
-							checked={selectedPages.length === pages.filter(p => p.slug !== "home").length}
+							checked={
+								selectedPages.length ===
+								pages.filter((p) => p.slug !== "home").length
+							}
 							onChange={(e) => handleSelectAll(e.target.checked)}
 							className="h-4 w-4 text-primary focus:ring-primary border-border rounded"
 						/>
 						<span className="text-sm font-medium">
-							{selectedPages.length} page{selectedPages.length === 1 ? '' : 's'} selected
+							{selectedPages.length} page{selectedPages.length === 1 ? "" : "s"}{" "}
+							selected
 						</span>
 					</div>
 					<div className="flex items-center gap-2">

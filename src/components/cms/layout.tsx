@@ -14,7 +14,9 @@ type TProps = {
 export default function CMSLayout({
 	children,
 	showBackButton = false,
-	onBack = () => {},
+	onBack = () => {
+		// Intentionally empty - default no-op callback
+	},
 }: TProps) {
 	const router = useRouter();
 

@@ -33,12 +33,12 @@ export default function SegmentEditor({
 				return "🟢";
 			case "link":
 				return "🔗";
-		case "project-card":
-			return "📦";
-		case "time-widget":
-			return "🕐";
-		default:
-			return "📝";
+			case "project-card":
+				return "📦";
+			case "time-widget":
+				return "🕐";
+			default:
+				return "📝";
 		}
 	};
 
@@ -112,13 +112,17 @@ export default function SegmentEditor({
 							Time Widget Configuration (JSON)
 						</label>
 						<textarea
-							value={JSON.stringify(segment.data?.timeWidgetConfig || {
-								id: "widget-1",
-								timezone: "Europe/Amsterdam",
-								format: "24h",
-								showSeconds: true,
-								label: "CEST"
-							}, null, 2)}
+							value={JSON.stringify(
+								segment.data?.timeWidgetConfig || {
+									id: "widget-1",
+									timezone: "Europe/Amsterdam",
+									format: "24h",
+									showSeconds: true,
+									label: "CEST",
+								},
+								null,
+								2,
+							)}
 							onChange={(e) => {
 								try {
 									const timeWidgetConfig = JSON.parse(e.target.value);

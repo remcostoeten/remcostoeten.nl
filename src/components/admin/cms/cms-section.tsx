@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import InlinePageEditor from "@/components/cms/inline-page-editor";
-import { PagesList } from "@/components/cms/pages-list";
 import KeyboardShortcutsLegend from "@/components/cms/keyboard-shortcuts-legend";
+import { PagesList } from "@/components/cms/pages-list";
 import { CMSToastContainer, useCMSToast } from "@/hooks/use-cms-toast";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { usePagesState } from "@/hooks/use-pages-state";
@@ -80,23 +80,23 @@ export function CMSSection() {
 		}
 	}
 
-async function handleDeletePage(pageId: string) {
-	if (confirm("Are you sure you want to delete this page?")) {
-		try {
-			await actions.deletePage(pageId);
-			toast.success("Page deleted", "Page has been removed.");
-		} catch (error) {
-			toast.error("Failed to delete page", "Please try again.");
+	async function handleDeletePage(pageId: string) {
+		if (confirm("Are you sure you want to delete this page?")) {
+			try {
+				await actions.deletePage(pageId);
+				toast.success("Page deleted", "Page has been removed.");
+			} catch (error) {
+				toast.error("Failed to delete page", "Please try again.");
+			}
 		}
 	}
-}
 
 	async function handleBulkDeletePages(pageIds: string[]) {
 		try {
 			await actions.bulkDeletePages(pageIds);
 			toast.success(
 				"Pages deleted",
-				`${pageIds.length} page${pageIds.length === 1 ? '' : 's'} have been removed.`
+				`${pageIds.length} page${pageIds.length === 1 ? "" : "s"} have been removed.`,
 			);
 		} catch (error) {
 			toast.error("Failed to delete pages", "Please try again.");
@@ -151,7 +151,7 @@ async function handleDeletePage(pageId: string) {
 					// This will be handled in the PagesList component
 				}
 			},
-			"delete": () => {
+			delete: () => {
 				// Delete selected pages (when not in editor)
 				if (!currentPage) {
 					// This will be handled in the PagesList component

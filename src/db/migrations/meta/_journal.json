@@ -1,41 +1,41 @@
 {
-  "version": "7",
-  "dialect": "sqlite",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "6",
-      "when": 1752442172759,
-      "tag": "0000_natural_venom",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1752520546634,
-      "tag": "0001_natural_zaladane",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1752523074505,
-      "tag": "0002_cold_kate_bishop",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "6",
-      "when": 1752583905001,
-      "tag": "0003_shiny_thunderbolt_ross",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "6",
-      "when": 1752613570230,
-      "tag": "0004_fair_boom_boom",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "sqlite",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "6",
+			"when": 1752442172759,
+			"tag": "0000_natural_venom",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "6",
+			"when": 1752520546634,
+			"tag": "0001_natural_zaladane",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "6",
+			"when": 1752523074505,
+			"tag": "0002_cold_kate_bishop",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "6",
+			"when": 1752583905001,
+			"tag": "0003_shiny_thunderbolt_ross",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "6",
+			"when": 1752613570230,
+			"tag": "0004_fair_boom_boom",
+			"breakpoints": true
+		}
+	]
 }

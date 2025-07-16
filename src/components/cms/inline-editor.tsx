@@ -10,8 +10,8 @@ import {
 	Type,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { BlockStyles, ContentSegment } from "@/types/cms";
 import { SwappingWordEffect } from "@/components/swapping-word-effect";
+import { BlockStyles, ContentSegment } from "@/types/cms";
 
 interface InlineEditorProps {
 	segment: ContentSegment;

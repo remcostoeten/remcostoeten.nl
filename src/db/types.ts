@@ -26,21 +26,20 @@ export type TBaseEntity = {
 export type TPageContent = {
 	blocks: Array<{
 		id: number;
-		segments: Array<{
-			id: number;
-		} & (
-			| { type: 'text'; content: string }
-			| { type: 'time-widget'; value: any }
-		)>;
+		segments: Array<
+			{
+				id: number;
+			} & (
+				| { type: "text"; content: string }
+				| { type: "time-widget"; value: any }
+			)
+		>;
 	}>;
 };
 
 export type TContentSegment = {
 	id: number;
-} & (
-	| { type: 'text'; content: string }
-	| { type: 'time-widget'; value: any }
-);
+} & ({ type: "text"; content: string } | { type: "time-widget"; value: any });
 
 export type TContentBlock = {
 	id: number;
@@ -58,17 +57,17 @@ export function transformDbPageToPageContent(
 		blocks: dbPage.blocks.map((block) => ({
 			id: block.id,
 			segments: block.segments.map((segment) => {
-				if (segment.type === 'time-widget') {
+				if (segment.type === "time-widget") {
 					const metadata = segment.metadata ? JSON.parse(segment.metadata) : {};
 					return {
 						id: segment.id,
-						type: 'time-widget' as const,
+						type: "time-widget" as const,
 						value: metadata,
 					};
 				}
 				return {
 					id: segment.id,
-					type: 'text' as const,
+					type: "text" as const,
 					content: segment.text,
 				};
 			}),
@@ -94,35 +93,35 @@ export function transformPageContentToDb(
 			order: blockIndex + 1,
 		});
 
-	block.segments.forEach((segment, segmentIndex) => {
-		if (segment.type === 'time-widget') {
-			segments.push({
-				id: segment.id,
-				blockId: block.id,
-				order: segmentIndex + 1,
-				text: "",
-				type: segment.type,
-				href: null,
-				target: null,
-				className: null,
-				style: null,
-				metadata: JSON.stringify((segment as any).value || {}),
-			});
-		} else {
-			segments.push({
-				id: segment.id,
-				blockId: block.id,
-				order: segmentIndex + 1,
-				text: (segment as any).content || "",
-				type: segment.type,
-				href: null,
-				target: null,
-				className: null,
-				style: null,
-				metadata: null,
-			});
-		}
-	});
+		block.segments.forEach((segment, segmentIndex) => {
+			if (segment.type === "time-widget") {
+				segments.push({
+					id: segment.id,
+					blockId: block.id,
+					order: segmentIndex + 1,
+					text: "",
+					type: segment.type,
+					href: null,
+					target: null,
+					className: null,
+					style: null,
+					metadata: JSON.stringify((segment as any).value || {}),
+				});
+			} else {
+				segments.push({
+					id: segment.id,
+					blockId: block.id,
+					order: segmentIndex + 1,
+					text: (segment as any).content || "",
+					type: segment.type,
+					href: null,
+					target: null,
+					className: null,
+					style: null,
+					metadata: null,
+				});
+			}
+		});
 	});
 
 	return { blocks, segments };

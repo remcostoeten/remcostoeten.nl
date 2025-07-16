@@ -1,8 +1,8 @@
 "use client";
 
+import { TDbPageWithBlocks } from "@/db/types";
 import { renderSegment } from "@/lib/cms/renderSegment";
 import { TPageContent } from "@/lib/cms/types";
-import { TDbPageWithBlocks } from "@/db/types";
 
 type TProps = {
 	page: TDbPageWithBlocks;

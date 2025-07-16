@@ -92,19 +92,19 @@ export function renderSegment(segment: TContentSegment) {
 			);
 		}
 
-	case "time-widget":
-		return (
-			<span key={segment.id}>
-				<TimeWidget config={segment.value} />
-			</span>
-		);
+		case "time-widget":
+			return (
+				<span key={segment.id}>
+					<TimeWidget config={segment.value} />
+				</span>
+			);
 
-	case "spotify-now-playing":
-		return (
-			<span key={segment.id}>
-				<NowPlaying />
-			</span>
-		);
+		case "spotify-now-playing":
+			return (
+				<span key={segment.id}>
+					<NowPlaying />
+				</span>
+			);
 
 		case "api-endpoint":
 			return <span key={segment.id}>{segment.content}</span>;

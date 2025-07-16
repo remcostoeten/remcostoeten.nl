@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { HelpCircle, X, Command } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Command, HelpCircle, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type TShortcut = {
 	keys: string[];
