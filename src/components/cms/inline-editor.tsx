@@ -394,6 +394,8 @@ export default function InlineEditor({
 									"spotify-now-playing",
 									"api-endpoint",
 									"swapping-word-effect",
+									"contact-form",
+									"time-display",
 								].map((type) => (
 									<button
 										key={type}
@@ -429,7 +431,15 @@ export default function InlineEditor({
 																				initialWord: "word1",
 																				...prev.data,
 																			}
-																		: prev.data,
+																: type === "contact-form"
+																	? {
+																			emailText: "Email ↗",
+																			additionalText: "or check out my",
+																			websiteUrl: "https://remcostoeten.nl",
+																			websiteText: "website ↗",
+																			...prev.data,
+																		}
+																	: prev.data,
 											}));
 										}}
 										className={`px-3 py-1 text-xs rounded transition-colors ${
@@ -657,6 +667,60 @@ export default function InlineEditor({
 										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="Leave empty to start with first word"
+									/>
+								</div>
+							</div>
+						)}
+
+						{/* Contact Form configuration */}
+						{editingSegment.type === "contact-form" && (
+							<div className="space-y-3">
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Email Button Text
+									</label>
+									<input
+										type="text"
+										value={editingSegment.data?.emailText || ""}
+										onChange={(e) => updateSegmentData("emailText", e.target.value)}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="Email ↗"
+									/>
+								</div>
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Additional Text
+									</label>
+									<input
+										type="text"
+										value={editingSegment.data?.additionalText || ""}
+										onChange={(e) => updateSegmentData("additionalText", e.target.value)}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="or check out my"
+									/>
+								</div>
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Website URL
+									</label>
+									<input
+										type="url"
+										value={editingSegment.data?.websiteUrl || ""}
+										onChange={(e) => updateSegmentData("websiteUrl", e.target.value)}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="https://remcostoeten.nl"
+									/>
+								</div>
+								<div>
+									<label className="block text-xs font-medium text-foreground mb-2">
+										Website Link Text
+									</label>
+									<input
+										type="text"
+										value={editingSegment.data?.websiteText || ""}
+										onChange={(e) => updateSegmentData("websiteText", e.target.value)}
+										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
+										placeholder="website ↗"
 									/>
 								</div>
 							</div>

@@ -37,7 +37,9 @@ export interface ContentSegment {
 		| "project-card"
 		| "spotify-now-playing"
 		| "api-endpoint"
-		| "swapping-word-effect";
+		| "swapping-word-effect"
+		| "contact-form"
+		| "time-display";
 	content: string;
 	data?: {
 		url?: string;
@@ -62,6 +64,11 @@ export interface ContentSegment {
 		words?: string[];
 		interval?: number;
 		initialWord?: string;
+		// Contact form data
+		emailText?: string;
+		additionalText?: string;
+		websiteUrl?: string;
+		websiteText?: string;
 	};
 }
 

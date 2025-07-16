@@ -55,13 +55,86 @@ export function CMSIndexView({ initialContent }: TProps) {
 						return a.order - b.order;
 					})
 					.map(function renderBlock(block) {
-						const content = block.segments.map(renderSegment);
+						const content = block.segments.map((segment) => {
+							// Handle contact form segment specially
+							if (segment.type === 'contact-form') {
+								return (
+									<div key={segment.id} className="relative">
+										<p className="text-foreground leading-relaxed text-base">
+											{segment.content || 'or contact me via'}{" "}
+											<span
+												className="relative inline-block"
+												ref={popoverRootRef}
+												onMouseEnter={handleMouseEnter}
+												onMouseLeave={handleMouseLeave}
+											>
+												<button
+													className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60"
+													onClick={handleClick}
+												>
+													{segment.data?.emailText || 'Email ↗'}
+												</button>
+											</span>{" "}
+											{segment.data?.additionalText || 'or check out my'}{" "}
+											<a
+												href={segment.data?.websiteUrl || 'https://remcostoeten.nl'}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="text-accent hover:underline font-medium"
+											>
+												{segment.data?.websiteText || 'website ↗'}
+											</a>
+											.
+										</p>
+										<ContactForm
+											isVisible={isVisible}
+											openAbove={shouldOpenAbove}
+											containerRef={popoverRootRef}
+											onMouseEnter={handlePopoverMouseEnter}
+											onMouseLeave={handlePopoverMouseLeave}
+										/>
+									</div>
+								);
+							}
+							
+							// Handle time display segment specially
+							if (segment.type === 'time-display') {
+								return (
+									<span key={segment.id}>
+										{segment.content || 'Right now it is'}{" "}
+										<span
+											className="font-medium font-mono"
+											style={{ minWidth: "8ch", display: "inline-block" }}
+										>
+											{currentTime || "--:--"}
+										</span>
+										.
+									</span>
+								);
+							}
+							
+							return renderSegment(segment);
+						});
+
+						const blockStyles = {
+							marginTop: block.styles?.marginTop || undefined,
+							marginBottom: block.styles?.marginBottom || undefined,
+							paddingTop: block.styles?.paddingTop || undefined,
+							paddingBottom: block.styles?.paddingBottom || undefined,
+						};
+
+						let borderClasses = "";
+						if (block.styles?.borderTop) borderClasses += " border-t border-border";
+						if (block.styles?.borderBottom) borderClasses += " border-b border-border";
+						if (block.styles?.borderLeft) borderClasses += " border-l border-border";
+						if (block.styles?.borderRight) borderClasses += " border-r border-border";
 
 						if (block.blockType === "heading") {
 							return (
 								<h1
 									key={block.id}
-									className="text-xl font-medium text-foreground"
+									className={`text-xl font-medium text-foreground${borderClasses}`}
+									style={blockStyles}
 								>
 									{content}
 								</h1>
@@ -76,7 +149,8 @@ export function CMSIndexView({ initialContent }: TProps) {
 							return (
 								<div
 									key={block.id}
-									className="text-foreground leading-relaxed text-base"
+									className={`text-foreground leading-relaxed text-base${borderClasses}`}
+									style={blockStyles}
 								>
 									{content}
 								</div>
@@ -86,59 +160,13 @@ export function CMSIndexView({ initialContent }: TProps) {
 						return (
 							<p
 								key={block.id}
-								className="text-foreground leading-relaxed text-base"
+								className={`text-foreground leading-relaxed text-base${borderClasses}`}
+								style={blockStyles}
 							>
 								{content}
 							</p>
 						);
-					})}
-
-				<div className="relative">
-					<p className="text-foreground leading-relaxed text-base">
-						or contact me via{" "}
-						<span
-							className="relative inline-block"
-							ref={popoverRootRef}
-							onMouseEnter={handleMouseEnter}
-							onMouseLeave={handleMouseLeave}
-						>
-							<button
-								className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60"
-								onClick={handleClick}
-							>
-								Email ↗
-							</button>
-						</span>{" "}
-						or check out my{" "}
-						<a
-							href="https://remcostoeten.nl"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-accent hover:underline font-medium"
-						>
-							website ↗
-						</a>
-						.
-					</p>
-					<ContactForm
-						isVisible={isVisible}
-						openAbove={shouldOpenAbove}
-						containerRef={popoverRootRef}
-						onMouseEnter={handlePopoverMouseEnter}
-						onMouseLeave={handlePopoverMouseLeave}
-					/>
-				</div>
-
-				<p className="text-foreground leading-relaxed text-base">
-					Right now it is{" "}
-					<span
-						className="font-medium font-mono"
-						style={{ minWidth: "8ch", display: "inline-block" }}
-					>
-						{currentTime || "--:--"}
-					</span>
-					.
-				</p>
+					})
 			</div>
 		</div>
 	);
