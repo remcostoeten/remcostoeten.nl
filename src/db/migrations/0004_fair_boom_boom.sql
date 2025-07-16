@@ -1,0 +1,1 @@
+ALTER TABLE `pages` ADD `is_homepage` integer DEFAULT 0 NOT NULL;

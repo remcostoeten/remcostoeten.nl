@@ -127,7 +127,7 @@ export default function AdminLayout({
 								<MessageSquare className="w-4 h-4" />
 								Feedback Management
 								{unreadCount > 0 && (
-									<span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[20px] h-5 flex items-center justify-center">
+									<span className="bg-destructive text-destructive-foreground text-xs rounded-full px-2 py-1 min-w-[20px] h-5 flex items-center justify-center">
 										{unreadCount}
 									</span>
 								)}

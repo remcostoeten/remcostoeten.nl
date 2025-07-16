@@ -54,8 +54,7 @@ async function seedHomeContent() {
 				blockId: introBlock.id,
 				order: 2,
 				text: "Frontend Developer",
-				type: "text",
-				className: "text-green-400",
+				type: "highlighted",
 			},
 			{
 				blockId: introBlock.id,
@@ -88,7 +87,6 @@ async function seedHomeContent() {
 				order: 2,
 				text: "Roll Your Own Authentication",
 				type: "link",
-				className: "text-green-400 underline",
 				href: "https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication",
 				target: "_blank",
 			},

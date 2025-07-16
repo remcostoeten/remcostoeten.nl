@@ -27,7 +27,7 @@ All colors MUST be HSL.
 		--muted: 0 0% 12%;
 		--muted-foreground: 0 0% 65%;
 
-		--accent: 0 0% 25%; /* Neutral gray accent color for links and UI elements */
+		--accent: 85 100% 65%; /* Green accent color for links and UI elements */
 		--accent-foreground: 0 0% 85%;
 
 		--destructive: 0 84.2% 60.2%;
@@ -40,8 +40,8 @@ All colors MUST be HSL.
 		--radius: 0.5rem;
 
 		/* Highlighted text colors */
-		--highlight-product: 85 100% 75%;
-		--highlight-frontend: 85 100% 75%;
+		--highlight-product: 85 100% 65%;
+		--highlight-frontend: 85 100% 65%;
 	}
 }
 

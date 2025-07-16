@@ -14,6 +14,7 @@ export const pages = sqliteTable(
 		title: text("title").notNull(),
 		description: text("description"),
 		isPublished: integer("is_published").notNull().default(1), // SQLite: use integer for boolean
+		isHomepage: integer("is_homepage").notNull().default(0), // SQLite: use integer for boolean
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},

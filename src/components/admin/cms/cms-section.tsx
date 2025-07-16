@@ -80,16 +80,16 @@ export function CMSSection() {
 		}
 	}
 
-	function handleDeletePage(pageId: string) {
-		if (confirm("Are you sure you want to delete this page?")) {
-			try {
-				actions.deletePage(pageId);
-				toast.success("Page deleted", "Page has been removed.");
-			} catch (error) {
-				toast.error("Failed to delete page", "Please try again.");
-			}
+async function handleDeletePage(pageId: string) {
+	if (confirm("Are you sure you want to delete this page?")) {
+		try {
+			await actions.deletePage(pageId);
+			toast.success("Page deleted", "Page has been removed.");
+		} catch (error) {
+			toast.error("Failed to delete page", "Please try again.");
 		}
 	}
+}
 
 	async function handleBulkDeletePages(pageIds: string[]) {
 		try {

@@ -62,11 +62,23 @@ export async function readPageAction(slug: string) {
 	const pagesFactory = createPagesFactory();
 
 	try {
-		const page = await pagesFactory.read(slug);
+		const page = await pagesFactory.readBySlug(slug);
 		return { success: true, data: page };
 	} catch (error) {
 		console.error("Failed to read page:", error);
 		return { success: false, error: "Failed to read page" };
+	}
+}
+
+export async function readAllPagesAction() {
+	const pagesFactory = createPagesFactory();
+
+	try {
+		const pages = await pagesFactory.read();
+		return { success: true, data: pages };
+	} catch (error) {
+		console.error("Failed to read all pages:", error);
+		return { success: false, error: "Failed to read all pages" };
 	}
 }
 
@@ -77,7 +89,7 @@ export async function updatePageAction(
 	const pagesFactory = createPagesFactory();
 
 	try {
-		const updatedPage = await pagesFactory.update(id, data);
+		const updatedPage = await pagesFactory.update(parseInt(id), data);
 		return { success: true, data: updatedPage };
 	} catch (error) {
 		console.error("Failed to update page:", error);
@@ -89,7 +101,7 @@ export async function deletePageAction(id: string) {
 	const pagesFactory = createPagesFactory();
 
 	try {
-		await pagesFactory.destroy(id);
+		await pagesFactory.destroy(parseInt(id));
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to delete page:", error);

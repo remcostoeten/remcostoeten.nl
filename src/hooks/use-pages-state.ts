@@ -257,31 +257,45 @@ export function usePagesState() {
 		}
 	}, []);
 
-	const deletePage = useCallback((pageId: string) => {
-		dispatch({ type: "CLEAR_ERROR" });
+const deletePage = useCallback(async (pageId: string) => {
+	dispatch({ type: "CLEAR_ERROR" });
+	dispatch({ type: "SET_LOADING", payload: true });
 
-		try {
-			dispatch({ type: "DELETE_PAGE", payload: pageId });
-		} catch (error) {
-			dispatch({ type: "SET_ERROR", payload: "Failed to delete page" });
-			throw error;
+	try {
+		// Find the page to get its slug
+		const pageToDelete = state.pages.find(p => p.id === pageId);
+		if (!pageToDelete) {
+			throw new Error("Page not found");
 		}
-	}, []);
 
-	const bulkDeletePages = useCallback(async (pageIds: string[]) => {
-		dispatch({ type: "CLEAR_ERROR" });
-		dispatch({ type: "SET_LOADING", payload: true });
+		await cmsApiClient.deletePage(pageToDelete.slug);
+		dispatch({ type: "DELETE_PAGE", payload: pageId });
+	} catch (error) {
+		dispatch({ type: "SET_ERROR", payload: "Failed to delete page" });
+		throw error;
+	} finally {
+		dispatch({ type: "SET_LOADING", payload: false });
+	}
+}, [state.pages]);
 
-		try {
-			await cmsApiClient.bulkDeletePages(pageIds);
-			dispatch({ type: "DELETE_PAGES_BULK", payload: pageIds });
-		} catch (error) {
-			dispatch({ type: "SET_ERROR", payload: "Failed to bulk delete pages" });
-			throw error;
-		} finally {
-			dispatch({ type: "SET_LOADING", payload: false });
-		}
-	}, []);
+const bulkDeletePages = useCallback(async (pageIds: string[]) => {
+	dispatch({ type: "CLEAR_ERROR" });
+	dispatch({ type: "SET_LOADING", payload: true });
+
+	try {
+		// Convert page IDs to slugs for the API call
+		const pagesToDelete = state.pages.filter(p => pageIds.includes(p.id));
+		const slugsToDelete = pagesToDelete.map(p => p.slug);
+		
+		await cmsApiClient.bulkDeletePages(slugsToDelete);
+		dispatch({ type: "DELETE_PAGES_BULK", payload: pageIds });
+	} catch (error) {
+		dispatch({ type: "SET_ERROR", payload: "Failed to bulk delete pages" });
+		throw error;
+	} finally {
+		dispatch({ type: "SET_LOADING", payload: false });
+	}
+}, [state.pages]);
 
 	const setCurrentPage = useCallback((page: Page | null) => {
 		dispatch({ type: "SET_CURRENT_PAGE", payload: page });

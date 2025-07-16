@@ -3,12 +3,14 @@ import { db } from "@/db/db";
 import { contentBlocks, contentSegments, pages } from "@/db/schema";
 import type { TBaseEntity, TTimestamps } from "@/db/types";
 
-type TPageEntity = TBaseEntity & {
+type TPageEntity = {
+	id: number;
 	slug: string;
 	title: string;
 	description: string | null;
 	isPublished: boolean;
-};
+	isHomepage: boolean;
+} & TTimestamps;
 
 type TPageCreateInput = {
 	slug: string;
@@ -18,7 +20,7 @@ type TPageCreateInput = {
 };
 
 type TPageUpdateInput = Partial<
-	Pick<TPageEntity, "title" | "description" | "isPublished">
+	Pick<TPageEntity, "title" | "description" | "isPublished" | "isHomepage">
 >;
 
 type TBlockEntity = TBaseEntity & {
@@ -71,15 +73,39 @@ export function createPagesFactory() {
 				slug: data.slug,
 				title: data.title,
 				description: data.description || null,
-				isPublished: data.isPublished ?? true,
+				isPublished: data.isPublished ? 1 : 0,
+				isHomepage: 0,
 			})
 			.returning()
 			.execute();
 
-		return newPage[0] as TPageEntity;
+		const result = newPage[0];
+		return {
+			...result,
+			isPublished: Boolean(result.isPublished),
+			isHomepage: Boolean(result.isHomepage),
+			createdAt: new Date(result.createdAt),
+			updatedAt: new Date(result.updatedAt),
+		} as TPageEntity;
 	}
 
-	async function read(slug: string): Promise<TPageEntity | null> {
+	async function read(): Promise<TPageEntity[]> {
+		const allPages = await db
+			.select()
+			.from(pages)
+			.orderBy(asc(pages.title))
+			.execute();
+
+		return allPages.map(page => ({
+			...page,
+			isPublished: Boolean(page.isPublished),
+			isHomepage: Boolean(page.isHomepage),
+			createdAt: new Date(page.createdAt),
+			updatedAt: new Date(page.updatedAt),
+		})) as TPageEntity[];
+	}
+
+	async function readBySlug(slug: string): Promise<TPageEntity | null> {
 		const page = await db
 			.select()
 			.from(pages)
@@ -87,24 +113,46 @@ export function createPagesFactory() {
 			.limit(1)
 			.execute();
 
-		return (page[0] as TPageEntity) || null;
+		if (!page[0]) return null;
+
+		const result = page[0];
+		return {
+			...result,
+			isPublished: Boolean(result.isPublished),
+			isHomepage: Boolean(result.isHomepage),
+			createdAt: new Date(result.createdAt),
+			updatedAt: new Date(result.updatedAt),
+		} as TPageEntity;
 	}
 
 	async function update(
 		id: number,
 		data: TPageUpdateInput,
 	): Promise<TPageEntity> {
+		const updateData: Record<string, any> = {
+			updatedAt: new Date().toISOString(),
+		};
+
+		if (data.title !== undefined) updateData.title = data.title;
+		if (data.description !== undefined) updateData.description = data.description;
+		if (data.isPublished !== undefined) updateData.isPublished = data.isPublished ? 1 : 0;
+		if (data.isHomepage !== undefined) updateData.isHomepage = data.isHomepage ? 1 : 0;
+
 		const updatedPage = await db
 			.update(pages)
-			.set({
-				...data,
-				updatedAt: new Date(),
-			})
+			.set(updateData)
 			.where(eq(pages.id, id))
 			.returning()
 			.execute();
 
-		return updatedPage[0] as TPageEntity;
+		const result = updatedPage[0];
+		return {
+			...result,
+			isPublished: Boolean(result.isPublished),
+			isHomepage: Boolean(result.isHomepage),
+			createdAt: new Date(result.createdAt),
+			updatedAt: new Date(result.updatedAt),
+		} as TPageEntity;
 	}
 
 	async function destroy(id: number): Promise<void> {
@@ -114,6 +162,7 @@ export function createPagesFactory() {
 	return {
 		create,
 		read,
+		readBySlug,
 		update,
 		destroy,
 	};
