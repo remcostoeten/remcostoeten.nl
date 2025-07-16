@@ -10,7 +10,6 @@ import { PageContentSchema, type THomePageResponse } from "@/lib/cms/types";
 
 export async function GET(request: NextRequest) {
 	try {
-
 		// Check if we're in build mode and return early
 		if (
 			process.env.NODE_ENV === "production" &&
@@ -48,7 +47,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
 	try {
-
 		// Check if we're in build mode and return early
 		if (
 			process.env.NODE_ENV === "production" &&

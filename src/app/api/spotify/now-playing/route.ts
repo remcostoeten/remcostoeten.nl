@@ -73,7 +73,7 @@ export async function GET() {
 
 		const isPlaying = song.is_playing;
 		const title = song.item.name;
-	const artist = song.item.artists
+		const artist = song.item.artists
 			.map((artist: TSpotifyArtist) => artist.name)
 			.join(", ");
 		const album = song.item.album.name;

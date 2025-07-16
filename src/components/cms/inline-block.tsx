@@ -98,7 +98,7 @@ export default function InlineBlock({
 		onSegmentCancel(); // Close editing mode
 	};
 
-	const handleBlockStylesChange = (styles: ContentBlock['styles']) => {
+	const handleBlockStylesChange = (styles: ContentBlock["styles"]) => {
 		onBlockChange({
 			...block,
 			styles,

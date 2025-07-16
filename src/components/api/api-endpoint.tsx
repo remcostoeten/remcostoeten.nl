@@ -16,7 +16,11 @@ type TAPIState<T = unknown> = {
 	error: string | null;
 };
 
-export function APIEndpoint<T = unknown>({ endpointUrl, refreshInterval, render }: TProps<T>) {
+export function APIEndpoint<T = unknown>({
+	endpointUrl,
+	refreshInterval,
+	render,
+}: TProps<T>) {
 	const [state, setState] = useState<TAPIState<T>>({
 		data: null,
 		loading: true,

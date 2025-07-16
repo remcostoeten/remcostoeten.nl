@@ -74,33 +74,38 @@ export function FeedbackManagement({ onUnreadCountChange }: TProps) {
 	const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
 	const [refreshing, setRefreshing] = useState(false);
 
-	const fetchFeedbacks = useCallback(async function fetchFeedbacks(isRefresh = false) {
-		try {
-			if (isRefresh) {
-				setRefreshing(true);
-			} else {
-				setLoading(true);
+	const fetchFeedbacks = useCallback(
+		async function fetchFeedbacks(isRefresh = false) {
+			try {
+				if (isRefresh) {
+					setRefreshing(true);
+				} else {
+					setLoading(true);
+				}
+				setError(null);
+				const response = await fetch("/api/feedback");
+				if (!response.ok) {
+					throw new Error("Failed to fetch feedback");
+				}
+				const data = await response.json();
+				setFeedbacks(data);
+				if (isRefresh) {
+					onUnreadCountChange?.();
+				}
+			} catch (err) {
+				setError(
+					err instanceof Error ? err.message : "Failed to fetch feedback",
+				);
+			} finally {
+				if (isRefresh) {
+					setRefreshing(false);
+				} else {
+					setLoading(false);
+				}
 			}
-			setError(null);
-			const response = await fetch("/api/feedback");
-			if (!response.ok) {
-				throw new Error("Failed to fetch feedback");
-			}
-			const data = await response.json();
-			setFeedbacks(data);
-			if (isRefresh) {
-				onUnreadCountChange?.();
-			}
-		} catch (err) {
-			setError(err instanceof Error ? err.message : "Failed to fetch feedback");
-		} finally {
-			if (isRefresh) {
-				setRefreshing(false);
-			} else {
-				setLoading(false);
-			}
-		}
-	}, [onUnreadCountChange]);
+		},
+		[onUnreadCountChange],
+	);
 
 	async function deleteFeedback(id: number) {
 		try {

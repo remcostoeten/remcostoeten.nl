@@ -1,5 +1,5 @@
 import React from "react";
-import { ContentSegment, Page } from "../../types/cms";
+import { ContentBlock, ContentSegment, Page } from "../../types/cms";
 
 interface PagePreviewProps {
 	page: Page;
@@ -92,7 +92,7 @@ export default function PagePreview({ page }: PagePreviewProps) {
 		}
 	};
 
-	const renderBlock = (block: any) => {
+	const renderBlock = (block: ContentBlock) => {
 		const content = block.content.map(renderSegment);
 
 		if (block.type === "heading") {

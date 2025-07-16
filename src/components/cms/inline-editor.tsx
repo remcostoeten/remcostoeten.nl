@@ -60,14 +60,14 @@ export default function InlineEditor({
 		}
 	};
 
-	const updateSegmentData = (key: string, value: any) => {
+	const updateSegmentData = (key: string, value: unknown) => {
 		setEditingSegment((prev) => ({
 			...prev,
 			data: { ...prev.data, [key]: value },
 		}));
 	};
 
-	const updateBlockStyles = (key: keyof BlockStyles, value: any) => {
+	const updateBlockStyles = (key: keyof BlockStyles, value: unknown) => {
 		if (onBlockStylesChange) {
 			onBlockStylesChange({
 				...blockStyles,
@@ -95,7 +95,10 @@ export default function InlineEditor({
 		}
 	};
 
-	const applyStyleToSelection = (type: ContentSegment["type"], data: any) => {
+	const applyStyleToSelection = (
+		type: ContentSegment["type"],
+		data: Record<string, unknown>,
+	) => {
 		if (!inputRef.current) return;
 
 		const input = inputRef.current;
@@ -192,30 +195,30 @@ export default function InlineEditor({
 					</span>
 				);
 
-		case "project-card":
-			return (
-				<span
-					className={`${baseClasses} font-medium px-1 py-0.5 rounded`}
-					style={{
-						backgroundColor: "hsl(var(--highlight-product) / 0.2)",
-						color: "hsl(var(--highlight-product))",
-					}}
-				>
-					{segment.content}
-				</span>
-			);
+			case "project-card":
+				return (
+					<span
+						className={`${baseClasses} font-medium px-1 py-0.5 rounded`}
+						style={{
+							backgroundColor: "hsl(var(--highlight-product) / 0.2)",
+							color: "hsl(var(--highlight-product))",
+						}}
+					>
+						{segment.content}
+					</span>
+				);
 
-		case "swapping-word-effect":
-			return (
-				<SwappingWordEffect
-					words={segment.data?.words || ["word1", "word2", "word3"]}
-					interval={segment.data?.interval || 3000}
-					initialWord={segment.data?.initialWord}
-					className={baseClasses}
-				/>
-			);
+			case "swapping-word-effect":
+				return (
+					<SwappingWordEffect
+						words={segment.data?.words || ["word1", "word2", "word3"]}
+						interval={segment.data?.interval || 3000}
+						initialWord={segment.data?.initialWord}
+						className={baseClasses}
+					/>
+				);
 
-		default:
+			default:
 				return (
 					<span
 						className={baseClasses}
@@ -384,7 +387,7 @@ export default function InlineEditor({
 								Type
 							</label>
 							<div className="flex gap-2">
-								[
+								{[
 									"text",
 									"highlighted",
 									"link",
@@ -397,7 +400,7 @@ export default function InlineEditor({
 										onClick={() => {
 											setEditingSegment((prev) => ({
 												...prev,
-												type: type as any,
+												type: type as ContentSegment["type"],
 												data:
 													type === "highlighted"
 														? {
@@ -408,25 +411,25 @@ export default function InlineEditor({
 														: type === "link"
 															? { url: "", ...prev.data }
 															: type === "api-endpoint"
+																? {
+																		endpointUrl: "",
+																		refreshInterval: 60000,
+																		...prev.data,
+																	}
+																: type === "spotify-now-playing"
 																	? {
-																			endpointUrl: "",
-																			refreshInterval: 60000,
+																			endpointUrl: "/api/spotify/now-playing",
+																			refreshInterval: 30000,
 																			...prev.data,
 																		}
-																	: type === "spotify-now-playing"
+																	: type === "swapping-word-effect"
 																		? {
-																				endpointUrl: "/api/spotify/now-playing",
-																				refreshInterval: 30000,
+																				words: ["word1", "word2", "word3"],
+																				interval: 3000,
+																				initialWord: "word1",
 																				...prev.data,
 																			}
-																		: type === "swapping-word-effect"
-																			? {
-																					words: ["word1", "word2", "word3"],
-																					interval: 3000,
-																					initialWord: "word1",
-																					...prev.data,
-																				}
-																			: prev.data,
+																		: prev.data,
 											}));
 										}}
 										className={`px-3 py-1 text-xs rounded transition-colors ${
@@ -619,7 +622,10 @@ export default function InlineEditor({
 										type="text"
 										value={editingSegment.data?.words?.join(", ") || ""}
 										onChange={(e) =>
-											updateSegmentData("words", e.target.value.split(", ").map(w => w.trim()))
+											updateSegmentData(
+												"words",
+												e.target.value.split(", ").map((w) => w.trim()),
+											)
 										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="developer, designer, creator"

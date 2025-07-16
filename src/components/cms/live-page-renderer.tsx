@@ -1,7 +1,7 @@
 import { ArrowLeft, Edit3, Eye } from "lucide-react";
 import React, { useState } from "react";
 import { APIEndpoint, SpotifyNowPlaying } from "@/components/api";
-import { ContentSegment, Page } from "@/types/cms";
+import { ContentBlock, ContentSegment, Page } from "@/types/cms";
 
 type TProps = {
 	page: Page;
@@ -100,7 +100,7 @@ function renderSegment(segment: ContentSegment) {
 	}
 }
 
-function renderBlock(block: any) {
+function renderBlock(block: ContentBlock) {
 	const content = block.content.map(renderSegment);
 	const blockStyles = {
 		marginTop: block.styles?.marginTop || undefined,
