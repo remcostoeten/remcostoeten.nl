@@ -8,6 +8,7 @@ import { CMSToastContainer, useCMSToast } from "@/hooks/use-cms-toast";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { usePagesState } from "@/hooks/use-pages-state";
 import { Page } from "@/types/cms";
+import WidthControl from "@/components/settings/WidthControl";
 
 export function CMSSection() {
 	const { pages, currentPage, isLoading, error, actions, computed } =
@@ -205,7 +206,12 @@ export function CMSSection() {
 	}
 
 	return (
-		<>
+				<>
+			{/* Global Width Control for all pages */}
+			<div className="mb-6">
+				<WidthControl global={true} />
+			</div>
+			
 			<PagesList
 				pages={pages}
 				onEdit={handleEditPage}
@@ -215,6 +221,7 @@ export function CMSSection() {
 				onRefresh={handleRefreshCMSData}
 				onBulkDelete={handleBulkDeletePages}
 			/>
+
 			<KeyboardShortcutsLegend />
 			<CMSToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 		</>

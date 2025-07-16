@@ -1,10 +1,12 @@
 import { InferSelectModel } from "drizzle-orm";
-import { contentBlocks, contentSegments, pages, stylePresets } from "./schema";
+import { contentBlocks, contentSegments, pages, stylePresets, layoutSettings, globalLayoutSettings } from "./schema";
 
 export type TDbPage = InferSelectModel<typeof pages>;
 export type TDbContentBlock = InferSelectModel<typeof contentBlocks>;
 export type TDbContentSegment = InferSelectModel<typeof contentSegments>;
 export type TDbStylePreset = InferSelectModel<typeof stylePresets>;
+export type TDbLayoutSetting = InferSelectModel<typeof layoutSettings>;
+export type TDbGlobalLayoutSetting = InferSelectModel<typeof globalLayoutSettings>;
 
 export type TDbContentBlockWithSegments = TDbContentBlock & {
 	segments: TDbContentSegment[];

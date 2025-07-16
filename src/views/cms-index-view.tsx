@@ -4,6 +4,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { ContactForm } from "@/components/contact-form";
 import { useContactPopover } from "@/hooks/useContactPopover";
+import { useContainerWidth } from "@/hooks/useLayoutSettings";
 import { renderSegment } from "@/lib/cms/renderSegment";
 import { TContentBlock, TContentSegment, TPageContent } from "@/lib/cms/types";
 
@@ -30,7 +31,8 @@ export function CMSIndexView({ initialContent }: TProps) {
 		handlePopoverMouseLeave,
 		popoverRootRef,
 	} = useContactPopover();
-	const [homePageContent] = useState<TPageContent>(initialContent);
+	const [homePageContent, setHomePageContent] = useState<TPageContent>(initialContent);
+	const { containerWidth } = useContainerWidth(undefined, true); // Use global setting
 
 	useEffect(function initTime() {
 		setCurrentTime(getFormattedTime());
@@ -49,7 +51,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 
 	return (
 		<div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
-			<div className="max-w-2xl w-full space-y-8">
+			<div className="w-full space-y-8" style={{ maxWidth: `${containerWidth}px` }}>
 				{homePageContent.blocks
 					.sort(function sortByOrder(a, b) {
 						return a.order - b.order;
