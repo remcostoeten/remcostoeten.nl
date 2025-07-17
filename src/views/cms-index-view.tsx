@@ -1,4 +1,4 @@
-"use client";
+  "use client";
 
 import type React from "react";
 import { useEffect, useState } from "react";
@@ -59,11 +59,11 @@ export function CMSIndexView({ initialContent }: TProps) {
 					.map(function renderBlock(block) {
 						const content = block.segments.map((segment) => {
 							// Handle contact form segment specially
-							if (segment.type === 'contact-form') {
+							if (segment.type === "contact-form") {
 								return (
 									<div key={segment.id} className="relative">
 										<p className="text-foreground leading-relaxed text-base">
-											{segment.content || 'or contact me via'}{" "}
+											{segment.content || "or contact me via"}{" "}
 											<span
 												className="relative inline-block"
 												ref={popoverRootRef}
@@ -74,17 +74,17 @@ export function CMSIndexView({ initialContent }: TProps) {
 													className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60"
 													onClick={handleClick}
 												>
-													{segment.data?.emailText || 'Email ↗'}
+													{segment.data?.emailText || "Email ↗"}
 												</button>
 											</span>{" "}
-											{segment.data?.additionalText || 'or check out my'}{" "}
+											{segment.data?.additionalText || "or check out my"}{" "}
 											<a
-												href={segment.data?.websiteUrl || 'https://remcostoeten.nl'}
+												href={segment.data?.websiteUrl || "https://remcostoeten.nl"}
 												target="_blank"
 												rel="noopener noreferrer"
 												className="text-accent hover:underline font-medium"
 											>
-												{segment.data?.websiteText || 'website ↗'}
+												{segment.data?.websiteText || "website ↗"}
 											</a>
 											.
 										</p>
@@ -98,12 +98,12 @@ export function CMSIndexView({ initialContent }: TProps) {
 									</div>
 								);
 							}
-							
+
 							// Handle time display segment specially
-							if (segment.type === 'time-display') {
+							if (segment.type === "time-display") {
 								return (
 									<span key={segment.id}>
-										{segment.content || 'Right now it is'}{" "}
+										{segment.content || "Right now it is"}{" "}
 										<span
 											className="font-medium font-mono"
 											style={{ minWidth: "8ch", display: "inline-block" }}
@@ -114,7 +114,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 									</span>
 								);
 							}
-							
+
 							return renderSegment(segment);
 						});
 
@@ -173,3 +173,15 @@ export function CMSIndexView({ initialContent }: TProps) {
 		</div>
 	);
 }
+
+import { db } from "@/db/db";
+import { getHomePageContent } from "@/lib/cms/repository";
+import { CMSIndexView } from "@/views/cms-index-view";
+
+export default async function HomePage() {
+	// Fetch content on the server
+	const homePageContent = await getHomePageContent(db);
+
+	return <CMSIndexView initialContent={homePageContent} />;
+}
+
