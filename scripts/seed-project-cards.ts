@@ -165,6 +165,8 @@ async function seedProjectCards() {
 					pageId: "home",
 					blockType: "paragraph",
 					order: existingBlocks.length,
+					createdAt: new Date().toISOString(),
+					updatedAt: new Date().toISOString(),
 				};
 			}
 

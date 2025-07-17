@@ -3,6 +3,7 @@
 import { ProgressBar } from "@/components/progress-bar";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/contexts/theme-context";
 
 type TProps = {
 	children: React.ReactNode;
@@ -11,9 +12,11 @@ type TProps = {
 export function Providers({ children }: TProps) {
 	return (
 		<QueryProvider>
-			<ProgressBar>
-				<TooltipProvider>{children}</TooltipProvider>
-			</ProgressBar>
+			<ThemeProvider>
+				<ProgressBar>
+					<TooltipProvider>{children}</TooltipProvider>
+				</ProgressBar>
+			</ThemeProvider>
 		</QueryProvider>
 	);
 }

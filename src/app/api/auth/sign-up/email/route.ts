@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/db/db";
 import { users } from "@/db/schemas/users";
-import { generateToken, hashPassword, setAuthCookie } from "@/lib/auth";
+import { generateToken, hashPassword } from "@/lib/auth";
 
 const signUpSchema = z.object({
 	email: z.string().email("Invalid email address"),

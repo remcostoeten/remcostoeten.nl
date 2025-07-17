@@ -13,8 +13,6 @@ import {
 async function fixTimestamps() {
 	console.log("🔧 Fixing timestamp data...");
 
-	const currentTime = new Date().toISOString();
-
 	try {
 		// Fix pages table
 		console.log("Fixing pages table...");

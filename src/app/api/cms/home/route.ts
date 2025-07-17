@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/db";
 import {
 	createErrorResponse,
-	createSuccessResponse,
 	validateResponseData,
 } from "@/lib/api/utils";
 import { getHomePageContent } from "@/lib/cms/repository";
 import { PageContentSchema, type THomePageResponse } from "@/lib/cms/types";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
 	try {
 		// Check if we're in build mode and return early
 		if (

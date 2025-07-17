@@ -29,6 +29,12 @@ All colors MUST be HSL.
 
 		--accent: 85 100% 65%; /* Green accent color for links and UI elements */
 		--accent-foreground: 0 0% 85%;
+		--accent-hover: 85 100% 75%;
+		--accent-active: 85 100% 55%;
+		--accent-muted: 85 70% 85%;
+		--accent-contrast: 85 100% 20%;
+		--accent-preview: var(--accent);
+		--accent-preview-hover: var(--accent-hover);
 
 		--destructive: 0 84.2% 60.2%;
 		--destructive-foreground: 0 0% 98%;
