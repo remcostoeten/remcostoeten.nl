@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Page } from "@/types/cms";
-import { CMSLoadingMinimal, CMSPagesListSkeleton } from "@/components/cms/cms-loading";
 
 type TProps = {
 	pages: Page[];

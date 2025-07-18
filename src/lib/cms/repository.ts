@@ -4,6 +4,64 @@ import { contentBlocks, contentSegments } from "@/db/schema";
 import type { TContentBlock, TContentSegment, TPageContent } from "./types";
 import { parseLinkMetadata } from "./link-metadata";
 
+/**
+ * Helper function to parse segment metadata and extract link metadata if present
+ * @param metadata - The raw metadata string from the segment
+ * @param segmentId - The segment ID for logging purposes
+ * @returns Parsed link metadata or null if parsing fails or no href found
+ */
+function parseSegmentLinkMetadata(metadata: string | null, segmentId: number): any | null {
+	if (!metadata) return null;
+	
+	try {
+		// Only try to parse if metadata looks like link metadata (contains href)
+		const parsed = JSON.parse(metadata);
+		if (parsed && typeof parsed === 'object' && parsed.href) {
+			return parseLinkMetadata(metadata);
+		}
+		return null;
+	} catch (error) {
+		console.warn(
+			`Failed to parse link metadata for segment ${segmentId}:`,
+			error,
+		);
+		return null;
+	}
+}
+
+/**
+ * Helper function to parse generic metadata for non-text segments
+ * @param metadata - The raw metadata string from the segment
+ * @param segmentId - The segment ID for logging purposes
+ * @returns Object with linkMetadata and value properties
+ */
+function parseGenericMetadata(metadata: string | null, segmentId: number): { linkMetadata: any | null; value: any | null } {
+	let linkMetadata = null;
+	let value = null;
+	
+	if (!metadata) return { linkMetadata, value };
+	
+	try {
+		// Try to parse metadata for different segment types
+		const parsed = JSON.parse(metadata);
+		if (parsed && typeof parsed === 'object') {
+			if (parsed.href) {
+				linkMetadata = parseLinkMetadata(metadata);
+			} else {
+				// For other types like project-card, store as value
+				value = parsed;
+			}
+		}
+	} catch (error) {
+		console.warn(
+			`Failed to parse metadata for segment ${segmentId}:`,
+			error,
+		);
+	}
+	
+	return { linkMetadata, value };
+}
+
 type TDatabase = typeof db;
 
 export async function getHomePageContent(
@@ -41,22 +99,7 @@ export async function getHomePageContent(
 					// Handle different segment types properly
 					if (segment.type === "text") {
 						// For text segments, try to parse link metadata
-						let linkMetadata = null;
-						if (segment.metadata) {
-							try {
-								// Only try to parse if metadata looks like link metadata (contains href)
-								const parsed = JSON.parse(segment.metadata);
-								if (parsed && typeof parsed === 'object' && parsed.href) {
-									linkMetadata = parseLinkMetadata(segment.metadata);
-								}
-							} catch (error) {
-								console.warn(
-									`Failed to parse link metadata for segment ${segment.id}:`,
-									error,
-								);
-								linkMetadata = null;
-							}
-						}
+						const linkMetadata = parseSegmentLinkMetadata(segment.metadata, segment.id);
 
 						return {
 							id: segment.id,
@@ -104,28 +147,7 @@ export async function getHomePageContent(
 						};
 					} else {
 						// Handle other segment types, preserving their original type
-						let linkMetadata = null;
-						let value = null;
-						
-						if (segment.metadata) {
-							try {
-								// Try to parse metadata for different segment types
-								const parsed = JSON.parse(segment.metadata);
-								if (parsed && typeof parsed === 'object') {
-									if (parsed.href) {
-										linkMetadata = parseLinkMetadata(segment.metadata);
-									} else {
-										// For other types like project-card, store as value
-										value = parsed;
-									}
-								}
-							} catch (error) {
-								console.warn(
-									`Failed to parse metadata for segment ${segment.id}:`,
-									error,
-								);
-							}
-						}
+						const { linkMetadata, value } = parseGenericMetadata(segment.metadata, segment.id);
 
 						return {
 							id: segment.id,
@@ -187,22 +209,7 @@ export async function getPageContent(
 					// Handle different segment types properly
 					if (segment.type === "text") {
 						// For text segments, try to parse link metadata
-						let linkMetadata = null;
-						if (segment.metadata) {
-							try {
-								// Only try to parse if metadata looks like link metadata (contains href)
-								const parsed = JSON.parse(segment.metadata);
-								if (parsed && typeof parsed === 'object' && parsed.href) {
-									linkMetadata = parseLinkMetadata(segment.metadata);
-								}
-							} catch (error) {
-								console.warn(
-									`Failed to parse link metadata for segment ${segment.id}:`,
-									error,
-								);
-								linkMetadata = null;
-							}
-						}
+						const linkMetadata = parseSegmentLinkMetadata(segment.metadata, segment.id);
 
 						return {
 							id: segment.id,
@@ -250,28 +257,7 @@ export async function getPageContent(
 						};
 					} else {
 						// Handle other segment types, preserving their original type
-						let linkMetadata = null;
-						let value = null;
-						
-						if (segment.metadata) {
-							try {
-								// Try to parse metadata for different segment types
-								const parsed = JSON.parse(segment.metadata);
-								if (parsed && typeof parsed === 'object') {
-									if (parsed.href) {
-										linkMetadata = parseLinkMetadata(segment.metadata);
-									} else {
-										// For other types like project-card, store as value
-										value = parsed;
-									}
-								}
-							} catch (error) {
-								console.warn(
-									`Failed to parse metadata for segment ${segment.id}:`,
-									error,
-								);
-							}
-						}
+						const { linkMetadata, value } = parseGenericMetadata(segment.metadata, segment.id);
 
 						return {
 							id: segment.id,
@@ -417,26 +403,53 @@ export async function getContentSegmentById(
 
 	if (segments.length > 0) {
 		const segment = segments[0];
-		let linkMetadata = null;
-		if (segment.metadata) {
+		
+		// Handle different segment types properly
+		if (segment.type === "text") {
+			const linkMetadata = parseSegmentLinkMetadata(segment.metadata, segment.id);
+			return {
+				...segment,
+				linkMetadata,
+			} as TContentSegment;
+		} else if (segment.type === "time-widget") {
+			// Parse the value from metadata for time-widget segments
+			let value;
 			try {
-				// Only try to parse if metadata looks like link metadata (contains href)
-				const parsed = JSON.parse(segment.metadata);
-				if (parsed && typeof parsed === 'object' && parsed.href) {
-					linkMetadata = parseLinkMetadata(segment.metadata);
+				if (segment.metadata) {
+					value = JSON.parse(segment.metadata);
+				} else {
+					// Fallback to default time widget config
+					value = {
+						id: `widget-${segment.id}`,
+						timezone: "UTC",
+						format: "24h",
+						showSeconds: false,
+					};
 				}
-			} catch (error) {
-				console.warn(
-					`Failed to parse link metadata for segment ${segment.id}:`,
-					error,
-				);
-				linkMetadata = null;
+			} catch {
+				// Fallback to default time widget config
+				value = {
+					id: `widget-${segment.id}`,
+					timezone: "UTC",
+					format: "24h",
+					showSeconds: false,
+				};
 			}
+			
+			return {
+				...segment,
+				value,
+				linkMetadata: null, // time-widget doesn't have link metadata
+			} as TContentSegment;
+		} else {
+			// Handle other segment types
+			const { linkMetadata, value } = parseGenericMetadata(segment.metadata, segment.id);
+			return {
+				...segment,
+				linkMetadata,
+				value,
+			} as TContentSegment;
 		}
-		return {
-			...segment,
-			linkMetadata,
-		} as TContentSegment;
 	}
 	return null;
 }
@@ -456,10 +469,9 @@ export async function updateHomePageContent(
 			const [createdBlock] = await tx
 				.insert(contentBlocks)
 				.values({
-					id: block.id,
 					pageId: "home",
-					blockType: block.blockType,
-					order: block.order,
+					blockType: block.blockType ?? "content",
+					order: block.order ?? 0,
 				})
 				.returning()
 				.execute();
@@ -469,10 +481,9 @@ export async function updateHomePageContent(
 				await tx
 					.insert(contentSegments)
 					.values({
-						id: segment.id,
 						blockId: createdBlock.id,
-						order: segment.order,
-						text: segment.content,
+						order: segment.order ?? 0,
+						text: segment.content ?? "",
 						type: segment.type,
 						href: segment.href,
 						target: segment.target,

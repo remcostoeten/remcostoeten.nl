@@ -14,7 +14,7 @@ type TUseContactPopoverReturn = {
 	handleClick: () => void;
 	handlePopoverMouseEnter: () => void;
 	handlePopoverMouseLeave: () => void;
-	popoverRootRef: React.RefObject<HTMLDivElement>;
+	popoverRootRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export function useContactPopover(): TUseContactPopoverReturn {
