@@ -17,4 +17,19 @@ function createDatabaseClient() {
 	}
 }
 
-export const db = createDatabaseClient();
+// Create database client lazily to avoid client-side execution
+let _db: ReturnType<typeof createDatabaseClient> | null = null;
+
+export const db = new Proxy({} as ReturnType<typeof createDatabaseClient>, {
+	get(_target, prop) {
+		if (typeof window !== 'undefined') {
+			throw new Error('Database client cannot be used on the client side');
+		}
+		
+		if (!_db) {
+			_db = createDatabaseClient();
+		}
+		
+		return _db[prop as keyof typeof _db];
+	}
+});
