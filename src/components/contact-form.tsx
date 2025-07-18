@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { popoverTransition } from "@/lib/animations";
 
 const emojis = ["😊", "🔥", "💡", "👏", "❤️", "🚀"];
 
@@ -95,7 +94,7 @@ export function ContactForm({
 						initial={{ opacity: 0, y: openAbove ? 10 : -10 }}
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: openAbove ? 10 : -10 }}
-transition={{ type: "spring", stiffness: 300, damping: 30 }}
+						transition={{ type: "spring", stiffness: 300, damping: 30 }}
 						onMouseEnter={onMouseEnter}
 						onMouseLeave={onMouseLeave}
 						className={`absolute z-50 w-80 p-4 bg-popover text-popover-foreground backdrop-blur-lg border border-border rounded-lg shadow-2xl left-0 ${

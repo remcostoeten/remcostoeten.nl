@@ -1,6 +1,6 @@
 "use client";
 
-import { cubicBezier, motion, type HTMLMotionProps, useAnimation } from "framer-motion";
+import { cubicBezier, motion, useAnimation } from "framer-motion";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -69,7 +69,7 @@ const UndoIcon = forwardRef<UndoIconHandle, UndoIconProps>(
 					strokeLinecap="round"
 					strokeLinejoin="round"
 				>
-<motion.path
+					<motion.path
 						transition={{
 							duration: 0.6,
 							ease: customEasing,

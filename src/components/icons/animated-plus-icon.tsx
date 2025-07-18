@@ -57,7 +57,7 @@ const PlusIcon = forwardRef<PlusIconHandle, PlusIconProps>(
 				onMouseLeave={handleMouseLeave}
 				{...props}
 			>
-<motion.svg
+				<motion.svg
 					xmlns="http://www.w3.org/2000/svg"
 					width={size}
 					height={size}

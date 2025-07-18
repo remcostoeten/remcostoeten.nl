@@ -20,7 +20,6 @@ const AUTHORIZED_EMAILS = getAuthorizedEmails();
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
 	// Check for auth token cookie (this is what the signin API sets)
 	const authCookie = request.cookies.get("auth-token");
-	const authHeader = request.headers.get("Authorization");
 
 	// If we have a token cookie, validate it
 	if (authCookie?.value) {

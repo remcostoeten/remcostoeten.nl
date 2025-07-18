@@ -60,7 +60,10 @@ export default function LoginForm({ onLogin }: TProps) {
 				error("Authentication Failed", result.error || "Authentication failed");
 			}
 		} catch (error) {
-console.error("Authentication Error", "An error occurred during authentication");
+			console.error(
+				"Authentication Error",
+				"An error occurred during authentication",
+			);
 		} finally {
 			setIsLoading(false);
 		}

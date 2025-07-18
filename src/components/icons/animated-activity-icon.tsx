@@ -14,20 +14,6 @@ interface ActivityIconProps extends HTMLAttributes<HTMLDivElement> {
 	size?: number;
 }
 
-// Unused variants
-const unusedVariants = {
-  normal: {
-    opacity: 1,
-    pathLength: 1,
-    pathOffset: 0,
-  },
-  animate: {
-    opacity: [0, 1],
-    pathLength: [0, 1],
-    pathOffset: [1, 0],
-  },
-} as const;
-
 const ActivityIcon = forwardRef<ActivityIconHandle, ActivityIconProps>(
 	({ onMouseEnter, onMouseLeave, className, size = 28, ...props }, ref) => {
 		const controls = useAnimation();
@@ -82,23 +68,23 @@ const ActivityIcon = forwardRef<ActivityIconHandle, ActivityIconProps>(
 					strokeLinecap="round"
 					strokeLinejoin="round"
 				>
-<motion.path
-variants={{
-        normal: {
-          opacity: 1,
-          pathLength: 1,
-          pathOffset: 0
-        },
-        animate: {
-          opacity: [0, 1],
-          pathLength: [0, 1],
-          pathOffset: [1, 0],
-          transition: {
-            duration: 1,
-            ease: "easeInOut"
-          }
-        }
-      }}
+					<motion.path
+						variants={{
+							normal: {
+								opacity: 1,
+								pathLength: 1,
+								pathOffset: 0,
+							},
+							animate: {
+								opacity: [0, 1],
+								pathLength: [0, 1],
+								pathOffset: [1, 0],
+								transition: {
+									duration: 1,
+									ease: "easeInOut",
+								},
+							},
+						}}
 						animate={controls}
 						initial="normal"
 						d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"

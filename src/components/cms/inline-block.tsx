@@ -224,9 +224,9 @@ export default function InlineBlock({
 													API Endpoint
 												</button>
 												<button
-												onClick={() => {
-													setShowAddDropdown(false);
-												}}
+													onClick={() => {
+														setShowAddDropdown(false);
+													}}
 													className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"
 												>
 													<Github className="w-4 h-4 mr-3 text-muted-foreground" />{" "}

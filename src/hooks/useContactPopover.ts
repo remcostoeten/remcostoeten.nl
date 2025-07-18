@@ -6,13 +6,6 @@ type TPopoverState = {
 	shouldOpenAbove: boolean;
 };
 
-type TPopoverHandlers = {
-	handleMouseEnter: (event: React.MouseEvent) => void;
-	handleMouseLeave: () => void;
-	handleClick: () => void;
-	closePopover: () => void;
-};
-
 type TUseContactPopoverReturn = {
 	isVisible: boolean;
 	shouldOpenAbove: boolean;
@@ -21,7 +14,7 @@ type TUseContactPopoverReturn = {
 	handleClick: () => void;
 	handlePopoverMouseEnter: () => void;
 	handlePopoverMouseLeave: () => void;
-popoverRootRef: React.RefObject<HTMLElement | null>
+	popoverRootRef: React.RefObject<HTMLElement | null>;
 };
 
 export function useContactPopover(): TUseContactPopoverReturn {

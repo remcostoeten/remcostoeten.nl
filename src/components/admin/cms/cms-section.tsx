@@ -19,11 +19,16 @@ export function CMSSection() {
 
 	// Initialize homepage if it doesn't exist (only on first load)
 	useEffect(() => {
-		if (!isLoading && pages.length === 0 && !computed.hasHomepage && !homepageCreatedRef.current) {
+		if (
+			!isLoading &&
+			pages.length === 0 &&
+			!computed.hasHomepage &&
+			!homepageCreatedRef.current
+		) {
 			homepageCreatedRef.current = true;
 			actions.createHomepage().catch((error) => {
-				console.error('Failed to create homepage:', error);
-				toast.error('Failed to create homepage', 'Please try again.');
+				console.error("Failed to create homepage:", error);
+				toast.error("Failed to create homepage", "Please try again.");
 				homepageCreatedRef.current = false;
 			});
 		}
@@ -205,21 +210,21 @@ export function CMSSection() {
 	}
 
 	return (
-				<>
+		<>
 			{/* Global Width Control for all pages */}
 			<div className="mb-6">
 				<WidthControl global={true} />
 			</div>
-			
+
 			{/* Theme Settings */}
 			<div className="mb-6">
-				<AccentColorPicker 
+				<AccentColorPicker
 					onColorChange={(color) => {
 						toast.success("Accent color updated", `New color: ${color}`);
 					}}
 				/>
 			</div>
-			
+
 			<PagesList
 				pages={pages}
 				onEdit={handleEditPage}

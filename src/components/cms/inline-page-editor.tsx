@@ -120,8 +120,8 @@ export default function InlinePageEditor({
 			data:
 				segmentType === "api-endpoint"
 					? { endpointUrl: "https://api.example.com" }
-: false
-? {}
+					: false
+						? {}
 						: segmentType === "spotify-now-playing"
 							? {}
 							: undefined,
@@ -146,6 +146,19 @@ export default function InlinePageEditor({
 	};
 
 	const handleSegmentSave = (segmentId: string, segment: ContentSegment) => {
+		// Update the editing page with the new segment data
+		setEditingPage((prev) => ({
+			...prev,
+			blocks: prev.blocks.map((block) => ({
+				...block,
+				content: block.content.map((seg) =>
+					seg.id === segmentId ? segment : seg,
+				),
+			})),
+			updatedAt: new Date(),
+		}));
+		setHasUnsavedChanges(true);
+		setSaveStatus("idle");
 		setEditingSegment(null);
 	};
 

@@ -34,17 +34,22 @@ export function ThemeProvider({ children }: TProps) {
 	const [previewColor, setPreviewColor] = useState<string | null>(null);
 
 	useEffect(function loadInitialTheme() {
+		// Apply default theme variables immediately
+		updateCSSVariables(accentColor);
+
 		async function fetchAccentColor() {
 			try {
 				const response = await fetch("/api/theme/accent");
 				const data = await response.json();
-				
+
 				if (response.ok) {
 					setAccentColor(data.accentColor);
-					updateCSSVariable(data.accentColor);
+					updateCSSVariables(data.accentColor);
 				}
 			} catch (error) {
 				console.error("Failed to fetch accent color:", error);
+				// Fallback to default on error
+				updateCSSVariables(accentColor);
 			} finally {
 				setIsLoading(false);
 			}
@@ -53,44 +58,73 @@ export function ThemeProvider({ children }: TProps) {
 		fetchAccentColor();
 	}, []);
 
-	useEffect(function handlePreviewColor() {
-		updatePreviewCSS(previewColor);
-	}, [previewColor]);
+	useEffect(
+		function handlePreviewColor() {
+			updatePreviewCSS(previewColor);
+		},
+		[previewColor],
+	);
 
 	function handleSetPreviewColor(color: string | null) {
 		setPreviewColor(color);
 	}
 
 	function generateAccentVariations(color: string): TAccentColorVariations {
-		const [h, s, l] = color.split(' ').map(val => parseFloat(val.replace('%', '')));
-		
+		const [h, s, l] = color
+			.split(" ")
+			.map((val) => parseFloat(val.replace("%", "")));
+
 		return {
 			primary: color,
 			hover: `${h} ${s}% ${Math.min(l + 10, 100)}%`,
 			active: `${h} ${s}% ${Math.max(l - 10, 0)}%`,
 			muted: `${h} ${Math.max(s - 30, 0)}% ${Math.min(l + 20, 100)}%`,
-			contrast: l > 50 ? `${h} ${s}% 20%` : `${h} ${s}% 90%`
+			contrast: l > 50 ? `${h} ${s}% 20%` : `${h} ${s}% 90%`,
 		};
 	}
 
 	function updateCSSVariables(color: string) {
 		const variations = generateAccentVariations(color);
-		
+
 		document.documentElement.style.setProperty("--accent", variations.primary);
-		document.documentElement.style.setProperty("--accent-hover", variations.hover);
-		document.documentElement.style.setProperty("--accent-active", variations.active);
-		document.documentElement.style.setProperty("--accent-muted", variations.muted);
-		document.documentElement.style.setProperty("--accent-contrast", variations.contrast);
-		
-		document.documentElement.style.setProperty("--highlight-product", variations.primary);
-		document.documentElement.style.setProperty("--highlight-frontend", variations.primary);
+		document.documentElement.style.setProperty(
+			"--accent-hover",
+			variations.hover,
+		);
+		document.documentElement.style.setProperty(
+			"--accent-active",
+			variations.active,
+		);
+		document.documentElement.style.setProperty(
+			"--accent-muted",
+			variations.muted,
+		);
+		document.documentElement.style.setProperty(
+			"--accent-contrast",
+			variations.contrast,
+		);
+
+		document.documentElement.style.setProperty(
+			"--highlight-product",
+			variations.primary,
+		);
+		document.documentElement.style.setProperty(
+			"--highlight-frontend",
+			variations.primary,
+		);
 	}
 
 	function updatePreviewCSS(color: string | null) {
 		if (color) {
 			const variations = generateAccentVariations(color);
-			document.documentElement.style.setProperty("--accent-preview", variations.primary);
-			document.documentElement.style.setProperty("--accent-preview-hover", variations.hover);
+			document.documentElement.style.setProperty(
+				"--accent-preview",
+				variations.primary,
+			);
+			document.documentElement.style.setProperty(
+				"--accent-preview-hover",
+				variations.hover,
+			);
 		} else {
 			document.documentElement.style.removeProperty("--accent-preview");
 			document.documentElement.style.removeProperty("--accent-preview-hover");
@@ -103,27 +137,41 @@ export function ThemeProvider({ children }: TProps) {
 		const c = (1 - Math.abs(2 * l - 1)) * s;
 		const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
 		const m = l - c / 2;
-		let r = 0, g = 0, b = 0;
+		let r = 0,
+			g = 0,
+			b = 0;
 
 		if (0 <= h && h < 60) {
-			r = c; g = x; b = 0;
+			r = c;
+			g = x;
+			b = 0;
 		} else if (60 <= h && h < 120) {
-			r = x; g = c; b = 0;
+			r = x;
+			g = c;
+			b = 0;
 		} else if (120 <= h && h < 180) {
-			r = 0; g = c; b = x;
+			r = 0;
+			g = c;
+			b = x;
 		} else if (180 <= h && h < 240) {
-			r = 0; g = x; b = c;
+			r = 0;
+			g = x;
+			b = c;
 		} else if (240 <= h && h < 300) {
-			r = x; g = 0; b = c;
+			r = x;
+			g = 0;
+			b = c;
 		} else if (300 <= h && h < 360) {
-			r = c; g = 0; b = x;
+			r = c;
+			g = 0;
+			b = x;
 		}
 
 		return [(r + m) * 255, (g + m) * 255, (b + m) * 255];
 	}
 
 	function getLuminance(r: number, g: number, b: number): number {
-		const [rs, gs, bs] = [r, g, b].map(c => {
+		const [rs, gs, bs] = [r, g, b].map((c) => {
 			c = c / 255;
 			return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
 		});
@@ -131,14 +179,16 @@ export function ThemeProvider({ children }: TProps) {
 	}
 
 	function getContrastRatio(color: string): number {
-		const [h, s, l] = color.split(' ').map(val => parseFloat(val.replace('%', '')));
+		const [h, s, l] = color
+			.split(" ")
+			.map((val) => parseFloat(val.replace("%", "")));
 		const [r, g, b] = hslToRgb(h, s, l);
 		const colorLuminance = getLuminance(r, g, b);
 		const backgroundLuminance = getLuminance(18, 18, 18);
-		
+
 		const lighter = Math.max(colorLuminance, backgroundLuminance);
 		const darker = Math.min(colorLuminance, backgroundLuminance);
-		
+
 		return (lighter + 0.05) / (darker + 0.05);
 	}
 

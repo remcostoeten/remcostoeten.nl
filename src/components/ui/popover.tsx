@@ -53,12 +53,12 @@ const MotionPopoverContent = React.forwardRef<
 		ref,
 	) => (
 		<PopoverPrimitive.Portal>
-<motion.div
+			<motion.div
 				layout={layout}
 				initial={initial || { opacity: 0, scale: 0.95 }}
 				animate={animate || { opacity: 1, scale: 1 }}
 				exit={exit || { opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: "easeInOut" }}
+				transition={{ duration: 0.2, ease: "easeInOut" }}
 			>
 				<PopoverPrimitive.Content
 					ref={ref}

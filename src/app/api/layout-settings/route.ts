@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
 				if (!setting) {
 					return NextResponse.json(
 						{ error: "Setting not found" },
-						{ status: 404 }
+						{ status: 404 },
 					);
 				}
 
@@ -29,7 +29,10 @@ export async function GET(request: NextRequest) {
 					success: true,
 					data: {
 						...setting,
-						parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
+						parsedValue: parseSettingValue(
+							setting.settingValue,
+							setting.settingType,
+						),
 					},
 				});
 			}
@@ -42,64 +45,73 @@ export async function GET(request: NextRequest) {
 
 			return NextResponse.json({
 				success: true,
-				data: settings.map(setting => ({
+				data: settings.map((setting) => ({
 					...setting,
-					parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
+					parsedValue: parseSettingValue(
+						setting.settingValue,
+						setting.settingType,
+					),
 				})),
 			});
 		}
 
 		if (pageId) {
-const query = db.select().from(layoutSettings);
+			const query = db.select().from(layoutSettings);
 
-if (settingKey) {
-	const setting = await query
-		.where(
-			and(
-				eq(layoutSettings.pageId, parseInt(pageId)),
-				eq(layoutSettings.settingKey, settingKey)
-			)
-		)
-		.get();
+			if (settingKey) {
+				const setting = await query
+					.where(
+						and(
+							eq(layoutSettings.pageId, parseInt(pageId)),
+							eq(layoutSettings.settingKey, settingKey),
+						),
+					)
+					.get();
 
-	if (!setting) {
-		return NextResponse.json(
-			{ error: "Setting not found" },
-			{ status: 404 }
-		);
-	}
+				if (!setting) {
+					return NextResponse.json(
+						{ error: "Setting not found" },
+						{ status: 404 },
+					);
+				}
 
-	return NextResponse.json({
-		success: true,
-		data: {
-			...setting,
-			parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
-		},
-	});
-}
+				return NextResponse.json({
+					success: true,
+					data: {
+						...setting,
+						parsedValue: parseSettingValue(
+							setting.settingValue,
+							setting.settingType,
+						),
+					},
+				});
+			}
 
-const settings = await query
-	.where(eq(layoutSettings.pageId, parseInt(pageId)))
-	.all();
+			const settings = await query
+				.where(eq(layoutSettings.pageId, parseInt(pageId)))
+				.all();
 
-return NextResponse.json({
-	success: true,
-	data: settings.map(setting => ({
-		...setting,
-		parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
-	})),
-});
+			return NextResponse.json({
+				success: true,
+				data: settings.map((setting) => ({
+					...setting,
+					parsedValue: parseSettingValue(
+						setting.settingValue,
+						setting.settingType,
+					),
+				})),
+			});
 		}
 
 		return NextResponse.json(
 			{ error: "pageId or global=true parameter is required" },
-			{ status: 400 }
+			{ status: 400 },
 		);
 	} catch (error) {
 		console.error("Error fetching layout settings:", error);
 		return NextResponse.json(
 			{ error: "Internal server error" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }
@@ -107,12 +119,19 @@ return NextResponse.json({
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
-		const { pageId, settingKey, settingValue, settingType = "string", description, global = false } = body;
+		const {
+			pageId,
+			settingKey,
+			settingValue,
+			settingType = "string",
+			description,
+			global = false,
+		} = body;
 
 		if (!settingKey || settingValue === undefined) {
 			return NextResponse.json(
 				{ error: "settingKey and settingValue are required" },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -141,7 +160,10 @@ export async function POST(request: NextRequest) {
 					success: true,
 					data: {
 						...updatedSetting,
-						parsedValue: parseSettingValue(updatedSetting.settingValue, updatedSetting.settingType),
+						parsedValue: parseSettingValue(
+							updatedSetting.settingValue,
+							updatedSetting.settingType,
+						),
 					},
 				});
 			}
@@ -161,7 +183,10 @@ export async function POST(request: NextRequest) {
 				success: true,
 				data: {
 					...newSetting,
-					parsedValue: parseSettingValue(newSetting.settingValue, newSetting.settingType),
+					parsedValue: parseSettingValue(
+						newSetting.settingValue,
+						newSetting.settingType,
+					),
 				},
 			});
 		}
@@ -169,7 +194,7 @@ export async function POST(request: NextRequest) {
 		if (!pageId) {
 			return NextResponse.json(
 				{ error: "pageId is required for page-specific settings" },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -179,8 +204,8 @@ export async function POST(request: NextRequest) {
 			.where(
 				and(
 					eq(layoutSettings.pageId, parseInt(pageId)),
-					eq(layoutSettings.settingKey, settingKey)
-				)
+					eq(layoutSettings.settingKey, settingKey),
+				),
 			)
 			.get();
 
@@ -196,8 +221,8 @@ export async function POST(request: NextRequest) {
 				.where(
 					and(
 						eq(layoutSettings.pageId, parseInt(pageId)),
-						eq(layoutSettings.settingKey, settingKey)
-					)
+						eq(layoutSettings.settingKey, settingKey),
+					),
 				)
 				.returning();
 
@@ -205,7 +230,10 @@ export async function POST(request: NextRequest) {
 				success: true,
 				data: {
 					...updatedSetting,
-					parsedValue: parseSettingValue(updatedSetting.settingValue, updatedSetting.settingType),
+					parsedValue: parseSettingValue(
+						updatedSetting.settingValue,
+						updatedSetting.settingType,
+					),
 				},
 			});
 		}
@@ -225,14 +253,17 @@ export async function POST(request: NextRequest) {
 			success: true,
 			data: {
 				...newSetting,
-				parsedValue: parseSettingValue(newSetting.settingValue, newSetting.settingType),
+				parsedValue: parseSettingValue(
+					newSetting.settingValue,
+					newSetting.settingType,
+				),
 			},
 		});
 	} catch (error) {
 		console.error("Error saving layout setting:", error);
 		return NextResponse.json(
 			{ error: "Internal server error" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }
@@ -247,7 +278,7 @@ export async function DELETE(request: NextRequest) {
 		if (!settingKey) {
 			return NextResponse.json(
 				{ error: "settingKey is required" },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -259,7 +290,7 @@ export async function DELETE(request: NextRequest) {
 			if (!pageId) {
 				return NextResponse.json(
 					{ error: "pageId is required for page-specific settings" },
-					{ status: 400 }
+					{ status: 400 },
 				);
 			}
 
@@ -268,8 +299,8 @@ export async function DELETE(request: NextRequest) {
 				.where(
 					and(
 						eq(layoutSettings.pageId, parseInt(pageId)),
-						eq(layoutSettings.settingKey, settingKey)
-					)
+						eq(layoutSettings.settingKey, settingKey),
+					),
 				);
 		}
 
@@ -278,7 +309,7 @@ export async function DELETE(request: NextRequest) {
 		console.error("Error deleting layout setting:", error);
 		return NextResponse.json(
 			{ error: "Internal server error" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

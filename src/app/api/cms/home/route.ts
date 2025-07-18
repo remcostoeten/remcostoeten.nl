@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/db";
-import {
-	createErrorResponse,
-	validateResponseData,
-} from "@/lib/api/utils";
+import { createErrorResponse, validateResponseData } from "@/lib/api/utils";
 import { getHomePageContent } from "@/lib/cms/repository";
 import { PageContentSchema, type THomePageResponse } from "@/lib/cms/types";
 

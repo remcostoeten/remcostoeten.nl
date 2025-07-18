@@ -129,7 +129,7 @@ export async function readBlockAction(id: string) {
 	const blocksFactory = createBlocksFactory();
 
 	try {
-		const block = await blocksFactory.read(id);
+		const block = await blocksFactory.read(parseInt(id));
 		return { success: true, data: block };
 	} catch (error) {
 		console.error("Failed to read block:", error);
@@ -144,7 +144,7 @@ export async function updateBlockAction(
 	const blocksFactory = createBlocksFactory();
 
 	try {
-		const updatedBlock = await blocksFactory.update(id, data);
+		const updatedBlock = await blocksFactory.update(parseInt(id), data);
 		return { success: true, data: updatedBlock };
 	} catch (error) {
 		console.error("Failed to update block:", error);
@@ -156,7 +156,7 @@ export async function deleteBlockAction(id: string) {
 	const blocksFactory = createBlocksFactory();
 
 	try {
-		await blocksFactory.destroy(id);
+		await blocksFactory.destroy(parseInt(id));
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to delete block:", error);
@@ -178,7 +178,10 @@ export async function createSegmentAction(data: {
 	const segmentsFactory = createSegmentsFactory();
 
 	try {
-		const newSegment = await segmentsFactory.create(data);
+		const newSegment = await segmentsFactory.create({
+			...data,
+			blockId: parseInt(data.blockId),
+		});
 		return { success: true, data: newSegment };
 	} catch (error) {
 		console.error("Failed to create segment:", error);
@@ -190,7 +193,7 @@ export async function readSegmentAction(id: string) {
 	const segmentsFactory = createSegmentsFactory();
 
 	try {
-		const segment = await segmentsFactory.read(id);
+		const segment = await segmentsFactory.read(parseInt(id));
 		return { success: true, data: segment };
 	} catch (error) {
 		console.error("Failed to read segment:", error);
@@ -215,7 +218,7 @@ export async function updateSegmentAction(
 	const segmentsFactory = createSegmentsFactory();
 
 	try {
-		const updatedSegment = await segmentsFactory.update(id, data);
+		const updatedSegment = await segmentsFactory.update(parseInt(id), data);
 		return { success: true, data: updatedSegment };
 	} catch (error) {
 		console.error("Failed to update segment:", error);
@@ -227,7 +230,7 @@ export async function deleteSegmentAction(id: string) {
 	const segmentsFactory = createSegmentsFactory();
 
 	try {
-		await segmentsFactory.destroy(id);
+		await segmentsFactory.destroy(parseInt(id));
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to delete segment:", error);

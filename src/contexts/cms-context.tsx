@@ -15,7 +15,7 @@ interface CMSContextType {
 	// Actions
 	actions: {
 		createPage: () => Page;
-  createHomepage: () => Promise<Page>;
+		createHomepage: () => Promise<Page>;
 		updatePage: (pageId: string, page: Page) => Promise<Page>;
 		deletePage: (pageId: string) => void;
 		setCurrentPage: (page: Page | null) => void;
@@ -44,9 +44,9 @@ export function CMSProvider({ children }: CMSProviderProps) {
 	const pagesState = usePagesState();
 
 	return (
-<CMSContext.Provider value={pagesState as CMSContextType}>
-      {children}
-    </CMSContext.Provider>
+		<CMSContext.Provider value={pagesState as CMSContextType}>
+			{children}
+		</CMSContext.Provider>
 	);
 }
 
@@ -63,8 +63,8 @@ export function useCMS() {
 
 // HOC for components that need CMS state
 export function withCMS<P extends object>(Component: React.ComponentType<P>) {
-  return function CMSComponent(props: P) {
-    return (
+	return function CMSComponent(props: P) {
+		return (
 			<CMSProvider>
 				<Component {...props} />
 			</CMSProvider>

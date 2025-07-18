@@ -25,10 +25,16 @@ export function ThemeDemo() {
 							<Button className="w-full bg-accent hover:bg-accent-hover text-accent-foreground">
 								Primary Button
 							</Button>
-							<Button variant="outline" className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground">
+							<Button
+								variant="outline"
+								className="w-full border-accent text-accent hover:bg-accent hover:text-accent-foreground"
+							>
 								Outline Button
 							</Button>
-							<Button variant="ghost" className="w-full text-accent hover:bg-accent/20">
+							<Button
+								variant="ghost"
+								className="w-full text-accent hover:bg-accent/20"
+							>
 								Ghost Button
 							</Button>
 						</div>
@@ -42,11 +48,22 @@ export function ThemeDemo() {
 								Accent Badge
 							</Badge>
 							<div className="text-sm">
-								This is a <span className="text-accent font-medium">highlighted link</span> in content
+								This is a{" "}
+								<span className="text-accent font-medium">
+									highlighted link
+								</span>{" "}
+								in content
 							</div>
 							<div className="text-sm">
-								I'm a <span className="text-highlight-frontend font-medium">Frontend Developer</span> working on 
-								<span className="text-highlight-product font-medium"> digital products</span>
+								I'm a{" "}
+								<span className="text-highlight-frontend font-medium">
+									Frontend Developer
+								</span>{" "}
+								working on
+								<span className="text-highlight-product font-medium">
+									{" "}
+									digital products
+								</span>
 							</div>
 						</div>
 					</div>
@@ -60,10 +77,21 @@ export function ThemeDemo() {
 							<span>CSS Variables Updated:</span>
 						</div>
 						<div className="grid grid-cols-2 gap-2 text-xs font-mono">
-							<div>--accent: <span className="text-accent">{accentColor}</span></div>
-							<div>--accent-hover: <span className="text-accent">{accentVariations.hover}</span></div>
-							<div>--accent-active: <span className="text-accent">{accentVariations.active}</span></div>
-							<div>--accent-muted: <span className="text-accent">{accentVariations.muted}</span></div>
+							<div>
+								--accent: <span className="text-accent">{accentColor}</span>
+							</div>
+							<div>
+								--accent-hover:{" "}
+								<span className="text-accent">{accentVariations.hover}</span>
+							</div>
+							<div>
+								--accent-active:{" "}
+								<span className="text-accent">{accentVariations.active}</span>
+							</div>
+							<div>
+								--accent-muted:{" "}
+								<span className="text-accent">{accentVariations.muted}</span>
+							</div>
 						</div>
 					</div>
 				</div>

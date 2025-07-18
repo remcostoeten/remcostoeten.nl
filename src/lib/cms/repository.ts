@@ -37,20 +37,95 @@ export async function getHomePageContent(
 				id: block.id,
 				blockType: block.blockType,
 				order: block.order,
-				segments: segments.map(segment => {
-					let linkMetadata = null;
-					if (segment.metadata) {
-						try {
-							linkMetadata = parseLinkMetadata(segment.metadata);
-						} catch (error) {
-							console.warn(`Failed to parse link metadata for segment ${segment.id}:`, error);
-							linkMetadata = null;
+				segments: segments.map((segment) => {
+					// Handle different segment types properly
+					if (segment.type === "text") {
+						// For text segments, try to parse link metadata
+						let linkMetadata = null;
+						if (segment.metadata) {
+							try {
+								linkMetadata = parseLinkMetadata(segment.metadata);
+							} catch (error) {
+								console.warn(
+									`Failed to parse link metadata for segment ${segment.id}:`,
+									error,
+								);
+								linkMetadata = null;
+							}
 						}
+
+						return {
+							id: segment.id,
+							type: "text" as const,
+							content: segment.content,
+							order: segment.order,
+							href: segment.href,
+							target: segment.target,
+							className: segment.className,
+							style: segment.style,
+							metadata: segment.metadata,
+							linkMetadata,
+						};
+					} else if (segment.type === "time-widget") {
+						// For time-widget segments, parse the metadata as the widget config
+						let value;
+						try {
+							if (segment.metadata) {
+								value = JSON.parse(segment.metadata);
+							} else {
+								// Try to parse from content field as fallback
+								value = segment.content ? JSON.parse(segment.content) : null;
+							}
+						} catch {
+							// Fallback to default time widget config
+							value = {
+								id: `widget-${segment.id}`,
+								timezone: "UTC",
+								format: "24h",
+								showSeconds: false,
+							};
+						}
+
+						return {
+							id: segment.id,
+							type: "time-widget" as const,
+							value,
+							order: segment.order,
+							href: segment.href,
+							target: segment.target,
+							className: segment.className,
+							style: segment.style,
+							metadata: segment.metadata,
+							linkMetadata: null, // time-widget doesn't have link metadata
+						};
+					} else {
+						// Default to text type for unknown types
+						let linkMetadata = null;
+						if (segment.metadata) {
+							try {
+								linkMetadata = parseLinkMetadata(segment.metadata);
+							} catch (error) {
+								console.warn(
+									`Failed to parse link metadata for segment ${segment.id}:`,
+									error,
+								);
+								linkMetadata = null;
+							}
+						}
+
+						return {
+							id: segment.id,
+							type: "text" as const,
+							content: segment.content,
+							order: segment.order,
+							href: segment.href,
+							target: segment.target,
+							className: segment.className,
+							style: segment.style,
+							metadata: segment.metadata,
+							linkMetadata,
+						};
 					}
-					return {
-						...segment,
-						linkMetadata,
-					};
 				}) as TContentSegment[],
 			};
 		}),
@@ -93,20 +168,95 @@ export async function getPageContent(
 				id: block.id,
 				blockType: block.blockType,
 				order: block.order,
-				segments: segments.map(segment => {
-					let linkMetadata = null;
-					if (segment.metadata) {
-						try {
-							linkMetadata = parseLinkMetadata(segment.metadata);
-						} catch (error) {
-							console.warn(`Failed to parse link metadata for segment ${segment.id}:`, error);
-							linkMetadata = null;
+				segments: segments.map((segment) => {
+					// Handle different segment types properly
+					if (segment.type === "text") {
+						// For text segments, try to parse link metadata
+						let linkMetadata = null;
+						if (segment.metadata) {
+							try {
+								linkMetadata = parseLinkMetadata(segment.metadata);
+							} catch (error) {
+								console.warn(
+									`Failed to parse link metadata for segment ${segment.id}:`,
+									error,
+								);
+								linkMetadata = null;
+							}
 						}
+
+						return {
+							id: segment.id,
+							type: "text" as const,
+							content: segment.content,
+							order: segment.order,
+							href: segment.href,
+							target: segment.target,
+							className: segment.className,
+							style: segment.style,
+							metadata: segment.metadata,
+							linkMetadata,
+						};
+					} else if (segment.type === "time-widget") {
+						// For time-widget segments, parse the metadata as the widget config
+						let value;
+						try {
+							if (segment.metadata) {
+								value = JSON.parse(segment.metadata);
+							} else {
+								// Try to parse from content field as fallback
+								value = segment.content ? JSON.parse(segment.content) : null;
+							}
+						} catch {
+							// Fallback to default time widget config
+							value = {
+								id: `widget-${segment.id}`,
+								timezone: "UTC",
+								format: "24h",
+								showSeconds: false,
+							};
+						}
+
+						return {
+							id: segment.id,
+							type: "time-widget" as const,
+							value,
+							order: segment.order,
+							href: segment.href,
+							target: segment.target,
+							className: segment.className,
+							style: segment.style,
+							metadata: segment.metadata,
+							linkMetadata: null, // time-widget doesn't have link metadata
+						};
+					} else {
+						// Default to text type for unknown types
+						let linkMetadata = null;
+						if (segment.metadata) {
+							try {
+								linkMetadata = parseLinkMetadata(segment.metadata);
+							} catch (error) {
+								console.warn(
+									`Failed to parse link metadata for segment ${segment.id}:`,
+									error,
+								);
+								linkMetadata = null;
+							}
+						}
+
+						return {
+							id: segment.id,
+							type: "text" as const,
+							content: segment.content,
+							order: segment.order,
+							href: segment.href,
+							target: segment.target,
+							className: segment.className,
+							style: segment.style,
+							metadata: segment.metadata,
+							linkMetadata,
+						};
 					}
-					return {
-						...segment,
-						linkMetadata,
-					};
 				}) as TContentSegment[],
 			};
 		}),
@@ -126,9 +276,9 @@ export async function updateSegmentText(
 		.update(contentSegments)
 		.set({
 			text,
-updatedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
 		})
-.where(eq(contentSegments.id, Number(id)))
+		.where(eq(contentSegments.id, Number(id)));
 }
 
 export async function createContentBlock(
@@ -137,7 +287,7 @@ export async function createContentBlock(
 	blockType: string,
 	order: number,
 ): Promise<string> {
-  const blockId = Date.now();
+	const blockId = Date.now();
 
 	await database.insert(contentBlocks).values({
 		id: blockId,
@@ -146,7 +296,7 @@ export async function createContentBlock(
 		order,
 	});
 
-  return blockId.toString();
+	return blockId.toString();
 }
 
 export async function createContentSegment(
@@ -156,7 +306,7 @@ export async function createContentSegment(
 	type: string,
 	order: number,
 ): Promise<string> {
-  const segmentId = Date.now();
+	const segmentId = Date.now();
 
 	await database.insert(contentSegments).values({
 		id: segmentId,
@@ -166,14 +316,16 @@ export async function createContentSegment(
 		order,
 	});
 
-  return segmentId.toString();
+	return segmentId.toString();
 }
 
 export async function deleteContentBlock(
 	database: TDatabase,
 	blockId: string,
 ): Promise<void> {
-	await database.delete(contentBlocks).where(eq(contentBlocks.id, Number(blockId)));
+	await database
+		.delete(contentBlocks)
+		.where(eq(contentBlocks.id, Number(blockId)));
 }
 
 export async function deleteContentSegment(
@@ -194,9 +346,9 @@ export async function updateBlockOrder(
 		.update(contentBlocks)
 		.set({
 			order: newOrder,
-updatedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
 		})
-.where(eq(contentBlocks.id, Number(blockId)));
+		.where(eq(contentBlocks.id, Number(blockId)));
 }
 
 export async function updateSegmentOrder(
@@ -208,9 +360,9 @@ export async function updateSegmentOrder(
 		.update(contentSegments)
 		.set({
 			order: newOrder,
-updatedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
 		})
-.where(eq(contentSegments.id, Number(segmentId)));
+		.where(eq(contentSegments.id, Number(segmentId)));
 }
 
 export async function getContentSegmentById(
@@ -230,7 +382,7 @@ export async function getContentSegmentById(
 			metadata: contentSegments.metadata,
 		})
 		.from(contentSegments)
-.where(eq(contentSegments.id, Number(segmentId)))
+		.where(eq(contentSegments.id, Number(segmentId)))
 		.limit(1);
 
 	if (segments.length > 0) {
@@ -240,7 +392,10 @@ export async function getContentSegmentById(
 			try {
 				linkMetadata = parseLinkMetadata(segment.metadata);
 			} catch (error) {
-				console.warn(`Failed to parse link metadata for segment ${segment.id}:`, error);
+				console.warn(
+					`Failed to parse link metadata for segment ${segment.id}:`,
+					error,
+				);
 				linkMetadata = null;
 			}
 		}

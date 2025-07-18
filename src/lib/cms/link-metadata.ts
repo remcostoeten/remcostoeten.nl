@@ -27,9 +27,9 @@ export function createLinkMetadata(options: {
 		target: "_blank" as const,
 		rel: "noopener noreferrer",
 		className: "external-link",
-		suffix: " ↗",
+		suffix: "", // Remove default text suffix - use icons instead
 	};
-	
+
 	return LinkMetadataSchema.parse({
 		...defaults,
 		...options,
@@ -39,6 +39,10 @@ export function createLinkMetadata(options: {
 export function parseLinkMetadata(metadata: string): TLinkMetadata {
 	try {
 		const parsed = JSON.parse(metadata);
+		// Check if the parsed object has a href field
+		if (!parsed || typeof parsed !== "object" || !parsed.href) {
+			throw new Error("Missing required href field");
+		}
 		return LinkMetadataSchema.parse(parsed);
 	} catch (error) {
 		throw new Error(`Invalid link metadata: ${error}`);

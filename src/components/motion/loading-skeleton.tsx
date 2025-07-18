@@ -28,7 +28,7 @@ const pulseAnimation = {
 		duration: 1.2,
 		repeat: Infinity,
 		repeatType: "reverse" as const,
-ease: "easeInOut",
+		ease: "easeInOut" as const,
 	},
 };
 

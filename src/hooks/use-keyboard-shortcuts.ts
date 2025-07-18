@@ -8,7 +8,7 @@ type TShortcuts = {
 
 function useKeyboardShortcuts(shortcuts: TShortcuts, deps: any[] = []) {
 	const keySequence = useRef<string[]>([]);
-const sequenceTimeout = useRef<NodeJS.Timeout | null>(null);
+	const sequenceTimeout = useRef<NodeJS.Timeout | null>(null);
 
 	const handleKeyDown = useCallback((event: KeyboardEvent) => {
 		// Don't trigger shortcuts when typing in inputs

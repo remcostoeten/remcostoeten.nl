@@ -11,13 +11,13 @@ export async function GET() {
 			.where(eq(themeSettings.settingKey, "accent_color"));
 
 		const accentColor = settings[0]?.settingValue || "85 100% 65%";
-		
+
 		return NextResponse.json({ accentColor });
 	} catch (error) {
 		console.error("Failed to fetch accent color:", error);
 		return NextResponse.json(
 			{ error: "Failed to fetch accent color" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }
@@ -25,31 +25,31 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
 	try {
 		const { accentColor } = await request.json();
-		
+
 		if (!accentColor) {
 			return NextResponse.json(
 				{ error: "Accent color is required" },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
 		await db
 			.update(themeSettings)
-			.set({ 
+			.set({
 				settingValue: accentColor,
-				updatedAt: new Date().toISOString()
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(themeSettings.settingKey, "accent_color"));
 
-		return NextResponse.json({ 
+		return NextResponse.json({
 			message: "Accent color updated successfully",
-			accentColor 
+			accentColor,
 		});
 	} catch (error) {
 		console.error("Failed to update accent color:", error);
 		return NextResponse.json(
 			{ error: "Failed to update accent color" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }
@@ -57,24 +57,24 @@ export async function PATCH(request: NextRequest) {
 export async function POST() {
 	try {
 		const defaultAccentColor = "85 100% 65%";
-		
+
 		await db
 			.update(themeSettings)
-			.set({ 
+			.set({
 				settingValue: defaultAccentColor,
-				updatedAt: new Date().toISOString()
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(themeSettings.settingKey, "accent_color"));
 
-		return NextResponse.json({ 
+		return NextResponse.json({
 			message: "Accent color reset to default",
-			accentColor: defaultAccentColor 
+			accentColor: defaultAccentColor,
 		});
 	} catch (error) {
 		console.error("Failed to reset accent color:", error);
 		return NextResponse.json(
 			{ error: "Failed to reset accent color" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

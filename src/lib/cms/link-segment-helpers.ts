@@ -1,8 +1,4 @@
-import {
-	createLinkMetadata,
-	serializeLinkMetadata,
-	type TLinkMetadata,
-} from "./link-metadata";
+import { createLinkMetadata, serializeLinkMetadata } from "./link-metadata";
 import type { TContentSegment } from "./types";
 
 export function createLinkSegment(options: {
@@ -22,7 +18,7 @@ export function createLinkSegment(options: {
 
 	return {
 		id: options.id,
-  type: "text",
+		type: "text",
 		content: options.content,
 		order: options.order || 0,
 		href: linkMetadata.href,

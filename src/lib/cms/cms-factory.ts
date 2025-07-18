@@ -23,7 +23,7 @@ export function createCmsFactory() {
 				slug: data.slug,
 				title: data.title,
 				description: data.description || null,
-isPublished: 1,
+				isPublished: 1,
 			})
 			.returning()
 			.execute();
@@ -81,7 +81,7 @@ isPublished: 1,
 			.update(pages)
 			.set({
 				...data,
-updatedAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(pages.id, id))
 			.returning()
@@ -144,7 +144,7 @@ updatedAt: new Date().toISOString(),
 			.update(contentBlocks)
 			.set({
 				...data,
-updatedAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(contentBlocks.id, id))
 			.returning()
@@ -203,7 +203,7 @@ updatedAt: new Date().toISOString(),
 			.update(contentSegments)
 			.set({
 				...data,
-updatedAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(contentSegments.id, id))
 			.returning()
@@ -250,20 +250,26 @@ updatedAt: new Date().toISOString(),
 				const blockId = createdBlock.id;
 
 				for (const [segmentIndex, segment] of block.segments.entries()) {
+					const segmentText =
+						segment.type === "text"
+							? segment.content
+							: JSON.stringify(segment.value);
+					const logContent =
+						segmentText.substring(0, 50) +
+						(segmentText.length > 50 ? "..." : "");
+
 					console.log(
 						`[CMS Factory] Creating segment ${segmentIndex + 1}/${block.segments.length} for block ${blockId}:`,
 						{
 							type: segment.type,
-							content:
-								segment.content?.substring(0, 50) +
-								(segment.content?.length > 50 ? "..." : ""),
+							content: logContent,
 						},
 					);
 
 					await tx.insert(contentSegments).values({
 						blockId,
 						order: segment.order || segmentIndex + 1,
-						text: segment.content,
+						text: segmentText,
 						type: segment.type,
 						href: segment.href || null,
 						target: segment.target || null,

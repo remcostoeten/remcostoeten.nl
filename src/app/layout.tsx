@@ -31,7 +31,21 @@ export default function RootLayout({
 				<meta property="og:type" content="website" />
 				<meta property="og:image" content="/og-image.png" />
 			</head>
-			<body className="text-balance antialiased">
+			<body
+				className="text-balance antialiased"
+				suppressHydrationWarning={true}
+				style={
+					{
+						"--accent": "85 100% 65%",
+						"--accent-hover": "85 100% 75%",
+						"--accent-active": "85 100% 55%",
+						"--accent-muted": "85 70% 85%",
+						"--accent-contrast": "85 100% 20%",
+						"--highlight-product": "85 100% 65%",
+						"--highlight-frontend": "85 100% 65%",
+					} as React.CSSProperties
+				}
+			>
 				<AuthOverlay>
 					<Providers>
 						<Toaster />
