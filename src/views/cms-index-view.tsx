@@ -159,7 +159,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 							);
 						}
 
-						return (
+				return (
 							<p
 								key={block.id}
 								className={`text-foreground leading-relaxed text-base${borderClasses}`}

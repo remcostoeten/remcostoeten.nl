@@ -9,6 +9,7 @@ import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { usePagesState } from "@/hooks/use-pages-state";
 import { Page } from "@/types/cms";
 import WidthControl from "@/components/settings/WidthControl";
+import { AccentColorPicker } from "@/components/cms/accent-color-picker";
 
 export function CMSSection() {
 	const { pages, currentPage, isLoading, error, actions, computed } =
@@ -17,17 +18,16 @@ export function CMSSection() {
 	const homepageCreatedRef = useRef(false);
 
 	// Initialize homepage if it doesn't exist (only on first load)
-	// DISABLED: Automatic homepage creation to prevent duplicates on refresh
-	// useEffect(() => {
-	// 	if (!isLoading && pages.length === 0 && !computed.hasHomepage && !homepageCreatedRef.current) {
-	// 		homepageCreatedRef.current = true;
-	// 		actions.createHomepage().catch((error) => {
-	// 			console.error('Failed to create homepage:', error);
-	// 			toast.error('Failed to create homepage', 'Please try again.');
-	// 			homepageCreatedRef.current = false;
-	// 		});
-	// 	}
-	// }, [isLoading, pages.length, computed.hasHomepage, actions, toast]);
+	useEffect(() => {
+		if (!isLoading && pages.length === 0 && !computed.hasHomepage && !homepageCreatedRef.current) {
+			homepageCreatedRef.current = true;
+			actions.createHomepage().catch((error) => {
+				console.error('Failed to create homepage:', error);
+				toast.error('Failed to create homepage', 'Please try again.');
+				homepageCreatedRef.current = false;
+			});
+		}
+	}, [isLoading, pages.length, computed.hasHomepage, actions, toast]);
 
 	function handleEditPage(page: Page) {
 		actions.setCurrentPage(page);
@@ -210,6 +210,15 @@ export function CMSSection() {
 			{/* Global Width Control for all pages */}
 			<div className="mb-6">
 				<WidthControl global={true} />
+			</div>
+			
+			{/* Theme Settings */}
+			<div className="mb-6">
+				<AccentColorPicker 
+					onColorChange={(color) => {
+						toast.success("Accent color updated", `New color: ${color}`);
+					}}
+				/>
 			</div>
 			
 			<PagesList

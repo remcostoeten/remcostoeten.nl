@@ -4,4 +4,5 @@ export * from "./feedback";
 export * from "./layout-settings";
 export * from "./pages";
 export * from "./style-presets";
+export * from "./theme-settings";
 export * from "./users";
