@@ -1,8 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Music } from "lucide-react";
 import { useEffect, useState } from "react";
-import { FadeIn } from "@/components/ui/fade-in";
-import { Spinner } from "@/components/ui/spinner";
 import { TextSkeleton } from "@/components/ui/text-skeleton";
 import { TrackPopover } from "./track-popover";
 

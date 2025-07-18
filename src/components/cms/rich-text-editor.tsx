@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	Bold,
-	Highlighter,
-	Link as LinkIcon,
-	Palette,
-	Type,
-} from "lucide-react";
+import { Highlighter, Palette } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ContentSegment } from "@/types/cms";
 
@@ -52,10 +46,6 @@ const DEFAULT_HIGHLIGHT_STYLES: THighlightStyle[] = [
 
 function generateId() {
 	return `seg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
-
-function convertSegmentsToText(segments: ContentSegment[]): string {
-	return segments.map((segment) => segment.content).join("");
 }
 
 function convertTextToSegments(text: string): ContentSegment[] {
@@ -196,7 +186,6 @@ export function RichTextEditor({
 		const rangeRect = range.getBoundingClientRect();
 
 		// Calculate text offsets
-		const fullText = convertSegmentsToText(segments);
 		const beforeRange = range.cloneRange();
 		beforeRange.selectNodeContents(editorRef.current);
 		beforeRange.setEnd(range.startContainer, range.startOffset);

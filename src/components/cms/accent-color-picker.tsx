@@ -7,7 +7,14 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useTheme } from "@/contexts/theme-context";
-import { Palette, RotateCcw, Eye, AlertCircle, CheckCircle, Zap } from "lucide-react";
+import {
+	Palette,
+	RotateCcw,
+	Eye,
+	AlertCircle,
+	CheckCircle,
+	Zap,
+} from "lucide-react";
 
 type TProps = {
 	onColorChange?: (color: string) => void;
@@ -27,16 +34,15 @@ const presetColors = [
 ];
 
 export function AccentColorPicker({ onColorChange }: TProps) {
-	const { 
-		accentColor, 
-		accentVariations, 
-		updateAccentColor, 
-		resetAccentColor, 
+	const {
+		accentColor,
+		accentVariations,
+		updateAccentColor,
+		resetAccentColor,
 		isLoading,
-		previewColor,
 		setPreviewColor,
 		getContrastRatio,
-		isAccessible
+		isAccessible,
 	} = useTheme();
 	const [customColor, setCustomColor] = useState<string>("");
 	const [error, setError] = useState<string>("");
@@ -44,18 +50,18 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 
 	function parseHslFromInput(input: string) {
 		const trimmed = input.trim();
-		
+
 		if (trimmed.includes("hsl(")) {
 			const match = trimmed.match(/hsl\(([^)]+)\)/);
 			if (match) {
 				return match[1];
 			}
 		}
-		
+
 		if (trimmed.match(/^\d+\s+\d+%\s+\d+%$/)) {
 			return trimmed;
 		}
-		
+
 		return null;
 	}
 
@@ -80,11 +86,11 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 	function getAccessibilityInfo(color: string) {
 		const contrast = getContrastRatio(color);
 		const accessible = isAccessible(color);
-		
+
 		return {
 			contrast: contrast.toFixed(2),
 			accessible,
-			rating: contrast >= 7 ? "AAA" : contrast >= 4.5 ? "AA" : "Fail"
+			rating: contrast >= 7 ? "AAA" : contrast >= 4.5 ? "AA" : "Fail",
 		};
 	}
 
@@ -106,7 +112,9 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 
 		const parsedColor = parseHslFromInput(customColor);
 		if (!parsedColor) {
-			setError("Invalid HSL format. Use: '85 100% 65%' or 'hsl(85, 100%, 65%)'");
+			setError(
+				"Invalid HSL format. Use: '85 100% 65%' or 'hsl(85, 100%, 65%)'",
+			);
 			return;
 		}
 
@@ -156,7 +164,11 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 					<div className="flex items-center justify-between">
 						<Label>Current Color</Label>
 						<div className="flex items-center gap-2">
-							<Badge variant={currentAccessibility.accessible ? "default" : "destructive"}>
+							<Badge
+								variant={
+									currentAccessibility.accessible ? "default" : "destructive"
+								}
+							>
 								{currentAccessibility.accessible ? (
 									<CheckCircle className="w-3 h-3 mr-1" />
 								) : (
@@ -170,7 +182,7 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 						</div>
 					</div>
 					<div className="flex items-center gap-3">
-						<div 
+						<div
 							className="w-10 h-10 rounded-lg border border-border shadow-sm transition-all"
 							style={{ backgroundColor: `hsl(${accentColor})` }}
 						/>
@@ -180,15 +192,30 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 							</code>
 							<div className="flex gap-1 mt-2">
 								<div className="flex items-center gap-1">
-									<div className="w-3 h-3 rounded-sm" style={{ backgroundColor: `hsl(${accentVariations.hover})` }} />
+									<div
+										className="w-3 h-3 rounded-sm"
+										style={{
+											backgroundColor: `hsl(${accentVariations.hover})`,
+										}}
+									/>
 									<span className="text-xs text-muted-foreground">Hover</span>
 								</div>
 								<div className="flex items-center gap-1">
-									<div className="w-3 h-3 rounded-sm" style={{ backgroundColor: `hsl(${accentVariations.active})` }} />
+									<div
+										className="w-3 h-3 rounded-sm"
+										style={{
+											backgroundColor: `hsl(${accentVariations.active})`,
+										}}
+									/>
 									<span className="text-xs text-muted-foreground">Active</span>
 								</div>
 								<div className="flex items-center gap-1">
-									<div className="w-3 h-3 rounded-sm" style={{ backgroundColor: `hsl(${accentVariations.muted})` }} />
+									<div
+										className="w-3 h-3 rounded-sm"
+										style={{
+											backgroundColor: `hsl(${accentVariations.muted})`,
+										}}
+									/>
 									<span className="text-xs text-muted-foreground">Muted</span>
 								</div>
 							</div>
@@ -214,7 +241,7 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 									title={`${preset.name} - ${presetAccessibility.rating} (${presetAccessibility.contrast}:1)`}
 								>
 									<div className="flex flex-col items-center gap-1">
-										<div 
+										<div
 											className="w-6 h-6 rounded border border-border transition-all"
 											style={{ backgroundColor: `hsl(${preset.value})` }}
 										/>
@@ -224,7 +251,9 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 											) : (
 												<AlertCircle className="w-2 h-2 text-orange-500" />
 											)}
-											<span className="text-xs">{presetAccessibility.rating}</span>
+											<span className="text-xs">
+												{presetAccessibility.rating}
+											</span>
 										</div>
 									</div>
 								</Button>
@@ -262,15 +291,35 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 					</p>
 					{customColor && (
 						<div className="flex items-center gap-2 text-xs">
-							<div className="w-4 h-4 rounded border" 
-								 style={{ backgroundColor: parseHslFromInput(customColor) ? `hsl(${parseHslFromInput(customColor)})` : 'transparent' }} />
+							<div
+								className="w-4 h-4 rounded border"
+								style={{
+									backgroundColor: parseHslFromInput(customColor)
+										? `hsl(${parseHslFromInput(customColor)})`
+										: "transparent",
+								}}
+							/>
 							{parseHslFromInput(customColor) && (
 								<>
 									<Badge variant="outline" className="text-xs">
-										{getAccessibilityInfo(parseHslFromInput(customColor)!).contrast}:1
+										{
+											getAccessibilityInfo(parseHslFromInput(customColor)!)
+												.contrast
+										}
+										:1
 									</Badge>
-									<Badge variant={getAccessibilityInfo(parseHslFromInput(customColor)!).accessible ? "default" : "destructive"}>
-										{getAccessibilityInfo(parseHslFromInput(customColor)!).rating}
+									<Badge
+										variant={
+											getAccessibilityInfo(parseHslFromInput(customColor)!)
+												.accessible
+												? "default"
+												: "destructive"
+										}
+									>
+										{
+											getAccessibilityInfo(parseHslFromInput(customColor)!)
+												.rating
+										}
 									</Badge>
 								</>
 							)}
@@ -285,11 +334,7 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 								<Eye className="w-4 h-4 text-accent" />
 								<span className="text-sm font-medium">Preview Mode Active</span>
 							</div>
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={handleStopPreview}
-							>
+							<Button variant="ghost" size="sm" onClick={handleStopPreview}>
 								Stop Preview
 							</Button>
 						</div>

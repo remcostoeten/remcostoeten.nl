@@ -41,9 +41,9 @@ export async function verifyToken(
 	}
 }
 
-export function setAuthCookie(token: string) {
+export async function setAuthCookie(token: string) {
 	const cookieStore = cookies();
-	cookieStore.set("auth-token", token, {
+	(await cookieStore)?.set("auth-token", token, {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
 		sameSite: "strict",
@@ -52,14 +52,14 @@ export function setAuthCookie(token: string) {
 	});
 }
 
-export function getAuthToken(): string | null {
+export async function getAuthToken(): Promise<string | null> {
 	const cookieStore = cookies();
-	return cookieStore.get("auth-token")?.value || null;
+	return (await cookieStore)?.get("auth-token")?.value || null;
 }
 
-export function clearAuthCookie() {
+export async function clearAuthCookie() {
 	const cookieStore = cookies();
-	cookieStore.set("auth-token", "", {
+	(await cookieStore)?.set("auth-token", "", {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",
 		sameSite: "strict",
@@ -72,7 +72,7 @@ export async function getCurrentUser(): Promise<{
 	userId: number;
 	email: string;
 } | null> {
-	const token = getAuthToken();
+	const token = await getAuthToken();
 	if (!token) return null;
 
 	return await verifyToken(token);

@@ -1,7 +1,6 @@
 "use client";
 
-import type { Variants } from "motion/react";
-import { motion, useAnimation } from "motion/react";
+import { motion, useAnimation } from "framer-motion";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -15,7 +14,7 @@ interface SquarePenIconProps extends HTMLAttributes<HTMLDivElement> {
 	size?: number;
 }
 
-const penVariants: Variants = {
+const penVariants = {
 	normal: {
 		rotate: 0,
 		x: 0,

@@ -23,7 +23,7 @@ export function createCmsFactory() {
 				slug: data.slug,
 				title: data.title,
 				description: data.description || null,
-				isPublished: true,
+				isPublished: 1,
 			})
 			.returning()
 			.execute();
@@ -81,7 +81,7 @@ export function createCmsFactory() {
 			.update(pages)
 			.set({
 				...data,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(pages.id, id))
 			.returning()
@@ -144,7 +144,7 @@ export function createCmsFactory() {
 			.update(contentBlocks)
 			.set({
 				...data,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(contentBlocks.id, id))
 			.returning()
@@ -203,7 +203,7 @@ export function createCmsFactory() {
 			.update(contentSegments)
 			.set({
 				...data,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(contentSegments.id, id))
 			.returning()
@@ -250,26 +250,39 @@ export function createCmsFactory() {
 				const blockId = createdBlock.id;
 
 				for (const [segmentIndex, segment] of block.segments.entries()) {
+					const segmentText =
+						segment.type === "text"
+							? segment.content
+							: JSON.stringify(segment.value);
+					const logContent =
+						segmentText.substring(0, 50) +
+						(segmentText.length > 50 ? "..." : "");
+
+					// Handle metadata: use segment.metadata if available, otherwise use segment.data
+					let metadata = segment.metadata || null;
+					if (!metadata && segment.data) {
+						metadata = JSON.stringify(segment.data);
+					}
+
 					console.log(
 						`[CMS Factory] Creating segment ${segmentIndex + 1}/${block.segments.length} for block ${blockId}:`,
 						{
 							type: segment.type,
-							content:
-								segment.content?.substring(0, 50) +
-								(segment.content?.length > 50 ? "..." : ""),
+							content: logContent,
+							metadata: metadata,
 						},
 					);
 
 					await tx.insert(contentSegments).values({
 						blockId,
 						order: segment.order || segmentIndex + 1,
-						text: segment.content,
+						text: segmentText,
 						type: segment.type,
 						href: segment.href || null,
 						target: segment.target || null,
 						className: segment.className || null,
 						style: segment.style || null,
-						metadata: segment.metadata || null,
+						metadata: metadata,
 					});
 				}
 			}

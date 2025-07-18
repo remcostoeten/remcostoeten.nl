@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { deleteFeedbackAction } from "@/lib/feedback/server-actions";
 
 export async function DELETE(
-	request: NextRequest,
+	_request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {

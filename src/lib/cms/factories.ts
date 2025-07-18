@@ -38,7 +38,7 @@ type TBlockCreateInput = {
 type TBlockUpdateInput = Partial<Pick<TBlockEntity, "blockType" | "order">>;
 
 type TSegmentEntity = TBaseEntity & {
-	blockId: number;
+	blockId: string;
 	order: number;
 	text: string;
 	type: string;
@@ -183,7 +183,12 @@ export function createBlocksFactory() {
 			.returning()
 			.execute();
 
-		return newBlock[0] as TBlockEntity;
+		return {
+			...newBlock[0],
+			id: newBlock[0].id.toString(),
+			createdAt: new Date(newBlock[0].createdAt),
+			updatedAt: new Date(newBlock[0].updatedAt),
+		} as TBlockEntity;
 	}
 
 	async function read(id: number): Promise<TBlockEntity | null> {
@@ -194,7 +199,14 @@ export function createBlocksFactory() {
 			.limit(1)
 			.execute();
 
-		return (block[0] as TBlockEntity) || null;
+		return block[0]
+			? ({
+					...block[0],
+					id: block[0].id.toString(),
+					createdAt: new Date(block[0].createdAt),
+					updatedAt: new Date(block[0].updatedAt),
+				} as TBlockEntity)
+			: null;
 	}
 
 	async function update(
@@ -205,13 +217,18 @@ export function createBlocksFactory() {
 			.update(contentBlocks)
 			.set({
 				...data,
-				updatedAt: new Date(),
+				updatedAt: new Date().toISOString(),
 			})
 			.where(eq(contentBlocks.id, id))
 			.returning()
 			.execute();
 
-		return updatedBlock[0] as TBlockEntity;
+		return {
+			...updatedBlock[0],
+			id: updatedBlock[0].id.toString(),
+			createdAt: new Date(updatedBlock[0].createdAt),
+			updatedAt: new Date(updatedBlock[0].updatedAt),
+		} as TBlockEntity;
 	}
 
 	async function destroy(id: number): Promise<void> {
@@ -244,7 +261,13 @@ export function createSegmentsFactory() {
 			.returning()
 			.execute();
 
-		return newSegment[0] as TSegmentEntity;
+		return {
+			...newSegment[0],
+			id: newSegment[0].id.toString(),
+			blockId: newSegment[0].blockId.toString(),
+			createdAt: new Date(newSegment[0].createdAt),
+			updatedAt: new Date(newSegment[0].updatedAt),
+		} as TSegmentEntity;
 	}
 
 	async function read(id: number): Promise<TSegmentEntity | null> {
@@ -255,24 +278,45 @@ export function createSegmentsFactory() {
 			.limit(1)
 			.execute();
 
-		return (segment[0] as TSegmentEntity) || null;
+		return segment[0]
+			? ({
+					...segment[0],
+					id: segment[0].id.toString(),
+					blockId: segment[0].blockId.toString(),
+					createdAt: new Date(segment[0].createdAt),
+					updatedAt: new Date(segment[0].updatedAt),
+				} as TSegmentEntity)
+			: null;
 	}
 
 	async function update(
 		id: number,
 		data: TSegmentUpdateInput,
 	): Promise<TSegmentEntity> {
+		const updateData: any = {
+			...data,
+			updatedAt: new Date().toISOString(),
+		};
+
+		// Convert blockId from string to number if present
+		if (data.blockId !== undefined) {
+			updateData.blockId = Number(data.blockId);
+		}
+
 		const updatedSegment = await db
 			.update(contentSegments)
-			.set({
-				...data,
-				updatedAt: new Date(),
-			})
+			.set(updateData)
 			.where(eq(contentSegments.id, id))
 			.returning()
 			.execute();
 
-		return updatedSegment[0] as TSegmentEntity;
+		return {
+			...updatedSegment[0],
+			id: updatedSegment[0].id.toString(),
+			blockId: updatedSegment[0].blockId.toString(),
+			createdAt: new Date(updatedSegment[0].createdAt),
+			updatedAt: new Date(updatedSegment[0].updatedAt),
+		} as TSegmentEntity;
 	}
 
 	async function destroy(id: number): Promise<void> {

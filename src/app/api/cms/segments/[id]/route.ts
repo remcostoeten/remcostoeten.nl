@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db/db";
-import {
-	createErrorResponse,
-	createSuccessResponse,
-	validateRequestBody,
-} from "@/lib/api/utils";
+import { createErrorResponse, validateRequestBody } from "@/lib/api/utils";
 import { getContentSegmentById, updateSegmentText } from "@/lib/cms/repository";
 import {
 	type TUpdateSegmentResponse,
@@ -48,7 +44,7 @@ export async function PATCH(request: NextRequest, { params }: TRouteParams) {
 			return createErrorResponse("Invalid request data", 400);
 		}
 
-		const { content } = validationResult.data;
+		const requestData = validationResult.data;
 
 		// Check if segment exists
 		const existingSegment = await getContentSegmentById(db, id);
@@ -56,8 +52,17 @@ export async function PATCH(request: NextRequest, { params }: TRouteParams) {
 			return createErrorResponse("Segment not found", 404);
 		}
 
-		// Update segment
-		await updateSegmentText(db, id, content);
+		// Update segment based on type
+		if (requestData.type === "text") {
+			await updateSegmentText(db, id, requestData.content);
+		} else {
+			// For time-widget, we would need a different update function
+			// For now, just return an error for unsupported types
+			return createErrorResponse(
+				"Unsupported segment type for text update",
+				400,
+			);
+		}
 
 		// Get updated segment
 		const updatedSegment = await getContentSegmentById(db, id);

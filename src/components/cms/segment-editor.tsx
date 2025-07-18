@@ -1,7 +1,6 @@
-import { Edit3, ExternalLink, Palette, Trash2 } from "lucide-react";
-import React, { useState } from "react";
+import { ExternalLink, Palette, Trash2 } from "lucide-react";
+import { useState } from "react";
 import { ContentSegment } from "@/types/cms";
-import { RichTextEditor } from "./rich-text-editor";
 
 interface SegmentEditorProps {
 	segment: ContentSegment;
@@ -35,7 +34,7 @@ export default function SegmentEditor({
 				return "🔗";
 			case "project-card":
 				return "📦";
-			case "time-widget":
+			case "time-display":
 				return "🕐";
 			default:
 				return "📝";
@@ -105,7 +104,7 @@ export default function SegmentEditor({
 					</div>
 				);
 
-			case "time-widget":
+			case "time-display":
 				return (
 					<div className="mt-2 space-y-2">
 						<label className="block text-xs font-medium text-foreground">

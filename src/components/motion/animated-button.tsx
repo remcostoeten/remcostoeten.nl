@@ -3,13 +3,12 @@
 import { motion } from "framer-motion";
 import { forwardRef } from "react";
 import type { ButtonProps } from "@/components/ui/button";
-import { Button } from "@/components/ui/button";
 
 type TProps = ButtonProps & {
-	whileTap?: object;
-	whileHover?: object;
-	whileLoading?: object;
 	isLoading?: boolean;
+	whileTap?: any;
+	whileHover?: any;
+	whileLoading?: any;
 };
 
 export const AnimatedButton = forwardRef<HTMLButtonElement, TProps>(
@@ -25,10 +24,8 @@ export const AnimatedButton = forwardRef<HTMLButtonElement, TProps>(
 		},
 		ref,
 	) => {
-		const MotionButton = motion(Button);
-
 		return (
-			<MotionButton
+			<motion.button
 				ref={ref}
 				whileTap={!disabled && !isLoading ? whileTap : undefined}
 				whileHover={!disabled && !isLoading ? whileHover : undefined}
@@ -39,7 +36,7 @@ export const AnimatedButton = forwardRef<HTMLButtonElement, TProps>(
 					damping: 17,
 				}}
 				disabled={disabled || isLoading}
-				{...props}
+				{...(props as any)}
 			>
 				{isLoading ? (
 					<motion.div
@@ -62,7 +59,7 @@ export const AnimatedButton = forwardRef<HTMLButtonElement, TProps>(
 				) : (
 					children
 				)}
-			</MotionButton>
+			</motion.button>
 		);
 	},
 );

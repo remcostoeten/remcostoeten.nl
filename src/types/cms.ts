@@ -69,6 +69,14 @@ export interface ContentSegment {
 		additionalText?: string;
 		websiteUrl?: string;
 		websiteText?: string;
+		// Time display data
+		timeWidgetConfig?: {
+			id: string;
+			timezone: string;
+			format: string;
+			showSeconds: boolean;
+			label: string;
+		};
 	};
 }
 

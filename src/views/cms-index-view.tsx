@@ -1,4 +1,4 @@
-  "use client";
+"use client";
 
 import type React from "react";
 import { useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import { ContactForm } from "@/components/contact-form";
 import { useContactPopover } from "@/hooks/useContactPopover";
 import { useContainerWidth } from "@/hooks/useLayoutSettings";
 import { renderSegment } from "@/lib/cms/renderSegment";
-import { TContentBlock, TContentSegment, TPageContent } from "@/lib/cms/types";
+import { TPageContent } from "@/lib/cms/types";
 
 function getFormattedTime() {
 	const now = new Date();
@@ -21,6 +21,7 @@ type TProps = {
 
 export function CMSIndexView({ initialContent }: TProps) {
 	const [currentTime, setCurrentTime] = useState<string>("");
+	const [isClient, setIsClient] = useState(false);
 	const {
 		isVisible,
 		shouldOpenAbove,
@@ -31,105 +32,142 @@ export function CMSIndexView({ initialContent }: TProps) {
 		handlePopoverMouseLeave,
 		popoverRootRef,
 	} = useContactPopover();
-	const [homePageContent, setHomePageContent] = useState<TPageContent>(initialContent);
+	const [homePageContent] = useState<TPageContent>(initialContent);
 	const { containerWidth } = useContainerWidth(undefined, true); // Use global setting
 
-	useEffect(function initTime() {
+	useEffect(function initClient() {
+		setIsClient(true);
 		setCurrentTime(getFormattedTime());
 	}, []);
 
-	useEffect(function setupTimeInterval() {
-		function updateTime() {
-			setCurrentTime(getFormattedTime());
-		}
+	useEffect(
+		function setupTimeInterval() {
+			if (!isClient) return;
 
-		const interval = setInterval(updateTime, 600);
-		return function cleanup() {
-			clearInterval(interval);
-		};
-	}, []);
+			function updateTime() {
+				setCurrentTime(getFormattedTime());
+			}
+
+			const interval = setInterval(updateTime, 600);
+			return function cleanup() {
+				clearInterval(interval);
+			};
+		},
+		[isClient],
+	);
 
 	return (
 		<div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
-			<div className="w-full space-y-8" style={{ maxWidth: `${containerWidth.value}${containerWidth.unit}` }}>
+			<div
+				className="w-full space-y-8"
+				style={{ maxWidth: `${containerWidth.value}${containerWidth.unit}` }}
+			>
 				{homePageContent.blocks
 					.sort(function sortByOrder(a, b) {
-						return a.order - b.order;
+						return (a.order || 0) - (b.order || 0);
 					})
 					.map(function renderBlock(block) {
 						const content = block.segments.map((segment) => {
 							// Handle contact form segment specially
-							if (segment.type === "contact-form") {
-								return (
-									<div key={segment.id} className="relative">
-										<p className="text-foreground leading-relaxed text-base">
-											{segment.content || "or contact me via"}{" "}
-											<span
-												className="relative inline-block"
-												ref={popoverRootRef}
-												onMouseEnter={handleMouseEnter}
-												onMouseLeave={handleMouseLeave}
-											>
-												<button
-													className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60"
-													onClick={handleClick}
-												>
-													{segment.data?.emailText || "Email ↗"}
-												</button>
-											</span>{" "}
-											{segment.data?.additionalText || "or check out my"}{" "}
-											<a
-												href={segment.data?.websiteUrl || "https://remcostoeten.nl"}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="text-accent hover:underline font-medium"
-											>
-												{segment.data?.websiteText || "website ↗"}
-											</a>
-											.
-										</p>
-										<ContactForm
-											isVisible={isVisible}
-											openAbove={shouldOpenAbove}
-											containerRef={popoverRootRef}
-											onMouseEnter={handlePopoverMouseEnter}
-											onMouseLeave={handlePopoverMouseLeave}
-										/>
-									</div>
-								);
+							if (segment.type === "text" && segment.metadata) {
+								try {
+									const segmentData = JSON.parse(segment.metadata);
+									if (
+										segmentData.emailText ||
+										segmentData.additionalText ||
+										segmentData.websiteUrl
+									) {
+										return (
+											<div key={segment.id} className="relative">
+												<p className="text-foreground leading-relaxed text-base">
+													{segment.content || "or contact me via"}{" "}
+													<span
+														className="relative inline-block"
+														ref={popoverRootRef}
+														onMouseEnter={handleMouseEnter}
+														onMouseLeave={handleMouseLeave}
+													>
+														<button
+															className="text-accent font-medium border-b border-dotted border-accent/30 hover:border-accent/60"
+															onClick={handleClick}
+														>
+															{segmentData.emailText || "Email ↗"}
+														</button>
+													</span>{" "}
+													{segmentData.additionalText || "or check out my"}{" "}
+													<a
+														href={
+															segmentData.websiteUrl ||
+															"https://remcostoeten.nl"
+														}
+														target="_blank"
+														rel="noopener noreferrer"
+														className="text-accent hover:underline font-medium"
+													>
+														{segmentData.websiteText || "website ↗"}
+													</a>
+													.
+												</p>
+												<ContactForm
+													isVisible={isVisible}
+													openAbove={shouldOpenAbove}
+														containerRef={popoverRootRef}
+													onMouseEnter={handlePopoverMouseEnter}
+													onMouseLeave={handlePopoverMouseLeave}
+												/>
+											</div>
+										);
+									}
+								} catch (error) {
+									// If metadata parsing fails, fall through to normal rendering
+								}
 							}
 
 							// Handle time display segment specially
-							if (segment.type === "time-display") {
+							if (segment.type === "time-widget") {
 								return (
 									<span key={segment.id}>
-										{segment.content || "Right now it is"}{" "}
+										{"Right now it is"}{" "}
 										<span
 											className="font-medium font-mono"
 											style={{ minWidth: "8ch", display: "inline-block" }}
 										>
-											{currentTime || "--:--"}
+											{isClient ? currentTime || "--:--" : "--:--"}
 										</span>
 										.
 									</span>
 								);
 							}
 
-							return renderSegment(segment);
+							// Render different segment types properly
+							return renderSegment({
+								id: segment.id.toString(),
+								type: segment.type as any,
+								content: (segment as any).content || "",
+								href: segment.href || undefined,
+								target: segment.target || undefined,
+								metadata: segment.metadata || undefined,
+								value: (segment as any).value || undefined,
+								className: segment.className || undefined,
+							});
 						});
 
 						const blockStyles = {
-							marginTop: block.styles?.marginTop || undefined,
-							marginBottom: block.styles?.marginBottom || undefined,
-							paddingTop: block.styles?.paddingTop || undefined,
-							paddingBottom: block.styles?.paddingBottom || undefined,
+							marginTop: (block as any).styles?.marginTop || undefined,
+							marginBottom: (block as any).styles?.marginBottom || undefined,
+							paddingTop: (block as any).styles?.paddingTop || undefined,
+							paddingBottom: (block as any).styles?.paddingBottom || undefined,
 						};
 
 						let borderClasses = "";
-						if (block.styles?.borderTop) borderClasses += " border-t border-border";
-						if (block.styles?.borderBottom) borderClasses += " border-b border-border";
-						if (block.styles?.borderLeft) borderClasses += " border-l border-border";
-						if (block.styles?.borderRight) borderClasses += " border-r border-border";
+						if ((block as any).styles?.borderTop)
+							borderClasses += " border-t border-border";
+						if ((block as any).styles?.borderBottom)
+							borderClasses += " border-b border-border";
+						if ((block as any).styles?.borderLeft)
+							borderClasses += " border-l border-border";
+						if ((block as any).styles?.borderRight)
+							borderClasses += " border-r border-border";
 
 						if (block.blockType === "heading") {
 							return (
@@ -144,7 +182,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 						}
 
 						const hasProjectCard = block.segments.some(function (segment) {
-							return segment.type === "project-card";
+							return (segment as any).type === "project-card";
 						});
 
 						if (hasProjectCard) {
@@ -159,7 +197,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 							);
 						}
 
-				return (
+						return (
 							<p
 								key={block.id}
 								className={`text-foreground leading-relaxed text-base${borderClasses}`}
@@ -173,15 +211,3 @@ export function CMSIndexView({ initialContent }: TProps) {
 		</div>
 	);
 }
-
-import { db } from "@/db/db";
-import { getHomePageContent } from "@/lib/cms/repository";
-import { CMSIndexView } from "@/views/cms-index-view";
-
-export default async function HomePage() {
-	// Fetch content on the server
-	const homePageContent = await getHomePageContent(db);
-
-	return <CMSIndexView initialContent={homePageContent} />;
-}
-

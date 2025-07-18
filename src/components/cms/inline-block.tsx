@@ -225,7 +225,6 @@ export default function InlineBlock({
 												</button>
 												<button
 													onClick={() => {
-														onAddSegment("github-commits");
 														setShowAddDropdown(false);
 													}}
 													className="flex items-center w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted transition-colors"

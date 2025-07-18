@@ -27,9 +27,18 @@ export default function CMSPageView({ page, content }: TProps) {
 						return (
 							<div key={block.id} className="mb-6">
 								{block.segments.map(function (segment) {
+									const segmentForRender = segment as any;
 									return (
 										<span key={segment.id} className="inline">
-											{renderSegment(segment)}
+											{renderSegment({
+												id: segment.id.toString(),
+												type: segment.type as any,
+												content: segmentForRender.content || "",
+												href: segment.href || undefined,
+												target: segment.target || undefined,
+												metadata: segment.metadata || undefined,
+												value: segmentForRender.value || undefined,
+											})}
 										</span>
 									);
 								})}

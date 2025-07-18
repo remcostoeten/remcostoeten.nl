@@ -18,9 +18,7 @@ export const themeSettings = sqliteTable(
 		createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 		updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 	},
-	(table) => [
-		uniqueIndex("theme_settings_key_unique").on(table.settingKey),
-	],
+	(table) => [uniqueIndex("theme_settings_key_unique").on(table.settingKey)],
 );
 
 export const defaultThemeSettings = [

@@ -3,7 +3,7 @@
 import { LogOut } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth-client";
-import { GridButton, importingFrames } from "./grid-button";
+import { Button } from "@/components/ui/button";
 
 type TProps = {
 	variant?:
@@ -39,19 +39,15 @@ export function LogoutButton({
 	}
 
 	return (
-		<GridButton
+		<Button
 			onClick={handleLogout}
-			gridSize={[5, 5]}
-			frames={importingFrames}
-			isLoading={isLoggingOut}
+			disabled={isLoggingOut}
 			variant={variant}
 			size={size}
-			className={`min-w-[140px] px-6 whitespace-nowrap flex items-center ${className || ""}`}
+			className={`min-w-[140px] px-6 py-2 h-10 flex items-center ${className || ""}`}
 		>
-			<div className="flex items-center">
-				{showIcon && <LogOut className="w-4 h-4 mr-2" />}
-				<span>{isLoggingOut ? "Signing Out..." : children}</span>
-			</div>
-		</GridButton>
+			{showIcon && <LogOut className="w-4 h-4 mr-2" />}
+			<span>{isLoggingOut ? "Signing Out..." : children}</span>
+		</Button>
 	);
 }

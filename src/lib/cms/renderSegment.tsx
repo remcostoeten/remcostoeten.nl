@@ -2,7 +2,24 @@ import { NowPlaying } from "@/components/dynamic-data/now-playing";
 import { ProjectCard } from "@/components/project-card";
 import { TimeWidget } from "@/components/time-widget";
 import { parseLinkMetadata } from "./link-metadata";
-import { TContentSegment } from "./types";
+
+type TSegment = {
+	id: string;
+	type:
+		| "text"
+		| "time-widget"
+		| "link"
+		| "highlighted"
+		| "project-card"
+		| "spotify-now-playing"
+		| "api-endpoint";
+	content: string;
+	href?: string;
+	target?: string;
+	metadata?: string;
+	value?: any;
+	className?: string | null;
+};
 
 type TProjectMeta = {
 	title: string;
@@ -16,17 +33,34 @@ type TProjectMeta = {
 	highlights: string[];
 };
 
-export function renderSegment(segment: TContentSegment) {
+export function renderSegment(segment: TSegment) {
 	switch (segment.type) {
 		case "highlighted":
+			// Parse highlight metadata if available
+			let highlightStyle = {
+				backgroundColor: "hsl(var(--highlight-frontend) / 0.2)",
+				color: "hsl(var(--highlight-frontend))",
+			};
+			
+			if (segment.metadata) {
+				try {
+					const parsed = JSON.parse(segment.metadata);
+					if (parsed.hslColor && parsed.backgroundColor) {
+						highlightStyle = {
+							backgroundColor: parsed.backgroundColor,
+							color: `hsl(${parsed.hslColor})`,
+						};
+					}
+				} catch (error) {
+					console.warn("Failed to parse highlight metadata:", error);
+				}
+			}
+			
 			return (
 				<span
 					key={segment.id}
 					className="font-medium px-1 py-0.5 rounded"
-					style={{
-						backgroundColor: "hsl(var(--highlight-frontend) / 0.2)",
-						color: "hsl(var(--highlight-frontend))",
-					}}
+					style={highlightStyle}
 				>
 					{segment.content}
 				</span>
@@ -37,7 +71,8 @@ export function renderSegment(segment: TContentSegment) {
 				href: segment.href || "#",
 				target: segment.target || "_blank",
 				rel: "noopener noreferrer",
-				className: "text-accent hover:underline font-medium",
+				className:
+					segment.className || "text-accent hover:underline font-medium",
 				suffix: " ↗",
 			};
 
@@ -48,9 +83,8 @@ export function renderSegment(segment: TContentSegment) {
 						href: metadata.href,
 						target: metadata.target || "_blank",
 						rel: metadata.rel || "noopener noreferrer",
-						className:
-							metadata.className || "text-accent hover:underline font-medium",
-						suffix: metadata.suffix || " ↗",
+						className: metadata.className || linkProps.className,
+						suffix: metadata.suffix || linkProps.suffix,
 					};
 				} catch (error) {
 					console.error("Failed to parse link metadata:", error);
@@ -110,6 +144,10 @@ export function renderSegment(segment: TContentSegment) {
 			return <span key={segment.id}>{segment.content}</span>;
 
 		default:
-			return <span key={segment.id}>{segment.content}</span>;
+			return (
+				<span key={segment.id} className={segment.className || undefined}>
+					{segment.content}
+				</span>
+			);
 	}
 }

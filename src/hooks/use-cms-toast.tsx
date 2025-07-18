@@ -1,4 +1,4 @@
-import { AlertCircle, Check, Info, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 
 type ToastType = "success" | "error" | "warning" | "info";

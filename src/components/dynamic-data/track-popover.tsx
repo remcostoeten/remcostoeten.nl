@@ -28,8 +28,6 @@ function generateExternalUrls(
 	trackName: string,
 	artistName: string,
 ): TExternalUrl[] {
-	const encodedTrack = encodeURIComponent(trackName);
-	const encodedArtist = encodeURIComponent(artistName);
 	const searchQuery = encodeURIComponent(`${trackName} ${artistName}`);
 
 	return [

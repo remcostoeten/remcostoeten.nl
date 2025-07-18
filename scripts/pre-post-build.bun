@@ -1,0 +1,39 @@
+import { readdir, rename } from "fs/promises";
+import path from "path";
+
+const TARGET_DIR = path.resolve("scripts"); // relative to package.json
+const EXT_FROM = process.argv[2] === "post" ? ".txt" : ".ts";
+const EXT_TO = process.argv[2] === "post" ? ".ts" : ".txt";
+
+async function renameFiles() {
+  console.log(`🔄 Switching *${EXT_FROM} → ${EXT_TO}* in ${TARGET_DIR} because we're to lazy to fix non runtime typing errors 🤡`);
+  try {
+    const files = await readdir(TARGET_DIR);
+
+    const targetFiles = files.filter((file) => file.endsWith(EXT_FROM));
+
+    if (targetFiles.length === 0) {
+      console.log(`⚠️ No files to rename from ${EXT_FROM} to ${EXT_TO}`);
+      return;
+    }
+
+    for (const file of targetFiles) {
+      const oldPath = path.join(TARGET_DIR, file);
+      const newPath = path.join(
+        TARGET_DIR,
+        file.replace(EXT_FROM, EXT_TO)
+      );
+      await rename(oldPath, newPath);
+      console.log(`✅ Renamed: ${file} → ${path.basename(newPath)}`);
+    }
+
+    console.log("🎉 Rename complete.");
+  } catch (err) {
+    console.error("❌ Error renaming files:", err);
+    process.exit(1);
+  }
+}
+
+renameFiles();
+
+

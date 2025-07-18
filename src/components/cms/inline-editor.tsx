@@ -1,15 +1,5 @@
-import {
-	Bold,
-	ListOrdered as BorderAll,
-	ExternalLink,
-	Italic,
-	Link,
-	Minus,
-	Palette,
-	Plus,
-	Type,
-} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { Palette } from "lucide-react";
 import { SwappingWordEffect } from "@/components/swapping-word-effect";
 import { BlockStyles, ContentSegment } from "@/types/cms";
 
@@ -37,7 +27,6 @@ export default function InlineEditor({
 	const [editingSegment, setEditingSegment] = useState<ContentSegment>(segment);
 	const [showStylePanel, setShowStylePanel] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {
 		if (isEditing && inputRef.current) {
@@ -431,15 +420,15 @@ export default function InlineEditor({
 																				initialWord: "word1",
 																				...prev.data,
 																			}
-																: type === "contact-form"
-																	? {
-																			emailText: "Email ↗",
-																			additionalText: "or check out my",
-																			websiteUrl: "https://remcostoeten.nl",
-																			websiteText: "website ↗",
-																			...prev.data,
-																		}
-																	: prev.data,
+																		: type === "contact-form"
+																			? {
+																					emailText: "Email ↗",
+																					additionalText: "or check out my",
+																					websiteUrl: "https://remcostoeten.nl",
+																					websiteText: "website ↗",
+																					...prev.data,
+																				}
+																			: prev.data,
 											}));
 										}}
 										className={`px-3 py-1 text-xs rounded transition-colors ${
@@ -682,7 +671,9 @@ export default function InlineEditor({
 									<input
 										type="text"
 										value={editingSegment.data?.emailText || ""}
-										onChange={(e) => updateSegmentData("emailText", e.target.value)}
+										onChange={(e) =>
+											updateSegmentData("emailText", e.target.value)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="Email ↗"
 									/>
@@ -694,7 +685,9 @@ export default function InlineEditor({
 									<input
 										type="text"
 										value={editingSegment.data?.additionalText || ""}
-										onChange={(e) => updateSegmentData("additionalText", e.target.value)}
+										onChange={(e) =>
+											updateSegmentData("additionalText", e.target.value)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="or check out my"
 									/>
@@ -706,7 +699,9 @@ export default function InlineEditor({
 									<input
 										type="url"
 										value={editingSegment.data?.websiteUrl || ""}
-										onChange={(e) => updateSegmentData("websiteUrl", e.target.value)}
+										onChange={(e) =>
+											updateSegmentData("websiteUrl", e.target.value)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="https://remcostoeten.nl"
 									/>
@@ -718,7 +713,9 @@ export default function InlineEditor({
 									<input
 										type="text"
 										value={editingSegment.data?.websiteText || ""}
-										onChange={(e) => updateSegmentData("websiteText", e.target.value)}
+										onChange={(e) =>
+											updateSegmentData("websiteText", e.target.value)
+										}
 										className="w-full px-2 py-1 text-xs border border-input rounded bg-background text-foreground"
 										placeholder="website ↗"
 									/>

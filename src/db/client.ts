@@ -1,24 +1,25 @@
 import { drizzle } from "drizzle-orm/libsql";
-import { Env } from "@/api/env";
-import { Users } from "./schemas/users";
+import { env } from "@/api/env";
+import { users } from "./schemas/users";
 
 async function main() {
 	const db = drizzle({
 		connection: {
-			url: Env.TURSO_DATABASE_URL!,
-			authToken: Env.TURSO_AUTH_TOKEN!,
+			url: env.TURSO_DATABASE_URL!,
+			authToken: env.TURSO_AUTH_TOKEN!,
 		},
 	});
 
-	const user: typeof Users.$inferInsert = {
+	const user: typeof users.$inferInsert = {
 		name: "peter",
 		email: "n@example.com",
+		password: "hashedpassword123",
 	};
 
-	await db.insert(Users).values(user);
+	await db.insert(users).values(user);
 	console.log("New user created!");
 
-	const allUsers = await db.select().from(Users);
+	const allUsers = await db.select().from(users);
 	console.log("Getting all users from the database: ", allUsers);
 }
 

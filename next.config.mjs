@@ -1,9 +1,10 @@
 import { resolve } from "path";
 import { fileURLToPath } from "url";
 
-const withBundleAnalyzer = process.env.ANALYZE === "true" ? 
-	require("@next/bundle-analyzer")({ enabled: true }) : 
-	(config) => config;
+const withBundleAnalyzer =
+	process.env.ANALYZE === "true"
+		? require("@next/bundle-analyzer")({ enabled: true })
+		: (config) => config;
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 

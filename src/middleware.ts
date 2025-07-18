@@ -20,7 +20,6 @@ const AUTHORIZED_EMAILS = getAuthorizedEmails();
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
 	// Check for auth token cookie (this is what the signin API sets)
 	const authCookie = request.cookies.get("auth-token");
-	const authHeader = request.headers.get("Authorization");
 
 	// If we have a token cookie, validate it
 	if (authCookie?.value) {
@@ -61,6 +60,12 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
 
+	// Handle favicon.ico specifically
+	if (pathname === '/favicon.ico') {
+		// Redirect to your icon route
+		return NextResponse.redirect(new URL('/icon', request.url));
+	}
+
 	// Protect admin routes
 	if (pathname.startsWith("/admin")) {
 		const authenticated = await isAuthenticated(request);
@@ -89,5 +94,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/admin/:path*", "/admin", "/api/cms/:path*"],
+	matcher: ["/admin/:path*", "/admin", "/api/cms/:path*", "/favicon.ico"],
 };

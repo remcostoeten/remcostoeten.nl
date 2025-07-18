@@ -8,7 +8,7 @@ type TProps = {
 };
 
 export function ProgressBar({ children }: TProps) {
-	const { isActive } = useProgress();
+	const {} = useProgress(); // Removed unused isActive
 
 	useEffect(() => {
 		if (typeof window !== "undefined") {

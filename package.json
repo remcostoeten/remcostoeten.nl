@@ -3,8 +3,8 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"build": "next build",
 		"dev": "next dev",
+		"build": "bun run scripts/pre-post-build.bun && next build || (bun run scripts/pre-post-build.bun post && exit 1) && bun run scripts/pre-post-build.bun post",
 		"lint": "biome check .",
 		"lint:fix": "biome check --apply .",
 		"format": "biome format --write .",
@@ -96,6 +96,7 @@
 		"@types/node": "^22",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
+		"autoprefixer": "^10.4.21",
 		"drizzle-kit": "^0.31.4",
 		"postcss": "^8.5",
 		"tailwindcss": "^3.4.17",

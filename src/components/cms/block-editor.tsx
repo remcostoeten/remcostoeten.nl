@@ -3,7 +3,6 @@ import {
 	Highlighter as Highlight,
 	Link,
 	Package,
-	Plus,
 	Repeat,
 	Trash2,
 	Type,

@@ -198,11 +198,11 @@ export function usePagesState() {
 				isPublished: true,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				blocks: homePageContent.blocks.map((block) => ({
+				blocks: homePageContent.blocks.map((block: any) => ({
 					id: block.id.toString(),
 					type: block.blockType,
 					order: block.order,
-					content: block.segments.map((segment) => ({
+					content: block.segments.map((segment: any) => ({
 						id: segment.id.toString(),
 						type: segment.type,
 						content: segment.content,
@@ -232,15 +232,41 @@ export function usePagesState() {
 		dispatch({ type: "SET_LOADING", payload: true });
 
 		try {
-			const pageContent: TPageContent = {
-				blocks: updatedPage.blocks.map((block) => ({
-					...block,
-					blockType: block.type,
-					segments: block.content,
-				})),
-			};
+			// If this is the home page, update the database directly
+			if (updatedPage.slug === "home") {
+				const pageContent: TPageContent = {
+					blocks: updatedPage.blocks.map((block: any) => ({
+						id: Number(block.id),
+						blockType: block.type,
+						order: block.order,
+						segments: block.content.map((segment: any) => ({
+							id: Number(segment.id),
+							type: segment.type,
+							content: segment.content,
+							order: segment.order,
+							href: segment.href || null,
+							target: segment.target || null,
+							className: segment.className || null,
+							style: segment.style || null,
+							metadata: segment.metadata || null,
+							linkMetadata: segment.linkMetadata || null,
+						})),
+					})),
+				};
 
-			await cmsApiClient.updatePage(updatedPage.slug, pageContent);
+				// Update the database via API
+				await cmsApiClient.updateHomePage(pageContent);
+			} else {
+				const pageContent: TPageContent = {
+					blocks: updatedPage.blocks.map((block: any) => ({
+						...block,
+						blockType: block.type,
+						segments: block.content,
+					})),
+				};
+
+				await cmsApiClient.updatePage(updatedPage.slug, pageContent);
+			}
 
 			dispatch({
 				type: "UPDATE_PAGE",

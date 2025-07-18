@@ -10,20 +10,27 @@ import { usePagesState } from "@/hooks/use-pages-state";
 import { Page } from "@/types/cms";
 import WidthControl from "@/components/settings/WidthControl";
 import { AccentColorPicker } from "@/components/cms/accent-color-picker";
+import { CMSLoading, CMSLoadingMinimal } from "@/components/cms/cms-loading";
 
 export function CMSSection() {
 	const { pages, currentPage, isLoading, error, actions, computed } =
 		usePagesState();
 	const toast = useCMSToast();
 	const homepageCreatedRef = useRef(false);
+	const [operationLoading, setOperationLoading] = useState(false);
 
 	// Initialize homepage if it doesn't exist (only on first load)
 	useEffect(() => {
-		if (!isLoading && pages.length === 0 && !computed.hasHomepage && !homepageCreatedRef.current) {
+		if (
+			!isLoading &&
+			pages.length === 0 &&
+			!computed.hasHomepage &&
+			!homepageCreatedRef.current
+		) {
 			homepageCreatedRef.current = true;
 			actions.createHomepage().catch((error) => {
-				console.error('Failed to create homepage:', error);
-				toast.error('Failed to create homepage', 'Please try again.');
+				console.error("Failed to create homepage:", error);
+				toast.error("Failed to create homepage", "Please try again.");
 				homepageCreatedRef.current = false;
 			});
 		}
@@ -33,12 +40,15 @@ export function CMSSection() {
 		actions.setCurrentPage(page);
 	}
 
-	async function handleSavePage(updatedPage: Page) {
+async function handleSavePage(updatedPage: Page) {
+		setOperationLoading(true);
 		try {
 			await actions.updatePage(updatedPage.id, updatedPage);
 			toast.success("Page saved successfully", "Your changes are now live!");
 		} catch (error) {
 			toast.error("Failed to save page", "Please try again.");
+		} finally {
+			setOperationLoading(false);
 		}
 	}
 
@@ -51,7 +61,8 @@ export function CMSSection() {
 		}
 	}
 
-	async function handleCreateHomepage() {
+async function handleCreateHomepage() {
+		setOperationLoading(true);
 		try {
 			await actions.createHomepage();
 			toast.success(
@@ -60,6 +71,8 @@ export function CMSSection() {
 			);
 		} catch (error) {
 			toast.error("Failed to create homepage", "Please try again.");
+		} finally {
+			setOperationLoading(false);
 		}
 	}
 
@@ -81,18 +94,22 @@ export function CMSSection() {
 		}
 	}
 
-	async function handleDeletePage(pageId: string) {
+async function handleDeletePage(pageId: string) {
 		if (confirm("Are you sure you want to delete this page?")) {
+			setOperationLoading(true);
 			try {
 				await actions.deletePage(pageId);
 				toast.success("Page deleted", "Page has been removed.");
 			} catch (error) {
 				toast.error("Failed to delete page", "Please try again.");
+			} finally {
+				setOperationLoading(false);
 			}
 		}
 	}
 
-	async function handleBulkDeletePages(pageIds: string[]) {
+async function handleBulkDeletePages(pageIds: string[]) {
+		setOperationLoading(true);
 		try {
 			await actions.bulkDeletePages(pageIds);
 			toast.success(
@@ -101,6 +118,8 @@ export function CMSSection() {
 			);
 		} catch (error) {
 			toast.error("Failed to delete pages", "Please try again.");
+		} finally {
+			setOperationLoading(false);
 		}
 	}
 
@@ -145,10 +164,9 @@ export function CMSSection() {
 					actions.setCurrentPage(null);
 				}
 			},
-			"cmd+a": (e) => {
+			"cmd+a": () => {
 				// Select all pages (when not in editor)
 				if (!currentPage) {
-					e.preventDefault();
 					// This will be handled in the PagesList component
 				}
 			},
@@ -162,17 +180,33 @@ export function CMSSection() {
 		[currentPage, pages],
 	);
 
-	// Loading state
-	if (isLoading) {
-		return (
-			<div className="flex items-center justify-center p-8">
-				<div className="text-center">
-					<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-					<p className="text-muted-foreground">Loading pages...</p>
-				</div>
-			</div>
-		);
-	}
+// Loading state
+if (isLoading) {
+    return <CMSLoading stage="initial" />;
+}
+
+// Operation loading overlay
+if (operationLoading) {
+    return (
+        <div className="relative">
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
+                <CMSLoadingMinimal message="Processing..." />
+            </div>
+            <div className="opacity-30 pointer-events-none">
+                {/* Render the normal content but disabled */}
+                <PagesList
+                    pages={pages}
+                    onEdit={handleEditPage}
+                    onCreate={handleCreatePage}
+                    onCreateHomepage={handleCreateHomepage}
+                    onDelete={handleDeletePage}
+                    onRefresh={handleRefreshCMSData}
+                    onBulkDelete={handleBulkDeletePages}
+                />
+            </div>
+        </div>
+    );
+}
 
 	// Error state
 	if (error) {
@@ -206,21 +240,21 @@ export function CMSSection() {
 	}
 
 	return (
-				<>
+		<>
 			{/* Global Width Control for all pages */}
 			<div className="mb-6">
 				<WidthControl global={true} />
 			</div>
-			
+
 			{/* Theme Settings */}
 			<div className="mb-6">
-				<AccentColorPicker 
+				<AccentColorPicker
 					onColorChange={(color) => {
 						toast.success("Accent color updated", `New color: ${color}`);
 					}}
 				/>
 			</div>
-			
+
 			<PagesList
 				pages={pages}
 				onEdit={handleEditPage}

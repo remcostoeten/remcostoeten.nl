@@ -5,7 +5,6 @@ import { useCMSToast } from "@/hooks/use-cms-toast";
 import { User } from "../../types/cms";
 import { GridButton, importingFrames } from "../grid-button";
 import { FadeIn } from "../ui/fade-in";
-import { Spinner } from "../ui/spinner";
 
 type TProps = {
 	onLogin: (user: User) => void;
@@ -61,7 +60,10 @@ export default function LoginForm({ onLogin }: TProps) {
 				error("Authentication Failed", result.error || "Authentication failed");
 			}
 		} catch (error) {
-			error("Authentication Error", "An error occurred during authentication");
+			console.error(
+				"Authentication Error",
+				"An error occurred during authentication",
+			);
 		} finally {
 			setIsLoading(false);
 		}

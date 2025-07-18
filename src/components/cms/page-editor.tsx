@@ -1,4 +1,4 @@
-import { motion, Reorder } from "framer-motion";
+import { Reorder } from "framer-motion";
 import { ArrowLeft, Eye, GripVertical, Plus, Save } from "lucide-react";
 import React, { useState } from "react";
 import { ContentBlock, Page } from "@/types/cms";
