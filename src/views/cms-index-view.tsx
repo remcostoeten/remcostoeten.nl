@@ -111,9 +111,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 												<ContactForm
 													isVisible={isVisible}
 													openAbove={shouldOpenAbove}
-													containerRef={
-														popoverRootRef as React.RefObject<HTMLDivElement>
-													}
+														containerRef={popoverRootRef}
 													onMouseEnter={handlePopoverMouseEnter}
 													onMouseLeave={handlePopoverMouseLeave}
 												/>

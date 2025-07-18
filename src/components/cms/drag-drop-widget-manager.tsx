@@ -263,7 +263,7 @@ export default function DragDropWidgetManager({
 						</div>
 						{widget.config?.hoverActivated ? (
 							<div
-								ref={popoverRootRef as React.RefObject<HTMLDivElement>}
+									ref={popoverRootRef}
 								onMouseEnter={handleContactMouseEnter}
 								onMouseLeave={handleContactMouseLeave}
 								className="relative"
@@ -274,9 +274,7 @@ export default function DragDropWidgetManager({
 								<ContactForm
 									isVisible={contactFormVisible}
 									openAbove={shouldOpenAbove}
-									containerRef={
-										popoverRootRef as React.RefObject<HTMLDivElement>
-									}
+									containerRef={popoverRootRef}
 									onMouseEnter={handlePopoverMouseEnter}
 									onMouseLeave={handlePopoverMouseLeave}
 								/>

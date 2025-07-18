@@ -14,7 +14,7 @@ type TUseContactPopoverReturn = {
 	handleClick: () => void;
 	handlePopoverMouseEnter: () => void;
 	handlePopoverMouseLeave: () => void;
-	popoverRootRef: React.RefObject<HTMLElement | null>;
+	popoverRootRef: React.RefObject<HTMLDivElement>;
 };
 
 export function useContactPopover(): TUseContactPopoverReturn {
@@ -24,7 +24,7 @@ export function useContactPopover(): TUseContactPopoverReturn {
 		shouldOpenAbove: false,
 	});
 
-	const popoverRootRef = useRef<HTMLElement>(null);
+	const popoverRootRef = useRef<HTMLDivElement>(null);
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 
 	const handleMouseEnter = useCallback((event: React.MouseEvent) => {
