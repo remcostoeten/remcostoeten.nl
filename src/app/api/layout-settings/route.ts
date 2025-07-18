@@ -50,45 +50,45 @@ export async function GET(request: NextRequest) {
 		}
 
 		if (pageId) {
-			let query = db.select().from(layoutSettings);
-			
-			if (settingKey) {
-				query = query.where(
-					and(
-						eq(layoutSettings.pageId, parseInt(pageId)),
-						eq(layoutSettings.settingKey, settingKey)
-					)
-				);
-				
-				const setting = await query.get();
-				
-				if (!setting) {
-					return NextResponse.json(
-						{ error: "Setting not found" },
-						{ status: 404 }
-					);
-				}
+const query = db.select().from(layoutSettings);
 
-				return NextResponse.json({
-					success: true,
-					data: {
-						...setting,
-						parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
-					},
-				});
-			}
+if (settingKey) {
+	const setting = await query
+		.where(
+			and(
+				eq(layoutSettings.pageId, parseInt(pageId)),
+				eq(layoutSettings.settingKey, settingKey)
+			)
+		)
+		.get();
 
-			const settings = await query
-				.where(eq(layoutSettings.pageId, parseInt(pageId)))
-				.all();
+	if (!setting) {
+		return NextResponse.json(
+			{ error: "Setting not found" },
+			{ status: 404 }
+		);
+	}
 
-			return NextResponse.json({
-				success: true,
-				data: settings.map(setting => ({
-					...setting,
-					parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
-				})),
-			});
+	return NextResponse.json({
+		success: true,
+		data: {
+			...setting,
+			parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
+		},
+	});
+}
+
+const settings = await query
+	.where(eq(layoutSettings.pageId, parseInt(pageId)))
+	.all();
+
+return NextResponse.json({
+	success: true,
+	data: settings.map(setting => ({
+		...setting,
+		parsedValue: parseSettingValue(setting.settingValue, setting.settingType),
+	})),
+});
 		}
 
 		return NextResponse.json(

@@ -3,7 +3,6 @@ import { createCmsFactory } from "@/lib/cms/cms-factory";
 
 export async function GET() {
 	try {
-		const cmsFactory = createCmsFactory();
 		// This would need to be implemented to get all pages
 		// For now, return empty array
 		return NextResponse.json([]);

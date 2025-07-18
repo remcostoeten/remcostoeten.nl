@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { markFeedbackAsReadAction } from "@/lib/feedback/server-actions";
 
 export async function PATCH(
-	request: NextRequest,
+	_request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {

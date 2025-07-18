@@ -1,0 +1,37 @@
+repository:
+  # Repository name
+  # name: repo-name
+
+  # Default branch
+  default_branch: master
+
+  # Disable features you don't want
+  has_wiki: false
+  has_issues: false
+  has_projects: false
+  has_downloads: false
+  has_discussions: false
+
+  # Enable features you want
+  delete_branch_on_merge: true
+  allow_auto_merge: true
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: false
+
+  # Squash merge settings
+  squash_merge_commit_title: PR_TITLE
+  squash_merge_commit_message: PR_TITLE
+
+  # Archive/Preserve settings
+  archived: false  # Set to true if you want to archive by default
+
+# Branch protection rules
+branches:
+  - name: master
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 0
+      required_status_checks: null
+      enforce_admins: false
+      restrictions: null

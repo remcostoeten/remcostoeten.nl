@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/libsql";
-import { Env } from "@/api/env";
-import { Users } from "./schemas/users";
+import { env } from "@/api/env";
+import { users } from "./schemas/users";
 
 async function main() {
 	const db = drizzle({

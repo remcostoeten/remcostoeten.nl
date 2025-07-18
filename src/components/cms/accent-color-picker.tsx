@@ -33,7 +33,6 @@ export function AccentColorPicker({ onColorChange }: TProps) {
 		updateAccentColor, 
 		resetAccentColor, 
 		isLoading,
-		previewColor,
 		setPreviewColor,
 		getContrastRatio,
 		isAccessible

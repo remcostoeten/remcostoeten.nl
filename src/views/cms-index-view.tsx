@@ -6,7 +6,7 @@ import { ContactForm } from "@/components/contact-form";
 import { useContactPopover } from "@/hooks/useContactPopover";
 import { useContainerWidth } from "@/hooks/useLayoutSettings";
 import { renderSegment } from "@/lib/cms/renderSegment";
-import { TContentBlock, TContentSegment, TPageContent } from "@/lib/cms/types";
+import { TPageContent } from "@/lib/cms/types";
 
 function getFormattedTime() {
 	const now = new Date();
@@ -31,7 +31,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 		handlePopoverMouseLeave,
 		popoverRootRef,
 	} = useContactPopover();
-	const [homePageContent, setHomePageContent] = useState<TPageContent>(initialContent);
+const [homePageContent] = useState<TPageContent>(initialContent);
 	const { containerWidth } = useContainerWidth(undefined, true); // Use global setting
 
 	useEffect(function initTime() {
@@ -54,12 +54,12 @@ export function CMSIndexView({ initialContent }: TProps) {
 			<div className="w-full space-y-8" style={{ maxWidth: `${containerWidth.value}${containerWidth.unit}` }}>
 				{homePageContent.blocks
 					.sort(function sortByOrder(a, b) {
-						return a.order - b.order;
+return (a.order || 0) - (b.order || 0);
 					})
 					.map(function renderBlock(block) {
 						const content = block.segments.map((segment) => {
 							// Handle contact form segment specially
-							if (segment.type === "contact-form") {
+  if ('data' in segment && segment.type === "text") {
 								return (
 									<div key={segment.id} className="relative">
 										<p className="text-foreground leading-relaxed text-base">
@@ -91,7 +91,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 										<ContactForm
 											isVisible={isVisible}
 											openAbove={shouldOpenAbove}
-											containerRef={popoverRootRef}
+containerRef={popoverRootRef as React.RefObject<HTMLDivElement>}
 											onMouseEnter={handlePopoverMouseEnter}
 											onMouseLeave={handlePopoverMouseLeave}
 										/>
@@ -100,7 +100,7 @@ export function CMSIndexView({ initialContent }: TProps) {
 							}
 
 							// Handle time display segment specially
-							if (segment.type === "time-display") {
+  if ('data' in segment && segment.type === "time-widget") {
 								return (
 									<span key={segment.id}>
 										{segment.content || "Right now it is"}{" "}
@@ -118,18 +118,18 @@ export function CMSIndexView({ initialContent }: TProps) {
 							return renderSegment(segment);
 						});
 
-						const blockStyles = {
-							marginTop: block.styles?.marginTop || undefined,
-							marginBottom: block.styles?.marginBottom || undefined,
-							paddingTop: block.styles?.paddingTop || undefined,
-							paddingBottom: block.styles?.paddingBottom || undefined,
+const blockStyles = {
+							marginTop: (block as any).styles?.marginTop || undefined,
+							marginBottom: (block as any).styles?.marginBottom || undefined,
+							paddingTop: (block as any).styles?.paddingTop || undefined,
+							paddingBottom: (block as any).styles?.paddingBottom || undefined,
 						};
 
 						let borderClasses = "";
-						if (block.styles?.borderTop) borderClasses += " border-t border-border";
-						if (block.styles?.borderBottom) borderClasses += " border-b border-border";
-						if (block.styles?.borderLeft) borderClasses += " border-l border-border";
-						if (block.styles?.borderRight) borderClasses += " border-r border-border";
+if ((block as any).styles?.borderTop) borderClasses += " border-t border-border";
+						if ((block as any).styles?.borderBottom) borderClasses += " border-b border-border";
+						if ((block as any).styles?.borderLeft) borderClasses += " border-l border-border";
+						if ((block as any).styles?.borderRight) borderClasses += " border-r border-border";
 
 						if (block.blockType === "heading") {
 							return (
@@ -176,7 +176,6 @@ export function CMSIndexView({ initialContent }: TProps) {
 
 import { db } from "@/db/db";
 import { getHomePageContent } from "@/lib/cms/repository";
-import { CMSIndexView } from "@/views/cms-index-view";
 
 export default async function HomePage() {
 	// Fetch content on the server

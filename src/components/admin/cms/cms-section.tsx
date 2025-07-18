@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import InlinePageEditor from "@/components/cms/inline-page-editor";
 import KeyboardShortcutsLegend from "@/components/cms/keyboard-shortcuts-legend";
 import { PagesList } from "@/components/cms/pages-list";
@@ -145,10 +145,9 @@ export function CMSSection() {
 					actions.setCurrentPage(null);
 				}
 			},
-			"cmd+a": (e) => {
+			"cmd+a": () => {
 				// Select all pages (when not in editor)
 				if (!currentPage) {
-					e.preventDefault();
 					// This will be handled in the PagesList component
 				}
 			},

@@ -22,7 +22,7 @@ export function createLinkSegment(options: {
 
 	return {
 		id: options.id,
-		type: "link",
+  type: "text",
 		content: options.content,
 		order: options.order || 0,
 		href: linkMetadata.href,

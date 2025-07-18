@@ -44,7 +44,7 @@ export async function GET(_request: NextRequest) {
 	}
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
 	try {
 		// Check if we're in build mode and return early
 		if (

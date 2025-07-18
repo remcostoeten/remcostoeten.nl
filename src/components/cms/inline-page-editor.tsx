@@ -6,12 +6,11 @@ import {
 	Edit3,
 	Eye,
 	FileText,
-	Plus,
 	Save,
 	Settings,
 	Type,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import useKeyboardShortcuts from "@/hooks/use-keyboard-shortcuts";
 import { ContentBlock, ContentSegment, Page } from "@/types/cms";
 import { generateSlug } from "@/utils/cms-data";
@@ -121,8 +120,8 @@ export default function InlinePageEditor({
 			data:
 				segmentType === "api-endpoint"
 					? { endpointUrl: "https://api.example.com" }
-					: segmentType === "github-commits"
-						? { repo: "user/repo", perPage: 5 }
+: false
+? {}
 						: segmentType === "spotify-now-playing"
 							? {}
 							: undefined,

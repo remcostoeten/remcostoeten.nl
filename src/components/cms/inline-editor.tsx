@@ -1,15 +1,5 @@
-import {
-	Bold,
-	ListOrdered as BorderAll,
-	ExternalLink,
-	Italic,
-	Link,
-	Minus,
-	Palette,
-	Plus,
-	Type,
-} from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import { Palette } from "lucide-react";
 import { SwappingWordEffect } from "@/components/swapping-word-effect";
 import { BlockStyles, ContentSegment } from "@/types/cms";
 
@@ -37,7 +27,6 @@ export default function InlineEditor({
 	const [editingSegment, setEditingSegment] = useState<ContentSegment>(segment);
 	const [showStylePanel, setShowStylePanel] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {
 		if (isEditing && inputRef.current) {

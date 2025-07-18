@@ -3,8 +3,8 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"build": "next build",
 		"dev": "next dev",
+    "build": "bun run scripts/pre-post-build.bun && next build || (bun run scripts/pre-post-build.bun post && exit 1) && bun run scripts/pre-post-build.bun post",
 		"lint": "biome check .",
 		"lint:fix": "biome check --apply .",
 		"format": "biome format --write .",

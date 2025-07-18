@@ -1,11 +1,8 @@
 "use client";
 
 import {
-	Bold,
-	Highlighter,
-	Link as LinkIcon,
-	Palette,
-	Type,
+Highlighter,
+ Palette,
 } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ContentSegment } from "@/types/cms";

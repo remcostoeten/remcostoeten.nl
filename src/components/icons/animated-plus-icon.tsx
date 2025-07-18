@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useAnimation } from "motion/react";
+import { useAnimation, motion } from "framer-motion";
 import type { HTMLAttributes } from "react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 import { cn } from "@/lib/utils";
@@ -57,7 +57,7 @@ const PlusIcon = forwardRef<PlusIconHandle, PlusIconProps>(
 				onMouseLeave={handleMouseLeave}
 				{...props}
 			>
-				<motion.svg
+<motion.svg
 					xmlns="http://www.w3.org/2000/svg"
 					width={size}
 					height={size}

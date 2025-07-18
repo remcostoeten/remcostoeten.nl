@@ -48,7 +48,7 @@ export type TContentBlock = {
 	segments: TContentSegment[];
 };
 
-type TDrizzlePageContent = {
+export type TDrizzlePageContent = {
 	blocks: TDbContentBlockWithSegments[];
 };
 

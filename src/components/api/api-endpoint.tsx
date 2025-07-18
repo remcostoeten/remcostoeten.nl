@@ -91,7 +91,7 @@ export function APIEndpoint<T = unknown>({
 		return (
 			<FadeIn>
 				<div className="text-base text-foreground leading-relaxed">
-					{render(state.data)}
+					{state.data && render(state.data)}
 				</div>
 			</FadeIn>
 		);

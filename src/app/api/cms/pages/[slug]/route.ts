@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createCmsFactory } from "@/lib/cms/cms-factory";
 
 export async function GET(
-	request: NextRequest,
+	_request: NextRequest,
 	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	try {
@@ -49,7 +49,7 @@ export async function PUT(
 }
 
 export async function DELETE(
-	request: NextRequest,
+	_request: NextRequest,
 	{ params }: { params: Promise<{ slug: string }> },
 ) {
 	try {

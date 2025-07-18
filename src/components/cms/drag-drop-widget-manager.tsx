@@ -1,7 +1,6 @@
 "use client";
 
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { MouseEvent, useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Plus, X, Settings, Move } from 'lucide-react';
 import { ContactForm } from '@/components/contact-form';
 import { Button } from '@/components/ui/button';
@@ -48,7 +47,6 @@ type TProps = {
 
 export default function DragDropWidgetManager({
   onWidgetUpdate,
-  onZoneUpdate,
   initialWidgets = [],
   initialZones = []
 }: TProps) {
@@ -64,7 +62,6 @@ export default function DragDropWidgetManager({
     shouldOpenAbove,
     handleMouseEnter: handleContactMouseEnter,
     handleMouseLeave: handleContactMouseLeave,
-    handleClick: handleContactClick,
     handlePopoverMouseEnter,
     handlePopoverMouseLeave,
     popoverRootRef,
@@ -149,7 +146,7 @@ export default function DragDropWidgetManager({
     setIsDragMode(true);
   }
 
-  function handleDragEnd(e: React.DragEvent, widget: TWidget) {
+  function handleDragEnd(_e: React.DragEvent, widget: TWidget) {
     updateWidget(widget.id, { isDragging: false });
     setIsDragMode(false);
   }
@@ -253,7 +250,7 @@ export default function DragDropWidgetManager({
             </div>
             {widget.config?.hoverActivated ? (
               <div
-                ref={popoverRootRef}
+                ref={popoverRootRef as React.RefObject<HTMLDivElement>}
                 onMouseEnter={handleContactMouseEnter}
                 onMouseLeave={handleContactMouseLeave}
                 className="relative"
@@ -264,7 +261,7 @@ export default function DragDropWidgetManager({
                 <ContactForm
                   isVisible={contactFormVisible}
                   openAbove={shouldOpenAbove}
-                  containerRef={popoverRootRef}
+                  containerRef={popoverRootRef as React.RefObject<HTMLDivElement>}
                   onMouseEnter={handlePopoverMouseEnter}
                   onMouseLeave={handlePopoverMouseLeave}
                 />

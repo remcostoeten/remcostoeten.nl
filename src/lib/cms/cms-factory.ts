@@ -23,7 +23,7 @@ export function createCmsFactory() {
 				slug: data.slug,
 				title: data.title,
 				description: data.description || null,
-				isPublished: true,
+isPublished: 1,
 			})
 			.returning()
 			.execute();
@@ -81,7 +81,7 @@ export function createCmsFactory() {
 			.update(pages)
 			.set({
 				...data,
-				updatedAt: new Date(),
+updatedAt: new Date().toISOString(),
 			})
 			.where(eq(pages.id, id))
 			.returning()
@@ -144,7 +144,7 @@ export function createCmsFactory() {
 			.update(contentBlocks)
 			.set({
 				...data,
-				updatedAt: new Date(),
+updatedAt: new Date().toISOString(),
 			})
 			.where(eq(contentBlocks.id, id))
 			.returning()
@@ -203,7 +203,7 @@ export function createCmsFactory() {
 			.update(contentSegments)
 			.set({
 				...data,
-				updatedAt: new Date(),
+updatedAt: new Date().toISOString(),
 			})
 			.where(eq(contentSegments.id, id))
 			.returning()

@@ -4,6 +4,16 @@ import { TimeWidget } from "@/components/time-widget";
 import { parseLinkMetadata } from "./link-metadata";
 import { TContentSegment } from "./types";
 
+type TSegment = {
+  id: string;
+  type: "text" | "time-widget" | "link" | "highlighted" | "project-card" | "spotify-now-playing" | "api-endpoint";
+  content: string;
+  href?: string;
+  target?: string;
+  metadata?: string;
+  value?: any;
+};
+
 type TProjectMeta = {
 	title: string;
 	description: string;
@@ -16,7 +26,7 @@ type TProjectMeta = {
 	highlights: string[];
 };
 
-export function renderSegment(segment: TContentSegment) {
+export function renderSegment(segment: TSegment) {
 	switch (segment.type) {
 		case "highlighted":
 			return (

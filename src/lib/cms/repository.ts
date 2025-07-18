@@ -1,7 +1,8 @@
-import { and, asc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
 import { contentBlocks, contentSegments } from "@/db/schema";
 import type { TContentBlock, TContentSegment, TPageContent } from "./types";
+import { parseLinkMetadata } from "./link-metadata";
 
 type TDatabase = typeof db;
 
@@ -36,7 +37,21 @@ export async function getHomePageContent(
 				id: block.id,
 				blockType: block.blockType,
 				order: block.order,
-				segments: segments as TContentSegment[],
+				segments: segments.map(segment => {
+					let linkMetadata = null;
+					if (segment.metadata) {
+						try {
+							linkMetadata = parseLinkMetadata(segment.metadata);
+						} catch (error) {
+							console.warn(`Failed to parse link metadata for segment ${segment.id}:`, error);
+							linkMetadata = null;
+						}
+					}
+					return {
+						...segment,
+						linkMetadata,
+					};
+				}) as TContentSegment[],
 			};
 		}),
 	);
@@ -78,7 +93,21 @@ export async function getPageContent(
 				id: block.id,
 				blockType: block.blockType,
 				order: block.order,
-				segments: segments as TContentSegment[],
+				segments: segments.map(segment => {
+					let linkMetadata = null;
+					if (segment.metadata) {
+						try {
+							linkMetadata = parseLinkMetadata(segment.metadata);
+						} catch (error) {
+							console.warn(`Failed to parse link metadata for segment ${segment.id}:`, error);
+							linkMetadata = null;
+						}
+					}
+					return {
+						...segment,
+						linkMetadata,
+					};
+				}) as TContentSegment[],
 			};
 		}),
 	);
@@ -97,9 +126,9 @@ export async function updateSegmentText(
 		.update(contentSegments)
 		.set({
 			text,
-			updatedAt: new Date(),
+updatedAt: new Date().toISOString(),
 		})
-		.where(eq(contentSegments.id, id));
+.where(eq(contentSegments.id, Number(id)))
 }
 
 export async function createContentBlock(
@@ -108,7 +137,7 @@ export async function createContentBlock(
 	blockType: string,
 	order: number,
 ): Promise<string> {
-	const blockId = `block_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  const blockId = Date.now();
 
 	await database.insert(contentBlocks).values({
 		id: blockId,
@@ -117,17 +146,17 @@ export async function createContentBlock(
 		order,
 	});
 
-	return blockId;
+  return blockId.toString();
 }
 
 export async function createContentSegment(
 	database: TDatabase,
-	blockId: string,
+	blockId: number,
 	text: string,
 	type: string,
 	order: number,
 ): Promise<string> {
-	const segmentId = `segment_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+  const segmentId = Date.now();
 
 	await database.insert(contentSegments).values({
 		id: segmentId,
@@ -137,14 +166,14 @@ export async function createContentSegment(
 		order,
 	});
 
-	return segmentId;
+  return segmentId.toString();
 }
 
 export async function deleteContentBlock(
 	database: TDatabase,
 	blockId: string,
 ): Promise<void> {
-	await database.delete(contentBlocks).where(eq(contentBlocks.id, blockId));
+	await database.delete(contentBlocks).where(eq(contentBlocks.id, Number(blockId)));
 }
 
 export async function deleteContentSegment(
@@ -153,7 +182,7 @@ export async function deleteContentSegment(
 ): Promise<void> {
 	await database
 		.delete(contentSegments)
-		.where(eq(contentSegments.id, segmentId));
+		.where(eq(contentSegments.id, Number(segmentId)));
 }
 
 export async function updateBlockOrder(
@@ -165,9 +194,9 @@ export async function updateBlockOrder(
 		.update(contentBlocks)
 		.set({
 			order: newOrder,
-			updatedAt: new Date(),
+updatedAt: new Date().toISOString(),
 		})
-		.where(eq(contentBlocks.id, blockId));
+.where(eq(contentBlocks.id, Number(blockId)));
 }
 
 export async function updateSegmentOrder(
@@ -179,9 +208,9 @@ export async function updateSegmentOrder(
 		.update(contentSegments)
 		.set({
 			order: newOrder,
-			updatedAt: new Date(),
+updatedAt: new Date().toISOString(),
 		})
-		.where(eq(contentSegments.id, segmentId));
+.where(eq(contentSegments.id, Number(segmentId)));
 }
 
 export async function getContentSegmentById(
@@ -201,8 +230,24 @@ export async function getContentSegmentById(
 			metadata: contentSegments.metadata,
 		})
 		.from(contentSegments)
-		.where(eq(contentSegments.id, segmentId))
+.where(eq(contentSegments.id, Number(segmentId)))
 		.limit(1);
 
-	return segments.length > 0 ? (segments[0] as TContentSegment) : null;
+	if (segments.length > 0) {
+		const segment = segments[0];
+		let linkMetadata = null;
+		if (segment.metadata) {
+			try {
+				linkMetadata = parseLinkMetadata(segment.metadata);
+			} catch (error) {
+				console.warn(`Failed to parse link metadata for segment ${segment.id}:`, error);
+				linkMetadata = null;
+			}
+		}
+		return {
+			...segment,
+			linkMetadata,
+		} as TContentSegment;
+	}
+	return null;
 }

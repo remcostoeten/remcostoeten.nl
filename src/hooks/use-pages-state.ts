@@ -198,11 +198,11 @@ export function usePagesState() {
 				isPublished: true,
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				blocks: homePageContent.blocks.map((block) => ({
+blocks: homePageContent.blocks.map((block: any) => ({
 					id: block.id.toString(),
 					type: block.blockType,
 					order: block.order,
-					content: block.segments.map((segment) => ({
+content: block.segments.map((segment: any) => ({
 						id: segment.id.toString(),
 						type: segment.type,
 						content: segment.content,
@@ -233,7 +233,7 @@ export function usePagesState() {
 
 		try {
 			const pageContent: TPageContent = {
-				blocks: updatedPage.blocks.map((block) => ({
+blocks: updatedPage.blocks.map((block: any) => ({
 					...block,
 					blockType: block.type,
 					segments: block.content,

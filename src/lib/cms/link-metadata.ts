@@ -10,13 +10,10 @@ export type TLinkMetadata = {
 
 export const LinkMetadataSchema = z.object({
 	href: z.string().url("Must be a valid URL"),
-	target: z
-		.enum(["_blank", "_self", "_parent", "_top"])
-		.optional()
-		.default("_blank"),
-	rel: z.string().optional().default("noopener noreferrer"),
-	className: z.string().optional().default("external-link"),
-	suffix: z.string().optional().default(" ↗"),
+	target: z.enum(["_blank", "_self", "_parent", "_top"]).optional(),
+	rel: z.string().optional(),
+	className: z.string().optional(),
+	suffix: z.string().optional(),
 });
 
 export function createLinkMetadata(options: {
@@ -26,7 +23,17 @@ export function createLinkMetadata(options: {
 	className?: string;
 	suffix?: string;
 }): TLinkMetadata {
-	return LinkMetadataSchema.parse(options);
+	const defaults = {
+		target: "_blank" as const,
+		rel: "noopener noreferrer",
+		className: "external-link",
+		suffix: " ↗",
+	};
+	
+	return LinkMetadataSchema.parse({
+		...defaults,
+		...options,
+	});
 }
 
 export function parseLinkMetadata(metadata: string): TLinkMetadata {

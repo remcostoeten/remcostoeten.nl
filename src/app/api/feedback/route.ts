@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
 
-		const ipAddress = request.headers.get("x-forwarded-for") ?? request.ip;
+		const ipAddress = request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "unknown";
 		const userAgent = request.headers.get("user-agent") ?? "";
 		const referrer = request.headers.get("referer") ?? "";
 		const browser = extractBrowserFromUserAgent(userAgent);
