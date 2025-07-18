@@ -96,24 +96,24 @@ export default function AdminLayout({
 							variant="outline"
 							size="default"
 							onClick={() => router.push("/")}
-							className="flex items-center min-w-[120px]"
+							className="flex items-center px-6 py-2 min-w-[140px] h-10"
 							title="Go back to index page (Backspace 3x + Space 3x)"
 						>
-							<Home className="w-4 h-4 mr-1" />
+							<Home className="w-4 h-4 mr-2" />
 							Back to Index
 						</Button>
 						{showBackButton && onBack && (
 							<Button
 								variant="outline"
-								size="sm"
+								size="default"
 								onClick={onBack}
-								className="flex items-center"
+								className="flex items-center px-6 py-2 h-10"
 							>
-								<ArrowLeft className="w-4 h-4 mr-1" />
+								<ArrowLeft className="w-4 h-4 mr-2" />
 								Back
 							</Button>
 						)}
-						<LogoutButton variant="outline" size="default" />
+						<LogoutButton variant="outline" size="default" className="px-6 py-2 h-10" />
 					</div>
 				</div>
 

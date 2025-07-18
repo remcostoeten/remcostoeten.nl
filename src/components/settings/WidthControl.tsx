@@ -390,20 +390,21 @@ export default function WidthControl({
 				{/* Visual Preview */}
 				<div className="space-y-2">
 					<Label className="text-sm font-medium">Preview</Label>
-					<div className="w-full bg-muted rounded p-4">
-						<div
-							className="bg-background border border-border rounded h-12 transition-all duration-200"
-							style={{
-								width:
-									selectedUnit === "px"
-										? `${Math.min(width.value, 400)}px`
-										: `${Math.min(width.value, 100)}${width.unit}`,
-								maxWidth: "100%",
-							}}
-						>
-							<div className="p-3 text-xs text-muted-foreground text-center">
-								{width.value}
-								{width.unit} container
+					<div className="w-full bg-muted rounded p-4 overflow-hidden">
+						<div className="w-full">
+							<div
+								className="bg-background border border-border rounded h-12 transition-all duration-200 mx-auto"
+								style={{
+									width: `${width.value}${width.unit}`,
+									maxWidth: "100%",
+								}}
+							>
+								<div className="p-3 text-xs text-muted-foreground text-center">
+									{width.value}{width.unit} container
+								</div>
+							</div>
+							<div className="mt-2 text-xs text-muted-foreground text-center">
+								Scale: {selectedUnit === "px" ? `${Math.round((width.value / 400) * 100)}%` : `${width.value}${width.unit}`} of preview area
 							</div>
 						</div>
 					</div>

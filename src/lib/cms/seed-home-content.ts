@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/db/db";
-import { contentBlocks, contentSegments } from "@/db/schema";
+import { contentBlocks, contentSegments, pages } from "@/db/schema";
 
 const HOME_PAGE_ID = "home";
 
@@ -36,8 +36,19 @@ const DEFAULT_CONTENT = [
 		segments: [
 			{
 				type: "text",
-				content:
-					"I am a passionate developer with expertise in modern web technologies. My journey in software development has been driven by curiosity and a commitment to creating meaningful digital experiences.",
+				content: "I am a passionate developer with expertise in ",
+			},
+			{
+				type: "highlighted",
+				content: "modern web technologies",
+				metadata: JSON.stringify({
+					hslColor: "var(--highlight-frontend)",
+					backgroundColor: "hsl(var(--highlight-frontend) / 0.2)",
+				}),
+			},
+			{
+				type: "text",
+				content: ". My journey in software development has been driven by curiosity and a commitment to creating meaningful digital experiences.",
 			},
 		],
 	},
@@ -46,8 +57,43 @@ const DEFAULT_CONTENT = [
 		segments: [
 			{
 				type: "text",
-				content:
-					"With years of experience in full-stack development, I specialize in React, Next.js, TypeScript, and modern database technologies. I enjoy solving complex problems and building scalable applications.",
+				content: "With years of experience in full-stack development, I specialize in ",
+			},
+			{
+				type: "highlighted",
+				content: "React",
+				metadata: JSON.stringify({
+					hslColor: "200 100% 70%",
+					backgroundColor: "hsl(200 100% 70% / 0.15)",
+				}),
+			},
+			{
+				type: "text",
+				content: ", ",
+			},
+			{
+				type: "highlighted",
+				content: "Next.js",
+				metadata: JSON.stringify({
+					hslColor: "280 100% 70%",
+					backgroundColor: "hsl(280 100% 70% / 0.15)",
+				}),
+			},
+			{
+				type: "text",
+				content: ", ",
+			},
+			{
+				type: "highlighted",
+				content: "TypeScript",
+				metadata: JSON.stringify({
+					hslColor: "45 100% 65%",
+					backgroundColor: "hsl(45 100% 65% / 0.15)",
+				}),
+			},
+			{
+				type: "text",
+				content: ", and modern database technologies. I enjoy solving complex problems and building scalable applications.",
 			},
 		],
 	},
@@ -131,6 +177,33 @@ async function verifyRequiredSegmentTypes(blocks: any[]) {
 	return true;
 }
 
+async function ensureHomePageExists() {
+	// Check if home page exists
+	const existingPage = await db
+		.select()
+		.from(pages)
+		.where(eq(pages.slug, HOME_PAGE_ID))
+		.limit(1)
+		.execute();
+
+	if (existingPage.length === 0) {
+		// Create home page
+		await db
+			.insert(pages)
+			.values({
+				slug: HOME_PAGE_ID,
+				title: "Home",
+				description: "Welcome to my portfolio - showcasing my work and expertise",
+				isPublished: 1,
+				isHomepage: 1,
+			})
+			.execute();
+		console.log(`✅ Created home page in pages table`);
+	} else {
+		console.log(`ℹ️  Home page already exists in pages table`);
+	}
+}
+
 async function seedContentBlocks() {
 	return await db.transaction(async (tx) => {
 		await tx
@@ -175,15 +248,21 @@ async function seedContentBlocks() {
 }
 
 export async function ensureHomeContentBlocks() {
+	// First, ensure the home page exists in the pages table
+	await ensureHomePageExists();
+
 	const existingBlocks = await queryContentBlocks();
 
 	const hasRequiredContent = await verifyRequiredSegmentTypes(existingBlocks);
 
 	if (!hasRequiredContent) {
+		console.log(`🔄 Seeding home page content...`);
 		await seedContentBlocks();
+		console.log(`✅ Home page content seeded successfully`);
 		return await queryContentBlocks();
 	}
 
+	console.log(`ℹ️  Home page content already exists`);
 	return existingBlocks;
 }
 

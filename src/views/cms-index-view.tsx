@@ -141,15 +141,15 @@ export function CMSIndexView({ initialContent }: TProps) {
 								);
 							}
 
-							const segmentForRender = segment as any;
+							// Render different segment types properly
 							return renderSegment({
 								id: segment.id.toString(),
 								type: segment.type as any,
-								content: segmentForRender.content || "",
+								content: (segment as any).content || "",
 								href: segment.href || undefined,
 								target: segment.target || undefined,
 								metadata: segment.metadata || undefined,
-								value: segmentForRender.value || undefined,
+								value: (segment as any).value || undefined,
 								className: segment.className || undefined,
 							});
 						});

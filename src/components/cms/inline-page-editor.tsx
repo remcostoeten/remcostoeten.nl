@@ -242,10 +242,11 @@ export default function InlinePageEditor({
 						<div className="flex items-center space-x-4">
 							<button
 								onClick={onBack}
-								className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted"
+								className="flex items-center gap-2 px-4 py-2 h-10 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted border border-border"
 								title="Back to pages"
 							>
-								<ArrowLeft className="w-5 h-5" />
+								<ArrowLeft className="w-4 h-4" />
+								Back
 							</button>
 							<div className="flex flex-col">
 								<div className="flex items-center gap-4">
@@ -282,10 +283,10 @@ export default function InlinePageEditor({
 							{isEditing && (
 								<button
 									onClick={() => setShowMetadata(!showMetadata)}
-									className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+									className={`px-4 py-2 h-10 rounded-lg transition-colors flex items-center gap-2 border ${
 										showMetadata
-											? "bg-accent/20 text-accent"
-											: "bg-muted text-muted-foreground hover:bg-muted/80"
+											? "bg-secondary text-secondary-foreground border-border"
+											: "bg-muted text-muted-foreground hover:bg-muted/80 border-border"
 									}`}
 								>
 									<Settings className="w-4 h-4" />
@@ -295,10 +296,10 @@ export default function InlinePageEditor({
 
 							<button
 								onClick={handleToggleEdit}
-								className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+								className={`px-4 py-2 h-10 rounded-lg transition-colors flex items-center gap-2 border ${
 									isEditing
-										? "bg-accent/20 text-accent"
-										: "bg-muted text-muted-foreground hover:bg-muted/80"
+										? "bg-secondary text-secondary-foreground border-border"
+										: "bg-muted text-muted-foreground hover:bg-muted/80 border-border"
 								}`}
 							>
 								{isEditing ? (
@@ -313,14 +314,14 @@ export default function InlinePageEditor({
 								<button
 									onClick={handleSave}
 									disabled={saveStatus === "saving"}
-									className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+									className={`px-4 py-2 h-10 rounded-lg transition-colors flex items-center gap-2 border ${
 										saveStatus === "saving"
-											? "bg-muted text-muted-foreground cursor-not-allowed"
+											? "bg-muted text-muted-foreground cursor-not-allowed border-border"
 											: saveStatus === "saved"
-												? "bg-accent text-accent-foreground"
+												? "bg-green-600 text-white border-green-600"
 												: hasUnsavedChanges
-													? "bg-accent text-accent-foreground hover:bg-accent/90"
-													: "bg-muted text-muted-foreground"
+													? "bg-blue-600 text-white hover:bg-blue-700 border-blue-600"
+													: "bg-muted text-muted-foreground border-border"
 									}`}
 								>
 									{saveStatus === "saving" ? (

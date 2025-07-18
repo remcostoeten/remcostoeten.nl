@@ -145,24 +145,25 @@ export default function LivePageRenderer({ page, onBack, onEdit }: TProps) {
 		<>
 			<div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
 				{/* Floating Edit Controls */}
-				<div className="fixed top-4 left-4 z-50 flex items-center space-x-2">
+				<div className="fixed top-6 left-6 z-50 flex items-center space-x-3">
 					<button
 						onClick={onBack}
-						className="p-2 bg-card border border-border rounded-lg text-muted-foreground hover:text-foreground transition-colors shadow-lg"
+						className="flex items-center gap-2 px-4 py-2 h-10 bg-card border border-border rounded-lg text-muted-foreground hover:text-foreground transition-colors shadow-lg backdrop-blur-sm"
 						title="Back to pages"
 					>
-						<ArrowLeft className="w-5 h-5" />
+						<ArrowLeft className="w-4 h-4" />
+						Back
 					</button>
 					<button
 						onClick={onEdit}
-						className="px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90 transition-colors flex items-center gap-2 shadow-lg"
+						className="px-4 py-2 h-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-lg backdrop-blur-sm border border-blue-600"
 					>
 						<Edit3 className="w-4 h-4" />
 						Edit
 					</button>
 					<button
 						onClick={() => setShowPreview(true)}
-						className="px-4 py-2 bg-card border border-border rounded-lg text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 shadow-lg"
+						className="px-4 py-2 h-10 bg-card border border-border rounded-lg text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 shadow-lg backdrop-blur-sm"
 					>
 						<Eye className="w-4 h-4" />
 						Preview

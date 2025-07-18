@@ -258,11 +258,18 @@ export function createCmsFactory() {
 						segmentText.substring(0, 50) +
 						(segmentText.length > 50 ? "..." : "");
 
+					// Handle metadata: use segment.metadata if available, otherwise use segment.data
+					let metadata = segment.metadata || null;
+					if (!metadata && segment.data) {
+						metadata = JSON.stringify(segment.data);
+					}
+
 					console.log(
 						`[CMS Factory] Creating segment ${segmentIndex + 1}/${block.segments.length} for block ${blockId}:`,
 						{
 							type: segment.type,
 							content: logContent,
+							metadata: metadata,
 						},
 					);
 
@@ -275,7 +282,7 @@ export function createCmsFactory() {
 						target: segment.target || null,
 						className: segment.className || null,
 						style: segment.style || null,
-						metadata: segment.metadata || null,
+						metadata: metadata,
 					});
 				}
 			}

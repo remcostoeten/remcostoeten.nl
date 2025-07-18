@@ -36,14 +36,31 @@ type TProjectMeta = {
 export function renderSegment(segment: TSegment) {
 	switch (segment.type) {
 		case "highlighted":
+			// Parse highlight metadata if available
+			let highlightStyle = {
+				backgroundColor: "hsl(var(--highlight-frontend) / 0.2)",
+				color: "hsl(var(--highlight-frontend))",
+			};
+			
+			if (segment.metadata) {
+				try {
+					const parsed = JSON.parse(segment.metadata);
+					if (parsed.hslColor && parsed.backgroundColor) {
+						highlightStyle = {
+							backgroundColor: parsed.backgroundColor,
+							color: `hsl(${parsed.hslColor})`,
+						};
+					}
+				} catch (error) {
+					console.warn("Failed to parse highlight metadata:", error);
+				}
+			}
+			
 			return (
 				<span
 					key={segment.id}
 					className="font-medium px-1 py-0.5 rounded"
-					style={{
-						backgroundColor: "hsl(var(--highlight-frontend) / 0.2)",
-						color: "hsl(var(--highlight-frontend))",
-					}}
+					style={highlightStyle}
 				>
 					{segment.content}
 				</span>

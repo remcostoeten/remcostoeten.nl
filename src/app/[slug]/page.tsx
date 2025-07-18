@@ -13,6 +13,11 @@ type TProps = {
 export default async function DynamicCMSPage({ params }: TProps) {
 	const { slug } = await params;
 
+	// Skip favicon and other static assets
+	if (slug.includes('.') || slug === 'favicon.ico' || slug === 'robots.txt' || slug === 'sitemap.xml') {
+		notFound();
+	}
+
 	try {
 		const cmsFactory = createCmsFactory();
 		const page = await cmsFactory.readPage(slug);

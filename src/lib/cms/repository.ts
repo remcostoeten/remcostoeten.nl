@@ -44,7 +44,11 @@ export async function getHomePageContent(
 						let linkMetadata = null;
 						if (segment.metadata) {
 							try {
-								linkMetadata = parseLinkMetadata(segment.metadata);
+								// Only try to parse if metadata looks like link metadata (contains href)
+								const parsed = JSON.parse(segment.metadata);
+								if (parsed && typeof parsed === 'object' && parsed.href) {
+									linkMetadata = parseLinkMetadata(segment.metadata);
+								}
 							} catch (error) {
 								console.warn(
 									`Failed to parse link metadata for segment ${segment.id}:`,
@@ -99,23 +103,33 @@ export async function getHomePageContent(
 							linkMetadata: null, // time-widget doesn't have link metadata
 						};
 					} else {
-						// Default to text type for unknown types
+						// Handle other segment types, preserving their original type
 						let linkMetadata = null;
+						let value = null;
+						
 						if (segment.metadata) {
 							try {
-								linkMetadata = parseLinkMetadata(segment.metadata);
+								// Try to parse metadata for different segment types
+								const parsed = JSON.parse(segment.metadata);
+								if (parsed && typeof parsed === 'object') {
+									if (parsed.href) {
+										linkMetadata = parseLinkMetadata(segment.metadata);
+									} else {
+										// For other types like project-card, store as value
+										value = parsed;
+									}
+								}
 							} catch (error) {
 								console.warn(
-									`Failed to parse link metadata for segment ${segment.id}:`,
+									`Failed to parse metadata for segment ${segment.id}:`,
 									error,
 								);
-								linkMetadata = null;
 							}
 						}
 
 						return {
 							id: segment.id,
-							type: "text" as const,
+							type: segment.type as any, // Preserve the original type
 							content: segment.content,
 							order: segment.order,
 							href: segment.href,
@@ -124,6 +138,7 @@ export async function getHomePageContent(
 							style: segment.style,
 							metadata: segment.metadata,
 							linkMetadata,
+							value,
 						};
 					}
 				}) as TContentSegment[],
@@ -175,7 +190,11 @@ export async function getPageContent(
 						let linkMetadata = null;
 						if (segment.metadata) {
 							try {
-								linkMetadata = parseLinkMetadata(segment.metadata);
+								// Only try to parse if metadata looks like link metadata (contains href)
+								const parsed = JSON.parse(segment.metadata);
+								if (parsed && typeof parsed === 'object' && parsed.href) {
+									linkMetadata = parseLinkMetadata(segment.metadata);
+								}
 							} catch (error) {
 								console.warn(
 									`Failed to parse link metadata for segment ${segment.id}:`,
@@ -230,23 +249,33 @@ export async function getPageContent(
 							linkMetadata: null, // time-widget doesn't have link metadata
 						};
 					} else {
-						// Default to text type for unknown types
+						// Handle other segment types, preserving their original type
 						let linkMetadata = null;
+						let value = null;
+						
 						if (segment.metadata) {
 							try {
-								linkMetadata = parseLinkMetadata(segment.metadata);
+								// Try to parse metadata for different segment types
+								const parsed = JSON.parse(segment.metadata);
+								if (parsed && typeof parsed === 'object') {
+									if (parsed.href) {
+										linkMetadata = parseLinkMetadata(segment.metadata);
+									} else {
+										// For other types like project-card, store as value
+										value = parsed;
+									}
+								}
 							} catch (error) {
 								console.warn(
-									`Failed to parse link metadata for segment ${segment.id}:`,
+									`Failed to parse metadata for segment ${segment.id}:`,
 									error,
 								);
-								linkMetadata = null;
 							}
 						}
 
 						return {
 							id: segment.id,
-							type: "text" as const,
+							type: segment.type as any, // Preserve the original type
 							content: segment.content,
 							order: segment.order,
 							href: segment.href,
@@ -255,6 +284,7 @@ export async function getPageContent(
 							style: segment.style,
 							metadata: segment.metadata,
 							linkMetadata,
+							value,
 						};
 					}
 				}) as TContentSegment[],
@@ -390,7 +420,11 @@ export async function getContentSegmentById(
 		let linkMetadata = null;
 		if (segment.metadata) {
 			try {
-				linkMetadata = parseLinkMetadata(segment.metadata);
+				// Only try to parse if metadata looks like link metadata (contains href)
+				const parsed = JSON.parse(segment.metadata);
+				if (parsed && typeof parsed === 'object' && parsed.href) {
+					linkMetadata = parseLinkMetadata(segment.metadata);
+				}
 			} catch (error) {
 				console.warn(
 					`Failed to parse link metadata for segment ${segment.id}:`,
@@ -405,4 +439,49 @@ export async function getContentSegmentById(
 		} as TContentSegment;
 	}
 	return null;
+}
+
+export async function updateHomePageContent(
+	database: TDatabase,
+	pageContent: TPageContent,
+): Promise<void> {
+	return await database.transaction(async (tx) => {
+		// First, delete all existing home page content
+		await tx
+			.delete(contentBlocks)
+			.where(eq(contentBlocks.pageId, "home"));
+
+		// Then, insert the new content
+		for (const block of pageContent.blocks) {
+			const [createdBlock] = await tx
+				.insert(contentBlocks)
+				.values({
+					id: block.id,
+					pageId: "home",
+					blockType: block.blockType,
+					order: block.order,
+				})
+				.returning()
+				.execute();
+
+			// Insert segments for this block
+			for (const segment of block.segments) {
+				await tx
+					.insert(contentSegments)
+					.values({
+						id: segment.id,
+						blockId: createdBlock.id,
+						order: segment.order,
+						text: segment.content,
+						type: segment.type,
+						href: segment.href,
+						target: segment.target,
+						className: segment.className,
+						style: segment.style,
+						metadata: segment.metadata,
+					})
+					.execute();
+			}
+		}
+	});
 }

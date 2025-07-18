@@ -60,6 +60,12 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
 
+	// Handle favicon.ico specifically
+	if (pathname === '/favicon.ico') {
+		// Redirect to your icon route
+		return NextResponse.redirect(new URL('/icon', request.url));
+	}
+
 	// Protect admin routes
 	if (pathname.startsWith("/admin")) {
 		const authenticated = await isAuthenticated(request);
@@ -88,5 +94,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/admin/:path*", "/admin", "/api/cms/:path*"],
+	matcher: ["/admin/:path*", "/admin", "/api/cms/:path*", "/favicon.ico"],
 };

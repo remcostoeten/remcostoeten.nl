@@ -25,10 +25,11 @@ export type TContentSegment = {
 	style?: string | null;
 	metadata?: string | null;
 	linkMetadata?: TLinkMetadata | null;
-} & (
-	| { type: "text"; content: string }
-	| { type: "time-widget"; value: TTimeWidgetConfig }
-);
+	type: string;
+	content: string;
+	value?: any;
+	data?: any;
+};
 
 export type TContentBlock = {
 	id: number;

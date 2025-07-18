@@ -92,6 +92,22 @@ export class CmsApiClient {
 		return response.json();
 	}
 
+	async updateHomePage(content: TPageContent) {
+		const response = await fetch(`${this.baseUrl}/home`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ content }),
+		});
+
+		if (!response.ok) {
+			throw new Error(`Failed to update homepage: ${response.statusText}`);
+		}
+
+		return response.json();
+	}
+
 	async deletePage(slug: string) {
 		const response = await fetch(`${this.baseUrl}/pages/${slug}`, {
 			method: "DELETE",
