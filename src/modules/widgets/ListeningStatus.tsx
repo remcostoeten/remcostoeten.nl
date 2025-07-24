@@ -6,7 +6,8 @@ export const ListeningStatus = ({
   prefixText = "while listening to", 
   tracks, 
   interval = Number(process.env.REACT_APP_SPOTIFY_WIDGET_CYCLE_INTERVAL) || 3000,
-  className = ""
+  className = "",
+  showHoverCard = false
 }: ListeningStatusProps) => {
   return (
     <motion.p
@@ -19,7 +20,7 @@ export const ListeningStatus = ({
       className={`text-sm text-muted-foreground ${className}`}
     >
       {prefixText}{' '}
-      <RecentSpotify tracks={tracks} interval={interval} />
+      <RecentSpotify tracks={tracks} interval={interval} showHoverCard={showHoverCard} />
     </motion.p>
   );
 };

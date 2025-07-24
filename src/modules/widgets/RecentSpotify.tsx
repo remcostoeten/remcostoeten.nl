@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TrackHoverCard } from './TrackHoverCard';
 import type { RecentSpotifyProps } from './types';
 
 export const RecentSpotify = ({ 
   tracks, 
-  interval = Number(process.env.REACT_APP_SPOTIFY_WIDGET_CYCLE_INTERVAL) || 3000 
+  interval = Number(process.env.REACT_APP_SPOTIFY_WIDGET_CYCLE_INTERVAL) || 3000,
+  showHoverCard = false
 }: RecentSpotifyProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -45,7 +47,9 @@ export const RecentSpotify = ({
         }}
         className="font-medium text-foreground"
       >
-        "{currentTrack.name}" by {currentTrack.artists.map(artist => artist.name).join(', ')}
+        <TrackHoverCard track={currentTrack} disabled={!showHoverCard}>
+          "{currentTrack.name}" by {currentTrack.artists.map(artist => artist.name).join(', ')}
+        </TrackHoverCard>
       </motion.span>
     </AnimatePresence>
   );

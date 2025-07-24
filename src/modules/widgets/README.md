@@ -16,6 +16,7 @@ import { ListeningStatus } from './modules/widgets';
   tracks={tracks}
   interval={3000} // optional, milliseconds between track changes, default: 3000
   className="max-w-md" // optional, additional CSS classes
+  showHoverCard={true} // optional, show detailed track info on hover, default: false
 />
 ```
 
@@ -29,8 +30,29 @@ import { RecentSpotify } from './modules/widgets';
 <RecentSpotify
   tracks={tracks}
   interval={3000} // optional, milliseconds between track changes, default: 3000
+  showHoverCard={true} // optional, show detailed track info on hover, default: false
 />
 ```
+
+### TrackHoverCard
+
+A hover card component that displays detailed track information including album art, duration, release date, and Spotify links.
+
+```tsx
+import { TrackHoverCard } from './modules/widgets';
+
+<TrackHoverCard track={track} disabled={false}>
+  <span>Hover me for track details!</span>
+</TrackHoverCard>
+```
+
+**Features:**
+- 🎨 Album artwork display
+- ⏱️ Track duration and release date
+- 🏷️ Explicit content and popularity badges
+- 🔗 Direct links to Spotify track and album
+- 📅 Relative "played at" timestamps
+- 🎵 Preview availability indicator
 
 ## Hooks
 
@@ -115,6 +137,9 @@ REACT_APP_SPOTIFY_ACCESS_TOKEN=your_spotify_token_here
 - ✅ Error handling and loading states
 - ✅ TypeScript support
 - ✅ Responsive design with Tailwind CSS
+- ✅ Rich hover cards with detailed track information
+- ✅ Album artwork and metadata display
+- ✅ Direct Spotify integration links
 
 ## Dependencies
 
