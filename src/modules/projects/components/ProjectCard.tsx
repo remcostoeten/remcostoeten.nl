@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Code, Star, GitBranch, Eye, Calendar } from "lucide-react";
+import { useAnalyticsContext } from "@/modules/analytics";
 import { TProjectData } from "../types";
 
 type TProps = TProjectData;
@@ -17,11 +18,22 @@ export function ProjectCard({
   highlights,
 }: TProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const { trackProjectView, trackExternalLinkClick } = useAnalyticsContext();
+
+  const handleProjectHover = () => {
+    setIsHovered(true);
+    // Track project view when user hovers (shows interest)
+    trackProjectView(title, title);
+  };
+
+  const handleLinkClick = (linkType: 'code' | 'demo', linkUrl: string) => {
+    trackExternalLinkClick(linkUrl, `${title} - ${linkType}`, 'projects');
+  };
 
   return (
     <div
       className="relative cursor-pointer"
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleProjectHover}
       onMouseLeave={() => setIsHovered(false)}
     >
       <a
@@ -29,6 +41,7 @@ export function ProjectCard({
         target="_blank"
         rel="noopener noreferrer"
         className="text-accent hover:underline font-medium inline-flex items-center gap-1"
+        onClick={() => handleLinkClick('code', url)}
       >
         {title}
         <ExternalLink className="w-3 h-3" />
@@ -100,6 +113,7 @@ export function ProjectCard({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs text-accent hover:underline flex items-center gap-1"
+                      onClick={() => handleLinkClick('demo', demoUrl)}
                     >
                       <Eye className="w-3 h-3" />
                       Demo
@@ -110,6 +124,7 @@ export function ProjectCard({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-accent hover:underline flex items-center gap-1"
+                    onClick={() => handleLinkClick('code', url)}
                   >
                     <Code className="w-3 h-3" />
                     Code

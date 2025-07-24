@@ -1,16 +1,9 @@
 import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
-import { useTimezone, TTimezoneId } from "@/modules/time";
+import { TIMEZONE_INFO, useCurrentTime } from "@/modules/time";
 
-type TProps = {
-  timezoneId?: TTimezoneId;
-};
-
-export function TimezoneSection({ timezoneId = 'UTC+1' }: TProps) {
-  const { currentTime, timezoneInfo } = useTimezone({ 
-    timezoneId,
-    format: { format: '24h', showSeconds: true }
-  });
+export function TimezoneSection() {
+  const currentTime = useCurrentTime();
 
   return (
     <motion.p 
@@ -22,10 +15,10 @@ export function TimezoneSection({ timezoneId = 'UTC+1' }: TProps) {
         className="font-medium px-1 py-0.5 rounded"
         style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' }}
       >
-        {timezoneInfo.offset}
+        {TIMEZONE_INFO.offset}
       </span>{" "}
       which includes countries like{" "}
-      {timezoneInfo.countries.map((country, index) => (
+      {TIMEZONE_INFO.countries.map((country, index) => (
         <span key={country}>
           <span 
             className="font-medium px-1 py-0.5 rounded"
@@ -33,8 +26,8 @@ export function TimezoneSection({ timezoneId = 'UTC+1' }: TProps) {
           >
             {country}
           </span>
-          {index < timezoneInfo.countries.length - 1 && (
-            index === timezoneInfo.countries.length - 2 ? " and " : ", "
+          {index < TIMEZONE_INFO.countries.length - 1 && (
+            index === TIMEZONE_INFO.countries.length - 2 ? " and " : ", "
           )}
         </span>
       ))}

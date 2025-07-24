@@ -5,25 +5,54 @@ export function getTimezoneInfo(timezoneId: TTimezoneId) {
   return TIMEZONE_DATA[timezoneId];
 }
 
-function createDateObject(timestamp?: number) {
-  return timestamp ? new Date(timestamp) : new Date();
+function createTimestamp(timestamp?: number): number {
+  return timestamp ?? Date.now();
+}
+
+function formatTimestamp(timestamp: number, options: Intl.DateTimeFormatOptions): string {
+  return Intl.DateTimeFormat('en-US', options).format(timestamp);
+}
+
+function getCurrentTimezoneOffset(): number {
+  const tempTimestamp = Date.now();
+  const tempDate = Date(tempTimestamp);
+  const offsetMatch = tempDate.match(/GMT([+-]\d{4})/);
+  if (offsetMatch) {
+    const offsetStr = offsetMatch[1];
+    const hours = parseInt(offsetStr.slice(1, 3));
+    const minutes = parseInt(offsetStr.slice(3, 5));
+    const multiplier = offsetStr[0] === '+' ? -1 : 1;
+    return multiplier * (hours * 60 + minutes) * 60000;
+  }
+  return 0;
 }
 
 export function getCurrentTimeInTimezone(
   timezoneId: TTimezoneId,
   format: TTimeFormat = { format: '24h', showSeconds: true }
 ): string {
-  const now = createDateObject();
+  const now = createTimestamp();
   const timezoneInfo = getTimezoneInfo(timezoneId);
   
   if (timezoneId.startsWith('UTC')) {
-    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const targetTime = createDateObject(utcTime + (timezoneInfo.utcOffset * 3600000));
-    return formatTime(targetTime, format);
+    const timezoneOffsetMs = getCurrentTimezoneOffset();
+    const utcTime = now + timezoneOffsetMs;
+    const targetTime = utcTime + (timezoneInfo.utcOffset * 3600000);
+    return formatTimestamp(targetTime, {
+      hour12: format.format === '12h',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: format.showSeconds ? '2-digit' : undefined,
+      ...(format.showDate && {
+        year: 'numeric',
+        month: format.dateFormat === 'short' ? '2-digit' : 'long',
+        day: '2-digit'
+      })
+    });
   }
   
   try {
-    const formatter = new Intl.DateTimeFormat('en-US', {
+    return formatTimestamp(now, {
       timeZone: timezoneId,
       hour12: format.format === '12h',
       hour: '2-digit',
@@ -35,29 +64,22 @@ export function getCurrentTimeInTimezone(
         day: '2-digit'
       })
     });
-    
-    return formatter.format(now);
   } catch (error) {
     console.warn(`Failed to format time for timezone ${timezoneId}:`, error);
-    return formatTime(now, format);
+    return formatTimestamp(now, {
+      hour12: format.format === '12h',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: format.showSeconds ? '2-digit' : undefined,
+      ...(format.showDate && {
+        year: 'numeric',
+        month: format.dateFormat === 'short' ? '2-digit' : 'long',
+        day: '2-digit'
+      })
+    });
   }
 }
 
-function formatTime(date: Date, format: TTimeFormat): string {
-  const options: Intl.DateTimeFormatOptions = {
-    hour12: format.format === '12h',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: format.showSeconds ? '2-digit' : undefined,
-    ...(format.showDate && {
-      year: 'numeric',
-      month: format.dateFormat === 'short' ? '2-digit' : 'long',
-      day: '2-digit'
-    })
-  };
-  
-  return new Intl.DateTimeFormat('en-US', options).format(date);
-}
 
 export function createTimezoneTimeUpdater(
   timezoneId: TTimezoneId,
@@ -77,18 +99,19 @@ export function createTimezoneTimeUpdater(
 }
 
 export function convertTimeToTimezone(
-  sourceTime: Date,
+  sourceTimestamp: number,
   targetTimezoneId: TTimezoneId
-): Date {
+): number {
   const timezoneInfo = getTimezoneInfo(targetTimezoneId);
   
   if (targetTimezoneId.startsWith('UTC')) {
-    const utcTime = sourceTime.getTime() + (sourceTime.getTimezoneOffset() * 60000);
-    return createDateObject(utcTime + (timezoneInfo.utcOffset * 3600000));
+    const timezoneOffsetMs = getCurrentTimezoneOffset();
+    const utcTime = sourceTimestamp + timezoneOffsetMs;
+    return utcTime + (timezoneInfo.utcOffset * 3600000);
   }
   
   try {
-    const formatter = new Intl.DateTimeFormat('en-CA', {
+    const parts = Intl.DateTimeFormat('en-CA', {
       timeZone: targetTimezoneId,
       year: 'numeric',
       month: '2-digit',
@@ -97,9 +120,8 @@ export function convertTimeToTimezone(
       minute: '2-digit',
       second: '2-digit',
       hour12: false
-    });
+    }).formatToParts(sourceTimestamp);
     
-    const parts = formatter.formatToParts(sourceTime);
     const dateString = parts.reduce(function reduceParts(acc, part) {
       if (part.type === 'year') acc.year = part.value;
       if (part.type === 'month') acc.month = part.value;
@@ -110,10 +132,10 @@ export function convertTimeToTimezone(
       return acc;
     }, {} as Record<string, string>);
     
-    return createDateObject(Date.parse(`${dateString.year}-${dateString.month}-${dateString.day}T${dateString.hour}:${dateString.minute}:${dateString.second}`));
+    return Date.parse(`${dateString.year}-${dateString.month}-${dateString.day}T${dateString.hour}:${dateString.minute}:${dateString.second}`);
   } catch (error) {
     console.warn(`Failed to convert time to timezone ${targetTimezoneId}:`, error);
-    return sourceTime;
+    return sourceTimestamp;
   }
 }
 

@@ -7,6 +7,7 @@ export function ProjectsSection() {
   return (
     <motion.p 
       className="text-foreground leading-relaxed text-base"
+      data-section="projects"
       {...ANIMATION_CONFIGS.staggered(0.2)}
     >
       Recently I've been building{" "}

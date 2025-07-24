@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { useAnalyticsContext } from "@/modules/analytics";
 import { CONTACT_EMOJIS } from "../constants";
 import { TContactFormData } from "../types";
 
@@ -18,13 +20,46 @@ export function ContactForm({ isVisible, openAbove = false }: TProps) {
     emoji: ""
   });
   const [selectedEmoji, setSelectedEmoji] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const { trackContactFormSubmission } = useAnalyticsContext();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
     
-    setFormData({ name: "", feedback: "", emoji: "" });
-    setSelectedEmoji("");
+    try {
+      // Here you would normally send the form data to your backend
+      // For now, we'll simulate a successful submission
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log("Form submitted:", formData);
+      
+      // Track successful form submission
+      trackContactFormSubmission(true);
+      
+      // Show success message
+      toast({
+        title: "Message sent!",
+        description: "Thank you for your feedback. I'll get back to you soon.",
+      });
+      
+      // Reset form
+      setFormData({ name: "", feedback: "", emoji: "" });
+      setSelectedEmoji("");
+    } catch (error) {
+      // Track failed form submission
+      trackContactFormSubmission(false, ['Form submission failed']);
+      
+      // Show error message
+      toast({
+        title: "Failed to send message",
+        description: "Please try again later or contact me directly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -108,8 +143,8 @@ export function ContactForm({ isVisible, openAbove = false }: TProps) {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full">
-                Send Feedback
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send Feedback"}
               </Button>
               
               <p className="text-xs text-muted-foreground text-center">

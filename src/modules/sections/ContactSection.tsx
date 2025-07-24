@@ -6,6 +6,7 @@ export function ContactSection() {
   return (
     <motion.p 
       className="text-foreground leading-relaxed text-base"
+      data-section="contact"
       {...ANIMATION_CONFIGS.staggered(0.3)}
     >
       Feel free to explore my work and{" "}
