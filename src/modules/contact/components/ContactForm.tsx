@@ -6,10 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { CONTACT_EMOJIS } from "../constants";
 import { ContactFormData } from "../types";
 
-interface ContactFormProps {
+type ContactFormProps = {
   isVisible: boolean;
   openAbove?: boolean;
-}
+};
 
 export function ContactForm({ isVisible, openAbove = false }: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>({

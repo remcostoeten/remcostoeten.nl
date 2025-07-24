@@ -1,4 +1,4 @@
-export interface ProjectData {
+export type ProjectData = {
   title: string;
   description: string;
   url: string;
@@ -8,9 +8,9 @@ export interface ProjectData {
   technologies: string[];
   lastUpdated: string;
   highlights: string[];
-}
+};
 
-export interface SimpleProject {
+export type SimpleProject = {
   name: string;
   url: string;
-}
+};

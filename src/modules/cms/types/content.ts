@@ -1,4 +1,4 @@
-export interface CMSContent {
+export type CMSContent = {
   id: string;
   type: ContentType;
   slug: string;
@@ -6,7 +6,7 @@ export interface CMSContent {
   publishedAt?: string;
   updatedAt: string;
   createdAt: string;
-}
+};
 
 export type ContentType = 
   | 'page'
@@ -17,7 +17,7 @@ export type ContentType =
   | 'settings'
   | 'navigation';
 
-export interface HeroContent extends CMSContent {
+export type HeroContent = CMSContent & {
   type: 'hero';
   data: {
     title: string;
@@ -28,9 +28,9 @@ export interface HeroContent extends CMSContent {
     backgroundImage?: string;
     profileImage?: string;
   };
-}
+};
 
-export interface AboutContent extends CMSContent {
+export type AboutContent = CMSContent & {
   type: 'about';
   data: {
     title: string;
@@ -39,16 +39,16 @@ export interface AboutContent extends CMSContent {
     experience?: ExperienceItem[];
     image?: string;
   };
-}
+};
 
-export interface ExperienceItem {
+export type ExperienceItem = {
   title: string;
   company: string;
   period: string;
   description: string;
-}
+};
 
-export interface ProjectContent extends CMSContent {
+export type ProjectContent = CMSContent & {
   type: 'project';
   data: {
     title: string;
@@ -67,23 +67,23 @@ export interface ProjectContent extends CMSContent {
     highlights: string[];
     metrics?: ProjectMetrics;
   };
-}
+};
 
-export interface ProjectImage {
+export type ProjectImage = {
   url: string;
   alt: string;
   caption?: string;
   isHero?: boolean;
-}
+};
 
-export interface ProjectMetrics {
+export type ProjectMetrics = {
   stars?: number;
   forks?: number;
   downloads?: number;
   users?: number;
-}
+};
 
-export interface ContactContent extends CMSContent {
+export type ContactContent = CMSContent & {
   type: 'contact';
   data: {
     title: string;
@@ -98,16 +98,16 @@ export interface ContactContent extends CMSContent {
       message?: string;
     };
   };
-}
+};
 
-export interface SocialLink {
+export type SocialLink = {
   platform: string;
   url: string;
   username?: string;
   icon?: string;
-}
+};
 
-export interface PageContent extends CMSContent {
+export type PageContent = CMSContent & {
   type: 'page';
   data: {
     title: string;
@@ -117,17 +117,17 @@ export interface PageContent extends CMSContent {
     seoDescription?: string;
     sections: PageSection[];
   };
-}
+};
 
-export interface PageSection {
+export type PageSection = {
   id: string;
   type: 'hero' | 'about' | 'projects' | 'contact' | 'custom';
   enabled: boolean;
   order: number;
   settings?: Record<string, any>;
-}
+};
 
-export interface SiteSettings extends CMSContent {
+export type SiteSettings = CMSContent & {
   type: 'settings';
   data: {
     siteName: string;
@@ -152,20 +152,20 @@ export interface SiteSettings extends CMSContent {
       facebookPixel?: string;
     };
   };
-}
+};
 
-export interface NavigationContent extends CMSContent {
+export type NavigationContent = CMSContent & {
   type: 'navigation';
   data: {
     items: NavigationItem[];
   };
-}
+};
 
-export interface NavigationItem {
+export type NavigationItem = {
   id: string;
   label: string;
   url: string;
   external?: boolean;
   order: number;
   children?: NavigationItem[];
-}
+};

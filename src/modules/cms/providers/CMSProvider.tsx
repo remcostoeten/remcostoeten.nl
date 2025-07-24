@@ -3,27 +3,27 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureCMS } from '../hooks/useCMS';
 import { useSiteSettings } from '../hooks/useCMS';
 
-interface CMSConfig {
+type CMSConfig = {
   baseUrl: string;
   apiKey: string;
   previewMode?: boolean;
-}
+};
 
-interface CMSContextType {
+type CMSContextType = {
   config: CMSConfig | null;
   isConfigured: boolean;
-}
+};
 
 const CMSContext = createContext<CMSContextType>({
   config: null,
   isConfigured: false,
 });
 
-interface CMSProviderProps {
+type CMSProviderProps = {
   children: ReactNode;
   config?: CMSConfig;
   queryClient?: QueryClient;
-}
+};
 
 // Create a default query client if none provided
 const defaultQueryClient = new QueryClient({

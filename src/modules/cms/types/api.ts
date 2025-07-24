@@ -1,20 +1,20 @@
 import { CMSContent, ContentType } from './content';
 
-export interface CMSResponse<T = any> {
+export type CMSResponse<T = any> = {
   success: boolean;
   data?: T;
   error?: string;
   pagination?: PaginationInfo;
-}
+};
 
-export interface PaginationInfo {
+export type PaginationInfo = {
   total: number;
   page: number;
   limit: number;
   totalPages: number;
-}
+};
 
-export interface CMSQuery {
+export type CMSQuery = {
   type?: ContentType;
   status?: 'draft' | 'published' | 'archived';
   slug?: string;
@@ -24,33 +24,33 @@ export interface CMSQuery {
   sortOrder?: 'asc' | 'desc';
   search?: string;
   filters?: Record<string, any>;
-}
+};
 
-export interface CMSCreateRequest<T = any> {
+export type CMSCreateRequest<T = any> = {
   type: ContentType;
   slug: string;
   data: T;
   status?: 'draft' | 'published';
-}
+};
 
-export interface CMSUpdateRequest<T = any> {
+export type CMSUpdateRequest<T = any> = {
   data?: Partial<T>;
   status?: 'draft' | 'published' | 'archived';
-}
+};
 
-export interface CMSBulkOperation {
+export type CMSBulkOperation = {
   action: 'publish' | 'unpublish' | 'archive' | 'delete';
   ids: string[];
-}
+};
 
-export interface CMSMediaUpload {
+export type CMSMediaUpload = {
   file: File;
   alt?: string;
   caption?: string;
   folder?: string;
-}
+};
 
-export interface CMSMediaItem {
+export type CMSMediaItem = {
   id: string;
   url: string;
   filename: string;
@@ -61,15 +61,15 @@ export interface CMSMediaItem {
   folder?: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface CMSWebhook {
+export type CMSWebhook = {
   id: string;
   url: string;
   events: CMSWebhookEvent[];
   secret?: string;
   active: boolean;
-}
+};
 
 export type CMSWebhookEvent = 
   | 'content.created'

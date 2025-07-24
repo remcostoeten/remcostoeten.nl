@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
-interface PageLayoutProps {
+type PageLayoutProps = {
   children: ReactNode;
-}
+};
 
 export function PageLayout({ children }: PageLayoutProps) {
   return (
