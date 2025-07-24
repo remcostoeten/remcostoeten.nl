@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { spotify } from '@remcostoeten/fync';
 import type { Track, UseRecentTracksOptions, UseRecentTracksReturn } from '../types';
 
@@ -10,7 +10,7 @@ export const useRecentTracks = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTracks = async () => {
+  const fetchTracks = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -27,28 +27,55 @@ export const useRecentTracks = ({
         .getRecentlyPlayed({ limit });
 
       // Transform the response to match our Track interface
-      const transformedTracks: Track[] = recentTracks.items?.map((item: any) => ({
-        name: item.track.name,
-        artists: item.track.artists?.map((artist: any) => ({
-          name: artist.name,
-          id: artist.id,
-          external_urls: artist.external_urls
-        })) || [],
-        album: {
-          name: item.track.album.name,
-          images: item.track.album.images,
-          release_date: item.track.album.release_date,
-          total_tracks: item.track.album.total_tracks,
-          external_urls: item.track.album.external_urls
-        },
-        duration_ms: item.track.duration_ms,
-        explicit: item.track.explicit,
-        external_urls: item.track.external_urls,
-        popularity: item.track.popularity,
-        preview_url: item.track.preview_url,
-        id: item.track.id,
-        played_at: item.played_at
-      })) || [];
+      const transformedTracks: Track[] = recentTracks.items?.map((item: unknown) => {
+        const trackItem = item as {
+          track: {
+            name: string;
+            artists: Array<{
+              name: string;
+              id: string;
+              external_urls: { spotify: string };
+            }>;
+            album: {
+              name: string;
+              images: Array<{ url: string; width: number; height: number }>;
+              release_date: string;
+              total_tracks: number;
+              external_urls: { spotify: string };
+            };
+            duration_ms: number;
+            explicit: boolean;
+            external_urls: { spotify: string };
+            popularity: number;
+            preview_url: string;
+            id: string;
+          };
+          played_at: string;
+        };
+        
+        return {
+          name: trackItem.track.name,
+          artists: trackItem.track.artists?.map((artist) => ({
+            name: artist.name,
+            id: artist.id,
+            external_urls: artist.external_urls
+          })) || [],
+          album: {
+            name: trackItem.track.album.name,
+            images: trackItem.track.album.images,
+            release_date: trackItem.track.album.release_date,
+            total_tracks: trackItem.track.album.total_tracks,
+            external_urls: trackItem.track.album.external_urls
+          },
+          duration_ms: trackItem.track.duration_ms,
+          explicit: trackItem.track.explicit,
+          external_urls: trackItem.track.external_urls,
+          popularity: trackItem.track.popularity,
+          preview_url: trackItem.track.preview_url,
+          id: trackItem.track.id,
+          played_at: trackItem.played_at
+        };
+      }) || [];
 
       setTracks(transformedTracks);
     } catch (err) {
@@ -57,7 +84,7 @@ export const useRecentTracks = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [limit]);
 
   useEffect(() => {
     fetchTracks();
@@ -66,7 +93,7 @@ export const useRecentTracks = ({
       const interval = setInterval(fetchTracks, refreshInterval);
       return () => clearInterval(interval);
     }
-  }, [limit, refreshInterval]);
+  }, [fetchTracks, refreshInterval]);
 
   return {
     tracks,
