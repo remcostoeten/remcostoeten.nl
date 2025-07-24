@@ -7,7 +7,7 @@ export function HeroSection() {
       className="text-xl font-medium text-foreground"
       {...ANIMATION_CONFIGS.fadeInUp}
     >
-      I build digital things.
+      I craft digital experiences.
     </motion.h1>
   );
 }

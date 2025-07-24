@@ -1,24 +1,11 @@
-/**
- * Converts current time to UTC+1 timezone
- */
-export const getCurrentTimeUTCPlus1 = (): string => {
-  const now = new Date();
-  const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const utcPlus1 = new Date(utcTime + (1 * 3600000));
-  
-  return utcPlus1.toTimeString().split(' ')[0];
-};
+import { getCurrentTimeInTimezone, createTimezoneTimeUpdater } from './timezone';
 
-/**
- * Updates time every second
- */
-export const createTimeUpdater = (callback: (time: string) => void) => {
-  const updateTime = () => {
-    callback(getCurrentTimeUTCPlus1());
-  };
+export function getCurrentTimeUTCPlus1(): string {
+  return getCurrentTimeInTimezone('UTC+1');
+}
 
-  updateTime(); // Initial call
-  const interval = setInterval(updateTime, 1000);
+export function createTimeUpdater(callback: (time: string) => void) {
+  return createTimezoneTimeUpdater('UTC+1', callback);
+}
 
-  return () => clearInterval(interval);
-};
+export * from './timezone';

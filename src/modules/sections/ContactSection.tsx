@@ -8,41 +8,23 @@ export function ContactSection() {
       className="text-foreground leading-relaxed text-base"
       {...ANIMATION_CONFIGS.staggered(0.3)}
     >
-      Find me on{" "}
+      Feel free to explore my work and{" "}
       <a 
-        href={SOCIAL_LINKS.x} 
+        href="mailto:remco@remcostoeten.nl" 
+        className="text-accent hover:underline font-medium"
+      >
+        contact me ↗
+      </a>{" "}
+      or check out my{" "}
+      <a 
+        href="https://remcostoeten.nl" 
         target="_blank" 
         rel="noopener noreferrer"
         className="text-accent hover:underline font-medium"
       >
-        X ↗
+        website ↗
       </a>{" "}
-      and{" "}
-      <a 
-        href={SOCIAL_LINKS.github} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium"
-      >
-        GitHub ↗
-      </a>{" "}
-      or contact me using{" "}
-      <a 
-        href="mailto:" 
-        className="text-accent hover:underline font-medium"
-      >
-        E-Mail ↗
-      </a>{" "}
-      or{" "}
-      <a 
-        href={SOCIAL_LINKS.telegram} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium"
-      >
-        Telegram ↗
-      </a>
-      .
+      if you'd like to collaborate on interesting projects or discuss technology and development practices.
     </motion.p>
   );
 }

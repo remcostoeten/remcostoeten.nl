@@ -37,6 +37,6 @@ export const FEATURED_PROJECTS: TProjectData[] = [
 ];
 
 export const SIMPLE_PROJECTS: TSimpleProject[] = [
-  { name: "WalkSmart", url: "#" },
-  { name: "ZenPersonal", url: "#" }
+  { name: "remcostoeten.nl", url: "https://remcostoeten.nl" },
+  { name: "Fync SDK", url: "https://github.com/remcostoeten/fync" }
 ];

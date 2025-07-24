@@ -1,57 +1,49 @@
-# Kunze Clone Project
+# Remco Stoeten - Portfolio
 
-## How to edit this code
+A minimalist portfolio website showcasing my work as a Frontend Developer. Built with modern web technologies and following clean, functional programming principles.
 
-**Use your preferred IDE**
+## About
 
-Clone this repo and push changes.
+This is my personal portfolio website where I showcase my experience in building scalable web applications, from Magento shops to modern SaaS platforms. I specialize in TypeScript, React, and Next.js development.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Current Projects
 
-Follow these steps:
+- **Roll Your Own Authentication** - A comprehensive Next.js 15 authentication system
+- **Turso DB Creator CLI** - A powerful CLI tool for automated SQLite database creation
+- **LMS System** - Currently working on a learning management system for Dutch MBO students
+- Various CLI tools & automation scripts
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Technologies Used
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- **Frontend**: React 18, TypeScript, Framer Motion
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **State Management**: TanStack Query
+- **Code Quality**: ESLint, functional programming patterns
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Development
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-```
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Build the project and deploy to your preferred hosting service:
-
-```sh
+# Build for production
 npm run build
+
+# Preview production build
+npm run preview
 ```
+
+## Contact
+
+- **Website**: [remcostoeten.nl](https://remcostoeten.nl)
+- **Email**: remco@remcostoeten.nl
+- **GitHub**: [@remcostoeten](https://github.com/remcostoeten)
+- **Location**: Working remotely from Lemmer, Netherlands
+
+## Description
+
+Frontend Developer focused on creating efficient and maintainable web applications. I help bridge the gap between efficient design and development, working with modern technologies to build scalable solutions.
