@@ -18,7 +18,10 @@
     "db:down": "docker-compose down",
     "db:logs": "docker-compose logs -f postgres",
     "db:reset": "docker-compose down -v && docker-compose up -d postgres",
-    "pgadmin": "docker-compose --profile admin up -d pgadmin"
+    "pgadmin": "docker-compose --profile admin up -d pgadmin",
+    "analytics:setup": "node scripts/setup-analytics.js",
+    "analytics:start": "npm run db:up && npm run db:push",
+    "analytics:dashboard": "echo 'Visit http://localhost:8080/analytics to see the dashboard'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

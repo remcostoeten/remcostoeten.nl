@@ -175,8 +175,14 @@ export const useRealTimeMetrics = () => {
   return useQuery({
     queryKey: ['analytics', 'realtime'],
     queryFn: () => AnalyticsService.getRealTimeMetrics(),
-    refetchInterval: 30 * 1000, // Refetch every 30 seconds
-    staleTime: 0,
+    refetchInterval: (data, query) => {
+      // Stop polling if tab is not visible
+      if (document.hidden) return false;
+      // Reduce frequency - poll every 60 seconds instead of 30
+      return 60 * 1000;
+    },
+    staleTime: 30 * 1000, // Cache for 30 seconds
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 };
 
@@ -224,25 +230,44 @@ export const usePageViewTracking = () => {
 export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 100]) => {
   const { trackScrollDepth } = useAnalytics();
   const trackedDepths = useRef(new Set<number>());
+  const throttleTimer = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = Math.round((scrollTop / docHeight) * 100);
-
-      thresholds.forEach(threshold => {
-        if (scrollPercent >= threshold && !trackedDepths.current.has(threshold)) {
-          trackedDepths.current.add(threshold);
-          trackScrollDepth(threshold);
+      // Throttle scroll events to prevent excessive calls
+      if (throttleTimer.current) return;
+      
+      throttleTimer.current = window.setTimeout(() => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        
+        if (docHeight <= 0) {
+          throttleTimer.current = null;
+          return;
         }
-      });
+        
+        const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+
+        thresholds.forEach(threshold => {
+          if (scrollPercent >= threshold && !trackedDepths.current.has(threshold)) {
+            trackedDepths.current.add(threshold);
+            trackScrollDepth(threshold);
+          }
+        });
+        
+        throttleTimer.current = null;
+      }, 100); // Throttle to 100ms
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      // Clear any pending throttle timer
+      if (throttleTimer.current) {
+        clearTimeout(throttleTimer.current);
+        throttleTimer.current = null;
+      }
       // Reset tracked depths when component unmounts
       trackedDepths.current.clear();
     };
