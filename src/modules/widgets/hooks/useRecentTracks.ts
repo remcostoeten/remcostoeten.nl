@@ -3,8 +3,8 @@ import { spotify } from '@remcostoeten/fync';
 import type { Track, UseRecentTracksOptions, UseRecentTracksReturn } from '../types';
 
 export const useRecentTracks = ({
-  limit = 5,
-  refreshInterval = 0
+  limit = Number(process.env.REACT_APP_SPOTIFY_WIDGET_TRACK_LIMIT) || 5,
+  refreshInterval = Number(process.env.REACT_APP_SPOTIFY_WIDGET_REFRESH_INTERVAL) || 0
 }: UseRecentTracksOptions = {}): UseRecentTracksReturn => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [loading, setLoading] = useState(true);

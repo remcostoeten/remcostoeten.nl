@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { RecentSpotifyProps } from './types';
 
-export const RecentSpotify = ({ tracks, interval = 3000 }: RecentSpotifyProps) => {
+export const RecentSpotify = ({ 
+  tracks, 
+  interval = Number(process.env.REACT_APP_SPOTIFY_WIDGET_CYCLE_INTERVAL) || 3000 
+}: RecentSpotifyProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {

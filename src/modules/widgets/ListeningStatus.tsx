@@ -5,7 +5,7 @@ import type { ListeningStatusProps } from './types';
 export const ListeningStatus = ({ 
   prefixText = "while listening to", 
   tracks, 
-  interval = 3000,
+  interval = Number(process.env.REACT_APP_SPOTIFY_WIDGET_CYCLE_INTERVAL) || 3000,
   className = ""
 }: ListeningStatusProps) => {
   return (
