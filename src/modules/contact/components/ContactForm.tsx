@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CONTACT_EMOJIS } from "../constants";
-import { ContactFormData } from "../types";
+import { TContactFormData } from "../types";
 
-type ContactFormProps = {
+type TProps = {
   isVisible: boolean;
   openAbove?: boolean;
 };
 
-export function ContactForm({ isVisible, openAbove = false }: ContactFormProps) {
-  const [formData, setFormData] = useState<ContactFormData>({
+export function ContactForm({ isVisible, openAbove = false }: TProps) {
+  const [formData, setFormData] = useState<TContactFormData>({
     name: "",
     feedback: "",
     emoji: ""

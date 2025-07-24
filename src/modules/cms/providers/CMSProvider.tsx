@@ -3,25 +3,25 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureCMS } from '../hooks/useCMS';
 import { useSiteSettings } from '../hooks/useCMS';
 
-type CMSConfig = {
+type TCMSConfig = {
   baseUrl: string;
   apiKey: string;
   previewMode?: boolean;
 };
 
-type CMSContextType = {
-  config: CMSConfig | null;
+type TCMSContextType = {
+  config: TCMSConfig | null;
   isConfigured: boolean;
 };
 
-const CMSContext = createContext<CMSContextType>({
+const CMSContext = createContext<TCMSContextType>({
   config: null,
   isConfigured: false,
 });
 
-type CMSProviderProps = {
+type TProps = {
   children: ReactNode;
-  config?: CMSConfig;
+  config?: TCMSConfig;
   queryClient?: QueryClient;
 };
 
@@ -40,8 +40,8 @@ export function CMSProvider({
   children, 
   config,
   queryClient = defaultQueryClient 
-}: CMSProviderProps) {
-  const [cmsConfig, setCmsConfig] = React.useState<CMSConfig | null>(config || null);
+}: TProps) {
+  const [cmsConfig, setCmsConfig] = React.useState<TCMSConfig | null>(config || null);
 
   useEffect(() => {
     if (cmsConfig) {
@@ -49,7 +49,7 @@ export function CMSProvider({
     }
   }, [cmsConfig]);
 
-  const contextValue: CMSContextType = {
+  const contextValue: TCMSContextType = {
     config: cmsConfig,
     isConfigured: !!cmsConfig,
   };

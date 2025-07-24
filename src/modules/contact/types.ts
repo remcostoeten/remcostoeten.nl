@@ -1,4 +1,4 @@
-export type ContactFormData = {
+export type TContactFormData = {
   name: string;
   feedback: string;
   emoji: string;

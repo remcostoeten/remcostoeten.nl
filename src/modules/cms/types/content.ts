@@ -1,4 +1,4 @@
-export type CMSContent = {
+export type TCMSContent = {
   id: string;
   type: ContentType;
   slug: string;
@@ -17,7 +17,7 @@ export type ContentType =
   | 'settings'
   | 'navigation';
 
-export type HeroContent = CMSContent & {
+export type THeroContent = TCMSContent & {
   type: 'hero';
   data: {
     title: string;
@@ -30,25 +30,25 @@ export type HeroContent = CMSContent & {
   };
 };
 
-export type AboutContent = CMSContent & {
+export type TAboutContent = TCMSContent & {
   type: 'about';
   data: {
     title: string;
     content: string;
     skills?: string[];
-    experience?: ExperienceItem[];
+    experience?: TExperienceItem[];
     image?: string;
   };
 };
 
-export type ExperienceItem = {
+export type TExperienceItem = {
   title: string;
   company: string;
   period: string;
   description: string;
 };
 
-export type ProjectContent = CMSContent & {
+export type TProjectContent = TCMSContent & {
   type: 'project';
   data: {
     title: string;
@@ -60,30 +60,30 @@ export type ProjectContent = CMSContent & {
     technologies: string[];
     category: string;
     featured: boolean;
-    images: ProjectImage[];
+    images: TProjectImage[];
     status: 'completed' | 'in-progress' | 'planned';
     startDate: string;
     endDate?: string;
     highlights: string[];
-    metrics?: ProjectMetrics;
+    metrics?: TProjectMetrics;
   };
 };
 
-export type ProjectImage = {
+export type TProjectImage = {
   url: string;
   alt: string;
   caption?: string;
   isHero?: boolean;
 };
 
-export type ProjectMetrics = {
+export type TProjectMetrics = {
   stars?: number;
   forks?: number;
   downloads?: number;
   users?: number;
 };
 
-export type ContactContent = CMSContent & {
+export type TContactContent = TCMSContent & {
   type: 'contact';
   data: {
     title: string;
@@ -92,7 +92,7 @@ export type ContactContent = CMSContent & {
     phone?: string;
     location?: string;
     timezone: string;
-    socialLinks: SocialLink[];
+    socialLinks: TSocialLink[];
     availability: {
       status: 'available' | 'busy' | 'unavailable';
       message?: string;
@@ -100,14 +100,14 @@ export type ContactContent = CMSContent & {
   };
 };
 
-export type SocialLink = {
+export type TSocialLink = {
   platform: string;
   url: string;
   username?: string;
   icon?: string;
 };
 
-export type PageContent = CMSContent & {
+export type TPageContent = TCMSContent & {
   type: 'page';
   data: {
     title: string;
@@ -115,11 +115,11 @@ export type PageContent = CMSContent & {
     content: string;
     seoTitle?: string;
     seoDescription?: string;
-    sections: PageSection[];
+    sections: TPageSection[];
   };
 };
 
-export type PageSection = {
+export type TPageSection = {
   id: string;
   type: 'hero' | 'about' | 'projects' | 'contact' | 'custom';
   enabled: boolean;
@@ -127,7 +127,7 @@ export type PageSection = {
   settings?: Record<string, any>;
 };
 
-export type SiteSettings = CMSContent & {
+export type TSiteSettings = TCMSContent & {
   type: 'settings';
   data: {
     siteName: string;
@@ -154,18 +154,18 @@ export type SiteSettings = CMSContent & {
   };
 };
 
-export type NavigationContent = CMSContent & {
+export type TNavigationContent = TCMSContent & {
   type: 'navigation';
   data: {
-    items: NavigationItem[];
+    items: TNavigationItem[];
   };
 };
 
-export type NavigationItem = {
+export type TNavigationItem = {
   id: string;
   label: string;
   url: string;
   external?: boolean;
   order: number;
-  children?: NavigationItem[];
+  children?: TNavigationItem[];
 };

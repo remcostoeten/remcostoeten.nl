@@ -1,6 +1,6 @@
-import { ProjectData, SimpleProject } from "../types";
+import { TProjectData, TSimpleProject } from "../types";
 
-export const FEATURED_PROJECTS: ProjectData[] = [
+export const FEATURED_PROJECTS: TProjectData[] = [
   {
     title: "Roll Your Own Authentication",
     description: "A comprehensive Next.js 15 authentication system showcasing how to implement JWT-based auth without external services like Lucia, NextAuth, or Clerk. Features secure PostgreSQL storage, admin roles, onboarding flows, and more.",
@@ -36,7 +36,7 @@ export const FEATURED_PROJECTS: ProjectData[] = [
   }
 ];
 
-export const SIMPLE_PROJECTS: SimpleProject[] = [
+export const SIMPLE_PROJECTS: TSimpleProject[] = [
   { name: "WalkSmart", url: "#" },
   { name: "ZenPersonal", url: "#" }
 ];

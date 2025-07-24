@@ -1,4 +1,4 @@
-export type ProjectData = {
+export type TProjectData = {
   title: string;
   description: string;
   url: string;
@@ -10,7 +10,7 @@ export type ProjectData = {
   highlights: string[];
 };
 
-export type SimpleProject = {
+export type TSimpleProject = {
   name: string;
   url: string;
 };

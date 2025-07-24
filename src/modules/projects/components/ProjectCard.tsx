@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Code, Star, GitBranch, Eye, Calendar } from "lucide-react";
-import { ProjectData } from "../types";
+import { TProjectData } from "../types";
 
-type ProjectCardProps = ProjectData;
+type TProps = TProjectData;
 
 export function ProjectCard({
   title,
@@ -15,7 +15,7 @@ export function ProjectCard({
   technologies,
   lastUpdated,
   highlights,
-}: ProjectCardProps) {
+}: TProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
