@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { SOCIAL_LINKS } from "@/modules/contact";
 
-export const ContactSection = () => {
+export function ContactSection() {
   return (
     <motion.p 
       className="text-foreground leading-relaxed text-base"
@@ -45,4 +45,4 @@ export const ContactSection = () => {
       .
     </motion.p>
   );
-};
+}

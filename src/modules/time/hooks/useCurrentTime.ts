@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { createTimeUpdater } from "../utils/time";
 
-export const useCurrentTime = () => {
+export function useCurrentTime() {
   const [currentTime, setCurrentTime] = useState<string>("");
 
   useEffect(() => {
@@ -10,4 +10,4 @@ export const useCurrentTime = () => {
   }, []);
 
   return currentTime;
-};
+}

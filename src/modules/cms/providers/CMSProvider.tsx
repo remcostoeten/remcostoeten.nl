@@ -36,11 +36,11 @@ const defaultQueryClient = new QueryClient({
   },
 });
 
-export const CMSProvider: React.FC<CMSProviderProps> = ({ 
+export function CMSProvider({ 
   children, 
   config,
   queryClient = defaultQueryClient 
-}) => {
+}: CMSProviderProps) {
   const [cmsConfig, setCmsConfig] = React.useState<CMSConfig | null>(config || null);
 
   useEffect(() => {
@@ -61,15 +61,15 @@ export const CMSProvider: React.FC<CMSProviderProps> = ({
       </CMSContext.Provider>
     </QueryClientProvider>
   );
-};
+}
 
-export const useCMSContext = () => {
+export function useCMSContext() {
   const context = useContext(CMSContext);
   if (!context) {
     throw new Error('useCMSContext must be used within a CMSProvider');
   }
   return context;
-};
+}
 
 // HOC for components that need CMS configuration
 export const withCMS = <P extends object>(
@@ -91,7 +91,7 @@ export const withCMS = <P extends object>(
 };
 
 // Theme provider that uses CMS settings
-export const CMSThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export function CMSThemeProvider({ children }: { children: ReactNode }) {
   const { data: settings } = useSiteSettings();
 
   useEffect(() => {
@@ -99,20 +99,17 @@ export const CMSThemeProvider: React.FC<{ children: ReactNode }> = ({ children }
       const theme = settings.data.theme;
       const root = document.documentElement;
       
-      // Apply theme colors as CSS custom properties
       root.style.setProperty('--cms-primary', theme.primaryColor);
       root.style.setProperty('--cms-secondary', theme.secondaryColor);
       root.style.setProperty('--cms-accent', theme.accentColor);
       
-      // Apply theme mode
       if (theme.mode === 'dark') {
         root.classList.add('dark');
       } else if (theme.mode === 'light') {
         root.classList.remove('dark');
       }
-      // 'system' mode can be handled by CSS media queries
     }
   }, [settings]);
 
   return <>{children}</>;
-};
+}

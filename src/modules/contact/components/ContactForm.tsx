@@ -11,7 +11,7 @@ interface ContactFormProps {
   openAbove?: boolean;
 }
 
-export const ContactForm = ({ isVisible, openAbove = false }: ContactFormProps) => {
+export function ContactForm({ isVisible, openAbove = false }: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     feedback: "",
@@ -19,30 +19,29 @@ export const ContactForm = ({ isVisible, openAbove = false }: ContactFormProps) 
   });
   const [selectedEmoji, setSelectedEmoji] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     console.log("Form submitted:", formData);
     
-    // Reset form
     setFormData({ name: "", feedback: "", emoji: "" });
     setSelectedEmoji("");
-  };
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-  };
+  }
 
-  const handleEmojiSelect = (emoji: string) => {
+  function handleEmojiSelect(emoji: string) {
     setSelectedEmoji(emoji);
     setFormData(prev => ({
       ...prev,
       emoji
     }));
-  };
+  }
 
   return (
     <AnimatePresence>

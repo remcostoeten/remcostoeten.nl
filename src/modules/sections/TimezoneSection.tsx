@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { TIMEZONE_INFO, useCurrentTime } from "@/modules/time";
 
-export const TimezoneSection = () => {
+export function TimezoneSection() {
   const currentTime = useCurrentTime();
 
   return (
@@ -44,4 +44,4 @@ export const TimezoneSection = () => {
       .
     </motion.p>
   );
-};
+}

@@ -7,7 +7,7 @@ import {
   TimezoneSection 
 } from "@/modules/sections";
 
-const Index = () => {
+function Index() {
   return (
     <PageLayout>
       <HeroSection />
@@ -17,6 +17,6 @@ const Index = () => {
       <TimezoneSection />
     </PageLayout>
   );
-};
+}
 
 export default Index;

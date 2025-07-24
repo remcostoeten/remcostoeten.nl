@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 
-export const AboutSection = () => {
+export function AboutSection() {
   return (
     <motion.p 
       className="text-foreground leading-relaxed text-base"
@@ -24,4 +24,4 @@ export const AboutSection = () => {
       I help bridge the gap between efficient design and development.
     </motion.p>
   );
-};
+}

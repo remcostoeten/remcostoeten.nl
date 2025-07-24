@@ -5,7 +5,7 @@ import { ProjectData } from "../types";
 
 interface ProjectCardProps extends ProjectData {}
 
-export const ProjectCard = ({
+export function ProjectCard({
   title,
   description,
   url,
@@ -15,7 +15,7 @@ export const ProjectCard = ({
   technologies,
   lastUpdated,
   highlights,
-}: ProjectCardProps) => {
+}: ProjectCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

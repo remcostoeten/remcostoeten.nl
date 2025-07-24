@@ -4,7 +4,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, X } from 'lucide-react';
 import { useCMSPreview } from '../hooks/useCMS';
 
-export const PreviewBanner: React.FC = () => {
+export function PreviewBanner() {
   const { previewMode, disablePreview } = useCMSPreview();
 
   if (!previewMode) {

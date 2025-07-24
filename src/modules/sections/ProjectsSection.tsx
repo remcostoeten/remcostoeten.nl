@@ -3,7 +3,7 @@ import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { SOCIAL_LINKS } from "@/modules/contact";
 import { SIMPLE_PROJECTS } from "@/modules/projects";
 
-export const ProjectsSection = () => {
+export function ProjectsSection() {
   return (
     <motion.p 
       className="text-foreground leading-relaxed text-base"
@@ -35,4 +35,4 @@ export const ProjectsSection = () => {
       .
     </motion.p>
   );
-};
+}
