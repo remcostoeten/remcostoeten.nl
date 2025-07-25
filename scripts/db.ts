@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { analyticsEvents } from '../src/db/schema'
+import { analyticsEvents, adminUser, adminSessions, adminActivityLog } from '../src/db/schema'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -18,8 +18,17 @@ const sql = postgres(connectionString, {
 })
 
 export const db = drizzle(sql, {
-  schema: { analyticsEvents }
+  schema: { analyticsEvents, adminUser, adminSessions, adminActivityLog }
 })
 
-export { analyticsEvents }
-export type { TAnalyticsEvent, TNewAnalyticsEvent } from '../src/db/schema'
+export { analyticsEvents, adminUser, adminSessions, adminActivityLog }
+export type { 
+  TAnalyticsEvent, 
+  TNewAnalyticsEvent, 
+  TAdminUser, 
+  TNewAdminUser, 
+  TAdminSession, 
+  TNewAdminSession, 
+  TAdminActivityLog, 
+  TNewAdminActivityLog 
+} from '../src/db/schema'

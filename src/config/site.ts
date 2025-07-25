@@ -25,42 +25,55 @@ type TSiteConfig = {
   };
 };
 
-export const SITE_CONFIG: TSiteConfig = {
-  site: {
-    title: import.meta.env.VITE_SITE_TITLE || "Portfolio Site",
-    description: import.meta.env.VITE_SITE_DESCRIPTION || "A modern portfolio website",
-    url: import.meta.env.VITE_SITE_URL || "https://example.com",
-  },
-  contact: {
-    email: import.meta.env.VITE_CONTACT_EMAIL || "contact@example.com",
-  },
-  social: {
-    x: import.meta.env.VITE_SOCIAL_X || "",
-    github: import.meta.env.VITE_SOCIAL_GITHUB || "",
-    behance: import.meta.env.VITE_SOCIAL_BEHANCE || "",
-    telegram: import.meta.env.VITE_SOCIAL_TELEGRAM || "",
-  },
-  analytics: {
-    adminPassword: import.meta.env.VITE_ANALYTICS_PASSWORD || "change-me",
-    sessionTimeout: 24 * 60 * 60 * 1000,
-    realtimeInterval: 30 * 1000,
-    maxLoginAttempts: 5,
-    lockoutDuration: 15 * 60 * 1000,
-  },
-  api: {
-    allowedOrigins: import.meta.env.VITE_ALLOWED_ORIGINS 
-      ? import.meta.env.VITE_ALLOWED_ORIGINS.split(',')
-      : [
-          'http://localhost:3333',
-          'http://localhost:3334',
-          'http://localhost:5173',
-          'http://localhost:3000',
-          'http://127.0.0.1:3333',
-          'http://127.0.0.1:3334',
-          'http://127.0.0.1:5173'
-        ],
-  },
-};
+function getEnvironment() {
+  if (typeof window !== 'undefined') {
+    return import.meta.env;
+  }
+  return process.env;
+}
+
+function createSiteConfig(): TSiteConfig {
+  const env = getEnvironment();
+  
+  return {
+    site: {
+      title: env.VITE_SITE_TITLE || "Portfolio Site",
+      description: env.VITE_SITE_DESCRIPTION || "A modern portfolio website",
+      url: env.VITE_SITE_URL || "https://example.com",
+    },
+    contact: {
+      email: env.VITE_CONTACT_EMAIL || "contact@example.com",
+    },
+    social: {
+      x: env.VITE_SOCIAL_X || "",
+      github: env.VITE_SOCIAL_GITHUB || "",
+      behance: env.VITE_SOCIAL_BEHANCE || "",
+      telegram: env.VITE_SOCIAL_TELEGRAM || "",
+    },
+    analytics: {
+      adminPassword: env.VITE_ANALYTICS_PASSWORD || "change-me",
+      sessionTimeout: 24 * 60 * 60 * 1000,
+      realtimeInterval: 30 * 1000,
+      maxLoginAttempts: 5,
+      lockoutDuration: 15 * 60 * 1000,
+    },
+    api: {
+      allowedOrigins: env.VITE_ALLOWED_ORIGINS 
+        ? env.VITE_ALLOWED_ORIGINS.split(',')
+        : [
+            'http://localhost:3333',
+            'http://localhost:3334',
+            'http://localhost:5173',
+            'http://localhost:3000',
+            'http://127.0.0.1:3333',
+            'http://127.0.0.1:3334',
+            'http://127.0.0.1:5173'
+          ],
+    },
+  };
+}
+
+export const SITE_CONFIG: TSiteConfig = createSiteConfig();
 
 export function getSiteConfig(): TSiteConfig {
   return SITE_CONFIG;

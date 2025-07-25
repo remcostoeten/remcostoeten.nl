@@ -13,13 +13,8 @@ import { toast } from "sonner";
 
 const navigation = [
   {
-    name: "Dashboard",
-    href: "/admin/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
     name: "Analytics",
-    href: "/admin/analytics", 
+    href: "/admin", 
     icon: BarChart3,
   },
   {

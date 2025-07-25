@@ -16,56 +16,39 @@ export function DashboardPage() {
   const stats = [
     {
       title: "Total Visitors",
-      value: "12,543",
-      description: "+20.1% from last month",
+      value: "0",
+      description: "Connect analytics to see data",
       icon: Users,
-      trend: "up"
+      trend: "stable"
     },
     {
       title: "Page Views", 
-      value: "45,231",
-      description: "+12.5% from last month",
+      value: "0",
+      description: "Connect analytics to see data",
       icon: BarChart3,
-      trend: "up"
+      trend: "stable"
     },
     {
       title: "Active Projects",
-      value: "8",
-      description: "2 completed this month",
+      value: "0",
+      description: "Add projects to see count",
       icon: FileText,
       trend: "stable"
     },
     {
-      title: "Uptime",
-      value: "99.9%",
-      description: "Last 30 days",
+      title: "System Status",
+      value: "Active",
+      description: "System operational",
       icon: Activity,  
       trend: "up"
     }
   ];
 
-  const recentActivity = [
-    {
-      action: "New contact form submission",
-      time: "2 minutes ago",
-      type: "contact"
-    },
-    {
-      action: "Analytics data updated",
-      time: "15 minutes ago", 
-      type: "analytics"
-    },
-    {
-      action: "Project 'Portfolio V3' published",
-      time: "1 hour ago",
-      type: "content"
-    },
-    {
-      action: "Admin login",
-      time: "2 hours ago",
-      type: "auth"
-    }
-  ];
+  const recentActivity: Array<{
+    action: string;
+    time: string;
+    type: string;
+  }> = [];
 
   return (
     <div className="space-y-6">

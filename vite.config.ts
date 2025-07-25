@@ -7,17 +7,32 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 3333,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3334',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   plugins: [
     react(),
   ],
   define: {
     'process.env': 'import.meta.env',
+    global: 'globalThis',
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      buffer: 'buffer',
+      crypto: 'crypto-browserify',
+      stream: 'stream-browserify',
+      util: 'util',
     },
+  },
+  optimizeDeps: {
+    include: ['buffer', 'crypto-browserify', 'stream-browserify', 'util']
   },
   build: {
     rollupOptions: {

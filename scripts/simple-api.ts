@@ -1,8 +1,9 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
-import { db, analyticsEvents, type TNewAnalyticsEvent } from './db'
-import { desc, count, sql, countDistinct, and, gte, lte, eq } from 'drizzle-orm'
+import { db, analyticsEvents, adminUser, adminSessions, adminActivityLog, type TNewAnalyticsEvent, type TAdminUser, type TNewAdminSession, type TNewAdminActivityLog } from './db'
+import { desc, count, sql, countDistinct, and, gte, lte, eq, gt } from 'drizzle-orm'
+import { createHash, randomBytes } from 'crypto'
 
 const app = new Hono()
 
@@ -75,9 +76,42 @@ function processAnalyticsEvent(eventData: any) {
   cache.clear()
 }
 
+// Auth helper functions
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "remcostoeten@hotmail.com"
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Mhca6r4g1!"
+const SESSION_DURATION = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+
+function hashPassword(password: string): string {
+  return createHash('sha256').update(password + 'salt_remco_2024').digest('hex')
+}
+
+function generateToken(): string {
+  return randomBytes(32).toString('hex')
+}
+
+function calculateExpiresAt(): Date {
+  return new Date(Date.now() + SESSION_DURATION)
+}
+
+async function ensureAdminExists(): Promise<TAdminUser> {
+  const existingAdmin = await db.select().from(adminUser).where(eq(adminUser.email, ADMIN_EMAIL)).limit(1)
+  
+  if (existingAdmin.length > 0) {
+    return existingAdmin[0]
+  }
+
+  const newAdmin = await db.insert(adminUser).values({
+    email: ADMIN_EMAIL,
+    passwordHash: hashPassword(ADMIN_PASSWORD),
+    isActive: true,
+  }).returning()
+
+  return newAdmin[0]
+}
+
 // Enable CORS for all routes
 app.use('*', cors({
-  origin: ['http://localhost:3333', 'http://localhost:3000', 'http://localhost:5173'],
+  origin: ['http://localhost:3333', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:3335'],
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 }))
@@ -89,6 +123,165 @@ app.get('/health', (c) => {
     timestamp: new Date().toISOString(),
     service: 'simple-api'
   })
+})
+
+// Auth endpoints
+app.post('/api/auth/login', async (c) => {
+  try {
+    const { email, password, ipAddress, userAgent } = await c.req.json()
+    
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      return c.text('Invalid credentials', 401)
+    }
+
+    const admin = await ensureAdminExists()
+    
+    // Update last login
+    await db.update(adminUser)
+      .set({ lastLoginAt: new Date() })
+      .where(eq(adminUser.id, admin.id))
+
+    // Create session
+    const token = generateToken()
+    const expiresAt = calculateExpiresAt()
+
+    const sessionData: TNewAdminSession = {
+      userId: admin.id,
+      token,
+      expiresAt,
+      ipAddress,
+      userAgent,
+    }
+
+    await db.insert(adminSessions).values(sessionData)
+
+    // Log activity
+    await db.insert(adminActivityLog).values({
+      userId: admin.id,
+      action: 'login',
+      module: 'auth',
+      details: { ipAddress },
+      ipAddress,
+    })
+
+    return c.json({
+      token,
+      expiresAt,
+      user: {
+        id: admin.id,
+        email: admin.email,
+        lastLoginAt: admin.lastLoginAt,
+      },
+    })
+  } catch (error) {
+    console.error('Login error:', error)
+    return c.text('Login failed', 500)
+  }
+})
+
+app.post('/api/auth/validate', async (c) => {
+  try {
+    const { token } = await c.req.json()
+    
+    if (!token || token.length !== 64) {
+      return c.text('Invalid token', 401)
+    }
+
+    const session = await db
+      .select({
+        session: adminSessions,
+        user: adminUser,
+      })
+      .from(adminSessions)
+      .innerJoin(adminUser, eq(adminSessions.userId, adminUser.id))
+      .where(
+        and(
+          eq(adminSessions.token, token),
+          gt(adminSessions.expiresAt, new Date()),
+          eq(adminUser.isActive, true)
+        )
+      )
+      .limit(1)
+
+    if (session.length === 0) {
+      return c.text('Invalid or expired session', 401)
+    }
+
+    return c.json({
+      user: {
+        id: session[0].user.id,
+        email: session[0].user.email,
+        lastLoginAt: session[0].user.lastLoginAt,
+      },
+      session: session[0].session,
+    })
+  } catch (error) {
+    console.error('Validation error:', error)
+    return c.text('Validation failed', 500)
+  }
+})
+
+app.post('/api/auth/logout', async (c) => {
+  try {
+    const { token, ipAddress } = await c.req.json()
+    
+    if (!token) {
+      return c.text('Token required', 400)
+    }
+
+    // Get session info before deleting
+    const session = await db
+      .select({
+        session: adminSessions,
+        user: adminUser,
+      })
+      .from(adminSessions)
+      .innerJoin(adminUser, eq(adminSessions.userId, adminUser.id))
+      .where(eq(adminSessions.token, token))
+      .limit(1)
+    
+    if (session.length > 0) {
+      // Delete session
+      await db.delete(adminSessions).where(eq(adminSessions.token, token))
+      
+      // Log activity
+      await db.insert(adminActivityLog).values({
+        userId: session[0].user.id,
+        action: 'logout',
+        module: 'auth',
+        details: { ipAddress },
+        ipAddress,
+      })
+    }
+
+    return c.json({ success: true })
+  } catch (error) {
+    console.error('Logout error:', error)
+    return c.text('Logout failed', 500)
+  }
+})
+
+app.get('/api/auth/activity', async (c) => {
+  try {
+    const limit = parseInt(c.req.query('limit') || '50')
+    
+    const activity = await db
+      .select({
+        action: adminActivityLog.action,
+        module: adminActivityLog.module,
+        details: adminActivityLog.details,
+        timestamp: adminActivityLog.timestamp,
+        ipAddress: adminActivityLog.ipAddress,
+      })
+      .from(adminActivityLog)
+      .orderBy(desc(adminActivityLog.timestamp))
+      .limit(limit)
+
+    return c.json(activity)
+  } catch (error) {
+    console.error('Activity fetch error:', error)
+    return c.json({ error: 'Failed to fetch activity' }, 500)
+  }
 })
 
 // Analytics endpoints

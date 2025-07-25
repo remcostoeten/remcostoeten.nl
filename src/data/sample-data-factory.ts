@@ -1,4 +1,4 @@
-import { getSiteConfig } from '../config/site-node';
+import { getSiteConfig } from '../config/site';
 import type { 
   TNewProject, 
   TNewSkill, 

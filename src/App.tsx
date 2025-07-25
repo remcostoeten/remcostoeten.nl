@@ -12,9 +12,8 @@ import { PerformanceDashboard } from "./components/dev/PerformanceDashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import TimezoneDemo from "./pages/timezone-demo";
-import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
-import { DashboardPage } from "./pages/admin/DashboardPage";
 import { AdminAnalyticsPage } from "./pages/admin/AdminAnalyticsPage";
+import { KeyboardShortcutsProvider } from "./components/KeyboardShortcutsProvider";
 
 function createQueryClient() {
   return new QueryClient({
@@ -49,29 +48,30 @@ export function App() {
         <BrowserRouter>
           <AuthProvider>
             <AnalyticsProvider>
-              <Routes>
-                {/* Public routes */}
-                <Route path="/" element={<Index />} />
-                <Route path="/timezone-demo" element={<TimezoneDemo />} />
-                <Route path="/analytics" element={<AnalyticsDashboardPage />} />
-                
-                {/* Admin authentication */}
-                <Route path="/admin/login" element={<LoginForm />} />
-                
-                {/* Protected admin routes */}
-                <Route path="/admin" element={
-                  <ProtectedRoute>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }>
-                  <Route path="dashboard" element={<DashboardPage />} />
-                  <Route path="analytics" element={<AdminAnalyticsPage />} />
-                  <Route path="cms" element={<div>CMS Coming Soon...</div>} />
-                  <Route path="settings" element={<div>Settings Coming Soon...</div>} />
-                </Route>
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <KeyboardShortcutsProvider>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<Index />} />
+                  <Route path="/timezone-demo" element={<TimezoneDemo />} />
+                  
+                  {/* Admin authentication */}
+                  <Route path="/admin/login" element={<LoginForm />} />
+                  
+                  {/* Protected admin routes */}
+                  <Route path="/admin" element={
+                    <ProtectedRoute>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }>
+                    <Route index element={<AdminAnalyticsPage />} />
+                    <Route path="analytics" element={<AdminAnalyticsPage />} />
+                    <Route path="cms" element={<div>CMS Coming Soon...</div>} />
+                    <Route path="settings" element={<div>Settings Coming Soon...</div>} />
+                  </Route>
+                  
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </KeyboardShortcutsProvider>
             </AnalyticsProvider>
           </AuthProvider>
         </BrowserRouter>

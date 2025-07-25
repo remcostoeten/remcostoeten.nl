@@ -10,7 +10,7 @@ export function AdminAnalyticsPage() {
         </p>
       </div>
       
-      <AnalyticsDashboard />
+      <AnalyticsDashboard hideHeader={true} />
     </div>
   );
 }

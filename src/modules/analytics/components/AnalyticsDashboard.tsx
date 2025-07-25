@@ -41,7 +41,11 @@ const predefinedRanges = [
   { label: 'Last 90 days', days: 90 },
 ];
 
-export const AnalyticsDashboard: React.FC = () => {
+type TProps = {
+  hideHeader?: boolean;
+};
+
+export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => {
   const [dateRange, setDateRange] = useState<DateRange>({
     from: startOfDay(subDays(new Date(), 7)),
     to: endOfDay(new Date()),
@@ -131,23 +135,34 @@ export const AnalyticsDashboard: React.FC = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className={hideHeader ? "space-y-6" : "p-6 space-y-6"}>
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-          <p className="text-gray-600">
-            Track your portfolio's performance and user engagement
-          </p>
+      {!hideHeader && (
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
+            <p className="text-gray-600">
+              Track your portfolio's performance and user engagement
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button onClick={refreshAllData} variant="outline" size="sm">
+              <RefreshCwIcon className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-2">
+      )}
+      
+      {hideHeader && (
+        <div className="flex justify-end">
           <Button onClick={refreshAllData} variant="outline" size="sm">
             <RefreshCwIcon className="w-4 h-4 mr-2" />
             Refresh
           </Button>
         </div>
-      </div>
+      )}
 
       {/* Filters */}
       <Card>

@@ -10,6 +10,8 @@ services:
       POSTGRES_USER: portfolio_user
       POSTGRES_PASSWORD: portfolio_password
       PGDATA: /var/lib/postgresql/data/pgdata
+      # For applications to use
+      DATABASE_URL: postgresql://portfolio_user:portfolio_password@localhost:5433/portfolio_db
     ports:
       - "5433:5432"
     volumes:

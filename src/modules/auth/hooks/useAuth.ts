@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { createAuthService } from "../services/authService";
+import { createAuthClient } from "../services/authClient";
 import type { TAuthUser, TAuthContext } from "../types/auth-types";
 
 const AUTH_TOKEN_KEY = "admin_auth_token";
-const authService = createAuthService();
+const authClient = createAuthClient();
 
 function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -43,7 +43,7 @@ export function useAuth(): TAuthContext {
     }
 
     try {
-      const sessionResult = await authService.validateSession(token);
+      const sessionResult = await authClient.validateSession(token);
       
       if (sessionResult) {
         setUser(sessionResult.user);
@@ -69,7 +69,7 @@ export function useAuth(): TAuthContext {
     
     try {
       const clientInfo = getClientInfo();
-      const loginResult = await authService.login(
+      const loginResult = await authClient.login(
         email, 
         password, 
         clientInfo.ipAddress, 
@@ -91,7 +91,7 @@ export function useAuth(): TAuthContext {
     if (token) {
       try {
         const clientInfo = getClientInfo();
-        await authService.logout(token, clientInfo.ipAddress);
+        await authClient.logout(token, clientInfo.ipAddress);
       } catch (error) {
         console.error("Logout error:", error);
       }
@@ -106,14 +106,6 @@ export function useAuth(): TAuthContext {
     validateSession();
   }, [validateSession]);
 
-  // Set up session cleanup interval
-  useEffect(() => {
-    const interval = setInterval(() => {
-      authService.cleanExpiredSessions().catch(console.error);
-    }, 60 * 60 * 1000); // Clean up every hour
-
-    return () => clearInterval(interval);
-  }, []);
 
   return {
     user,
