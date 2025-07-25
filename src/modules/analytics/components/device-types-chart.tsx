@@ -76,7 +76,7 @@ export function DeviceTypesChart({ data, loading }: TProps) {
   // Sort by count for better visualization
   const sortedData = [...chartData].sort((a, b) => b.count - a.count);
   
-  const customTooltip = ({ active, payload }: any) => {
+  const customTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { type: string; count: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const percentage = ((data.count / total) * 100).toFixed(1);
@@ -156,7 +156,14 @@ export function DeviceTypesChart({ data, loading }: TProps) {
     );
   }
 
-  const renderCustomPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+  const renderCustomPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+  }) => {
     if (percent < 0.05) return null;
     
     const RADIAN = Math.PI / 180;

@@ -108,7 +108,7 @@ export function stringFromSequence(sequence: TKeystroke[]): string {
 }
 
 /** Create common navigation shortcuts */
-export function createNavigationShortcuts(router: any) {
+export function createNavigationShortcuts(router: { push: (path: string) => void }) {
   return [
     createShortcut(
       'nav-home',

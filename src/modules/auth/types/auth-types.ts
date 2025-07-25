@@ -24,7 +24,7 @@ export type TSession = {
 export type TActivityLogEntry = {
   action: string;
   module: string;
-  details?: any;
+  details?: Record<string, unknown>;
   timestamp: Date;
   ipAddress?: string;
 };

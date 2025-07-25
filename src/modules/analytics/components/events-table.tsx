@@ -50,7 +50,7 @@ export const EventsTable: React.FC<EventsTableProps> = ({ filters }) => {
     return labels[eventType] || eventType;
   };
 
-  const formatEventData = (eventType: string, data: any) => {
+  const formatEventData = (eventType: string, data: Record<string, unknown>) => {
     if (!data || typeof data !== 'object') return null;
     
     switch (eventType) {
