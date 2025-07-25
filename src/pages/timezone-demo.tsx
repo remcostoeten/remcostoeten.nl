@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+// Simple timezone data (outside component to prevent recreating on each render)
+const timezones = {
+  'UTC': { name: 'UTC', offset: 0, countries: ['Greenwich'] },
+  'UTC+1': { name: 'Central European Time', offset: 1, countries: ['Germany', 'France', 'Netherlands'] },
+  'UTC-5': { name: 'Eastern Time', offset: -5, countries: ['New York', 'Toronto'] },
+  'UTC+9': { name: 'Japan Standard Time', offset: 9, countries: ['Japan'] },
+};
+
 // Simple working demo without complex dependencies
 function SimpleTimezoneDemo() {
   const [selectedTimezone, setSelectedTimezone] = useState('UTC+1');
   const [currentTime, setCurrentTime] = useState('');
-
-  // Simple timezone data
-  const timezones = {
-    'UTC': { name: 'UTC', offset: 0, countries: ['Greenwich'] },
-    'UTC+1': { name: 'Central European Time', offset: 1, countries: ['Germany', 'France', 'Netherlands'] },
-    'UTC-5': { name: 'Eastern Time', offset: -5, countries: ['New York', 'Toronto'] },
-    'UTC+9': { name: 'Japan Standard Time', offset: 9, countries: ['Japan'] },
-  };
 
   // Simple time calculation
   function getCurrentTimeInTimezone(timezoneOffset: number) {

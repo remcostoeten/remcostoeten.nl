@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 type TPerformanceMetrics = {
   memoryUsage?: {
@@ -9,6 +9,12 @@ type TPerformanceMetrics = {
   loadTime: number;
   domContentLoaded: number;
   firstContentfulPaint?: number;
+};
+
+type TPerformanceMemory = {
+  usedJSHeapSize: number;
+  totalJSHeapSize: number;
+  jsHeapSizeLimit: number;
 };
 
 export function usePerformance() {
@@ -24,10 +30,10 @@ export function usePerformance() {
 
       // Get memory usage if available (Chrome only)
       if ('memory' in performance) {
-        const memory = (performance as any).memory;
+        const memory = (performance as Performance & { memory: TPerformanceMemory }).memory;
         performanceMetrics.memoryUsage = {
-          used: Math.round(memory.usedJSHeapSize / 1048576), // MB
-          total: Math.round(memory.totalJSHeapSize / 1048576), // MB
+          used: Math.round(memory.usedJSHeapSize / 1048576),
+          total: Math.round(memory.totalJSHeapSize / 1048576),
           percentage: Math.round((memory.usedJSHeapSize / memory.jsHeapSizeLimit) * 100),
         };
       }
@@ -61,16 +67,16 @@ export function usePerformance() {
     };
   }, []);
 
-  function logMemoryWarning() {
+  const logMemoryWarning = useCallback(() => {
     if (metrics?.memoryUsage && metrics.memoryUsage.percentage > 80) {
       console.warn('High memory usage detected:', metrics.memoryUsage);
     }
-  }
+  }, [metrics]);
 
   // Check for memory warnings when metrics update
   useEffect(() => {
     logMemoryWarning();
-  }, [metrics]);
+  }, [logMemoryWarning]);
 
   return {
     metrics,

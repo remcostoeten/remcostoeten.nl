@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
@@ -21,7 +21,7 @@ export function ApiStatusIndicator({
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
   const [isManualChecking, setIsManualChecking] = useState(false);
 
-  async function checkApiStatus() {
+  const checkApiStatus = useCallback(async () => {
     try {
       setStatus('checking');
       const response = await fetch(`${apiUrl}/api/health`, {
@@ -43,7 +43,7 @@ export function ApiStatusIndicator({
       setLastChecked(new Date());
       return false;
     }
-  }
+  }, [apiUrl]);
 
   async function handleManualCheck() {
     setIsManualChecking(true);
@@ -65,7 +65,7 @@ export function ApiStatusIndicator({
     
     const interval = setInterval(checkApiStatus, checkInterval);
     return () => clearInterval(interval);
-  }, [apiUrl, checkInterval]);
+  }, [apiUrl, checkInterval, checkApiStatus]);
 
   function getStatusConfig(status: TApiStatus) {
     switch (status) {

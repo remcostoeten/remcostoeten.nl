@@ -194,7 +194,7 @@ export const useAnalytics = () => {
       });
       hasTrackedSessionStart.current = true;
     }
-  }, []); // Remove trackEventMutation dependency to prevent re-renders
+  }, [trackEventMutation]);
 
   return {
     trackPageView,
@@ -262,11 +262,17 @@ export const usePageViewTracking = () => {
   const { trackPageView } = useAnalytics();
   const currentPath = useRef(window.location.pathname);
   const hasTrackedInitialView = useRef(false);
+  const trackPageViewRef = useRef(trackPageView);
+
+  // Update ref when trackPageView changes
+  useEffect(() => {
+    trackPageViewRef.current = trackPageView;
+  }, [trackPageView]);
 
   useEffect(() => {
     // Only track initial page view once and exclude analytics paths
     if (!hasTrackedInitialView.current && !shouldExcludeFromTracking(window.location.pathname)) {
-      trackPageView(window.location.pathname, document.referrer);
+      trackPageViewRef.current(window.location.pathname, document.referrer);
       hasTrackedInitialView.current = true;
     }
 
@@ -274,7 +280,7 @@ export const usePageViewTracking = () => {
     const handleLocationChange = () => {
       const newPath = window.location.pathname;
       if (newPath !== currentPath.current && !shouldExcludeFromTracking(newPath)) {
-        trackPageView(newPath, currentPath.current);
+        trackPageViewRef.current(newPath, currentPath.current);
         currentPath.current = newPath;
       }
     };
@@ -285,7 +291,7 @@ export const usePageViewTracking = () => {
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
     };
-  }, []); // Remove trackPageView from dependencies to prevent infinite re-renders
+  }, []);
 };
 
 // Hook for scroll depth tracking
@@ -294,11 +300,16 @@ export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 1
   const trackedDepths = useRef(new Set<number>());
   const throttleTimer = useRef<number | null>(null);
   const thresholdsRef = useRef(thresholds);
+  const trackScrollDepthRef = useRef(trackScrollDepth);
 
-  // Update thresholds ref when they change
+  // Update refs when they change
   useEffect(() => {
     thresholdsRef.current = thresholds;
   }, [thresholds]);
+
+  useEffect(() => {
+    trackScrollDepthRef.current = trackScrollDepth;
+  }, [trackScrollDepth]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -322,25 +333,23 @@ export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 1
         thresholdsRef.current.forEach(threshold => {
           if (scrollPercent >= threshold && !trackedDepths.current.has(threshold)) {
             trackedDepths.current.add(threshold);
-            trackScrollDepth(threshold);
+            trackScrollDepthRef.current(threshold);
           }
         });
         
         throttleTimer.current = null;
-      }, 250); // Increased throttle to 250ms to reduce load
+      }, 250);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      // Clear any pending throttle timer
       if (throttleTimer.current) {
         clearTimeout(throttleTimer.current);
         throttleTimer.current = null;
       }
-      // Reset tracked depths when component unmounts
       trackedDepths.current.clear();
     };
-  }, []); // Remove trackScrollDepth from dependencies to prevent re-renders
+  }, []);
 };
