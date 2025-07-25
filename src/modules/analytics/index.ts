@@ -6,7 +6,6 @@ export { DeviceTypesChart } from './components/DeviceTypesChart';
 export { TopPagesTable } from './components/TopPagesTable';
 export { RealTimeStats } from './components/RealTimeStats';
 export { EventsTable } from './components/EventsTable';
-export { LoginForm } from './components/LoginForm';
 
 // Hooks
 export { 
@@ -18,7 +17,6 @@ export {
   usePageCompletionTracking
 } from './hooks/useAnalytics';
 export { useTrack } from './hooks/useTrack';
-export { useAuth } from './hooks/useAuth';
 
 // Providers
 export { AnalyticsProvider, useAnalyticsContext } from './providers/AnalyticsProvider';
