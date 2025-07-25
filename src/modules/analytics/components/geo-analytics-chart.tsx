@@ -79,7 +79,7 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
   
   const totalVisits = chartData.reduce((sum, item) => sum + item.value, 0);
   
-  const customTooltip = ({ active, payload }: any) => {
+  const customTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number; percentage?: number; flag: string } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

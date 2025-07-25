@@ -53,12 +53,16 @@ export function PageViewsChart({ data, loading }: TProps) {
   const secondHalfAvg = secondHalf.reduce((sum, item) => sum + item.pageViews, 0) / secondHalf.length || 0;
   const trendPercentage = firstHalfAvg > 0 ? ((secondHalfAvg - firstHalfAvg) / firstHalfAvg) * 100 : 0;
   
-  const customTooltip = ({ active, payload, label }: any) => {
+  const customTooltip = ({ active, payload, label }: {
+    active?: boolean;
+    payload?: Array<{ name: string; value: number; color: string }>;
+    label?: string;
+  }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-background/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg">
           <p className="font-semibold text-foreground mb-2 text-sm">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry, index: number) => (
             <div key={index} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <div 
