@@ -1,4 +1,4 @@
-export interface AnalyticsEvent {
+export type TAnalyticsEvent = {
   id: string;
   eventType: string;
   page?: string;
@@ -6,17 +6,17 @@ export interface AnalyticsEvent {
   userAgent?: string;
   ipAddress?: string;
   sessionId?: string;
-  userId?: string; // Persistent user identifier
-  data?: Record<string, any>;
+  userId?: string;
+  data?: Record<string, string | number | boolean | string[]>;
   timestamp: Date;
 }
 
-export interface PageView extends AnalyticsEvent {
+export type TPageView = TAnalyticsEvent & {
   eventType: 'page_view';
   page: string;
 }
 
-export interface ButtonClick extends AnalyticsEvent {
+export type TButtonClick = TAnalyticsEvent & {
   eventType: 'button_click';
   data: {
     buttonText: string;
@@ -25,7 +25,7 @@ export interface ButtonClick extends AnalyticsEvent {
   };
 }
 
-export interface ProjectView extends AnalyticsEvent {
+export type TProjectView = TAnalyticsEvent & {
   eventType: 'project_view';
   data: {
     projectId: string;
@@ -33,7 +33,7 @@ export interface ProjectView extends AnalyticsEvent {
   };
 }
 
-export interface ContactFormSubmission extends AnalyticsEvent {
+export type TContactFormSubmission = TAnalyticsEvent & {
   eventType: 'contact_form_submission';
   data: {
     success: boolean;
@@ -41,7 +41,7 @@ export interface ContactFormSubmission extends AnalyticsEvent {
   };
 }
 
-export interface SkillHover extends AnalyticsEvent {
+export type TSkillHover = TAnalyticsEvent & {
   eventType: 'skill_hover';
   data: {
     skillName: string;
@@ -49,15 +49,15 @@ export interface SkillHover extends AnalyticsEvent {
   };
 }
 
-export interface ScrollDepth extends AnalyticsEvent {
+export type TScrollDepth = TAnalyticsEvent & {
   eventType: 'scroll_depth';
   data: {
-    depth: number; // percentage
+    depth: number;
     section?: string;
   };
 }
 
-export interface SessionStart extends AnalyticsEvent {
+export type TSessionStart = TAnalyticsEvent & {
   eventType: 'session_start';
   data: {
     timezone: string;
@@ -67,7 +67,7 @@ export interface SessionStart extends AnalyticsEvent {
   };
 }
 
-export interface ExternalLinkClick extends AnalyticsEvent {
+export type TExternalLinkClick = TAnalyticsEvent & {
   eventType: 'external_link_click';
   data: {
     url: string;
@@ -76,17 +76,17 @@ export interface ExternalLinkClick extends AnalyticsEvent {
   };
 }
 
-export type AnalyticsEventType = 
-  | PageView
-  | ButtonClick
-  | ProjectView
-  | ContactFormSubmission
-  | SkillHover
-  | ScrollDepth
-  | SessionStart
-  | ExternalLinkClick;
+export type TAnalyticsEventType = 
+  | TPageView
+  | TButtonClick
+  | TProjectView
+  | TContactFormSubmission
+  | TSkillHover
+  | TScrollDepth
+  | TSessionStart
+  | TExternalLinkClick;
 
-export interface AnalyticsMetrics {
+export type TAnalyticsMetrics = {
   totalPageViews: number;
   uniqueVisitors: number;
   averageSessionDuration: number;
@@ -122,18 +122,18 @@ export interface AnalyticsMetrics {
   }>;
 }
 
-export interface AnalyticsFilters {
+export type TAnalyticsFilters = {
   startDate?: Date;
   endDate?: Date;
   page?: string;
   eventType?: string;
 }
 
-export interface RealTimeMetrics {
+export type TRealTimeMetrics = {
   activeUsers: number;
   currentPageViews: Array<{
     page: string;
     activeUsers: number;
   }>;
-  recentEvents: AnalyticsEvent[];
+  recentEvents: TAnalyticsEvent[];
 }

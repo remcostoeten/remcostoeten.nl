@@ -2,15 +2,15 @@ import { useCallback } from 'react';
 import { AnalyticsService } from '../services/analyticsService';
 
 // Simple tracking hook - just call track() with event name and optional data
+type TTrackData = Record<string, string | number | boolean | string[]>;
+
 export function useTrack() {
-  const track = useCallback((event: string, data?: any) => {
-    // Get basic info
+  const track = useCallback((event: string, data?: TTrackData) => {
     const sessionId = getSessionId();
     const page = window.location.pathname;
     const referrer = document.referrer;
     const userAgent = navigator.userAgent;
     
-    // Map common event names to proper types
     const eventTypeMap: Record<string, string> = {
       'page': 'page_view',
       'click': 'button_click', 
@@ -29,18 +29,17 @@ export function useTrack() {
       page,
       referrer,
       userAgent,
-      ipAddress: '', // Will be set server-side
+      ipAddress: '',
       sessionId,
       data
     });
   }, []);
 
-  // Convenience methods
   const trackPage = useCallback((page?: string) => {
     track('page', { page: page || window.location.pathname });
   }, [track]);
 
-  const trackClick = useCallback((element: string, data?: any) => {
+  const trackClick = useCallback((element: string, data?: TTrackData) => {
     track('click', { element, ...data });
   }, [track]);
 
@@ -48,7 +47,7 @@ export function useTrack() {
     track('project', { projectId, projectTitle });
   }, [track]);
 
-  const trackForm = useCallback((formType: string, success: boolean, data?: any) => {
+  const trackForm = useCallback((formType: string, success: boolean, data?: TTrackData) => {
     track('form', { formType, success, ...data });
   }, [track]);
 

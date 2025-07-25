@@ -5,7 +5,7 @@ import {
   useAnalytics 
 } from '../hooks/useAnalytics';
 
-interface AnalyticsContextType {
+type TAnalyticsContextType = {
   trackPageView: (page: string, referrer?: string) => void;
   trackButtonClick: (buttonText: string, buttonId?: string, section?: string) => void;
   trackProjectView: (projectId: string, projectTitle: string) => void;
@@ -16,24 +16,22 @@ interface AnalyticsContextType {
   isTracking: boolean;
 }
 
-const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
+const AnalyticsContext = createContext<TAnalyticsContextType | undefined>(undefined);
 
-interface AnalyticsProviderProps {
+type TProps = {
   children: React.ReactNode;
   enableAutoTracking?: boolean;
 }
 
-export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ 
+export function AnalyticsProvider({ 
   children, 
   enableAutoTracking = true 
-}) => {
+}: TProps) {
   const analytics = useAnalytics();
   
-  // Enable automatic page view tracking
-  if (enableAutoTracking) {
-    usePageViewTracking();
-    useScrollDepthTracking();
-  }
+  // Always call hooks unconditionally
+  usePageViewTracking();
+  useScrollDepthTracking();
 
   // Enhanced external link tracking
   useEffect(() => {
@@ -89,7 +87,7 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
     };
   }, [analytics, enableAutoTracking]);
 
-  const contextValue: AnalyticsContextType = {
+  const contextValue: TAnalyticsContextType = {
     trackPageView: analytics.trackPageView,
     trackButtonClick: analytics.trackButtonClick,
     trackProjectView: analytics.trackProjectView,
@@ -105,12 +103,12 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
       {children}
     </AnalyticsContext.Provider>
   );
-};
+}
 
-export const useAnalyticsContext = (): AnalyticsContextType => {
+export function useAnalyticsContext(): TAnalyticsContextType {
   const context = useContext(AnalyticsContext);
   if (!context) {
     throw new Error('useAnalyticsContext must be used within an AnalyticsProvider');
   }
   return context;
-};
+}
