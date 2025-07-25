@@ -8,7 +8,7 @@ import {
   LogOut,
   User
 } from "lucide-react";
-import { useAuthContext } from "@/modules/auth/providers/AuthProvider";
+import { useAuthContext } from 'from "@/modules/auth/providers/AuthProvider"';
 import { toast } from "sonner";
 
 const navigation = [

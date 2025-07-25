@@ -6,6 +6,8 @@ import {
   useTimezone,
   TTimezoneId 
 } from '@/modules/time';
+import { TimeNumberFlow } from './time-number-flow';
+import { NumberFlowTest } from './number-flow-test';
 
 function TimezoneDisplayCard() {
   const { currentTimezone, timeFormat } = useTimezoneContext();
@@ -20,7 +22,7 @@ function TimezoneDisplayCard() {
       <div className="space-y-2">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Current Time:</span>
-          <span className="font-mono font-medium">{currentTime}</span>
+          <TimeNumberFlow time={currentTime} className="font-medium" />
         </div>
         <div className="flex justify-between">
           <span className="text-muted-foreground">Offset:</span>
@@ -158,6 +160,11 @@ export function TimezoneDemo() {
       </TimezoneProvider>
 
       <div>
+        <h3 className="text-lg font-semibold mb-4">NumberFlow Debug Test</h3>
+        <NumberFlowTest />
+      </div>
+
+      <div>
         <h3 className="text-lg font-semibold mb-4">Multiple Timezone Display</h3>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {selectedTimezones.map(timezoneId => (
@@ -194,7 +201,7 @@ function MultiTimezoneCard({ timezoneId }: { timezoneId: TTimezoneId }) {
         <h4 className="font-medium text-sm">{timezoneInfo.name}</h4>
         <span className="text-xs text-muted-foreground">{timezoneInfo.offset}</span>
       </div>
-      <div className="font-mono text-lg font-semibold">{currentTime}</div>
+      <TimeNumberFlow time={currentTime} className="text-lg font-semibold" />
       <div className="text-xs text-muted-foreground mt-1">
         {timezoneInfo.countries[0]}
       </div>

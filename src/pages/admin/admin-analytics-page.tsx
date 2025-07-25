@@ -1,4 +1,4 @@
-import { AnalyticsDashboard } from "@/modules/analytics/components/AnalyticsDashboard";
+import { AnalyticsDashboard } from 'from "@/modules/analytics/components/AnalyticsDashboard"';
 
 export function AdminAnalyticsPage() {
   return (

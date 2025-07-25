@@ -1,4 +1,4 @@
-import { PageLayout } from "@/components/layout/PageLayout";
+// import { PageLayout } from "@/components/layout/PageLayout";
 import { 
   HeroSection, 
   AboutSection, 
@@ -9,13 +9,15 @@ import {
 
 function Index() {
   return (
-    <PageLayout>
-      <HeroSection />
-      <AboutSection />
-      <ProjectsSection />
-      <ContactSection />
-      <TimezoneSection />
-    </PageLayout>
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="container mx-auto px-4 py-8 space-y-16">
+        <HeroSection />
+        <AboutSection />
+        <ProjectsSection />
+        <ContactSection />
+        <TimezoneSection />
+      </div>
+    </div>
   );
 }
 

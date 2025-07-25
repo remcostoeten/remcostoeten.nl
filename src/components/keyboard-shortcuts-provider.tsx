@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useKeyboardShortcuts } from '../hooks/use-keyboard-shortcuts';
 import { createCustomSequenceShortcut } from '../hooks/keyboard-shortcuts-utils';
-import { useAuthContext } from '../modules/auth/providers/AuthProvider';
+import { useAuthContext } from 'from '../modules/auth/providers/auth-provider'';
 
 type TProps = {
   children: React.ReactNode;

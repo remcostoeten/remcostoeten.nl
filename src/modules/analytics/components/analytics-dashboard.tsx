@@ -20,12 +20,12 @@ import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '../../../lib/utils';
 
 import { useAnalyticsMetrics, useRealTimeMetrics } from '../hooks/useAnalytics';
-import { MetricsOverview } from './MetricsOverview';
-import { PageViewsChart } from './PageViewsChart';
-import { TopPagesTable } from './TopPagesTable';
-import { DeviceTypesChart } from './DeviceTypesChart';
-import { RealTimeStats } from './RealTimeStats';
-import { EventsTable } from './EventsTable';
+import { MetricsOverview } from './metrics-overview';
+import { PageViewsChart } from './page-views-chart';
+import { TopPagesTable } from './top-pages-table';
+import { DeviceTypesChart } from './device-types-chart';
+import { RealTimeStats } from './real-time-stats';
+import { EventsTable } from './events-table';
 import type { AnalyticsFilters } from '../types';
 
 interface DateRange {

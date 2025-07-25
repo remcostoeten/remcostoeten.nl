@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuthContext } from "../providers/AuthProvider";
+import { useAuthContext } from 'from "../providers/AuthProvider"';
 import type { TProtectedRouteProps } from "../types/auth-types";
 
 export function ProtectedRoute({ children, fallback }: TProtectedRouteProps) {

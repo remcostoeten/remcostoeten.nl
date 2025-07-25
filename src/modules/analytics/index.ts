@@ -1,11 +1,11 @@
 // Components
-export { AnalyticsDashboard } from './components/AnalyticsDashboard';
-export { MetricsOverview } from './components/MetricsOverview';
-export { PageViewsChart } from './components/PageViewsChart';
-export { DeviceTypesChart } from './components/DeviceTypesChart';
-export { TopPagesTable } from './components/TopPagesTable';
-export { RealTimeStats } from './components/RealTimeStats';
-export { EventsTable } from './components/EventsTable';
+export { AnalyticsDashboard } from './components/analytics-dashboard';
+export { MetricsOverview } from './components/metrics-overview';
+export { PageViewsChart } from './components/page-views-chart';
+export { DeviceTypesChart } from './components/device-types-chart';
+export { TopPagesTable } from './components/top-pages-table';
+export { RealTimeStats } from './components/real-time-stats';
+export { EventsTable } from './components/events-table';
 
 // Hooks
 export { 
@@ -19,7 +19,7 @@ export {
 export { useTrack } from './hooks/useTrack';
 
 // Providers
-export { AnalyticsProvider, useAnalyticsContext } from './providers/AnalyticsProvider';
+export { AnalyticsProvider, useAnalyticsContext } from './providers/analytics-provider';
 
 // Services
 export { AnalyticsService } from './services/analyticsService';

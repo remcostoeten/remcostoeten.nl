@@ -1,5 +1,5 @@
 import { usePerformance } from '@/hooks/use-performance';
-import { ApiStatusIndicator } from './ApiStatusIndicator';
+import { ApiStatusIndicator } from './api-status-indicator';
 
 type TProps = {
   enabled?: boolean;
