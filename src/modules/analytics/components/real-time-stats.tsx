@@ -61,12 +61,12 @@ export const RealTimeStats: React.FC<RealTimeStatsProps> = ({
           {[...Array(3)].map((_, index) => (
             <Card key={index}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
-                <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 bg-muted rounded animate-pulse w-24"></div>
+                <div className="h-8 w-8 bg-muted rounded animate-pulse"></div>
               </CardHeader>
               <CardContent>
-                <div className="h-8 bg-gray-200 rounded animate-pulse w-16 mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded animate-pulse w-32"></div>
+                <div className="h-8 bg-muted rounded animate-pulse w-16 mb-2"></div>
+                <div className="h-3 bg-muted rounded animate-pulse w-32"></div>
               </CardContent>
             </Card>
           ))}
@@ -106,19 +106,19 @@ export const RealTimeStats: React.FC<RealTimeStatsProps> = ({
   return (
     <div className="space-y-6">
       {/* Status Bar */}
-      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+      <div className="flex items-center justify-between p-4 bg-card rounded-lg border border-border">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-gray-700">Live Data</span>
+            <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-card-foreground">Live Data</span>
           </div>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted-foreground">
             Updates every {document.hidden ? '60' : '30'} seconds
           </span>
         </div>
         <div className="flex items-center gap-2">
           {metrics && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               Last updated: {format(new Date(), 'HH:mm:ss')}
             </span>
           )}
@@ -139,77 +139,77 @@ export const RealTimeStats: React.FC<RealTimeStatsProps> = ({
       
       {/* Real-time overview cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
+        <Card className="bg-card border-border hover:border-accent/50 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-card-foreground">
               Active Users
             </CardTitle>
-            <div className="p-2 rounded-lg bg-green-50">
-              <UsersIcon className="h-4 w-4 text-green-600" />
+            <div className="p-2 rounded-lg bg-muted">
+              <UsersIcon className="h-4 w-4 text-accent" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold mb-1">
+            <div className="text-2xl font-bold mb-1 text-card-foreground">
               {metrics?.activeUsers || 0}
             </div>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-muted-foreground">
               Unique users (5 min)
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card border-border hover:border-accent/50 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-card-foreground">
               Active Sessions
             </CardTitle>
-            <div className="p-2 rounded-lg bg-orange-50">
-              <ActivityIcon className="h-4 w-4 text-orange-600" />
+            <div className="p-2 rounded-lg bg-muted">
+              <ActivityIcon className="h-4 w-4 text-accent" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold mb-1">
+            <div className="text-2xl font-bold mb-1 text-card-foreground">
               {metrics?.activeSessions || 0}
             </div>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-muted-foreground">
               Browser sessions (5 min)
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card border-border hover:border-accent/50 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-card-foreground">
               Page Views
             </CardTitle>
-            <div className="p-2 rounded-lg bg-blue-50">
-              <ActivityIcon className="h-4 w-4 text-blue-600" />
+            <div className="p-2 rounded-lg bg-muted">
+              <ActivityIcon className="h-4 w-4 text-accent" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold mb-1">
+            <div className="text-2xl font-bold mb-1 text-card-foreground">
               {metrics?.currentPageViews.reduce((sum, pv) => sum + pv.activeUsers, 0) || 0}
             </div>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-muted-foreground">
               Active page views
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card border-border hover:border-accent/50 transition-colors">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-card-foreground">
               Recent Events
             </CardTitle>
-            <div className="p-2 rounded-lg bg-purple-50">
-              <MousePointerClickIcon className="h-4 w-4 text-purple-600" />
+            <div className="p-2 rounded-lg bg-muted">
+              <MousePointerClickIcon className="h-4 w-4 text-accent" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold mb-1">
+            <div className="text-2xl font-bold mb-1 text-card-foreground">
               {metrics?.recentEvents.length || 0}
             </div>
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-muted-foreground">
               Events in last 5 minutes
             </p>
           </CardContent>

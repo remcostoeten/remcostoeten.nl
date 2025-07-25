@@ -40,3 +40,24 @@
 .read-the-docs {
   color: #888;
 }
+
+.theme-link {
+  color: var(--accent-color, #646cff);
+  font-weight: 500;
+  text-decoration: none;
+  transition: text-decoration 150ms ease;
+}
+
+.theme-link:hover {
+  text-decoration: underline;
+}
+
+.theme-link.with-link::after {
+  content: " 🔗";
+  margin-left: 0.25rem;
+}
+
+.theme-link.with-arrow::after {
+  content: " ↗";
+  margin-left: 0.25rem;
+}

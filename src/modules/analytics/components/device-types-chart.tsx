@@ -29,32 +29,40 @@ type ChartType = 'pie' | 'bar';
 
 const DEVICE_CONFIG = {
   'Desktop': {
-    color: '#3b82f6',
-    gradient: 'from-blue-500 to-blue-600',
+    color: 'hsl(var(--chart-1))',
     icon: MonitorIcon,
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200'
+    bgColor: 'bg-card/50',
+    borderColor: 'border-border',
+    textColor: 'text-foreground',
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary'
   },
   'Mobile': {
-    color: '#10b981',
-    gradient: 'from-emerald-500 to-emerald-600',
+    color: 'hsl(var(--chart-2))',
     icon: SmartphoneIcon,
-    bgColor: 'bg-emerald-50',
-    borderColor: 'border-emerald-200'
+    bgColor: 'bg-card/50',
+    borderColor: 'border-border',
+    textColor: 'text-foreground',
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary'
   },
   'Tablet': {
-    color: '#f59e0b',
-    gradient: 'from-amber-500 to-amber-600',
+    color: 'hsl(var(--chart-3))',
     icon: TabletIcon,
-    bgColor: 'bg-amber-50',
-    borderColor: 'border-amber-200'
+    bgColor: 'bg-card/50',
+    borderColor: 'border-border',
+    textColor: 'text-foreground',
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary'
   },
   'Unknown': {
-    color: '#6b7280',
-    gradient: 'from-gray-500 to-gray-600',
+    color: 'hsl(var(--chart-4))',
     icon: HelpCircleIcon,
-    bgColor: 'bg-gray-50',
-    borderColor: 'border-gray-200'
+    bgColor: 'bg-card/50',
+    borderColor: 'border-border',
+    textColor: 'text-foreground',
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary'
   },
 };
 
@@ -76,20 +84,20 @@ export function DeviceTypesChart({ data, loading }: TProps) {
       const IconComponent = deviceConfig?.icon || HelpCircleIcon;
       
       return (
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-4 shadow-lg">
+        <div className="bg-background/95 backdrop-blur-sm border border-border rounded-xl p-4 shadow-lg">
           <div className="flex items-center gap-2 mb-2">
             <div className={`p-1.5 rounded-lg bg-gradient-to-br ${deviceConfig?.gradient || 'from-gray-500 to-gray-600'}`}>
               <IconComponent className="w-4 h-4 text-white" />
             </div>
-            <span className="font-semibold text-gray-900">{data.type}</span>
+            <span className="font-semibold text-foreground">{data.type}</span>
           </div>
           <div className="space-y-1">
             <div className="flex justify-between items-center gap-4">
-              <span className="text-sm text-gray-600">Visits:</span>
+              <span className="text-sm text-muted-foreground">Visits:</span>
               <span className="font-semibold">{data.count.toLocaleString()}</span>
             </div>
             <div className="flex justify-between items-center gap-4">
-              <span className="text-sm text-gray-600">Share:</span>
+              <span className="text-sm text-muted-foreground">Share:</span>
               <span className="font-semibold">{percentage}%</span>
             </div>
           </div>
@@ -101,11 +109,11 @@ export function DeviceTypesChart({ data, loading }: TProps) {
 
   if (loading) {
     return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-indigo-100 rounded-lg">
-              <PieChartIcon className="w-5 h-5 text-indigo-600" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <PieChartIcon className="w-5 h-5 text-primary" />
             </div>
             Device Types
           </CardTitle>
@@ -113,9 +121,9 @@ export function DeviceTypesChart({ data, loading }: TProps) {
             Distribution of visitor device types
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="h-80 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl animate-pulse flex items-center justify-center">
-            <PieChartIcon className="w-8 h-8 text-gray-400 animate-spin" />
+        <CardContent>
+          <div className="h-80 bg-muted/50 rounded-lg animate-pulse flex items-center justify-center">
+            <PieChartIcon className="w-8 h-8 text-muted-foreground animate-spin" />
           </div>
         </CardContent>
       </Card>
@@ -124,11 +132,11 @@ export function DeviceTypesChart({ data, loading }: TProps) {
 
   if (!data || data.length === 0 || total === 0) {
     return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-indigo-100 rounded-lg">
-              <PieChartIcon className="w-5 h-5 text-indigo-600" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <PieChartIcon className="w-5 h-5 text-primary" />
             </div>
             Device Types
           </CardTitle>
@@ -136,10 +144,10 @@ export function DeviceTypesChart({ data, loading }: TProps) {
             Distribution of visitor device types
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="h-80 flex items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+        <CardContent>
+          <div className="h-80 flex items-center justify-center text-muted-foreground bg-muted/20 rounded-lg">
             <div className="text-center">
-              <PieChartIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <PieChartIcon className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
               <p>No device data available</p>
             </div>
           </div>
@@ -173,16 +181,16 @@ export function DeviceTypesChart({ data, loading }: TProps) {
   };
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg bg-white">
-      <CardHeader className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-b">
+    <Card>
+      <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg shadow-lg">
-              <PieChartIcon className="w-5 h-5 text-white" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <PieChartIcon className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-gray-900">Device Types</CardTitle>
-              <CardDescription className="text-gray-600">
+              <CardTitle>Device Types</CardTitle>
+              <CardDescription>
                 Distribution of visitor device types
               </CardDescription>
             </div>
@@ -210,24 +218,13 @@ export function DeviceTypesChart({ data, loading }: TProps) {
         </div>
       </CardHeader>
       
-      <CardContent className="p-6 bg-gradient-to-br from-gray-50/30 to-white">
+      <CardContent>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Chart */}
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === 'pie' ? (
                 <PieChart>
-                  <defs>
-                    {sortedData.map((entry, index) => {
-                      const deviceConfig = DEVICE_CONFIG[entry.type as keyof typeof DEVICE_CONFIG];
-                      return (
-                        <linearGradient key={`gradient-${index}`} id={`deviceGradient-${index}`} x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stopColor={deviceConfig?.color || '#6b7280'} stopOpacity={0.8} />
-                          <stop offset="100%" stopColor={deviceConfig?.color || '#6b7280'} stopOpacity={1} />
-                        </linearGradient>
-                      );
-                    })}
-                  </defs>
                   <Pie
                     data={sortedData}
                     cx="50%"
@@ -239,7 +236,8 @@ export function DeviceTypesChart({ data, loading }: TProps) {
                     fill="#8884d8"
                     dataKey="count"
                     animationBegin={0}
-                    animationDuration={1200}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
                     onMouseEnter={(_, index) => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
@@ -249,14 +247,14 @@ export function DeviceTypesChart({ data, loading }: TProps) {
                       return (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={`url(#deviceGradient-${index})`}
+                          fill={deviceConfig?.color || '#6b7280'}
                           stroke={deviceConfig?.color || '#6b7280'}
                           strokeWidth={isHovered ? 3 : 1}
                           style={{
-                            filter: isHovered ? 'brightness(1.1)' : 'none',
-                            transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                            filter: isHovered ? 'brightness(1.15) drop-shadow(0 4px 8px rgba(0,0,0,0.1))' : 'none',
+                            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
                             transformOrigin: 'center',
-                            transition: 'all 0.2s ease-in-out'
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                           }}
                         />
                       );
@@ -266,26 +264,15 @@ export function DeviceTypesChart({ data, loading }: TProps) {
                 </PieChart>
               ) : (
                 <BarChart data={sortedData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <defs>
-                    {sortedData.map((entry, index) => {
-                      const deviceConfig = DEVICE_CONFIG[entry.type as keyof typeof DEVICE_CONFIG];
-                      return (
-                        <linearGradient key={`barGradient-${index}`} id={`barGradient-${entry.type}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={deviceConfig?.color || '#6b7280'} stopOpacity={0.9} />
-                          <stop offset="95%" stopColor={deviceConfig?.color || '#6b7280'} stopOpacity={0.6} />
-                        </linearGradient>
-                      );
-                    })}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" opacity={0.6} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                   <XAxis 
                     dataKey="type" 
-                    tick={{ fontSize: 12, fill: '#64748b' }}
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                     axisLine={false}
                     tickLine={false}
                   />
                   <YAxis 
-                    tick={{ fontSize: 12, fill: '#64748b' }}
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -293,12 +280,19 @@ export function DeviceTypesChart({ data, loading }: TProps) {
                   <Bar 
                     dataKey="count" 
                     radius={[8, 8, 0, 0]}
-                    animationDuration={1200}
+                    animationDuration={1500}
                     animationBegin={0}
+                    animationEasing="ease-out"
                   >
-                    {sortedData.map((entry, index) => (
-                      <Cell key={`bar-cell-${index}`} fill={`url(#barGradient-${entry.type})`} />
-                    ))}
+                    {sortedData.map((entry, index) => {
+                      const deviceConfig = DEVICE_CONFIG[entry.type as keyof typeof DEVICE_CONFIG];
+                      return (
+                        <Cell 
+                          key={`bar-cell-${index}`} 
+                          fill={deviceConfig?.color || '#6b7280'}
+                        />
+                      );
+                    })}
                   </Bar>
                 </BarChart>
               )}
@@ -307,7 +301,7 @@ export function DeviceTypesChart({ data, loading }: TProps) {
           
           {/* Device Stats */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900 mb-4">Device Breakdown</h4>
+            <h4 className="font-semibold text-foreground mb-4">Device Breakdown</h4>
             <div className="space-y-3">
               {sortedData.map((item, index) => {
                 const percentage = ((item.count / total) * 100).toFixed(1);
@@ -327,12 +321,12 @@ export function DeviceTypesChart({ data, loading }: TProps) {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg bg-gradient-to-br ${deviceConfig?.gradient || 'from-gray-500 to-gray-600'} shadow-sm`}>
-                          <IconComponent className="w-4 h-4 text-white" />
+                        <div className={`p-2 rounded-lg ${deviceConfig?.iconBg} shadow-sm`}>
+                          <IconComponent className={`w-4 h-4 ${deviceConfig?.iconColor}`} />
                         </div>
                         <div>
-                          <span className="font-medium text-gray-900">{item.type}</span>
-                          <p className="text-sm text-gray-600">{percentage}% of traffic</p>
+                          <span className={`font-medium ${deviceConfig?.textColor}`}>{item.type}</span>
+                          <p className={`text-sm ${deviceConfig?.textColor}/70`}>{percentage}% of traffic</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -344,7 +338,7 @@ export function DeviceTypesChart({ data, loading }: TProps) {
                     
                     {/* Progress bar */}
                     <div className="mt-3">
-                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                      <div className="w-full bg-background/50 rounded-full h-2 overflow-hidden">
                         <div 
                           className="h-2 rounded-full transition-all duration-1000 ease-out"
                           style={{
@@ -360,10 +354,10 @@ export function DeviceTypesChart({ data, loading }: TProps) {
             </div>
             
             {/* Total Summary */}
-            <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border">
+            <div className="mt-6 p-4 bg-gradient-to-r from-purple-950 to-pink-900 border-purple-800 rounded-xl border">
               <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-900">Total Visits</span>
-                <Badge variant="default" className="text-lg px-3 py-1">
+                <span className="font-medium text-purple-200">Total Visits</span>
+                <Badge variant="default" className="text-lg px-3 py-1 bg-purple-800 text-purple-100">
                   {total.toLocaleString()}
                 </Badge>
               </div>

@@ -1,15 +1,12 @@
 import React from 'react';
-import { useKeyboardShortcuts } from '../hooks/use-keyboard-shortcuts';
+import { useKeyboardShortcutsContext } from './keyboard-shortcuts-provider';
 
 type TProps = {
   className?: string;
 };
 
 export function KeyboardShortcutIndicator({ className = '' }: TProps) {
-  const { currentSequence, isRecording } = useKeyboardShortcuts([], {
-    debug: false,
-    ignoreInputs: true,
-  });
+  const { currentSequence, isRecording } = useKeyboardShortcutsContext();
 
   if (!isRecording || currentSequence.length === 0) {
     return null;
@@ -23,17 +20,17 @@ export function KeyboardShortcutIndicator({ className = '' }: TProps) {
 
   return (
     <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
-      <div className="bg-gray-900/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg shadow-lg border border-gray-700">
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-300">Shortcut:</span>
-          <div className="flex items-center gap-1">
+      <div className="bg-background/95 backdrop-blur-md text-foreground px-4 py-3 rounded-xl shadow-2xl border border-border/50 ring-1 ring-primary/20">
+        <div className="flex items-center gap-3 text-sm">
+          <span className="text-muted-foreground font-medium">Shortcut:</span>
+          <div className="flex items-center gap-2">
             {displaySequence.map((key, index) => (
               <React.Fragment key={index}>
-                <kbd className="bg-gray-700 px-2 py-1 rounded text-xs font-mono">
+                <kbd className="bg-gradient-to-b from-primary/20 to-primary/30 border border-primary/40 text-primary shadow-md px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold tracking-wider animate-pulse">
                   {key}
                 </kbd>
                 {index < displaySequence.length - 1 && (
-                  <span className="text-gray-400">→</span>
+                  <span className="text-primary/60 text-lg">→</span>
                 )}
               </React.Fragment>
             ))}

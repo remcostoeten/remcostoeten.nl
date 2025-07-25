@@ -118,10 +118,10 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-red-600 mb-2">
+              <h3 className="text-lg font-semibold text-destructive mb-2">
                 Error Loading Analytics
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-muted-foreground mb-4">
                 Failed to load analytics data. Please try again.
               </p>
               <Button onClick={refreshAllData} variant="outline">
@@ -136,23 +136,21 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
   }
 
   return (
-    <div className={hideHeader ? "space-y-6" : "p-6 space-y-6"}>
+    <div className={hideHeader ? "px-4 space-y-4" : "p-4 space-y-4"}>
       {/* Header */}
       {!hideHeader && (
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-            <p className="text-gray-600">
+            <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
+            <p className="text-sm text-muted-foreground">
               Track your portfolio's performance and user engagement
             </p>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button onClick={refreshAllData} variant="outline" size="sm">
-              <RefreshCwIcon className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
+          <Button onClick={refreshAllData} variant="outline" size="sm">
+            <RefreshCwIcon className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
         </div>
       )}
       
@@ -165,35 +163,32 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
         </div>
       )}
 
-      {/* Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Filters</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Date Range Picker */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Date Range</label>
-              <div className="flex flex-wrap gap-2 mb-2">
+      {/* Compact Filters */}
+      <Card className="p-3">
+        <div className="flex flex-wrap items-end gap-3">
+          {/* Date Range Picker */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Date Range</label>
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1">
                 {predefinedRanges.map((range) => (
                   <Button
                     key={range.label}
                     variant="outline"
                     size="sm"
                     onClick={() => handleDateRangeSelect(range)}
-                    className="text-xs"
+                    className="text-xs h-7 px-2"
                   >
                     {range.label}
                   </Button>
                 ))}
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="justify-start text-left font-normal">
-                      <CalendarIcon className="w-4 h-4 mr-2" />
-                      {format(dateRange.from, 'MMM dd, yyyy')}
+                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                      <CalendarIcon className="w-3 h-3 mr-1" />
+                      {format(dateRange.from, 'MMM dd')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -208,9 +203,9 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
                 
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="justify-start text-left font-normal">
-                      <CalendarIcon className="w-4 h-4 mr-2" />
-                      {format(dateRange.to, 'MMM dd, yyyy')}
+                    <Button variant="outline" size="sm" className="h-7 px-2 text-xs">
+                      <CalendarIcon className="w-3 h-3 mr-1" />
+                      {format(dateRange.to, 'MMM dd')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -224,43 +219,43 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
                 </Popover>
               </div>
             </div>
-
-            {/* Page Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Page</label>
-              <Select value={selectedPage} onValueChange={setSelectedPage}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select page" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Pages</SelectItem>
-                  <SelectItem value="/">Home</SelectItem>
-                  <SelectItem value="/projects">Projects</SelectItem>
-                  <SelectItem value="/contact">Contact</SelectItem>
-                  <SelectItem value="/about">About</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Event Type Filter */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Event Type</label>
-              <Select value={selectedEventType} onValueChange={setSelectedEventType}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select event type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Events</SelectItem>
-                  <SelectItem value="page_view">Page Views</SelectItem>
-                  <SelectItem value="button_click">Button Clicks</SelectItem>
-                  <SelectItem value="project_view">Project Views</SelectItem>
-                  <SelectItem value="contact_form_submission">Form Submissions</SelectItem>
-                  <SelectItem value="scroll_depth">Scroll Depth</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
-        </CardContent>
+
+          {/* Page Filter */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Page</label>
+            <Select value={selectedPage} onValueChange={setSelectedPage}>
+              <SelectTrigger className="w-32 h-7 text-xs">
+                <SelectValue placeholder="All Pages" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Pages</SelectItem>
+                <SelectItem value="/">Home</SelectItem>
+                <SelectItem value="/projects">Projects</SelectItem>
+                <SelectItem value="/contact">Contact</SelectItem>
+                <SelectItem value="/about">About</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Event Type Filter */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-muted-foreground">Event Type</label>
+            <Select value={selectedEventType} onValueChange={setSelectedEventType}>
+              <SelectTrigger className="w-36 h-7 text-xs">
+                <SelectValue placeholder="All Events" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Events</SelectItem>
+                <SelectItem value="page_view">Page Views</SelectItem>
+                <SelectItem value="button_click">Button Clicks</SelectItem>
+                <SelectItem value="project_view">Project Views</SelectItem>
+                <SelectItem value="contact_form_submission">Form Submissions</SelectItem>
+                <SelectItem value="scroll_depth">Scroll Depth</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </Card>
 
       {/* Dashboard Content */}
@@ -318,7 +313,7 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
                 {metricsLoading ? (
                   <div className="space-y-2">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                      <div key={i} className="h-4 bg-muted rounded animate-pulse"></div>
                     ))}
                   </div>
                 ) : (
@@ -331,7 +326,7 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
                         <Badge variant="secondary">{referrer.visits}</Badge>
                       </div>
                     )) || (
-                      <p className="text-gray-500 text-sm">No referrer data available</p>
+                      <p className="text-muted-foreground text-sm">No referrer data available</p>
                     )}
                   </div>
                 )}
@@ -373,7 +368,7 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
                 {metricsLoading ? (
                   <div className="space-y-2">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                      <div key={i} className="h-4 bg-muted rounded animate-pulse"></div>
                     ))}
                   </div>
                 ) : (
@@ -386,7 +381,7 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
                         <Badge variant="secondary">{project.views} views</Badge>
                       </div>
                     )) || (
-                      <p className="text-gray-500 text-sm">No project data available</p>
+                      <p className="text-muted-foreground text-sm">No project data available</p>
                     )}
                   </div>
                 )}
@@ -403,8 +398,8 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
               <CardContent>
                 {metricsLoading ? (
                   <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-4 bg-muted rounded animate-pulse"></div>
+                    <div className="h-4 bg-muted rounded animate-pulse"></div>
                   </div>
                 ) : (
                   <div className="space-y-4">

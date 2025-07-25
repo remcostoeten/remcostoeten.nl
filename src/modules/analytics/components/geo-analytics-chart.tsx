@@ -198,14 +198,6 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
             <ResponsiveContainer width="100%" height="100%">
               {chartType === 'pie' ? (
                 <PieChart>
-                  <defs>
-                    {chartData.map((entry, index) => (
-                      <linearGradient key={`gradient-${index}`} id={`geoGradient-${index}`} x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stopColor={entry.color} stopOpacity={0.8} />
-                        <stop offset="100%" stopColor={entry.color} stopOpacity={1} />
-                      </linearGradient>
-                    ))}
-                  </defs>
                   <Pie
                     data={chartData}
                     cx="50%"
@@ -214,7 +206,8 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
                     innerRadius={40}
                     dataKey="value"
                     animationBegin={0}
-                    animationDuration={1200}
+                    animationDuration={1500}
+                    animationEasing="ease-out"
                     onMouseEnter={(_, index) => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
                   >
@@ -223,14 +216,14 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
                       return (
                         <Cell 
                           key={`cell-${index}`} 
-                          fill={`url(#geoGradient-${index})`}
+                          fill={entry.color}
                           stroke={entry.color}
                           strokeWidth={isHovered ? 3 : 1}
                           style={{
-                            filter: isHovered ? 'brightness(1.1)' : 'none',
-                            transform: isHovered ? 'scale(1.02)' : 'scale(1)',
+                            filter: isHovered ? 'brightness(1.15) drop-shadow(0 4px 8px rgba(0,0,0,0.1))' : 'none',
+                            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
                             transformOrigin: 'center',
-                            transition: 'all 0.2s ease-in-out'
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
                           }}
                         />
                       );
@@ -240,18 +233,10 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
                 </PieChart>
               ) : (
                 <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <defs>
-                    {chartData.map((entry, index) => (
-                      <linearGradient key={`barGradient-${index}`} id={`barGradient-${entry.name}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={entry.color} stopOpacity={0.9} />
-                        <stop offset="95%" stopColor={entry.color} stopOpacity={0.6} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" opacity={0.6} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                   <XAxis 
                     dataKey="name" 
-                    tick={{ fontSize: 12, fill: '#64748b' }}
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                     axisLine={false}
                     tickLine={false}
                     angle={-45}
@@ -259,7 +244,7 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
                     height={80}
                   />
                   <YAxis 
-                    tick={{ fontSize: 12, fill: '#64748b' }}
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
                     axisLine={false}
                     tickLine={false}
                   />
@@ -267,11 +252,12 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
                   <Bar 
                     dataKey="value" 
                     radius={[8, 8, 0, 0]}
-                    animationDuration={1200}
+                    animationDuration={1500}
                     animationBegin={0}
+                    animationEasing="ease-out"
                   >
                     {chartData.map((entry, index) => (
-                      <Cell key={`bar-cell-${index}`} fill={`url(#barGradient-${entry.name})`} />
+                      <Cell key={`bar-cell-${index}`} fill={entry.color} />
                     ))}
                   </Bar>
                 </BarChart>

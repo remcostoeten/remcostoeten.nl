@@ -37,12 +37,12 @@ function createSiteConfig(): TSiteConfig {
   
   return {
     site: {
-      title: env.VITE_SITE_TITLE || "Portfolio Site",
-      description: env.VITE_SITE_DESCRIPTION || "A modern portfolio website",
-      url: env.VITE_SITE_URL || "https://example.com",
+      title: env.VITE_SITE_TITLE || "",
+      description: env.VITE_SITE_DESCRIPTION || "",
+      url: env.VITE_SITE_URL || "",
     },
     contact: {
-      email: env.VITE_CONTACT_EMAIL || "contact@example.com",
+      email: env.VITE_CONTACT_EMAIL || "",
     },
     social: {
       x: env.VITE_SOCIAL_X || "",
@@ -51,7 +51,7 @@ function createSiteConfig(): TSiteConfig {
       telegram: env.VITE_SOCIAL_TELEGRAM || "",
     },
     analytics: {
-      adminPassword: env.VITE_ANALYTICS_PASSWORD || "change-me",
+      adminPassword: env.VITE_ANALYTICS_PASSWORD || "",
       sessionTimeout: 24 * 60 * 60 * 1000,
       realtimeInterval: 30 * 1000,
       maxLoginAttempts: 5,
@@ -81,25 +81,25 @@ export function getSiteConfig(): TSiteConfig {
 
 export function isProductionConfigured(): boolean {
   return (
-    SITE_CONFIG.analytics.adminPassword !== "change-me" &&
-    SITE_CONFIG.site.url !== "https://example.com" &&
-    SITE_CONFIG.contact.email !== "contact@example.com"
+    SITE_CONFIG.analytics.adminPassword !== "" && 
+    SITE_CONFIG.site.url !== "" &&
+    SITE_CONFIG.contact.email !== ""
   );
 }
 
 export function getConfigWarnings(): string[] {
   const warnings: string[] = [];
   
-  if (SITE_CONFIG.analytics.adminPassword === "change-me") {
-    warnings.push("⚠️ Default analytics password in use! Set VITE_ANALYTICS_PASSWORD environment variable");
+  if (!SITE_CONFIG.analytics.adminPassword) {
+    warnings.push("⚠️ Analytics password not configured! Set VITE_ANALYTICS_PASSWORD environment variable");
   }
   
-  if (SITE_CONFIG.site.url === "https://example.com") {
-    warnings.push("⚠️ Default site URL in use! Set NEXT_PUBLIC_SITE_URL environment variable");
+  if (!SITE_CONFIG.site.url) {
+    warnings.push("⚠️ Site URL not configured! Set VITE_SITE_URL environment variable");
   }
   
-  if (SITE_CONFIG.contact.email === "contact@example.com") {
-    warnings.push("⚠️ Default contact email in use! Set NEXT_PUBLIC_CONTACT_EMAIL environment variable");
+  if (!SITE_CONFIG.contact.email) {
+    warnings.push("⚠️ Contact email not configured! Set VITE_CONTACT_EMAIL environment variable");
   }
   
   return warnings;

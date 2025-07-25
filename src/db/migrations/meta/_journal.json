@@ -8,6 +8,13 @@
       "when": 1753438331765,
       "tag": "0000_yielding_calypso",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1753449925259,
+      "tag": "0001_wise_blade",
+      "breakpoints": true
     }
   ]
 }

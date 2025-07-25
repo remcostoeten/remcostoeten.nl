@@ -1,12 +1,29 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, createContext, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useKeyboardShortcuts } from '../hooks/use-keyboard-shortcuts';
 import { createCustomSequenceShortcut } from '../hooks/keyboard-shortcuts-utils';
+import type { TKeystroke } from '../hooks/use-keyboard-shortcuts';
 // import { useAuthContext } from '../modules/auth/providers/auth-provider';
+
+type TKeyboardShortcutsContext = {
+  currentSequence: TKeystroke[];
+  isRecording: boolean;
+  matchedShortcutId: string | null;
+};
 
 type TProps = {
   children: React.ReactNode;
 };
+
+const KeyboardShortcutsContext = createContext<TKeyboardShortcutsContext | null>(null);
+
+export function useKeyboardShortcutsContext() {
+  const context = useContext(KeyboardShortcutsContext);
+  if (!context) {
+    throw new Error('useKeyboardShortcutsContext must be used within KeyboardShortcutsProvider');
+  }
+  return context;
+}
 
 export function KeyboardShortcutsProvider({ children }: TProps) {
   const navigate = useNavigate();
@@ -86,12 +103,22 @@ export function KeyboardShortcutsProvider({ children }: TProps) {
     return shortcutList;
   }, [navigate, location.pathname, user]);
 
-  useKeyboardShortcuts(shortcuts, {
+  const shortcutState = useKeyboardShortcuts(shortcuts, {
     debug: false,
     ignoreInputs: true,
     preventDefaultOnMatch: true,
     sequenceTimeout: 2000, // Give 2 seconds for the sequence
   });
 
-  return <>{children}</>;
+  const contextValue: TKeyboardShortcutsContext = {
+    currentSequence: shortcutState.currentSequence,
+    isRecording: shortcutState.isRecording,
+    matchedShortcutId: shortcutState.matchedShortcutId,
+  };
+
+  return (
+    <KeyboardShortcutsContext.Provider value={contextValue}>
+      {children}
+    </KeyboardShortcutsContext.Provider>
+  );
 }

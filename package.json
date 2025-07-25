@@ -24,6 +24,7 @@
     "analytics:setup": "node scripts/setup-analytics.js",
     "analytics:start": "npm run db:up && npm run db:push",
     "analytics:dashboard": "echo 'Visit http://localhost:3333/analytics to see the dashboard'",
+    "analytics:test-geo": "npx tsx scripts/test-geo-analytics.ts",
     "deploy": "./deploy.sh",
     "deploy:check": "npm run build && npm run lint",
     "deploy:setup-db": "npx tsx scripts/setup-production-db.ts",

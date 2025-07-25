@@ -12,19 +12,19 @@ export function ContactSection() {
       Feel free to explore my work and{" "}
       <a 
         href="mailto:remco@remcostoeten.nl" 
-        className="text-accent hover:underline font-medium"
+        className="theme-link with-arrow"
       >
-        contact me ↗
-      </a>{" "}
+        contact me
+      </a>
       or check out my{" "}
       <a 
         href="https://remcostoeten.nl" 
         target="_blank" 
         rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium"
+        className="theme-link with-arrow"
       >
-        website ↗
-      </a>{" "}
+        website
+      </a>
       if you'd like to collaborate on interesting projects or discuss technology and development practices.
     </motion.p>
   );

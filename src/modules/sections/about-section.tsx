@@ -8,17 +8,11 @@ export function AboutSection() {
       {...ANIMATION_CONFIGS.staggered(0.1)}
     >
       With extensive experience in{" "}
-      <span 
-        className="font-medium px-1 py-0.5 rounded"
-        style={{ backgroundColor: 'hsl(var(--highlight-frontend) / 0.2)', color: 'hsl(var(--highlight-frontend))' }}
-      >
+      <span className="highlight">
         TypeScript and React & Next.js
-      </span>{" "}
+      </span>
       I specialize in building scalable web applications, from Magento shops to modern SaaS platforms. Currently working on an{" "}
-      <span 
-        className="font-medium px-1 py-0.5 rounded"
-        style={{ backgroundColor: 'hsl(var(--highlight-product) / 0.2)', color: 'hsl(var(--highlight-product))' }}
-      >
+      <span className="highlight">
         LMS system for Dutch MBO students
       </span>
       .

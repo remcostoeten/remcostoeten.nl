@@ -52,7 +52,10 @@ export class AnalyticsService {
         popularProjects: [],
         contactFormStats: { submissions: 0, successRate: 0 },
         hourlyActivity: [],
-        dailyActivity: []
+        dailyActivity: [],
+        topCountries: [],
+        topRegions: [],
+        topCities: []
       };
     }
   }

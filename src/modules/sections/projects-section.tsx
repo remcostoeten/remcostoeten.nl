@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { SOCIAL_LINKS } from "@/modules/contact";
-import { SIMPLE_PROJECTS } from "@/modules/projects";
 
 export function ProjectsSection() {
   return (
@@ -15,24 +14,21 @@ export function ProjectsSection() {
         href="https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication" 
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium"
+        className="theme-link with-arrow"
       >
-        Roll Your Own Authentication ↗
-      </a>{" "}
+        Roll Your Own Authentication
+      </a>
       and{" "}
       <a 
         href="https://github.com/remcostoeten/Turso-db-creator-auto-retrieve-env-credentials" 
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium"
+        className="theme-link with-arrow"
       >
-        Turso DB Creator CLI ↗
-      </a>{" "}
+        Turso DB Creator CLI
+      </a>
       and various{" "}
-      <span 
-        className="font-medium px-1 py-0.5 rounded"
-        style={{ backgroundColor: 'hsl(var(--highlight-frontend) / 0.2)', color: 'hsl(var(--highlight-frontend))' }}
-      >
+      <span className="highlight">
         CLI tools & automation scripts
       </span>
       . More projects and experiments can be found on{" "}
@@ -40,9 +36,9 @@ export function ProjectsSection() {
         href={SOCIAL_LINKS.github} 
         target="_blank" 
         rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium"
+        className="theme-link with-arrow"
       >
-        GitHub ↗
+        GitHub
       </a>
       .
     </motion.p>

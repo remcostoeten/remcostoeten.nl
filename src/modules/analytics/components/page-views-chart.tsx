@@ -56,18 +56,18 @@ export function PageViewsChart({ data, loading }: TProps) {
   const customTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl p-4 shadow-lg">
-          <p className="font-semibold text-gray-900 mb-2">{label}</p>
+        <div className="bg-background/95 backdrop-blur-sm border border-border rounded-lg p-3 shadow-lg">
+          <p className="font-semibold text-foreground mb-2 text-sm">{label}</p>
           {payload.map((entry: any, index: number) => (
-            <div key={index} className="flex items-center justify-between gap-4">
+            <div key={index} className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2">
                 <div 
-                  className="w-3 h-3 rounded-full" 
+                  className="w-2 h-2 rounded-full" 
                   style={{ backgroundColor: entry.color }}
                 />
-                <span className="text-sm text-gray-600">{entry.name}</span>
+                <span className="text-xs text-muted-foreground">{entry.name}</span>
               </div>
-              <span className="font-semibold" style={{ color: entry.color }}>
+              <span className="font-semibold text-xs" style={{ color: entry.color }}>
                 {entry.value.toLocaleString()}
               </span>
             </div>
@@ -80,11 +80,11 @@ export function PageViewsChart({ data, loading }: TProps) {
 
   if (loading) {
     return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b">
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <BarChart3Icon className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <BarChart3Icon className="w-5 h-5 text-primary" />
             </div>
             Page Views Over Time
           </CardTitle>
@@ -92,9 +92,9 @@ export function PageViewsChart({ data, loading }: TProps) {
             Daily page views and unique visitors
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="h-80 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl animate-pulse flex items-center justify-center">
-            <ActivityIcon className="w-8 h-8 text-gray-400 animate-spin" />
+        <CardContent>
+          <div className="h-80 bg-muted/50 rounded-lg animate-pulse flex items-center justify-center">
+            <ActivityIcon className="w-8 h-8 text-muted-foreground animate-spin" />
           </div>
         </CardContent>
       </Card>
@@ -103,11 +103,11 @@ export function PageViewsChart({ data, loading }: TProps) {
 
   if (!data || data.length === 0) {
     return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b">
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <BarChart3Icon className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <BarChart3Icon className="w-5 h-5 text-primary" />
             </div>
             Page Views Over Time
           </CardTitle>
@@ -115,10 +115,10 @@ export function PageViewsChart({ data, loading }: TProps) {
             Daily page views and unique visitors
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="h-80 flex items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+        <CardContent>
+          <div className="h-80 flex items-center justify-center text-muted-foreground bg-muted/20 rounded-lg">
             <div className="text-center">
-              <BarChart3Icon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <BarChart3Icon className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
               <p>No data available for the selected period</p>
             </div>
           </div>
@@ -128,16 +128,16 @@ export function PageViewsChart({ data, loading }: TProps) {
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg bg-white">
-      <CardHeader className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b">
+    <Card>
+      <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-lg">
-              <BarChart3Icon className="w-5 h-5 text-white" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <BarChart3Icon className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-gray-900">Page Views Over Time</CardTitle>
-              <CardDescription className="text-gray-600">
+              <CardTitle>Page Views Over Time</CardTitle>
+              <CardDescription>
                 Daily page views and unique visitors
               </CardDescription>
             </div>
@@ -164,11 +164,11 @@ export function PageViewsChart({ data, loading }: TProps) {
         
         {/* Stats Overview */}
         <div className="grid grid-cols-3 gap-4 mt-4">
-          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border">
+          <div className="bg-muted/30 backdrop-blur-sm rounded-lg p-3 border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 mb-1">Avg Page Views</p>
-                <p className="text-lg font-bold text-gray-900">{Math.round(avgPageViews).toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mb-1">Avg Page Views</p>
+                <p className="text-lg font-bold text-foreground">{Math.round(avgPageViews).toLocaleString()}</p>
               </div>
               <div className="text-right">
                 <div className={`flex items-center gap-1 ${
@@ -183,41 +183,31 @@ export function PageViewsChart({ data, loading }: TProps) {
             </div>
           </div>
           
-          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border">
+          <div className="bg-muted/30 backdrop-blur-sm rounded-lg p-3 border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 mb-1">Unique Visitors</p>
-                <p className="text-lg font-bold text-gray-900">{Math.round(avgUniqueVisitors).toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mb-1">Unique Visitors</p>
+                <p className="text-lg font-bold text-foreground">{Math.round(avgUniqueVisitors).toLocaleString()}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border">
+          <div className="bg-muted/30 backdrop-blur-sm rounded-lg p-3 border">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600 mb-1">Total Views</p>
-                <p className="text-lg font-bold text-gray-900">{totalPageViews.toLocaleString()}</p>
+                <p className="text-xs text-muted-foreground mb-1">Total Views</p>
+                <p className="text-lg font-bold text-foreground">{totalPageViews.toLocaleString()}</p>
               </div>
             </div>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="p-6 bg-gradient-to-br from-gray-50/30 to-white">
+      <CardContent>
         <div className="h-80 relative">
           <ResponsiveContainer width="100%" height="100%">
             {chartType === 'area' ? (
               <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="pageViewsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                  </linearGradient>
-                  <linearGradient id="uniqueVisitorsGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
-                  </linearGradient>
-                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" opacity={0.6} />
                 <XAxis 
                   dataKey="date" 
@@ -238,24 +228,30 @@ export function PageViewsChart({ data, loading }: TProps) {
                   iconType="circle"
                 />
                 <Area
-                  type="monotone"
+                  type="basis"
                   dataKey="pageViews"
                   stroke="#3b82f6"
                   strokeWidth={3}
-                  fill="url(#pageViewsGradient)"
+                  fill="rgba(59, 130, 246, 0.1)"
                   name="Page Views"
-                  animationDuration={1500}
+                  animationDuration={2000}
                   animationBegin={0}
+                  animationEasing="ease-out"
+                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#ffffff' }}
                 />
                 <Area
-                  type="monotone"
+                  type="basis"
                   dataKey="uniqueVisitors"
                   stroke="#10b981"
                   strokeWidth={3}
-                  fill="url(#uniqueVisitorsGradient)"
+                  fill="rgba(16, 185, 129, 0.1)"
                   name="Unique Visitors"
-                  animationDuration={1500}
-                  animationBegin={200}
+                  animationDuration={2000}
+                  animationBegin={300}
+                  animationEasing="ease-out"
+                  dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2, fill: '#ffffff' }}
                 />
                 <ReferenceLine y={avgPageViews} stroke="#3b82f6" strokeDasharray="5 5" opacity={0.5} />
               </AreaChart>
@@ -281,26 +277,28 @@ export function PageViewsChart({ data, loading }: TProps) {
                   iconType="circle"
                 />
                 <Line
-                  type="monotone"
+                  type="basis"
                   dataKey="pageViews"
                   stroke="#3b82f6"
                   strokeWidth={3}
                   dot={{ fill: '#3b82f6', strokeWidth: 2, r: 5 }}
-                  activeDot={{ r: 7, stroke: '#3b82f6', strokeWidth: 2, fill: '#fff' }}
+                  activeDot={{ r: 8, stroke: '#3b82f6', strokeWidth: 3, fill: '#ffffff', shadow: true }}
                   name="Page Views"
-                  animationDuration={1500}
+                  animationDuration={2000}
                   animationBegin={0}
+                  animationEasing="ease-out"
                 />
                 <Line
-                  type="monotone"
+                  type="basis"
                   dataKey="uniqueVisitors"
                   stroke="#10b981"
                   strokeWidth={3}
                   dot={{ fill: '#10b981', strokeWidth: 2, r: 5 }}
-                  activeDot={{ r: 7, stroke: '#10b981', strokeWidth: 2, fill: '#fff' }}
+                  activeDot={{ r: 8, stroke: '#10b981', strokeWidth: 3, fill: '#ffffff', shadow: true }}
                   name="Unique Visitors"
-                  animationDuration={1500}
-                  animationBegin={200}
+                  animationDuration={2000}
+                  animationBegin={300}
+                  animationEasing="ease-out"
                 />
                 <ReferenceLine y={avgPageViews} stroke="#3b82f6" strokeDasharray="5 5" opacity={0.5} />
               </LineChart>

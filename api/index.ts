@@ -5,11 +5,44 @@ import { db } from '../src/db/connection';
 import { analyticsEvents } from '../src/db/schema';
 import { eq, desc, count, and, gte, lte, sql } from 'drizzle-orm';
 import type { 
-  AnalyticsEvent, 
-  AnalyticsMetrics, 
-  AnalyticsFilters,
-  RealTimeMetrics 
+  TAnalyticsEvent as AnalyticsEvent, 
+  TAnalyticsMetrics as AnalyticsMetrics, 
+  TAnalyticsFilters as AnalyticsFilters,
+  TRealTimeMetrics as RealTimeMetrics 
 } from '../src/modules/analytics/types';
+
+// Simple IP geolocation function using ipapi.co
+async function getLocationFromIP(ip: string): Promise<{
+  country?: string;
+  region?: string;
+  city?: string;
+  latitude?: string;
+  longitude?: string;
+}> {
+  if (!ip || ip === 'unknown' || ip === '127.0.0.1' || ip === '::1') {
+    return {};
+  }
+
+  try {
+    // Use ipapi.co for basic geolocation (free tier)
+    const response = await fetch(`https://ipapi.co/${ip}/json/`);
+    if (!response.ok) {
+      return {};
+    }
+    
+    const data = await response.json();
+    return {
+      country: data.country_name || undefined,
+      region: data.region || undefined,
+      city: data.city || undefined,
+      latitude: data.latitude ? String(data.latitude) : undefined,
+      longitude: data.longitude ? String(data.longitude) : undefined,
+    };
+  } catch (error) {
+    console.error('Failed to get location from IP:', error);
+    return {};
+  }
+}
 
 const app = new Hono().basePath('/api');
 
@@ -34,6 +67,12 @@ app.post('/analytics/events', async (c) => {
                     'unknown';
     const userAgent = c.req.header('user-agent') || '';
 
+    // Get geographic data from IP (only for page views to reduce API calls)
+    let locationData = {};
+    if (event.eventType === 'page_view' || event.eventType === 'session_start') {
+      locationData = await getLocationFromIP(clientIP);
+    }
+
     await db.insert(analyticsEvents).values({
       eventType: event.eventType,
       page: event.page,
@@ -41,7 +80,9 @@ app.post('/analytics/events', async (c) => {
       userAgent,
       ipAddress: clientIP,
       sessionId: event.sessionId,
+      userId: event.userId,
       data: event.data,
+      ...locationData,
     });
 
     return c.json({ success: true });
@@ -130,6 +171,8 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
   const [
     totalPageViews,
     uniqueVisitors,
+    sessionDurations,
+    bounceRate,
     topPages,
     topReferrers,
     popularProjects,
@@ -137,7 +180,10 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
     successfulSubmissions,
     hourlyActivity,
     dailyActivity,
-    userAgents
+    userAgents,
+    topCountries,
+    topRegions,
+    topCities
   ] = await Promise.all([
     // Total page views
     db.select({ count: count() })
@@ -147,6 +193,35 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
     // Unique visitors
     db.selectDistinct({ sessionId: analyticsEvents.sessionId })
       .from(analyticsEvents)
+      .where(and(eq(analyticsEvents.eventType, 'page_view'), whereClause)),
+    
+    // Session durations
+    db.select({
+      sessionId: analyticsEvents.sessionId,
+      minTime: sql`MIN(${analyticsEvents.timestamp})`.as('minTime'),
+      maxTime: sql`MAX(${analyticsEvents.timestamp})`.as('maxTime'),
+      duration: sql`EXTRACT(EPOCH FROM (MAX(${analyticsEvents.timestamp}) - MIN(${analyticsEvents.timestamp})))`.as('duration')
+    })
+      .from(analyticsEvents)
+      .where(whereClause)
+      .groupBy(analyticsEvents.sessionId)
+      .having(sql`COUNT(*) > 1`),
+    
+    // Bounce rate (sessions with only 1 page view)
+    db.select({
+      totalSessions: sql`COUNT(DISTINCT ${analyticsEvents.sessionId})`.as('totalSessions'),
+      bouncedSessions: sql`COUNT(DISTINCT CASE WHEN single_page.page_count = 1 THEN ${analyticsEvents.sessionId} END)`.as('bouncedSessions')
+    })
+      .from(analyticsEvents)
+      .leftJoin(
+        sql`(
+          SELECT session_id, COUNT(*) as page_count 
+          FROM analytics_events 
+          WHERE event_type = 'page_view' 
+          GROUP BY session_id
+        ) single_page`.as('single_page'),
+        sql`${analyticsEvents.sessionId} = single_page.session_id`
+      )
       .where(and(eq(analyticsEvents.eventType, 'page_view'), whereClause)),
     
     // Top pages
@@ -215,15 +290,72 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
     // User agents for device categorization
     db.select({ userAgent: analyticsEvents.userAgent })
       .from(analyticsEvents)
-      .where(and(eq(analyticsEvents.eventType, 'session_start'), whereClause))
+      .where(and(eq(analyticsEvents.eventType, 'session_start'), whereClause)),
+    
+    // Top countries
+    db.select({ 
+      country: analyticsEvents.country, 
+      visits: count(),
+      totalVisits: sql`SUM(COUNT(*)) OVER()`.as('totalVisits')
+    })
+      .from(analyticsEvents)
+      .where(and(
+        eq(analyticsEvents.eventType, 'page_view'), 
+        sql`${analyticsEvents.country} IS NOT NULL`,
+        whereClause
+      ))
+      .groupBy(analyticsEvents.country)
+      .orderBy(desc(count()))
+      .limit(10),
+    
+    // Top regions
+    db.select({ 
+      region: analyticsEvents.region,
+      country: analyticsEvents.country,
+      visits: count()
+    })
+      .from(analyticsEvents)
+      .where(and(
+        eq(analyticsEvents.eventType, 'page_view'),
+        sql`${analyticsEvents.region} IS NOT NULL`,
+        whereClause
+      ))
+      .groupBy(analyticsEvents.region, analyticsEvents.country)
+      .orderBy(desc(count()))
+      .limit(10),
+    
+    // Top cities
+    db.select({ 
+      city: analyticsEvents.city,
+      region: analyticsEvents.region,
+      country: analyticsEvents.country,
+      visits: count()
+    })
+      .from(analyticsEvents)
+      .where(and(
+        eq(analyticsEvents.eventType, 'page_view'),
+        sql`${analyticsEvents.city} IS NOT NULL`,
+        whereClause
+      ))
+      .groupBy(analyticsEvents.city, analyticsEvents.region, analyticsEvents.country)
+      .orderBy(desc(count()))
+      .limit(10)
   ]);
 
   const deviceTypes = categorizeDeviceTypes(userAgents.map(ua => ua.userAgent || ''));
+  
+  // Calculate average session duration
+  const avgSessionDuration = sessionDurations.length > 0 
+    ? sessionDurations.reduce((sum, session) => sum + Number(session.duration || 0), 0) / sessionDurations.length
+    : 0;
+
+  // Calculate total visits for percentage calculation
+  const totalVisits = topCountries.reduce((sum, country) => sum + country.visits, 0);
 
   return {
     totalPageViews: totalPageViews[0]?.count || 0,
     uniqueVisitors: uniqueVisitors.length,
-    averageSessionDuration: 0,
+    averageSessionDuration: Math.round(avgSessionDuration),
     topPages: topPages.map(p => ({
       page: p.page || 'Unknown',
       views: p.views
@@ -252,6 +384,22 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
       date: d.date as string,
       pageViews: d.pageViews,
       uniqueVisitors: Number(d.uniqueVisitors)
+    })),
+    topCountries: topCountries.map(c => ({
+      country: c.country || 'Unknown',
+      visits: c.visits,
+      percentage: totalVisits > 0 ? (c.visits / totalVisits) * 100 : 0
+    })),
+    topRegions: topRegions.map(r => ({
+      region: r.region || 'Unknown',
+      country: r.country || 'Unknown',
+      visits: r.visits
+    })),
+    topCities: topCities.map(c => ({
+      city: c.city || 'Unknown',
+      region: c.region || 'Unknown',
+      country: c.country || 'Unknown',
+      visits: c.visits
     }))
   };
 }

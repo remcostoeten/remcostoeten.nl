@@ -29,8 +29,8 @@ export function ContactForm({ isVisible, openAbove = false }: TProps) {
     setIsSubmitting(true);
     
     try {
-      // Here you would normally send the form data to your backend
-      // For now, we'll simulate a successful submission
+      // TODO: Replace this with actual API call to submit form data
+      // Example: await submitContactForm(formData);
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       console.log("Form submitted:", formData);
@@ -147,9 +147,6 @@ export function ContactForm({ isVisible, openAbove = false }: TProps) {
                 {isSubmitting ? "Sending..." : "Send Feedback"}
               </Button>
               
-              <p className="text-xs text-muted-foreground text-center">
-                This is a demo form. No data will be sent.
-              </p>
             </form>
           </div>
         </motion.div>

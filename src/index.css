@@ -12,8 +12,8 @@ All colors MUST be HSL.
     --background: 0 0% 7%;
     --foreground: 0 0% 85%;
 
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 85%;
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 90%;
 
     --popover: 0 0% 7%;
     --popover-foreground: 0 0% 85%;
@@ -33,7 +33,7 @@ All colors MUST be HSL.
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
+    --border: 0 0% 15%;
     --input: 0 0% 20%;
     --ring: 85 100% 75%;
 
@@ -97,5 +97,184 @@ All colors MUST be HSL.
     background: linear-gradient(90deg, #f0f0f0 0px, #e0e0e0 40px, #f0f0f0 80px);
     background-size: 200px;
     animation: shimmer 1.5s infinite;
+  }
+
+  .highlight {
+    @apply font-medium px-1 py-0.5 rounded;
+    background-color: hsl(var(--highlight-frontend) / 0.2);
+    color: hsl(var(--highlight-frontend));
+    animation: highlight-enter 0.8s ease-out 0.5s forwards;
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  .dashed-highlight {
+    @apply font-medium px-1 py-0.5 border-2 border-dashed border-muted-foreground/30 rounded-md;
+    animation: dashed-outline-enter 0.8s ease-out 0.3s forwards;
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  /* Dashed border highlight variant */
+  .highlight-dashed {
+    @apply font-medium px-1 py-0.5 rounded;
+    border: 1px dashed hsl(var(--highlight-frontend) / 0.5);
+    color: hsl(var(--highlight-frontend));
+  }
+
+  /* Color strength modifiers */
+  .highlight-light, .highlight-dashed-light {
+    background-color: hsl(var(--highlight-frontend) / 0.1);
+    border-color: hsl(var(--highlight-frontend) / 0.3);
+    color: hsl(var(--highlight-frontend) / 0.8);
+  }
+
+  .highlight-medium, .highlight-dashed-medium {
+    background-color: hsl(var(--highlight-frontend) / 0.2);
+    border-color: hsl(var(--highlight-frontend) / 0.5);
+    color: hsl(var(--highlight-frontend));
+  }
+
+  .highlight-strong, .highlight-dashed-strong {
+    background-color: hsl(var(--highlight-frontend) / 0.3);
+    border-color: hsl(var(--highlight-frontend) / 0.7);
+    color: hsl(var(--highlight-frontend));
+  }
+
+  .highlight-intense, .highlight-dashed-intense {
+    background-color: hsl(var(--highlight-frontend) / 0.4);
+    border-color: hsl(var(--highlight-frontend) / 0.9);
+    color: hsl(var(--highlight-frontend));
+  }
+
+  /* Dashed outline for timezone section */
+  .dashed-outline {
+    @apply font-medium px-2 py-1 border-2 border-dashed border-muted-foreground/30 rounded-md;
+    animation: dashed-outline-enter 0.8s ease-out 0.3s forwards;
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  /* Dashed outline variants with different colors/strengths */
+  .dashed-outline-light {
+    @apply font-medium px-2 py-1 border-2 border-dashed border-muted-foreground/20 rounded-md;
+    animation: dashed-outline-enter 0.8s ease-out 0.3s forwards;
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  .dashed-outline-strong {
+    @apply font-medium px-2 py-1 border-2 border-dashed border-muted-foreground/50 rounded-md;
+    animation: dashed-outline-enter 0.8s ease-out 0.3s forwards;
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  .dashed-outline-accent {
+    @apply font-medium px-2 py-1 border-2 border-dashed rounded-md;
+    border-color: hsl(var(--accent) / 0.5);
+    color: hsl(var(--accent));
+    animation: dashed-outline-enter 0.8s ease-out 0.3s forwards;
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  .theme-link {
+    @apply text-accent font-medium no-underline transition-all duration-150;
+    position: relative;
+    display: inline;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: theme-link-enter 0.6s ease-out forwards;
+  }
+
+  .theme-link:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 1px;
+    animation: underline-grow 150ms ease forwards;
+  }
+
+  .theme-link.with-link:hover::before,
+  .theme-link.with-arrow:hover::before {
+    right: 1.5rem;
+    background: linear-gradient(to right, currentColor 70%, transparent 100%);
+  }
+
+  .theme-link:not(.with-link):not(.with-arrow):hover::before {
+    right: 0;
+    background-color: currentColor;
+  }
+
+  .theme-link.with-link::after,
+  .theme-link.with-arrow::after {
+    position: relative;
+    z-index: 1;
+  }
+
+  .theme-link.with-link::after {
+    content: " 🔗";
+    @apply mr-0.5;
+  }
+
+  .theme-link.with-arrow::after {
+    content: " ↗";
+    @apply mr-0.5;
+  }
+
+  @keyframes underline-grow {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes theme-link-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes highlight-enter {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+      box-shadow: 0 0 0 hsl(var(--highlight-frontend) / 0);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.02);
+      box-shadow: 0 0 8px hsl(var(--highlight-frontend) / 0.3);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 0 0 hsl(var(--highlight-frontend) / 0);
+    }
+  }
+
+  @keyframes dashed-outline-enter {
+    0% {
+      opacity: 0;
+      transform: scale(0.98);
+      border-color: transparent;
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.01);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }
