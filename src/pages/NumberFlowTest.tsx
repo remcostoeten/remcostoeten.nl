@@ -1,5 +1,5 @@
-import { NumberFlowDemo } from '@/components/examples/number-flow-demo';
-import { NumberFlowPresetsDemo } from '@/components/examples/number-flow-presets-demo';
+import { NumberFlowDemo } from '@/components/examples/NumberFlowDemo';
+import { NumberFlowPresetsDemo } from '@/components/examples/NumberFlowPresetsDemo';
 
 export default function NumberFlowTestPage() {
   return (

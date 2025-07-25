@@ -131,6 +131,11 @@ export const analyticsEvents = pgTable("analytics_events", {
   userId: varchar("user_id", { length: 255 }), // Persistent user identifier
   data: jsonb("data"),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
+  country: varchar("country", { length: 100 }), // Country name
+  region: varchar("region", { length: 100 }), // Region name
+  city: varchar("city", { length: 100 }), // City name
+  latitude: varchar("latitude", { length: 50 }), // Latitude
+  longitude: varchar("longitude", { length: 50 }), // Longitude
 }, (table) => ({
   eventTypeIdx: index("analytics_event_type_idx").on(table.eventType),
   timestampIdx: index("analytics_timestamp_idx").on(table.timestamp),

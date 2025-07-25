@@ -9,6 +9,11 @@ export type TAnalyticsEvent = {
   userId?: string;
   data?: Record<string, string | number | boolean | string[]>;
   timestamp: Date;
+  country?: string;
+  region?: string;
+  city?: string;
+  latitude?: string;
+  longitude?: string;
 }
 
 export type TPageView = TAnalyticsEvent & {
@@ -110,6 +115,22 @@ export type TAnalyticsMetrics = {
     date: string;
     pageViews: number;
     uniqueVisitors: number;
+  }>;
+  topCountries: Array<{
+    country: string;
+    visits: number;
+    percentage: number;
+  }>;
+  topRegions: Array<{
+    region: string;
+    country: string;
+    visits: number;
+  }>;
+  topCities: Array<{
+    city: string;
+    region: string;
+    country: string;
+    visits: number;
   }>;
 }
 

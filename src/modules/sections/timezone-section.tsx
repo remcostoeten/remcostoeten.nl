@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
-import { TIMEZONE_INFO, useCurrentTime } from "@/modules/time";
+import { TIMEZONE_INFO, useCurrentTime, TimeNumberFlow } from "@/modules/time";
 
 export function TimezoneSection() {
   const currentTime = useCurrentTime();
@@ -33,13 +33,13 @@ export function TimezoneSection() {
       ))}
       . Right now it is{" "}
       <motion.span 
-        className="font-medium px-1 py-0.5 rounded"
+        className="font-medium px-1 py-0.5 rounded inline-block"
         style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.8, ease: "easeOut" }}
       >
-        {currentTime}
+        <TimeNumberFlow time={currentTime} className="" />
       </motion.span>
       .
     </motion.p>

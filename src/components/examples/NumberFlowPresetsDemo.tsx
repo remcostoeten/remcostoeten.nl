@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NumberFlow } from '@/components/ui/number-flow';
+import { NumberFlow } from '@/components/ui/NumberFlow';
 import { numberFlowPresets } from '@/lib/number-flow-presets';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';

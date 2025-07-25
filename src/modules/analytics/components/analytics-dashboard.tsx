@@ -24,6 +24,7 @@ import { MetricsOverview } from './metrics-overview';
 import { PageViewsChart } from './page-views-chart';
 import { TopPagesTable } from './top-pages-table';
 import { DeviceTypesChart } from './device-types-chart';
+import { GeoAnalyticsChart } from './geo-analytics-chart';
 import { RealTimeStats } from './real-time-stats';
 import { EventsTable } from './events-table';
 import type { AnalyticsFilters } from '../types';
@@ -336,6 +337,14 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
                 )}
               </CardContent>
             </Card>
+          </div>
+          
+          {/* Geographic Analytics */}
+          <div className="mt-6">
+            <GeoAnalyticsChart 
+              metrics={metrics} 
+              loading={metricsLoading} 
+            />
           </div>
         </TabsContent>
 
