@@ -6,6 +6,7 @@ export interface AnalyticsEvent {
   userAgent?: string;
   ipAddress?: string;
   sessionId?: string;
+  userId?: string; // Persistent user identifier
   data?: Record<string, any>;
   timestamp: Date;
 }

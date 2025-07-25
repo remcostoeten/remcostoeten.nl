@@ -4,6 +4,7 @@ import { useAuth } from '../modules/analytics/hooks/useAuth';
 import { LoginForm } from '../modules/analytics/components/LoginForm';
 import { Button } from '../components/ui/button';
 import { LogOutIcon } from 'lucide-react';
+import { AnalyticsProvider } from '../modules/analytics';
 
 export default function AnalyticsDashboardPage() {
   const { 
@@ -36,16 +37,18 @@ export default function AnalyticsDashboardPage() {
   }
 
   return (
-    <div className="relative">
-      {/* Logout Button */}
-      <div className="absolute top-4 right-4 z-50">
-        <Button onClick={logout} variant="outline" size="sm">
-          <LogOutIcon className="w-4 h-4 mr-2" />
-          Logout
-        </Button>
+    <AnalyticsProvider enableAutoTracking={false}>
+      <div className="relative">
+        {/* Logout Button */}
+        <div className="absolute top-4 right-4 z-50">
+          <Button onClick={logout} variant="outline" size="sm">
+            <LogOutIcon className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+        </div>
+        
+        <AnalyticsDashboard />
       </div>
-      
-      <AnalyticsDashboard />
-    </div>
+    </AnalyticsProvider>
   );
 }

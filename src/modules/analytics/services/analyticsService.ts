@@ -6,7 +6,10 @@ import type {
 } from '../types';
 
 export class AnalyticsService {
-  private static readonly API_BASE = '/api/analytics';
+  private static readonly API_BASE = 
+    import.meta.env?.DEV || window.location.hostname === 'localhost'
+      ? `http://localhost:${import.meta.env.VITE_API_PORT || '3003'}/api/analytics`
+      : '/api/analytics';
 
   // Track a new analytics event
   static async trackEvent(event: Omit<AnalyticsEvent, 'id' | 'timestamp'>): Promise<void> {

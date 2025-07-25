@@ -1,35 +1,31 @@
-// Analytics Configuration
-// You can set these via environment variables or change them here
+import { getSiteConfig } from './site';
 
-export const ANALYTICS_CONFIG = {
-  // Change this password to something secure!
-  ADMIN_PASSWORD: import.meta.env.VITE_ANALYTICS_PASSWORD || 'admin123',
-  
-  // Session timeout in milliseconds (24 hours)
-  SESSION_TIMEOUT: 24 * 60 * 60 * 1000,
-  
-  // API base URL
-  API_BASE: '/api/analytics',
-  
-  // Real-time update interval (30 seconds)
-  REALTIME_INTERVAL: 30 * 1000,
-  
-  // Max failed login attempts before temporary lockout
-  MAX_LOGIN_ATTEMPTS: 5,
-  
-  // Lockout duration in milliseconds (15 minutes)
-  LOCKOUT_DURATION: 15 * 60 * 1000
-};
+// Analytics Configuration
+// Configuration is now managed centrally in src/config/site.ts
+
+function getAnalyticsConfig() {
+  const config = getSiteConfig();
+  return {
+    ADMIN_PASSWORD: config.analytics.adminPassword,
+    SESSION_TIMEOUT: config.analytics.sessionTimeout,
+    API_BASE: '/api/analytics',
+    REALTIME_INTERVAL: config.analytics.realtimeInterval,
+    MAX_LOGIN_ATTEMPTS: config.analytics.maxLoginAttempts,
+    LOCKOUT_DURATION: config.analytics.lockoutDuration
+  };
+}
+
+export const ANALYTICS_CONFIG = getAnalyticsConfig();
 
 // Helper to check if analytics is properly configured
 export function isAnalyticsConfigured(): boolean {
-  return ANALYTICS_CONFIG.ADMIN_PASSWORD !== 'admin123';
+  return ANALYTICS_CONFIG.ADMIN_PASSWORD !== 'change-me';
 }
 
 // Warning message for default password
 export function getSecurityWarning(): string | null {
   if (!isAnalyticsConfigured()) {
-    return '⚠️ Using default password! Set VITE_ANALYTICS_PASSWORD environment variable or change ADMIN_PASSWORD in src/config/analytics.ts';
+    return '⚠️ Using default password! Set VITE_ANALYTICS_PASSWORD environment variable';
   }
   return null;
 }

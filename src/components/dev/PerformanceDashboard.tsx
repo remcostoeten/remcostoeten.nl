@@ -1,10 +1,11 @@
 import { usePerformance } from '@/hooks/use-performance';
+import { ApiStatusIndicator } from './ApiStatusIndicator';
 
 type TProps = {
   enabled?: boolean;
 };
 
-export function PerformanceDashboard({ enabled = process.env.NODE_ENV === 'development' }: TProps) {
+export function PerformanceDashboard({ enabled = import.meta.env.VITE_NODE_ENV === 'development' }: TProps) {
   const { metrics } = usePerformance();
 
   if (!enabled || !metrics) {
@@ -12,8 +13,9 @@ export function PerformanceDashboard({ enabled = process.env.NODE_ENV === 'devel
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50 max-w-xs">
-      <h3 className="text-sm font-bold mb-2">Performance Metrics</h3>
+    <>
+      <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50 max-w-xs">
+        <h3 className="text-sm font-bold mb-2">Performance Metrics</h3>
       
       {metrics.memoryUsage && (
         <div className="mb-2">
@@ -51,6 +53,11 @@ export function PerformanceDashboard({ enabled = process.env.NODE_ENV === 'devel
           </div>
         )}
       </div>
-    </div>
+      </div>
+      
+      <div className="fixed bottom-4 left-4 z-50">
+        <ApiStatusIndicator showDetails={false} />
+      </div>
+    </>
   );
 }

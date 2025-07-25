@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 import { AnalyticsService } from '../services/analyticsService';
 import type { AnalyticsFilters, AnalyticsEvent } from '../types';
+import { shouldExcludeFromTracking } from '../config/excluded-paths';
 
 // Session management
 const getSessionId = (): string => {
@@ -25,12 +26,51 @@ const getUserFingerprint = (): string => {
   const fingerprint = [
     navigator.userAgent,
     navigator.language,
+    navigator.languages?.join(',') || '',
     screen.width + 'x' + screen.height,
+    screen.colorDepth,
     new Date().getTimezoneOffset(),
-    canvas.toDataURL()
+    navigator.platform,
+    navigator.cookieEnabled,
+    navigator.doNotTrack || 'unknown',
+    canvas.toDataURL(),
+    // Hardware concurrency (CPU cores)
+    navigator.hardwareConcurrency || 'unknown',
+    // Available fonts detection (simplified)
+    typeof document.fonts !== 'undefined' ? 'fonts-api' : 'no-fonts-api',
   ].join('|');
   
-  return btoa(fingerprint).slice(0, 32);
+  // Create a more stable hash
+  let hash = 0;
+  for (let i = 0; i < fingerprint.length; i++) {
+    const char = fingerprint.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  
+  return Math.abs(hash).toString(36).padStart(8, '0');
+};
+
+// Get or create persistent user ID (survives incognito/different sessions)
+const getUserId = (): string => {
+  // Try to get from localStorage first (persists across regular sessions)
+  let userId = localStorage.getItem('analytics_user_id');
+  
+  if (!userId) {
+    // Fallback to fingerprint-based ID
+    const fingerprint = getUserFingerprint();
+    userId = `fp_${fingerprint}`;
+    
+    // Try to store in localStorage (won't work in incognito but that's ok)
+    try {
+      localStorage.setItem('analytics_user_id', userId);
+    } catch (e) {
+      // Incognito mode or storage disabled
+      console.debug('Could not store user ID in localStorage');
+    }
+  }
+  
+  return userId;
 };
 
 // Main analytics hook
@@ -44,6 +84,7 @@ export const useAnalytics = () => {
       const eventData = {
         ...event,
         sessionId: sessionId.current,
+        userId: getUserId(), // Add persistent user ID
         userAgent: navigator.userAgent,
         // In a real app, you'd get this from your server
         ipAddress: undefined, 
@@ -67,6 +108,8 @@ export const useAnalytics = () => {
   }, [trackEventMutation]);
 
   const trackButtonClick = useCallback((buttonText: string, buttonId?: string, section?: string) => {
+    if (shouldExcludeFromTracking(window.location.pathname)) return;
+    
     trackEventMutation.mutate({
       eventType: 'button_click',
       page: window.location.pathname,
@@ -135,19 +178,23 @@ export const useAnalytics = () => {
   }, [trackEventMutation]);
 
   // Track session start on mount
+  const hasTrackedSessionStart = useRef(false);
   useEffect(() => {
-    trackEventMutation.mutate({
-      eventType: 'session_start',
-      page: window.location.pathname,
-      referrer: document.referrer,
-      data: {
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        screenWidth: screen.width,
-        screenHeight: screen.height,
-        userAgent: navigator.userAgent,
-      },
-    });
-  }, [trackEventMutation]);
+    if (!hasTrackedSessionStart.current) {
+      trackEventMutation.mutate({
+        eventType: 'session_start',
+        page: window.location.pathname,
+        referrer: document.referrer,
+        data: {
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          screenWidth: screen.width,
+          screenHeight: screen.height,
+          userAgent: navigator.userAgent,
+        },
+      });
+      hasTrackedSessionStart.current = true;
+    }
+  }, []); // Remove trackEventMutation dependency to prevent re-renders
 
   return {
     trackPageView,
@@ -166,7 +213,10 @@ export const useAnalyticsMetrics = (filters?: AnalyticsFilters) => {
   return useQuery({
     queryKey: ['analytics', 'metrics', filters],
     queryFn: () => AnalyticsService.getMetrics(filters),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 2 * 60 * 1000, // 2 minutes - matches server cache
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -175,14 +225,19 @@ export const useRealTimeMetrics = () => {
   return useQuery({
     queryKey: ['analytics', 'realtime'],
     queryFn: () => AnalyticsService.getRealTimeMetrics(),
-    refetchInterval: (data, query) => {
-      // Stop polling if tab is not visible
-      if (document.hidden) return false;
-      // Reduce frequency - poll every 60 seconds instead of 30
-      return 60 * 1000;
+    refetchInterval: (query) => {
+      // Continue polling even when tab is hidden, but at a slower rate
+      if (document.hidden) {
+        // Poll every 60 seconds when tab is hidden
+        return 60 * 1000;
+      }
+      // Poll every 30 seconds when tab is visible
+      return 30 * 1000;
     },
-    staleTime: 30 * 1000, // Cache for 30 seconds
-    refetchOnWindowFocus: false, // Don't refetch on window focus
+    staleTime: 15 * 1000, // Cache for 15 seconds - matches server cache
+    gcTime: 2 * 60 * 1000, // 2 minutes 
+    refetchOnWindowFocus: true, // Refresh when tab becomes visible
+    refetchOnReconnect: true, // Refresh when connection is restored
   });
 };
 
@@ -195,7 +250,10 @@ export const useAnalyticsEvents = (
   return useQuery({
     queryKey: ['analytics', 'events', page, limit, filters],
     queryFn: () => AnalyticsService.getEvents(page, limit, filters),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 3 * 60 * 1000, // 3 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -203,15 +261,19 @@ export const useAnalyticsEvents = (
 export const usePageViewTracking = () => {
   const { trackPageView } = useAnalytics();
   const currentPath = useRef(window.location.pathname);
+  const hasTrackedInitialView = useRef(false);
 
   useEffect(() => {
-    // Track initial page view
-    trackPageView(window.location.pathname, document.referrer);
+    // Only track initial page view once and exclude analytics paths
+    if (!hasTrackedInitialView.current && !shouldExcludeFromTracking(window.location.pathname)) {
+      trackPageView(window.location.pathname, document.referrer);
+      hasTrackedInitialView.current = true;
+    }
 
     // Track navigation changes (for SPA)
     const handleLocationChange = () => {
       const newPath = window.location.pathname;
-      if (newPath !== currentPath.current) {
+      if (newPath !== currentPath.current && !shouldExcludeFromTracking(newPath)) {
         trackPageView(newPath, currentPath.current);
         currentPath.current = newPath;
       }
@@ -223,7 +285,7 @@ export const usePageViewTracking = () => {
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
     };
-  }, [trackPageView]);
+  }, []); // Remove trackPageView from dependencies to prevent infinite re-renders
 };
 
 // Hook for scroll depth tracking
@@ -231,9 +293,18 @@ export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 1
   const { trackScrollDepth } = useAnalytics();
   const trackedDepths = useRef(new Set<number>());
   const throttleTimer = useRef<number | null>(null);
+  const thresholdsRef = useRef(thresholds);
+
+  // Update thresholds ref when they change
+  useEffect(() => {
+    thresholdsRef.current = thresholds;
+  }, [thresholds]);
 
   useEffect(() => {
     const handleScroll = () => {
+      // Don't track scroll depth on analytics pages
+      if (shouldExcludeFromTracking(window.location.pathname)) return;
+      
       // Throttle scroll events to prevent excessive calls
       if (throttleTimer.current) return;
       
@@ -248,7 +319,7 @@ export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 1
         
         const scrollPercent = Math.round((scrollTop / docHeight) * 100);
 
-        thresholds.forEach(threshold => {
+        thresholdsRef.current.forEach(threshold => {
           if (scrollPercent >= threshold && !trackedDepths.current.has(threshold)) {
             trackedDepths.current.add(threshold);
             trackScrollDepth(threshold);
@@ -256,7 +327,7 @@ export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 1
         });
         
         throttleTimer.current = null;
-      }, 100); // Throttle to 100ms
+      }, 250); // Increased throttle to 250ms to reduce load
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -271,5 +342,5 @@ export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 1
       // Reset tracked depths when component unmounts
       trackedDepths.current.clear();
     };
-  }, [trackScrollDepth, thresholds]);
+  }, []); // Remove trackScrollDepth from dependencies to prevent re-renders
 };

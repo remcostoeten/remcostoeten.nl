@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema";
+import * as schema from "./schema.ts";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -13,9 +13,14 @@ function createConnection() {
   }
 
   const client = postgres(connectionString, {
-    max: 10,
-    idle_timeout: 20,
+    max: 20, // Increased pool size for analytics queries
+    idle_timeout: 30, // Keep connections alive longer
     connect_timeout: 10,
+    max_lifetime: 60 * 30, // 30 minutes
+    prepare: false, // Disable prepared statements for analytics queries
+    transform: {
+      undefined: null,
+    },
   });
 
   return drizzle(client, { schema });

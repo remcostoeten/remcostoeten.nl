@@ -128,12 +128,14 @@ export const analyticsEvents = pgTable("analytics_events", {
   userAgent: text("user_agent"),
   ipAddress: varchar("ip_address", { length: 45 }),
   sessionId: varchar("session_id", { length: 255 }),
+  userId: varchar("user_id", { length: 255 }), // Persistent user identifier
   data: jsonb("data"),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 }, (table) => ({
   eventTypeIdx: index("analytics_event_type_idx").on(table.eventType),
   timestampIdx: index("analytics_timestamp_idx").on(table.timestamp),
   pageIdx: index("analytics_page_idx").on(table.page),
+  userIdIdx: index("analytics_user_id_idx").on(table.userId),
 }));
 
 // Relations

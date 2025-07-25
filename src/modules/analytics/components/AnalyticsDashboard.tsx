@@ -20,7 +20,7 @@ import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { cn } from '../../../lib/utils';
 
 import { useAnalyticsMetrics, useRealTimeMetrics } from '../hooks/useAnalytics';
-import MetricsOverview from './MetricsOverview';
+import { MetricsOverview } from './MetricsOverview';
 import { PageViewsChart } from './PageViewsChart';
 import { TopPagesTable } from './TopPagesTable';
 import { DeviceTypesChart } from './DeviceTypesChart';
@@ -271,7 +271,8 @@ export const AnalyticsDashboard: React.FC = () => {
         <TabsContent value="overview" className="space-y-6">
           <MetricsOverview 
             metrics={metrics} 
-            loading={metricsLoading} 
+            isLoading={metricsLoading}
+            error={metricsError} 
           />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -326,7 +327,8 @@ export const AnalyticsDashboard: React.FC = () => {
         <TabsContent value="realtime" className="space-y-6">
           <RealTimeStats 
             metrics={realTimeMetrics} 
-            loading={realTimeLoading} 
+            loading={realTimeLoading}
+            onRefresh={refetchRealTime} 
           />
         </TabsContent>
 

@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import TimezoneDemo from "./pages/timezone-demo";
 import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
+import DevPage from "./pages/DevPage";
 
 function createQueryClient() {
   return new QueryClient({
@@ -46,6 +47,7 @@ export function App() {
               <Route path="/" element={<Index />} />
               <Route path="/timezone-demo" element={<TimezoneDemo />} />
               <Route path="/analytics" element={<AnalyticsDashboardPage />} />
+            <Route path="/dev" element={<DevPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnalyticsProvider>

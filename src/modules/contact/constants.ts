@@ -1,8 +1,15 @@
+import { getSiteConfig } from '../../config/site';
+
 export const CONTACT_EMOJIS = ["😊", "🔥", "💡", "👏", "❤️", "🚀"];
 
-export const SOCIAL_LINKS = {
-  x: "https://x.com/remcostoeten",
-  github: "https://github.com/remcostoeten",
-  behance: "https://behance.net/remcostoeten",
-  telegram: "https://t.me/remcostoeten"
-};
+function getSocialLinks() {
+  const config = getSiteConfig();
+  return {
+    x: config.social.x,
+    github: config.social.github,
+    behance: config.social.behance,
+    telegram: config.social.telegram
+  };
+}
+
+export const SOCIAL_LINKS = getSocialLinks();

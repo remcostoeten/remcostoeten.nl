@@ -1,6 +1,6 @@
 // Components
 export { AnalyticsDashboard } from './components/AnalyticsDashboard';
-export { default as MetricsOverview } from './components/MetricsOverview';
+export { MetricsOverview } from './components/MetricsOverview';
 export { PageViewsChart } from './components/PageViewsChart';
 export { DeviceTypesChart } from './components/DeviceTypesChart';
 export { TopPagesTable } from './components/TopPagesTable';
@@ -25,6 +25,9 @@ export { AnalyticsProvider, useAnalyticsContext } from './providers/AnalyticsPro
 
 // Services
 export { AnalyticsService } from './services/analyticsService';
+
+// Configuration
+export { EXCLUDED_ANALYTICS_PATHS, shouldExcludeFromTracking } from './config/excluded-paths';
 
 // Types
 export type {

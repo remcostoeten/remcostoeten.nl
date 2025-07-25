@@ -1,19 +1,22 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../components/ui/table';
-import { ActivityIcon, UsersIcon, MousePointerClickIcon } from 'lucide-react';
+import { ActivityIcon, UsersIcon, MousePointerClickIcon, RefreshCwIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import type { RealTimeMetrics } from '../types';
 
 interface RealTimeStatsProps {
   metrics?: RealTimeMetrics;
   loading: boolean;
+  onRefresh?: () => void;
 }
 
 export const RealTimeStats: React.FC<RealTimeStatsProps> = ({ 
   metrics, 
-  loading 
+  loading,
+  onRefresh 
 }) => {
   const getEventTypeIcon = (eventType: string) => {
     switch (eventType) {
@@ -102,6 +105,38 @@ export const RealTimeStats: React.FC<RealTimeStatsProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Status Bar */}
+      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-gray-700">Live Data</span>
+          </div>
+          <span className="text-xs text-gray-500">
+            Updates every {document.hidden ? '60' : '30'} seconds
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {metrics && (
+            <span className="text-xs text-gray-500">
+              Last updated: {format(new Date(), 'HH:mm:ss')}
+            </span>
+          )}
+          {onRefresh && (
+            <Button
+              onClick={onRefresh}
+              variant="outline"
+              size="sm"
+              disabled={loading}
+              className="text-xs"
+            >
+              <RefreshCwIcon className={`w-3 h-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          )}
+        </div>
+      </div>
+      
       {/* Real-time overview cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
