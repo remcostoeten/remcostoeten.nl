@@ -23,7 +23,7 @@
     "pgadmin": "docker-compose --profile admin up -d pgadmin",
     "analytics:setup": "node scripts/setup-analytics.js",
     "analytics:start": "npm run db:up && npm run db:push",
-    "analytics:dashboard": "echo 'Visit http://localhost:8080/analytics to see the dashboard'"
+    "analytics:dashboard": "echo 'Visit http://localhost:3333/analytics to see the dashboard'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

@@ -150,6 +150,45 @@ export const projectImagesRelations = relations(projectImages, ({ one }) => ({
   }),
 }));
 
+// Admin user table (single user system)
+export const adminUser = pgTable("admin_user", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  lastLoginAt: timestamp("last_login_at"),
+  ...timestamps,
+});
+
+// Admin sessions table
+export const adminSessions = pgTable("admin_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => adminUser.id, { onDelete: "cascade" }).notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  ...timestamps,
+}, (table) => ({
+  tokenIdx: index("admin_sessions_token_idx").on(table.token),
+  expiresIdx: index("admin_sessions_expires_idx").on(table.expiresAt),
+}));
+
+// Activity log for admin actions
+export const adminActivityLog = pgTable("admin_activity_log", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => adminUser.id, { onDelete: "cascade" }).notNull(),
+  action: varchar("action", { length: 100 }).notNull(),
+  module: varchar("module", { length: 50 }).notNull(), // 'cms', 'analytics', 'settings'
+  details: jsonb("details"),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+}, (table) => ({
+  userIdx: index("admin_activity_user_idx").on(table.userId),
+  moduleIdx: index("admin_activity_module_idx").on(table.module),
+  timestampIdx: index("admin_activity_timestamp_idx").on(table.timestamp),
+}));
+
 // Types for use in application
 export type TProject = typeof projects.$inferSelect;
 export type TNewProject = typeof projects.$inferInsert;
@@ -165,3 +204,9 @@ export type TSiteSetting = typeof siteSettings.$inferSelect;
 export type TNewSiteSetting = typeof siteSettings.$inferInsert;
 export type TAnalyticsEvent = typeof analyticsEvents.$inferSelect;
 export type TNewAnalyticsEvent = typeof analyticsEvents.$inferInsert;
+export type TAdminUser = typeof adminUser.$inferSelect;
+export type TNewAdminUser = typeof adminUser.$inferInsert;
+export type TAdminSession = typeof adminSessions.$inferSelect;
+export type TNewAdminSession = typeof adminSessions.$inferInsert;
+export type TAdminActivityLog = typeof adminActivityLog.$inferSelect;
+export type TNewAdminActivityLog = typeof adminActivityLog.$inferInsert;

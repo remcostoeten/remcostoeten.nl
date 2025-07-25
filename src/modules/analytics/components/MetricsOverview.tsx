@@ -64,7 +64,7 @@ function MetricsOverview({ metrics, isLoading, error }: TProps) {
     {
       title: 'Total Page Views',
       value: metrics?.totalPageViews ?? 0,
-      change: '+12%', // Could be calculated from daily activity
+      change: (metrics?.totalPageViews ?? 0) > 0 ? undefined : undefined, // No fake data - could be calculated from daily activity comparison
       description: 'Total visits across all pages',
       icon: EyeIcon,
       color: 'text-blue-600',

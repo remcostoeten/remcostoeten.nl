@@ -14,8 +14,8 @@ export function PerformanceDashboard({ enabled = import.meta.env.VITE_NODE_ENV =
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 bg-black/80 text-white p-4 rounded-lg text-xs font-mono z-50 max-w-xs">
-        <h3 className="text-sm font-bold mb-2">Performance Metrics</h3>
+      <div className="fixed bottom-4 right-4 bg-card/95 border border-border text-card-foreground p-4 rounded-lg text-xs font-mono z-50 max-w-xs backdrop-blur-sm">
+        <h3 className="text-sm font-bold mb-2 text-foreground">Performance Metrics</h3>
       
       {metrics.memoryUsage && (
         <div className="mb-2">
@@ -23,12 +23,12 @@ export function PerformanceDashboard({ enabled = import.meta.env.VITE_NODE_ENV =
             <span>Memory:</span>
             <span>{metrics.memoryUsage.used}MB / {metrics.memoryUsage.total}MB</span>
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-1 mt-1">
+          <div className="w-full bg-muted rounded-full h-1 mt-1">
             <div 
               className={`h-1 rounded-full ${
-                metrics.memoryUsage.percentage > 80 ? 'bg-red-500' : 
-                metrics.memoryUsage.percentage > 60 ? 'bg-yellow-500' : 
-                'bg-green-500'
+                metrics.memoryUsage.percentage > 80 ? 'bg-destructive' : 
+                metrics.memoryUsage.percentage > 60 ? 'bg-yellow-400' : 
+                'bg-accent'
               }`}
               style={{ width: `${metrics.memoryUsage.percentage}%` }}
             />

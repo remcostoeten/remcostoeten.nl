@@ -4,11 +4,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnalyticsProvider } from "./modules/analytics";
+import { AuthProvider } from "./modules/auth/providers/AuthProvider";
+import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
+import { LoginForm } from "./modules/auth/components/LoginForm";
+import { DashboardLayout } from "./modules/admin/components/DashboardLayout";
 import { PerformanceDashboard } from "./components/dev/PerformanceDashboard";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import TimezoneDemo from "./pages/timezone-demo";
 import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
+import { DashboardPage } from "./pages/admin/DashboardPage";
+import { AdminAnalyticsPage } from "./pages/admin/AdminAnalyticsPage";
 
 function createQueryClient() {
   return new QueryClient({
@@ -41,14 +47,33 @@ export function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AnalyticsProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/timezone-demo" element={<TimezoneDemo />} />
-              <Route path="/analytics" element={<AnalyticsDashboardPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AnalyticsProvider>
+          <AuthProvider>
+            <AnalyticsProvider>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Index />} />
+                <Route path="/timezone-demo" element={<TimezoneDemo />} />
+                <Route path="/analytics" element={<AnalyticsDashboardPage />} />
+                
+                {/* Admin authentication */}
+                <Route path="/admin/login" element={<LoginForm />} />
+                
+                {/* Protected admin routes */}
+                <Route path="/admin" element={
+                  <ProtectedRoute>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }>
+                  <Route path="dashboard" element={<DashboardPage />} />
+                  <Route path="analytics" element={<AdminAnalyticsPage />} />
+                  <Route path="cms" element={<div>CMS Coming Soon...</div>} />
+                  <Route path="settings" element={<div>Settings Coming Soon...</div>} />
+                </Route>
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AnalyticsProvider>
+          </AuthProvider>
         </BrowserRouter>
         <PerformanceDashboard />
       </TooltipProvider>

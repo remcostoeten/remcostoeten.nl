@@ -128,7 +128,8 @@ export const EventsTable: React.FC<EventsTableProps> = ({ filters }) => {
                     <TableHead>Type</TableHead>
                     <TableHead>Page</TableHead>
                     <TableHead>Details</TableHead>
-                    <TableHead>Session</TableHead>
+                    <TableHead>User ID</TableHead>
+                    <TableHead>Session ID</TableHead>
                     <TableHead className="text-right">Time</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -154,7 +155,29 @@ export const EventsTable: React.FC<EventsTableProps> = ({ filters }) => {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-xs text-gray-500 font-mono">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500 font-mono">
+                            {event.userId ? (
+                              event.userId.startsWith('fp_') ? (
+                                <span className="text-orange-600" title="Fingerprint-based ID">
+                                  {event.userId.slice(0, 12)}...
+                                </span>
+                              ) : (
+                                <span className="text-green-600" title="Persistent user ID">
+                                  {event.userId.slice(0, 12)}...
+                                </span>
+                              )
+                            ) : '-'}
+                          </span>
+                          {event.userId && (
+                            <span className="text-xs text-gray-400">
+                              {event.userId.startsWith('fp_') ? 'Fingerprint' : 'Persistent'}
+                            </span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-xs text-gray-500 font-mono" title="Session ID">
                           {event.sessionId?.slice(0, 8) || '-'}
                         </span>
                       </TableCell>

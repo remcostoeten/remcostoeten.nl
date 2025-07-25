@@ -24,7 +24,7 @@ export function ApiStatusIndicator({
   const checkApiStatus = useCallback(async () => {
     try {
       setStatus('checking');
-      const response = await fetch(`${apiUrl}/api/health`, {
+      const response = await fetch(`${apiUrl}/health`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         signal: AbortSignal.timeout(5000)
@@ -74,28 +74,28 @@ export function ApiStatusIndicator({
           icon: CheckCircle,
           text: 'API Online',
           variant: 'default' as const,
-          className: 'bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20'
+          className: 'bg-accent/10 text-accent border-accent/20 hover:bg-accent/20'
         };
       case 'offline':
         return {
           icon: XCircle,
           text: 'API Offline',
           variant: 'destructive' as const,
-          className: 'bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20'
+          className: 'bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20'
         };
       case 'checking':
         return {
           icon: Clock,
           text: 'Checking...',
           variant: 'secondary' as const,
-          className: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20'
+          className: 'bg-yellow-400/10 text-yellow-400 border-yellow-400/20'
         };
       default:
         return {
           icon: Clock,
           text: 'Unknown',
           variant: 'outline' as const,
-          className: 'bg-gray-500/10 text-gray-600 border-gray-500/20'
+          className: 'bg-muted-foreground/10 text-muted-foreground border-muted-foreground/20'
         };
     }
   }

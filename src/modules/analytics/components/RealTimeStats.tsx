@@ -138,7 +138,7 @@ export const RealTimeStats: React.FC<RealTimeStatsProps> = ({
       </div>
       
       {/* Real-time overview cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">
@@ -153,7 +153,26 @@ export const RealTimeStats: React.FC<RealTimeStatsProps> = ({
               {metrics?.activeUsers || 0}
             </div>
             <p className="text-xs text-gray-600">
-              Users in last 5 minutes
+              Unique users (5 min)
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-gray-600">
+              Active Sessions
+            </CardTitle>
+            <div className="p-2 rounded-lg bg-orange-50">
+              <ActivityIcon className="h-4 w-4 text-orange-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold mb-1">
+              {metrics?.activeSessions || 0}
+            </div>
+            <p className="text-xs text-gray-600">
+              Browser sessions (5 min)
             </p>
           </CardContent>
         </Card>

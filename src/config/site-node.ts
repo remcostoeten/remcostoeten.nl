@@ -51,10 +51,12 @@ export const SITE_CONFIG: TSiteConfig = {
     allowedOrigins: process.env.VITE_ALLOWED_ORIGINS 
       ? process.env.VITE_ALLOWED_ORIGINS.split(',')
       : [
-          'http://localhost:8080',
+          'http://localhost:3333',
+          'http://localhost:3334',
           'http://localhost:5173',
           'http://localhost:3000',
-          'http://127.0.0.1:8080',
+          'http://127.0.0.1:3333',
+          'http://127.0.0.1:3334',
           'http://127.0.0.1:5173'
         ],
   },

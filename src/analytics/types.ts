@@ -77,6 +77,13 @@ export type TAnalyticsEventType =
   | TSessionStart
   | TExternalLinkClick;
 
+export type TAnalyticsFilters = {
+  startDate?: Date;
+  endDate?: Date;
+  page?: string;
+  eventType?: string;
+}
+
 export type TAnalyticsMetrics = {
   totalPageViews: number;
   uniqueVisitors: number;
@@ -113,16 +120,8 @@ export type TAnalyticsMetrics = {
   }>;
 }
 
-export type TAnalyticsFilters = {
-  startDate?: Date;
-  endDate?: Date;
-  page?: string;
-  eventType?: string;
-}
-
 export type TRealTimeMetrics = {
   activeUsers: number;
-  activeSessions?: number; // Optional for backward compatibility
   currentPageViews: Array<{
     page: string;
     activeUsers: number;

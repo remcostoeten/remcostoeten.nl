@@ -1,48 +1,45 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { db, analyticsEvents, type TNewAnalyticsEvent } from './db'
+import { desc, count, sql, countDistinct, and, gte, lte, eq } from 'drizzle-orm'
 
 const app = new Hono()
 
-const analyticsData = {
-  events: [] as any[],
-  sessions: new Set<string>(),
-  users: new Set<string>(),
-  pageViews: new Map<string, number>(),
-  referrers: new Map<string, number>(),
-  deviceTypes: new Map<string, number>(),
-  hourlyActivity: new Map<number, number>(),
-  dailyActivity: new Map<string, { pageViews: number, uniqueVisitors: Set<string> }>()
-}
-
 const cache = new Map<string, { data: any, timestamp: number }>()
 const CACHE_TTL = 15000
-const eventBatch: any[] = []
+const eventBatch: TNewAnalyticsEvent[] = []
 let isProcessing = false
 
-function getCachedData(key: string, calculator: () => any) {
+function getCachedData(key: string, calculator: () => Promise<any>) {
   const cached = cache.get(key)
   const now = Date.now()
   
   if (cached && (now - cached.timestamp) < CACHE_TTL) {
-    return cached.data
+    return Promise.resolve(cached.data)
   }
   
-  const data = calculator()
-  cache.set(key, { data, timestamp: now })
-  return data
+  return calculator().then(data => {
+    cache.set(key, { data, timestamp: now })
+    return data
+  })
 }
 
-function processBatch() {
+async function processBatch() {
   if (isProcessing || eventBatch.length === 0) return
   
   isProcessing = true
   const batch = eventBatch.splice(0, eventBatch.length)
   
-  batch.forEach(processAnalyticsEventSync)
+  try {
+    if (batch.length > 0) {
+      await db.insert(analyticsEvents).values(batch)
+    }
+  } catch (error) {
+    console.error('Error inserting batch events:', error)
+  }
   
-  cache.delete('metrics')
-  cache.delete('realtime')
+  cache.clear()
   
   isProcessing = false
 }
@@ -60,78 +57,22 @@ function categorizeDevice(userAgent: string): string {
   }
 }
 
-// Sync version of event processing for batch operations
-function processAnalyticsEventSync(event: any) {
-  // Store the event
-  analyticsData.events.unshift({
-    ...event,
-    id: Date.now(),
-    timestamp: new Date().toISOString()
-  })
-  
-  // Keep only last 1000 events
-  if (analyticsData.events.length > 1000) {
-    analyticsData.events = analyticsData.events.slice(0, 1000)
+function processAnalyticsEvent(eventData: any) {
+  const event: TNewAnalyticsEvent = {
+    eventType: eventData.eventType,
+    page: eventData.page || null,
+    referrer: eventData.referrer || null,
+    userAgent: eventData.userAgent || null,
+    ipAddress: eventData.ipAddress || null,
+    sessionId: eventData.sessionId || null,
+    userId: eventData.userId || null,
+    data: eventData.data || null,
+    timestamp: new Date()
   }
   
-  // Track sessions
-  if (event.sessionId) {
-    analyticsData.sessions.add(event.sessionId)
-  }
-  
-  // Track unique users
-  if (event.userId) {
-    analyticsData.users.add(event.userId)
-  }
-  
-  // Track page views
-  if (event.eventType === 'page_view' && event.page) {
-    const currentCount = analyticsData.pageViews.get(event.page) || 0
-    analyticsData.pageViews.set(event.page, currentCount + 1)
-  }
-  
-  // Track referrers
-  if (event.referrer) {
-    const referrer = event.referrer || 'Direct'
-    const currentCount = analyticsData.referrers.get(referrer) || 0
-    analyticsData.referrers.set(referrer, currentCount + 1)
-  }
-  
-  // Track device types
-  if (event.userAgent) {
-    const deviceType = categorizeDevice(event.userAgent)
-    const currentCount = analyticsData.deviceTypes.get(deviceType) || 0
-    analyticsData.deviceTypes.set(deviceType, currentCount + 1)
-  }
-  
-  // Track hourly activity
-  const hour = new Date().getHours()
-  const currentHourCount = analyticsData.hourlyActivity.get(hour) || 0
-  analyticsData.hourlyActivity.set(hour, currentHourCount + 1)
-  
-  // Track daily activity
-  const today = new Date().toISOString().split('T')[0]
-  const dailyData = analyticsData.dailyActivity.get(today) || { 
-    pageViews: 0, 
-    uniqueVisitors: new Set<string>() 
-  }
-  
-  if (event.eventType === 'page_view') {
-    dailyData.pageViews++
-    if (event.userId) {
-      dailyData.uniqueVisitors.add(event.userId)
-    }
-  }
-  
-  analyticsData.dailyActivity.set(today, dailyData)
-}
-
-// Add event to queue for batch processing (performance optimization)
-function processAnalyticsEvent(event: any) {
   eventBatch.push(event)
   
-  cache.delete('metrics')
-  cache.delete('realtime')
+  cache.clear()
 }
 
 // Enable CORS for all routes
@@ -151,21 +92,33 @@ app.get('/health', (c) => {
 })
 
 // Analytics endpoints
-app.get('/api/analytics/events', (c) => {
+app.get('/api/analytics/events', async (c) => {
   const page = parseInt(c.req.query('page') || '1')
   const limit = parseInt(c.req.query('limit') || '50')
   const offset = (page - 1) * limit
   
-  const events = analyticsData.events.slice(offset, offset + limit)
-  const total = analyticsData.events.length
-  
-  return c.json({ 
-    events,
-    total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit)
-  })
+  try {
+    const [events, totalResult] = await Promise.all([
+      db.select().from(analyticsEvents)
+        .orderBy(desc(analyticsEvents.timestamp))
+        .limit(limit)
+        .offset(offset),
+      db.select({ count: count() }).from(analyticsEvents)
+    ])
+    
+    const total = totalResult[0]?.count || 0
+    
+    return c.json({ 
+      events,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit)
+    })
+  } catch (error) {
+    console.error('Error fetching events:', error)
+    return c.json({ error: 'Failed to fetch events' }, 500)
+  }
 })
 
 app.post('/api/analytics/events', async (c) => {
@@ -186,118 +139,198 @@ app.post('/api/analytics/events', async (c) => {
   }
 })
 
-app.get('/api/analytics/metrics', (c) => {
-  // Calculate total page views
-  const totalPageViews = Array.from(analyticsData.pageViews.values())
-    .reduce((sum, views) => sum + views, 0)
-  
-  // Get top pages
-  const topPages = Array.from(analyticsData.pageViews.entries())
-    .map(([page, views]) => ({ page, views }))
-    .sort((a, b) => b.views - a.views)
-    .slice(0, 10)
-  
-  // Get top referrers
-  const topReferrers = Array.from(analyticsData.referrers.entries())
-    .map(([referrer, visits]) => ({ referrer, visits }))
-    .sort((a, b) => b.visits - a.visits)
-    .slice(0, 10)
-  
-  // Get device types
-  const deviceTypes = Array.from(analyticsData.deviceTypes.entries())
-    .map(([type, count]) => ({ type, count }))
-  
-  // Get hourly activity
-  const hourlyActivity = Array.from(analyticsData.hourlyActivity.entries())
-    .map(([hour, count]) => ({ hour, count }))
-    .sort((a, b) => a.hour - b.hour)
-  
-  // Get daily activity
-  const dailyActivity = Array.from(analyticsData.dailyActivity.entries())
-    .map(([date, data]) => ({
-      date,
-      pageViews: data.pageViews,
-      uniqueVisitors: data.uniqueVisitors.size
-    }))
-    .sort((a, b) => a.date.localeCompare(b.date))
-  
-  const metrics = {
-    totalPageViews,
-    uniqueVisitors: analyticsData.users.size, // Use users instead of sessions for unique visitors
-    averageSessionDuration: 0,
-    topPages,
-    topReferrers,
-    deviceTypes,
-    popularProjects: [],
-    contactFormStats: {
-      submissions: 0,
-      successRate: 0
-    },
-    hourlyActivity,
-    dailyActivity
-  }
-  
-  return c.json(metrics)
+app.get('/api/analytics/metrics', async (c) => {
+  return getCachedData('metrics', async () => {
+    try {
+      // Calculate total page views
+      const totalPageViewsResult = await db
+        .select({ count: count() })
+        .from(analyticsEvents)
+        .where(eq(analyticsEvents.eventType, 'page_view'))
+      
+      const totalPageViews = totalPageViewsResult[0]?.count || 0
+      
+      // Get unique visitors
+      const uniqueVisitorsResult = await db
+        .select({ count: countDistinct(analyticsEvents.userId) })
+        .from(analyticsEvents)
+        .where(analyticsEvents.userId !== null)
+      
+      const uniqueVisitors = uniqueVisitorsResult[0]?.count || 0
+      
+      // Get top pages
+      const topPagesResult = await db
+        .select({
+          page: analyticsEvents.page,
+          views: count()
+        })
+        .from(analyticsEvents)
+        .where(and(
+          eq(analyticsEvents.eventType, 'page_view'),
+          analyticsEvents.page !== null
+        ))
+        .groupBy(analyticsEvents.page)
+        .orderBy(desc(count()))
+        .limit(10)
+      
+      // Get top referrers
+      const topReferrersResult = await db
+        .select({
+          referrer: analyticsEvents.referrer,
+          visits: count()
+        })
+        .from(analyticsEvents)
+        .where(analyticsEvents.referrer !== null)
+        .groupBy(analyticsEvents.referrer)
+        .orderBy(desc(count()))
+        .limit(10)
+      
+      // Get device types by analyzing user agents
+      const userAgentsResult = await db
+        .select({
+          userAgent: analyticsEvents.userAgent,
+          count: count()
+        })
+        .from(analyticsEvents)
+        .where(analyticsEvents.userAgent !== null)
+        .groupBy(analyticsEvents.userAgent)
+      
+      const deviceTypes = userAgentsResult.reduce((acc, { userAgent, count }) => {
+        const deviceType = categorizeDevice(userAgent || '')
+        acc[deviceType] = (acc[deviceType] || 0) + Number(count)
+        return acc
+      }, {} as Record<string, number>)
+      
+      const deviceTypesArray = Object.entries(deviceTypes)
+        .map(([type, count]) => ({ type, count }))
+      
+      // Get hourly activity
+      const hourlyActivityResult = await db
+        .select({
+          hour: sql<number>`EXTRACT(HOUR FROM ${analyticsEvents.timestamp})`,
+          count: count()
+        })
+        .from(analyticsEvents)
+        .groupBy(sql`EXTRACT(HOUR FROM ${analyticsEvents.timestamp})`)
+        .orderBy(sql`EXTRACT(HOUR FROM ${analyticsEvents.timestamp})`)
+      
+      // Get daily activity (last 30 days)
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      
+      const dailyActivityResult = await db
+        .select({
+          date: sql<string>`DATE(${analyticsEvents.timestamp})`,
+          pageViews: count(),
+          uniqueVisitors: countDistinct(analyticsEvents.userId)
+        })
+        .from(analyticsEvents)
+        .where(and(
+          gte(analyticsEvents.timestamp, thirtyDaysAgo),
+          eq(analyticsEvents.eventType, 'page_view')
+        ))
+        .groupBy(sql`DATE(${analyticsEvents.timestamp})`)
+        .orderBy(sql`DATE(${analyticsEvents.timestamp})`)
+      
+      const metrics = {
+        totalPageViews,
+        uniqueVisitors,
+        averageSessionDuration: 0,
+        topPages: topPagesResult,
+        topReferrers: topReferrersResult,
+        deviceTypes: deviceTypesArray,
+        popularProjects: [],
+        contactFormStats: {
+          submissions: 0,
+          successRate: 0
+        },
+        hourlyActivity: hourlyActivityResult,
+        dailyActivity: dailyActivityResult
+      }
+      
+      return metrics
+    } catch (error) {
+      console.error('Error fetching metrics:', error)
+      throw error
+    }
+  }).then(metrics => c.json(metrics))
+    .catch(error => c.json({ error: 'Failed to fetch metrics' }, 500))
 })
 
-app.get('/api/analytics/realtime', (c) => {
-  // Get events from last 5 minutes
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-  const recentEvents = analyticsData.events
-    .filter(event => new Date(event.timestamp) > fiveMinutesAgo)
-    .slice(0, 20)
-  
-  // Get active sessions and users from recent events
-  const activeSessions = new Set()
-  const activeUsers = new Set()
-  recentEvents.forEach(event => {
-    if (event.sessionId) {
-      activeSessions.add(event.sessionId)
-    }
-    if (event.userId) {
-      activeUsers.add(event.userId)
-    }
-  })
-  
-  // Get current page views by page from recent events (using userId for better tracking)
-  const currentPageViews = new Map()
-  recentEvents
-    .filter(event => event.eventType === 'page_view')
-    .forEach(event => {
-      if (event.page) {
-        const userSet = currentPageViews.get(event.page) || new Set()
-        if (event.userId) {
-          userSet.add(event.userId)
-        }
-        currentPageViews.set(event.page, userSet)
+app.get('/api/analytics/realtime', async (c) => {
+  return getCachedData('realtime', async () => {
+    try {
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+      
+      // Get recent events
+      const recentEvents = await db
+        .select()
+        .from(analyticsEvents)
+        .where(gte(analyticsEvents.timestamp, fiveMinutesAgo))
+        .orderBy(desc(analyticsEvents.timestamp))
+        .limit(20)
+      
+      // Get active users count
+      const activeUsersResult = await db
+        .select({ count: countDistinct(analyticsEvents.userId) })
+        .from(analyticsEvents)
+        .where(and(
+          gte(analyticsEvents.timestamp, fiveMinutesAgo),
+          analyticsEvents.userId !== null
+        ))
+      
+      const activeUsers = activeUsersResult[0]?.count || 0
+      
+      // Get active sessions count
+      const activeSessionsResult = await db
+        .select({ count: countDistinct(analyticsEvents.sessionId) })
+        .from(analyticsEvents)
+        .where(and(
+          gte(analyticsEvents.timestamp, fiveMinutesAgo),
+          analyticsEvents.sessionId !== null
+        ))
+      
+      const activeSessions = activeSessionsResult[0]?.count || 0
+      
+      // Get current page views by page
+      const currentPageViewsResult = await db
+        .select({
+          page: analyticsEvents.page,
+          activeUsers: countDistinct(analyticsEvents.userId)
+        })
+        .from(analyticsEvents)
+        .where(and(
+          gte(analyticsEvents.timestamp, fiveMinutesAgo),
+          eq(analyticsEvents.eventType, 'page_view'),
+          analyticsEvents.page !== null
+        ))
+        .groupBy(analyticsEvents.page)
+      
+      const realtimeMetrics = {
+        activeUsers,
+        activeSessions,
+        currentPageViews: currentPageViewsResult,
+        recentEvents: recentEvents.map(event => ({
+          id: event.id,
+          eventType: event.eventType,
+          page: event.page,
+          referrer: event.referrer,
+          userAgent: event.userAgent,
+          ipAddress: event.ipAddress,
+          sessionId: event.sessionId,
+          userId: event.userId,
+          data: event.data,
+          timestamp: event.timestamp
+        }))
       }
-    })
-  
-  const currentPageViewsArray = Array.from(currentPageViews.entries())
-    .map(([page, users]) => ({
-      page,
-      activeUsers: users.size
-    }))
-  
-  const realtimeMetrics = {
-    activeUsers: activeUsers.size, // Use unique users instead of sessions
-    activeSessions: activeSessions.size, // Also provide session count
-    currentPageViews: currentPageViewsArray,
-    recentEvents: recentEvents.map(event => ({
-      id: event.id,
-      eventType: event.eventType,
-      page: event.page,
-      referrer: event.referrer,
-      userAgent: event.userAgent,
-      ipAddress: event.ipAddress,
-      sessionId: event.sessionId,
-      userId: event.userId, // Include userId in the response
-      data: event.data,
-      timestamp: event.timestamp
-    }))
-  }
-  
-  return c.json(realtimeMetrics)
+      
+      return realtimeMetrics
+    } catch (error) {
+      console.error('Error fetching realtime metrics:', error)
+      throw error
+    }
+  }).then(metrics => c.json(metrics))
+    .catch(error => c.json({ error: 'Failed to fetch realtime metrics' }, 500))
 })
 
 // Catch all for undefined routes

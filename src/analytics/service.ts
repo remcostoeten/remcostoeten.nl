@@ -1,18 +1,19 @@
 import type { 
-  AnalyticsEvent, 
-  AnalyticsMetrics, 
-  AnalyticsFilters,
-  RealTimeMetrics 
-} from '../types';
+  TAnalyticsEvent, 
+  TAnalyticsMetrics, 
+  TAnalyticsFilters,
+  TRealTimeMetrics 
+} from './types';
 
 export class AnalyticsService {
   private static readonly API_BASE = 
-    import.meta.env?.DEV || window.location.hostname === 'localhost'
-      ? `http://localhost:${import.meta.env.VITE_API_PORT || '3334'}/api/analytics`
-      : '/api/analytics';
+    typeof window !== 'undefined' && (
+      (import.meta?.env?.DEV || window.location.hostname === 'localhost')
+        ? `http://localhost:${import.meta?.env?.VITE_API_PORT || '3003'}/api/analytics`
+        : '/api/analytics'
+    );
 
-  // Track a new analytics event
-  static async trackEvent(event: Omit<AnalyticsEvent, 'id' | 'timestamp'>): Promise<void> {
+  static async trackEvent(event: Omit<TAnalyticsEvent, 'id' | 'timestamp'>): Promise<void> {
     try {
       await fetch(`${this.API_BASE}/events`, {
         method: 'POST',
@@ -23,12 +24,10 @@ export class AnalyticsService {
       });
     } catch (error) {
       console.error('Failed to track analytics event:', error);
-      // Don't throw error to avoid breaking user experience
     }
   }
 
-  // Get analytics metrics with filters
-  static async getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics> {
+  static async getMetrics(filters?: TAnalyticsFilters): Promise<TAnalyticsMetrics> {
     try {
       const params = new URLSearchParams();
       if (filters?.startDate) params.append('startDate', filters.startDate.toISOString());
@@ -43,7 +42,6 @@ export class AnalyticsService {
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch analytics metrics:', error);
-      // Return empty metrics as fallback
       return {
         totalPageViews: 0,
         uniqueVisitors: 0,
@@ -59,8 +57,7 @@ export class AnalyticsService {
     }
   }
 
-  // Get real-time metrics
-  static async getRealTimeMetrics(): Promise<RealTimeMetrics> {
+  static async getRealTimeMetrics(): Promise<TRealTimeMetrics> {
     try {
       const response = await fetch(`${this.API_BASE}/realtime`);
       if (!response.ok) {
@@ -77,11 +74,10 @@ export class AnalyticsService {
     }
   }
 
-  // Get events with pagination
   static async getEvents(
     page: number = 1, 
     limit: number = 50, 
-    filters?: AnalyticsFilters
+    filters?: TAnalyticsFilters
   ) {
     try {
       const params = new URLSearchParams();
@@ -107,39 +103,5 @@ export class AnalyticsService {
         totalPages: 0
       };
     }
-  }
-
-  // Helper method to categorize device types from user agents
-  private static categorizeDeviceTypes(userAgents: string[]) {
-    const categories = {
-      'Desktop': 0,
-      'Mobile': 0,
-      'Tablet': 0,
-      'Unknown': 0
-    };
-
-    userAgents.forEach(ua => {
-      if (!ua) {
-        categories.Unknown++;
-        return;
-      }
-
-      const lowerUA = ua.toLowerCase();
-      
-      if (lowerUA.includes('mobile') || lowerUA.includes('android') || lowerUA.includes('iphone')) {
-        categories.Mobile++;
-      } else if (lowerUA.includes('tablet') || lowerUA.includes('ipad')) {
-        categories.Tablet++;
-      } else if (lowerUA.includes('mozilla') || lowerUA.includes('chrome') || lowerUA.includes('safari')) {
-        categories.Desktop++;
-      } else {
-        categories.Unknown++;
-      }
-    });
-
-    return Object.entries(categories).map(([type, count]) => ({
-      type,
-      count
-    }));
   }
 }
