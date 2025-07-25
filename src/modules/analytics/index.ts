@@ -15,7 +15,7 @@ export {
   useRealTimeMetrics,
   useAnalyticsEvents,
   usePageViewTracking,
-  useScrollDepthTracking
+  usePageCompletionTracking
 } from './hooks/useAnalytics';
 export { useTrack } from './hooks/useTrack';
 export { useAuth } from './hooks/useAuth';
@@ -31,17 +31,16 @@ export { EXCLUDED_ANALYTICS_PATHS, shouldExcludeFromTracking } from './config/ex
 
 // Types
 export type {
-  AnalyticsEvent,
-  PageView,
-  ButtonClick,
-  ProjectView,
-  ContactFormSubmission,
-  SkillHover,
-  ScrollDepth,
-  SessionStart,
-  ExternalLinkClick,
-  AnalyticsEventType,
-  AnalyticsMetrics,
-  AnalyticsFilters,
-  RealTimeMetrics
+  TAnalyticsEvent,
+  TPageView,
+  TButtonClick,
+  TProjectView,
+  TContactFormSubmission,
+  TPageCompleted,
+  TSessionStart,
+  TExternalLinkClick,
+  TAnalyticsEventType,
+  TAnalyticsMetrics,
+  TAnalyticsFilters,
+  TRealTimeMetrics
 } from './types';

@@ -143,23 +143,12 @@ export const useAnalytics = () => {
     });
   }, [trackEventMutation]);
 
-  const trackSkillHover = useCallback((skillName: string, skillCategory: string) => {
+  const trackPageCompleted = useCallback((timeOnPage: number, section?: string) => {
     trackEventMutation.mutate({
-      eventType: 'skill_hover',
+      eventType: 'page_completed',
       page: window.location.pathname,
       data: {
-        skillName,
-        skillCategory,
-      },
-    });
-  }, [trackEventMutation]);
-
-  const trackScrollDepth = useCallback((depth: number, section?: string) => {
-    trackEventMutation.mutate({
-      eventType: 'scroll_depth',
-      page: window.location.pathname,
-      data: {
-        depth,
+        timeOnPage,
         section,
       },
     });
@@ -201,8 +190,7 @@ export const useAnalytics = () => {
     trackButtonClick,
     trackProjectView,
     trackContactFormSubmission,
-    trackSkillHover,
-    trackScrollDepth,
+    trackPageCompleted,
     trackExternalLinkClick,
     isTracking: trackEventMutation.isPending,
   };
@@ -294,62 +282,52 @@ export const usePageViewTracking = () => {
   }, []);
 };
 
-// Hook for scroll depth tracking
-export const useScrollDepthTracking = (thresholds: number[] = [25, 50, 75, 90, 100]) => {
-  const { trackScrollDepth } = useAnalytics();
-  const trackedDepths = useRef(new Set<number>());
-  const throttleTimer = useRef<number | null>(null);
-  const thresholdsRef = useRef(thresholds);
-  const trackScrollDepthRef = useRef(trackScrollDepth);
-
-  // Update refs when they change
-  useEffect(() => {
-    thresholdsRef.current = thresholds;
-  }, [thresholds]);
+// Simple page completion tracking - tracks when user reaches bottom or spends significant time
+export const usePageCompletionTracking = () => {
+  const { trackPageCompleted } = useAnalytics();
+  const pageStartTime = useRef(Date.now());
+  const hasTrackedCompletion = useRef(false);
+  const trackPageCompletedRef = useRef(trackPageCompleted);
 
   useEffect(() => {
-    trackScrollDepthRef.current = trackScrollDepth;
-  }, [trackScrollDepth]);
+    trackPageCompletedRef.current = trackPageCompleted;
+  }, [trackPageCompleted]);
 
   useEffect(() => {
+    if (shouldExcludeFromTracking(window.location.pathname)) return;
+
     const handleScroll = () => {
-      // Don't track scroll depth on analytics pages
-      if (shouldExcludeFromTracking(window.location.pathname)) return;
+      if (hasTrackedCompletion.current) return;
       
-      // Throttle scroll events to prevent excessive calls
-      if (throttleTimer.current) return;
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       
-      throttleTimer.current = window.setTimeout(() => {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        
-        if (docHeight <= 0) {
-          throttleTimer.current = null;
-          return;
-        }
-        
-        const scrollPercent = Math.round((scrollTop / docHeight) * 100);
-
-        thresholdsRef.current.forEach(threshold => {
-          if (scrollPercent >= threshold && !trackedDepths.current.has(threshold)) {
-            trackedDepths.current.add(threshold);
-            trackScrollDepthRef.current(threshold);
-          }
-        });
-        
-        throttleTimer.current = null;
-      }, 250);
+      // Track completion when user reaches 90% of page
+      if (docHeight > 0 && (scrollTop / docHeight) >= 0.9) {
+        const timeOnPage = Date.now() - pageStartTime.current;
+        trackPageCompletedRef.current(timeOnPage);
+        hasTrackedCompletion.current = true;
+      }
     };
+
+    // Also track if user stays on page for 2+ minutes (engaged user)
+    const timeoutId = setTimeout(() => {
+      if (!hasTrackedCompletion.current) {
+        const timeOnPage = Date.now() - pageStartTime.current;
+        trackPageCompletedRef.current(timeOnPage, 'time-based');
+        hasTrackedCompletion.current = true;
+      }
+    }, 2 * 60 * 1000); // 2 minutes
 
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      if (throttleTimer.current) {
-        clearTimeout(throttleTimer.current);
-        throttleTimer.current = null;
-      }
-      trackedDepths.current.clear();
+      clearTimeout(timeoutId);
+      
+      // Reset for next page
+      pageStartTime.current = Date.now();
+      hasTrackedCompletion.current = false;
     };
   }, []);
 };

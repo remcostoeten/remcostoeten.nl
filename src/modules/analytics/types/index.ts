@@ -41,18 +41,10 @@ export type TContactFormSubmission = TAnalyticsEvent & {
   };
 }
 
-export type TSkillHover = TAnalyticsEvent & {
-  eventType: 'skill_hover';
+export type TPageCompleted = TAnalyticsEvent & {
+  eventType: 'page_completed';
   data: {
-    skillName: string;
-    skillCategory: string;
-  };
-}
-
-export type TScrollDepth = TAnalyticsEvent & {
-  eventType: 'scroll_depth';
-  data: {
-    depth: number;
+    timeOnPage: number;
     section?: string;
   };
 }
@@ -81,8 +73,7 @@ export type TAnalyticsEventType =
   | TButtonClick
   | TProjectView
   | TContactFormSubmission
-  | TSkillHover
-  | TScrollDepth
+  | TPageCompleted
   | TSessionStart
   | TExternalLinkClick;
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import { 
   usePageViewTracking, 
-  useScrollDepthTracking, 
+  usePageCompletionTracking, 
   useAnalytics 
 } from '../hooks/useAnalytics';
 
@@ -10,8 +10,7 @@ type TAnalyticsContextType = {
   trackButtonClick: (buttonText: string, buttonId?: string, section?: string) => void;
   trackProjectView: (projectId: string, projectTitle: string) => void;
   trackContactFormSubmission: (success: boolean, errors?: string[]) => void;
-  trackSkillHover: (skillName: string, skillCategory: string) => void;
-  trackScrollDepth: (depth: number, section?: string) => void;
+  trackPageCompleted: (timeOnPage: number, section?: string) => void;
   trackExternalLinkClick: (url: string, linkText: string, section?: string) => void;
   isTracking: boolean;
 }
@@ -31,7 +30,7 @@ export function AnalyticsProvider({
   
   // Always call hooks unconditionally
   usePageViewTracking();
-  useScrollDepthTracking();
+  usePageCompletionTracking();
 
   // Enhanced external link tracking
   useEffect(() => {
@@ -92,8 +91,7 @@ export function AnalyticsProvider({
     trackButtonClick: analytics.trackButtonClick,
     trackProjectView: analytics.trackProjectView,
     trackContactFormSubmission: analytics.trackContactFormSubmission,
-    trackSkillHover: analytics.trackSkillHover,
-    trackScrollDepth: analytics.trackScrollDepth,
+    trackPageCompleted: analytics.trackPageCompleted,
     trackExternalLinkClick: analytics.trackExternalLinkClick,
     isTracking: analytics.isTracking,
   };
