@@ -1,8 +1,13 @@
 {
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index"
+    }
+  ],
   "build": {
     "env": {
       "NODE_ENV": "production"
     }
-  },
-  "public": true
+  }
 }

@@ -44,7 +44,7 @@ async function getLocationFromIP(ip: string): Promise<{
   }
 }
 
-const app = new Hono().basePath('/api');
+const app = new Hono();
 
 import { getSiteConfig } from '../src/config/site';
 
