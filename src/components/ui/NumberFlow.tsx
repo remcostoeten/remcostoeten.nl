@@ -42,11 +42,10 @@ export const NumberFlow: Component<TProps> = (props) => {
     }
 
     const transformTiming = props.transformTiming || { duration: 400, easing: 'ease-out' };
-    const duration = transformTiming.duration / 1000; // Convert to seconds for motion-one
+    const duration = transformTiming.duration / 1000;
 
     setIsAnimating(true);
     
-    // Animate the number change
     animate(
       (progress) => {
         const interpolatedValue = currentValue + (newValue - currentValue) * progress;

@@ -1,4 +1,3 @@
-// Database types following functional style conventions
 
 export type TProject = {
   readonly id: string
@@ -65,7 +64,6 @@ export type TContactMessage = {
   readonly updatedAt: Date
 }
 
-// Input types for create operations
 export type TCreateProject = Omit<TProject, 'id' | 'createdAt' | 'updatedAt'>
 export type TUpdateProject = Partial<TCreateProject> & { readonly id: string }
 

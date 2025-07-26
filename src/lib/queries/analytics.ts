@@ -67,7 +67,6 @@ const recordPageView = async (data: TPageViewData): Promise<void> => {
   }
 }
 
-// Query hooks
 export const useGetAnalyticsMetrics = (timeframe: 'day' | 'week' | 'month') => {
   return createQuery(() => ({
     queryKey: ['analytics', 'metrics', timeframe],
@@ -93,7 +92,6 @@ export const useRecordPageView = () => {
   }))
 }
 
-// Utility function to generate visitor ID
 export const generateVisitorId = (): string => {
   if (typeof window === 'undefined') return 'server'
   

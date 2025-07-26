@@ -80,7 +80,6 @@ const updateContactMessageStatus = async (id: string, status: TContactMessage['s
   return result.data
 }
 
-// Query hooks
 export const useGetContactMessages = (params?: { limit?: number; status?: string }) => {
   return createQuery(() => ({
     queryKey: ['contact-messages', params],

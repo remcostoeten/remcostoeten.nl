@@ -7,7 +7,7 @@ const getAuthToken = (request: Request): string | null => {
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return null
   }
-  return authorization.slice(7) // Remove 'Bearer ' prefix
+  return authorization.slice(7)
 }
 
 export async function GET(event: APIEvent) {
@@ -30,7 +30,6 @@ export async function GET(event: APIEvent) {
       return json({ success: false, error: 'User not found' }, { status: 404 })
     }
 
-    // Don't include sensitive information in response
     const { ...safeUser } = user
     return json({ success: true, data: safeUser })
   } catch (error) {

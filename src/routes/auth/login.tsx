@@ -54,7 +54,7 @@ const LoginPage = () => {
     
     try {
       await loginMutation.mutateAsync(formData())
-      navigate('/') // Redirect to home on successful login
+      navigate('/')
     } catch (error) {
       setErrors({ general: error instanceof Error ? error.message : 'Login failed' })
     }
@@ -62,7 +62,6 @@ const LoginPage = () => {
 
   const updateField = (field: keyof TLoginForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear field error when user starts typing
     if (errors()[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }

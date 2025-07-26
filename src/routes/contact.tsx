@@ -73,7 +73,6 @@ const ContactPage = () => {
         message: formData().message.trim()
       })
       
-      // Reset form and show success message
       setFormData({
         name: '',
         email: '',
@@ -83,7 +82,6 @@ const ContactPage = () => {
       setErrors({})
       setShowSuccessMessage(true)
       
-      // Hide success message after 5 seconds
       setTimeout(() => setShowSuccessMessage(false), 5000)
     } catch (error) {
       setErrors({ general: error instanceof Error ? error.message : 'Failed to send message' })
@@ -92,7 +90,6 @@ const ContactPage = () => {
 
   const updateField = (field: keyof TContactForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear field error when user starts typing
     if (errors()[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }

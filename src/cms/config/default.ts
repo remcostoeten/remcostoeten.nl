@@ -3,18 +3,18 @@ import type { TCMSConfig } from "../types/config";
 const defaultConfig: TCMSConfig = {
   layout: {
     container: {
-      maxWidth: 896, // equivalent to max-w-4xl
-      paddingX: 1, // 1rem
-      paddingY: 2, // 2rem
+      maxWidth: 896,
+      paddingX: 1,
+      paddingY: 2,
       marginX: 'auto',
-      spacing: 4, // 4rem between sections
+      spacing: 4,
       variants: {
         wide: {
-          maxWidth: 1280, // max-w-7xl
+          maxWidth: 1280,
           paddingX: 2,
         },
         narrow: {
-          maxWidth: 640, // max-w-2xl
+          maxWidth: 640,
           paddingX: 1,
         },
         fullWidth: {
@@ -25,7 +25,7 @@ const defaultConfig: TCMSConfig = {
       responsive: {
         mobile: {
           paddingX: 1,
-          spacing: 2, // reduced spacing on mobile
+          spacing: 2,
         },
         tablet: {
           paddingX: 1.5,

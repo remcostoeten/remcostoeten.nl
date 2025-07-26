@@ -71,7 +71,7 @@ const RegisterPage = () => {
     try {
       const { confirmPassword, ...registerData } = formData()
       await registerMutation.mutateAsync(registerData)
-      navigate('/') // Redirect to home on successful registration
+      navigate('/')
     } catch (error) {
       setErrors({ general: error instanceof Error ? error.message : 'Registration failed' })
     }
@@ -79,7 +79,6 @@ const RegisterPage = () => {
 
   const updateField = (field: keyof TRegisterForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
-    // Clear field error when user starts typing
     if (errors()[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }

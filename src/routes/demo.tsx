@@ -18,7 +18,6 @@ const Demo: Component = () => {
   const [downloads, setDownloads] = createSignal(1234567);
   const [rating, setRating] = createSignal(4.7);
 
-  // Auto-increment counter
   const counterInterval = setInterval(() => {
     setCounter(prev => (prev + 1) % 100);
   }, 2000);

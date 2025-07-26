@@ -31,7 +31,6 @@ const ProjectsPage = () => {
         technologies: data.technologies.length > 0 ? data.technologies : ['JavaScript']
       })
       
-      // Reset form
       setFormData({
         name: '',
         description: '',

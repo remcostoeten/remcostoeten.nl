@@ -93,7 +93,6 @@ const deleteProject = async (id: string): Promise<void> => {
   }
 }
 
-// Query hooks following functional naming conventions
 export const useGetProjects = (params?: { limit?: number; status?: string }) => {
   return createQuery(() => ({
     queryKey: ['projects', params],

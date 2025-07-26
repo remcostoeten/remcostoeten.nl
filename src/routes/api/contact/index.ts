@@ -33,7 +33,6 @@ export async function POST(event: APIEvent) {
       }, { status: 400 })
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return json({ 

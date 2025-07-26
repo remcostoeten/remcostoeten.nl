@@ -64,7 +64,7 @@ const fetchCurrentUser = async (): Promise<TUser> => {
   const result: TApiResponse<TUser> = await response.json()
   
   if (!result.success) {
-    removeStoredToken() // Clear invalid token
+    removeStoredToken()
     throw new Error(result.error || 'Failed to fetch user')
   }
   
@@ -76,8 +76,6 @@ const fetchCurrentUser = async (): Promise<TUser> => {
 }
 
 const loginUser = async (data: TLoginData): Promise<TAuthResponse> => {
-  // For now, we'll simulate a login since we don't have a full auth backend
-  // In a real app, this would call /api/auth/login
   const response = await fetch('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -138,7 +136,6 @@ const logoutUser = async (): Promise<void> => {
   removeStoredToken()
 }
 
-// Query hooks
 export const useCurrentUser = () => {
   return createQuery(() => ({
     queryKey: ['auth', 'currentUser'],
@@ -176,12 +173,11 @@ export const useLogout = () => {
   return createMutation(() => ({
     mutationFn: logoutUser,
     onSuccess: () => {
-      queryClient.clear() // Clear all cached data on logout
+      queryClient.clear()
     }
   }))
 }
 
-// Utility functions
 export const isAuthenticated = (): boolean => {
   return !!getStoredToken()
 }

@@ -28,7 +28,7 @@ const createAuthFactory = (): TAuthFactory => {
     try {
       const result = await db.insert(adminUser).values({
         email: data.email,
-        passwordHash: 'temp-hash' // In a real app, this would be properly hashed
+        passwordHash: 'temp-hash'
       }).returning()
       return result[0] || null
     } catch (error) {
@@ -73,10 +73,8 @@ const createAuthFactory = (): TAuthFactory => {
 
   const deleteUser = async (id: string): Promise<boolean> => {
     try {
-      // First delete all sessions for this user
       await db.delete(adminSessions).where(eq(adminSessions.userId, id))
       
-      // Then delete the user
       const result = await db.delete(adminUser).where(eq(adminUser.id, id))
       return result.rowsAffected > 0
     } catch (error) {
