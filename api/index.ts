@@ -545,7 +545,8 @@ function categorizeDeviceTypes(userAgents: string[]) {
 }
 
 // Export for Vercel (production)
-export default handle(app);
+module.exports = handle(app);
+module.exports.default = handle(app);
 
 // Export app for development server
-export { app };
+module.exports.app = app;
