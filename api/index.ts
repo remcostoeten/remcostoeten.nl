@@ -4,12 +4,48 @@ import { handle } from 'hono/vercel';
 import { db } from '../src/db/connection';
 import { analyticsEvents } from '../src/db/schema';
 import { eq, desc, count, and, gte, lte, sql } from 'drizzle-orm';
-import type { 
-  TAnalyticsEvent as AnalyticsEvent, 
-  TAnalyticsMetrics as AnalyticsMetrics, 
-  TAnalyticsFilters as AnalyticsFilters,
-  TRealTimeMetrics as RealTimeMetrics 
-} from '../src/modules/analytics/types';
+// Analytics types defined directly
+type AnalyticsEvent = {
+  id: string;
+  eventType: string;
+  page?: string;
+  referrer?: string;
+  userAgent?: string;
+  ipAddress?: string;
+  sessionId?: string;
+  userId?: string;
+  data?: any;
+  timestamp: Date;
+};
+
+type AnalyticsMetrics = {
+  totalPageViews: number;
+  uniqueVisitors: number;
+  averageSessionDuration: number;
+  topPages: { page: string; views: number }[];
+  topReferrers: { referrer: string; visits: number }[];
+  deviceTypes: { type: string; count: number }[];
+  popularProjects: { projectId: string; projectTitle: string; views: number }[];
+  contactFormStats: { submissions: number; successRate: number };
+  hourlyActivity: { hour: number; count: number }[];
+  dailyActivity: { date: string; pageViews: number; uniqueVisitors: number }[];
+  topCountries: { country: string; visits: number; percentage: number }[];
+  topRegions: { region: string; country: string; visits: number }[];
+  topCities: { city: string; region: string; country: string; visits: number }[];
+};
+
+type AnalyticsFilters = {
+  startDate?: Date;
+  endDate?: Date;
+  page?: string;
+  eventType?: string;
+};
+
+type RealTimeMetrics = {
+  activeUsers: number;
+  currentPageViews: { page: string; activeUsers: number }[];
+  recentEvents: AnalyticsEvent[];
+};
 
 // Simple IP geolocation function using ipapi.co
 async function getLocationFromIP(ip: string): Promise<{
