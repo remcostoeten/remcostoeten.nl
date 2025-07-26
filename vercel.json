@@ -3,5 +3,6 @@
     "env": {
       "NODE_ENV": "production"
     }
-  }
+  },
+  "public": true
 }
