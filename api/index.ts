@@ -179,6 +179,42 @@ app.get('/health', (c) => {
   return c.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Debug endpoint
+app.get('/debug', async (c) => {
+  try {
+    const hasDbUrl = !!process.env.DATABASE_URL;
+    const nodeEnv = process.env.NODE_ENV;
+    
+    // Test basic DB connection
+    let dbTest = 'not_tested';
+    try {
+      if (hasDbUrl) {
+        const result = await db.execute(`SELECT NOW() as current_time`);
+        dbTest = 'connected';
+      } else {
+        dbTest = 'no_db_url';
+      }
+    } catch (error) {
+      dbTest = `error: ${error instanceof Error ? error.message : 'unknown'}`;
+    }
+    
+    return c.json({
+      status: 'debug',
+      timestamp: new Date().toISOString(),
+      environment: {
+        NODE_ENV: nodeEnv,
+        has_database_url: hasDbUrl,
+        db_test: dbTest
+      }
+    });
+  } catch (error) {
+    return c.json({
+      status: 'error',
+      error: error instanceof Error ? error.message : 'unknown error'
+    }, 500);
+  }
+});
+
 async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics> {
   const whereConditions = [];
   
