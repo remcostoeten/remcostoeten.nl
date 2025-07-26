@@ -20,8 +20,8 @@ type TContactFactory = {
   readonly deleteMessage: (id: string) => Promise<boolean>
 }
 
-const createContactFactory = (): TContactFactory => {
-  const createMessage = async (data: TCreateContactMessage): Promise<TContactSubmission | null> => {
+function createContactFactory(): TContactFactory {
+async function createMessage(data: TCreateContactMessage): PromisecTContactSubmission | nulle {
     try {
       const result = await db.insert(contactSubmissions).values({
         name: data.name,
@@ -36,7 +36,7 @@ const createContactFactory = (): TContactFactory => {
     }
   }
 
-  const getAllMessages = async (limit = 50): Promise<TContactSubmission[]> => {
+async function getAllMessages(limit = 50): PromisecTContactSubmission[]e {
     try {
       const result = await db.select().from(contactSubmissions).limit(limit)
       return result
@@ -46,7 +46,7 @@ const createContactFactory = (): TContactFactory => {
     }
   }
 
-  const getMessageById = async (id: string): Promise<TContactSubmission | null> => {
+async function getMessageById(id: string): PromisecTContactSubmission | nulle {
     try {
       const result = await db.select().from(contactSubmissions).where(eq(contactSubmissions.id, id)).limit(1)
       return result[0] || null
@@ -56,7 +56,7 @@ const createContactFactory = (): TContactFactory => {
     }
   }
 
-  const updateMessageStatus = async (data: TUpdateContactMessage): Promise<TContactSubmission | null> => {
+async function updateMessageStatus(data: TUpdateContactMessage): PromisecTContactSubmission | nulle {
     try {
       const result = await db
         .update(contactSubmissions)
@@ -70,7 +70,7 @@ const createContactFactory = (): TContactFactory => {
     }
   }
 
-  const getMessagesByStatus = async (status: string): Promise<TContactSubmission[]> => {
+async function getMessagesByStatus(status: string): PromisecTContactSubmission[]e {
     try {
       const result = await db.select().from(contactSubmissions).where(eq(contactSubmissions.status, status))
       return result
@@ -80,10 +80,10 @@ const createContactFactory = (): TContactFactory => {
     }
   }
 
-  const deleteMessage = async (id: string): Promise<boolean> => {
+async function deleteMessage(id: string): Promisecbooleane {
     try {
       const result = await db.delete(contactSubmissions).where(eq(contactSubmissions.id, id))
-      return result.rowsAffected > 0
+      return result.rowsAffected e 0
     } catch (error) {
       console.error('Failed to delete contact message:', error)
       return false
