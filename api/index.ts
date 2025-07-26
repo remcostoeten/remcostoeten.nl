@@ -1,9 +1,23 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { handle } from 'hono/vercel';
-import { db } from '../src/db/connection';
-import { analyticsEvents } from '../src/db/schema';
-import { eq, desc, count, and, gte, lte, sql } from 'drizzle-orm';
+
+// Try to import database safely
+let db: any;
+let analyticsEvents: any;
+let eq: any, desc: any, count: any, and: any, gte: any, lte: any, sql: any;
+
+try {
+  const dbModule = require('../src/db/connection');
+  const schemaModule = require('../src/db/schema');
+  const drizzleOrm = require('drizzle-orm');
+  
+  db = dbModule.db;
+  analyticsEvents = schemaModule.analyticsEvents;
+  ({ eq, desc, count, and, gte, lte, sql } = drizzleOrm);
+} catch (error) {
+  console.error('Failed to import database modules:', error);
+}
 // Analytics types defined directly
 type AnalyticsEvent = {
   id: string;
