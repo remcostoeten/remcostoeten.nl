@@ -1,5 +1,8 @@
 import { createSignal, For, Show } from 'solid-js'
 import { useGetProjects, useCreateProject } from '~/lib/queries/projects'
+import BaseLayout from '~/components/layout/BaseLayout'
+import Button from '~/components/ui/Button'
+import Input from '~/components/ui/Input'
 import type { TProject } from '~/db/schema'
 
 const ProjectsPage = () => {
@@ -48,7 +51,8 @@ const ProjectsPage = () => {
   }
 
   return (
-    <div class="max-w-4xl mx-auto p-6">
+    <BaseLayout>
+      <div class="max-w-4xl mx-auto p-6">
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-4">Projects</h1>
         <button
@@ -217,6 +221,7 @@ const ProjectsPage = () => {
         </Show>
       </div>
     </div>
+    </BaseLayout>
   )
 }
 

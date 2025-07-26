@@ -1,12 +1,25 @@
 import { db } from '../connection'
-import type { TPageView, TVisitorData, TAnalyticsMetrics } from '../types'
+import { analyticsEvents } from '../schema'
+import { eq, sql, desc, gte, and } from 'drizzle-orm'
+
+type TAnalyticsMetrics = {
+  readonly totalViews: number
+  readonly uniqueVisitors: number
+  readonly uniquePages: number
+  readonly timeframe: 'day' | 'week' | 'month'
+}
+
+type TTopPage = {
+  readonly path: string
+  readonly views: number
+}
 
 type TAnalyticsFactory = {
-  readonly recordPageView: (data: Omit<TPageView, 'id' | 'createdAt'>) => Promise<TPageView | null>
-  readonly getPageViews: (options?: { limit?: number; startDate?: Date; endDate?: Date }) => Promise<TPageView[]>
-  readonly getVisitorData: (visitorId: string) => Promise<TVisitorData | null>
+  readonly recordPageView: (data: { path: string; visitorId: string; userAgent?: string; referrer?: string }) => Promise<any | null>
+  readonly getPageViews: (options?: { limit?: number; startDate?: Date; endDate?: Date }) => Promise<any[]>
+  readonly getVisitorData: (visitorId: string) => Promise<any | null>
   readonly getAnalyticsMetrics: (timeframe: 'day' | 'week' | 'month') => Promise<TAnalyticsMetrics>
-  readonly getTopPages: (limit?: number) => Promise<Array<{ path: string; views: number }>>
+  readonly getTopPages: (limit?: number) => Promise<TTopPage[]>
 }
 
 const createAnalyticsFactory = (): TAnalyticsFactory => {
