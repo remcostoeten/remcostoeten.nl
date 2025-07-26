@@ -29,9 +29,9 @@ if [[ -n $(git status --porcelain) ]]; then
     exit 1
 fi
 
-# Push to main branch
-echo "📤 Pushing to main branch..."
-git push origin main
+# Push to master branch
+echo "📤 Pushing to master branch..."
+git push origin master
 
 # Test production database connection
 echo "🗄️  Testing production database connection..."
