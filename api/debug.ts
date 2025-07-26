@@ -25,11 +25,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     
     try {
       // Try to import database modules
-      const dbConnection = await import('../src/db/connection.js');
+      const { getDb } = await import('../src/db/connection.js');
+      dbModule = getDb();
       const { analyticsEvents } = await import('../src/db/schema.js');
       const { sql } = await import('drizzle-orm');
       
-      dbModule = dbConnection.db;
       dbInitTest = 'modules_loaded';
       
       if (hasDbUrl && dbModule) {

@@ -1,9 +1,9 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
-import dotenv from "dotenv";
 
-dotenv.config();
+// Global connection cache for serverless environments
+let globalConnection: ReturnType<typeof drizzle> | undefined;
 
 function createConnection() {
   const connectionString = process.env.DATABASE_URL;
@@ -12,12 +12,15 @@ function createConnection() {
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
+  // For serverless environments, use a simpler configuration
+  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
+  
   const client = postgres(connectionString, {
-    max: 20, // Increased pool size for analytics queries
-    idle_timeout: 30, // Keep connections alive longer
+    max: isServerless ? 1 : 20, // Single connection in serverless
+    idle_timeout: isServerless ? 0 : 30,
     connect_timeout: 10,
-    max_lifetime: 60 * 30, // 30 minutes
-    prepare: false, // Disable prepared statements for analytics queries
+    max_lifetime: isServerless ? 0 : 60 * 30,
+    prepare: false,
     transform: {
       undefined: null,
     },
@@ -26,6 +29,14 @@ function createConnection() {
   return drizzle(client, { schema });
 }
 
-export const db = createConnection();
+export function getDb() {
+  if (!globalConnection) {
+    globalConnection = createConnection();
+  }
+  return globalConnection;
+}
+
+// Keep the old export for backward compatibility but make it lazy
+export const db = getDb();
 
 export type TDatabase = typeof db;

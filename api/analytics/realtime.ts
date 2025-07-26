@@ -16,7 +16,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     // Import database modules dynamically
-    const { db } = await import('../../src/db/connection.js');
+const { getDb } = await import('../../src/db/connection.js');
+    const db = getDb();
     const { analyticsEvents } = await import('../../src/db/schema.js');
     const { eq, desc, gte, sql } = await import('drizzle-orm');
 
