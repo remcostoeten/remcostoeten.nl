@@ -172,7 +172,7 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
     totalPageViews,
     uniqueVisitors,
     sessionDurations,
-    bounceRate,
+    ,
     topPages,
     topReferrers,
     popularProjects,
@@ -219,7 +219,7 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
           FROM analytics_events 
           WHERE event_type = 'page_view' 
           GROUP BY session_id
-        ) single_page`.as('single_page'),
+        ) single_page`,
         sql`${analyticsEvents.sessionId} = single_page.session_id`
       )
       .where(and(eq(analyticsEvents.eventType, 'page_view'), whereClause)),
@@ -372,8 +372,8 @@ async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics>
     })),
     contactFormStats: {
       submissions: contactFormSubmissions[0]?.count || 0,
-      successRate: contactFormSubmissions[0]?.count > 0 
-        ? (successfulSubmissions[0]?.count || 0) / contactFormSubmissions[0].count * 100 
+      successRate: (contactFormSubmissions[0]?.count || 0) > 0 
+        ? ((successfulSubmissions[0]?.count || 0) / (contactFormSubmissions[0]?.count || 1)) * 100 
         : 0
     },
     hourlyActivity: hourlyActivity.map(h => ({
@@ -442,11 +442,11 @@ async function getRealTimeMetrics(): Promise<RealTimeMetrics> {
     recentEvents: recentEvents.map(event => ({
       id: event.id,
       eventType: event.eventType,
-      page: event.page,
-      referrer: event.referrer,
-      userAgent: event.userAgent,
-      ipAddress: event.ipAddress,
-      sessionId: event.sessionId,
+      page: event.page || undefined,
+      referrer: event.referrer || undefined,
+      userAgent: event.userAgent || undefined,
+      ipAddress: event.ipAddress || undefined,
+      sessionId: event.sessionId || undefined,
       data: event.data,
       timestamp: event.timestamp
     }))
@@ -496,11 +496,11 @@ async function getEvents(
     events: events.map(event => ({
       id: event.id,
       eventType: event.eventType,
-      page: event.page,
-      referrer: event.referrer,
-      userAgent: event.userAgent,
-      ipAddress: event.ipAddress,
-      sessionId: event.sessionId,
+      page: event.page || undefined,
+      referrer: event.referrer || undefined,
+      userAgent: event.userAgent || undefined,
+      ipAddress: event.ipAddress || undefined,
+      sessionId: event.sessionId || undefined,
       data: event.data,
       timestamp: event.timestamp
     })),

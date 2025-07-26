@@ -27,7 +27,7 @@ type TSiteConfig = {
 
 function getEnvironment() {
   if (typeof window !== 'undefined') {
-    return import.meta.env;
+    return (globalThis as any).import?.meta?.env || {};
   }
   return process.env;
 }
