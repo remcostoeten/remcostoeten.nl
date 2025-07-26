@@ -14,51 +14,15 @@ type TProps = {
 type ChartType = 'pie' | 'bar';
 
 const COUNTRY_CONFIG = {
-  'United States': {
-    flag: '🇺🇸',
-    color: '#3b82f6',
-    gradient: 'from-blue-500 to-blue-600'
-  },
-  'Canada': {
-    flag: '🇨🇦',
-    color: '#10b981',
-    gradient: 'from-emerald-500 to-emerald-600'
-  },
-  'United Kingdom': {
-    flag: '🇬🇧',
-    color: '#f59e0b',
-    gradient: 'from-amber-500 to-amber-600'
-  },
-  'Germany': {
-    flag: '🇩🇪',
-    color: '#ef4444',
-    gradient: 'from-red-500 to-red-600'
-  },
-  'France': {
-    flag: '🇫🇷',
-    color: '#8b5cf6',
-    gradient: 'from-violet-500 to-violet-600'
-  },
-  'Netherlands': {
-    flag: '🇳🇱',
-    color: '#f97316',
-    gradient: 'from-orange-500 to-orange-600'
-  },
-  'Australia': {
-    flag: '🇦🇺',
-    color: '#06b6d4',
-    gradient: 'from-cyan-500 to-cyan-600'
-  },
-  'Japan': {
-    flag: '🇯🇵',
-    color: '#ec4899',
-    gradient: 'from-pink-500 to-pink-600'
-  },
-  'Other': {
-    flag: '🌍',
-    color: '#6b7280',
-    gradient: 'from-gray-500 to-gray-600'
-  }
+  'United States': { flag: '🇺🇸', color: '#3b82f6' },
+  'Canada': { flag: '🇨🇦', color: '#10b981' },
+  'United Kingdom': { flag: '🇬🇧', color: '#f59e0b' },
+  'Germany': { flag: '🇩🇪', color: '#ef4444' },
+  'France': { flag: '🇫🇷', color: '#8b5cf6' },
+  'Netherlands': { flag: '🇳🇱', color: '#f97316' },
+  'Australia': { flag: '🇦🇺', color: '#06b6d4' },
+  'Japan': { flag: '🇯🇵', color: '#ec4899' },
+  'Other': { flag: '🌍', color: '#6b7280' }
 } as const;
 
 export function GeoAnalyticsChart({ metrics, loading }: TProps) {
@@ -72,8 +36,7 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
       value: country.visits,
       percentage: country.percentage,
       color: config.color,
-      flag: config.flag,
-      gradient: config.gradient
+      flag: config.flag
     };
   }) || [];
   
@@ -106,20 +69,16 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
 
   if (loading) {
     return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b">
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-emerald-100 rounded-lg">
-              <GlobeIcon className="w-5 h-5 text-emerald-600" />
-            </div>
+            <GlobeIcon className="w-5 h-5 text-blue-600" />
             Geographic Distribution
           </CardTitle>
-          <CardDescription>
-            Visitor locations worldwide
-          </CardDescription>
+          <CardDescription>Visitor locations worldwide</CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="h-80 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl animate-pulse flex items-center justify-center">
+          <div className="h-80 bg-gray-50 rounded-lg animate-pulse flex items-center justify-center">
             <ActivityIcon className="w-8 h-8 text-gray-400 animate-spin" />
           </div>
         </CardContent>
@@ -129,20 +88,16 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
 
   if (!metrics?.topCountries || chartData.length === 0) {
     return (
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b">
+      <Card>
+        <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <div className="p-2 bg-emerald-100 rounded-lg">
-              <GlobeIcon className="w-5 h-5 text-emerald-600" />
-            </div>
+            <GlobeIcon className="w-5 h-5 text-blue-600" />
             Geographic Distribution
           </CardTitle>
-          <CardDescription>
-            Visitor locations worldwide
-          </CardDescription>
+          <CardDescription>Visitor locations worldwide</CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <div className="h-80 flex items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
+          <div className="h-80 flex items-center justify-center text-gray-500 bg-gray-50 rounded-lg">
             <div className="text-center">
               <GlobeIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
               <p>No geographic data available</p>
@@ -154,18 +109,14 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
   }
 
   return (
-    <Card className="overflow-hidden border-0 shadow-lg bg-white">
-      <CardHeader className="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border-b">
+    <Card>
+      <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg shadow-lg">
-              <GlobeIcon className="w-5 h-5 text-white" />
-            </div>
+          <div className="flex items-center gap-2">
+            <GlobeIcon className="w-5 h-5 text-blue-600" />
             <div>
-              <CardTitle className="text-gray-900">Geographic Distribution</CardTitle>
-              <CardDescription className="text-gray-600">
-                Visitor locations worldwide
-              </CardDescription>
+              <CardTitle>Geographic Distribution</CardTitle>
+              <CardDescription>Visitor locations worldwide</CardDescription>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -173,25 +124,23 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
               variant={chartType === 'pie' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setChartType('pie')}
-              className="h-8"
             >
               <MapPinIcon className="w-3 h-3 mr-1" />
-              Map
+              Pie
             </Button>
             <Button
               variant={chartType === 'bar' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setChartType('bar')}
-              className="h-8"
             >
               <BarChart3Icon className="w-3 h-3 mr-1" />
-              Chart
+              Bar
             </Button>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="p-6 bg-gradient-to-br from-gray-50/30 to-white">
+      <CardContent className="p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Chart */}
           <div className="h-80">
@@ -272,31 +221,30 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
               {chartData.map((item, index) => (
                 <div 
                   key={item.name} 
-                  className="p-4 rounded-xl border bg-white/60 backdrop-blur-sm border-gray-200 transition-all duration-200 hover:shadow-md hover:bg-white/80"
+                  className="p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition-colors"
                   onMouseEnter={() => setHoveredIndex(index)}
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{item.flag}</span>
+                      <span className="text-xl">{item.flag}</span>
                       <div>
                         <span className="font-medium text-gray-900">{item.name}</span>
                         <p className="text-sm text-gray-600">{item.percentage?.toFixed(1) || '0.0'}% of traffic</p>
                       </div>
                     </div>
-                    <Badge variant="secondary" className="font-semibold">
+                    <Badge variant="secondary">
                       {item.value.toLocaleString()}
                     </Badge>
                   </div>
                   
-                  {/* Progress bar */}
-                  <div className="mt-3">
-                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div className="mt-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div 
-                        className="h-2 rounded-full transition-all duration-1000 ease-out"
+                        className="h-1.5 rounded-full transition-all duration-500"
                         style={{
                           width: `${item.percentage || 0}%`,
-                          background: `linear-gradient(90deg, ${item.color}, ${item.color}dd)`
+                          backgroundColor: item.color
                         }}
                       />
                     </div>
@@ -305,11 +253,10 @@ export function GeoAnalyticsChart({ metrics, loading }: TProps) {
               ))}
             </div>
             
-            {/* Total Summary */}
-            <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border">
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
               <div className="flex items-center justify-between">
                 <span className="font-medium text-gray-900">Total Countries</span>
-                <Badge variant="default" className="text-lg px-3 py-1">
+                <Badge variant="default">
                   {chartData.length}
                 </Badge>
               </div>
