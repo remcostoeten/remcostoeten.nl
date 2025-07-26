@@ -259,7 +259,7 @@ export function Text({
     }
     
     if (highlight) {
-      effects.push('bg-accent/20 px-1 rounded-sm border-l-2 border-accent');
+      effects.push('highlight');
     }
     
     if (truncate) {

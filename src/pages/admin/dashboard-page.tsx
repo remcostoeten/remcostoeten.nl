@@ -11,11 +11,11 @@ import {
   TrendingDown,
   Minus
 } from "lucide-react";
-import { useAuthContext } from "@/modules/auth/providers/AuthProvider";
+import { useAuthContext } from "@/modules/auth/providers/auth-provider";
 import { useAnalyticsMetrics, useRealTimeMetrics } from "@/modules/analytics";
 
 export function DashboardPage() {
-  const { user } = useAuthContext();
+  const { user, isLoading: authLoading } = useAuthContext();
   
   // Get analytics data for last 30 days
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -112,7 +112,7 @@ export function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome back, {user?.email.split('@')[0]}. Here's what's happening with your site.
+          Welcome back{user ? `, ${user.email.split('@')[0]}` : ''}. Here's what's happening with your site.
         </p>
       </div>
 

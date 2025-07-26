@@ -290,13 +290,39 @@ app.get('/api/analytics/events', async (c) => {
   const limit = parseInt(c.req.query('limit') || '50')
   const offset = (page - 1) * limit
   
+  // Extract filter parameters
+  const startDate = c.req.query('startDate')
+  const endDate = c.req.query('endDate')
+  const pageFilter = c.req.query('filterPage') // Note: using filterPage to avoid conflict with 'page' pagination param
+  const eventTypeFilter = c.req.query('eventType')
+  
   try {
+    // Build filter conditions
+    const filterConditions = []
+    
+    if (startDate) {
+      filterConditions.push(gte(analyticsEvents.timestamp, new Date(startDate)))
+    }
+    if (endDate) {
+      filterConditions.push(lte(analyticsEvents.timestamp, new Date(endDate)))
+    }
+    if (pageFilter && pageFilter !== 'all') {
+      filterConditions.push(eq(analyticsEvents.page, pageFilter))
+    }
+    if (eventTypeFilter && eventTypeFilter !== 'all') {
+      filterConditions.push(eq(analyticsEvents.eventType, eventTypeFilter))
+    }
+    
+    const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined
+    
     const [events, totalResult] = await Promise.all([
       db.select().from(analyticsEvents)
+        .where(whereClause)
         .orderBy(desc(analyticsEvents.timestamp))
         .limit(limit)
         .offset(offset),
       db.select({ count: count() }).from(analyticsEvents)
+        .where(whereClause)
     ])
     
     const total = totalResult[0]?.count || 0
@@ -333,25 +359,65 @@ app.post('/api/analytics/events', async (c) => {
 })
 
 app.get('/api/analytics/metrics', async (c) => {
-  return getCachedData('metrics', async () => {
+  // Extract query parameters for filtering
+  const startDate = c.req.query('startDate')
+  const endDate = c.req.query('endDate')
+  const pageFilter = c.req.query('page')
+  const eventTypeFilter = c.req.query('eventType')
+  
+  // Create cache key that includes filters
+  const cacheKey = `metrics-${startDate || 'null'}-${endDate || 'null'}-${pageFilter || 'null'}-${eventTypeFilter || 'null'}`
+  
+  return getCachedData(cacheKey, async () => {
     try {
-      // Calculate total page views
+      // Build base filter conditions
+      const baseConditions = []
+      
+      // Add date range filters
+      if (startDate) {
+        baseConditions.push(gte(analyticsEvents.timestamp, new Date(startDate)))
+      }
+      if (endDate) {
+        baseConditions.push(lte(analyticsEvents.timestamp, new Date(endDate)))
+      }
+      
+      // Add page filter
+      if (pageFilter && pageFilter !== 'all') {
+        baseConditions.push(eq(analyticsEvents.page, pageFilter))
+      }
+      
+      // For page views specifically
+      const pageViewConditions = [
+        eq(analyticsEvents.eventType, 'page_view'),
+        ...baseConditions
+      ]
+      
+      // For event type filter (applies to all queries)
+      const eventTypeConditions = [...baseConditions]
+      if (eventTypeFilter && eventTypeFilter !== 'all') {
+        eventTypeConditions.push(eq(analyticsEvents.eventType, eventTypeFilter))
+      }
+      
+      // Calculate total page views with filters
       const totalPageViewsResult = await db
         .select({ count: count() })
         .from(analyticsEvents)
-        .where(eq(analyticsEvents.eventType, 'page_view'))
+        .where(pageViewConditions.length > 0 ? and(...pageViewConditions) : undefined)
       
       const totalPageViews = totalPageViewsResult[0]?.count || 0
       
-      // Get unique visitors
+      // Get unique visitors with filters
       const uniqueVisitorsResult = await db
         .select({ count: countDistinct(analyticsEvents.userId) })
         .from(analyticsEvents)
-        .where(analyticsEvents.userId !== null)
+        .where(and(
+          analyticsEvents.userId !== null,
+          ...(eventTypeConditions.length > 0 ? eventTypeConditions : [])
+        ))
       
       const uniqueVisitors = uniqueVisitorsResult[0]?.count || 0
       
-      // Get top pages
+      // Get top pages with filters
       const topPagesResult = await db
         .select({
           page: analyticsEvents.page,
@@ -360,32 +426,39 @@ app.get('/api/analytics/metrics', async (c) => {
         .from(analyticsEvents)
         .where(and(
           eq(analyticsEvents.eventType, 'page_view'),
-          analyticsEvents.page !== null
+          analyticsEvents.page !== null,
+          ...(baseConditions.length > 0 ? baseConditions : [])
         ))
         .groupBy(analyticsEvents.page)
         .orderBy(desc(count()))
         .limit(10)
       
-      // Get top referrers
+      // Get top referrers with filters
       const topReferrersResult = await db
         .select({
           referrer: analyticsEvents.referrer,
           visits: count()
         })
         .from(analyticsEvents)
-        .where(analyticsEvents.referrer !== null)
+        .where(and(
+          analyticsEvents.referrer !== null,
+          ...(eventTypeConditions.length > 0 ? eventTypeConditions : [])
+        ))
         .groupBy(analyticsEvents.referrer)
         .orderBy(desc(count()))
         .limit(10)
       
-      // Get device types by analyzing user agents
+      // Get device types by analyzing user agents with filters
       const userAgentsResult = await db
         .select({
           userAgent: analyticsEvents.userAgent,
           count: count()
         })
         .from(analyticsEvents)
-        .where(analyticsEvents.userAgent !== null)
+        .where(and(
+          analyticsEvents.userAgent !== null,
+          ...(eventTypeConditions.length > 0 ? eventTypeConditions : [])
+        ))
         .groupBy(analyticsEvents.userAgent)
       
       const deviceTypes = userAgentsResult.reduce((acc, { userAgent, count }) => {

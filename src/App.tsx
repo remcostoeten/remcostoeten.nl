@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnalyticsProvider } from "./modules/analytics";
-// import { AuthProvider } from "./modules/auth/providers/AuthProvider";
+import { AuthProvider } from "./modules/auth/providers/auth-provider";
 // import { ProtectedRoute } from "./modules/auth/components/ProtectedRoute";
 // import { LoginForm } from "./modules/auth/components/LoginForm";
 // import { DashboardLayout } from "./modules/admin/components/DashboardLayout";
@@ -54,7 +54,8 @@ export function App() {
         <Sonner />
         <BrowserRouter>
           <AnalyticsProvider>
-            <KeyboardShortcutsProvider>
+            <AuthProvider>
+              <KeyboardShortcutsProvider>
               <KeyboardShortcutIndicator />
               <Routes>
 {/* Public routes */}
@@ -77,7 +78,8 @@ export function App() {
               {/* Fallback route */}
               <Route path="*" element={<div className="min-h-screen flex items-center justify-center"><h1 className="text-2xl">Page Not Found</h1></div>} />
               </Routes>
-            </KeyboardShortcutsProvider>
+              </KeyboardShortcutsProvider>
+            </AuthProvider>
           </AnalyticsProvider>
         </BrowserRouter>
       </TooltipProvider>

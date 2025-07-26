@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
+import { Text } from '@/components/ui/text';
 
 export function AboutSection() {
   return (
@@ -8,13 +9,13 @@ export function AboutSection() {
       {...ANIMATION_CONFIGS.staggered(0.1)}
     >
       With extensive experience in{" "}
-      <span className="highlight">
+      <Text highlight>
         TypeScript and React & Next.js
-      </span>
-      I specialize in building scalable web applications, from Magento shops to modern SaaS platforms. Currently working on an{" "}
-      <span className="highlight">
+      </Text>
+      {" "}I specialize in building scalable web applications, from Magento shops to modern SaaS platforms. Currently working on an{" "}
+      <Text highlight>
         LMS system for Dutch MBO students
-      </span>
+      </Text>
       .
     </motion.p>
   );

@@ -165,6 +165,31 @@ export const AnalyticsDashboard: React.FC<TProps> = ({ hideHeader = false }) => 
 
       {/* Compact Filters */}
       <Card className="p-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-muted-foreground">Filters</span>
+            {(selectedPage !== 'all' || selectedEventType !== 'all') && (
+              <Badge variant="secondary" className="text-xs">
+                {[selectedPage !== 'all' && 'Page', selectedEventType !== 'all' && 'Event'].filter(Boolean).join(' + ')} filtered
+              </Badge>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setSelectedPage('all')
+              setSelectedEventType('all')
+              setDateRange({
+                from: startOfDay(subDays(new Date(), 7)),
+                to: endOfDay(new Date()),
+              })
+            }}
+            className="text-xs h-6 px-2"
+          >
+            Reset
+          </Button>
+        </div>
         <div className="flex flex-wrap items-end gap-3">
           {/* Date Range Picker */}
           <div className="space-y-1">
