@@ -107,16 +107,26 @@ app.post('/analytics/events', async (c) => {
   try {
     const event: Omit<AnalyticsEvent, 'id' | 'timestamp'> = await c.req.json();
     
-    // Get client info from headers
-    const clientIP = c.req.header('x-forwarded-for')?.split(',')[0] || 
+    // Get client info from headers with better detection
+    const clientIP = c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || 
                     c.req.header('x-real-ip') || 
+                    c.req.header('cf-connecting-ip') || // Cloudflare
+                    c.req.header('x-client-ip') || 
+                    c.req.header('true-client-ip') || 
                     'unknown';
     const userAgent = c.req.header('user-agent') || '';
+
+    console.log(`Analytics event: ${event.eventType} from IP: ${clientIP}`);
 
     // Get geographic data from IP (only for page views to reduce API calls)
     let locationData = {};
     if (event.eventType === 'page_view' || event.eventType === 'session_start') {
       locationData = await getLocationFromIP(clientIP);
+      if (Object.keys(locationData).length > 0) {
+        console.log(`Geographic data found:`, locationData);
+      } else {
+        console.log(`No geographic data for IP: ${clientIP}`);
+      }
     }
 
     await db.insert(analyticsEvents).values({
@@ -193,6 +203,7 @@ app.get('/health', (c) => {
   return c.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+<<<<<<< HEAD
 // Debug endpoint
 app.get('/debug', async (c) => {
   try {
@@ -227,6 +238,21 @@ app.get('/debug', async (c) => {
       error: error instanceof Error ? error.message : 'unknown error'
     }, 500);
   }
+=======
+// Debug endpoint for testing IP geolocation
+app.get('/debug/geolocation/:ip?', async (c) => {
+  const testIP = c.req.param('ip') || '8.8.8.8'; // Default to Google DNS for testing
+  
+  console.log(`Testing geolocation for IP: ${testIP}`);
+  
+  const locationData = await getLocationFromIP(testIP);
+  
+  return c.json({
+    ip: testIP,
+    locationData,
+    hasLocation: Object.keys(locationData).length > 0
+  });
+>>>>>>> 9152a09 (feat: add real geographic data collection to analytics)
 });
 
 async function getMetrics(filters?: AnalyticsFilters): Promise<AnalyticsMetrics> {

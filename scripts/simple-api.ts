@@ -58,17 +58,65 @@ function categorizeDevice(userAgent: string): string {
   }
 }
 
-function processAnalyticsEvent(eventData: any) {
+// Simple IP geolocation function using ipapi.co
+async function getLocationFromIP(ip: string): Promise<{
+  country?: string;
+  region?: string;
+  city?: string;
+  latitude?: string;
+  longitude?: string;
+}> {
+  if (!ip || ip === 'unknown' || ip === '127.0.0.1' || ip === '::1') {
+    return {};
+  }
+
+  try {
+    // Use ipapi.co for basic geolocation (free tier)
+    const response = await fetch(`https://ipapi.co/${ip}/json/`);
+    if (!response.ok) {
+      return {};
+    }
+    
+    const data = await response.json();
+    return {
+      country: data.country_name || undefined,
+      region: data.region || undefined,
+      city: data.city || undefined,
+      latitude: data.latitude ? String(data.latitude) : undefined,
+      longitude: data.longitude ? String(data.longitude) : undefined,
+    };
+  } catch (error) {
+    console.error('Failed to get location from IP:', error);
+    return {};
+  }
+}
+
+async function processAnalyticsEvent(eventData: any, clientIP?: string) {
+  // Get geographic data from IP (only for page views to reduce API calls)
+  let locationData = {};
+  const ipToProcess = clientIP || eventData.ipAddress;
+  
+  if ((eventData.eventType === 'page_view' || eventData.eventType === 'session_start') && ipToProcess) {
+    console.log(`Processing analytics event: ${eventData.eventType} from IP: ${ipToProcess}`);
+    locationData = await getLocationFromIP(ipToProcess);
+    if (Object.keys(locationData).length > 0) {
+      console.log(`Geographic data found:`, locationData);
+    } else {
+      console.log(`No geographic data for IP: ${ipToProcess}`);
+    }
+  }
+
   const event: TNewAnalyticsEvent = {
     eventType: eventData.eventType,
     page: eventData.page || null,
     referrer: eventData.referrer || null,
     userAgent: eventData.userAgent || null,
-    ipAddress: eventData.ipAddress || null,
+    ipAddress: ipToProcess || null,
     sessionId: eventData.sessionId || null,
     userId: eventData.userId || null,
     data: eventData.data || null,
-    timestamp: new Date()
+    timestamp: new Date(),
+    ...locationData
   }
   
   eventBatch.push(event)
@@ -343,7 +391,16 @@ app.get('/api/analytics/events', async (c) => {
 app.post('/api/analytics/events', async (c) => {
   try {
     const event = await c.req.json()
-    processAnalyticsEvent(event)
+    
+    // Get client IP from headers with better detection
+    const clientIP = c.req.header('x-forwarded-for')?.split(',')[0]?.trim() || 
+                    c.req.header('x-real-ip') || 
+                    c.req.header('cf-connecting-ip') || // Cloudflare
+                    c.req.header('x-client-ip') || 
+                    c.req.header('true-client-ip') || 
+                    'unknown';
+    
+    await processAnalyticsEvent(event, clientIP)
     return c.json({ 
       success: true, 
       message: 'Event tracked successfully',
@@ -498,6 +555,58 @@ app.get('/api/analytics/metrics', async (c) => {
         .groupBy(sql`DATE(${analyticsEvents.timestamp})`)
         .orderBy(sql`DATE(${analyticsEvents.timestamp})`)
       
+      // Get geographic data
+      const topCountriesResult = await db
+        .select({
+          country: analyticsEvents.country,
+          visits: count()
+        })
+        .from(analyticsEvents)
+        .where(and(
+          eq(analyticsEvents.eventType, 'page_view'),
+          analyticsEvents.country !== null,
+          ...(baseConditions.length > 0 ? baseConditions : [])
+        ))
+        .groupBy(analyticsEvents.country)
+        .orderBy(desc(count()))
+        .limit(10)
+      
+      const topRegionsResult = await db
+        .select({
+          region: analyticsEvents.region,
+          country: analyticsEvents.country,
+          visits: count()
+        })
+        .from(analyticsEvents)
+        .where(and(
+          eq(analyticsEvents.eventType, 'page_view'),
+          analyticsEvents.region !== null,
+          ...(baseConditions.length > 0 ? baseConditions : [])
+        ))
+        .groupBy(analyticsEvents.region, analyticsEvents.country)
+        .orderBy(desc(count()))
+        .limit(10)
+      
+      const topCitiesResult = await db
+        .select({
+          city: analyticsEvents.city,
+          region: analyticsEvents.region,
+          country: analyticsEvents.country,
+          visits: count()
+        })
+        .from(analyticsEvents)
+        .where(and(
+          eq(analyticsEvents.eventType, 'page_view'),
+          analyticsEvents.city !== null,
+          ...(baseConditions.length > 0 ? baseConditions : [])
+        ))
+        .groupBy(analyticsEvents.city, analyticsEvents.region, analyticsEvents.country)
+        .orderBy(desc(count()))
+        .limit(10)
+      
+      // Calculate total visits for percentage calculation
+      const totalVisits = topCountriesResult.reduce((sum, country) => sum + country.visits, 0)
+      
       const metrics = {
         totalPageViews,
         uniqueVisitors,
@@ -511,7 +620,23 @@ app.get('/api/analytics/metrics', async (c) => {
           successRate: 0
         },
         hourlyActivity: hourlyActivityResult,
-        dailyActivity: dailyActivityResult
+        dailyActivity: dailyActivityResult,
+        topCountries: topCountriesResult.map(c => ({
+          country: c.country || 'Unknown',
+          visits: c.visits,
+          percentage: totalVisits > 0 ? (c.visits / totalVisits) * 100 : 0
+        })),
+        topRegions: topRegionsResult.map(r => ({
+          region: r.region || 'Unknown',
+          country: r.country || 'Unknown',
+          visits: r.visits
+        })),
+        topCities: topCitiesResult.map(c => ({
+          city: c.city || 'Unknown',
+          region: c.region || 'Unknown',
+          country: c.country || 'Unknown',
+          visits: c.visits
+        }))
       }
       
       return metrics
@@ -598,6 +723,54 @@ app.get('/api/analytics/realtime', async (c) => {
   }).then(metrics => c.json(metrics))
     .catch(error => c.json({ error: 'Failed to fetch realtime metrics' }, 500))
 })
+
+// Test endpoint to add a real visitor with geographic data
+app.post('/api/test/add-real-visitor', async (c) => {
+  try {
+    // Use a real public IP for testing (Google DNS)
+    const testIP = '8.8.8.8';
+    
+    console.log(`Testing with real IP: ${testIP}`);
+    const locationData = await getLocationFromIP(testIP);
+    
+    if (Object.keys(locationData).length > 0) {
+      // Create a realistic page view event with this geographic data
+      const testEvent = {
+        eventType: 'page_view',
+        page: '/',
+        referrer: null,
+        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        ipAddress: testIP,
+        sessionId: `test_session_${Date.now()}`,
+        userId: null,
+        data: null,
+        timestamp: new Date(),
+        ...locationData
+      };
+      
+      await db.insert(analyticsEvents).values([testEvent]);
+      
+      return c.json({
+        success: true,
+        message: 'Added real visitor with geographic data',
+        locationData,
+        event: testEvent
+      });
+    } else {
+      return c.json({
+        success: false,
+        message: 'Could not get geographic data',
+        ip: testIP
+      }, 400);
+    }
+  } catch (error) {
+    console.error('Error adding test visitor:', error);
+    return c.json({
+      success: false,
+      message: 'Failed to add test visitor'
+    }, 500);
+  }
+});
 
 // Catch all for undefined routes
 app.notFound((c) => {
