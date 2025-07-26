@@ -67,9 +67,21 @@ export function AdminAnalyticsPage() {
           </div>
         </nav>
         
-        {/* Analytics Dashboard */}
-        <div className="bg-card border border-border rounded-lg">
-          <AnalyticsDashboard hideHeader={true} />
+        {/* Analytics Dashboard - Temporarily disabled */}
+        <div className="bg-card border border-border rounded-lg p-8">
+          <div className="text-center space-y-4">
+            <BarChart3Icon className="w-16 h-16 mx-auto text-muted-foreground" />
+            <div>
+              <h3 className="text-xl font-semibold">Analytics Dashboard</h3>
+              <p className="text-muted-foreground">
+                Analytics are temporarily disabled while we fix API connectivity issues.
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                The dashboard will be restored once the backend issues are resolved.
+              </p>
+            </div>
+          </div>
+          {/* <AnalyticsDashboard hideHeader={true} /> */}
         </div>
       </div>
     </div>
