@@ -2,6 +2,7 @@ import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { Suspense } from "solid-js";
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
+import KeyboardShortcutsProvider from "~/components/providers/KeyboardShortcutsProvider";
 import "./app.css";
 
 const queryClient = new QueryClient({
@@ -17,13 +18,15 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router
-        root={props => (
-          <Suspense>{props.children}</Suspense>
-        )}
-      >
-        <FileRoutes />
-      </Router>
+      <KeyboardShortcutsProvider>
+        <Router
+          root={props => (
+            <Suspense>{props.children}</Suspense>
+          )}
+        >
+          <FileRoutes />
+        </Router>
+      </KeyboardShortcutsProvider>
     </QueryClientProvider>
   );
 }

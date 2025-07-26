@@ -1,5 +1,6 @@
 import { Motion } from "@motionone/solid";
 import { TIMEZONE_INFO, useCurrentTime, TimeNumberFlow } from "~/modules/time";
+import { getParagraphClass } from "~/cms";
 
 type TProps = {
   showAnimation?: boolean;
@@ -11,7 +12,7 @@ export function TimezoneSection(props: TProps) {
 
   return (
     <Motion.p 
-      class="text-foreground leading-relaxed text-base"
+      class={`text-foreground ${getParagraphClass('body')}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.4, easing: [0.4, 0.0, 0.2, 1] }}

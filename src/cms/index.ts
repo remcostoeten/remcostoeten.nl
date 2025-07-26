@@ -8,7 +8,26 @@ export {
   getThemeColorClass,
   getButtonClass,
   getInputClass,
+  getLineHeightClass,
+  getParagraphConfig,
+  getParagraphClass,
 } from "./utils/getters";
+
+export {
+  updateContainerWidth,
+  updateContainerPaddingX,
+  updateContainerPaddingY,
+  updateSectionSpacing,
+  updateContainerVariantWidth,
+  updateResponsivePadding,
+  updateMobileSpacing,
+  resetContainerToDefaults,
+} from "./utils/updaters";
+
+export {
+  generateContainerStyles,
+  injectDynamicCSS,
+} from "./utils/css-generators";
 
 export { CMSContainer } from "./container";
 

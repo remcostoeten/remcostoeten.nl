@@ -3,11 +3,36 @@ import type { TCMSConfig } from "../types/config";
 const defaultConfig: TCMSConfig = {
   layout: {
     container: {
-      default: "container-centered",
+      maxWidth: 896, // equivalent to max-w-4xl
+      paddingX: 1, // 1rem
+      paddingY: 2, // 2rem
+      marginX: 'auto',
+      spacing: 4, // 4rem between sections
       variants: {
-        wide: "container-wide",
-        narrow: "container-narrow", 
-        fullWidth: "w-full",
+        wide: {
+          maxWidth: 1280, // max-w-7xl
+          paddingX: 2,
+        },
+        narrow: {
+          maxWidth: 640, // max-w-2xl
+          paddingX: 1,
+        },
+        fullWidth: {
+          maxWidth: '100%',
+          paddingX: 1,
+        },
+      },
+      responsive: {
+        mobile: {
+          paddingX: 1,
+          spacing: 2, // reduced spacing on mobile
+        },
+        tablet: {
+          paddingX: 1.5,
+        },
+        desktop: {
+          paddingX: 2,
+        },
       },
     },
   },
@@ -24,6 +49,32 @@ const defaultConfig: TCMSConfig = {
       default: "text-base",
       small: "text-sm",
       large: "text-lg",
+    },
+    lineHeight: {
+      global: "leading-[1.7]",
+      tight: "leading-tight",
+      normal: "leading-normal",
+      relaxed: "leading-relaxed",
+      loose: "leading-loose",
+      none: "leading-none",
+    },
+    paragraphs: {
+      hero: {
+        class: "text-lg font-medium",
+        lineHeight: "leading-relaxed",
+      },
+      body: {
+        class: "text-base",
+        lineHeight: "leading-normal",
+      },
+      caption: {
+        class: "text-sm text-muted-foreground",
+        lineHeight: "leading-normal",
+      },
+      quote: {
+        class: "text-lg italic",
+        lineHeight: "leading-relaxed",
+      },
     },
   },
   colors: {

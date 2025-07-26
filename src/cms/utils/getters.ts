@@ -1,20 +1,28 @@
 import { getCMSConfig } from "../store/config-store";
+import { safeInjectCSS } from "../client-init";
 
 /**
- * Gets the default container class
+ * Gets the default container class (now dynamic)
  * @returns The default container CSS class
  */
 function getContainerClass(): string {
-  return getCMSConfig().layout.container.default;
+  safeInjectCSS(); // Ensure latest styles are injected (client-side only)
+  return "cms-container";
 }
 
 /**
- * Gets a container variant class
+ * Gets a container variant class (now dynamic)
  * @param variant - The container variant to get
  * @returns The container variant CSS class
  */
 function getContainerVariant(variant: "wide" | "narrow" | "fullWidth"): string {
-  return getCMSConfig().layout.container.variants[variant];
+  safeInjectCSS(); // Ensure latest styles are injected (client-side only)
+  const variantMap = {
+    wide: "cms-container-wide",
+    narrow: "cms-container-narrow",
+    fullWidth: "cms-container-full",
+  };
+  return variantMap[variant];
 }
 
 /**
@@ -67,6 +75,39 @@ function getInputClass(state: "default" | "error" | "success" = "default"): stri
   return getCMSConfig().components.input[state];
 }
 
+/**
+ * Gets a line height class
+ * @param variant - The line height variant
+ * @returns The line height CSS class
+ */
+function getLineHeightClass(variant: "global" | "tight" | "normal" | "relaxed" | "loose" | "none" = "normal"): string {
+  return getCMSConfig().typography.lineHeight[variant];
+}
+
+/**
+ * Gets a paragraph configuration with combined classes
+ * @param type - The paragraph type
+ * @returns Object with combined class and lineHeight
+ */
+function getParagraphConfig(type: "hero" | "body" | "caption" | "quote"): { class: string; lineHeight: string; combined: string } {
+  const config = getCMSConfig().typography.paragraphs[type];
+  return {
+    class: config.class,
+    lineHeight: config.lineHeight,
+    combined: `${config.class} ${config.lineHeight}`,
+  };
+}
+
+/**
+ * Gets a complete paragraph class string
+ * @param type - The paragraph type
+ * @returns The combined CSS class string
+ */
+function getParagraphClass(type: "hero" | "body" | "caption" | "quote"): string {
+  const config = getCMSConfig().typography.paragraphs[type];
+  return `${config.class} ${config.lineHeight}`;
+}
+
 export {
   getContainerClass,
   getContainerVariant,
@@ -75,4 +116,7 @@ export {
   getThemeColorClass,
   getButtonClass,
   getInputClass,
+  getLineHeightClass,
+  getParagraphConfig,
+  getParagraphClass,
 };
