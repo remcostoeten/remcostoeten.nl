@@ -21,7 +21,7 @@ type TContactFactory = {
 }
 
 function createContactFactory(): TContactFactory {
-async function createMessage(data: TCreateContactMessage): PromisecTContactSubmission | nulle {
+  async function createMessage(data: TCreateContactMessage): Promise<TContactSubmission | null> {
     try {
       const result = await db.insert(contactSubmissions).values({
         name: data.name,
@@ -36,7 +36,7 @@ async function createMessage(data: TCreateContactMessage): PromisecTContactSubm
     }
   }
 
-async function getAllMessages(limit = 50): PromisecTContactSubmission[]e {
+  async function getAllMessages(limit = 50): Promise<TContactSubmission[]> {
     try {
       const result = await db.select().from(contactSubmissions).limit(limit)
       return result
@@ -46,7 +46,7 @@ async function getAllMessages(limit = 50): PromisecTContactSubmission[]e {
     }
   }
 
-async function getMessageById(id: string): PromisecTContactSubmission | nulle {
+  async function getMessageById(id: string): Promise<TContactSubmission | null> {
     try {
       const result = await db.select().from(contactSubmissions).where(eq(contactSubmissions.id, id)).limit(1)
       return result[0] || null
@@ -56,7 +56,7 @@ async function getMessageById(id: string): PromisecTContactSubmission | nulle 
     }
   }
 
-async function updateMessageStatus(data: TUpdateContactMessage): PromisecTContactSubmission | nulle {
+  async function updateMessageStatus(data: TUpdateContactMessage): Promise<TContactSubmission | null> {
     try {
       const result = await db
         .update(contactSubmissions)
@@ -70,7 +70,7 @@ async function updateMessageStatus(data: TUpdateContactMessage): PromisecTConta
     }
   }
 
-async function getMessagesByStatus(status: string): PromisecTContactSubmission[]e {
+  async function getMessagesByStatus(status: string): Promise<TContactSubmission[]> {
     try {
       const result = await db.select().from(contactSubmissions).where(eq(contactSubmissions.status, status))
       return result
@@ -80,10 +80,10 @@ async function getMessagesByStatus(status: string): PromisecTContactSubmission[
     }
   }
 
-async function deleteMessage(id: string): Promisecbooleane {
+  async function deleteMessage(id: string): Promise<boolean> {
     try {
       const result = await db.delete(contactSubmissions).where(eq(contactSubmissions.id, id))
-      return result.rowsAffected e 0
+      return result.rowsAffected > 0
     } catch (error) {
       console.error('Failed to delete contact message:', error)
       return false
