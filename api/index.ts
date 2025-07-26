@@ -46,12 +46,8 @@ async function getLocationFromIP(ip: string): Promise<{
 
 const app = new Hono();
 
-import { getSiteConfig } from '../src/config/site';
-
-const config = getSiteConfig();
-
 app.use('/*', cors({
-  origin: config.api.allowedOrigins,
+  origin: '*', // Allow all origins for now
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowHeaders: ['Content-Type', 'Authorization'],
 }));
