@@ -20,9 +20,9 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <KeyboardShortcutsProvider>
         <Router
-          root={props => (
-            <Suspense>{props.children}</Suspense>
-          )}
+          root={function(props) {
+            return <Suspense>{props.children}</Suspense>;
+          }}
         >
           <FileRoutes />
         </Router>

@@ -19,7 +19,7 @@ type TFormErrors = {
   general?: string
 }
 
-const ContactPage = () => {
+function ContactPage() {
   const createMessageMutation = useCreateContactMessage()
   const [showSuccessMessage, setShowSuccessMessage] = createSignal(false)
   
@@ -32,7 +32,7 @@ const ContactPage = () => {
   
   const [errors, setErrors] = createSignal<TFormErrors>({})
 
-  const validateForm = (): boolean => {
+  function validateForm(): boolean {
     const data = formData()
     const newErrors: TFormErrors = {}
     
@@ -60,7 +60,7 @@ const ContactPage = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: Event) => {
+  async function handleSubmit(e: Event) {
     e.preventDefault()
     
     if (!validateForm()) return
@@ -82,17 +82,43 @@ const ContactPage = () => {
       setErrors({})
       setShowSuccessMessage(true)
       
-      setTimeout(() => setShowSuccessMessage(false), 5000)
+      setTimeout(function() {
+        setShowSuccessMessage(false);
+      }, 5000)
     } catch (error) {
       setErrors({ general: error instanceof Error ? error.message : 'Failed to send message' })
     }
   }
 
-  const updateField = (field: keyof TContactForm, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+  function updateField(field: keyof TContactForm, value: string) {
+    setFormData(function(prev) {
+      return { ...prev, [field]: value };
+    })
     if (errors()[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }))
+      setErrors(function(prev) {
+        return { ...prev, [field]: undefined };
+      })
     }
+  }
+
+  function handleNameInput(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+    updateField('name', target.value);
+  }
+
+  function handleEmailInput(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+    updateField('email', target.value);
+  }
+
+  function handleSubjectInput(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+    updateField('subject', target.value);
+  }
+
+  function handleMessageInput(e: Event) {
+    const target = e.currentTarget as HTMLTextAreaElement;
+    updateField('message', target.value);
   }
 
   return (
@@ -129,7 +155,7 @@ const ContactPage = () => {
                 label="Your name"
                 type="text"
                 value={formData().name}
-                onInput={(e) => updateField('name', e.currentTarget.value)}
+                onInput={handleNameInput}
                 error={errors().name}
                 required
                 autocomplete="name"
@@ -139,7 +165,7 @@ const ContactPage = () => {
                 label="Email address"
                 type="email"
                 value={formData().email}
-                onInput={(e) => updateField('email', e.currentTarget.value)}
+                onInput={handleEmailInput}
                 error={errors().email}
                 required
                 autocomplete="email"
@@ -150,7 +176,7 @@ const ContactPage = () => {
               label="Subject"
               type="text"
               value={formData().subject}
-              onInput={(e) => updateField('subject', e.currentTarget.value)}
+              onInput={handleSubjectInput}
               error={errors().subject}
               required
               placeholder="What's this about?"
@@ -168,7 +194,7 @@ const ContactPage = () => {
                 }`}
                 rows={6}
                 value={formData().message}
-                onInput={(e) => updateField('message', e.currentTarget.value)}
+                onInput={handleMessageInput}
                 placeholder="Tell me about your project or question..."
                 required
               />

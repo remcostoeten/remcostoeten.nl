@@ -1,13 +1,13 @@
 import { JSX, Show } from 'solid-js'
 import { A } from '@solidjs/router'
 
-type TBaseLayoutProps = {
+type TProps = {
   readonly children: JSX.Element
   readonly title?: string
   readonly showNav?: boolean
 }
 
-const BaseLayout = (props: TBaseLayoutProps) => {
+function BaseLayout(props: TProps) {
   return (
     <div class="min-h-screen bg-gray-50">
       <Show when={props.showNav !== false}>
@@ -73,7 +73,7 @@ const BaseLayout = (props: TBaseLayoutProps) => {
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
 export default BaseLayout
