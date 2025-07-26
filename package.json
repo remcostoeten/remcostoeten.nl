@@ -2,6 +2,7 @@
   "name": "remco-stoeten-portfolio",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "dev:api": "npx tsx scripts/simple-api.ts",
