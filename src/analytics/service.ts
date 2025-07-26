@@ -4,14 +4,15 @@ import type {
   TAnalyticsFilters,
   TRealTimeMetrics 
 } from './types';
+import { AnalyticsDebug } from './debug';
 
 export class AnalyticsService {
   private static readonly API_BASE = 
-    typeof window !== 'undefined' && (
-      (import.meta?.env?.DEV || window.location.hostname === 'localhost')
+    typeof window !== 'undefined' 
+      ? (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? `http://localhost:${import.meta?.env?.VITE_API_PORT || '3003'}/api/analytics`
         : '/api/analytics'
-    );
+      : '/api/analytics';
 
   static async trackEvent(event: Omit<TAnalyticsEvent, 'id' | 'timestamp'>): Promise<void> {
     try {

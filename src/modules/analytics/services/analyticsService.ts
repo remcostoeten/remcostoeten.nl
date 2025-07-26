@@ -7,8 +7,10 @@ import type {
 
 export class AnalyticsService {
   private static readonly API_BASE = 
-    import.meta.env?.DEV || window.location.hostname === 'localhost'
-      ? `http://localhost:${import.meta.env.VITE_API_PORT || '3334'}/api/analytics`
+    typeof window !== 'undefined' 
+      ? (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? `http://localhost:${import.meta.env.VITE_API_PORT || '3334'}/api/analytics`
+        : '/api/analytics'
       : '/api/analytics';
 
   // Track a new analytics event
