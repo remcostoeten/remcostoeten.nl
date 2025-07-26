@@ -53,7 +53,7 @@ export function App() {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AnalyticsProvider>
+          {/* <AnalyticsProvider> */}
             <AuthProvider>
               <KeyboardShortcutsProvider>
               <KeyboardShortcutIndicator />
@@ -80,7 +80,7 @@ export function App() {
               </Routes>
               </KeyboardShortcutsProvider>
             </AuthProvider>
-          </AnalyticsProvider>
+          {/* </AnalyticsProvider> */}
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
