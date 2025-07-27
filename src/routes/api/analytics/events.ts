@@ -1,26 +1,19 @@
 import { json } from '@solidjs/router'
 import type { APIEvent } from '@solidjs/start/server'
 import { analyticsFactory } from '~/db/factories/analytics-factory'
-import { z } from 'zod'
-
-const TopPagesQuerySchema = z.object({
-  limit: z.coerce.number().min(1).max(100).default(10),
-})
-
-type TTopPage = {
-  readonly path: string
-  readonly views: number
-}
+import { EventsQuerySchema } from '~/lib/validation/analytics'
+import type { TAnalyticsEvent } from '~/db/schema'
 
 export async function GET(event: APIEvent): Promise<Response> {
   try {
     const url = new URL(event.request.url)
     const queryParams = {
-      limit: url.searchParams.get('limit') || '10'
+      eventType: url.searchParams.get('eventType') || undefined,
+      limit: url.searchParams.get('limit') || '100'
     }
 
     // Validate query parameters with Zod
-    const validationResult = TopPagesQuerySchema.safeParse(queryParams)
+    const validationResult = EventsQuerySchema.safeParse(queryParams)
     
     if (!validationResult.success) {
       return json({ 
@@ -30,21 +23,24 @@ export async function GET(event: APIEvent): Promise<Response> {
       }, { status: 400 })
     }
 
-    const { limit } = validationResult.data
+    const { eventType, limit } = validationResult.data
     
-    const topPages = await analyticsFactory.getTopPages(limit)
+    const events = await analyticsFactory.getAnalyticsEvents({ 
+      eventType, 
+      limit 
+    })
     
-    const typedTopPages: TTopPage[] = topPages
+    const typedEvents: TAnalyticsEvent[] = events
     
     return json({ 
       success: true, 
-      data: typedTopPages 
+      data: typedEvents 
     })
   } catch (error) {
-    console.error('GET /api/analytics/top-pages error:', error)
+    console.error('GET /api/analytics/events error:', error)
     return json({ 
       success: false, 
-      error: 'Failed to fetch top pages' 
+      error: 'Failed to fetch analytics events' 
     }, { status: 500 })
   }
 }

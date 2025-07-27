@@ -23,19 +23,19 @@ export async function GET(event: APIEvent): Promise<Response> {
 
     const { timeframe } = validationResult.data
 
-    const metrics = await analyticsFactory.getAnalyticsMetrics(timeframe)
+    const stats = await analyticsFactory.getAnalyticsMetrics(timeframe)
     
-    const typedMetrics: TAnalyticsStats = metrics
+    const typedStats: TAnalyticsStats = stats
     
     return json({ 
       success: true, 
-      data: typedMetrics 
+      data: typedStats 
     })
   } catch (error) {
-    console.error('GET /api/analytics/metrics error:', error)
+    console.error('GET /api/analytics/stats error:', error)
     return json({ 
       success: false, 
-      error: 'Failed to fetch analytics metrics' 
+      error: 'Failed to fetch analytics stats' 
     }, { status: 500 })
   }
 }

@@ -39,6 +39,22 @@ function KeyboardShortcutsProvider(props: TProps) {
         description: 'Navigate to home with 1 + triple space',
         global: true 
       }
+    ),
+    
+    createShortcut(
+      'db-test-access',
+      'Go to Database Test',
+      [
+        KeyHelpers.plain('space'),
+        KeyHelpers.plain('space'),
+        KeyHelpers.plain('space'),
+        KeyHelpers.plain('2')
+      ],
+      () => navigateTo('/db-test'),
+      { 
+        description: 'Navigate to database test page with triple space + 2',
+        global: true 
+      }
     )
   ];
 

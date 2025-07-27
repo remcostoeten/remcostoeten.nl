@@ -8,6 +8,13 @@
       "when": 1753531165807,
       "tag": "0000_regular_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1753566751300,
+      "tag": "0001_handy_starbolt",
+      "breakpoints": true
     }
   ]
 }

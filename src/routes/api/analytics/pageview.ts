@@ -1,33 +1,45 @@
 import { json } from '@solidjs/router'
 import type { APIEvent } from '@solidjs/start/server'
 import { analyticsFactory } from '~/db/factories/analytics-factory'
+import { PageViewSchema } from '~/lib/validation/analytics'
+import type { TAnalyticsEvent } from '~/db/schema'
 
-export async function POST(event: APIEvent) {
+export async function POST(event: APIEvent): Promise<Response> {
   try {
     const body = await event.request.json()
-    const { path, visitorId, userAgent, referrer } = body
-
-    if (!path || !visitorId) {
+    
+    // Validate the payload with Zod
+    const validationResult = PageViewSchema.safeParse(body)
+    
+    if (!validationResult.success) {
       return json({ 
         success: false, 
-        error: 'Missing required fields: path, visitorId' 
+        error: 'Invalid payload',
+        details: validationResult.error.issues
       }, { status: 400 })
     }
 
-    const pageView = await analyticsFactory.recordPageView({
-      path,
-      visitorId,
-      userAgent,
-      referrer
-    })
+    const pageViewData = validationResult.data
+
+    const pageView = await analyticsFactory.recordPageView(pageViewData)
 
     if (!pageView) {
-      return json({ success: false, error: 'Failed to record page view' }, { status: 500 })
+      return json({ 
+        success: false, 
+        error: 'Failed to record page view' 
+      }, { status: 500 })
     }
 
-    return json({ success: true, data: pageView }, { status: 201 })
+    const typedResult: TAnalyticsEvent = pageView
+    return json({ 
+      success: true, 
+      data: typedResult 
+    }, { status: 201 })
   } catch (error) {
     console.error('POST /api/analytics/pageview error:', error)
-    return json({ success: false, error: 'Failed to record page view' }, { status: 500 })
+    return json({ 
+      success: false, 
+      error: 'Failed to record page view' 
+    }, { status: 500 })
   }
 }

@@ -1,7 +1,6 @@
-import { db } from '../connection'
-import { analyticsEvents } from '../schema'
+import { analyticsEvents } from '~/db/schema'
 import { eq, desc, gte, and, count, countDistinct, min, max, lte } from 'drizzle-orm'
-import type { TAnalyticsEvent, TNewAnalyticsEvent } from '../schema'
+import type { TAnalyticsEvent, TNewAnalyticsEvent } from '~/db/schema'
 
 type TAnalyticsMetrics = {
   readonly totalViews: number
@@ -9,8 +8,6 @@ type TAnalyticsMetrics = {
   readonly uniquePages: number
   readonly timeframe: 'day' | 'week' | 'month'
 }
-
-export type TAnalyticsStats = TAnalyticsMetrics
 
 type TTopPage = {
   readonly path: string
@@ -45,7 +42,7 @@ type TAnalyticsFactory = {
   readonly getAnalyticsEvents: (options?: { eventType?: string; limit?: number }) => Promise<TAnalyticsEvent[]>
 }
 
-function createAnalyticsFactory(): TAnalyticsFactory {
+export function createAnalyticsFactory(db: any): TAnalyticsFactory {
   async function recordPageView(data: TPageViewData): Promise<TAnalyticsEvent | null> {
     try {
       const eventData: TNewAnalyticsEvent = {
@@ -230,5 +227,3 @@ function createAnalyticsFactory(): TAnalyticsFactory {
     getAnalyticsEvents
   }
 }
-
-export const analyticsFactory = createAnalyticsFactory()

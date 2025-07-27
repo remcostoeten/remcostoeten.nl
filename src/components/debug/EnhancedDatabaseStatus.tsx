@@ -1,275 +1,573 @@
 import { createSignal, onMount, Show, For, onCleanup, createEffect } from 'solid-js';
+import '~/styles/outerbase-dashboard.css';
 
 type TDatabaseTestResult = {
-  success: boolean;
-  message: string;
+  success: boolean
+  message: string
   data?: {
-    connection: string;
-    timestamp: string;
-    tables: string[];
+    connection: string
+    timestamp: string
+    tables: string[]
     stats: {
-      adminUsers: number;
-      projects: number;
-    };
-  };
-  error?: string;
-  timestamp: string;
-};
+      adminUsers: number
+      projects: number
+    }
+  }
+  error?: string
+  timestamp: string
+}
+
+type TTableData = {
+  tableName: string
+  columns: string[]
+  rows: Record<string, any>[]
+  totalRows: number
+}
+
+type TTableSchema = {
+  column_name: string
+  data_type: string
+  is_nullable: string
+  column_default: string | null
+}
 
 function EnhancedDatabaseStatus() {
-  const [testResult, setTestResult] = createSignal<TDatabaseTestResult | null>(null);
-  const [isLoading, setIsLoading] = createSignal(false);
-  const [lastRefresh, setLastRefresh] = createSignal<string>('');
-  const [selectedTable, setSelectedTable] = createSignal<string>('');
-  const [autoRefresh, setAutoRefresh] = createSignal(false);
-  const [refreshInterval, setRefreshInterval] = createSignal<number | null>(null);
-  const [testHistory, setTestHistory] = createSignal<{ time: string; success: boolean }[]>([]);
-  const [responseTime, setResponseTime] = createSignal<number>(0);
+  const [cpuUsage, setCpuUsage] = createSignal(0)
+  const [memoryUsage, setMemoryUsage] = createSignal(0)
+  const [activeConnections, setActiveConnections] = createSignal(0)
+  const [errors, setErrors] = createSignal(0)
+  const [testResult, setTestResult] = createSignal<TDatabaseTestResult | null>(null)
+  const [isLoading, setIsLoading] = createSignal(false)
+  const [lastRefresh, setLastRefresh] = createSignal<string>("")
+  const [selectedTable, setSelectedTable] = createSignal<string>("")
+  const [autoRefresh, setAutoRefresh] = createSignal(false)
+  const [refreshInterval, setRefreshInterval] = createSignal<number | null>(null)
+  const [testHistory, setTestHistory] = createSignal<{ time: string; success: boolean }[]>([])
+  const [responseTime, setResponseTime] = createSignal<number>(0)
+  const [tableData, setTableData] = createSignal<TTableData | null>(null)
+  const [tableSchema, setTableSchema] = createSignal<TTableSchema[]>([])
+  const [loadingTableData, setLoadingTableData] = createSignal(false)
+  const [currentPage, setCurrentPage] = createSignal(1)
+  const [itemsPerPage] = createSignal(10)
+  const [sortColumn, setSortColumn] = createSignal<string>("")
+  const [sortDirection, setSortDirection] = createSignal<"asc" | "desc">("asc")
 
   async function testConnection() {
-    setIsLoading(true);
-    const startTime = Date.now();
-    
+    setIsLoading(true)
+    const startTime = Date.now()
     try {
-      const response = await fetch('/api/db/test');
-      const result = await response.json();
-      const endTime = Date.now();
-      const duration = endTime - startTime;
-      
-      setTestResult(result);
-      setResponseTime(duration);
-      setLastRefresh(new Date().toLocaleTimeString());
-      
+      const response = await fetch("/api/db/test")
+      const result = await response.json()
+      const endTime = Date.now()
+      const duration = endTime - startTime
+      setTestResult(result)
+      setResponseTime(duration)
+      setLastRefresh(new Date().toLocaleTimeString())
       // Add to history
-      setTestHistory(prev => [
+      setTestHistory((prev) => [
         { time: new Date().toLocaleTimeString(), success: result.success },
-        ...prev.slice(0, 9) // Keep last 10 results
-      ]);
-      
+        ...prev.slice(0, 9), // Keep last 10 results
+      ])
     } catch (error) {
-      const endTime = Date.now();
-      const duration = endTime - startTime;
-      
+      const endTime = Date.now()
+      const duration = endTime - startTime
       setTestResult({
         success: false,
-        message: 'Failed to reach database test endpoint',
-        error: error instanceof Error ? error.message : 'Network error',
+        message: "Failed to reach database test endpoint",
+        error: error instanceof Error ? error.message : "Network error",
         timestamp: new Date().toISOString(),
-      });
-      setResponseTime(duration);
-      
+      })
+      setResponseTime(duration)
       // Add failed test to history
-      setTestHistory(prev => [
-        { time: new Date().toLocaleTimeString(), success: false },
-        ...prev.slice(0, 9)
-      ]);
+      setTestHistory((prev) => [{ time: new Date().toLocaleTimeString(), success: false }, ...prev.slice(0, 9)])
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
 
   function toggleAutoRefresh() {
-    setAutoRefresh(!autoRefresh());
+    setAutoRefresh(!autoRefresh())
+  }
+
+  async function fetchTableData(tableName: string) {
+    if (!tableName) return
+    setLoadingTableData(true)
+    try {
+      const [dataResponse, schemaResponse] = await Promise.all([
+        fetch(`/api/db/table/${tableName}?page=${currentPage()}&limit=${itemsPerPage()}`),
+        fetch(`/api/db/table/${tableName}/schema`),
+      ])
+      if (dataResponse.ok && schemaResponse.ok) {
+        const data = await dataResponse.json()
+        const schema = await schemaResponse.json()
+        setTableData({
+          tableName,
+          columns: data.columns || [],
+          rows: data.rows || [],
+          totalRows: data.totalRows || 0,
+        })
+        setTableSchema(schema.columns || [])
+      }
+    } catch (error) {
+      console.error("Failed to fetch table data:", error)
+      setTableData(null)
+      setTableSchema([])
+    } finally {
+      setLoadingTableData(false)
+    }
+  }
+
+  function handleTableSelect(tableName: string) {
+    const newTable = selectedTable() === tableName ? "" : tableName
+    setSelectedTable(newTable)
+    setCurrentPage(1)
+    if (newTable) {
+      fetchTableData(newTable)
+    } else {
+      setTableData(null)
+      setTableSchema([])
+    }
+  }
+
+  function handleSort(column: string) {
+    if (sortColumn() === column) {
+      setSortDirection(sortDirection() === "asc" ? "desc" : "asc")
+    } else {
+      setSortColumn(column)
+      setSortDirection("asc")
+    }
+  }
+
+  function getSortedData() {
+    const data = tableData()
+    if (!data || !sortColumn()) return data?.rows || []
+    return [...data.rows].sort((a, b) => {
+      const aVal = a[sortColumn()]
+      const bVal = b[sortColumn()]
+      const direction = sortDirection() === "asc" ? 1 : -1
+      if (aVal < bVal) return -1 * direction
+      if (aVal > bVal) return 1 * direction
+      return 0
+    })
+  }
+
+  function formatCellValue(value: any): string {
+    if (value === null || value === undefined) return "NULL"
+    if (typeof value === "boolean") return value ? "TRUE" : "FALSE"
+    if (typeof value === "object") return JSON.stringify(value)
+    if (typeof value === "string" && value.length > 50) {
+      return value.substring(0, 50) + "..."
+    }
+    return String(value)
+  }
+
+  function getDataTypeIcon(dataType: string): string {
+    if (dataType.includes("varchar") || dataType.includes("text")) return "📝"
+    if (dataType.includes("int") || dataType.includes("serial")) return "🔢"
+    if (dataType.includes("bool")) return "✓"
+    if (dataType.includes("timestamp") || dataType.includes("date")) return "📅"
+    if (dataType.includes("uuid")) return "🔑"
+    return "📄"
   }
 
   // Handle auto-refresh
   createEffect(() => {
     if (autoRefresh()) {
-      const interval = setInterval(testConnection, 30000); // Every 30 seconds
-      setRefreshInterval(interval as unknown as number);
+      const interval = setInterval(testConnection, 30000) // Every 30 seconds
+      setRefreshInterval(interval as unknown as number)
     } else {
       if (refreshInterval()) {
-        clearInterval(refreshInterval()!);
-        setRefreshInterval(null);
+        clearInterval(refreshInterval()!)
+        setRefreshInterval(null)
       }
     }
-  });
+  })
 
   onMount(() => {
-    testConnection();
-  });
+    testConnection()
+  })
 
   onCleanup(() => {
     if (refreshInterval()) {
-      clearInterval(refreshInterval()!);
+      clearInterval(refreshInterval()!)
     }
-  });
+  })
 
   return (
-    <div class="space-y-6">
-      {/* Main Status Card */}
-      <div class="bg-card border border-border rounded-lg p-6 transition-all duration-300 hover:shadow-lg">
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center gap-3">
-            <h2 class="text-2xl font-bold text-foreground">Database Status</h2>
-            <Show when={testResult()}>
-              <div class={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
-                testResult()!.success 
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
-                  : 'bg-red-500/10 text-red-400 border border-red-500/20'
-              }`}>
-                <div class={`w-2 h-2 rounded-full ${
-                  testResult()!.success ? 'bg-green-500 animate-pulse' : 'bg-red-500'
-                }`}></div>
-                {testResult()!.success ? 'Online' : 'Offline'}
-              </div>
-            </Show>
-          </div>
-          
-          <div class="flex items-center gap-3">
-            <button
-              onClick={toggleAutoRefresh}
-              class={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                autoRefresh() 
-                  ? 'bg-accent/20 text-accent border border-accent/30 hover:bg-accent/30' 
-                  : 'bg-muted text-muted-foreground border border-border hover:bg-muted/80'
-              }`}
-            >
-              {autoRefresh() ? '🔄 Auto (30s)' : '⏸️ Manual'}
-            </button>
-            
+    <div class="outerbase-dashboard">
+      {/* Sidebar */}
+      <div class="outerbase-sidebar-dashboard">
+        <div class="outerbase-sidebar-content-dashboard">
+          {/* Header */}
+          <div class="outerbase-sidebar-header-dashboard">
+            <h2 class="outerbase-sidebar-title-dashboard">Database Monitor</h2>
             <button
               onClick={testConnection}
               disabled={isLoading()}
-              class="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-all duration-200 font-medium shadow-sm"
+              class="outerbase-refresh-btn"
+              title="Refresh connection"
             >
-              {isLoading() ? '🔄 Testing...' : '🚀 Test Now'}
+              <svg
+                class={`w-4 h-4 ${isLoading() ? "animate-spin" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
             </button>
           </div>
-        </div>
 
-        {/* Connection Stats Grid */}
-        <Show when={testResult()}>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-muted/50 rounded-lg p-4 text-center">
-              <div class="text-2xl font-bold text-foreground">
-                {responseTime()}ms
-              </div>
-              <div class="text-sm text-muted-foreground">Response Time</div>
-            </div>
-            
-            <div class="bg-muted/50 rounded-lg p-4 text-center">
-              <div class="text-2xl font-bold text-accent">
-                {testResult()!.data?.tables.length || 0}
-              </div>
-              <div class="text-sm text-muted-foreground">Tables</div>
-            </div>
-            
-            <div class="bg-muted/50 rounded-lg p-4 text-center">
-              <div class="text-2xl font-bold text-accent">
-                {testResult()!.data?.stats.adminUsers || 0}
-              </div>
-              <div class="text-sm text-muted-foreground">Admin Users</div>
-            </div>
-            
-            <div class="bg-muted/50 rounded-lg p-4 text-center">
-              <div class="text-2xl font-bold text-accent">
-                {testResult()!.data?.stats.projects || 0}
-              </div>
-              <div class="text-sm text-muted-foreground">Projects</div>
-            </div>
+          {/* Auto Refresh Toggle */}
+          <div class="outerbase-auto-refresh-section">
+            <label class="outerbase-checkbox-label">
+              <input type="checkbox" checked={autoRefresh()} onChange={toggleAutoRefresh} class="outerbase-checkbox" />
+              <span class="outerbase-checkbox-text">Auto refresh (30s)</span>
+            </label>
           </div>
-        </Show>
 
-        {/* Status Message */}
-        <Show when={testResult()}>
-          <div class={`p-4 rounded-lg border transition-all duration-300 ${
-            testResult()!.success 
-              ? 'bg-green-500/5 border-green-500/20' 
-              : 'bg-red-500/5 border-red-500/20'
-          }`}>
-            <p class="text-foreground font-medium mb-2">
-              {testResult()!.message}
-            </p>
-            
-            <Show when={lastRefresh()}>
-              <p class="text-sm text-muted-foreground">
-                Last checked: {lastRefresh()}
-              </p>
-            </Show>
-
-            <Show when={testResult()!.error}>
-              <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mt-3">
-                <p class="text-sm text-red-400 font-mono">
-                  ❌ {testResult()!.error}
-                </p>
+          {/* Connection Status */}
+          <div class="outerbase-status-section">
+            <h3 class="outerbase-section-title">Connection Status</h3>
+            <Show when={testResult()}>
+              <div class={`outerbase-status-card ${testResult()!.success ? "success" : "error"}`}>
+                <div class={`outerbase-status-indicator ${testResult()!.success ? "success" : "error"}`}></div>
+                <div class="outerbase-status-info">
+                  <p class="outerbase-status-text">{testResult()!.success ? "Connected" : "Disconnected"}</p>
+                  <p class="outerbase-status-meta">{responseTime()}ms response time</p>
+                </div>
               </div>
             </Show>
           </div>
-        </Show>
 
-        {/* Loading State */}
-        <Show when={isLoading()}>
-          <div class="flex items-center justify-center py-12">
-            <div class="relative">
-              <div class="animate-spin rounded-full h-12 w-12 border-4 border-primary/20 border-t-primary"></div>
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+          {/* Stats */}
+          <Show when={testResult()?.data}>
+            <div class="outerbase-stats-section">
+              <h3 class="outerbase-section-title">Database Stats</h3>
+              <div class="outerbase-stat-item">
+                <span class="outerbase-stat-label">Tables</span>
+                <span class="outerbase-stat-value">{testResult()!.data!.tables.length}</span>
+              </div>
+              <div class="outerbase-stat-item">
+                <span class="outerbase-stat-label">Admin Users</span>
+                <span class="outerbase-stat-value">{testResult()!.data!.stats.adminUsers}</span>
+              </div>
+              <div class="outerbase-stat-item">
+                <span class="outerbase-stat-label">Projects</span>
+                <span class="outerbase-stat-value">{testResult()!.data!.stats.projects}</span>
               </div>
             </div>
-          </div>
-        </Show>
-      </div>
+          </Show>
 
-      {/* Tables Grid */}
-      <Show when={testResult()?.data?.tables}>
-        <div class="bg-card border border-border rounded-lg p-6">
-          <h3 class="text-lg font-semibold text-foreground mb-4">Database Tables</h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            <For each={testResult()!.data!.tables}>
-              {(table) => (
-                <button
-                  onClick={() => setSelectedTable(selectedTable() === table ? '' : table)}
-                  class={`p-3 rounded-lg border text-left transition-all duration-200 hover:scale-105 ${
-                    selectedTable() === table
-                      ? 'bg-primary/10 border-primary/30 text-primary'
-                      : 'bg-muted/30 border-border hover:bg-muted/50 text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <div class="text-sm font-mono">{table}</div>
-                </button>
-              )}
-            </For>
-          </div>
-          
-          <Show when={selectedTable()}>
-            <div class="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-              <h4 class="font-semibold text-primary mb-2">
-                📋 Selected: {selectedTable()}
-              </h4>
-              <p class="text-sm text-muted-foreground">
-                This table is part of your database schema. You could extend this to show table details, row counts, or schema information.
-              </p>
+          {/* Tables List */}
+          <Show when={testResult()?.data?.tables}>
+            <div class="outerbase-tables-section">
+              <h3 class="outerbase-section-title">Tables</h3>
+              <div class="outerbase-tables-list">
+                <For each={testResult()!.data!.tables}>
+                  {(table) => (
+                    <button
+                      onClick={() => handleTableSelect(table)}
+                      class={`outerbase-table-item ${selectedTable() === table ? "active" : ""}`}
+                    >
+                      <div class="outerbase-table-info">
+                        <span class="outerbase-table-name">{table}</span>
+                        <Show when={selectedTable() === table}>
+                          <svg
+                            class="w-4 h-4 outerbase-table-arrow"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                          </svg>
+                        </Show>
+                      </div>
+                    </button>
+                  )}
+                </For>
+              </div>
+            </div>
+          </Show>
+
+          {/* Test History */}
+          <Show when={testHistory().length > 0}>
+            <div class="outerbase-history-section">
+              <h3 class="outerbase-section-title">Recent Tests</h3>
+              <div class="outerbase-history-list">
+                <For each={testHistory().slice(0, 5)}>
+                  {(test) => (
+                    <div class="outerbase-history-item">
+                      <span class="outerbase-history-time">{test.time}</span>
+                      <div class={`outerbase-history-status ${test.success ? "success" : "error"}`}>
+                        <div class={`outerbase-history-dot ${test.success ? "success" : "error"}`}></div>
+                        {test.success ? "OK" : "FAIL"}
+                      </div>
+                    </div>
+                  )}
+                </For>
+              </div>
             </div>
           </Show>
         </div>
-      </Show>
+      </div>
 
-      {/* Test History */}
-      <Show when={testHistory().length > 0}>
-        <div class="bg-card border border-border rounded-lg p-6">
-          <h3 class="text-lg font-semibold text-foreground mb-4">Recent Tests</h3>
-          <div class="space-y-2">
-            <For each={testHistory()}>
-              {(test) => (
-                <div class="flex items-center justify-between p-2 rounded bg-muted/30">
-                  <span class="text-sm font-mono text-muted-foreground">{test.time}</span>
-                  <div class={`flex items-center gap-2 text-sm ${
-                    test.success ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    <div class={`w-2 h-2 rounded-full ${
-                      test.success ? 'bg-green-500' : 'bg-red-500'
-                    }`}></div>
-                    {test.success ? 'Success' : 'Failed'}
+      {/* Main Content Area */}
+      <div class="outerbase-main-content">
+        <div class="outerbase-content-wrapper">
+          {/* Header */}
+          <div class="outerbase-main-header">
+            <h1 class="outerbase-main-title">Database Status Dashboard</h1>
+            <Show when={lastRefresh()}>
+              <p class="outerbase-last-updated">Last updated: {lastRefresh()}</p>
+            </Show>
+          </div>
+
+          {/* Connection Stats Grid */}
+          <Show when={testResult()}>
+            <div class="outerbase-stats-grid">
+              <div class="outerbase-stat-card">
+                <div class="outerbase-stat-card-value">{responseTime()}ms</div>
+                <div class="outerbase-stat-card-label">Response Time</div>
+              </div>
+              <div class="outerbase-stat-card">
+                <div class="outerbase-stat-card-value">{testResult()!.data?.tables.length || 0}</div>
+                <div class="outerbase-stat-card-label">Tables</div>
+              </div>
+              <div class="outerbase-stat-card">
+                <div class="outerbase-stat-card-value">{testResult()!.data?.stats.adminUsers || 0}</div>
+                <div class="outerbase-stat-card-label">Admin Users</div>
+              </div>
+              <div class="outerbase-stat-card">
+                <div class="outerbase-stat-card-value">{testResult()!.data?.stats.projects || 0}</div>
+                <div class="outerbase-stat-card-label">Projects</div>
+              </div>
+            </div>
+          </Show>
+
+          {/* Status Message */}
+          <Show when={testResult()}>
+            <div class={`outerbase-message-card ${testResult()!.success ? "success" : "error"}`}>
+              <p class="outerbase-message-text">{testResult()!.message}</p>
+              <Show when={testResult()!.error}>
+                <div class="outerbase-error-details">
+                  <p class="outerbase-error-text">❌ {testResult()!.error}</p>
+                </div>
+              </Show>
+            </div>
+          </Show>
+
+          {/* Loading State */}
+          <Show when={isLoading()}>
+            <div class="outerbase-loading">
+              <div class="outerbase-spinner">
+                <div class="outerbase-spinner-ring"></div>
+                <div class="outerbase-spinner-dot"></div>
+              </div>
+            </div>
+          </Show>
+
+          {/* Tables Grid */}
+          <Show when={testResult()?.data?.tables && !selectedTable()}>
+            <div class="outerbase-tables-grid-container">
+              <h3 class="outerbase-tables-grid-title">Database Tables</h3>
+              <div class="outerbase-tables-grid">
+                <For each={testResult()!.data!.tables}>
+                  {(table) => (
+                    <button onClick={() => handleTableSelect(table)} class="outerbase-table-card">
+                      <div class="outerbase-table-card-name">{table}</div>
+                      <div class="outerbase-table-card-subtitle">Click to explore</div>
+                    </button>
+                  )}
+                </For>
+              </div>
+            </div>
+          </Show>
+
+          {/* Selected Table Details */}
+          <Show when={selectedTable()}>
+            <div class="outerbase-table-details">
+              {/* Table Header */}
+              <div class="outerbase-table-header">
+                <div class="outerbase-table-header-left">
+                  <button onClick={() => handleTableSelect("")} class="outerbase-back-btn" title="Back to tables list">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <h4 class="outerbase-table-title">📊 {selectedTable()}</h4>
+                  <Show when={tableData()}>
+                    <div class="outerbase-table-row-count">{tableData()!.totalRows} total rows</div>
+                  </Show>
+                </div>
+                <Show when={loadingTableData()}>
+                  <div class="outerbase-table-loading">
+                    <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-200 border-t-blue-600"></div>
+                  </div>
+                </Show>
+              </div>
+
+              {/* Schema Information */}
+              <Show when={tableSchema().length > 0}>
+                <div class="outerbase-schema-container">
+                  <div class="outerbase-schema-header">
+                    <h5 class="outerbase-schema-title">📋 Table Schema</h5>
+                  </div>
+                  <div class="outerbase-schema-table-wrapper">
+                    <table class="outerbase-schema-table">
+                      <thead class="outerbase-schema-thead">
+                        <tr>
+                          <th class="outerbase-schema-th">Column</th>
+                          <th class="outerbase-schema-th">Type</th>
+                          <th class="outerbase-schema-th">Nullable</th>
+                          <th class="outerbase-schema-th">Default</th>
+                        </tr>
+                      </thead>
+                      <tbody class="outerbase-schema-tbody">
+                        <For each={tableSchema()}>
+                          {(column) => (
+                            <tr class="outerbase-schema-tr">
+                              <td class="outerbase-schema-td">
+                                <div class="outerbase-column-info">
+                                  <span class="outerbase-column-icon">{getDataTypeIcon(column.data_type)}</span>
+                                  <span class="outerbase-column-name">{column.column_name}</span>
+                                </div>
+                              </td>
+                              <td class="outerbase-schema-td">
+                                <span class="outerbase-data-type">{column.data_type}</span>
+                              </td>
+                              <td class="outerbase-schema-td">
+                                <span
+                                  class={`outerbase-nullable-badge ${column.is_nullable === "YES" ? "nullable" : "not-nullable"}`}
+                                >
+                                  {column.is_nullable === "YES" ? "NULL" : "NOT NULL"}
+                                </span>
+                              </td>
+                              <td class="outerbase-schema-td">
+                                <span class="outerbase-default-value">{column.column_default || "None"}</span>
+                              </td>
+                            </tr>
+                          )}
+                        </For>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              )}
-            </For>
-          </div>
+              </Show>
+
+              {/* Table Data */}
+              <Show when={tableData() && tableData()!.rows.length > 0}>
+                <div class="outerbase-data-container">
+                  <div class="outerbase-data-header">
+                    <h5 class="outerbase-data-title">📄 Table Data</h5>
+                    <div class="outerbase-data-pagination-info">
+                      <span>Page {currentPage()}</span>
+                      <span>•</span>
+                      <span>
+                        {Math.min(itemsPerPage(), tableData()!.totalRows)} of {tableData()!.totalRows} rows
+                      </span>
+                    </div>
+                  </div>
+                  <div class="outerbase-data-table-wrapper">
+                    <table class="outerbase-data-table">
+                      <thead class="outerbase-data-thead">
+                        <tr>
+                          <For each={tableData()!.columns}>
+                            {(column) => (
+                              <th class="outerbase-data-th">
+                                <button onClick={() => handleSort(column)} class="outerbase-sort-btn">
+                                  {column}
+                                  <Show when={sortColumn() === column}>
+                                    <span class="outerbase-sort-indicator">
+                                      {sortDirection() === "asc" ? "↑" : "↓"}
+                                    </span>
+                                  </Show>
+                                </button>
+                              </th>
+                            )}
+                          </For>
+                        </tr>
+                      </thead>
+                      <tbody class="outerbase-data-tbody">
+                        <For each={getSortedData()}>
+                          {(row) => (
+                            <tr class="outerbase-data-tr">
+                              <For each={tableData()!.columns}>
+                                {(column) => (
+                                  <td class="outerbase-data-td">
+                                    <div
+                                      class={`outerbase-cell-value ${row[column] === null || row[column] === undefined ? "null" : ""}`}
+                                    >
+                                      {formatCellValue(row[column])}
+                                    </div>
+                                  </td>
+                                )}
+                              </For>
+                            </tr>
+                          )}
+                        </For>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  <Show when={tableData()!.totalRows > itemsPerPage()}>
+                    <div class="outerbase-pagination">
+                      <div class="outerbase-pagination-info">
+                        Showing {(currentPage() - 1) * itemsPerPage() + 1} to{" "}
+                        {Math.min(currentPage() * itemsPerPage(), tableData()!.totalRows)} of {tableData()!.totalRows}{" "}
+                        results
+                      </div>
+                      <div class="outerbase-pagination-controls">
+                        <button
+                          onClick={() => {
+                            setCurrentPage(Math.max(1, currentPage() - 1))
+                            fetchTableData(selectedTable())
+                          }}
+                          disabled={currentPage() === 1}
+                          class="outerbase-pagination-btn"
+                        >
+                          ← Previous
+                        </button>
+                        <span class="outerbase-pagination-current">
+                          {currentPage()} of {Math.ceil(tableData()!.totalRows / itemsPerPage())}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setCurrentPage(currentPage() + 1)
+                            fetchTableData(selectedTable())
+                          }}
+                          disabled={currentPage() >= Math.ceil(tableData()!.totalRows / itemsPerPage())}
+                          class="outerbase-pagination-btn"
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    </div>
+                  </Show>
+                </div>
+              </Show>
+
+              <Show when={tableData() && tableData()!.rows.length === 0 && !loadingTableData()}>
+                <div class="outerbase-empty-state">
+                  <div class="outerbase-empty-icon">📋</div>
+                  <h5 class="outerbase-empty-title">No Data Found</h5>
+                  <p class="outerbase-empty-description">
+                    This table appears to be empty or no data matches the current criteria.
+                  </p>
+                </div>
+              </Show>
+            </div>
+          </Show>
         </div>
-      </Show>
+      </div>
     </div>
-  );
+  )
 }
 
-export default EnhancedDatabaseStatus;
+export default EnhancedDatabaseStatus
