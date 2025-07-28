@@ -1,4 +1,7 @@
-import { createSignal, createEffect, Component, JSX, onCleanup } from 'solid-js';
+import { createSignal, createEffect, Component, JSX, onCleanup, For } from 'solid-js';
+import './NumberFlow.css';
+import { DigitColumn } from '../../../components/ui/DigitColumn';
+import { buildDigitMeta, splitFormatted } from '../lib/digit-model-helpers';
 
 type TProps = {
   value: number;
@@ -38,69 +41,14 @@ function easeInOutExpo(t: number): number {
 
 export const NumberFlow: Component<TProps> = (props) => {
   const [displayValue, setDisplayValue] = createSignal(props.value);
-  const [isAnimating, setIsAnimating] = createSignal(false);
-  let animationId: number | null = null;
   let spanRef: HTMLSpanElement | undefined;
 
   const formatValue = (value: number) => {
     return new Intl.NumberFormat(undefined, props.format || {}).format(value);
   };
 
-  onCleanup(() => {
-    if (animationId !== null) {
-      cancelAnimationFrame(animationId);
-    }
-  });
-
   createEffect(() => {
-    const newValue = props.value;
-    const currentValue = displayValue();
-    
-    // Default animated to true if not specified
-    const isAnimated = props.animated !== false;
-    
-    if (newValue === currentValue || !isAnimated) {
-      setDisplayValue(newValue);
-      return;
-    }
-
-    // Cancel any existing animation
-    if (animationId !== null) {
-      cancelAnimationFrame(animationId);
-    }
-
-    const transformTiming = props.transformTiming || { duration: 400, easing: 'ease-out' };
-    const startTime = performance.now();
-    const startValue = currentValue;
-    const valueChange = newValue - startValue;
-
-    setIsAnimating(true);
-    
-    function animateStep(currentTime: number) {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / transformTiming.duration, 1);
-      
-      // Apply easing function
-      let easedProgress = progress;
-      if (transformTiming.easing === 'ease-out') {
-        easedProgress = easeOutExpo(progress);
-      } else if (transformTiming.easing === 'ease-in-out') {
-        easedProgress = easeInOutExpo(progress);
-      }
-      
-      const interpolatedValue = startValue + (valueChange * easedProgress);
-      setDisplayValue(interpolatedValue);
-      
-      if (progress < 1) {
-        animationId = requestAnimationFrame(animateStep);
-      } else {
-        setIsAnimating(false);
-        setDisplayValue(newValue);
-        animationId = null;
-      }
-    }
-    
-    animationId = requestAnimationFrame(animateStep);
+    setDisplayValue(props.value);
   });
   if (props.animated === false) {
     const formattedValue = formatValue(props.value);

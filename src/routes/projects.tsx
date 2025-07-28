@@ -144,8 +144,8 @@ function ProjectsPage() {
                   {createProjectMutation.isPending ? 'Creating...' : 'Create Project'}
                 </button>
               </form>
-        </div>
-      </Show>
+            </div>
+          </Show>
 
           <div class="space-y-6">
             <Show
@@ -223,7 +223,8 @@ function ProjectsPage() {
               </div>
             </Show>
           </div>
-    </div>
+        </div>
+      </div>
     </BaseLayout>
   )
 }

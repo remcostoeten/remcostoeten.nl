@@ -43,12 +43,24 @@ function getLinkClasses(variant: "default" | "theme" | "muted" = "theme"): strin
 }
 
 function getInputClasses(state: "default" | "error" | "success" = "default"): string {
-  const baseClasses = "flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+  const baseClasses = "flex h-10 w-full rounded-md border bg-background text-gray-200 px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50";
   
   const states = {
-    default: "border-border focus-visible:ring-accent",
-    error: "border-destructive focus-visible:ring-destructive",
-    success: "border-accent focus-visible:ring-accent"
+    default: "border-border focus:border-accent/60 hover:border-border/80",
+    error: "border-destructive focus:border-destructive/80 hover:border-destructive/60",
+    success: "border-accent focus:border-accent/80 hover:border-accent/60"
+  };
+  
+  return `${baseClasses} ${states[state]}`;
+}
+
+function getTextareaClasses(state: "default" | "error" | "success" = "default"): string {
+  const baseClasses = "flex w-full rounded-md border bg-background text-red-200 px-3 py-2 text-sm placeholder:text-red-400 focus:outline-none transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  
+  const states = {
+    default: "border-border focus:border-accent/60 hover:border-border/80",
+    error: "border-destructive focus:border-destructive/80 hover:border-destructive/60",
+    success: "border-accent focus:border-accent/80 hover:border-accent/60"
   };
   
   return `${baseClasses} ${states[state]}`;
@@ -80,6 +92,7 @@ export {
   getCardClasses,
   getLinkClasses,
   getInputClasses,
+  getTextareaClasses,
   getBadgeClasses,
   getPageClasses,
   getSectionClasses

@@ -54,56 +54,57 @@ function AnalyticsPage() {
             </div>
           </div>
 
-        <div class="mb-12">
-          <Show when={!metricsQuery.isLoading}>
-            <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-              <h2 class="text-2xl font-bold text-gray-900 mb-4">Metrics Overview</h2>
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-blue-50 p-4 rounded-lg">
-                  <p class="text-6xl font-bold text-blue-600">
-                    {metricsQuery.data.totalViews}
-                  </p>
-                  <p class="mt-2 text-lg text-gray-700">Total Views</p>
-                </div>
+          <div class="mb-12">
+            <Show when={!metricsQuery.isLoading}>
+              <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Metrics Overview</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                  <div class="bg-blue-50 p-4 rounded-lg">
+                    <p class="text-6xl font-bold text-blue-600">
+                      {metricsQuery.data.totalViews}
+                    </p>
+                    <p class="mt-2 text-lg text-gray-700">Total Views</p>
+                  </div>
 
-                <div class="bg-green-50 p-4 rounded-lg">
-                  <p class="text-6xl font-bold text-green-600">
-                    {metricsQuery.data.uniqueVisitors}
-                  </p>
-                  <p class="mt-2 text-lg text-gray-700">Unique Visitors</p>
-                </div>
+                  <div class="bg-green-50 p-4 rounded-lg">
+                    <p class="text-6xl font-bold text-green-600">
+                      {metricsQuery.data.uniqueVisitors}
+                    </p>
+                    <p class="mt-2 text-lg text-gray-700">Unique Visitors</p>
+                  </div>
 
-                <div class="bg-orange-50 p-4 rounded-lg">
-                  <p class="text-6xl font-bold text-orange-600">
-                    {metricsQuery.data.uniquePages}
-                  </p>
-                  <p class="mt-2 text-lg text-gray-700">Unique Pages</p>
+                  <div class="bg-orange-50 p-4 rounded-lg">
+                    <p class="text-6xl font-bold text-orange-600">
+                      {metricsQuery.data.uniquePages}
+                    </p>
+                    <p class="mt-2 text-lg text-gray-700">Unique Pages</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Show>
-        </div>
+            </Show>
+          </div>
 
-        <div class="bg-white shadow-md rounded-lg p-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">Top Pages</h2>
-          <table class="w-full table-auto">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-semibold text-gray-700">Page Path</th>
-                <th class="px-4 py-2 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-semibold text-gray-700">Views</th>
-              </tr>
-            </thead>
-            <tbody>
-              <Show when={!topPagesQuery.isLoading}>
-                {topPagesQuery.data.map(({ path, views }) => (
-                  <tr>
-                    <td class="px-4 py-2 border-b border-gray-200 text-sm">{path}</td>
-                    <td class="px-4 py-2 border-b border-gray-200 text-sm">{views}</td>
-                  </tr>
-                ))}
-              </Show>
-            </tbody>
-          </table>
+          <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Top Pages</h2>
+            <table class="w-full table-auto">
+              <thead>
+                <tr>
+                  <th class="px-4 py-2 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-semibold text-gray-700">Page Path</th>
+                  <th class="px-4 py-2 border-b border-gray-200 bg-gray-50 text-left text-sm leading-4 font-semibold text-gray-700">Views</th>
+                </tr>
+              </thead>
+              <tbody>
+                <Show when={!topPagesQuery.isLoading}>
+                  {topPagesQuery.data.map(({ path, views }) => (
+                    <tr>
+                      <td class="px-4 py-2 border-b border-gray-200 text-sm">{path}</td>
+                      <td class="px-4 py-2 border-b border-gray-200 text-sm">{views}</td>
+                    </tr>
+                  ))}
+                </Show>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </BaseLayout>
