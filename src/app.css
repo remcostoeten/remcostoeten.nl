@@ -4,7 +4,6 @@
 
 /* Import custom utilities to replace Tailwind classes */
 @import './styles/utilities.css';
-@import './styles/database-test.css';
 
 /* Exact colors from source project - Dark theme by default */
 @layer base {
