@@ -1,6 +1,6 @@
 import { createSignal, Show } from 'solid-js'
 import { useCreateContactMessage } from '~/lib/queries/contact'
-import BaseLayout from '~/components/layout/BaseLayout'
+import BaseLayout from '~/components/layout/base-layout'
 import Button from '~/components/ui/Button'
 import Input from '~/components/ui/Input'
 

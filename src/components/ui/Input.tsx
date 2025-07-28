@@ -1,35 +1,32 @@
-import { JSX, Component, splitProps, Show } from 'solid-js'
+import { JSX, splitProps, Show } from 'solid-js'
+import { getInputClasses } from '~/lib/style-utils'
 
-type TInputProps = {
+type TProps = {
   readonly label?: string
   readonly error?: string
   readonly helperText?: string
+  readonly success?: boolean
   readonly required?: boolean
   readonly class?: string
 } & JSX.InputHTMLAttributes<HTMLInputElement>
 
-const Input: Component<TInputProps> = (props) => {
+function Input(props: TProps) {
   const [local, others] = splitProps(props, [
-    'label', 'error', 'helperText', 'required', 'class'
+    'label', 'error', 'helperText', 'success', 'required', 'class'
   ])
 
-  const inputClasses = () => [
-    'block w-full px-3 py-2 border rounded-md shadow-sm',
-    'focus:outline-none focus:ring-2 focus:ring-offset-0',
-    'transition-colors duration-200',
-    local.error 
-      ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-      : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500',
-    'disabled:bg-gray-50 disabled:text-gray-500',
-    local.class
-  ].filter(Boolean).join(' ')
+  const inputClasses = () => {
+    const state = local.error ? 'error' : local.success ? 'success' : 'default'
+    const baseClasses = getInputClasses(state)
+    return local.class ? `${baseClasses} ${local.class}` : baseClasses
+  }
 
   return (
     <div class="space-y-1">
       <Show when={local.label}>
-        <label class="block text-sm font-medium text-gray-700">
+        <label class="block text-sm font-medium text-foreground">
           {local.label}
-          {local.required && <span class="text-red-500 ml-1">*</span>}
+          {local.required && <span class="text-destructive ml-1">*</span>}
         </label>
       </Show>
       
@@ -40,11 +37,11 @@ const Input: Component<TInputProps> = (props) => {
       />
       
       <Show when={local.error}>
-        <p class="text-sm text-red-600">{local.error}</p>
+        <p class="text-sm text-destructive">{local.error}</p>
       </Show>
       
       <Show when={local.helperText && !local.error}>
-        <p class="text-sm text-gray-500">{local.helperText}</p>
+        <p class="text-sm text-muted-foreground">{local.helperText}</p>
       </Show>
     </div>
   )

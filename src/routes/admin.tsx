@@ -1,32 +1,35 @@
-import { A } from "@solidjs/router";
-import { CMSContainer } from "~/cms/container";
+import { A } from "@solidjs/router"
+import BaseLayout from "~/components/layout/base-layout"
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "~/components/ui/Card"
+import { getPageClasses, getBadgeClasses, getButtonClasses } from "~/lib/style-utils"
 
 function AdminPage() {
   return (
-    <div class="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 text-foreground relative overflow-hidden">
-      {/* Background decoration */}
-      <div class="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
-      <div class="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
-      <div class="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-      
-      <div class={CMSContainer()}>
-        <div class="relative z-10 py-12">
-          {/* Header */}
-          <div class="text-center mb-12">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6">
-              <div class="w-2 h-2 rounded-full bg-accent animate-pulse" />
-              <span class="text-sm font-medium text-accent">Admin Dashboard</span>
+    <BaseLayout>
+      <div class={`${getPageClasses()} relative bg-gradient-to-br from-background via-background to-muted/20 overflow-hidden`}>
+        {/* Background decoration */}
+        <div class="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none" />
+        <div class="absolute top-0 right-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div class="container-centered">
+          <div class="relative z-10 py-12">
+            {/* Header */}
+            <div class="text-center mb-12">
+              <div class={getBadgeClasses("accent")}>
+                <div class="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                <span class="font-medium">Admin Dashboard</span>
+              </div>
+              <h1 class="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient mb-4">
+                Welcome Back
+              </h1>
+              <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Manage your application with powerful tools and insights
+              </p>
             </div>
-            <h1 class="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient mb-4">
-              Welcome Back
-            </h1>
-            <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Manage your application with powerful tools and insights
-            </p>
-          </div>
 
-          {/* Main Card */}
-          <div class="max-w-4xl mx-auto">
+            {/* Main Card */}
+            <div class="max-w-4xl mx-auto">
             <div class="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl shadow-2xl overflow-hidden">
               {/* Card Header */}
               <div class="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 p-8 border-b border-border/50">
@@ -91,7 +94,7 @@ function AdminPage() {
                 <div class="flex flex-col sm:flex-row gap-4">
                   <A 
                     href="/" 
-                    class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-background font-medium rounded-xl hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5"
+                    class={`${getButtonClasses("primary", "lg")} flex-1 gap-2 rounded-xl shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 hover:-translate-y-0.5`}
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -109,10 +112,11 @@ function AdminPage() {
               </div>
             </div>
           </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    </BaseLayout>
+  )
 }
 
-export default AdminPage;
+export default AdminPage

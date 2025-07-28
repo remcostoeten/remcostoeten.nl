@@ -1,3 +1,5 @@
+@import "../styles/theme-link.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -42,6 +44,7 @@
     /* Highlighted text colors */
     --highlight-product: 85 100% 75%;
     --highlight-frontend: 85 100% 75%;
+
   }
 }
 
@@ -144,25 +147,6 @@
     }
   }
 
-  @keyframes theme-link-enter {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes underline-grow {
-    from {
-      transform: scaleX(0);
-    }
-    to {
-      transform: scaleX(1);
-    }
-  }
 
   /* Highlight Styles - Exact match from source */
   .highlight {
@@ -183,44 +167,6 @@
     transform: scale(0.98);
   }
 
-  /* Theme Links - Exact match from source */
-  .theme-link {
-    color: hsl(var(--accent));
-    font-weight: 500;
-    text-decoration: none;
-    transition: all 0.15s;
-    position: relative;
-    display: inline;
-    opacity: 0;
-    transform: translateY(10px);
-    animation: theme-link-enter 0.6s ease-out forwards;
-  }
-
-  .theme-link:hover::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 1px;
-    animation: underline-grow 150ms ease forwards;
-  }
-
-  .theme-link.with-arrow:hover::before {
-    right: 1.5rem;
-    background: linear-gradient(to right, currentColor 70%, transparent 100%);
-  }
-
-  .theme-link:not(.with-arrow):hover::before {
-    right: 0;
-    background-color: currentColor;
-  }
-
-  .theme-link.with-arrow::after {
-    position: relative;
-    z-index: 1;
-    content: " ↗";
-    margin-right: 0.125rem;
-  }
 
   /* Grid Pattern Background */
   .bg-grid-pattern {

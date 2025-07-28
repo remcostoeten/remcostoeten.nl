@@ -15,6 +15,13 @@
       "when": 1753566751300,
       "tag": "0001_handy_starbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753703031943,
+      "tag": "0002_flippant_goliath",
+      "breakpoints": true
     }
   ]
 }
