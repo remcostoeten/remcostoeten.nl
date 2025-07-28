@@ -148,9 +148,6 @@ export function useKeyboardShortcuts(
   }
 
   function executeShortcut(shortcut: TShortcutConfig) {
-    if (mergedOptions.debug) {
-      console.log(`Executing shortcut: ${shortcut.name}`);
-    }
 
     setState(prev => shortcutReducer(prev, { type: 'SET_MATCH', shortcutId: shortcut.id }));
     shortcut.action();
@@ -219,9 +216,6 @@ export function useKeyboardShortcuts(
       clearSequence();
     }, mergedOptions.sequenceTimeout);
 
-    if (mergedOptions.debug) {
-      console.log(`Keystroke: ${key}${modifiers.length ? ` (${modifiers.join('+')})` : ''}`);
-    }
   }
 
   createEffect(() => {

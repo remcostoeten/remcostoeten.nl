@@ -27,36 +27,19 @@ function createTimestamps(): TTimestamps {
   };
 }
 
-// export const projects = pgTable("projects", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   title: varchar("title", { length: 255 }).notNull(),
-//   description: text("description").notNull(),
-//   longDescription: text("long_description"),
-//   url: varchar("url", { length: 500 }),
-//   demoUrl: varchar("demo_url", { length: 500 }),
-//   githubUrl: varchar("github_url", { length: 500 }),
-//   technologies: jsonb("technologies").$type<string[]>().notNull(),
-//   category: varchar("category", { length: 100 }).notNull(),
-//   featured: boolean("featured").default(false).notNull(),
-//   status: varchar("status", { length: 50 }).default("completed").notNull(),
-//   startDate: timestamp("start_date").notNull(),
-//   endDate: timestamp("end_date"),
-//   highlights: jsonb("highlights").$type<string[]>().notNull(),
-//   metrics: jsonb("metrics").$type<{
-//     stars?: number;
-//     forks?: number;
-//     downloads?: number;
-//     users?: number;
-//   }>(),
-//   isPublished: boolean("is_published").default(true).notNull(),
-//   sortOrder: integer("sort_order").default(0).notNull(),
-//   slug: varchar("slug", { length: 255 }).notNull().unique(),
-//   ...createTimestamps(),
-// }, (table) => ({
-//   featuredIdx: index("projects_featured_idx").on(table.featured),
-//   statusIdx: index("projects_status_idx").on(table.status),
-//   publishedIdx: index("projects_published_idx").on(table.isPublished),
-// }));
+export const projects = pgTable("projects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  url: varchar("url", { length: 500 }),
+  githubUrl: varchar("github_url", { length: 500 }),
+  imageUrl: varchar("image_url", { length: 500 }),
+  technologies: jsonb("technologies").$type<string[]>().notNull(),
+  status: varchar("status", { length: 50 }).default("active").notNull(),
+  ...createTimestamps(),
+}, (table) => ({
+  statusIdx: index("projects_status_idx").on(table.status),
+}));
 
 // export const projectImages = pgTable("project_images", {
 //   id: uuid("id").primaryKey().defaultRandom(),
@@ -95,22 +78,22 @@ function createTimestamps(): TTimestamps {
 //   ...createTimestamps(),
 // });
 
-// export const contactSubmissions = pgTable("contact_submissions", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   name: varchar("name", { length: 255 }).notNull(),
-//   email: varchar("email", { length: 255 }).notNull(),
-//   subject: varchar("subject", { length: 255 }),
-//   message: text("message").notNull(),
-//   status: varchar("status", { length: 50 }).default("new").notNull(),
-//   ipAddress: varchar("ip_address", { length: 45 }),
-//   userAgent: text("user_agent"),
-//   isRead: boolean("is_read").default(false).notNull(),
-//   repliedAt: timestamp("replied_at"),
-//   ...createTimestamps(),
-// }, (table) => ({
-//   statusIdx: index("contact_status_idx").on(table.status),
-//   readIdx: index("contact_read_idx").on(table.isRead),
-// }));
+export const contactSubmissions = pgTable("contact_submissions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 255 }),
+  message: text("message").notNull(),
+  status: varchar("status", { length: 50 }).default("new").notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  isRead: boolean("is_read").default(false).notNull(),
+  repliedAt: timestamp("replied_at"),
+  ...createTimestamps(),
+}, (table) => ({
+  statusIdx: index("contact_status_idx").on(table.status),
+  readIdx: index("contact_read_idx").on(table.isRead),
+}));
 
 // export const siteSettings = pgTable("site_settings", {
 //   id: uuid("id").primaryKey().defaultRandom(),
@@ -145,27 +128,27 @@ export const analyticsEvents = pgTable("analytics_events", {
   userIdIdx: index("analytics_user_id_idx").on(table.userId),
 }));
 
-// export const adminUser = pgTable("admin_user", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   email: varchar("email", { length: 255 }).notNull().unique(),
-//   passwordHash: text("password_hash").notNull(),
-//   isActive: boolean("is_active").default(true).notNull(),
-//   lastLoginAt: timestamp("last_login_at"),
-//   ...createTimestamps(),
-// });
+export const adminUser = pgTable("admin_user", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  lastLoginAt: timestamp("last_login_at"),
+  ...createTimestamps(),
+});
 
-// export const adminSessions = pgTable("admin_sessions", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   userId: uuid("user_id").references(() => adminUser.id, { onDelete: "cascade" }).notNull(),
-//   token: text("token").notNull().unique(),
-//   expiresAt: timestamp("expires_at").notNull(),
-//   ipAddress: varchar("ip_address", { length: 45 }),
-//   userAgent: text("user_agent"),
-//   ...createTimestamps(),
-// }, (table) => ({
-//   tokenIdx: index("admin_sessions_token_idx").on(table.token),
-//   expiresIdx: index("admin_sessions_expires_idx").on(table.expiresAt),
-// }));
+export const adminSessions = pgTable("admin_sessions", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => adminUser.id, { onDelete: "cascade" }).notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  ...createTimestamps(),
+}, (table) => ({
+  tokenIdx: index("admin_sessions_token_idx").on(table.token),
+  expiresIdx: index("admin_sessions_expires_idx").on(table.expiresAt),
+}));
 
 // export const adminActivityLog = pgTable("admin_activity_log", {
 //   id: uuid("id").primaryKey().defaultRandom(),
@@ -193,22 +176,21 @@ export const analyticsEvents = pgTable("analytics_events", {
 //   }),
 // }));
 
-// Commented out types since the related tables are commented out
-// export type TProject = typeof projects.$inferSelect;
-// export type TNewProject = typeof projects.$inferInsert;
+export type TProject = typeof projects.$inferSelect;
+export type TNewProject = typeof projects.$inferInsert;
 // export type TProjectImage = typeof projectImages.$inferSelect;
 // export type TNewProjectImage = typeof projectImages.$inferInsert;
 // export type TSkill = typeof skills.$inferSelect;
 // export type TNewSkill = typeof skills.$inferInsert;
 // export type TExperience = typeof experience.$inferSelect;
 // export type TNewExperience = typeof experience.$inferInsert;
-// export type TContactSubmission = typeof contactSubmissions.$inferSelect;
-// export type TNewContactSubmission = typeof contactSubmissions.$inferInsert;
+export type TContactSubmission = typeof contactSubmissions.$inferSelect;
+export type TNewContactSubmission = typeof contactSubmissions.$inferInsert;
 // export type TSiteSetting = typeof siteSettings.$inferSelect;
 // export type TNewSiteSetting = typeof siteSettings.$inferInsert;
 export type TAnalyticsEvent = typeof analyticsEvents.$inferSelect;
 export type TNewAnalyticsEvent = typeof analyticsEvents.$inferInsert;
-// export type TAdminUser = typeof adminUser.$inferSelect;
-// export type TNewAdminUser = typeof adminUser.$inferInsert;
-// export type TAdminSession = typeof adminSessions.$inferSelect;
-// export type TNewAdminSession = typeof adminSessions.$inferInsert;
+export type TAdminUser = typeof adminUser.$inferSelect;
+export type TNewAdminUser = typeof adminUser.$inferInsert;
+export type TAdminSession = typeof adminSessions.$inferSelect;
+export type TNewAdminSession = typeof adminSessions.$inferInsert;

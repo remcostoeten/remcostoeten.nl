@@ -50,15 +50,15 @@ function AdminPage() {
                 {/* Stats Grid */}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                   <div class="bg-background/50 rounded-xl p-6 border border-border/30 hover:border-accent/30 transition-all group">
-                    <div class="text-3xl font-bold text-accent mb-1">42</div>
+                    <div class="text-3xl font-bold text-muted-foreground mb-1">--</div>
                     <div class="text-sm text-muted-foreground">Active Users</div>
                   </div>
                   <div class="bg-background/50 rounded-xl p-6 border border-border/30 hover:border-accent/30 transition-all group">
-                    <div class="text-3xl font-bold text-accent mb-1">128</div>
+                    <div class="text-3xl font-bold text-muted-foreground mb-1">--</div>
                     <div class="text-sm text-muted-foreground">Total Posts</div>
                   </div>
                   <div class="bg-background/50 rounded-xl p-6 border border-border/30 hover:border-accent/30 transition-all group">
-                    <div class="text-3xl font-bold text-accent mb-1">99.9%</div>
+                    <div class="text-3xl font-bold text-muted-foreground mb-1">--</div>
                     <div class="text-sm text-muted-foreground">Uptime</div>
                   </div>
                 </div>
