@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
 import KeyboardShortcutsProvider from "~/components/providers/KeyboardShortcutsProvider";
 import KeyboardShortcutIndicator from "~/components/ui/KeyboardShortcutIndicator";
 import { AnalyticsTracker } from "~/components/analytics/AnalyticsTracker";
+import "~/styles/tailwind.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {

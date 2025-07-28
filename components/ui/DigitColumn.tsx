@@ -7,6 +7,7 @@ type TProps = {
     duration: number;
     easing: string;
   };
+  delay?: number;
   ref?: (el: HTMLSpanElement) => void;
 };
 
@@ -26,6 +27,9 @@ export function DigitColumn(props: TProps): Component<TProps> {
     
     digitRef.style.transition = `transform ${props.timing.duration}ms ${props.timing.easing}`;
     digitRef.style.transform = `translateY(${targetOffset * 10}%)`;
+    if (props.delay !== undefined) {
+      digitRef.style.transitionDelay = `${props.delay}ms`;
+    }
     setOffset(targetOffset);
   }
 

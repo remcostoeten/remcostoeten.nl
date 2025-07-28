@@ -20,7 +20,7 @@ function AdminPage() {
                 <div class="w-2 h-2 rounded-full bg-accent animate-pulse" />
                 <span class="font-medium">Admin Dashboard</span>
               </div>
-              <h1 class="text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient mb-4">
+              <h1 class="!text-red-400 text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient mb-4">
                 Welcome Back
               </h1>
               <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
