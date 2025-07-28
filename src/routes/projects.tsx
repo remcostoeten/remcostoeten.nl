@@ -1,6 +1,7 @@
 import { createSignal, For, Show } from 'solid-js'
 import { useGetProjects, useCreateProject } from '~/lib/queries/projects'
-import BaseLayout from '~/components/layout/base-layout'
+import { BaseLayout } from '~/components/layout/base-layout'
+import { ArrowLink } from '~/components/ui/ArrowLink'
 import type { TProject } from '~/db/schema'
 
 function ProjectsPage() {
@@ -190,25 +191,15 @@ function ProjectsPage() {
                       
                       <div class="flex gap-4">
                         <Show when={project.url}>
-                          <a
-                            href={project.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="theme-link with-arrow"
-                          >
+                          <ArrowLink href={project.url!}>
                             View Project
-                          </a>
+                          </ArrowLink>
                         </Show>
                         
                         <Show when={project.githubUrl}>
-                          <a
-                            href={project.githubUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="theme-link with-arrow"
-                          >
+                          <ArrowLink href={project.githubUrl!}>
                             GitHub
-                          </a>
+                          </ArrowLink>
                         </Show>
                       </div>
                     </div>

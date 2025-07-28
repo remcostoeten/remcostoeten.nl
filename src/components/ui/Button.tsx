@@ -1,7 +1,7 @@
 import { JSX, Component, splitProps } from 'solid-js'
 import { getButtonClasses } from '~/lib/style-utils'
 
-type TButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive'
+type TButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive' | 'outlined' | 'link' | 'admin'
 type TButtonSize = 'sm' | 'md' | 'lg'
 
 type TProps = {
@@ -18,11 +18,19 @@ function Button(props: TProps) {
     'variant', 'size', 'disabled', 'loading', 'children', 'class'
   ])
 
-  const variant = () => local.variant ?? 'primary'
-  const size = () => local.size ?? 'md'
-  const isDisabled = () => local.disabled || local.loading
+  function variant() {
+    return local.variant ?? 'primary'
+  }
+  
+  function size() {
+    return local.size ?? 'md'
+  }
+  
+  function isDisabled() {
+    return local.disabled || local.loading
+  }
 
-  const classes = () => {
+  function classes() {
     const baseClasses = getButtonClasses(variant(), size())
     return local.class ? `${baseClasses} ${local.class}` : baseClasses
   }
@@ -59,4 +67,4 @@ function Button(props: TProps) {
   )
 }
 
-export default Button
+export { Button }

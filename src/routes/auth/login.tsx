@@ -1,9 +1,9 @@
 import { createSignal, Show } from 'solid-js'
 import { useNavigate } from '@solidjs/router'
 import { useLogin } from '~/lib/queries/auth'
-import BaseLayout from '~/components/layout/base-layout'
-import Button from '~/components/ui/Button'
-import Input from '~/components/ui/Input'
+import { BaseLayout } from '~/components/layout/base-layout'
+import { Button } from '~/components/ui/Button'
+import { Input } from '~/components/ui/Input'
 
 type TLoginForm = {
   email: string
@@ -16,7 +16,7 @@ type TFormErrors = {
   general?: string
 }
 
-const LoginPage = () => {
+function LoginPage() {
   const navigate = useNavigate()
   const loginMutation = useLogin()
   
@@ -27,7 +27,7 @@ const LoginPage = () => {
   
   const [errors, setErrors] = createSignal<TFormErrors>({})
 
-  const validateForm = (): boolean => {
+  function validateForm(): boolean {
     const data = formData()
     const newErrors: TFormErrors = {}
     
@@ -47,7 +47,7 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: Event) => {
+  async function handleSubmit(e: Event) {
     e.preventDefault()
     
     if (!validateForm()) return
@@ -60,7 +60,7 @@ const LoginPage = () => {
     }
   }
 
-  const updateField = (field: keyof TLoginForm, value: string) => {
+  function updateField(field: keyof TLoginForm, value: string) {
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors()[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))

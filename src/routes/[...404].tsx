@@ -1,6 +1,6 @@
-import { A } from "@solidjs/router";
 import { Motion } from "@motionone/solid";
 import { CMSContainer } from "~/cms/container";
+import { ButtonLink } from "~/components/ui/ButtonLink";
 
 type TProps = {
   readonly url?: string;
@@ -44,12 +44,12 @@ function NotFound(props: TProps) {
             transition={{ duration: 0.6, delay: 0.4, easing: [0.4, 0.0, 0.2, 1] }}
             class="space-y-4"
           >
-            <A 
+            <ButtonLink 
               href="/" 
-              class="theme-link inline-block px-6 py-3 border border-border rounded-md hover:bg-muted transition-all duration-300 ease-in-out hover:border-accent/50 hover:shadow-sm"
+              variant="admin"
             >
               ← Back to Home
-            </A>
+            </ButtonLink>
           </Motion.div>
 
           <Motion.div
@@ -59,9 +59,9 @@ function NotFound(props: TProps) {
             class="pt-8 space-y-2"
           >
             <p class="text-sm text-muted-foreground">
-              <A href="/projects" class="theme-link">View Projects</A>
+              <ButtonLink href="/projects" variant="link">View Projects</ButtonLink>
               {" • "}
-              <A href="/contact" class="theme-link">Contact</A>
+              <ButtonLink href="/contact" variant="link">Contact</ButtonLink>
             </p>
           </Motion.div>
         </div>

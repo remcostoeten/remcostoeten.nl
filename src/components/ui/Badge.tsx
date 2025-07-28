@@ -8,7 +8,7 @@ type TProps = {
 }
 
 function Badge(props: TProps) {
-  const classes = () => {
+  function classes() {
     const baseClasses = getBadgeClasses(props.variant)
     return props.class ? `${baseClasses} ${props.class}` : baseClasses
   }
@@ -20,4 +20,4 @@ function Badge(props: TProps) {
   )
 }
 
-export default Badge
+export { Badge }

@@ -1,9 +1,10 @@
 import { createSignal, Show } from 'solid-js'
 import { useCreateContactMessage } from '~/lib/queries/contact'
-import BaseLayout from '~/components/layout/base-layout'
-import Button from '~/components/ui/Button'
-import Input from '~/components/ui/Input'
-import Textarea from '~/components/primitives/Textarea'
+import { BaseLayout } from '~/components/layout/base-layout'
+import { Button } from '~/components/ui/Button'
+import { Input } from '~/components/ui/Input'
+import { Textarea } from '~/components/primitives/Textarea'
+import { ArrowLink } from '~/components/ui/ArrowLink'
 
 type TContactForm = {
   name: string
@@ -216,7 +217,7 @@ function ContactPage() {
                   </svg>
                 </div>
                 <p class="font-medium text-foreground">Email</p>
-                <a href="mailto:remco@remcostoeten.nl" class="theme-link with-arrow">remco@remcostoeten.nl</a>
+                <ArrowLink href="mailto:remco@remcostoeten.nl" external={false}>remco@remcostoeten.nl</ArrowLink>
               </div>
               
               <div class="flex flex-col items-center p-4 bg-card/30 border border-border rounded-lg backdrop-blur-sm hover:bg-card/50 transition-colors">
@@ -226,7 +227,7 @@ function ContactPage() {
                   </svg>
                 </div>
                 <p class="font-medium text-foreground">GitHub</p>
-                <a href="https://github.com/remcostoeten" target="_blank" rel="noopener noreferrer" class="theme-link with-arrow">@remcostoeten</a>
+                <ArrowLink href="https://github.com/remcostoeten">@remcostoeten</ArrowLink>
               </div>
               
               <div class="flex flex-col items-center p-4 bg-card/30 border border-border rounded-lg backdrop-blur-sm hover:bg-card/50 transition-colors">
@@ -236,7 +237,7 @@ function ContactPage() {
                   </svg>
                 </div>
                 <p class="font-medium text-foreground">LinkedIn</p>
-                <a href="https://linkedin.com/in/remcostoeten" target="_blank" rel="noopener noreferrer" class="theme-link with-arrow">@remcostoeten</a>
+                <ArrowLink href="https://linkedin.com/in/remcostoeten">@remcostoeten</ArrowLink>
               </div>
             </div>
           </div>

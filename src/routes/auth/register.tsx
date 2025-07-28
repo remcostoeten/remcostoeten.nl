@@ -1,9 +1,9 @@
 import { createSignal, Show } from 'solid-js'
 import { useNavigate } from '@solidjs/router'
 import { useRegister } from '~/lib/queries/auth'
-import BaseLayout from '~/components/layout/base-layout'
-import Button from '~/components/ui/Button'
-import Input from '~/components/ui/Input'
+import { BaseLayout } from '~/components/layout/base-layout'
+import { Button } from '~/components/ui/Button'
+import { Input } from '~/components/ui/Input'
 
 type TRegisterForm = {
   name: string
@@ -20,7 +20,7 @@ type TFormErrors = {
   general?: string
 }
 
-const RegisterPage = () => {
+function RegisterPage() {
   const navigate = useNavigate()
   const registerMutation = useRegister()
   
@@ -33,7 +33,7 @@ const RegisterPage = () => {
   
   const [errors, setErrors] = createSignal<TFormErrors>({})
 
-  const validateForm = (): boolean => {
+  function validateForm(): boolean {
     const data = formData()
     const newErrors: TFormErrors = {}
     
@@ -63,7 +63,7 @@ const RegisterPage = () => {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: Event) => {
+  async function handleSubmit(e: Event) {
     e.preventDefault()
     
     if (!validateForm()) return
@@ -77,7 +77,7 @@ const RegisterPage = () => {
     }
   }
 
-  const updateField = (field: keyof TRegisterForm, value: string) => {
+  function updateField(field: keyof TRegisterForm, value: string) {
     setFormData(prev => ({ ...prev, [field]: value }))
     if (errors()[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))

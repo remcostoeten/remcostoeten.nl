@@ -15,7 +15,7 @@ function Input(props: TProps) {
     'label', 'error', 'helperText', 'success', 'required', 'class'
   ])
 
-  const inputClasses = () => {
+  function inputClasses() {
     const state = local.error ? 'error' : local.success ? 'success' : 'default'
     const baseClasses = getInputClasses(state)
     return local.class ? `${baseClasses} ${local.class}` : baseClasses
@@ -47,4 +47,4 @@ function Input(props: TProps) {
   )
 }
 
-export default Input
+export { Input }

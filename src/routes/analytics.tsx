@@ -1,6 +1,6 @@
 import { useGetAnalyticsMetrics, useGetTopPages } from '~/lib/queries/analytics'
 import { createSignal, Show } from 'solid-js'
-import BaseLayout from '~/components/layout/base-layout'
+import { BaseLayout } from '~/components/layout/base-layout'
 
 function AnalyticsPage() {
   const [timeframe, setTimeframe] = createSignal<'day' | 'week' | 'month'>('week');

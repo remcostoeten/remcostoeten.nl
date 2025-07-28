@@ -24,13 +24,13 @@ type TProps = {
   ref?: (el: HTMLSpanElement) => void;
 } & JSX.HTMLAttributes<HTMLSpanElement>;
 
-export const NumberFlow: Component<TProps> = (props) => {
+function NumberFlow(props: TProps) {
   const [displayValue, setDisplayValue] = createSignal(props.value);
   let spanRef: HTMLSpanElement | undefined;
 
-  const formatValue = (value: number) => {
+  function formatValue(value: number) {
     return new Intl.NumberFormat(undefined, props.format || {}).format(value);
-  };
+  }
 
   createEffect(() => {
     setDisplayValue(props.value);
@@ -83,4 +83,6 @@ export const NumberFlow: Component<TProps> = (props) => {
       {props.suffix && <span class="ml-0.5">{props.suffix}</span>}
     </span>
   );
-};
+}
+
+export { NumberFlow };

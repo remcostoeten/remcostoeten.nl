@@ -1,4 +1,5 @@
-import BaseLayout from "~/components/layout/base-layout"
+import { BaseLayout } from "~/components/layout/base-layout"
+import { ArrowLink } from "~/components/ui/ArrowLink"
 
 export default function AboutPage() {
   return (
@@ -23,9 +24,9 @@ export default function AboutPage() {
             </p>
             <p class="text-muted-foreground">
               This site is built with{" "}
-              <a href="https://solidjs.com" target="_blank" class="theme-link with-arrow">
+              <ArrowLink href="https://solidjs.com">
                 SolidJS
-              </a>
+              </ArrowLink>
               {" "}and demonstrates modern web development practices.
             </p>
           </div>

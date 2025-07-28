@@ -26,13 +26,13 @@ function Textarea(props: TProps) {
   const textareaId = local.id || uniqueId
   const describedById = `${textareaId}-description`
 
-  const textareaClasses = () => {
+  function textareaClasses() {
     const state = local.error ? 'error' : local.success ? 'success' : 'default'
     const baseClasses = getTextareaClasses(state)
     return local.class ? `${baseClasses} ${local.class}` : baseClasses
   }
 
-  const textareaStyle = () => {
+  function textareaStyle() {
     const resize = local.resize || 'vertical'
     const baseStyle = { resize }
     
@@ -124,4 +124,4 @@ function Textarea(props: TProps) {
   )
 }
 
-export default Textarea
+export { Textarea }

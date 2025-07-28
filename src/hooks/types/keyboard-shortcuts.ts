@@ -35,6 +35,12 @@ type TKeyboardShortcutsState = {
   matchedShortcutId: string | null;
 };
 
+type TDisplayKeystroke = {
+  key: string;
+  timestamp: number;
+  action: string;
+};
+
 export type {
   TShortcutConfig,
   TShortcutSequence,
@@ -44,4 +50,5 @@ export type {
   TKey,
   TShortcutOptions,
   TKeyboardShortcutsState,
+  TDisplayKeystroke,
 };

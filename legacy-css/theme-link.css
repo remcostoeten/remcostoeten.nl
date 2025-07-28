@@ -31,15 +31,12 @@
 @keyframes theme-link-pulse {
   0% {
     opacity: 1;
-    transform: scale(1);
   }
   50% {
     opacity: 0.8;
-    transform: scale(1.02);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
   }
 }
 
@@ -116,13 +113,10 @@
   transition: all 0.15s;
   position: relative;
   display: inline;
-  opacity: 0;
-  transform: translateY(10px);
-  animation: theme-link-enter var(--link-enter-duration) var(--link-enter-easing) forwards;
+  opacity: 1;
 }
 
 .theme-link:hover {
-  transform: translateY(-2px) scale(1.02);
   color: hsl(var(--accent));
   transition: all var(--link-transition-duration) var(--link-transition-easing);
 }

@@ -1,18 +1,74 @@
 import { createSignal, onMount, onCleanup, Show, createEffect } from 'solid-js';
+import { readRecentShortcut, clearRecentShortcut } from '../../utils/recent-shortcut';
+import type { TDisplayKeystroke } from '../../hooks/types/keyboard-shortcuts';
 
-type TKeyStroke = {
-  key: string;
-  timestamp: number;
-  action?: string;
+type TShortcutSequence = {
+  keys: string[];
+  description: string;
+  target?: string;
 };
 
 function KeyboardShortcutIndicator() {
-  const [keystrokes, setKeystrokes] = createSignal<TKeyStroke[]>([]);
+  const [keystrokes, setKeystrokes] = createSignal<TDisplayKeystroke[]>([]);
+  const [currentSequence, setCurrentSequence] = createSignal<string[]>([]);
   const [isVisible, setIsVisible] = createSignal(false);
   const [currentAction, setCurrentAction] = createSignal<string>('');
+  const [isSequenceMode, setIsSequenceMode] = createSignal(false);
 
   const DISPLAY_DURATION = 2500;
   const MAX_KEYSTROKES = 5;
+  const SEQUENCE_TIMEOUT = 2000;
+
+  // Define the custom shortcuts
+  const shortcuts: TShortcutSequence[] = [
+    {
+      keys: ['space', 'space', 'space', '1'],
+      description: 'Navigate to Home',
+      target: '/'
+    },
+    {
+      keys: ['space', 'space', 'space', '2'],
+      description: 'Navigate to About',
+      target: '/about'
+    },
+    {
+      keys: ['space', 'space', 'space', '3'],
+      description: 'Navigate to Analytics',
+      target: '/analytics'
+    },
+    {
+      keys: ['space', 'space', 'space', '4'],
+      description: 'Navigate to Login',
+      target: '/auth/login'
+    },
+    {
+      keys: ['space', 'space', 'space', '5'],
+      description: 'Navigate to Register',
+      target: '/auth/register'
+    },
+    {
+      keys: ['space', 'space', 'space', '6'],
+      description: 'Navigate to Contact',
+      target: '/contact'
+    },
+    {
+      keys: ['space', 'space', 'space', '7'],
+      description: 'Navigate to Demo',
+      target: '/demo'
+    },
+    {
+      keys: ['space', 'space', 'space', '8'],
+      description: 'Navigate to Projects',
+      target: '/projects'
+    },
+    {
+      keys: ['space', 'space', 'space', '9'],
+      description: 'Navigate to Tailwind Demo',
+      target: '/tailwind-demo'
+    }
+  ];
+
+  let sequenceTimeout: number | null = null;
 
   function formatKey(key: string): string {
     const keyMap: Record<string, string> = {
@@ -103,7 +159,101 @@ function KeyboardShortcutIndicator() {
     }
   }
 
+  function clearSequence() {
+    setCurrentSequence([]);
+    setIsSequenceMode(false);
+    if (sequenceTimeout) {
+      clearTimeout(sequenceTimeout);
+      sequenceTimeout = null;
+    }
+  }
+
+  function checkForSequenceMatch(sequence: string[]): TShortcutSequence | null {
+    return shortcuts.find(shortcut => 
+      shortcut.keys.length === sequence.length &&
+      shortcut.keys.every((key, index) => key === sequence[index])
+    ) || null;
+  }
+
+  function checkForPartialMatch(sequence: string[]): boolean {
+    return shortcuts.some(shortcut => 
+      shortcut.keys.length >= sequence.length &&
+      sequence.every((key, index) => shortcut.keys[index] === key)
+    );
+  }
+
   function handleKeyDown(event: KeyboardEvent) {
+    // Skip if in input elements
+    const activeElement = document.activeElement;
+    if (activeElement && (
+      ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeElement.tagName) ||
+      activeElement.hasAttribute('contenteditable')
+    )) {
+      return;
+    }
+
+    const key = event.key === ' ' ? 'space' : event.key.toLowerCase();
+    
+    // Handle sequence tracking for custom shortcuts
+    const currentSeq = currentSequence();
+    const newSequence = [...currentSeq, key];
+    
+    // Check for complete match
+    const match = checkForSequenceMatch(newSequence);
+    if (match) {
+      const sequenceDisplay = newSequence.map(k => k === 'space' ? '␣' : k.toUpperCase()).join(' ');
+      
+      const newKeystroke: TDisplayKeystroke = {
+        key: sequenceDisplay,
+        timestamp: Date.now(),
+        action: match.description
+      };
+
+      setKeystrokes(prev => [newKeystroke, ...prev.slice(0, MAX_KEYSTROKES - 1)]);
+      setCurrentAction(match.description);
+      setIsVisible(true);
+      setIsSequenceMode(false);
+      clearSequence();
+
+      setTimeout(() => {
+        setIsVisible(false);
+      }, DISPLAY_DURATION);
+      return;
+    }
+    
+    // Check for partial match
+    const hasPartialMatch = checkForPartialMatch(newSequence);
+    if (hasPartialMatch) {
+      setCurrentSequence(newSequence);
+      setIsSequenceMode(true);
+      
+      const sequenceDisplay = newSequence.map(k => k === 'space' ? '␣' : k.toUpperCase()).join(' ');
+      
+      const newKeystroke: TDisplayKeystroke = {
+        key: sequenceDisplay,
+        timestamp: Date.now(),
+        action: `Sequence: ${sequenceDisplay}...`
+      };
+
+      setKeystrokes(prev => [newKeystroke, ...prev.slice(0, MAX_KEYSTROKES - 1)]);
+      setCurrentAction(`Sequence: ${sequenceDisplay}...`);
+      setIsVisible(true);
+
+      // Clear sequence timeout
+      if (sequenceTimeout) clearTimeout(sequenceTimeout);
+      sequenceTimeout = setTimeout(() => {
+        clearSequence();
+        setIsVisible(false);
+      }, SEQUENCE_TIMEOUT);
+      return;
+    }
+    
+    // Clear sequence if no match
+    if (currentSeq.length > 0) {
+      clearSequence();
+    }
+
+    // Handle regular navigation shortcuts
     const action = getNavigationAction(event);
     
     if (!action) return;
@@ -116,7 +266,7 @@ function KeyboardShortcutIndicator() {
 
     const keyDisplay = [...modifiers, formatKey(event.key)].join(' + ');
     
-    const newKeystroke: TKeyStroke = {
+    const newKeystroke: TDisplayKeystroke = {
       key: keyDisplay,
       timestamp: Date.now(),
       action
@@ -142,52 +292,62 @@ function KeyboardShortcutIndicator() {
     onCleanup(() => clearInterval(interval));
   });
 
-  onMount(() => {
+onMount(() => {
+    const recentShortcut = readRecentShortcut();
+    if (recentShortcut && Date.now() - recentShortcut.timestamp < DISPLAY_DURATION) {
+      setKeystrokes([recentShortcut, ...keystrokes()]);
+      setCurrentAction(recentShortcut.action);
+      setIsVisible(true);
+
+      setTimeout(() => {
+        setIsVisible(false);
+        clearRecentShortcut();
+      }, DISPLAY_DURATION);
+    }
     document.addEventListener('keydown', handleKeyDown, { passive: true });
     
     onCleanup(() => {
       document.removeEventListener('keydown', handleKeyDown);
+      if (sequenceTimeout) {
+        clearTimeout(sequenceTimeout);
+      }
     });
   });
 
   return (
     <Show when={isVisible() && keystrokes().length > 0}>
-      <div class="fixed bottom-4 right-4 z-50 pointer-events-none">
-        <div class="bg-black/80 backdrop-blur-sm border border-white/10 rounded-lg p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200">
-          <div class="flex items-center gap-3 mb-2">
-            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span class="text-white/90 text-sm font-medium">{currentAction()}</span>
+      <div class="fixed bottom-6 right-6 z-50 pointer-events-none">
+        <div class="bg-card border-border rounded-lg p-4 shadow-2xl backdrop-blur-sm animate-fadeInUp">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-1.5 h-1.5 bg-accent rounded-full"></div>
+            <span class="text-foreground text-sm font-medium">{currentAction()}</span>
           </div>
           
-          <div class="space-y-1">
+          <div class="space-y-2">
             {keystrokes().slice(0, 3).map((keystroke, index) => (
               <div 
                 class={`flex items-center gap-2 transition-all duration-300 ${
                   index === 0 ? 'opacity-100' : 'opacity-60'
                 }`}
               >
-                <div class="flex items-center gap-1">
+                <div class="flex items-center gap-1.5">
                   {keystroke.key.split(' + ').map((part, partIndex) => (
                     <>
-                      <kbd class="inline-flex items-center justify-center min-w-[24px] h-6 px-2 bg-white/10 border border-white/20 rounded text-white/90 text-xs font-mono leading-none">
+                      <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-muted border-border rounded text-muted-foreground text-xs font-medium">
                         {part}
-                      </kbd>
+                      </span>
                       {partIndex < keystroke.key.split(' + ').length - 1 && (
-                        <span class="text-white/50 text-xs">+</span>
+                        <span class="text-muted-foreground text-xs font-medium">+</span>
                       )}
                     </>
                   ))}
                 </div>
-                
-                {index === 0 && (
-                  <div class="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
-                )}
               </div>
             ))}
           </div>
           
           {keystrokes().length > 3 && (
-            <div class="text-xs text-white/50 mt-2 text-center">
+            <div class="text-xs text-muted-foreground mt-2 text-center font-medium">
               +{keystrokes().length - 3} more
             </div>
           )}

@@ -1,14 +1,17 @@
-type TButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
+type TButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outlined" | "link" | "admin";
 type TButtonSize = "sm" | "md" | "lg";
 
-function getButtonClasses(variant: TButtonVariant = "primary", size: TButtonSize = "md"): string {
+function getButtonClasses(variant: TButtonVariant = "admin", size: TButtonSize = "md"): string {
   const baseClasses = "inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-accent text-background hover:bg-accent/90 focus:ring-accent",
+    primary: "bg-accent text-accent-foreground hover:bg-accent/90 focus:ring-accent",
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary",
     ghost: "hover:bg-muted hover:text-foreground focus:ring-muted",
-    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive"
+    destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive",
+    outlined: "theme-link inline-block px-6 py-3 border border-border rounded-md hover:bg-muted transition-all duration-300 ease-in-out hover:border-accent/50 hover:shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] hover:-translate-y-0.5",
+    link: "theme-link text-foreground hover:text-accent transition-colors underline-offset-4 hover:underline",
+    admin: "bg-background border-2 border-border hover:border-accent/50 text-foreground hover:-translate-y-0.5 focus:ring-accent"
   };
   
   const sizes = {

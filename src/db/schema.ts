@@ -41,42 +41,42 @@ export const projects = pgTable("projects", {
   statusIdx: index("projects_status_idx").on(table.status),
 }));
 
-// export const projectImages = pgTable("project_images", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
-//   url: varchar("url", { length: 500 }).notNull(),
-//   alt: varchar("alt", { length: 255 }).notNull(),
-//   caption: text("caption"),
-//   isHero: boolean("is_hero").default(false).notNull(),
-//   sortOrder: integer("sort_order").default(0).notNull(),
-//   ...createTimestamps(),
-// });
+export const projectImages = pgTable("project_images", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
+  url: varchar("url", { length: 500 }).notNull(),
+  alt: varchar("alt", { length: 255 }).notNull(),
+  caption: text("caption"),
+  isHero: boolean("is_hero").default(false).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  ...createTimestamps(),
+});
 
-// export const skills = pgTable("skills", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   name: varchar("name", { length: 100 }).notNull().unique(),
-//   category: varchar("category", { length: 50 }).notNull(),
-//   proficiency: integer("proficiency").notNull(),
-//   yearsOfExperience: integer("years_of_experience"),
-//   isActive: boolean("is_active").default(true).notNull(),
-//   sortOrder: integer("sort_order").default(0).notNull(),
-//   ...createTimestamps(),
-// });
+export const skills = pgTable("skills", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  category: varchar("category", { length: 50 }).notNull(),
+  proficiency: integer("proficiency").notNull(),
+  yearsOfExperience: integer("years_of_experience"),
+  isActive: boolean("is_active").default(true).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  ...createTimestamps(),
+});
 
-// export const experience = pgTable("experience", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   title: varchar("title", { length: 255 }).notNull(),
-//   company: varchar("company", { length: 255 }).notNull(),
-//   location: varchar("location", { length: 255 }),
-//   startDate: timestamp("start_date").notNull(),
-//   endDate: timestamp("end_date"),
-//   isCurrent: boolean("is_current").default(false).notNull(),
-//   description: text("description").notNull(),
-//   achievements: jsonb("achievements").$type<string[]>().notNull(),
-//   technologies: jsonb("technologies").$type<string[]>().notNull(),
-//   sortOrder: integer("sort_order").default(0).notNull(),
-//   ...createTimestamps(),
-// });
+export const experience = pgTable("experience", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: varchar("title", { length: 255 }).notNull(),
+  company: varchar("company", { length: 255 }).notNull(),
+  location: varchar("location", { length: 255 }),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date"),
+  isCurrent: boolean("is_current").default(false).notNull(),
+  description: text("description").notNull(),
+  achievements: jsonb("achievements").$type<string[]>().notNull(),
+  technologies: jsonb("technologies").$type<string[]>().notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  ...createTimestamps(),
+});
 
 export const contactSubmissions = pgTable("contact_submissions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -95,15 +95,15 @@ export const contactSubmissions = pgTable("contact_submissions", {
   readIdx: index("contact_read_idx").on(table.isRead),
 }));
 
-// export const siteSettings = pgTable("site_settings", {
-//   id: uuid("id").primaryKey().defaultRandom(),
-//   key: varchar("key", { length: 100 }).notNull().unique(),
-//   value: jsonb("value").notNull(),
-//   type: varchar("type", { length: 50 }).notNull(),
-//   description: text("description"),
-//   isPublic: boolean("is_public").default(false).notNull(),
-//   ...createTimestamps(),
-// });
+export const siteSettings = pgTable("site_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  key: varchar("key", { length: 100 }).notNull().unique(),
+  value: jsonb("value").notNull(),
+  type: varchar("type", { length: 50 }).notNull(),
+  description: text("description"),
+  isPublic: boolean("is_public").default(false).notNull(),
+  ...createTimestamps(),
+});
 
 export const analyticsEvents = pgTable("analytics_events", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -164,30 +164,29 @@ export const adminSessions = pgTable("admin_sessions", {
 //   timestampIdx: index("admin_activity_timestamp_idx").on(table.timestamp),
 // }));
 
-// Commented out relations since the related tables are commented out
-// export const projectsRelations = relations(projects, ({ many }) => ({
-//   images: many(projectImages),
-// }));
+export const projectsRelations = relations(projects, ({ many }) => ({
+  images: many(projectImages),
+}));
 
-// export const projectImagesRelations = relations(projectImages, ({ one }) => ({
-//   project: one(projects, {
-//     fields: [projectImages.projectId],
-//     references: [projects.id],
-//   }),
-// }));
+export const projectImagesRelations = relations(projectImages, ({ one }) => ({
+  project: one(projects, {
+    fields: [projectImages.projectId],
+    references: [projects.id],
+  }),
+}));
 
 export type TProject = typeof projects.$inferSelect;
 export type TNewProject = typeof projects.$inferInsert;
-// export type TProjectImage = typeof projectImages.$inferSelect;
-// export type TNewProjectImage = typeof projectImages.$inferInsert;
-// export type TSkill = typeof skills.$inferSelect;
-// export type TNewSkill = typeof skills.$inferInsert;
-// export type TExperience = typeof experience.$inferSelect;
-// export type TNewExperience = typeof experience.$inferInsert;
+export type TProjectImage = typeof projectImages.$inferSelect;
+export type TNewProjectImage = typeof projectImages.$inferInsert;
+export type TSkill = typeof skills.$inferSelect;
+export type TNewSkill = typeof skills.$inferInsert;
+export type TExperience = typeof experience.$inferSelect;
+export type TNewExperience = typeof experience.$inferInsert;
 export type TContactSubmission = typeof contactSubmissions.$inferSelect;
 export type TNewContactSubmission = typeof contactSubmissions.$inferInsert;
-// export type TSiteSetting = typeof siteSettings.$inferSelect;
-// export type TNewSiteSetting = typeof siteSettings.$inferInsert;
+export type TSiteSetting = typeof siteSettings.$inferSelect;
+export type TNewSiteSetting = typeof siteSettings.$inferInsert;
 export type TAnalyticsEvent = typeof analyticsEvents.$inferSelect;
 export type TNewAnalyticsEvent = typeof analyticsEvents.$inferInsert;
 export type TAdminUser = typeof adminUser.$inferSelect;

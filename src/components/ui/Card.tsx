@@ -8,7 +8,7 @@ type TProps = {
 }
 
 function Card(props: TProps) {
-  const classes = () => {
+  function classes() {
     const baseClasses = getCardClasses(props.variant)
     return props.class ? `${baseClasses} ${props.class}` : baseClasses
   }
@@ -21,7 +21,9 @@ function Card(props: TProps) {
 }
 
 function CardHeader(props: { readonly children: JSX.Element; readonly class?: string }) {
-  const classes = () => props.class ? `p-6 ${props.class}` : "p-6"
+  function classes() {
+    return props.class ? `p-6 ${props.class}` : "p-6"
+  }
   
   return (
     <div class={classes()}>
@@ -31,7 +33,9 @@ function CardHeader(props: { readonly children: JSX.Element; readonly class?: st
 }
 
 function CardContent(props: { readonly children: JSX.Element; readonly class?: string }) {
-  const classes = () => props.class ? `p-6 pt-0 ${props.class}` : "p-6 pt-0"
+  function classes() {
+    return props.class ? `p-6 pt-0 ${props.class}` : "p-6 pt-0"
+  }
   
   return (
     <div class={classes()}>
@@ -41,7 +45,9 @@ function CardContent(props: { readonly children: JSX.Element; readonly class?: s
 }
 
 function CardTitle(props: { readonly children: JSX.Element; readonly class?: string }) {
-  const classes = () => props.class ? `text-xl font-semibold leading-none tracking-tight ${props.class}` : "text-xl font-semibold leading-none tracking-tight"
+  function classes() {
+    return props.class ? `text-xl font-semibold leading-none tracking-tight ${props.class}` : "text-xl font-semibold leading-none tracking-tight"
+  }
   
   return (
     <h3 class={classes()}>
@@ -51,7 +57,9 @@ function CardTitle(props: { readonly children: JSX.Element; readonly class?: str
 }
 
 function CardDescription(props: { readonly children: JSX.Element; readonly class?: string }) {
-  const classes = () => props.class ? `text-sm text-muted-foreground ${props.class}` : "text-sm text-muted-foreground"
+  function classes() {
+    return props.class ? `text-sm text-muted-foreground ${props.class}` : "text-sm text-muted-foreground"
+  }
   
   return (
     <p class={classes()}>

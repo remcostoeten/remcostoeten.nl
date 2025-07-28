@@ -1,5 +1,6 @@
 import { JSX, Show } from 'solid-js'
 import { A, useLocation } from '@solidjs/router'
+import { ButtonLink } from '~/components/ui/ButtonLink'
 
 type TBaseLayoutProps = {
   readonly children: JSX.Element
@@ -15,7 +16,10 @@ type TNavLinkProps = {
 
 function NavLink(props: TNavLinkProps) {
   const location = useLocation()
-  const isActive = () => location.pathname === props.href
+  
+  function isActive() {
+    return location.pathname === props.href
+  }
   
   return (
     <A 
@@ -49,12 +53,6 @@ function BaseLayout(props: TBaseLayoutProps) {
                 <NavLink href="/projects">Projects</NavLink>
                 <NavLink href="/contact">Contact</NavLink>
                 <NavLink href="/analytics">Analytics</NavLink>
-                <NavLink 
-                  href="/admin" 
-                  class="px-3 py-1.5 bg-accent text-accent-foreground rounded-md font-medium hover:bg-accent/90 transition-colors"
-                >
-                  Admin
-                </NavLink>
               </div>
             </div>
           </div>
@@ -76,4 +74,4 @@ function BaseLayout(props: TBaseLayoutProps) {
   )
 }
 
-export default BaseLayout
+export { BaseLayout }
