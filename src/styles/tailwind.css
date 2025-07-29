@@ -204,4 +204,96 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
+
+  /* Motion Debug Styles */
+  [data-motion] {
+    /* Ensure Motion components are visible during development */
+    min-height: 1px !important;
+    display: block !important;
+  }
+
+  /* Fallback for Motion components that might be stuck at opacity 0 */
+  .motion-fallback {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+
+  /* CMS Container Styles */
+  .cms-container {
+    max-width: 896px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .cms-container > * + * {
+    margin-top: 4rem;
+  }
+
+  .cms-container-wide {
+    max-width: 1280px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cms-container-narrow {
+    max-width: 640px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cms-container-full {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Responsive CMS Container */
+  @media (max-width: 640px) {
+    .cms-container,
+    .cms-container-wide,
+    .cms-container-narrow,
+    .cms-container-full {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    .cms-container > * + * {
+      margin-top: 2rem;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .cms-container,
+    .cms-container-wide,
+    .cms-container-narrow,
+    .cms-container-full {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cms-container,
+    .cms-container-wide,
+    .cms-container-narrow,
+    .cms-container-full {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
 }

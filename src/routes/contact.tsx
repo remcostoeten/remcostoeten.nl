@@ -1,12 +1,12 @@
 import { createSignal, Show } from 'solid-js'
 import { useCreateContactMessage } from '~/lib/queries/contact'
 import { BaseLayout } from '~/components/layout/base-layout'
-import { Button } from '~/components/ui/Button'
-import { Input } from '~/components/ui/Input'
-import { Textarea } from '~/components/primitives/Textarea'
+import { Button } from '~/components/primitives/button'
+import { Input } from '~/components/primitives/input'
+import { Textarea } from '~/components/primitives/textarea'
 import { ArrowLink } from '~/components/ui/ArrowLink'
 
-type TContactForm = {
+type TProps  = {
   name: string
   email: string
   subject: string
@@ -25,7 +25,7 @@ function ContactPage() {
   const createMessageMutation = useCreateContactMessage()
   const [showSuccessMessage, setShowSuccessMessage] = createSignal(false)
   
-  const [formData, setFormData] = createSignal<TContactForm>({
+  const [formData, setFormData] = createSignal<TProps>({
     name: '',
     email: '',
     subject: '',
@@ -92,7 +92,7 @@ function ContactPage() {
     }
   }
 
-  function updateField(field: keyof TContactForm, value: string) {
+  function updateField(field: keyof TProps, value: string) {
     setFormData(function(prev) {
       return { ...prev, [field]: value };
     })

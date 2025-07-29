@@ -9,8 +9,8 @@ function HomePage() {
         <AboutSection />
         <ProjectsSection />
         <ContactSection />
-        <TimezoneSection 
-          showAnimation={true} 
+        <TimezoneSection
+          showAnimation={true}
           animationDelay={0.8}
         />
       </div>

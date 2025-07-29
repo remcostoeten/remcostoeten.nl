@@ -1,11 +1,11 @@
-import { Motion } from "@motionone/solid";
-import { Text } from "~/components/ui/Text";
+import { ClientMotion } from "~/components/ui/client-motion";
+import { Text } from "~/components/primitives/text";
 import { ArrowLink } from "~/components/ui/ArrowLink";
 
 export function ContactSection() {
   return (
-    <Motion.div
-      data-section="contact"
+    <ClientMotion
+      as="div"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.3, easing: [0.4, 0.0, 0.2, 1] }}
@@ -21,6 +21,6 @@ export function ContactSection() {
         </ArrowLink>
         if you'd like to collaborate on interesting projects or discuss technology and development practices.
       </Text>
-    </Motion.div>
+    </ClientMotion>
   );
 }

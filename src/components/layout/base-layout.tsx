@@ -1,77 +1,128 @@
-import { JSX, Show } from 'solid-js'
-import { A, useLocation } from '@solidjs/router'
-import { ButtonLink } from '~/components/ui/ButtonLink'
+import { A, useLocation } from "@solidjs/router"
+import { JSX, Show, For, createMemo } from "solid-js"
 
-type TBaseLayoutProps = {
+type TProps = {
   readonly children: JSX.Element
-  readonly title?: string
-  readonly 'show-nav'?: boolean
+  readonly "show-nav"?: boolean
 }
 
-type TNavLinkProps = {
+type TNav = {
   readonly href: string
   readonly children: JSX.Element
   readonly class?: string
 }
 
-function NavLink(props: TNavLinkProps) {
-  const location = useLocation()
-  
-  function isActive() {
-    return location.pathname === props.href
+type TItem = {
+  href: string
+  label: string
+  order?: number
+}
+
+const ROUTE_CONFIG = {
+  exclude: [
+    "/[...404]",
+    "/api/*",
+    "/auth/register",
+    "/tailwind-demo",
+  ],
+  customLabels: {
+    "/": { label: "Home", order: 1 },
+    "/about": { label: "About", order: 2 },
+    "/projects": { label: "Projects", order: 3 },
+    "/contact": { label: "Contact", order: 4 },
+    "/analytics": { label: "Analytics", order: 5 },
+    "/auth/login": { label: "Login", order: 10 },
   }
-  
+}
+
+function getStaticRoutes(): TItem[] {
+  return Object.entries(ROUTE_CONFIG.customLabels).map(([href, config]) => ({
+    href,
+    label: config.label,
+    order: config.order
+  })).sort((a, b) =>
+    a.order !== b.order ? (a.order || 0) - (b.order || 0) : a.label.localeCompare(b.label)
+  )
+}
+
+function generateLabelFromPath(routePath: string): string {
+  if (routePath === "/") return "Home"
+
+  return routePath
+    .split("/")
+    .filter(Boolean)
+    .map(segment => {
+      if (segment.startsWith(":")) return segment.slice(1)
+      return segment
+        .split("-")
+        .map(word => word[0].toUpperCase() + word.slice(1))
+        .join(" ")
+    })
+    .join(" / ")
+}
+
+const NAV_ITEMS: TItem[] = getStaticRoutes()
+
+function NavLink(props: TNav) {
+  const location = useLocation()
+
+  const isActive = createMemo(() => {
+    const currentPath = location.pathname
+    const linkPath = props.href
+    if (linkPath === "/") return currentPath === "/"
+    return currentPath === linkPath || currentPath.startsWith(`${linkPath}/`)
+  })
+
+  const computedClass = createMemo(() => {
+    const base = "theme-link transition-colors"
+    const state = isActive()
+      ? "text-accent font-medium"
+      : "text-muted-foreground hover:text-foreground"
+    const extra = props.class ? ` ${props.class}` : ""
+    return `${base} ${state}${extra}`
+  })
+
   return (
-    <A 
-      href={props.href}
-      class={`theme-link ${
-        isActive() 
-          ? 'text-accent font-medium' 
-          : 'text-muted-foreground hover:text-foreground'
-      } transition-colors ${props.class || ''}`}
-    >
+    <A href={props.href} class={computedClass()}>
       {props.children}
     </A>
   )
 }
 
-function BaseLayout(props: TBaseLayoutProps) {
+function Navigation() {
   return (
-    <div class="min-h-screen bg-background text-foreground">
-      <Show when={props['show-nav'] !== false}>
-        <nav class="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
-          <div class="container-centered">
-            <div class="flex justify-between items-center py-4">
-              <div class="flex items-center">
-                <A href="/" class="text-xl font-medium text-foreground hover:text-accent transition-colors">
-                  Remco Stoeten
-                </A>
-              </div>
-              
-              <div class="flex items-center gap-6">
-                <NavLink href="/">Home</NavLink>
-                <NavLink href="/projects">Projects</NavLink>
-                <NavLink href="/contact">Contact</NavLink>
-                <NavLink href="/analytics">Analytics</NavLink>
-              </div>
-            </div>
+    <nav class="border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
+      <div class="container-centered">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center">
+            <A href="/" class="text-xl font-medium text-foreground hover:text-accent transition-colors">
+              Remco Stoeten
+            </A>
           </div>
-        </nav>
-      </Show>
-      
-      <main class="flex-1">
-        {props.children}
-      </main>
-      
-      <footer class="border-t border-border bg-card/50 mt-auto">
-        <div class="container-centered">
-          <div class="text-center text-muted-foreground text-sm py-6">
-            © {new Date().getFullYear()} Remco Stoeten. Built with SolidStart.
+          <div class="flex items-center gap-6">
+            <For each={NAV_ITEMS}>
+              {item => <NavLink href={item.href}>{item.label}</NavLink>}
+            </For>
           </div>
         </div>
-      </footer>
+      </div>
+    </nav>
+  )
+}
+
+function BaseLayout(props: TProps) {
+  return (
+    <div class="min-h-screen bg-background text-foreground">
+      <Show when={props["show-nav"] !== false}>
+        <Navigation />
+      </Show>
+      <main class="flex-1">{props.children}</main>
     </div>
   )
 }
 
-export { BaseLayout }
+function refreshRoutes(): TItem[] {
+  return getStaticRoutes()
+}
+
+export { BaseLayout, NavLink, Navigation, NAV_ITEMS, refreshRoutes }

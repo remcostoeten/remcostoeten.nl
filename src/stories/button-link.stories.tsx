@@ -1,4 +1,4 @@
-import { ButtonLink } from './ButtonLink'
+import { ButtonLink } from '../components/ui/ButtonLink'
 
 type TStoryMeta = {
   title: string

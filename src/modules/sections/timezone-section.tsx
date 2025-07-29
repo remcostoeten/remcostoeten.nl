@@ -1,5 +1,5 @@
-import { Motion } from "@motionone/solid";
-import { TIMEZONE_INFO, useCurrentTime, TimeNumberFlow } from "~/modules/time";
+import { ClientMotion } from "~/components/ui/client-motion";
+import { TIMEZONE_INFO, useCurrentTime } from "~/modules/time";
 import { getParagraphClass } from "~/cms";
 
 type TProps = {
@@ -34,17 +34,18 @@ export function TimezoneSection(props: TProps) {
       ))}
       . Right now it is{" "}
       {props.showAnimation ? (
-        <Motion.span 
+        <ClientMotion
+          as="span"
           class="dashed-highlight inline-block"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: props.animationDelay || 0.8, easing: "ease-out" }}
         >
-          <TimeNumberFlow time={currentTime()} className="" />
-        </Motion.span>
+          <span class="font-mono leading-none">{currentTime()}</span>
+        </ClientMotion>
       ) : (
         <span class="dashed-highlight inline-block">
-          <TimeNumberFlow time={currentTime()} className="" />
+          <span class="font-mono leading-none">{currentTime()}</span>
         </span>
       )}
       .

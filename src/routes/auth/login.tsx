@@ -2,8 +2,8 @@ import { createSignal, Show } from 'solid-js'
 import { useNavigate } from '@solidjs/router'
 import { useLogin } from '~/lib/queries/auth'
 import { BaseLayout } from '~/components/layout/base-layout'
-import { Button } from '~/components/ui/Button'
-import { Input } from '~/components/ui/Input'
+import { Button } from '~/components/primitives/button'
+import { Input } from '~/components/primitives/input'
 
 type TLoginForm = {
   email: string

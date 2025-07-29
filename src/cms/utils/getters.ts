@@ -1,22 +1,22 @@
-import { getCMSConfig } from "../store/config-store";
-import { safeInjectCSS } from "../client-init";
+/**
+ * Simple CMS utilities that return static Tailwind classes
+ * Perfect foundation for a future content management system
+ */
 
 /**
- * Gets the default container class (now dynamic)
+ * Gets the default container class
  * @returns The default container CSS class
  */
 function getContainerClass(): string {
-  safeInjectCSS(); // Ensure latest styles are injected (client-side only)
   return "cms-container";
 }
 
 /**
- * Gets a container variant class (now dynamic)
+ * Gets a container variant class
  * @param variant - The container variant to get
  * @returns The container variant CSS class
  */
 function getContainerVariant(variant: "wide" | "narrow" | "fullWidth"): string {
-  safeInjectCSS(); // Ensure latest styles are injected (client-side only)
   const variantMap = {
     wide: "cms-container-wide",
     narrow: "cms-container-narrow",
@@ -31,7 +31,15 @@ function getContainerVariant(variant: "wide" | "narrow" | "fullWidth"): string {
  * @returns The heading CSS class
  */
 function getHeadingClass(level: "h1" | "h2" | "h3" | "h4" | "h5" | "h6"): string {
-  return getCMSConfig().typography.headings[level];
+  const headings = {
+    h1: "text-4xl font-bold",
+    h2: "text-3xl font-semibold",
+    h3: "text-2xl font-semibold",
+    h4: "text-xl font-semibold",
+    h5: "text-lg font-medium",
+    h6: "text-base font-medium",
+  };
+  return headings[level];
 }
 
 /**
@@ -40,7 +48,12 @@ function getHeadingClass(level: "h1" | "h2" | "h3" | "h4" | "h5" | "h6"): string
  * @returns The body text CSS class
  */
 function getBodyTextClass(size: "default" | "small" | "large" = "default"): string {
-  return getCMSConfig().typography.body[size];
+  const sizes = {
+    default: "text-base",
+    small: "text-sm",
+    large: "text-lg",
+  };
+  return sizes[size];
 }
 
 /**
@@ -49,53 +62,14 @@ function getBodyTextClass(size: "default" | "small" | "large" = "default"): stri
  * @returns The theme color CSS class
  */
 function getThemeColorClass(color: "primary" | "secondary" | "accent" | "background" | "foreground"): string {
-  return getCMSConfig().colors.theme[color];
-}
-
-/**
- * Gets a button class with variant and size
- * @param variant - The button variant
- * @param size - The button size
- * @returns The combined button CSS classes
- */
-function getButtonClass(
-  variant: "primary" | "secondary" | "ghost" = "primary",
-  size: "small" | "medium" | "large" = "medium"
-): string {
-  const config = getCMSConfig().components.button;
-  return `${config.variants[variant]} ${config.sizes[size]}`;
-}
-
-/**
- * Gets an input class with state
- * @param state - The input state
- * @returns The input CSS class
- */
-function getInputClass(state: "default" | "error" | "success" = "default"): string {
-  return getCMSConfig().components.input[state];
-}
-
-/**
- * Gets a line height class
- * @param variant - The line height variant
- * @returns The line height CSS class
- */
-function getLineHeightClass(variant: "global" | "tight" | "normal" | "relaxed" | "loose" | "none" = "normal"): string {
-  return getCMSConfig().typography.lineHeight[variant];
-}
-
-/**
- * Gets a paragraph configuration with combined classes
- * @param type - The paragraph type
- * @returns Object with combined class and lineHeight
- */
-function getParagraphConfig(type: "hero" | "body" | "caption" | "quote"): { class: string; lineHeight: string; combined: string } {
-  const config = getCMSConfig().typography.paragraphs[type];
-  return {
-    class: config.class,
-    lineHeight: config.lineHeight,
-    combined: `${config.class} ${config.lineHeight}`,
+  const colors = {
+    primary: "text-primary",
+    secondary: "text-secondary",
+    accent: "text-accent",
+    background: "bg-background",
+    foreground: "text-foreground",
   };
+  return colors[color];
 }
 
 /**
@@ -104,8 +78,13 @@ function getParagraphConfig(type: "hero" | "body" | "caption" | "quote"): { clas
  * @returns The combined CSS class string
  */
 function getParagraphClass(type: "hero" | "body" | "caption" | "quote"): string {
-  const config = getCMSConfig().typography.paragraphs[type];
-  return `${config.class} ${config.lineHeight}`;
+  const paragraphs = {
+    hero: "text-lg font-medium leading-relaxed",
+    body: "text-base leading-normal",
+    caption: "text-sm text-muted-foreground leading-normal",
+    quote: "text-lg italic leading-relaxed",
+  };
+  return paragraphs[type];
 }
 
 export {
@@ -114,9 +93,5 @@ export {
   getHeadingClass,
   getBodyTextClass,
   getThemeColorClass,
-  getButtonClass,
-  getInputClass,
-  getLineHeightClass,
-  getParagraphConfig,
   getParagraphClass,
 };

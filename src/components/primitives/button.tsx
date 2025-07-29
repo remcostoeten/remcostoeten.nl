@@ -1,4 +1,4 @@
-import { JSX, Component, splitProps } from 'solid-js'
+import { JSX, splitProps } from 'solid-js'
 import { getButtonClasses } from '~/lib/style-utils'
 
 type TButtonVariant = 'primary' | 'secondary' | 'ghost' | 'destructive' | 'outlined' | 'link' | 'admin'
