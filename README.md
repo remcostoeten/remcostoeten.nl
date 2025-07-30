@@ -1,16 +1,34 @@
-# SolidStart
+# SolidStart Project
 
 Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
 
-## Creating a project
+## Project Structure
 
-```bash
-# create a new project in the current directory
-npm init solid@latest
+This project includes comprehensive component documentation and testing:
 
-# create a new project in my-app
-npm init solid@latest my-app
-```
+- **Components**: `src/components/ui/`
+- **Documentation**: `docs/components/`
+- **Tests**: Comprehensive test coverage with Vitest
+- **Storybook**: Ready-to-use Storybook configuration
+
+## Components
+
+### ButtonLink
+A versatile button/link component with comprehensive accessibility features.
+
+**Documentation:**
+- [Main Documentation](./docs/components/ButtonLink.md)
+- [Usage Examples](./docs/components/ButtonLink-Examples.md)
+- [Accessibility Guide](./docs/components/ButtonLink-Accessibility.md)
+
+**Features:**
+- Dual rendering (button/anchor)
+- 5 variants, 3 sizes
+- Loading and disabled states
+- Full accessibility support
+- Comprehensive test coverage
+
+## Quick Start
 
 ## Developing
 

@@ -16,7 +16,6 @@ export async function GET({ params }: APIEvent) {
       });
     }
 
-    // Validate table name to prevent SQL injection
     const validTableNameRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
     if (!validTableNameRegex.test(tableName)) {
       return new Response(JSON.stringify({

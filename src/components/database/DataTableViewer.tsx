@@ -1,5 +1,4 @@
 import { createSignal, createMemo, Show, For } from 'solid-js';
-import '~/styles/data-table-viewer.css';
 
 type TColumn = {
   name: string;

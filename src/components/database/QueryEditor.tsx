@@ -1,5 +1,4 @@
 import { createSignal, createEffect, Show, For, onMount } from 'solid-js';
-import '~/styles/query-editor.css';
 
 type TQueryResult = {
   columns: string[];

@@ -67,21 +67,21 @@ const recordPageView = async (data: TPageViewData): Promise<void> => {
   }
 }
 
-export const useGetAnalyticsMetrics = (timeframe: 'day' | 'week' | 'month') => {
+export function useGetAnalyticsMetrics(timeframe: 'day' | 'week' | 'month') {
   return createQuery(() => ({
     queryKey: ['analytics', 'metrics', timeframe],
     queryFn: () => fetchAnalyticsMetrics(timeframe)
   }))
 }
 
-export const useGetTopPages = (limit = 10) => {
+export function useGetTopPages(limit = 10) {
   return createQuery(() => ({
     queryKey: ['analytics', 'top-pages', limit],
     queryFn: () => fetchTopPages(limit)
   }))
 }
 
-export const useRecordPageView = () => {
+export function useRecordPageView() {
   const queryClient = useQueryClient()
   
   return createMutation(() => ({

@@ -1,25 +1,51 @@
-import { A } from "@solidjs/router";
+import { CMSContainer } from "~/cms/container";
+import { ButtonLink } from "~/components/ui/ButtonLink";
 
-export default function NotFound() {
+type TProps = {
+  readonly url?: string;
+};
+
+function NotFound(props: TProps) {
   return (
-    <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">Not Found</h1>
-      <p class="mt-8">
-        Visit{" "}
-        <a href="https://solidjs.com" target="_blank" class="text-sky-600 hover:underline">
-          solidjs.com
-        </a>{" "}
-        to learn how to build Solid apps.
-      </p>
-      <p class="my-4">
-        <A href="/" class="text-sky-600 hover:underline">
-          Home
-        </A>
-        {" - "}
-        <A href="/about" class="text-sky-600 hover:underline">
-          About Page
-        </A>
-      </p>
-    </main>
+    <div class="min-h-screen bg-background text-foreground flex items-center">
+      <div class={CMSContainer()}>
+        <div class="text-center space-y-8">
+          <div class="space-y-6">
+            <h1 class="text-8xl md:text-9xl font-bold text-muted-foreground/30 select-none">
+              404
+            </h1>
+            <div class="h-px bg-border w-24 mx-auto"></div>
+          </div>
+
+          <div class="space-y-4">
+            <h2 class="text-2xl font-semibold text-foreground">
+              Page Not Found
+            </h2>
+            <p class="text-muted-foreground max-w-md mx-auto leading-relaxed">
+              The page you're looking for doesn't exist or has been moved.
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <ButtonLink
+              href="/"
+              variant="admin"
+            >
+              ← Back to Home
+            </ButtonLink>
+          </div>
+
+          <div class="pt-8 space-y-2">
+            <p class="text-sm text-muted-foreground">
+              <ButtonLink href="/projects" variant="link">View Projects</ButtonLink>
+              {" • "}
+              <ButtonLink href="/contact" variant="link">Contact</ButtonLink>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
+
+export default NotFound;
