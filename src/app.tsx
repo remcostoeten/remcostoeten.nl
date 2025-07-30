@@ -2,8 +2,6 @@ import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { Suspense } from "solid-js";
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
-import KeyboardShortcutsProvider from "~/components/providers/KeyboardShortcutsProvider";
-import KeyboardShortcutIndicator from "~/components/ui/KeyboardShortcutIndicator";
 import { AnalyticsTracker } from "~/components/analytics/AnalyticsTracker";
 import "~/styles/tailwind.css";
 
@@ -20,21 +18,18 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <KeyboardShortcutsProvider>
         <Router
           root={function(props) {
             return (
               <>
                 <AnalyticsTracker />
                 <Suspense>{props.children}</Suspense>
-                <KeyboardShortcutIndicator />
               </>
             );
           }}
         >
           <FileRoutes />
         </Router>
-      </KeyboardShortcutsProvider>
     </QueryClientProvider>
   );
 }

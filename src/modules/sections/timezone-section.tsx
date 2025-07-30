@@ -1,38 +1,30 @@
 import { For } from "solid-js";
 import { TIMEZONE_INFO, useCurrentTime } from "~/modules/time";
 import { getParagraphClass } from "~/cms";
-
-type TProps = {
-  showAnimation?: boolean;
-  animationDelay?: number;
-};
-
-export function TimezoneSection(props: TProps) {
+import { DashedHighlight } from "~/components/primitives";
+export function TimezoneSection() {
   const currentTime = useCurrentTime();
 
   return (
-    <p class={`text-foreground ${getParagraphClass('body')}`}>
+    <p class={`text-foreground ${getParagraphClass("body")}`}>
       My current timezone is{" "}
-      <span class="dashed-highlight">
+      <DashedHighlight>
         {TIMEZONE_INFO.offset}
-      </span>{" "}
+      </DashedHighlight>{" "}
       which includes countries like{" "}
       <For each={TIMEZONE_INFO.countries}>
         {(country, index) => (
           <span>
-            <span class="dashed-highlight">
-              {country}
-            </span>
-            {index() < TIMEZONE_INFO.countries.length - 1 && (
-              index() === TIMEZONE_INFO.countries.length - 2 ? " and " : ", "
-            )}
+            <DashedHighlight>{country}</DashedHighlight>
+            {index() < TIMEZONE_INFO.countries.length - 1 &&
+              (index() === TIMEZONE_INFO.countries.length - 2 ? " and " : ", ")}
           </span>
         )}
       </For>
       . Right now it is{" "}
-      <span class="dashed-highlight inline-block">
+      <DashedHighlight>
         <span class="font-mono leading-none">{currentTime()}</span>
-      </span>
+      </DashedHighlight>
       .
     </p>
   );

@@ -15,7 +15,6 @@ export async function POST(event: Request) {
       })
     }
 
-    // Basic SQL injection prevention - only allow SELECT queries for safety
     const trimmedQuery = query.trim().toUpperCase()
     const allowedStatements = ['SELECT', 'SHOW', 'DESCRIBE', 'EXPLAIN']
     const isAllowed = allowedStatements.some(stmt => trimmedQuery.startsWith(stmt))

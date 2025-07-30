@@ -7,9 +7,9 @@ export function ContactSection() {
       <Text as="p" variant="body">
         Feel free to explore my work and{" "}
         <ArrowLink href="mailto:remco@remcostoeten.nl" external={false}>
-          contact me
+          contact me{" "}
         </ArrowLink>
-        or check out my{" "}
+        {" "}or check out my{" "}
         <ArrowLink href="https://remcostoeten.nl">
           website
         </ArrowLink>

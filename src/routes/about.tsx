@@ -4,7 +4,6 @@ import { ArrowLink } from "~/components/ui/arrow-link"
 export default function AboutPage() {
   return (
     <BaseLayout>
-      <div class="container-centered">
         <div class="py-12">
           <h1 class="text-4xl font-bold text-foreground mb-8">About</h1>
           <div class="prose prose-lg max-w-none">
@@ -31,7 +30,6 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
-      </div>
     </BaseLayout>
   )
 }
