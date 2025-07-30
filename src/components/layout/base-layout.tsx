@@ -74,9 +74,9 @@ function NavLink(props: TNav) {
   })
 
   const computedClass = createMemo(() => {
-    const base = "theme-link transition-colors"
+    const base = "link-underline inline font-medium no-underline transition-all duration-300 ease-out"
     const state = isActive()
-      ? "text-accent font-medium"
+      ? "text-accent"
       : "text-muted-foreground hover:text-foreground"
     const extra = props.class ? ` ${props.class}` : ""
     return `${base} ${state}${extra}`

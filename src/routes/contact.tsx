@@ -4,7 +4,7 @@ import { BaseLayout } from '~/components/layout/base-layout'
 import { Button } from '~/components/primitives/button'
 import { Input } from '~/components/primitives/input'
 import { Textarea } from '~/components/primitives/textarea'
-import { ArrowLink } from '~/components/ui/ArrowLink'
+import { ArrowLink } from '~/components/ui/arrow-link'
 
 type TProps  = {
   name: string

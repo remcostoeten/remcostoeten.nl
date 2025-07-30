@@ -1,7 +1,7 @@
 import { createSignal, For, Show } from 'solid-js'
 import { useGetProjects, useCreateProject } from '~/lib/queries/projects'
 import { BaseLayout } from '~/components/layout/base-layout'
-import { ArrowLink } from '~/components/ui/ArrowLink'
+import { ArrowLink } from '~/components/ui/arrow-link'
 import type { TProject } from '~/db/schema'
 
 function ProjectsPage() {

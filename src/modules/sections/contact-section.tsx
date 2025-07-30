@@ -1,15 +1,9 @@
-import { ClientMotion } from "~/components/ui/client-motion";
 import { Text } from "~/components/primitives/text";
-import { ArrowLink } from "~/components/ui/ArrowLink";
+import { ArrowLink } from "~/components/ui/arrow-link";
 
 export function ContactSection() {
   return (
-    <ClientMotion
-      as="div"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.3, easing: [0.4, 0.0, 0.2, 1] }}
-    >
+    <div>
       <Text as="p" variant="body">
         Feel free to explore my work and{" "}
         <ArrowLink href="mailto:remco@remcostoeten.nl" external={false}>
@@ -21,6 +15,7 @@ export function ContactSection() {
         </ArrowLink>
         if you'd like to collaborate on interesting projects or discuss technology and development practices.
       </Text>
-    </ClientMotion>
+    </div>
   );
 }
+

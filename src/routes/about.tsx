@@ -1,5 +1,5 @@
 import { BaseLayout } from "~/components/layout/base-layout"
-import { ArrowLink } from "~/components/ui/ArrowLink"
+import { ArrowLink } from "~/components/ui/arrow-link"
 
 export default function AboutPage() {
   return (

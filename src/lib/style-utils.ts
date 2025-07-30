@@ -9,8 +9,8 @@ function getButtonClasses(variant: TButtonVariant = "admin", size: TButtonSize =
     secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 focus:ring-secondary",
     ghost: "hover:bg-muted hover:text-foreground focus:ring-muted",
     destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus:ring-destructive",
-    outlined: "theme-link inline-block px-6 py-3 border border-border rounded-md hover:bg-muted transition-all duration-300 ease-in-out hover:border-accent/50 hover:shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] hover:-translate-y-0.5",
-    link: "theme-link text-foreground hover:text-accent transition-colors underline-offset-4 hover:underline",
+    outlined: "relative inline-block px-6 py-3 border border-border rounded-md hover:bg-muted transition-all duration-300 ease-in-out hover:border-accent/50 hover:shadow-[0_1px_3px_rgba(0,0,0,0.12),0_1px_2px_rgba(0,0,0,0.24)] hover:-translate-y-0.5 text-accent font-medium no-underline",
+    link: "relative inline text-accent font-medium no-underline transition-colors duration-300 ease-out hover:text-accent underline-offset-4 hover:underline",
     admin: "bg-background border-2 border-border hover:border-accent/50 text-foreground hover:-translate-y-0.5 focus:ring-accent"
   };
   
@@ -37,11 +37,11 @@ function getCardClasses(variant: "default" | "muted" | "accent" = "default"): st
 
 function getLinkClasses(variant: "default" | "theme" | "muted" = "theme"): string {
   const variants = {
-    default: "text-foreground hover:text-accent transition-colors",
-    theme: "theme-link",
-    muted: "text-muted-foreground hover:text-foreground transition-colors"
+    default: "text-foreground hover:text-accent transition-colors duration-300",
+    theme: "relative inline text-accent font-medium no-underline transition-all duration-300 ease-out hover:text-accent",
+    muted: "text-muted-foreground hover:text-foreground transition-colors duration-300"
   };
-  
+
   return variants[variant];
 }
 

@@ -1,15 +1,9 @@
-import { ClientMotion } from "~/components/ui/client-motion";
 import { Text } from "~/components/primitives/text";
-import { ArrowLink } from "~/components/ui/ArrowLink";
+import { ArrowLink } from "~/components/ui/arrow-link";
 
 export function ProjectsSection() {
   return (
-    <ClientMotion
-      as="div"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2, easing: [0.4, 0.0, 0.2, 1] }}
-    >
+    <div>
       <Text as="p" variant="body">
         Recently I've been building{" "}
         <ArrowLink href="https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication">
@@ -29,6 +23,6 @@ export function ProjectsSection() {
         </ArrowLink>
         .
       </Text>
-    </ClientMotion>
+    </div>
   );
 }

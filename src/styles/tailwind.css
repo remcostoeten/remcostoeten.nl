@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* Import legacy theme variables and styles */
-@import "../../legacy-css/theme-link.css";
-
 /* Exact colors from source project - Dark theme by default */
 @layer base {
   :root {
@@ -216,6 +213,26 @@
   .motion-fallback {
     opacity: 1 !important;
     transform: translateY(0) !important;
+  }
+
+  /* Modern link animations using Tailwind utilities */
+  .link-underline {
+    @apply relative;
+  }
+
+  .link-underline::before {
+    content: '';
+    @apply absolute bottom-0 left-0 h-px bg-accent transform scale-x-0 origin-left transition-transform duration-300 ease-out;
+    width: 100%;
+  }
+
+  .link-underline:hover::before {
+    @apply scale-x-100;
+  }
+
+  .link-underline.with-arrow::before {
+    width: calc(100% - 1.5rem);
+    @apply bg-gradient-to-r from-accent via-accent to-transparent;
   }
 
   /* CMS Container Styles */
