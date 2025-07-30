@@ -1,4 +1,3 @@
-import { CMSContainer } from "~/cms/container";
 import { ButtonLink } from "~/components/ui/ButtonLink";
 
 type TProps = {
@@ -8,7 +7,7 @@ type TProps = {
 function NotFound(props: TProps) {
   return (
     <div class="min-h-screen bg-background text-foreground flex items-center">
-      <div class={CMSContainer()}>
+      <div class="container-centered">
         <div class="text-center space-y-8">
           <div class="space-y-6">
             <h1 class="text-8xl md:text-9xl font-bold text-muted-foreground/30 select-none">

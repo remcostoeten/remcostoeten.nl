@@ -1,12 +1,12 @@
 import { For } from "solid-js";
 import { TIMEZONE_INFO, useCurrentTime } from "~/modules/time";
-import { getParagraphClass } from "~/cms";
 import { DashedHighlight } from "~/components/primitives";
+
 export function TimezoneSection() {
   const currentTime = useCurrentTime();
 
   return (
-    <p class={`text-foreground ${getParagraphClass("body")}`}>
+    <p class="text-foreground text-base leading-normal">
       My current timezone is{" "}
       <DashedHighlight>
         {TIMEZONE_INFO.offset}

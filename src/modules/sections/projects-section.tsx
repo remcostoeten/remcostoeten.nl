@@ -1,14 +1,10 @@
-  import { Text } from "~/components/primitives/text";
-  import { ArrowLink } from "~/components/ui/arrow-link";
+import { Text } from "~/components/primitives/text";
+import { ArrowLink } from "~/components/ui/arrow-link";
 
-  export function ProjectsSection() {
-    return (
-      <div> // this will be a  `block` element in the CMS which is required if you want to add any widget (e.g. text) to the page.
-
-  // Text would be the widget that we add inside a `block` element.
-  // Text consists of base styling and multiple variants which can be selected in the CMS on individual characters or words. 
-  // We define via SolidJS code the styling and/or functionality of the variant.
-        <Text as="span" variant="highlight">
+export function ProjectsSection() {
+  return (
+    <div>
+      <Text as="span" variant="highlight">
           TypeScript and React & Next.js
         </Text>
         <Text as="p" variant="body">

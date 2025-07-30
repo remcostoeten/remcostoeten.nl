@@ -1,6 +1,6 @@
 {
   "name": "remcostoeten-solidjs",
-  "description": "Remcostoeten.nl, my personal about me site with a comprehensive back-end containing self rolled auth + RBA, self rolled visitor analytics and a complete custom rolled CMS system in the admin area",
+  "description": "Remcostoeten.nl, my personal about me site with a comprehensive back-end containing self rolled auth + RBA and self rolled visitor analytics",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
