@@ -6,7 +6,7 @@ export function TimezoneSection() {
   const currentTime = useCurrentTime();
 
   return (
-    <p class="text-foreground text-base leading-normal">
+    <p class="text-base">
       My current timezone is{" "}
       <DashedHighlight>
         {TIMEZONE_INFO.offset}
