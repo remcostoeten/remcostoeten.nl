@@ -1,5 +1,5 @@
 // src/routes/showcase.tsx
-import { createSignal, For } from 'solid-js'
+import { createSignal, For, onMount } from 'solid-js'
 import { Button } from '~/components/primitives/button'
 import { Text } from '~/components/primitives/text'
 import { Textarea } from '~/components/primitives/textarea'
@@ -35,9 +35,6 @@ const getTextareaClasses = (state: string) => {
   return `w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 ${states[state]}`
 }
 
-window.getButtonClasses = getButtonClasses
-window.getTextareaClasses = getTextareaClasses
-
 type TProps = {
   title: string
   description: string
@@ -46,6 +43,11 @@ type TProps = {
 }
 
 export default function ComponentShowcase() {
+  onMount(() => {
+    window.getButtonClasses = getButtonClasses
+    window.getTextareaClasses = getTextareaClasses
+  });
+
   const [activeTab, setActiveTab] = createSignal('button')
   const [textareaValue, setTextareaValue] = createSignal('')
 
