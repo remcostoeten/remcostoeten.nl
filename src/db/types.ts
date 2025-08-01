@@ -1,10 +1,5 @@
 
-export type TAnalyticsEvent = {
-  id: string;
-  pathname: string;
-  referrer: string | null;
-  createdAt: Date;
-};
+
 
 
 export type TProject = {
@@ -36,12 +31,7 @@ export type TVisitorData = {
   readonly lastVisit: Date
 }
 
-export type TAnalyticsMetrics = {
-  readonly totalViews: number
-  readonly uniqueVisitors: number
-  readonly uniquePages: number
-  readonly timeframe: 'day' | 'week' | 'month'
-}
+
 
 export type TUser = {
   readonly id: string

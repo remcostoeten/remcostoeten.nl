@@ -8,4 +8,4 @@ export function createTimeUpdater(callback: (time: string) => void) {
   return createTimezoneTimeUpdater('UTC+1', callback);
 }
 
-export * from './timezone';
+

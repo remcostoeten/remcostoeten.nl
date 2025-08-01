@@ -9,17 +9,9 @@
     "start": "vinxi start",
     "gen": "drizzle-kit generate",
     "push": "drizzle-kit push",
-    "studio": "drizzle-kit studio",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run",
-    "test:analytics": "vitest run scripts/test-analytics.test.js",
-    "docs:dev": "echo 'Documentation available in docs/ directory'",
-    "component:test": "vitest run src/components/ui/ButtonLink.test.tsx"
+    "studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@motionone/solid": "^10.16.4",
-    "@solid-primitives/transition-group": "^1.1.2",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.1.0",
     "@tanstack/solid-query": "^5.83.0",
@@ -30,19 +22,12 @@
     "drizzle-orm": "^0.44.3",
     "postgres": "^3.4.7",
     "solid-js": "^1.9.5",
-    "vinxi": "^0.5.7"
+    "vinxi": "^0.5.7",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@solidjs/testing-library": "^0.8.10",
     "@tailwindcss/vite": "^4.0.7",
-    "@testing-library/jest-dom": "^6.6.4",
-    "@types/better-sqlite3": "^7.6.13",
-    "@vitest/ui": "^3.2.4",
-    "jsdom": "^26.1.0",
-    "tailwindcss": "^4.0.7",
-    "tsx": "^4.20.3",
-    "vite-plugin-solid": "^2.11.7",
-    "vitest": "^3.2.4"
+    "@types/better-sqlite3": "^7.6.13"
   },
   "engines": {
     "node": ">=22"

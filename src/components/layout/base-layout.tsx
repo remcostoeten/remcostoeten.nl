@@ -23,14 +23,13 @@ const ROUTE_CONFIG = {
     "/[...404]",
     "/api/*",
     "/auth/register",
-    "/tailwind-demo",
+    
   ],
   customLabels: {
     "/": { label: "Home", order: 1 },
-    "/about": { label: "About", order: 2 },
     "/projects": { label: "Projects", order: 3 },
     "/contact": { label: "Contact", order: 4 },
-    "/analytics": { label: "Analytics", order: 5 },
+    
     "/auth/login": { label: "Login", order: 10 },
   }
 }

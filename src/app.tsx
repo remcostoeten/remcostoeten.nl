@@ -2,7 +2,6 @@ import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { Suspense } from "solid-js";
 import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
-import { AnalyticsTracker } from "~/components/analytics/AnalyticsTracker";
 import "~/styles/tailwind.css";
 
 const queryClient = new QueryClient({
@@ -22,7 +21,6 @@ export default function App() {
           root={function(props) {
             return (
               <>
-                <AnalyticsTracker />
                 <Suspense>{props.children}</Suspense>
               </>
             );

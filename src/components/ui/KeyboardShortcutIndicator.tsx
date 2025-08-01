@@ -31,11 +31,7 @@ function KeyboardShortcutIndicator() {
       description: 'Navigate to About',
       target: '/about'
     },
-    {
-      keys: ['space', 'space', 'space', '3'],
-      description: 'Navigate to Analytics',
-      target: '/analytics'
-    },
+    
     {
       keys: ['space', 'space', 'space', '4'],
       description: 'Navigate to Login',
@@ -51,20 +47,11 @@ function KeyboardShortcutIndicator() {
       description: 'Navigate to Contact',
       target: '/contact'
     },
-    {
-      keys: ['space', 'space', 'space', '7'],
-      description: 'Navigate to Demo',
-      target: '/demo'
-    },
+    
     {
       keys: ['space', 'space', 'space', '8'],
       description: 'Navigate to Projects',
       target: '/projects'
-    },
-    {
-      keys: ['space', 'space', 'space', '9'],
-      description: 'Navigate to Tailwind Demo',
-      target: '/tailwind-demo'
     }
   ];
 

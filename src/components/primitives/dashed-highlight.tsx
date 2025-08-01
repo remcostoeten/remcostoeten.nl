@@ -49,6 +49,7 @@ export function DashedHighlight(props: TProps) {
           stroke-width={strokeWidth}
           stroke-dasharray={dashArray}
           class="dashed-highlight-border"
+          vector-effect="non-scaling-stroke"
         />
       </svg>
     </span>

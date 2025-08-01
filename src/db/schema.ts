@@ -105,28 +105,7 @@ export const siteSettings = pgTable("site_settings", {
   ...createTimestamps(),
 });
 
-export const analyticsEvents = pgTable("analytics_events", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  eventType: varchar("event_type", { length: 100 }).notNull(),
-  page: varchar("page", { length: 255 }),
-  referrer: varchar("referrer", { length: 500 }),
-  userAgent: text("user_agent"),
-  ipAddress: varchar("ip_address", { length: 45 }),
-  sessionId: varchar("session_id", { length: 255 }),
-  userId: varchar("user_id", { length: 255 }),
-  data: jsonb("data"),
-  timestamp: timestamp("timestamp").defaultNow().notNull(),
-  country: varchar("country", { length: 100 }),
-  region: varchar("region", { length: 100 }),
-  city: varchar("city", { length: 100 }),
-  latitude: varchar("latitude", { length: 50 }),
-  longitude: varchar("longitude", { length: 50 }),
-}, (table) => ({
-  eventTypeIdx: index("analytics_event_type_idx").on(table.eventType),
-  timestampIdx: index("analytics_timestamp_idx").on(table.timestamp),
-  pageIdx: index("analytics_page_idx").on(table.page),
-  userIdIdx: index("analytics_user_id_idx").on(table.userId),
-}));
+
 
 export const adminUser = pgTable("admin_user", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -187,8 +166,7 @@ export type TContactSubmission = typeof contactSubmissions.$inferSelect;
 export type TNewContactSubmission = typeof contactSubmissions.$inferInsert;
 export type TSiteSetting = typeof siteSettings.$inferSelect;
 export type TNewSiteSetting = typeof siteSettings.$inferInsert;
-export type TAnalyticsEvent = typeof analyticsEvents.$inferSelect;
-export type TNewAnalyticsEvent = typeof analyticsEvents.$inferInsert;
+
 export type TAdminUser = typeof adminUser.$inferSelect;
 export type TNewAdminUser = typeof adminUser.$inferInsert;
 export type TAdminSession = typeof adminSessions.$inferSelect;
