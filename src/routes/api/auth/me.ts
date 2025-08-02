@@ -18,13 +18,13 @@ export async function GET(event: APIEvent) {
       return json({ success: false, error: 'Authentication token required' }, { status: 401 })
     }
 
-    const session = await authFactory.getSessionByToken(token)
+    const sessionValidationResult = await authFactory.validateSession(token)
     
-    if (!session) {
-      return json({ success: false, error: 'Invalid or expired session' }, { status: 401 })
+    if (!sessionValidationResult.success) {
+      return json({ success: false, error: sessionValidationResult.error || 'Invalid or expired session' }, { status: 401 })
     }
 
-    const user = await authFactory.getUserById(session.userId)
+    const user = await authFactory.getUserById(sessionValidationResult.userId!)
     
     if (!user) {
       return json({ success: false, error: 'User not found' }, { status: 404 })

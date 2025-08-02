@@ -1,4 +1,8 @@
-import { HeroSection, AboutSection, ProjectsSection, ContactSection, TimezoneSection } from "~/modules/sections";
+import { HeroSection } from "~/modules/sections/hero-section";
+import { AboutSection } from "~/modules/sections/about-section";
+import { ProjectsSection } from "~/modules/sections/projects-section";
+import { ContactSection } from "~/modules/sections/contact-section";
+import { TimezoneSection } from "~/modules/sections/timezone-section";
 
 function HomePage() {
   return (

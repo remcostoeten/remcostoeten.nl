@@ -1,20 +1,28 @@
-import { json } from '@solidjs/router'
-import type { APIEvent } from '@solidjs/start/server'
-import { authFactory } from '~/db/factories/auth-factory'
+import { json } from '@solidjs/router';
+import { authFactory } from '~/db/factories/auth-factory';
+import { getCookie } from 'vinxi/http';
+import { serialize } from 'cookie';
 
-export async function POST(event: APIEvent) {
+export async function POST(event) {
   try {
-    const token = event.request.headers.get('Authorization')?.replace('Bearer ', '')
-    
-    if (!token) {
-      return json({ success: false, error: 'Token is required' }, { status: 401 })
+    const authToken = getCookie(event, 'auth_token');
+
+    if (authToken) {
+      await authFactory.invalidateSession(authToken);
     }
 
-    await authFactory.deleteSession(token)
-    
-    return json({ success: true, message: 'Logged out successfully' })
+    return json({ success: true }, {
+      headers: {
+        'Set-Cookie': serialize('auth_token', '', {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: 0, // Expire the cookie immediately
+        }),
+      },
+    });
   } catch (error) {
-    console.error('POST /api/auth/logout error:', error)
-    return json({ success: false, error: 'Failed to logout' }, { status: 500 })
+    console.error('POST /api/auth/logout error:', error);
+    return json({ success: false, error: 'Failed to logout' }, { status: 500 });
   }
 }

@@ -131,4 +131,4 @@ function LoginPage() {
   )
 }
 
-export default LoginPage
+export { LoginPage }

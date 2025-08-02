@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 import { TIMEZONE_INFO, useCurrentTime } from "~/modules/time";
-import { DashedHighlight } from "~/components/primitives";
+import { DashedHighlight } from "~/components/primitives/dashed-highlight";
 
 export function TimezoneSection() {
   const currentTime = useCurrentTime();

@@ -20,7 +20,9 @@ function Card(props: TProps) {
   )
 }
 
-function CardHeader(props: { readonly children: JSX.Element; readonly class?: string }) {
+type TCardHeaderProps = { readonly children: JSX.Element; readonly class?: string };
+
+function CardHeader(props: TCardHeaderProps) {
   function classes() {
     return props.class ? `p-6 ${props.class}` : "p-6"
   }
@@ -32,7 +34,9 @@ function CardHeader(props: { readonly children: JSX.Element; readonly class?: st
   )
 }
 
-function CardContent(props: { readonly children: JSX.Element; readonly class?: string }) {
+type TCardContentProps = { readonly children: JSX.Element; readonly class?: string };
+
+function CardContent(props: TCardContentProps) {
   function classes() {
     return props.class ? `p-6 pt-0 ${props.class}` : "p-6 pt-0"
   }
@@ -44,7 +48,9 @@ function CardContent(props: { readonly children: JSX.Element; readonly class?: s
   )
 }
 
-function CardTitle(props: { readonly children: JSX.Element; readonly class?: string }) {
+type TCardTitleProps = { readonly children: JSX.Element; readonly class?: string };
+
+function CardTitle(props: TCardTitleProps) {
   function classes() {
     return props.class ? `text-xl font-semibold leading-none tracking-tight ${props.class}` : "text-xl font-semibold leading-none tracking-tight"
   }
@@ -56,7 +62,9 @@ function CardTitle(props: { readonly children: JSX.Element; readonly class?: str
   )
 }
 
-function CardDescription(props: { readonly children: JSX.Element; readonly class?: string }) {
+type TCardDescriptionProps = { readonly children: JSX.Element; readonly class?: string };
+
+function CardDescription(props: TCardDescriptionProps) {
   function classes() {
     return props.class ? `text-sm text-muted-foreground ${props.class}` : "text-sm text-muted-foreground"
   }

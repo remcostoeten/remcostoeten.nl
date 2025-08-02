@@ -9,7 +9,10 @@
     "start": "vinxi start",
     "gen": "drizzle-kit generate",
     "push": "drizzle-kit push",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "seed:admin": "bun run scripts/seed-admin.ts",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@solidjs/router": "^0.15.0",
@@ -27,7 +30,9 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.7",
-    "@types/better-sqlite3": "^7.6.13"
+    "@types/better-sqlite3": "^7.6.13",
+    "vitest": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0"
   },
   "engines": {
     "node": ">=22"

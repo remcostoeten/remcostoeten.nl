@@ -1,152 +1,126 @@
-import { db } from '../connection'
-import { adminUser, adminSessions } from '../schema'
-import { eq } from 'drizzle-orm'
-import { randomBytes } from 'crypto'
-import type { TAdminUser, TAdminSession } from '../schema'
+import { adminUser, adminSessions } from '../schema';
+import { eq } from 'drizzle-orm';
+import { PBKDF2, RandomBytes } from 'crypto';
 
-type TCreateUser = {
-  readonly email: string
-  readonly name?: string
-  readonly role: 'admin' | 'user'
+// Define interfaces for injected dependencies
+interface IDB {
+  query: {
+    adminUser: {
+      findFirst: (options: any) => Promise<any>;
+    };
+    adminSessions: {
+      findFirst: (options: any) => Promise<any>;
+    };
+  };
+  insert: (table: any) => {
+    values: (data: any) => {
+      returning: () => Promise<any>;
+    };
+  };
+  delete: (table: any) => {
+    where: (condition: any) => Promise<any>;
+  };
 }
-type TUpdateUser = Partial<TCreateUser> & { readonly id: string }
+
+interface ICrypto {
+  pbkdf2Sync: (password: string | Buffer, salt: string | Buffer, iterations: number, keylen: number, digest: string) => Buffer;
+  randomBytes: (size: number) => Buffer;
+}
+
+// Helper function to hash password
+function hashPassword(password: string, crypto: ICrypto, salt?: string): string {
+  const currentSalt = salt || crypto.randomBytes(16).toString('hex');
+  const hashedPassword = crypto.pbkdf2Sync(password, currentSalt, 1000, 64, 'sha512').toString('hex');
+  return `${currentSalt}:${hashedPassword}`;
+}
+
+// Helper function to verify password
+function verifyPassword(password: string, storedHash: string, crypto: ICrypto): boolean {
+  const [salt, hashedPassword] = storedHash.split(':');
+  const newHash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return newHash === hashedPassword;
+}
 
 type TAuthFactory = {
-  readonly createUser: (data: TCreateUser) => Promise<TAdminUser | null>
-  readonly getUserById: (id: string) => Promise<TAdminUser | null>
-  readonly getUserByEmail: (email: string) => Promise<TAdminUser | null>
-  readonly updateUser: (data: TUpdateUser) => Promise<TAdminUser | null>
-  readonly deleteUser: (id: string) => Promise<boolean>
-  readonly createSession: (userId: string, expiresInDays?: number) => Promise<TAdminSession | null>
-  readonly getSessionByToken: (token: string) => Promise<TAdminSession | null>
-  readonly deleteSession: (token: string) => Promise<boolean>
-  readonly deleteExpiredSessions: () => Promise<number>
-}
+  verifyUser: (email: string, password: string) => Promise<{ success: boolean; userId?: string; error?: string }>, 
+  createSession: (userId: string) => Promise<{ success: boolean; token?: string; error?: string }>, 
+  invalidateSession: (token: string) => Promise<{ success: boolean; error?: string }>, 
+  validateSession: (token: string) => Promise<{ success: boolean; userId?: string; error?: string }>,
+  getUserById: (userId: string) => Promise<any>;
+};
 
-function createAuthFactory(): TAuthFactory {
-  async function createUser(data: TCreateUser): Promise<TAdminUser | null> {
-    try {
-      const result = await db.insert(adminUser).values({
-        email: data.email,
-        passwordHash: 'temp-hash'
-      }).returning()
-      return result[0] || null
-    } catch (error) {
-      console.error('Failed to create user:', error)
-      return null
+export function createAuthFactory(injectedDb: IDB, injectedCrypto: ICrypto): TAuthFactory {
+  async function verifyUser(email: string, password: string): Promise<{ success: boolean; userId?: string; error?: string }> {
+    const user = await injectedDb.query.adminUser.findFirst({
+      where: eq(adminUser.email, email),
+    });
+
+    if (!user) {
+      return { success: false, error: 'Invalid credentials' };
     }
+
+    if (!verifyPassword(password, user.passwordHash, injectedCrypto)) {
+      return { success: false, error: 'Invalid credentials' };
+    }
+
+    return { success: true, userId: user.id };
   }
 
-  async function getUserById(id: string): Promise<TAdminUser | null> {
-    try {
-      const result = await db.select().from(adminUser).where(eq(adminUser.id, id)).limit(1)
-      return result[0] || null
-    } catch (error) {
-      console.error('Failed to get user by id:', error)
-      return null
-    }
-  }
+  async function createSession(userId: string): Promise<{ success: boolean; token?: string; error?: string }> {
+    const token = injectedCrypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
 
-  async function getUserByEmail(email: string): Promise<TAdminUser | null> {
     try {
-      const result = await db.select().from(adminUser).where(eq(adminUser.email, email)).limit(1)
-      return result[0] || null
-    } catch (error) {
-      console.error('Failed to get user by email:', error)
-      return null
-    }
-  }
-
-  async function updateUser(data: TUpdateUser): Promise<TAdminUser | null> {
-    try {
-      const result = await db
-        .update(adminUser)
-        .set({ email: data.email })
-        .where(eq(adminUser.id, data.id))
-        .returning()
-      return result[0] || null
-    } catch (error) {
-      console.error('Failed to update user:', error)
-      return null
-    }
-  }
-
-  async function deleteUser(id: string): Promise<boolean> {
-    try {
-      await db.delete(adminSessions).where(eq(adminSessions.userId, id))
-      
-      const result = await db.delete(adminUser).where(eq(adminUser.id, id))
-      return result.rowsAffected > 0
-    } catch (error) {
-      console.error('Failed to delete user:', error)
-      return false
-    }
-  }
-
-  async function createSession(userId: string, expiresInDays = 30): Promise<TAdminSession | null> {
-    try {
-      const token = randomBytes(32).toString('hex')
-      const expiresAt = new Date()
-      expiresAt.setDate(expiresAt.getDate() + expiresInDays)
-
-      const result = await db.insert(adminSessions).values({
+      await injectedDb.insert(adminSessions).values({
         userId,
         token,
-        expiresAt
-      }).returning()
-      return result[0] || null
+        expiresAt,
+      }).returning();
+      return { success: true, token };
     } catch (error) {
-      console.error('Failed to create session:', error)
-      return null
+      console.error('Error creating session:', error);
+      return { success: false, error: 'Failed to create session' };
     }
   }
 
-  async function getSessionByToken(token: string): Promise<TAdminSession | null> {
+  async function invalidateSession(token: string): Promise<{ success: boolean; error?: string }> {
     try {
-      const result = await db
-        .select()
-        .from(adminSessions)
-        .where(eq(adminSessions.token, token))
-        .limit(1)
-      return result[0] || null
+      await injectedDb.delete(adminSessions).where(eq(adminSessions.token, token)).execute();
+      return { success: true };
     } catch (error) {
-      console.error('Failed to get session by token:', error)
-      return null
+      console.error('Error invalidating session:', error);
+      return { success: false, error: 'Failed to invalidate session' };
     }
   }
 
-  async function deleteSession(token: string): Promise<boolean> {
-    try {
-      const result = await db.delete(adminSessions).where(eq(adminSessions.token, token))
-      return result.rowsAffected > 0
-    } catch (error) {
-      console.error('Failed to delete session:', error)
-      return false
+  async function validateSession(token: string): Promise<{ success: boolean; userId?: string; error?: string }> {
+    const session = await injectedDb.query.adminSessions.findFirst({
+      where: eq(adminSessions.token, token),
+    });
+
+    if (!session || session.expiresAt < new Date()) {
+      return { success: false, error: 'Invalid or expired session' };
     }
+
+    return { success: true, userId: session.userId };
   }
 
-  async function deleteExpiredSessions(): Promise<number> {
-    try {
-      const now = new Date()
-      const result = await db.delete(adminSessions).where(eq(adminSessions.expiresAt, now))
-      return result.rowsAffected || 0
-    } catch (error) {
-      console.error('Failed to delete expired sessions:', error)
-      return 0
-    }
+  async function getUserById(userId: string): Promise<any> {
+    return injectedDb.query.adminUser.findFirst({
+      where: eq(adminUser.id, userId),
+    });
   }
 
   return {
-    createUser,
-    getUserById,
-    getUserByEmail,
-    updateUser,
-    deleteUser,
+    verifyUser,
     createSession,
-    getSessionByToken,
-    deleteSession,
-    deleteExpiredSessions
-  }
+    invalidateSession,
+    validateSession,
+    getUserById,
+  };
 }
 
-export const authFactory = createAuthFactory()
+import { db } from '../connection';
+import * as crypto from 'crypto';
+
+export const authFactory = createAuthFactory(db, crypto);

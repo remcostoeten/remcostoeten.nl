@@ -7,5 +7,6 @@ export default defineConfig({
   },
   vite: {
     plugins: [tailwindcss()]
-  }
+  },
+  middleware: './src/middleware.ts'
 });
