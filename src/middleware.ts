@@ -14,7 +14,7 @@ export default createMiddleware({
           return new Response(null, {
             status: 307,
             headers: {
-              Location: '/login'
+              Location: '/auth/login'
             }
           });
         }
@@ -24,7 +24,7 @@ export default createMiddleware({
           return new Response(null, {
             status: 307,
             headers: {
-              Location: '/login'
+              Location: '/auth/login'
             }
           });
         }
