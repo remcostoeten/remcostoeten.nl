@@ -6,7 +6,7 @@ import { serialize } from 'cookie';
 export async function POST(event: APIEvent) {
   try {
     const body = await event.request.json()
-    const { email, password } = body
+    const { email, password, rememberMe } = body
 
     if (!email || !password) {
       return json({ success: false, error: 'Email and password are required' }, { status: 400 })
@@ -18,11 +18,13 @@ export async function POST(event: APIEvent) {
       return json({ success: false, error: verificationResult.error || 'Invalid credentials' }, { status: 401 })
     }
 
-    const sessionResult = await authFactory.createSession(verificationResult.userId!)
+    const sessionResult = await authFactory.createSession(verificationResult.userId!, rememberMe)
     
     if (!sessionResult.success || !sessionResult.token) {
       return json({ success: false, error: sessionResult.error || 'Failed to create session' }, { status: 500 })
     }
+
+    const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7; // 30 days if rememberMe, else 7 days
 
     return json({ success: true }, {
       headers: {
@@ -30,7 +32,8 @@ export async function POST(event: APIEvent) {
           path: '/',
           httpOnly: true,
           sameSite: 'lax',
-          maxAge: 60 * 60 * 24 * 7, // 1 week
+          secure: process.env.NODE_ENV === 'production',
+          maxAge,
         }),
       },
     });
