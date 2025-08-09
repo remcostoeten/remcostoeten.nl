@@ -1,18 +1,11 @@
 import { json } from '@solidjs/router'
 import type { APIEvent } from '@solidjs/start/server'
+import { getCookie } from 'vinxi/http'
 import { authFactory } from '~/db/factories/auth-factory'
-
-const getAuthToken = (request: Request): string | null => {
-  const authorization = request.headers.get('Authorization')
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return null
-  }
-  return authorization.slice(7)
-}
 
 export async function GET(event: APIEvent) {
   try {
-    const token = getAuthToken(event.request)
+    const token = getCookie(event, 'auth_token')
     
     if (!token) {
       return json({ success: false, error: 'Authentication token required' }, { status: 401 })
@@ -30,7 +23,7 @@ export async function GET(event: APIEvent) {
       return json({ success: false, error: 'User not found' }, { status: 404 })
     }
 
-    const { ...safeUser } = user
+    const { passwordHash, ...safeUser } = user as any
     return json({ success: true, data: safeUser })
   } catch (error) {
     console.error('GET /api/auth/me error:', error)
