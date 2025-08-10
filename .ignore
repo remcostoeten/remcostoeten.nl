@@ -1,0 +1,5 @@
+# Global ignore file for search tools (ripgrep, fd, ag)
+node_modules/
+**/node_modules/
+my-app/
+

@@ -29,3 +29,15 @@ Thumbs.db
 
 *storybook.log
 storybook-static
+
+# Additional ignores
+# Node and package managers
+node_modules/
+**/node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+bun.lock
+
+# Local app directories
+my-app/

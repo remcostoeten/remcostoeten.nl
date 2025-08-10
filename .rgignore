@@ -1,0 +1,5 @@
+# ripgrep-specific ignores
+node_modules/
+**/node_modules/
+my-app/
+
