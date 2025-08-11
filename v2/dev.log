@@ -1,0 +1,8 @@
+[0m[2m[35m$[0m [2m[1mvinxi dev[0m
+[2m[34mvinxi[39m[22m [2m[33mv0.5.8[39m[22m
+[2m[34mvinxi[39m[22m [2m[32mstarting dev server[39m[22m
+[get-port] Unable to find an available port (tried 3000 on host "localhost"). Using alternative port 3001.
+
+[32m  ➜ Local:   [39m [36m[4mhttp://localhost:[1m3001[22m/[24m[39m
+[90m  ➜ Network:  use [37m--host[90m to expose[39m
+
