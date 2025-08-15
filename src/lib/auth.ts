@@ -1,4 +1,3 @@
-import { cookies } from "vinxi/http";
 import * as jose from "jose";
 import bcrypt from "bcryptjs";
 import { createDb } from "~/db/client";
@@ -48,7 +47,8 @@ export async function verifyToken(token: string): Promise<TUserPayload | null> {
 
 export async function setAuthCookie(user: TUserPayload) {
   const token = await generateToken(user);
-  cookies().set(AUTH_COOKIE, token, {
+  const { setCookie } = await import("~/lib/http");
+  setCookie(AUTH_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
@@ -57,12 +57,14 @@ export async function setAuthCookie(user: TUserPayload) {
   });
 }
 
-export function clearAuthCookie() {
-  cookies().set(AUTH_COOKIE, "", { httpOnly: true, sameSite: "lax", path: "/", secure: true, maxAge: 0 });
+export async function clearAuthCookie() {
+  const { deleteCookie } = await import("~/lib/http");
+  deleteCookie(AUTH_COOKIE, { path: "/" });
 }
 
 export async function getCurrentUser(): Promise<TUserPayload | null> {
-  const token = cookies().get(AUTH_COOKIE)?.value;
+  const { getCookie } = await import("~/lib/http");
+  const token = getCookie(AUTH_COOKIE);
   if (!token) return null;
   return await verifyToken(token);
 }

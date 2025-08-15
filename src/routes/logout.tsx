@@ -1,7 +1,7 @@
 import { action, redirect } from "@solidjs/router";
-import { clearAuthCookie } from "~/lib/auth";
 
 export const logoutAction = action(async () => {
+  const { clearAuthCookie } = await import("~/lib/auth");
   await clearAuthCookie();
   throw redirect("/login");
 });

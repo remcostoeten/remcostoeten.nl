@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
 import { action, redirect } from "@solidjs/router";
-import { authenticateUser, setAuthCookie } from "~/lib/auth";
 
 const loginAction = action(async (formData: FormData) => {
   const email = String(formData.get("email") || "");
@@ -8,6 +7,7 @@ const loginAction = action(async (formData: FormData) => {
   if (!email || !password) {
     return { ok: false, error: "Email and password are required" } as const;
   }
+  const { authenticateUser, setAuthCookie } = await import("~/lib/auth");
   const user = await authenticateUser(email, password);
   if (!user) {
     return { ok: false, error: "Invalid credentials" } as const;
