@@ -1,3 +1,17 @@
+# Portfolio SolidStart
+
+Environment variables:
+
+- DATABASE_URL (preferred)
+- POSTGRES_URL (fallback)
+- POSTGRES_PRISMA_URL (fallback)
+
+Run migrations:
+
+```
+bunx drizzle-kit generate
+```
+
 # SolidStart
 
 Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
