@@ -48,7 +48,7 @@ export async function verifyToken(token: string): Promise<TUserPayload | null> {
 export async function setAuthCookie(user: TUserPayload) {
   const token = await generateToken(user);
   const { setCookie } = await import("~/lib/http");
-  setCookie(AUTH_COOKIE, token, {
+  await setCookie(AUTH_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
@@ -59,12 +59,12 @@ export async function setAuthCookie(user: TUserPayload) {
 
 export async function clearAuthCookie() {
   const { deleteCookie } = await import("~/lib/http");
-  deleteCookie(AUTH_COOKIE, { path: "/" });
+  await deleteCookie(AUTH_COOKIE, { path: "/" });
 }
 
 export async function getCurrentUser(): Promise<TUserPayload | null> {
   const { getCookie } = await import("~/lib/http");
-  const token = getCookie(AUTH_COOKIE);
+  const token = await getCookie(AUTH_COOKIE);
   if (!token) return null;
   return await verifyToken(token);
 }
