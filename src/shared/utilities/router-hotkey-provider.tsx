@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useMemo, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-// Types
-interface KeyEvent {
+
+type TKeyEvent = {
   key: string;
   ctrl: boolean;
   shift: boolean;
@@ -12,44 +12,44 @@ interface KeyEvent {
   timestamp: number;
 }
 
-interface HotkeyStep {
+type THotkeyStep = {
   key?: string;
   ctrl?: boolean;
   shift?: boolean;
   alt?: boolean;
   meta?: boolean;
-  maxDelay?: number; // ms - max time allowed since previous step
+  maxDelay?: number; 
 }
 
-interface HotkeyConfig {
+type THotkeyConfig = {
   id?: string;
-  sequence: HotkeyStep[] | string; // Array of steps or DSL string
+  sequence: HotkeyStep[] | string; 
   route: string;
-  onlyOn?: string | string[] | ((path: string) => boolean); // Only trigger on these routes
-  notOn?: string | string[] | ((path: string) => boolean); // Don't trigger on these routes
+  onlyOn?: string | string[] | ((path: string) => boolean); 
+  notOn?: string | string[] | ((path: string) => boolean); 
 }
 
 type OverlayPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
-interface OverlaySettings {
+type TOverlaySettings = {
   enabled: boolean;
   position?: OverlayPosition;
   opacity?: number;
-  itemDuration?: number; // ms
+  itemDuration?: number; 
   maxItems?: number;
   easing?: string;
 }
 
-interface RouteHotkeysProviderProps {
+type TRouteHotkeysProviderProps = {
   children: ReactNode;
   hotkeys: HotkeyConfig[];
   bufferSize?: number;
-  inactivityTimeout?: number; // ms
+  inactivityTimeout?: number; 
   overlay?: OverlaySettings;
 }
 
-// Key normalization
-const normalizeKey = (key: string): string => {
+
+function normalizeKey(key: string) {
   const keyMap: Record<string, string> = {
     'esc': 'escape',
     'cmd': 'meta',
@@ -68,24 +68,24 @@ const normalizeKey = (key: string): string => {
   return keyMap[key.toLowerCase()] || key.toLowerCase();
 };
 
-// DSL Parser
-const parseDSL = (dsl: string): HotkeyStep[] => {
+
+function parseDSL(dsl: string) {
   const steps: HotkeyStep[] = [];
   const parts = dsl.split('>').map(s => s.trim());
   
   for (const part of parts) {
     const step: HotkeyStep = {};
     
-    // Extract timing constraint if present
+    
     const timingMatch = part.match(/\(<=(\d+)\)/);
     if (timingMatch) {
       step.maxDelay = parseInt(timingMatch[1]);
     }
     
-    // Remove timing constraint from part
+    
     const cleanPart = part.replace(/\(<=\d+\)/, '').trim();
     
-    // Parse modifiers and key
+    
     const tokens = cleanPart.split('+').map(s => s.trim().toLowerCase());
     
     for (const token of tokens) {
@@ -118,8 +118,8 @@ const parseDSL = (dsl: string): HotkeyStep[] => {
   return steps;
 };
 
-// Utility functions
-const matchesRoute = (currentRoute: string, patterns: string | string[] | ((path: string) => boolean)): boolean => {
+
+function matchesRoute(currentRoute: string, patterns: string | string[] | ((path: string) => boolean)) {
   if (typeof patterns === 'function') {
     return patterns(currentRoute);
   }
@@ -134,13 +134,13 @@ const matchesRoute = (currentRoute: string, patterns: string | string[] | ((path
   });
 };
 
-const shouldTriggerOnRoute = (currentRoute: string, config: HotkeyConfig): boolean => {
-  // Check onlyOn condition
+function shouldTriggerOnRoute(currentRoute: string, config: HotkeyConfig) {
+  
   if (config.onlyOn && !matchesRoute(currentRoute, config.onlyOn)) {
     return false;
   }
   
-  // Check notOn condition
+  
   if (config.notOn && matchesRoute(currentRoute, config.notOn)) {
     return false;
   }
@@ -148,7 +148,7 @@ const shouldTriggerOnRoute = (currentRoute: string, config: HotkeyConfig): boole
   return true;
 };
 
-const formatKeyDisplay = (event: KeyEvent): string => {
+function formatKeyDisplay(event: KeyEvent) {
   const parts: string[] = [];
   if (event.ctrl) parts.push('Ctrl');
   if (event.shift) parts.push('Shift');
@@ -163,7 +163,7 @@ const formatKeyDisplay = (event: KeyEvent): string => {
   return parts.join('+') || 'Key';
 };
 
-// Main Component
+
 export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
   children,
   hotkeys,
@@ -177,7 +177,7 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
   const [overlayKeys, setOverlayKeys] = useState<{ id: string; display: string; timestamp: number }[]>([]);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Parse and memoize hotkey configurations
+  
   const parsedHotkeys = useMemo(() => {
     return hotkeys.map((config, index) => ({
       ...config,
@@ -188,29 +188,29 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
     }));
   }, [hotkeys]);
 
-  // Check if a sequence matches current buffer
-  const checkSequenceMatch = (sequence: HotkeyStep[], buffer: KeyEvent[]): boolean => {
+  
+  function checkSequenceMatch(sequence: HotkeyStep[], buffer: KeyEvent[]) {
     if (sequence.length > buffer.length) return false;
     
-    // Check from the end of the buffer backwards
+    
     const relevantBuffer = buffer.slice(-sequence.length);
     
     for (let i = 0; i < sequence.length; i++) {
       const step = sequence[i];
       const event = relevantBuffer[i];
       
-      // Check key match
+      
       if (step.key && normalizeKey(event.key) !== step.key) {
         return false;
       }
       
-      // Check modifiers
+      
       if (step.ctrl !== undefined && event.ctrl !== step.ctrl) return false;
       if (step.shift !== undefined && event.shift !== step.shift) return false;
       if (step.alt !== undefined && event.alt !== step.alt) return false;
       if (step.meta !== undefined && event.meta !== step.meta) return false;
       
-      // Check timing constraint
+      
       if (i > 0 && step.maxDelay !== undefined) {
         const timeDiff = event.timestamp - relevantBuffer[i - 1].timestamp;
         if (timeDiff > step.maxDelay) return false;
@@ -220,8 +220,8 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
     return true;
   };
 
-  // Reset inactivity timer
-  const resetInactivityTimer = () => {
+  
+  function resetInactivityTimer() {
     if (inactivityTimerRef.current) {
       clearTimeout(inactivityTimerRef.current);
     }
@@ -230,8 +230,8 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
     }, inactivityTimeout);
   };
 
-  // Add key to overlay
-  const addToOverlay = (event: KeyEvent) => {
+  
+  function addToOverlay(event: KeyEvent) {
     if (!overlay.enabled) return;
     
     const id = Math.random().toString(36).substr(2, 9);
@@ -242,16 +242,16 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
       return newKeys.slice(-(overlay.maxItems || 5));
     });
     
-    // Remove after duration
+    
     setTimeout(() => {
       setOverlayKeys(prev => prev.filter(k => k.id !== id));
     }, overlay.itemDuration || 1000);
   };
 
-  // Handle keyboard events
+  
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Skip if target is an input element
+    function handleKeyDown(e: KeyboardEvent) {
+      
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || 
           target.contentEditable === 'true') {
@@ -267,21 +267,21 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
         timestamp: Date.now()
       };
 
-      // Add to overlay
+      
       addToOverlay(keyEvent);
 
-      // Update buffer
+      
       setKeyBuffer(prev => {
         const newBuffer = [...prev, keyEvent].slice(-bufferSize);
         
-        // Check for matches
+        
         for (const config of parsedHotkeys) {
           if (!shouldTriggerOnRoute(location.pathname, config)) continue;
           
           if (checkSequenceMatch(config.parsedSequence, newBuffer)) {
             e.preventDefault();
             navigate(config.route);
-            return []; // Clear buffer after successful navigation
+            return []; 
           }
         }
         
@@ -300,8 +300,8 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
     };
   }, [parsedHotkeys, location.pathname, navigate, bufferSize, inactivityTimeout, overlay]);
 
-  // Overlay positioning
-  const getOverlayPosition = (position: OverlayPosition) => {
+  
+  function getOverlayPosition(position: OverlayPosition) {
     switch (position) {
       case 'top-left': return { top: 20, left: 20 };
       case 'top-right': return { top: 20, right: 20 };
@@ -315,7 +315,7 @@ export const RouteHotkeysProvider: React.FC<RouteHotkeysProviderProps> = ({
     <>
       {children}
       
-      {/* Overlay */}
+      {}
       {overlay.enabled && (
         <div
           style={{

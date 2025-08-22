@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
 
-interface Section {
+type TSection {
   id: string;
   direction: string;
   justify: string;
@@ -14,12 +14,12 @@ interface Section {
   widgets: Widget[];
 }
 
-interface Widget {
+type TWidget {
   type: string;
   props: any;
 }
 
-export default function AdminCMS() {
+export function AdminCMS() {
   const siteConfig = useQuery(api.site.getSiteConfig);
   const pageContent = useQuery(api.site.getPageContent, { pageId: "home" });
   const submissions = useQuery(api.submissions.get);
@@ -93,7 +93,7 @@ export default function AdminCMS() {
     }
   };
 
-  const addSection = () => {
+  function addSection() {
     const newSection: Section = {
       id: `section-${Date.now()}`,
       direction: "flex-col",
@@ -107,17 +107,17 @@ export default function AdminCMS() {
     setSections([...sections, newSection]);
   };
 
-  const updateSection = (index: number, updates: Partial<Section>) => {
+  function updateSection(index: number, updates: Partial<Section>) {
     const newSections = [...sections];
     newSections[index] = { ...newSections[index], ...updates };
     setSections(newSections);
   };
 
-  const deleteSection = (index: number) => {
+  function deleteSection(index: number) {
     setSections(sections.filter((_, i) => i !== index));
   };
 
-  const addWidget = (sectionIndex: number, widgetType: string) => {
+  function addWidget(sectionIndex: number, widgetType: string) {
     const defaultProps = {
       text: {
         text: "Sample text",
@@ -148,14 +148,14 @@ export default function AdminCMS() {
       },
       project: {
         text: "Project Name",
-        url: "https://github.com/username/project",
+        url: "https:
         fontSize: "text-base",
         githubOwner: "",
         githubRepo: "",
       },
       link: {
         text: "Link Text",
-        url: "https://example.com",
+        url: "https:
         fontSize: "text-base",
         fontWeight: "font-normal",
       },
@@ -174,7 +174,7 @@ export default function AdminCMS() {
     setSections(newSections);
   };
 
-  const updateWidget = (sectionIndex: number, widgetIndex: number, updates: any) => {
+  function updateWidget(sectionIndex: number, widgetIndex: number, updates: any) {
     const newSections = [...sections];
     newSections[sectionIndex].widgets[widgetIndex].props = {
       ...newSections[sectionIndex].widgets[widgetIndex].props,
@@ -183,7 +183,7 @@ export default function AdminCMS() {
     setSections(newSections);
   };
 
-  const deleteWidget = (sectionIndex: number, widgetIndex: number) => {
+  function deleteWidget(sectionIndex: number, widgetIndex: number) {
     const newSections = [...sections];
     newSections[sectionIndex].widgets.splice(widgetIndex, 1);
     setSections(newSections);
@@ -200,7 +200,7 @@ export default function AdminCMS() {
     }
   };
 
-  const exportData = () => {
+  function exportData() {
     const data = {
       page: {
         seo: [config.seo],
@@ -389,19 +389,19 @@ export default function AdminCMS() {
         )}
 
         {activeTab === "content" && (
-          <div className="cms-card p-6 rounded-none-lg shadow">
+          <div className="bg-white p-6 rounded-none-lg shadow">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold cms-text">Page Builder</h2>
+              <h2 className="text-xl font-semibold">Page Builder</h2>
               <div className="flex gap-2">
                 <button
                   onClick={addSection}
-                  className="cms-button-primary px-4 py-2 rounded-none"
+                  className="bg-green-500 text-white px-4 py-2 rounded-none hover:bg-green-600"
                 >
                   Add Section
                 </button>
                 <button
                   onClick={handleSaveContent}
-                  className="cms-button-primary px-4 py-2 rounded-none"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-none hover:bg-blue-600"
                 >
                   Save Content
                 </button>
@@ -409,12 +409,12 @@ export default function AdminCMS() {
             </div>
 
             {sections.map((section, sectionIndex) => (
-              <div key={section.id} className="cms-muted p-4 mb-4 rounded-none border border-border">
+              <div key={section.id} className="border p-4 mb-4 rounded-none">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold cms-text">Section {sectionIndex + 1}</h3>
+                  <h3 className="font-semibold">Section {sectionIndex + 1}</h3>
                   <button
                     onClick={() => deleteSection(sectionIndex)}
-                    className="cms-button-destructive px-2 py-1 rounded-none text-sm"
+                    className="bg-red-500 text-white px-2 py-1 rounded-none text-sm"
                   >
                     Delete
                   </button>
@@ -424,7 +424,7 @@ export default function AdminCMS() {
                   <select
                     value={section.direction}
                     onChange={(e) => updateSection(sectionIndex, { direction: e.target.value })}
-                    className="cms-input p-2 rounded-none text-sm"
+                    className="p-2 border rounded-none text-sm"
                   >
                     <option value="flex-col">Column</option>
                     <option value="flex-row">Row</option>
@@ -433,7 +433,7 @@ export default function AdminCMS() {
                   <select
                     value={section.justify}
                     onChange={(e) => updateSection(sectionIndex, { justify: e.target.value })}
-                    className="cms-input p-2 rounded-none text-sm"
+                    className="p-2 border rounded-none text-sm"
                   >
                     <option value="justify-start">Start</option>
                     <option value="justify-center">Center</option>
@@ -444,7 +444,7 @@ export default function AdminCMS() {
                   <select
                     value={section.align}
                     onChange={(e) => updateSection(sectionIndex, { align: e.target.value })}
-                    className="cms-input p-2 rounded-none text-sm"
+                    className="p-2 border rounded-none text-sm"
                   >
                     <option value="items-start">Start</option>
                     <option value="items-center">Center</option>
@@ -454,7 +454,7 @@ export default function AdminCMS() {
                   <select
                     value={section.gap}
                     onChange={(e) => updateSection(sectionIndex, { gap: e.target.value })}
-                    className="cms-input p-2 rounded-none text-sm"
+                    className="p-2 border rounded-none text-sm"
                   >
                     <option value="gap-2">Gap 2</option>
                     <option value="gap-4">Gap 4</option>
@@ -465,49 +465,49 @@ export default function AdminCMS() {
                 <div className="flex gap-2 mb-4 flex-wrap">
                   <button
                     onClick={() => addWidget(sectionIndex, "text")}
-                    className="cms-button-primary px-3 py-1 rounded-none text-sm"
+                    className="bg-blue-500 text-white px-3 py-1 rounded-none text-sm"
                   >
                     Add Text
                   </button>
                   <button
                     onClick={() => addWidget(sectionIndex, "heading")}
-                    className="cms-button-primary px-3 py-1 rounded-none text-sm"
+                    className="bg-blue-500 text-white px-3 py-1 rounded-none text-sm"
                   >
                     Add Heading
                   </button>
                   <button
                     onClick={() => addWidget(sectionIndex, "highlightedText")}
-                    className="cms-button-primary px-3 py-1 rounded-none text-sm"
+                    className="bg-blue-500 text-white px-3 py-1 rounded-none text-sm"
                   >
                     Add Highlight
                   </button>
                   <button
                     onClick={() => addWidget(sectionIndex, "project")}
-                    className="cms-button-secondary px-3 py-1 rounded-none text-sm"
+                    className="bg-purple-500 text-white px-3 py-1 rounded-none text-sm"
                   >
                     Add Project
                   </button>
                   <button
                     onClick={() => addWidget(sectionIndex, "link")}
-                    className="cms-button-secondary px-3 py-1 rounded-none text-sm"
+                    className="bg-green-500 text-white px-3 py-1 rounded-none text-sm"
                   >
                     Add Link
                   </button>
                   <button
                     onClick={() => addWidget(sectionIndex, "dynamic")}
-                    className="cms-button-secondary px-3 py-1 rounded-none text-sm"
+                    className="bg-orange-500 text-white px-3 py-1 rounded-none text-sm"
                   >
                     Add Dynamic
                   </button>
                 </div>
 
                 {section.widgets.map((widget, widgetIndex) => (
-                  <div key={widgetIndex} className="cms-card p-3 mb-2 rounded-none">
+                  <div key={widgetIndex} className="bg-gray-50 p-3 mb-2 rounded-none">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium capitalize cms-text">{widget.type}</span>
+                      <span className="font-medium capitalize">{widget.type}</span>
                       <button
                         onClick={() => deleteWidget(sectionIndex, widgetIndex)}
-                        className="cms-button-destructive px-2 py-1 rounded-none text-xs"
+                        className="bg-red-500 text-white px-2 py-1 rounded-none text-xs"
                       >
                         Delete
                       </button>
@@ -516,23 +516,23 @@ export default function AdminCMS() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       {widget.type !== 'dynamic' && (
                         <div>
-                          <label className="block text-xs font-medium mb-1 cms-text">Text</label>
+                          <label className="block text-xs font-medium mb-1">Text</label>
                           <input
                             type="text"
                             value={widget.props.text || ""}
                             onChange={(e) => updateWidget(sectionIndex, widgetIndex, { text: e.target.value })}
-                            className="cms-input w-full p-1 rounded-none text-sm"
+                            className="w-full p-1 border rounded-none text-sm"
                           />
                         </div>
                       )}
                       
                       {widget.type === "heading" && (
                         <div>
-                          <label className="block text-xs font-medium mb-1 cms-text">Level</label>
+                          <label className="block text-xs font-medium mb-1">Level</label>
                           <select
                             value={widget.props.level || 1}
                             onChange={(e) => updateWidget(sectionIndex, widgetIndex, { level: parseInt(e.target.value) })}
-                            className="cms-input w-full p-1 rounded-none text-sm"
+                            className="w-full p-1 border rounded-none text-sm"
                           >
                             <option value={1}>H1</option>
                             <option value={2}>H2</option>
@@ -546,24 +546,24 @@ export default function AdminCMS() {
                       
                       {(widget.type === "project" || widget.type === "link") && (
                         <div>
-                          <label className="block text-xs font-medium mb-1 cms-text">URL</label>
+                          <label className="block text-xs font-medium mb-1">URL</label>
                           <input
                             type="text"
                             value={widget.props.url || ""}
                             onChange={(e) => updateWidget(sectionIndex, widgetIndex, { url: e.target.value })}
-                            className="cms-input w-full p-1 rounded-none text-sm"
+                            className="w-full p-1 border rounded-none text-sm"
                           />
                         </div>
                       )}
 
                       {widget.type === "project" && (
                         <div>
-                          <label className="block text-xs font-medium mb-1 cms-text">GitHub Owner</label>
+                          <label className="block text-xs font-medium mb-1">GitHub Owner</label>
                           <input
                             type="text"
                             value={widget.props.githubOwner || ""}
                             onChange={(e) => updateWidget(sectionIndex, widgetIndex, { githubOwner: e.target.value })}
-                            className="cms-input w-full p-1 rounded-none text-sm"
+                            className="w-full p-1 border rounded-none text-sm"
                             placeholder="e.g., remcostoeten"
                           />
                         </div>
@@ -571,12 +571,12 @@ export default function AdminCMS() {
 
                       {widget.type === "project" && (
                         <div>
-                          <label className="block text-xs font-medium mb-1 cms-text">GitHub Repo</label>
+                          <label className="block text-xs font-medium mb-1">GitHub Repo</label>
                           <input
                             type="text"
                             value={widget.props.githubRepo || ""}
                             onChange={(e) => updateWidget(sectionIndex, widgetIndex, { githubRepo: e.target.value })}
-                            className="cms-input w-full p-1 rounded-none text-sm"
+                            className="w-full p-1 border rounded-none text-sm"
                             placeholder="e.g., nextjs-15-roll-your-own-authentication"
                           />
                         </div>
@@ -584,11 +584,11 @@ export default function AdminCMS() {
 
                       {widget.type === "dynamic" && (
                         <div>
-                          <label className="block text-xs font-medium mb-1 cms-text">Dynamic Type</label>
+                          <label className="block text-xs font-medium mb-1">Dynamic Type</label>
                           <select
                             value={widget.props.type || "current-time"}
                             onChange={(e) => updateWidget(sectionIndex, widgetIndex, { type: e.target.value })}
-                            className="cms-input w-full p-1 rounded-none text-sm"
+                            className="w-full p-1 border rounded-none text-sm"
                           >
                             <option value="current-time">Current Time</option>
                           </select>
@@ -603,20 +603,20 @@ export default function AdminCMS() {
         )}
 
         {activeTab === "import" && (
-          <div className="cms-card p-6 rounded-none-lg shadow">
-            <h2 className="text-xl font-semibold mb-4 cms-text">Import/Export</h2>
+          <div className="bg-white p-6 rounded-none-lg shadow">
+            <h2 className="text-xl font-semibold mb-4">Import/Export</h2>
             
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 cms-text">Import JSON</label>
+              <label className="block text-sm font-medium mb-2">Import JSON</label>
               <textarea
                 value={importJson}
                 onChange={(e) => setImportJson(e.target.value)}
-                className="cms-input w-full p-2 rounded-none h-32"
+                className="w-full p-2 border rounded-none h-32"
                 placeholder="Paste your JSON data here..."
               />
               <button
                 onClick={handleImport}
-                className="mt-2 cms-button-primary px-4 py-2 rounded-none"
+                className="mt-2 bg-green-500 text-white px-4 py-2 rounded-none hover:bg-green-600"
               >
                 Import Data
               </button>
@@ -625,11 +625,11 @@ export default function AdminCMS() {
             <div>
               <button
                 onClick={exportData}
-                className="cms-button-primary px-4 py-2 rounded-none"
+                className="bg-blue-500 text-white px-4 py-2 rounded-none hover:bg-blue-600"
               >
                 Export Current Data
               </button>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-sm text-gray-600 mt-2">
                 Exports current page data to clipboard as JSON
               </p>
             </div>

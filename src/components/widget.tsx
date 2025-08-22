@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { GitHubProjectCard } from './project-card';
 
-interface WidgetProps {
+type TWidgetProps = {
   type: string;
   props: any;
 }
 
-interface ProjectWidgetProps {
+type TProjectWidgetProps = {
   text: string;
   url: string;
   fontSize: string;
@@ -14,10 +14,9 @@ interface ProjectWidgetProps {
   githubRepo?: string;
 }
 
-function ProjectWidget({ text, url, fontSize, githubOwner, githubRepo }: ProjectWidgetProps) {
+function ProjectWidget({ text, url, fontSize, githubOwner, githubRepo }: TProjectWidgetProps) {
   const [showCard, setShowCard] = useState(false);
   
-  // Auto-extract GitHub info from URL if not provided
   let finalOwner = githubOwner;
   let finalRepo = githubRepo;
   
@@ -57,11 +56,10 @@ function ProjectWidget({ text, url, fontSize, githubOwner, githubRepo }: Project
   );
 }
 
-export default function Widget({ type, props }: WidgetProps) {
-  const parseHighlightedText = (text: string) => {
+export function Widget({ type, props }: TWidgetProps) {
+  function parseHighlightedText(text: string) {
     const parts = text.split(/(\[highlight:[^\]]+:[^\]]+\]|\[project:[^\]]+:[^\]]+(?::[^\]]+:[^\]]+)?\]|\[link:[^\]]+:[^\]]+\]|\[dynamic:[^\]]+\])/g);
     return parts.map((part, index) => {
-      // Handle highlight syntax: [highlight:text:type]
       const highlightMatch = part.match(/\[highlight:([^:]+):([^\]]+)\]/);
       if (highlightMatch) {
         const [, text, type] = highlightMatch;
@@ -86,7 +84,7 @@ export default function Widget({ type, props }: WidgetProps) {
         );
       }
 
-      // Handle project syntax: [project:text:url:owner:repo]
+      
       const projectMatch = part.match(/\[project:([^:]+):([^:]+)(?::([^:]+):([^\]]+))?\]/);
       if (projectMatch) {
         const [, text, url, owner, repo] = projectMatch;
@@ -102,7 +100,7 @@ export default function Widget({ type, props }: WidgetProps) {
         );
       }
 
-      // Handle link syntax: [link:text:url]
+      
       const linkMatch = part.match(/\[link:([^:]+):([^\]]+)\]/);
       if (linkMatch) {
         const [, text, url] = linkMatch;
@@ -119,7 +117,7 @@ export default function Widget({ type, props }: WidgetProps) {
         );
       }
 
-      // Handle dynamic syntax: [dynamic:type]
+      
       const dynamicMatch = part.match(/\[dynamic:([^\]]+)\]/);
       if (dynamicMatch) {
         const [, type] = dynamicMatch;

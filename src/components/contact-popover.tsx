@@ -21,7 +21,7 @@ type TProps = {
   openAbove?: boolean;
 }
 
-// Memoized emoji button component
+
 const EmojiButton = ({ 
   emoji, 
   isSelected, 
@@ -59,14 +59,14 @@ export const ContactForm = ({
   });
   const sendSubmission = useMutation(api.submissions.send);
 
-  // Memoized animation variants
+  
   const animationVariants = useMemo(() => ({
     initial: { opacity: 0, y: openAbove ? -10 : 10, scale: 0.95 },
     animate: { opacity: 1, y: 0, scale: 1 },
     exit: { opacity: 0, y: openAbove ? -10 : 10, scale: 0.95 }
   }), [openAbove]);
 
-  // Memoized transition config
+  
   const transition = useMemo(() => ({ 
     duration: 0.3, 
     ease: [0.4, 0.0, 0.2, 1] as const
@@ -75,7 +75,7 @@ export const ContactForm = ({
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     await sendSubmission(formData);
-    // Reset form
+    
     setFormData({ name: "", feedback: "", emoji: "" });
     console.log("Feedback submitted:", formData);
   }, [formData, sendSubmission]);
@@ -89,7 +89,7 @@ export const ContactForm = ({
     setFormData(prev => ({ ...prev, emoji }));
   }, []);
 
-  // Memoized form validation
+  
   const isFormValid = useMemo(() => 
     formData.name.trim() && formData.feedback.trim(), 
     [formData.name, formData.feedback]
@@ -111,7 +111,7 @@ export const ContactForm = ({
             boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
           }}
         >
-          {/* Header */}
+          {}
           <header className="mb-4">
             <h3 className="font-semibold text-foreground text-sm mb-1">Quick feedback</h3>
             <p className="text-xs text-muted-foreground">
@@ -119,7 +119,7 @@ export const ContactForm = ({
             </p>
           </header>
 
-          {/* Emoji Selection */}
+          {}
           <section className="mb-4">
             <Label className="text-xs font-medium text-foreground mb-2 block">
               How are you feeling?
@@ -136,7 +136,7 @@ export const ContactForm = ({
             </div>
           </section>
 
-          {/* Form */}
+          {}
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <Label htmlFor="name" className="text-xs font-medium text-foreground">

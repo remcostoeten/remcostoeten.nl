@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { Suspense, useEffect, useState } from "react";
 
-import HomePage from "./components/HomePage";
-import EnhancedAdminCMS from "./components/EnhancedAdminCMS";
+import { HomePage } from "./components/home-page";
+import { EnhancedAdminCMS } from "./components/enhanced-admin-cms";
 
 import { AppLoader } from "./components/effects/app-loader";
 import { RouteHotkeysProvider } from "./shared/utilities/router-hotkey-provider";
@@ -102,7 +102,7 @@ function AppContent() {
   );
 }
 
-export default function App() {
+export function App() {
   return (
     <Suspense fallback={<AppLoader loadingText="Initializing" words={["app", "database", "connection", "resources", "portfolio"]} />}>
       <AppContent />

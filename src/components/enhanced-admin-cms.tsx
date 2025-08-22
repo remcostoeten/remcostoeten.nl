@@ -2,14 +2,14 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
-import RichTextEditor from "./RichTextEditor";
-import Widget from "./Widget";
+import { RichTextEditor } from "./rich-text-editor";
+import { Widget } from "./widget";
 import { motion, AnimatePresence } from "framer-motion";
 import { Save, Plus, Trash2, Eye, EyeOff, Upload, Download, ChevronDown, ChevronRight } from "lucide-react";
 import { Textarea } from "./ui";
 
-// Types
-interface SeoConfig {
+
+type TSeoConfig = {
   title: string;
   description: string;
   keywords: string;
@@ -17,7 +17,7 @@ interface SeoConfig {
   twitterCard: string;
 }
 
-interface SiteConfig {
+type TSiteConfig = {
   title: string;
   favicon: string;
   metaDescription: string;
@@ -25,16 +25,16 @@ interface SiteConfig {
   bodyBgColor: string;
   bodyFontSize: string;
   bodyFont: string;
-  seo: SeoConfig;
+  seo: TSeoConfig;
 }
 
-interface Widget {
+type TWidget = {
   id: string;
   type: string;
   props: Record<string, any>;
 }
 
-interface Section {
+type TSection = {
   id: string;
   direction: string;
   justify: string;
@@ -42,15 +42,15 @@ interface Section {
   gap: string;
   padding: string;
   margin?: string;
-  widgets: Widget[];
+  widgets: TWidget[];
 }
 
-interface PageContent {
+type TPageContent = {
   pageId: string;
-  sections: Section[];
+  sections: TSection[];
 }
 
-// Constants
+
 const WIDGET_TYPES = {
   text: {
     label: "Text",
@@ -80,7 +80,7 @@ const WIDGET_TYPES = {
     color: "bg-green-600", 
     defaultProps: {
       text: "Project Name",
-      url: "https://github.com/username/project",
+      url: "https://example.com",
       fontSize: "text-base",
       githubOwner: "",
       githubRepo: "",
@@ -127,7 +127,7 @@ const BG_COLOR_OPTIONS = [
   { value: "bg-green-50", label: "Light Green", preview: "#f0fdf4" },
 ];
 
-// Custom hooks
+
 const useDebounce = <T,>(value: T, delay: number): T => {
   const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
@@ -139,7 +139,7 @@ const useDebounce = <T,>(value: T, delay: number): T => {
   return debouncedValue;
 };
 
-// Components
+
 const ColorPicker: React.FC<{
   value: string;
   onChange: (value: string) => void;
@@ -171,7 +171,7 @@ const ColorPicker: React.FC<{
 );
 
 const PreviewSection: React.FC<{
-  section: Section;
+  section: TSection;
   sectionIndex: number;
 }> = ({ section, sectionIndex }) => (
   <div 
@@ -188,11 +188,11 @@ const PreviewSection: React.FC<{
 );
 
 const SectionEditor: React.FC<{
-  section: Section;
+  section: TSection;
   sectionIndex: number;
   isExpanded: boolean;
   onToggleExpanded: (sectionId: string) => void;
-  onUpdateSection: (index: number, updates: Partial<Section>) => void;
+  onUpdateSection: (index: number, updates: Partial<TSection>) => void;
   onDeleteSection: (index: number) => void;
   onAddWidget: (sectionIndex: number, widgetType: string) => void;
   onUpdateWidget: (sectionIndex: number, widgetIndex: number, updates: any) => void;
@@ -208,7 +208,7 @@ const SectionEditor: React.FC<{
   onUpdateWidget,
   onDeleteWidget,
 }) => {
-  const handleSectionUpdate = useCallback((updates: Partial<Section>) => {
+  const handleSectionUpdate = useCallback((updates: Partial<TSection>) => {
     onUpdateSection(sectionIndex, updates);
   }, [sectionIndex, onUpdateSection]);
 
@@ -219,7 +219,7 @@ const SectionEditor: React.FC<{
       exit={{ opacity: 0, y: -20 }}
       className="bg-background AAA rounded-none-lg shadow-sm border border-border overflow-hidden"
     >
-      {/* Section Header */}
+      {}
       <div className="p-4 bg-muted AAAAborder-b border-border flex items-center justify-between">
         <button
           onClick={() => onToggleExpanded(section.id)}
@@ -249,7 +249,7 @@ const SectionEditor: React.FC<{
         </button>
       </div>
 
-      {/* Section Content */}
+      {}
       <AnimatePresence>
         {isExpanded && (
           <motion.div
@@ -259,7 +259,7 @@ const SectionEditor: React.FC<{
             className="overflow-hidden"
           >
             <div className="p-6 space-y-6">
-              {/* Section Layout Controls */}
+              {}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">
@@ -343,7 +343,7 @@ const SectionEditor: React.FC<{
                 </select>
               </div>
 
-              {/* Widget Controls */}
+              {}
               <div>
                 <label className="block text-sm font-mediumtext-neutral-400 mb-3">
                   Add Widget
@@ -361,7 +361,7 @@ const SectionEditor: React.FC<{
                 </div>
               </div>
 
-              {/* Widgets */}
+              {}
               <div className="space-y-4">
                 {section.widgets.map((widget, widgetIndex) => (
                   <WidgetEditor
@@ -383,7 +383,7 @@ const SectionEditor: React.FC<{
 };
 
 const WidgetEditor: React.FC<{
-  widget: Widget;
+  widget: TWidget;
   sectionIndex: number;
   widgetIndex: number;
   onUpdateWidget: (sectionIndex: number, widgetIndex: number, updates: any) => void;
@@ -542,17 +542,17 @@ const WidgetEditor: React.FC<{
   );
 };
 
-// Main Component
-export default function EnhancedAdminCMS() {
-  // Data fetching
+
+export function EnhancedAdminCMS() {
+  
   const siteConfig = useQuery(api.site.getSiteConfig);
   const pageContent = useQuery(api.site.getPageContent, { pageId: "home" });
   const updateSiteConfig = useMutation(api.site.updateSiteConfig);
   const updatePageContent = useMutation(api.site.updatePageContent);
   const importPageData = useMutation(api.site.importPageData);
 
-  // State
-  const [config, setConfig] = useState<SiteConfig>({
+  
+  const [config, setConfig] = useState<TSiteConfig>({
     title: "",
     favicon: "",
     metaDescription: "",
@@ -569,18 +569,18 @@ export default function EnhancedAdminCMS() {
     },
   });
 
-  const [sections, setSections] = useState<Section[]>([]);
+  const [sections, setSections] = useState<TSection[]>([]);
   const [activeTab, setActiveTab] = useState("content");
   const [importJson, setImportJson] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
 
-  // Debounced config for auto-save
+  
   const debouncedConfig = useDebounce(config, 1000);
   const debouncedSections = useDebounce(sections, 1000);
 
-  // Effects
+  
   useEffect(() => {
     if (siteConfig) {
       setConfig({
@@ -604,7 +604,7 @@ export default function EnhancedAdminCMS() {
 
   useEffect(() => {
     if (pageContent?.sections) {
-      // Ensure all widgets have IDs
+      
       const sectionsWithIds = pageContent.sections.map(section => ({
         ...section,
         widgets: section.widgets.map((widget: any) => ({
@@ -619,7 +619,7 @@ export default function EnhancedAdminCMS() {
     }
   }, [pageContent]);
 
-  // Auto-save effect
+  
   useEffect(() => {
     if (debouncedConfig && siteConfig) {
       handleSaveConfig(true);
@@ -632,7 +632,7 @@ export default function EnhancedAdminCMS() {
     }
   }, [debouncedSections]);
 
-  // Handlers
+  
   const handleSaveConfig = useCallback(async (isAutoSave = false) => {
     if (isLoading) return;
     
@@ -666,7 +666,7 @@ export default function EnhancedAdminCMS() {
   }, [sections, updatePageContent, isLoading]);
 
   const addSection = useCallback(() => {
-    const newSection: Section = {
+    const newSection: TSection = {
       id: `section-${Date.now()}`,
       direction: "flex-col",
       justify: "justify-center",
@@ -680,7 +680,7 @@ export default function EnhancedAdminCMS() {
     setExpandedSections(prev => new Set([...prev, newSection.id]));
   }, []);
 
-  const updateSection = useCallback((index: number, updates: Partial<Section>) => {
+  const updateSection = useCallback((index: number, updates: Partial<TSection>) => {
     setSections(prev => {
       const newSections = [...prev];
       newSections[index] = { ...newSections[index], ...updates };
@@ -718,7 +718,7 @@ export default function EnhancedAdminCMS() {
     const widgetConfig = WIDGET_TYPES[widgetType as keyof typeof WIDGET_TYPES];
     if (!widgetConfig) return;
 
-    const newWidget: Widget = {
+    const newWidget: TWidget = {
       id: `widget-${Date.now()}`,
       type: widgetType,
       props: { ...widgetConfig.defaultProps },
@@ -786,13 +786,13 @@ export default function EnhancedAdminCMS() {
     toast.success("Data copied to clipboard!");
   }, [config.seo, sections]);
 
-  // Memoized tab content
+  
   const tabContent = useMemo(() => {
     switch (activeTab) {
       case "content":
         return (
           <div className="space-y-6">
-            {/* Action Bar */}
+            {}
             <div className="bg-background AAA p-4 rounded-none-lg shadow-sm border border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <button
@@ -823,9 +823,9 @@ export default function EnhancedAdminCMS() {
               </button>
             </div>
 
-            {/* Content Area */}
+            {}
             {previewMode ? (
-              // Preview Mode
+              
               <div className="bg-[hsl(0_0%_7%)] rounded-none-lg p-8 border border-border min-h-[600px]">
                 <div className="max-w-4xl mx-auto">
                   <div className="mb-4 text-center">
@@ -859,7 +859,7 @@ export default function EnhancedAdminCMS() {
                 </div>
               </div>
             ) : (
-              // Edit Mode
+              
               <div className="space-y-4">
                 <AnimatePresence>
                   {sections.map((section, sectionIndex) => (
@@ -901,7 +901,7 @@ export default function EnhancedAdminCMS() {
             <h2 className="text-2xl font-semibold mb-6 text-gray-100">Site Configuration</h2>
             
             <div className="space-y-8">
-              {/* Basic Settings */}
+              {}
               <div>
                 <h3 className="text-lg font-semibold mb-4 text-gray-100">Basic Settings</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -951,7 +951,7 @@ export default function EnhancedAdminCMS() {
                 </div>
               </div>
 
-              {/* Style Settings */}
+              {}
               <div>
                 <h3 className="text-lg font-semibold mb-4 text-gray-100">Style Settings</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -994,7 +994,7 @@ export default function EnhancedAdminCMS() {
                 </div>
               </div>
 
-              {/* SEO Settings */}
+              {}
               <div>
                 <h3 className="text-lg font-semibold mb-4 text-gray-100">SEO Settings</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1164,7 +1164,7 @@ export default function EnhancedAdminCMS() {
                 </div>
               </div>
 
-              {/* Preview of current data */}
+              {}
               <div>
                 <h3 className="text-lg font-medium text-gray-100 mb-3">Current Data Preview</h3>
                 <div className="bg-muted AAAAborder border-border rounded-none-lg p-4">
@@ -1196,13 +1196,13 @@ export default function EnhancedAdminCMS() {
   return (
     <div className="min-h-screen cms-bg">
       <div className="max-w-7xl mx-auto p-6">
-        {/* Header */}
+        {}
         <div className="mb-8">
           <h1 className="text-4xl font-bold cms-text mb-2">Content Management System</h1>
           <p className="text-muted-foreground">Create and manage your portfolio content with our enhanced editor</p>
         </div>
         
-        {/* Navigation */}
+        {}
         <div className="flex gap-2 mb-8 cms-card p-1 rounded-none-lg shadow-sm">
           {[
             { id: "content", label: "Content Editor", icon: "📝", description: "Manage sections and widgets" },
@@ -1230,7 +1230,7 @@ export default function EnhancedAdminCMS() {
           ))}
         </div>
 
-        {/* Loading indicator */}
+        {}
         {isLoading && (
           <div className="fixed top-4 right-4 cms-accent px-4 py-2 rounded-none-lg shadow-lg z-50">
             <div className="flex items-center gap-2">
@@ -1240,7 +1240,7 @@ export default function EnhancedAdminCMS() {
           </div>
         )}
 
-        {/* Tab Content */}
+        {}
         {tabContent}
       </div>
     </div>

@@ -5,4 +5,4 @@ const http = router;
 
 auth.addHttpRoutes(http);
 
-export default http;
+export { http };
