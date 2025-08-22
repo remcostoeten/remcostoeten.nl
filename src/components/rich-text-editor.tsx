@@ -4,18 +4,18 @@ import { Link, Hash, Github, Palette, Type, Bold, Italic, Underline, X, ArrowLef
 import { cn } from '../shared/utilities/cn';
 
 
-type TSelection {
+type TSelection = {
   start: number;
   end: number;
   text: string;
 }
 
-type TPopoverPosition {
+type TPopoverPosition = {
   x: number;
   y: number;
 }
 
-type TRichTextEditorProps {
+type TRichTextEditorProps = {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -24,14 +24,14 @@ type TRichTextEditorProps {
   maxLength?: number;
 }
 
-type THighlightColor {
+type THighlightColor = {
   name: string;
   value: string;
   class: string;
   textClass?: string;
 }
 
-type TMarkupMatch {
+type TMarkupMatch = {
   type: 'highlight' | 'project' | 'link' | 'dynamic';
   text: string;
   params: string[];
@@ -211,7 +211,7 @@ const LinkForm: React.FC<{
     <div className="space-y-2">
       <input
         type="url"
-        placeholder="https:
+      placeholder="https://example.com"
         value={url}
         onChange={(e) => onUrlChange(e.target.value)}
         className={`w-full px-3 py-2 text-sm border rounded-none focus:outline-none focus:ring-2 transition-colors ${

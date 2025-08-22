@@ -9,7 +9,7 @@ import { Save, Plus, Trash2, Eye, EyeOff, Upload, Download, ChevronDown, Chevron
 import { Textarea } from "./ui";
 
 
-type TSeoConfig {
+type TSeoConfig = {
   title: string;
   description: string;
   keywords: string;
@@ -17,7 +17,7 @@ type TSeoConfig {
   twitterCard: string;
 }
 
-type TSiteConfig {
+type TSiteConfig = {
   title: string;
   favicon: string;
   metaDescription: string;
@@ -28,13 +28,13 @@ type TSiteConfig {
   seo: TSeoConfig;
 }
 
-type TWidget {
+type TWidget = {
   id: string;
   type: string;
   props: Record<string, any>;
 }
 
-type TSection {
+type TSection = {
   id: string;
   direction: string;
   justify: string;
@@ -80,7 +80,7 @@ const WIDGET_TYPES = {
     color: "bg-green-600", 
     defaultProps: {
       text: "Project Name",
-      url: "https:
+      url: "https://example.com",
       fontSize: "text-base",
       githubOwner: "",
       githubRepo: "",
@@ -91,7 +91,7 @@ const WIDGET_TYPES = {
     color: "bg-orange-600",
     defaultProps: {
       text: "Link Text",
-      url: "https:
+      url: "https://example.com",
       fontSize: "text-base",
       fontWeight: "font-normal",
     }
@@ -552,7 +552,7 @@ export function EnhancedAdminCMS() {
   const importPageData = useMutation(api.site.importPageData);
 
   
-  const [config, setConfig] = useState<SiteConfig>({
+  const [config, setConfig] = useState<TSiteConfig>({
     title: "",
     favicon: "",
     metaDescription: "",
@@ -569,7 +569,7 @@ export function EnhancedAdminCMS() {
     },
   });
 
-  const [sections, setSections] = useState<Section[]>([]);
+  const [sections, setSections] = useState<TSection[]>([]);
   const [activeTab, setActiveTab] = useState("content");
   const [importJson, setImportJson] = useState("");
   const [previewMode, setPreviewMode] = useState(false);
@@ -666,7 +666,7 @@ export function EnhancedAdminCMS() {
   }, [sections, updatePageContent, isLoading]);
 
   const addSection = useCallback(() => {
-    const newSection: Section = {
+    const newSection: TSection = {
       id: `section-${Date.now()}`,
       direction: "flex-col",
       justify: "justify-center",
@@ -680,7 +680,7 @@ export function EnhancedAdminCMS() {
     setExpandedSections(prev => new Set([...prev, newSection.id]));
   }, []);
 
-  const updateSection = useCallback((index: number, updates: Partial<Section>) => {
+  const updateSection = useCallback((index: number, updates: Partial<TSection>) => {
     setSections(prev => {
       const newSections = [...prev];
       newSections[index] = { ...newSections[index], ...updates };
@@ -718,7 +718,7 @@ export function EnhancedAdminCMS() {
     const widgetConfig = WIDGET_TYPES[widgetType as keyof typeof WIDGET_TYPES];
     if (!widgetConfig) return;
 
-    const newWidget: Widget = {
+    const newWidget: TWidget = {
       id: `widget-${Date.now()}`,
       type: widgetType,
       props: { ...widgetConfig.defaultProps },
@@ -923,7 +923,7 @@ export function EnhancedAdminCMS() {
                       value={config.favicon}
                       onChange={(e) => setConfig({ ...config, favicon: e.target.value })}
                       className="w-full p-3 border border-border rounded-none-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-gray-100"
-                      placeholder="https:
+                      placeholder="https://example.com/favicon.ico"
                     />
                   </div>
                   
@@ -1022,7 +1022,7 @@ export function EnhancedAdminCMS() {
                         seo: { ...config.seo, ogImage: e.target.value } 
                       })}
                       className="w-full p-3 border border-border rounded-none-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-700 text-gray-100"
-                      placeholder="https:
+                      placeholder="https://example.com/og-image.jpg"
                     />
                   </div>
                   

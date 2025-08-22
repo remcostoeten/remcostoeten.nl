@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
-type TKeyEvent {
+type TKeyEvent = {
   key: string;
   ctrl: boolean;
   shift: boolean;
@@ -12,7 +12,7 @@ type TKeyEvent {
   timestamp: number;
 }
 
-type THotkeyStep {
+type THotkeyStep = {
   key?: string;
   ctrl?: boolean;
   shift?: boolean;
@@ -21,7 +21,7 @@ type THotkeyStep {
   maxDelay?: number; 
 }
 
-type THotkeyConfig {
+type THotkeyConfig = {
   id?: string;
   sequence: HotkeyStep[] | string; 
   route: string;
@@ -31,7 +31,7 @@ type THotkeyConfig {
 
 type OverlayPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
-type TOverlaySettings {
+type TOverlaySettings = {
   enabled: boolean;
   position?: OverlayPosition;
   opacity?: number;
@@ -40,7 +40,7 @@ type TOverlaySettings {
   easing?: string;
 }
 
-type TRouteHotkeysProviderProps {
+type TRouteHotkeysProviderProps = {
   children: ReactNode;
   hotkeys: HotkeyConfig[];
   bufferSize?: number;
