@@ -1,0 +1,86 @@
+{
+  "page": {
+    "seo": [
+      {
+        "title": "Portfolio Homepage",
+        "description": "Frontend Developer focused on creating efficient and maintainable web applications",
+        "keywords": "frontend developer, web development, react, javascript",
+        "ogImage": "",
+        "twitterCard": "summary"
+      }
+    ],
+    "sections": [
+      {
+        "id": "main-content",
+        "direction": "flex-col",
+        "justify": "justify-center",
+        "align": "items-center",
+        "gap": "gap-8",
+        "padding": "py-8",
+        "widgets": [
+          {
+            "type": "heading",
+            "props": {
+              "text": "I build digital things.",
+              "level": 1,
+              "fontSize": "text-xl",
+              "fontWeight": "font-medium",
+              "color": "text-[hsl(var(--foreground))]",
+              "textAlign": "text-left"
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "text": "I'm a [highlight:Frontend Developer:frontend] focused on creating efficient and maintainable web applications. I work remotely from Lemmer, Netherlands.",
+              "fontSize": "text-base",
+              "fontWeight": "font-normal",
+              "color": "text-[hsl(var(--foreground))]",
+              "textAlign": "text-left"
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "text": "Recently I've been working on various projects. You can explore more of my work on [link:GitHub ↗:https://github.com/remcostoeten].",
+              "fontSize": "text-base",
+              "fontWeight": "font-normal",
+              "color": "text-[hsl(var(--foreground))]",
+              "textAlign": "text-left"
+            }
+          },
+          {
+            "type": "project",
+            "props": {
+              "text": "Roll Your Own Authentication",
+              "url": "https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication",
+              "fontSize": "text-base",
+              "githubOwner": "remcostoeten",
+              "githubRepo": "nextjs-15-roll-your-own-authentication"
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "text": "Connect with me on [link:LinkedIn ↗:https://nl.linkedin.com/in/remco-stoeten] or through my website. I'm currently working at [highlight:@exactonoline:product].",
+              "fontSize": "text-base",
+              "fontWeight": "font-normal",
+              "color": "text-[hsl(var(--foreground))]",
+              "textAlign": "text-left"
+            }
+          },
+          {
+            "type": "text",
+            "props": {
+              "text": "My current timezone is UTC+1 which includes countries like Ireland, Morocco and Portugal. Right now it is [dynamic:current-time].",
+              "fontSize": "text-base",
+              "fontWeight": "font-normal",
+              "color": "text-[hsl(var(--foreground))]",
+              "textAlign": "text-left"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
