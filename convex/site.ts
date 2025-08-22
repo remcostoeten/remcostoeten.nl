@@ -151,7 +151,7 @@ export const importPageData = mutation({
   handler: async (ctx, args) => {
     const { page } = args.pageData;
     
-    // Update site config with SEO data if provided
+    
     const existingConfig = await ctx.db.query("siteConfig").first();
     const seoData = page.seo && page.seo.length > 0 ? page.seo[0] : {};
     
@@ -171,7 +171,7 @@ export const importPageData = mutation({
       await ctx.db.insert("siteConfig", configUpdate);
     }
     
-    // Update page content
+    
     const existingContent = await ctx.db
       .query("pageContent")
       .withIndex("by_page_id", (q) => q.eq("pageId", "home"))

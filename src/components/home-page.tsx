@@ -1,9 +1,9 @@
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useEffect } from "react";
-import Widget from "./Widget";
+import { Widget } from "./widget";
 
-export default function HomePage() {
+export function HomePage() {
   const siteConfig = useQuery(api.site.getSiteConfig);
   const pageContent = useQuery(api.site.getPageContent, { pageId: "home" });
 

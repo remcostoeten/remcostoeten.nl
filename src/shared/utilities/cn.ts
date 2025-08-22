@@ -10,7 +10,7 @@ import { twMerge } from "tailwind-merge";
  * Example:
  * ```ts
  * cn("p-2", condition && "bg-red-500", "text-sm")
- * // => "p-2 text-sm bg-red-500"
+ * 
  * ```
  *
  * @param inputs - One or more class name values (strings, arrays, or objects).

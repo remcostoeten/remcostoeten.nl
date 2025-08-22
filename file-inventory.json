@@ -1,0 +1,234 @@
+{
+  "timestamp": "2025-08-22T16:17:57.291Z",
+  "totalFiles": 38,
+  "files": [
+    {
+      "path": "/home/remcostoeten/current/current/src/config/types.ts",
+      "relativePath": "src/config/types.ts",
+      "filename": "types.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/config/cms-config.ts",
+      "relativePath": "src/config/cms-config.ts",
+      "filename": "cms-config.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/config/example-usage.tsx",
+      "relativePath": "src/config/example-usage.tsx",
+      "filename": "example-usage.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/App.tsx",
+      "relativePath": "src/App.tsx",
+      "filename": "App.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/shared/hooks/use-loading-state.tsx",
+      "relativePath": "src/shared/hooks/use-loading-state.tsx",
+      "filename": "use-loading-state.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/shared/components/base/center.tsx",
+      "relativePath": "src/shared/components/base/center.tsx",
+      "filename": "center.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/shared/utilities/router-hotkey-provider.tsx",
+      "relativePath": "src/shared/utilities/router-hotkey-provider.tsx",
+      "filename": "router-hotkey-provider.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/shared/utilities/index.ts",
+      "relativePath": "src/shared/utilities/index.ts",
+      "filename": "index.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/shared/utilities/cn.ts",
+      "relativePath": "src/shared/utilities/cn.ts",
+      "filename": "cn.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/SignInForm.tsx",
+      "relativePath": "src/SignInForm.tsx",
+      "filename": "SignInForm.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/SignOutButton.tsx",
+      "relativePath": "src/SignOutButton.tsx",
+      "filename": "SignOutButton.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/vite-env.d.ts",
+      "relativePath": "src/vite-env.d.ts",
+      "filename": "vite-env.d.ts",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/main.tsx",
+      "relativePath": "src/main.tsx",
+      "filename": "main.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/AdminCMS.tsx",
+      "relativePath": "src/components/AdminCMS.tsx",
+      "filename": "AdminCMS.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/project-card.tsx",
+      "relativePath": "src/components/project-card.tsx",
+      "filename": "project-card.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/RichTextEditor.tsx",
+      "relativePath": "src/components/RichTextEditor.tsx",
+      "filename": "RichTextEditor.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/ui/button.tsx",
+      "relativePath": "src/components/ui/button.tsx",
+      "filename": "button.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/ui/input.tsx",
+      "relativePath": "src/components/ui/input.tsx",
+      "filename": "input.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/ui/index.ts",
+      "relativePath": "src/components/ui/index.ts",
+      "filename": "index.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/ui/label.tsx",
+      "relativePath": "src/components/ui/label.tsx",
+      "filename": "label.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/ui/textarea.tsx",
+      "relativePath": "src/components/ui/textarea.tsx",
+      "filename": "textarea.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/EnhancedAdminCMS.tsx",
+      "relativePath": "src/components/EnhancedAdminCMS.tsx",
+      "filename": "EnhancedAdminCMS.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/Widget.tsx",
+      "relativePath": "src/components/Widget.tsx",
+      "filename": "Widget.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/suspense-wrapper.tsx",
+      "relativePath": "src/components/suspense-wrapper.tsx",
+      "filename": "suspense-wrapper.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/AdminCMS-old.tsx",
+      "relativePath": "src/components/AdminCMS-old.tsx",
+      "filename": "AdminCMS-old.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/effects/swapping-word-loader.tsx",
+      "relativePath": "src/components/effects/swapping-word-loader.tsx",
+      "filename": "swapping-word-loader.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/effects/swapping-loader-examples.tsx",
+      "relativePath": "src/components/effects/swapping-loader-examples.tsx",
+      "filename": "swapping-loader-examples.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/effects/app-loader.tsx",
+      "relativePath": "src/components/effects/app-loader.tsx",
+      "filename": "app-loader.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/HomePage.tsx",
+      "relativePath": "src/components/HomePage.tsx",
+      "filename": "HomePage.tsx",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/components/contact-popover.tsx",
+      "relativePath": "src/components/contact-popover.tsx",
+      "filename": "contact-popover.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/src/context/design-tokens-context.tsx",
+      "relativePath": "src/context/design-tokens-context.tsx",
+      "filename": "design-tokens-context.tsx",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/convex/auth.config.ts",
+      "relativePath": "convex/auth.config.ts",
+      "filename": "auth.config.ts",
+      "needsRename": true
+    },
+    {
+      "path": "/home/remcostoeten/current/current/convex/auth.ts",
+      "relativePath": "convex/auth.ts",
+      "filename": "auth.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/convex/submissions.ts",
+      "relativePath": "convex/submissions.ts",
+      "filename": "submissions.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/convex/http.ts",
+      "relativePath": "convex/http.ts",
+      "filename": "http.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/convex/site.ts",
+      "relativePath": "convex/site.ts",
+      "filename": "site.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/convex/router.ts",
+      "relativePath": "convex/router.ts",
+      "filename": "router.ts",
+      "needsRename": false
+    },
+    {
+      "path": "/home/remcostoeten/current/current/convex/schema.ts",
+      "relativePath": "convex/schema.ts",
+      "filename": "schema.ts",
+      "needsRename": false
+    }
+  ]
+}

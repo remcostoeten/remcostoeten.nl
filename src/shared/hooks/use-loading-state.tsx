@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-type TLoadingState = {
+type TProps = {
   isLoading: boolean;
   hasMinTimeElapsed: boolean;
 };
@@ -8,7 +8,7 @@ type TLoadingState = {
 export function useLoadingState(
   actualLoading: boolean,
   minimumDisplayTime: number = 500
-): TLoadingState {
+): TProps {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [hasMinTimeElapsed, setHasMinTimeElapsed] = useState(false);
 

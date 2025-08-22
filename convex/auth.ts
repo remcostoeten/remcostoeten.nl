@@ -3,7 +3,7 @@ import { Password } from "@convex-dev/auth/providers/Password";
 import { Anonymous } from "@convex-dev/auth/providers/Anonymous";
 import { query, QueryCtx, MutationCtx } from "./_generated/server";
 
-type TAuthUser = {
+type TProps = {
   email?: string;
   name?: string;
 };

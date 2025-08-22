@@ -3,19 +3,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link, Hash, Github, Palette, Type, Bold, Italic, Underline, X, ArrowLeft } from 'lucide-react';
 import { cn } from '../shared/utilities/cn';
 
-// Types
-interface Selection {
+
+type TSelection {
   start: number;
   end: number;
   text: string;
 }
 
-interface PopoverPosition {
+type TPopoverPosition {
   x: number;
   y: number;
 }
 
-interface RichTextEditorProps {
+type TRichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
@@ -24,14 +24,14 @@ interface RichTextEditorProps {
   maxLength?: number;
 }
 
-interface HighlightColor {
+type THighlightColor {
   name: string;
   value: string;
   class: string;
   textClass?: string;
 }
 
-interface MarkupMatch {
+type TMarkupMatch {
   type: 'highlight' | 'project' | 'link' | 'dynamic';
   text: string;
   params: string[];
@@ -40,7 +40,7 @@ interface MarkupMatch {
 
 type MenuType = 'main' | 'highlight' | 'link' | 'project' | 'tag' | 'format';
 
-// Constants
+
 const HIGHLIGHT_COLORS: HighlightColor[] = [
   { name: 'Yellow', value: '#fef08a', class: 'bg-yellow-200', textClass: 'text-yellow-800' },
   { name: 'Green', value: '#bbf7d0', class: 'bg-green-200', textClass: 'text-green-800' },
@@ -69,8 +69,8 @@ const FORMAT_OPTIONS = [
   { key: 'code', label: 'Code', icon: Type, prefix: '`', suffix: '`' },
 ] as const;
 
-// Utility functions
-const parseMarkup = (text: string): MarkupMatch[] => {
+
+function parseMarkup(text: string) {
   const patterns = [
     { type: 'highlight' as const, regex: /Highlight:([ ^ :]+):([ ^ ]+)]/g },
     { type: 'project' as const, regex: /Project:([ ^ :]+):([ ^ :]+)(?::([ ^ :]+):([ ^ ]+))?]/g },
@@ -96,7 +96,7 @@ const parseMarkup = (text: string): MarkupMatch[] => {
   return matches;
 };
 
-const validateUrl = (url: string): boolean => {
+function validateUrl(url: string) {
   try {
     new URL(url);
     return true;
@@ -105,8 +105,8 @@ const validateUrl = (url: string): boolean => {
   }
 };
 
-// Custom hooks
-const useTextSelection = (editorRef: React.RefObject<HTMLTextAreaElement | null>) => {
+
+function useTextSelection(editorRef: React.RefObject<HTMLTextAreaElement | null>) {
   const [selection, setSelection] = useState<Selection | null>(null);
 
   const handleSelection = useCallback(() => {
@@ -129,7 +129,7 @@ const useTextSelection = (editorRef: React.RefObject<HTMLTextAreaElement | null>
   return { selection, handleSelection, setSelection };
 };
 
-const usePopover = () => {
+function usePopover() {
   const [showPopover, setShowPopover] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState<PopoverPosition>({ x: 0, y: 0 });
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -151,7 +151,7 @@ const usePopover = () => {
   };
 };
 
-// Sub-components
+
 const ColorGrid: React.FC<{
   colors: HighlightColor[];
   onColorSelect: (color: HighlightColor) => void;
@@ -211,7 +211,7 @@ const LinkForm: React.FC<{
     <div className="space-y-2">
       <input
         type="url"
-        placeholder="https://example.com"
+        placeholder="https:
         value={url}
         onChange={(e) => onUrlChange(e.target.value)}
         className={`w-full px-3 py-2 text-sm border rounded-none focus:outline-none focus:ring-2 transition-colors ${
@@ -476,8 +476,8 @@ const PopoverMenu: React.FC<{
   }
 };
 
-// Main component
-export default function RichTextEditor({ 
+
+export function RichTextEditor({ 
   value, 
   onChange, 
   placeholder = "Start typing...",
@@ -496,7 +496,7 @@ export default function RichTextEditor({
   const [projectRepo, setProjectRepo] = useState('');
   const [tagType, setTagType] = useState('frontend');
 
-  // Handle text selection
+  
   const handleTextSelection = useCallback(() => {
     const hasSelection = handleSelection();
     if (hasSelection && editorRef.current) {
@@ -512,7 +512,7 @@ export default function RichTextEditor({
     setTimeout(handleTextSelection, 10);
   }, [handleTextSelection]);
 
-  // Markup insertion helper
+  
   const insertMarkup = useCallback((markup: string) => {
     if (!selection) return;
 
@@ -524,14 +524,14 @@ export default function RichTextEditor({
     setShowPopover(false);
     setSelection(null);
     
-    // Clear form states
+    
     setLinkUrl('');
     setProjectUrl('');
     setProjectOwner('');
     setProjectRepo('');
   }, [selection, value, onChange, setSelection]);
 
-  // Handlers
+  
   const handleHighlight = useCallback((color: HighlightColor) => {
     if (!selection) return;
     const markup = `[highlight:${selection.text}:${color.name.toLowerCase()}]`;
@@ -547,7 +547,7 @@ export default function RichTextEditor({
   const handleProject = useCallback(() => {
     if (!selection || !projectUrl.trim() || !validateUrl(projectUrl)) return;
     
-    // Auto-extract GitHub owner and repo from URL if not provided
+    
     let finalOwner = projectOwner.trim();
     let finalRepo = projectRepo.trim();
     
@@ -580,14 +580,14 @@ export default function RichTextEditor({
     insertMarkup(markup);
   }, [selection, insertMarkup]);
 
-  // Render content with markup
+  
   const renderContent = useMemo(() => {
     if (!value) return <span className="text-gray-500 italic">{placeholder}</span>;
     
     const parts = value.split(/(\[highlight:[^\]]+:[^\]]+\]|\[project:[^\]]+:[^\]]+(?::[^\]]+:[^\]]+)?\]|\[link:[^\]]+:[^\]]+\]|\[dynamic:[^\]]+\]|\*\*[^*]+\*\*|_[^_]+_|`[^`]+`)/g);
     
     return parts.map((part, index) => {
-      // Handle markdown formatting
+      
       if (part.match(/^\*\*[^*]+\*\*$/)) {
         return <strong key={index}>{part.slice(2, -2)}</strong>;
       }
@@ -598,7 +598,7 @@ export default function RichTextEditor({
         return <code key={index} className="font-mono text-sm bg-gray-700text-neutral-400 px-1 rounded-none">{part.slice(1, -1)}</code>;
       }
 
-      // Handle highlight syntax
+      
       const highlightMatch = part.match(/\[highlight:([^:]+):([^\]]+)\]/);
       if (highlightMatch) {
         const [, text, type] = highlightMatch;
@@ -620,7 +620,7 @@ export default function RichTextEditor({
         }
       }
 
-      // Handle project syntax
+      
       const projectMatch = part.match(/\[project:([^:]+):([^:]+)(?::([^:]+):([^\]]+))?\]/);
       if (projectMatch) {
         const [, text, , owner, repo] = projectMatch;
@@ -635,7 +635,7 @@ export default function RichTextEditor({
         );
       }
 
-      // Handle link syntax
+      
       const linkMatch = part.match(/\[link:([^:]+):([^\]]+)\]/);
       if (linkMatch) {
         const [, text] = linkMatch;
@@ -647,7 +647,7 @@ export default function RichTextEditor({
         );
       }
 
-      // Handle dynamic syntax
+      
       const dynamicMatch = part.match(/\[dynamic:([^\]]+)\]/);
       if (dynamicMatch) {
         const [, type] = dynamicMatch;
@@ -663,13 +663,13 @@ export default function RichTextEditor({
     });
   }, [value, placeholder]);
 
-  // Character count
+  
   const characterCount = value?.length || 0;
   const isOverLimit = maxLength ? characterCount > maxLength : false;
 
-  // Effects
+  
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    function handleClickOutside(event: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node) &&
           editorRef.current && !editorRef.current.contains(event.target as Node)) {
         setShowPopover(false);
@@ -727,7 +727,7 @@ export default function RichTextEditor({
         )}
       </div>
       
-      {/* Preview area */}
+      {}
       <div className="mt-3 p-4 border border-border rounded-none-lg bg-background AAA/50">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-gray-400">Preview</span>
@@ -742,7 +742,7 @@ export default function RichTextEditor({
         </div>
       </div>
 
-      {/* Popover */}
+      {}
       <AnimatePresence>
         {showPopover && selection && !disabled && (
           <motion.div
