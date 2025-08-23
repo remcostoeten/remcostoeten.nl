@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { GitHubProjectCard } from './project-card';
+import { ContactPopoverTrigger } from './contact-popover-trigger';
+import { ProjectPopover } from './project-popover';
 
 type TWidgetProps = {
   type: string;
@@ -58,11 +60,25 @@ function ProjectWidget({ text, url, fontSize, githubOwner, githubRepo }: TProjec
 
 export function Widget({ type, props }: TWidgetProps) {
   function parseHighlightedText(text: string) {
-    const parts = text.split(/(\[highlight:[^\]]+:[^\]]+\]|\[project:[^\]]+:[^\]]+(?::[^\]]+:[^\]]+)?\]|\[link:[^\]]+:[^\]]+\]|\[dynamic:[^\]]+\])/g);
+    const parts = text.split(/(\[ContactPopover:[^\]]+\]|\[highlight:[^\]]+:[^\]]+\]|\[project:[^\]]+:[^\]]+(?::[^\]]+:[^\]]+)?\]|\[link:[^\]]+:[^\]]+\]|\[dynamic:[^\]]+\]|\*\*[^*]+\*\*|_[^_]+_|`[^`]+`)/g);
     return parts.map((part, index) => {
+      if (/^\*\*[^*]+\*\*$/.test(part)) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>;
+      }
+      if (/^_[^_]+_$/.test(part)) {
+        return <em key={index}>{part.slice(1, -1)}</em>;
+      }
+      if (/^`[^`]+`$/.test(part)) {
+        return (
+          <code key={index} className="font-mono text-sm bg-muted text-muted-foreground px-1 rounded-none">
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+
       const highlightMatch = part.match(/\[highlight:([^:]+):([^\]]+)\]/);
       if (highlightMatch) {
-        const [, text, type] = highlightMatch;
+        const [, textValue, type] = highlightMatch;
         const colorClasses = {
           yellow: 'bg-yellow-200 text-yellow-900',
           green: 'bg-green-200 text-green-900',
@@ -72,26 +88,22 @@ export function Widget({ type, props }: TWidgetProps) {
           orange: 'bg-orange-200 text-orange-900',
           frontend: 'bg-[hsl(var(--highlight))] text-black',
           product: 'bg-[hsl(var(--highlight-product))] text-black',
-        };
-        const colorClass = colorClasses[type.toLowerCase() as keyof typeof colorClasses] || 'bg-yellow-200 text-yellow-900';
+        } as const;
+        const colorClass = (colorClasses as any)[type.toLowerCase()] || 'bg-yellow-200 text-yellow-900';
         return (
-          <span
-            key={index}
-            className={`${colorClass} px-1 rounded`}
-          >
-            {text}
+          <span key={index} className={`${colorClass} px-1 rounded`}>
+            {textValue}
           </span>
         );
       }
 
-      
       const projectMatch = part.match(/\[project:([^:]+):([^:]+)(?::([^:]+):([^\]]+))?\]/);
       if (projectMatch) {
-        const [, text, url, owner, repo] = projectMatch;
+        const [, textValue, url, owner, repo] = projectMatch;
         return (
           <ProjectWidget
             key={index}
-            text={text}
+            text={textValue}
             url={url}
             fontSize="text-base"
             githubOwner={owner || ""}
@@ -100,10 +112,9 @@ export function Widget({ type, props }: TWidgetProps) {
         );
       }
 
-      
       const linkMatch = part.match(/\[link:([^:]+):([^\]]+)\]/);
       if (linkMatch) {
-        const [, text, url] = linkMatch;
+        const [, textValue, url] = linkMatch;
         return (
           <a
             key={index}
@@ -112,16 +123,15 @@ export function Widget({ type, props }: TWidgetProps) {
             rel="noopener noreferrer"
             className="text-[hsl(var(--accent))] hover:underline"
           >
-            {text}
+            {textValue}
           </a>
         );
       }
 
-      
       const dynamicMatch = part.match(/\[dynamic:([^\]]+)\]/);
       if (dynamicMatch) {
-        const [, type] = dynamicMatch;
-        if (type === 'current-time') {
+        const [, dynType] = dynamicMatch;
+        if (dynType === 'current-time') {
           return (
             <span key={index} className="font-mono text-[hsl(var(--accent))]">
               {new Date().toLocaleTimeString('en-US', {
@@ -133,7 +143,13 @@ export function Widget({ type, props }: TWidgetProps) {
             </span>
           );
         }
-        return <span key={index}>{type}</span>;
+        return <span key={index}>{dynType}</span>;
+      }
+
+      const contactMatch = part.match(/\[ContactPopover:([^\]]+)\]/);
+      if (contactMatch) {
+        const [, label] = contactMatch;
+        return <ContactPopoverTrigger key={index} label={label} />;
       }
 
       return part;
@@ -206,6 +222,28 @@ export function Widget({ type, props }: TWidgetProps) {
         >
           {props.text}
         </a>
+      );
+
+    case 'contactPopover':
+      return (
+        <ContactPopoverTrigger 
+          label={props.label || 'Contact'}
+        />
+      );
+
+    case 'projectPopover':
+      return (
+        <ProjectPopover
+          title={props.title || 'Untitled Project'}
+          description={props.description || 'No description available'}
+          url={props.url || '#'}
+          demoUrl={props.demoUrl}
+          stars={props.stars || 0}
+          branches={props.branches || 1}
+          technologies={props.technologies || []}
+          lastUpdated={props.lastUpdated || 'unknown'}
+          highlights={props.highlights || []}
+        />
       );
 
     case 'dynamic':

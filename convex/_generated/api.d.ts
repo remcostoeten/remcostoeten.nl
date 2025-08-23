@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as auth from "../auth.js";
+import type * as backfillLayerMeta from "../backfillLayerMeta.js";
 import type * as http from "../http.js";
 import type * as router from "../router.js";
 import type * as site from "../site.js";
@@ -29,6 +30,7 @@ import type * as submissions from "../submissions.js";
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  backfillLayerMeta: typeof backfillLayerMeta;
   http: typeof http;
   router: typeof router;
   site: typeof site;

@@ -228,6 +228,9 @@ const cmsConfig = {
       95: '0.95',
       100: '1',
     },
+    layout: {
+      containerMaxWidth: '1200px',
+    },
   },
 };
 

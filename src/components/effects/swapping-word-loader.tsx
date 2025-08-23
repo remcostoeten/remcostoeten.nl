@@ -13,7 +13,7 @@ type TProps = {
 
 export function SwappingWordsLoader({
   loadingText = "loading",
-  words = ["buttons", "forms", "switches", "cards", "buttons"],
+  words = ["neon.tech", "custom  cms", "convex"], 
   backgroundColor = "hsl(var(--background))",
   textColor = "hsl(var(--muted-foreground))",
   wordColor = "hsl(var(--accent))",

@@ -14,7 +14,8 @@ type TDesignTokensAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'UPDATE_COLOR'; payload: { path: string; value: string } }
   | { type: 'UPDATE_SPACING'; payload: { key: string; value: string } }
-  | { type: 'UPDATE_TYPOGRAPHY'; payload: { category: string; key: string; value: any } };
+  | { type: 'UPDATE_TYPOGRAPHY'; payload: { category: string; key: string; value: any } }
+  | { type: 'UPDATE_LAYOUT'; payload: { key: string; value: string } };
 
 function designTokensReducer(state: TDesignTokensState, action: TDesignTokensAction): TDesignTokensState {
   switch (action.type) {
@@ -56,6 +57,18 @@ function designTokensReducer(state: TDesignTokensState, action: TDesignTokensAct
       
       return { ...state, tokens: newTokens };
     }
+    case 'UPDATE_LAYOUT': {
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          layout: {
+            ...state.tokens.layout,
+            [action.payload.key]: action.payload.value,
+          },
+        },
+      };
+    }
     default:
       return state;
   }
@@ -67,6 +80,7 @@ type TDesignTokensContextValue = {
   updateColor: (path: string, value: string) => void;
   updateSpacing: (key: string, value: string) => void;
   updateTypography: (category: string, key: string, value: any) => void;
+  updateLayout: (key: string, value: string) => void;
 };
 
 const DesignTokensContext = createContext<TDesignTokensContextValue | undefined>(undefined);
@@ -109,12 +123,18 @@ export function DesignTokensProvider({ children }: TProps) {
     applyDesignTokens(state.tokens);
   }
 
+  function updateLayout(key: string, value: string) {
+    dispatch({ type: 'UPDATE_LAYOUT', payload: { key, value } });
+    applyDesignTokens(state.tokens);
+  }
+
   const value: TDesignTokensContextValue = {
     state,
     dispatch,
     updateColor,
     updateSpacing,
     updateTypography,
+    updateLayout,
   };
 
   return (
