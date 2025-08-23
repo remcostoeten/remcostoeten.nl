@@ -2,7 +2,8 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
 
-const applicationTables = {
+export default defineSchema({
+  ...(authTables as any),
   siteConfig: defineTable({
     title: v.string(),
     favicon: v.optional(v.string()),
@@ -30,12 +31,19 @@ const applicationTables = {
       ogImage: v.optional(v.string()),
       twitterCard: v.optional(v.string()),
     })),
+    cmsTabOrder: v.optional(v.array(v.string())),
+    activeTab: v.optional(v.string()),
+    designTokens: v.optional(v.any()),
   }),
   
   pageContent: defineTable({
     pageId: v.string(),
     sections: v.array(v.object({
       id: v.string(),
+      name: v.optional(v.string()),
+      visible: v.optional(v.boolean()),
+      locked: v.optional(v.boolean()),
+      collapsed: v.optional(v.boolean()),
       direction: v.string(),
       justify: v.string(),
       align: v.string(),
@@ -43,7 +51,11 @@ const applicationTables = {
       padding: v.string(),
       margin: v.optional(v.string()),
       widgets: v.array(v.object({
+        id: v.optional(v.string()),
         type: v.string(),
+        name: v.optional(v.string()),
+        visible: v.optional(v.boolean()),
+        locked: v.optional(v.boolean()),
         props: v.any(),
       })),
     })),
@@ -54,9 +66,4 @@ const applicationTables = {
     feedback: v.string(),
     emoji: v.optional(v.string()),
   }),
-};
-
-export default defineSchema({
-  ...authTables,
-  ...applicationTables,
 });

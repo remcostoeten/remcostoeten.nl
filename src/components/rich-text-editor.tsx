@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, Hash, Github, Palette, Type, Bold, Italic, Underline, X, ArrowLeft } from 'lucide-react';
+import { Link, Hash, Github, Palette, Type, Bold, Italic, Underline, X, ArrowLeft, MessageSquarePlus } from 'lucide-react';
 import { cn } from '../shared/utilities/cn';
+import { ContactPopoverTrigger } from './contact-popover-trigger';
+import { Textarea } from "@/shared/components/ui/textarea";
 
 
 type TSelection = {
@@ -32,7 +34,7 @@ type THighlightColor = {
 }
 
 type TMarkupMatch = {
-  type: 'highlight' | 'project' | 'link' | 'dynamic';
+  type: 'highlight' | 'project' | 'link' | 'dynamic' | 'contact';
   text: string;
   params: string[];
   fullMatch: string;
@@ -41,7 +43,7 @@ type TMarkupMatch = {
 type MenuType = 'main' | 'highlight' | 'link' | 'project' | 'tag' | 'format';
 
 
-const HIGHLIGHT_COLORS: HighlightColor[] = [
+const HIGHLIGHT_COLORS: THighlightColor[] = [
   { name: 'Yellow', value: '#fef08a', class: 'bg-yellow-200', textClass: 'text-yellow-800' },
   { name: 'Green', value: '#bbf7d0', class: 'bg-green-200', textClass: 'text-green-800' },
   { name: 'Blue', value: '#bfdbfe', class: 'bg-blue-200', textClass: 'text-blue-800' },
@@ -76,9 +78,10 @@ function parseMarkup(text: string) {
     { type: 'project' as const, regex: /Project:([ ^ :]+):([ ^ :]+)(?::([ ^ :]+):([ ^ ]+))?]/g },
     { type: 'link' as const, regex: /Link:([ ^ :]+):([ ^ ]+)]/g },
     { type: 'dynamic' as const, regex: /Dynamic:([ ^ ]+)]/g },
+    { type: 'contact' as const, regex: /\[ContactPopover:([^\]]+)\]/g },
   ];
 
-  const matches: MarkupMatch[] = [];
+  const matches: TMarkupMatch[] = [];
   
   patterns.forEach(({ type, regex }) => {
     let match;
@@ -107,7 +110,7 @@ function validateUrl(url: string) {
 
 
 function useTextSelection(editorRef: React.RefObject<HTMLTextAreaElement | null>) {
-  const [selection, setSelection] = useState<Selection | null>(null);
+  const [selection, setSelection] = useState<TSelection | null>(null);
 
   const handleSelection = useCallback(() => {
     const textarea = editorRef.current;
@@ -131,7 +134,7 @@ function useTextSelection(editorRef: React.RefObject<HTMLTextAreaElement | null>
 
 function usePopover() {
   const [showPopover, setShowPopover] = useState(false);
-  const [popoverPosition, setPopoverPosition] = useState<PopoverPosition>({ x: 0, y: 0 });
+  const [popoverPosition, setPopoverPosition] = useState<TPopoverPosition>({ x: 0, y: 0 });
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const updatePosition = useCallback((textarea: HTMLTextAreaElement) => {
@@ -153,8 +156,8 @@ function usePopover() {
 
 
 const ColorGrid: React.FC<{
-  colors: HighlightColor[];
-  onColorSelect: (color: HighlightColor) => void;
+  colors: THighlightColor[];
+  onColorSelect: (color: THighlightColor) => void;
 }> = ({ colors, onColorSelect }) => (
   <div className="grid grid-cols-4 gap-1">
     {colors.map((color) => (
@@ -298,12 +301,13 @@ const ProjectForm: React.FC<{
 const PopoverMenu: React.FC<{
   activeMenu: MenuType;
   setActiveMenu: (menu: MenuType) => void;
-  selection: Selection;
-  onHighlight: (color: HighlightColor) => void;
+  selection: TSelection;
+  onHighlight: (color: THighlightColor) => void;
   onLink: () => void;
   onProject: () => void;
   onTag: () => void;
   onFormat: (format: typeof FORMAT_OPTIONS[number]) => void;
+  onContact: () => void;
   linkUrl: string;
   setLinkUrl: (url: string) => void;
   projectUrl: string;
@@ -323,6 +327,7 @@ const PopoverMenu: React.FC<{
   onProject,
   onTag,
   onFormat,
+  onContact,
   linkUrl,
   setLinkUrl,
   projectUrl,
@@ -398,6 +403,14 @@ const PopoverMenu: React.FC<{
           >
             <Hash className="w-4 h-4 text-green-500" />
             Add Tag
+          </button>
+          
+          <button
+            onClick={onContact}
+            className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 rounded-none transition-colors"
+          >
+            <MessageSquarePlus className="w-4 h-4 text-indigo-500" />
+            Add Contact
           </button>
         </div>
       );
@@ -484,7 +497,7 @@ export function RichTextEditor({
   className,
   disabled = false,
   maxLength
-}: RichTextEditorProps) {
+}: TRichTextEditorProps) {
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const { selection, handleSelection, setSelection } = useTextSelection(editorRef);
   const { showPopover, setShowPopover, popoverPosition, updatePosition, popoverRef } = usePopover();
@@ -532,7 +545,7 @@ export function RichTextEditor({
   }, [selection, value, onChange, setSelection]);
 
   
-  const handleHighlight = useCallback((color: HighlightColor) => {
+  const handleHighlight = useCallback((color: THighlightColor) => {
     if (!selection) return;
     const markup = `[highlight:${selection.text}:${color.name.toLowerCase()}]`;
     insertMarkup(markup);
@@ -580,11 +593,17 @@ export function RichTextEditor({
     insertMarkup(markup);
   }, [selection, insertMarkup]);
 
+  const handleContact = useCallback(() => {
+    if (!selection) return;
+    const markup = `[ContactPopover:${selection.text}]`;
+    insertMarkup(markup);
+  }, [selection, insertMarkup]);
+
   
   const renderContent = useMemo(() => {
     if (!value) return <span className="text-gray-500 italic">{placeholder}</span>;
     
-    const parts = value.split(/(\[highlight:[^\]]+:[^\]]+\]|\[project:[^\]]+:[^\]]+(?::[^\]]+:[^\]]+)?\]|\[link:[^\]]+:[^\]]+\]|\[dynamic:[^\]]+\]|\*\*[^*]+\*\*|_[^_]+_|`[^`]+`)/g);
+    const parts = value.split(/(\[ContactPopover:[^\]]+\]|\[highlight:[^\]]+:[^\]]+\]|\[project:[^\]]+:[^\]]+(?::[^\]]+:[^\]]+)?\]|\[link:[^\]]+:[^\]]+\]|\[dynamic:[^\]]+\]|\*\*[^*]+\*\*|_[^_]+_|`[^`]+`)/g);
     
     return parts.map((part, index) => {
       
@@ -595,7 +614,7 @@ export function RichTextEditor({
         return <em key={index}>{part.slice(1, -1)}</em>;
       }
       if (part.match(/^`[^`]+`$/)) {
-        return <code key={index} className="font-mono text-sm bg-gray-700text-neutral-400 px-1 rounded-none">{part.slice(1, -1)}</code>;
+        return <code key={index} className="font-mono text-sm bg-muted text-muted-foreground px-1 rounded-none">{part.slice(1, -1)}</code>;
       }
 
       
@@ -659,6 +678,12 @@ export function RichTextEditor({
         );
       }
 
+      const contactMatch = part.match(/\[ContactPopover:([^\]]+)\]/);
+      if (contactMatch) {
+        const [, label] = contactMatch;
+        return <ContactPopoverTrigger key={index} label={label} />;
+      }
+
       return part;
     });
   }, [value, placeholder]);
@@ -696,7 +721,7 @@ export function RichTextEditor({
   return (
     <div className="relative">
       <div className="relative">
-        <textarea
+        <Textarea
           ref={editorRef}
           value={value}
           onChange={(e) => {
@@ -706,18 +731,10 @@ export function RichTextEditor({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            "min-h-[200px] p-4 border rounded-none-lg transition-colors",
-            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent",
-            "bg-gray-700 text-gray-100 resize-none border-border",
-            "leading-relaxed font-mono text-sm",
-            "placeholder:text-gray-400",
-            disabled && "bg-background AAA cursor-not-allowed",
-            isOverLimit && "border-red-400 focus:ring-red-500",
+            "cms-input min-h-[180px] w-full rounded-none resize-y leading-relaxed text-sm",
+            isOverLimit && "border-destructive focus:ring-destructive",
             className
           )}
-          style={{ 
-            fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace'
-          }}
         />
         
         {maxLength && (
@@ -728,7 +745,7 @@ export function RichTextEditor({
       </div>
       
       {}
-      <div className="mt-3 p-4 border border-border rounded-none-lg bg-background AAA/50">
+      <div className="mt-3 p-4 border border-border rounded-none-lg bg-card/50">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-medium text-gray-400">Preview</span>
           {parseMarkup(value).length > 0 && (
@@ -751,7 +768,7 @@ export function RichTextEditor({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="absolute z-50 bg-white rounded-none-lg shadow-lg border border-gray-200 p-2 min-w-[300px] max-w-[400px]"
+            className="absolute z-50 cms-card rounded-none-lg shadow-xl border border-border p-2 min-w-[280px] max-w-[420px]"
             style={{
               left: `${popoverPosition.x}px`,
               top: `${popoverPosition.y}px`,
@@ -767,6 +784,7 @@ export function RichTextEditor({
               onProject={handleProject}
               onTag={handleTag}
               onFormat={handleFormat}
+              onContact={handleContact}
               linkUrl={linkUrl}
               setLinkUrl={setLinkUrl}
               projectUrl={projectUrl}

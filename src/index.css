@@ -43,6 +43,37 @@ body {
   @apply w-full px-4 py-3 rounded bg-primary text-white font-semibold hover:bg-primary-hover transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
+/* Modern CMS Design System */
+@layer base {
+  :root {
+    /* Modern color palette */
+    --zinc-950: 9 9 11;
+    --zinc-900: 24 24 27;
+    --zinc-800: 39 39 42;
+    --zinc-700: 63 63 70;
+    --zinc-600: 82 82 91;
+    --zinc-500: 113 113 122;
+    --zinc-400: 161 161 170;
+    --zinc-300: 212 212 216;
+    --zinc-200: 228 228 231;
+    --zinc-100: 244 244 245;
+    --zinc-50: 250 250 250;
+    
+    /* Gradient colors */
+    --gradient-blue: 59 130 246;
+    --gradient-purple: 147 51 234;
+    --gradient-pink: 236 72 153;
+    --gradient-green: 34 197 94;
+    --gradient-orange: 251 146 60;
+    --gradient-cyan: 6 182 212;
+    
+    /* Glass effect */
+    --glass-bg: rgba(24, 24, 27, 0.3);
+    --glass-border: rgba(63, 63, 70, 0.3);
+    --glass-blur: 12px;
+  }
+}
+
 /* CMS utility classes for consistent dark theme styling */
 @layer utilities {
   .cms-bg {
@@ -78,14 +109,90 @@ body {
   }
   
   .cms-button-primary {
-    @apply bg-accent text-accent-foreground hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-accent text-black font-semibold hover:brightness-90 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .cms-button-secondary {
-    @apply bg-muted text-muted-foreground border border-border hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-muted text-foreground font-medium border border-border hover:bg-secondary hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
   }
   
   .cms-button-destructive {
     @apply bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  /* Modern glassmorphism effects */
+  .glass {
+    @apply backdrop-blur-xl bg-zinc-900/30 border border-zinc-800;
+  }
+  
+  .glass-hover {
+    @apply hover:bg-zinc-800/40 hover:border-zinc-700;
+  }
+  
+  /* Modern gradient utilities */
+  .gradient-blue-purple {
+    @apply bg-gradient-to-r from-blue-500 to-purple-500;
+  }
+  
+  .gradient-purple-pink {
+    @apply bg-gradient-to-r from-purple-500 to-pink-500;
+  }
+  
+  .gradient-green-emerald {
+    @apply bg-gradient-to-r from-green-500 to-emerald-500;
+  }
+  
+  .gradient-orange-red {
+    @apply bg-gradient-to-r from-orange-500 to-red-500;
+  }
+  
+  /* Modern shadows */
+  .shadow-glow-blue {
+    @apply shadow-lg shadow-blue-500/20;
+  }
+  
+  .shadow-glow-purple {
+    @apply shadow-lg shadow-purple-500/20;
+  }
+  
+  .shadow-glow-green {
+    @apply shadow-lg shadow-green-500/20;
+  }
+  
+  /* Modern animations */
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  .animate-pulse-glow {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes slide-up {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
+  
+  /* Runtime container utility that respects the custom CSS variable */
+  .runtime-container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: var(--container-max-width);
   }
 }

@@ -41,11 +41,12 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4">
+      <div className="runtime-container px-4">
         {pageContent.sections.map((section) => (
           <div
             key={section.id}
             className={`flex ${section.direction} ${section.justify} ${section.align} ${section.gap} ${section.padding} ${section.margin || ''}`}
+            style={{ maxWidth: 'var(--container-max-width)', width: '100%', marginLeft: 'auto', marginRight: 'auto' }}
           >
             {section.widgets.map((widget, index) => (
               <Widget

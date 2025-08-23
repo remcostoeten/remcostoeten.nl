@@ -231,6 +231,10 @@ type TOpacity = {
   100: string;
 };
 
+type TLayout = {
+  containerMaxWidth: string;
+};
+
 export type TDesignTokens = {
   colors: TColorPalette;
   typography: TTypography;
@@ -242,6 +246,7 @@ export type TDesignTokens = {
   animations: TAnimation;
   zIndex: TZIndex;
   opacity: TOpacity;
+  layout: TLayout;
 };
 
 export type TSeoConfig = {

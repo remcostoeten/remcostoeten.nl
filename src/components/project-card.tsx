@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { GitHub } from '@remcostoeten/fync/github';
 import { Star, GitBranch } from 'lucide-react';
 
-type ProjectCardProps = {
+type TProps = {
   title: string;
   description: string;
   url: string;
@@ -24,7 +24,7 @@ export function ProjectCard({
   technologies,
   lastUpdated,
   highlights,
-}: ProjectCardProps) {
+}: TProps) {
   return (
     <div className="bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-none-lg shadow-lg p-6 min-w-80 max-w-md">
       <h3 className="text-lg font-semibold text-[hsl(var(--foreground))] mb-2">
@@ -69,14 +69,14 @@ export function ProjectCard({
 }
 
 export function GitHubProjectCard({ owner, repo }: { owner: string; repo: string }) {
-  const [projectData, setProjectData] = useState<ProjectCardProps | null>(null);
+  const [projectData, setProjectData] = useState<TProps | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const token = process.env.VITE_GITHUB_TOKEN;
+        const token = import.meta.env.VITE_GITHUB_TOKEN;
         if (!token) {
           throw new Error('GitHub token not found. Please set VITE_GITHUB_TOKEN in your .env.local file.');
         }

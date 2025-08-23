@@ -31,7 +31,14 @@ export const getSiteConfig = query({
         keywords: "",
         ogImage: "",
         twitterCard: "",
-      }
+      },
+      designTokens: {
+        layout: {
+          containerMaxWidth: "1200px",
+        },
+      },
+      cmsTabOrder: ["submissions", "site", "content", "import"],
+      activeTab: "submissions"
     };
   },
 });
@@ -64,6 +71,8 @@ export const updateSiteConfig = mutation({
       ogImage: v.optional(v.string()),
       twitterCard: v.optional(v.string()),
     })),
+    designTokens: v.optional(v.any()),
+    cmsTabOrder: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     const existing = await ctx.db.query("siteConfig").first();
@@ -75,12 +84,52 @@ export const updateSiteConfig = mutation({
   },
 });
 
+export const updateTabOrder = mutation({
+  args: {
+    tabOrder: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { cmsTabOrder: args.tabOrder });
+    } else {
+      await ctx.db.insert("siteConfig", {
+        title: "My Portfolio",
+        bodyBgColor: "bg-[hsl(0_0%_7%)]",
+        bodyFontSize: "text-base",
+        bodyFont: "font-sans",
+        cmsTabOrder: args.tabOrder,
+      });
+    }
+  },
+});
+
+export const updateActiveTab = mutation({
+  args: {
+    activeTab: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.query("siteConfig").first();
+    if (existing) {
+      await ctx.db.patch(existing._id, { activeTab: args.activeTab });
+    } else {
+      await ctx.db.insert("siteConfig", {
+        title: "My Portfolio",
+        bodyBgColor: "bg-[hsl(0_0%_7%)]",
+        bodyFontSize: "text-base",
+        bodyFont: "font-sans",
+        activeTab: args.activeTab,
+      });
+    }
+  },
+});
+
 export const getPageContent = query({
   args: { pageId: v.string() },
   handler: async (ctx, args) => {
     const content = await ctx.db
       .query("pageContent")
-      .withIndex("by_page_id", (q) => q.eq("pageId", args.pageId))
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
       .first();
     
     return content || {
@@ -95,6 +144,10 @@ export const updatePageContent = mutation({
     pageId: v.string(),
     sections: v.array(v.object({
       id: v.string(),
+      name: v.optional(v.string()),
+      visible: v.optional(v.boolean()),
+      locked: v.optional(v.boolean()),
+      collapsed: v.optional(v.boolean()),
       direction: v.string(),
       justify: v.string(),
       align: v.string(),
@@ -102,7 +155,11 @@ export const updatePageContent = mutation({
       padding: v.string(),
       margin: v.optional(v.string()),
       widgets: v.array(v.object({
+        id: v.optional(v.string()),
         type: v.string(),
+        name: v.optional(v.string()),
+        visible: v.optional(v.boolean()),
+        locked: v.optional(v.boolean()),
         props: v.any(),
       })),
     })),
@@ -110,7 +167,7 @@ export const updatePageContent = mutation({
   handler: async (ctx, args) => {
     const existing = await ctx.db
       .query("pageContent")
-      .withIndex("by_page_id", (q) => q.eq("pageId", args.pageId))
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
       .first();
     
     if (existing) {
@@ -118,6 +175,11 @@ export const updatePageContent = mutation({
     } else {
       await ctx.db.insert("pageContent", args);
     }
+    
+    return await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
   },
 });
 
@@ -174,7 +236,7 @@ export const importPageData = mutation({
     
     const existingContent = await ctx.db
       .query("pageContent")
-      .withIndex("by_page_id", (q) => q.eq("pageId", "home"))
+      .filter((q) => q.eq(q.field("pageId"), "home"))
       .first();
     
     if (existingContent) {
@@ -185,5 +247,164 @@ export const importPageData = mutation({
         sections: page.sections,
       });
     }
+  },
+});
+
+export const updateLayerMeta = mutation({
+  args: {
+    pageId: v.string(),
+    layerId: v.string(),
+    layerType: v.union(v.literal("section"), v.literal("widget")),
+    data: v.object({
+      name: v.optional(v.string()),
+      visible: v.optional(v.boolean()),
+      locked: v.optional(v.boolean()),
+      collapsed: v.optional(v.boolean()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const pageContent = await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
+    
+    if (!pageContent) {
+      throw new Error(`Page content not found for pageId: ${args.pageId}`);
+    }
+    
+    const updatedSections = pageContent.sections.map((section: any) => {
+      if (args.layerType === "section" && section.id === args.layerId) {
+        return { ...section, ...args.data };
+      }
+      
+      if (args.layerType === "widget") {
+        const updatedWidgets = section.widgets.map((widget: any) => {
+          if (widget.id === args.layerId) {
+            return { ...widget, ...args.data };
+          }
+          return widget;
+        });
+        return { ...section, widgets: updatedWidgets };
+      }
+      
+      return section;
+    });
+    
+    await ctx.db.patch(pageContent._id, { sections: updatedSections });
+    
+    return await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
+  },
+});
+
+export const reorderSections = mutation({
+  args: {
+    pageId: v.string(),
+    orderedIds: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const pageContent = await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
+    
+    if (!pageContent) {
+      throw new Error(`Page content not found for pageId: ${args.pageId}`);
+    }
+    
+    const sectionMap = new Map();
+    pageContent.sections.forEach((section: any) => {
+      sectionMap.set(section.id, section);
+    });
+    
+    const reorderedSections = args.orderedIds
+      .map(id => sectionMap.get(id))
+      .filter(Boolean);
+    
+    await ctx.db.patch(pageContent._id, { sections: reorderedSections });
+    
+    return await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
+  },
+});
+
+export const reorderWidgets = mutation({
+  args: {
+    pageId: v.string(),
+    sectionId: v.string(),
+    orderedIds: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const pageContent = await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
+    
+    if (!pageContent) {
+      throw new Error(`Page content not found for pageId: ${args.pageId}`);
+    }
+    
+    const updatedSections = pageContent.sections.map((section: any) => {
+      if (section.id === args.sectionId) {
+        const widgetMap = new Map();
+        section.widgets.forEach((widget: any) => {
+          widgetMap.set(widget.id, widget);
+        });
+        
+        const reorderedWidgets = args.orderedIds
+          .map(id => widgetMap.get(id))
+          .filter(Boolean);
+        
+        return { ...section, widgets: reorderedWidgets };
+      }
+      return section;
+    });
+    
+    await ctx.db.patch(pageContent._id, { sections: updatedSections });
+    
+    return await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
+  },
+});
+
+export const deleteItems = mutation({
+  args: {
+    pageId: v.string(),
+    itemIds: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const pageContent = await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
+    
+    if (!pageContent) {
+      throw new Error(`Page content not found for pageId: ${args.pageId}`);
+    }
+    
+    // Create a set of item IDs to delete for faster lookup
+    const idsToDelete = new Set(args.itemIds);
+    
+    // Filter out sections and widgets that should be deleted
+    // When a section is deleted, all its widgets are automatically deleted
+    const updatedSections = pageContent.sections
+      .filter((section: any) => !idsToDelete.has(section.id))
+      .map((section: any) => ({
+        ...section,
+        widgets: section.widgets.filter((widget: any) => !idsToDelete.has(widget.id))
+      }));
+    
+    await ctx.db.patch(pageContent._id, { sections: updatedSections });
+    
+    return await ctx.db
+      .query("pageContent")
+      .filter((q) => q.eq(q.field("pageId"), args.pageId))
+      .first();
   },
 });

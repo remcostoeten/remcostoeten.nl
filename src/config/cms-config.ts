@@ -230,6 +230,9 @@ export const cmsConfig: TConfig = {
       95: '0.95',
       100: '1',
     },
+    layout: {
+      containerMaxWidth: '1200px',
+    },
   },
 };
 
@@ -265,6 +268,8 @@ export function toCssVariables(tokens: TDesignTokens): Record<string, string> {
   cssVars['--font-sans'] = tokens.typography.fontFamily.sans.join(', ');
   cssVars['--font-serif'] = tokens.typography.fontFamily.serif.join(', ');
   cssVars['--font-mono'] = tokens.typography.fontFamily.mono.join(', ');
+
+  cssVars['--container-max-width'] = tokens.layout.containerMaxWidth;
 
   return cssVars;
 }
