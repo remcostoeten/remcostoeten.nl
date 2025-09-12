@@ -97,3 +97,187 @@
   }
 }
 
+/* View Transitions API Support */
+@supports (view-transition-name: none) {
+  ::view-transition {
+    --transition-duration: 0.4s;
+    --transition-timing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--transition-duration);
+    animation-timing-function: var(--transition-timing);
+  }
+
+  /* Page transition animations */
+  ::view-transition-old(root) {
+    animation-name: slide-out-left;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: slide-in-right;
+  }
+
+  /* Specific page transitions */
+  ::view-transition-old(home-page),
+  ::view-transition-new(home-page) {
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  ::view-transition-old(posts-page),
+  ::view-transition-new(posts-page) {
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  ::view-transition-old(blog-post),
+  ::view-transition-new(blog-post) {
+    animation-duration: 0.6s;
+    animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  ::view-transition-old(contact-page),
+  ::view-transition-new(contact-page) {
+    animation-duration: 0.4s;
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* Blog post specific transitions */
+  ::view-transition-old(blog-content),
+  ::view-transition-new(blog-content) {
+    animation-duration: 0.5s;
+    animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  ::view-transition-old(blog-content) {
+    animation-name: fade-out-up;
+  }
+
+  ::view-transition-new(blog-content) {
+    animation-name: fade-in-down;
+  }
+
+  /* Navigation transitions */
+  ::view-transition-old(navigation),
+  ::view-transition-new(navigation) {
+    animation-duration: 0.3s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  ::view-transition-old(navigation) {
+    animation-name: fade-out;
+  }
+
+  ::view-transition-new(navigation) {
+    animation-name: fade-in;
+  }
+
+  /* Main content transitions */
+  ::view-transition-old(main-content),
+  ::view-transition-new(main-content) {
+    animation-duration: 0.4s;
+    animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  ::view-transition-old(main-content) {
+    animation-name: slide-out-left;
+  }
+
+  ::view-transition-new(main-content) {
+    animation-name: slide-in-right;
+  }
+}
+
+/* Custom bezier curve animations */
+@keyframes slide-out-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-30px);
+    opacity: 0.8;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(30px);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out-up {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fallback for browsers without view transitions */
+@supports not (view-transition-name: none) {
+  .page-transition {
+    transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  
+  .page-transition-enter {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  
+  .page-transition-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .page-transition-exit {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  
+  .page-transition-exit-active {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+

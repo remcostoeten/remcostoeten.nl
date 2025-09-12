@@ -1,12 +1,12 @@
 "use client";
 
 import React, { memo } from 'react';
-import Link from 'next/link';
+import { TransitionLink } from '@/components/view-transitions';
 import { NavigationLinkProps } from './types';
 
 const NavigationLink = memo(function NavigationLink({ item }: NavigationLinkProps) {
   return (
-    <Link
+    <TransitionLink
       href={item.href}
       className={`
         px-2.5 py-0.5 rounded-lg text-sm font-normal transition-all duration-200
@@ -18,7 +18,7 @@ const NavigationLink = memo(function NavigationLink({ item }: NavigationLinkProp
       `}
     >
       {item.label}
-    </Link>
+    </TransitionLink>
   );
 });
 

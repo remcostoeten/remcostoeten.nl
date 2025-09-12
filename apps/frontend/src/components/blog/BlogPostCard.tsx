@@ -1,13 +1,13 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink } from '@/components/view-transitions';
 import { ArrowRight } from 'lucide-react';
 import { BlogPostCardProps } from './types';
 
 export function BlogPostCard({ post }: BlogPostCardProps) {
   return (
-    <Link
+    <TransitionLink
       href={`/posts/${post.slug}`}
       className="
         group block p-6 rounded-lg border border-stone-700/50
@@ -36,6 +36,6 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
           </time>
         </div>
       </div>
-    </Link>
+    </TransitionLink>
   );
 }

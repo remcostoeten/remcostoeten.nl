@@ -21,10 +21,10 @@ export default function PostsPage() {
   }, [selectedCategory]);
 
   return (
-    <div className="min-h-screen" style={{ background: '#171616' }}>
+    <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'posts-page' }}>
       <Navigation navigationItems={navigationItems} />
       
-      <main className="pt-24 px-4">
+      <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>
         <div className="max-w-4xl mx-auto">
           <BlogHeader
             selectedCategory={selectedCategory}
@@ -32,11 +32,13 @@ export default function PostsPage() {
             categories={categories}
           />
           
-          {selectedCategory ? (
-            <BlogPostList posts={filteredPosts} />
-          ) : (
-            <NewPosts posts={blogPosts.slice(0, 6)} />
-          )}
+          <div style={{ viewTransitionName: 'blog-content' }}>
+            {selectedCategory ? (
+              <BlogPostList posts={filteredPosts} />
+            ) : (
+              <NewPosts posts={blogPosts.slice(0, 6)} />
+            )}
+          </div>
         </div>
       </main>
     </div>

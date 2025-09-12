@@ -27,7 +27,7 @@ const Navigation = memo(function Navigation({
   // Memoize navigation items to prevent unnecessary re-renders
   const memoizedNavigationItems = useMemo(() => navigationItems, [navigationItems]);
   return (
-    <div className={`fixed top-0 left-1/2 transform -translate-x-1/2 w-full z-50 ${className}`}>
+    <div className={`fixed top-0 left-1/2 transform -translate-x-1/2 w-full z-50 ${className}`} style={{ viewTransitionName: 'navigation' }}>
       <nav className="flex items-center justify-center overflow-hidden">
         <div 
           className="flex items-center justify-between flex-1 px-6 py-5 backdrop-blur-sm"

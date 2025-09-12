@@ -10,10 +10,10 @@ const navigationItems = [
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen" style={{ background: '#171616' }}>
+    <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'contact-page' }}>
       <Navigation navigationItems={navigationItems} />
       
-      <main className="pt-24 px-4">
+      <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center py-16">
             <h1 className="text-4xl font-bold text-white mb-4">

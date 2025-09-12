@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { WebVitals } from '@/components/performance';
+import { ViewTransitionsProvider } from '@/components/view-transitions';
 
 // Optimize font loading with display swap and preload
 const inter = Inter({ 
@@ -71,7 +72,9 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} ${inter.variable}`}>
         <WebVitals />
-        {children}
+        <ViewTransitionsProvider>
+          {children}
+        </ViewTransitionsProvider>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
+import { TransitionLink } from '@/components/view-transitions';
 import { ArrowLeft } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
 import { blogPosts } from '@/lib/blog-data';
@@ -42,13 +42,13 @@ export default function PostPage({ params }: PostPageProps) {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#171616' }}>
+    <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'blog-post' }}>
       <Navigation navigationItems={navigationItems} />
       
-      <main className="pt-24 px-4">
+      <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <Link
+            <TransitionLink
               href="/posts"
               className="
                 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg
@@ -58,7 +58,7 @@ export default function PostPage({ params }: PostPageProps) {
             >
               <ArrowLeft size={14} />
               All posts
-            </Link>
+            </TransitionLink>
             
             <div className="mb-4">
               <time className="text-stone-400 text-sm font-medium">
@@ -75,7 +75,7 @@ export default function PostPage({ params }: PostPageProps) {
             </p>
           </div>
           
-          <article className="prose prose-invert prose-lg max-w-none">
+          <article className="prose prose-invert prose-lg max-w-none" style={{ viewTransitionName: 'blog-content' }}>
             <div className="bg-stone-700/30 rounded-lg p-8 border border-stone-600/50">
               <p style={{ fontSize: '16px', color: '#aba9a7', lineHeight: '1.7', marginBottom: '24px' }}>
                 This is a sample blog post content. In a real application, you would fetch the full content 
