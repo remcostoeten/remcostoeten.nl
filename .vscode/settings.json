@@ -1,0 +1,30 @@
+{
+    // Exclude large folders from search, watchers, etc
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/.git/**": true
+    },
+    "search.exclude": {
+      "**/node_modules/**": true,
+      "**/dist/**": true
+    },
+    "files.exclude": {
+      // hide stuff in UI
+      "**/node_modules": true,
+      "**/.git": true
+    },
+  
+    // Maybe reduce editor tabs (auto-close unused ones)
+    "workbench.editor.limit.enabled": true,
+    "workbench.editor.limit.perEditorGroup": true,
+    "workbench.editor.limit.default": 10,   // for example
+  
+    // For JS/TS: possibly disable automatic features (intellisense, outlines, etc) if you don't need them full-time
+    "typescript.disableAutomaticTypeAcquisition": true,
+    
+    // Control telemetry / telemetry features if relevant
+    "telemetry.enableTelemetry": false,
+    "telemetry.enableCrashReporter": false
+  }
+  
