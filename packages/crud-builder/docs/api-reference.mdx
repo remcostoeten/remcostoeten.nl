@@ -1,0 +1,226 @@
+---
+title: API Reference
+description: Complete API documentation for CRUD Builder. Learn about all available methods, types, and configuration options.
+keywords: [api, reference, crud, methods, types, typescript]
+---
+
+# API Reference
+
+Complete reference for all CRUD Builder methods and types.
+
+## Core API
+
+### crud
+
+The main CRUD interface with fluent API.
+
+#### crud.create()
+
+Creates new records in a table.
+
+```typescript
+crud.create<T>(tableName: string)(data: TCreateInput<T>): Promise<TResult<T[]>>
+```
+
+**Parameters:**
+- `tableName` - Name of the database table
+- `data` - Object with fields to insert (excludes `id`, `createdAt`, `updatedAt`)
+
+**Returns:** Promise with `{ data?, error? }` format
+
+**Example:**
+```typescript
+const { data, error } = await crud.create('users')({
+  name: 'John Doe',
+  email: 'john@example.com'
+})
+```
+
+#### crud.read()
+
+Reads records from a table.
+
+```typescript
+crud.read<T>(tableName: string): {
+  all(): Promise<TResult<T[]>>
+  byId(id: string | number): Promise<TResult<T | null>>
+}
+```
+
+**Methods:**
+- `all()` - Get all records
+- `byId(id)` - Get single record by ID
+
+**Example:**
+```typescript
+// Get all users
+const { data: users } = await crud.read('users').all()
+
+// Get specific user
+const { data: user } = await crud.read('users').byId('123')
+```
+
+#### crud.update()
+
+Updates existing records.
+
+```typescript
+crud.update<T>(tableName: string)(id: string | number, data: TUpdateInput<T>): Promise<TResult<T[]>>
+```
+
+**Parameters:**
+- `id` - ID of record to update
+- `data` - Partial object with fields to update (excludes `id`, `createdAt`)
+
+**Example:**
+```typescript
+const { data } = await crud.update('users')('123', {
+  name: 'Jane Doe',
+  email: 'jane@example.com'
+})
+```
+
+#### crud.destroy()
+
+destroys records from a table.
+
+```typescript
+crud.destroy<T>(tableName: string)(id: string | number): Promise<TResult<T[]>>
+```
+
+**Example:**
+```typescript
+const { data } = await crud.destroy('users')('123')
+```
+
+## Factory Functions
+
+### createFn()
+
+Creates a typed create function.
+
+```typescript
+function createFn<T extends TEntity = TEntity>(): (tableName: string) => (data: TCreateInput<T>) => Promise<TResult<T[]>>
+```
+
+### readFn()
+
+Creates a typed read function.
+
+```typescript
+function readFn<T extends TEntity = TEntity>(): (tableName: string) => ReadOperations<T>
+```
+
+### updateFn()
+
+Creates a typed update function.
+
+```typescript
+function updateFn<T extends TEntity = TEntity>(): (tableName: string) => (id: string | number, data: TUpdateInput<T>) => Promise<TResult<T[]>>
+```
+
+### destroyFn()
+
+Creates a typed destroy function.
+
+```typescript
+function destroyFn<T extends TEntity = TEntity>(): (tableName: string) => (id: string | number) => Promise<TResult<T[]>>
+```
+
+## Configuration
+
+### configure()
+
+Configures the database connection and schema.
+
+```typescript
+function configure<T extends TDatabase, S extends TSchema>(database: T, schemaObj: S): void
+```
+
+**Parameters:**
+- `database` - Drizzle database instance
+- `schemaObj` - Schema object with table definitions
+
+**Example:**
+```typescript
+import { drizzle } from 'drizzle-orm/neon-http'
+import { configure } from '@remcostoeten/crud'
+import * as schema from './schema'
+
+const db = drizzle(connectionString)
+configure(db, schema)
+```
+
+## Client Hooks
+
+### useOptimisticCrud()
+
+React hook for optimistic updates.
+
+```typescript
+function useOptimisticCrud<T extends TEntity>(initialData: T[]): {
+  data: T[]
+  isPending: boolean
+  optimisticCreate: (newItem: Omit<T, 'id'>, serverAction: () => Promise<TResult<T[]>>) => void
+}
+```
+
+### withTransition()
+
+Wraps server actions with React transitions.
+
+```typescript
+function withTransition<T>(serverAction: () => Promise<TResult<T>>): () => void
+```
+
+## Types
+
+### TEntity
+
+Base entity type that all database records must extend.
+
+```typescript
+type TEntity = {
+  id: string | number
+  createdAt?: string | Date
+  updatedAt?: string | Date
+}
+```
+
+### TCreateInput
+
+Input type for create operations (excludes auto-generated fields).
+
+```typescript
+type TCreateInput<T extends TEntity> = Omit<T, 'id' | 'createdAt' | 'updatedAt'>
+```
+
+### TUpdateInput
+
+Input type for update operations (excludes id and createdAt).
+
+```typescript
+type TUpdateInput<T extends TEntity> = Partial<Omit<T, 'id' | 'createdAt'>>
+```
+
+### TResult
+
+Standard result format for all operations.
+
+```typescript
+type TResult<T> = {
+  data?: T
+  error?: Error
+}
+```
+
+### TTimestamped
+
+Entity type with required timestamps.
+
+```typescript
+type TTimestamped = TEntity & {
+  createdAt: string | Date
+  updatedAt: string | Date
+}
+```

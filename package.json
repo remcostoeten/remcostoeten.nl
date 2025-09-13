@@ -8,13 +8,17 @@
   ],
   "scripts": {
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:bun": "concurrently \"cd apps/frontend && bun run dev\" \"cd apps/backend && bun run dev\"",
     "dev:frontend": "cd apps/frontend && npm run dev",
     "dev:backend": "cd apps/backend && bun run dev",
     "build": "npm run build:frontend && npm run build:backend",
     "build:frontend": "cd apps/frontend && npm run build",
     "build:backend": "cd apps/backend && bun run build",
     "install:all": "npm install && cd apps/frontend && npm install && cd ../backend && bun install",
-    "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist apps/*/.next"
+    "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist apps/*/.next",
+    "gen": "cd apps/backend && bun run gen",
+    "push": "cd apps/backend && bun run push",
+    "release:crud": "node scripts/release.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"

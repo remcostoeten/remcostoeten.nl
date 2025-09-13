@@ -35,7 +35,7 @@ npm run dev
 
 # Or start individually:
 npm run dev:frontend  # Frontend on http://localhost:3000
-npm run dev:backend   # Backend on http://localhost:3001
+npm run dev:backend   # Backend on http://localhost:4001
 ```
 
 ### Production
@@ -60,7 +60,7 @@ npm run clean
 - **Framework**: Hono.js
 - **Language**: TypeScript
 - **Runtime**: Bun
-- **Port**: 3001
+- **Port**: 4001
 
 ## API Endpoints
 
@@ -84,5 +84,6 @@ npm run clean
 
 1. Make changes to either frontend or backend
 2. Both applications will hot-reload automatically
-3. Frontend can consume backend APIs at `http://localhost:3001`
+3. Frontend can consume backend APIs at `http://localhost:4001`
 4. Use `npm run build` to create production builds
+

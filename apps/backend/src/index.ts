@@ -1,24 +1,19 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { createPageviewsRouter } from './routes/pageviews';
-import { createPageviewService } from './services/pageviewService';
-import { createStorage } from './storage';
-import type { StorageType } from './storage';
+import { visitorRouter } from './routes/visitors';
 
-export const createApp = (storageType: StorageType = 'memory', dbPath?: string) => {
+type StorageType = 'memory' | 'sqlite';
+
+export const createApp = () => {
   const app = new Hono();
-
-  // Initialize storage and services
-  const storage = createStorage(storageType, dbPath);
-  const pageviewService = createPageviewService(storage);
 
   // Middleware
   app.use('*', logger());
   app.use('*', cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: ['http://localhost:3000', 'http://localhost:4001'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowHeaders: ['Content-Type', 'Authorization', 'X-Screen-Resolution', 'X-Timezone', 'X-Platform'],
   }));
 
   // Health check
@@ -32,20 +27,40 @@ export const createApp = (storageType: StorageType = 'memory', dbPath?: string) 
   });
 
   // Routes
-  app.route('/api', createPageviewsRouter(pageviewService));
+  app.route('/api/visitors', visitorRouter);
+
+  // Index page with all available endpoints
+  let cachedRoutesHtml: string | null = null;
+  
+  app.get('/', (c) => {
+    if (!cachedRoutesHtml) {
+      const routes = app.routes.map((route) => {
+        return `<li><a href="${route.path}">${route.method} ${route.path}</a></li>`;
+      });
+      
+      cachedRoutesHtml = `<html>
+        <head>
+          <title>Hono App Endpoints</title>
+        </head>
+        <body>
+          <h1>Available Endpoints</h1>
+          <ul>
+            ${routes.join('')}
+          </ul>
+        </body>
+      </html>`;
+    }
+
+    return c.html(cachedRoutesHtml);
+  });
 
   return app;
 };
 
-// Default app instance
-const storageType = (process.env.STORAGE_TYPE as StorageType) || 'memory';
-const dbPath = process.env.DB_PATH;
-const app = createApp(storageType, dbPath);
-
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 4001;
+const app = createApp();
 
 console.log(`🚀 Server running on http://localhost:${port}`);
-console.log(`📊 Storage: ${storageType}${dbPath ? ` (${dbPath})` : ''}`);
 
 export default {
   port,

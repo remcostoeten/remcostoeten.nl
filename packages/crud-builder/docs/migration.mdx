@@ -1,0 +1,332 @@
+---
+title: Migration Guide
+description: Migrate from other ORMs and database libraries to CRUD Builder. Step-by-step guides for Prisma, raw SQL, and other solutions.
+keywords: [migration, prisma, sql, orm, upgrade, convert]
+---
+
+# Migration Guide
+
+Step-by-step guides for migrating from other database solutions to CRUD Builder.
+
+## From Prisma
+
+### Before (Prisma)
+
+```typescript
+// prisma/schema.prisma
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  posts     Post[]
+}
+
+// lib/prisma.ts
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+
+// CRUD operations
+const user = await prisma.user.create({
+  data: { email: 'john@example.com', name: 'John' }
+})
+
+const users = await prisma.user.findMany()
+const user = await prisma.user.findUnique({ where: { id: '123' } })
+
+await prisma.user.update({
+  where: { id: '123' },
+  data: { name: 'Jane' }
+})
+
+await prisma.user.destroy({ where: { id: '123' } })
+```
+
+### After (CRUD Builder)
+
+```typescript
+// schema/users.ts
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  email: text('email').unique().notNull(),
+  name: text('name').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export type User = typeof users.$inferSelect
+
+// lib/db.ts
+import { drizzle } from 'drizzle-orm/neon-http'
+import { configure, crud } from '@remcostoeten/crud'
+import * as schema from '@/schema'
+
+const db = drizzle(process.env.DATABASE_URL!)
+configure(db, schema)
+
+// CRUD operations
+const { data: user } = await crud.create<User>('users')({
+  id: crypto.randomUUID(),
+  email: 'john@example.com',
+  name: 'John'
+})
+
+const { data: users } = await crud.read<User>('users').all()
+const { data: user } = await crud.read<User>('users').byId('123')
+
+await crud.update<User>('users')('123', { name: 'Jane' })
+await crud.destroy<User>('users')('123')
+```
+
+### Migration Steps
+
+1. **Install dependencies:**
+   ```bash
+   npm uninstall prisma @prisma/client
+   npm install @remcostoeten/crud drizzle-orm
+   ```
+
+2. **Convert schema:**
+   - Replace Prisma schema with Drizzle schema files
+   - Use `drizzle-kit` to generate migrations from existing database
+
+3. **Update CRUD operations:**
+   - Replace `prisma.model.create()` with `crud.create('table')()`
+   - Replace `findMany()` with `crud.read('table').all()`
+   - Replace `findUnique()` with `crud.read('table').byId()`
+
+4. **Handle relations:**
+   ```typescript
+   // Before: Prisma includes
+   const userWithPosts = await prisma.user.findUnique({
+     where: { id: '123' },
+     include: { posts: true }
+   })
+   
+   // After: Manual joins or separate queries
+   const { data: user } = await crud.read('users').byId('123')
+   const { data: posts } = await crud.read('posts').all()
+   const userPosts = posts?.filter(post => post.authorId === user?.id)
+   ```
+
+## From Raw SQL
+
+### Before (Raw SQL)
+
+```typescript
+import { Pool } from 'pg'
+
+const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+
+// Create
+const result = await pool.query(
+  'INSERT INTO users (id, email, name) VALUES ($1, $2, $3) RETURNING *',
+  [crypto.randomUUID(), 'john@example.com', 'John']
+)
+
+// Read
+const users = await pool.query('SELECT * FROM users')
+const user = await pool.query('SELECT * FROM users WHERE id = $1', ['123'])
+
+// Update
+await pool.query(
+  'UPDATE users SET name = $1, updated_at = NOW() WHERE id = $2',
+  ['Jane', '123']
+)
+
+// destroy
+await pool.query('destroy FROM users WHERE id = $1', ['123'])
+```
+
+### After (CRUD Builder)
+
+```typescript
+import { crud } from '@remcostoeten/crud'
+
+// Create
+const { data, error } = await crud.create('users')({
+  id: crypto.randomUUID(),
+  email: 'john@example.com',
+  name: 'John'
+})
+
+// Read
+const { data: users } = await crud.read('users').all()
+const { data: user } = await crud.read('users').byId('123')
+
+// Update
+await crud.update('users')('123', { name: 'Jane' })
+
+// destroy
+await crud.destroy('users')('123')
+```
+
+### Benefits of Migration
+
+- **Type Safety:** No more string-based queries
+- **Error Handling:** Consistent error format
+- **IntelliSense:** Full autocomplete support
+- **Validation:** Built-in table name validation
+
+## From TypeORM
+
+### Before (TypeORM)
+
+```typescript
+// entities/User.ts
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string
+
+  @Column({ unique: true })
+  email: string
+
+  @Column()
+  name: string
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
+}
+
+// Usage
+import { AppDataSource } from './data-source'
+import { User } from './entities/User'
+
+const userRepository = AppDataSource.getRepository(User)
+
+const user = await userRepository.save({
+  email: 'john@example.com',
+  name: 'John'
+})
+
+const users = await userRepository.find()
+const user = await userRepository.findOneBy({ id: '123' })
+
+await userRepository.update('123', { name: 'Jane' })
+await userRepository.destroy('123')
+```
+
+### After (CRUD Builder)
+
+```typescript
+// schema/users.ts
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  email: text('email').unique().notNull(),
+  name: text('name').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export type User = typeof users.$inferSelect
+
+// Usage
+import { crud } from '@remcostoeten/crud'
+
+const { data: user } = await crud.create<User>('users')({
+  id: crypto.randomUUID(),
+  email: 'john@example.com',
+  name: 'John'
+})
+
+const { data: users } = await crud.read<User>('users').all()
+const { data: user } = await crud.read<User>('users').byId('123')
+
+await crud.update<User>('users')('123', { name: 'Jane' })
+await crud.destroy<User>('users')('123')
+```
+
+## Common Migration Patterns
+
+### Error Handling Migration
+
+```typescript
+// Before: Try-catch everywhere
+try {
+  const user = await prisma.user.create({ data: userData })
+  return { success: true, user }
+} catch (error) {
+  return { success: false, error: error.message }
+}
+
+// After: Built-in error handling
+const { data: user, error } = await crud.create('users')(userData)
+if (error) {
+  return { success: false, error: error.message }
+}
+return { success: true, user: data }
+```
+
+### Validation Migration
+
+```typescript
+// Before: Manual validation
+function validateUser(data: any) {
+  if (!data.email || !data.name) {
+    throw new Error('Email and name are required')
+  }
+  // More validation...
+}
+
+// After: Type-safe with schema validation
+type User = {
+  id: string
+  email: string  // TypeScript enforces this
+  name: string   // TypeScript enforces this
+}
+
+const { data, error } = await crud.create<User>('users')(userData)
+// TypeScript catches missing fields at compile time
+```
+
+### Relationship Migration
+
+```typescript
+// Before: ORM handles relations
+const userWithPosts = await prisma.user.findUnique({
+  where: { id: userId },
+  include: { posts: true }
+})
+
+// After: Explicit queries (more control)
+const { data: user } = await crud.read('users').byId(userId)
+const { data: posts } = await crud.read('posts').all()
+const userPosts = posts?.filter(post => post.authorId === userId)
+
+// Or create a helper function
+async function getUserWithPosts(userId: string) {
+  const [userResult, postsResult] = await Promise.all([
+    crud.read('users').byId(userId),
+    crud.read('posts').all()
+  ])
+  
+  return {
+    user: userResult.data,
+    posts: postsResult.data?.filter(post => post.authorId === userId) || []
+  }
+}
+```
+
+## Migration Checklist
+
+- [ ] Install CRUD Builder and Drizzle ORM
+- [ ] Convert schema definitions
+- [ ] Update database configuration
+- [ ] Replace CRUD operations
+- [ ] Update error handling
+- [ ] Test all functionality
+- [ ] Update TypeScript types
+- [ ] Migrate relationship queries
+- [ ] Update tests
+- [ ] Deploy and monitor

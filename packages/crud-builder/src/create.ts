@@ -1,24 +1,16 @@
-import { getDb, getSchema } from './config'
+import { getDb, getSchema, validateTableName } from './config'
+import { safeExecute } from './core/execute'
+import type { TEntity, TCreateInput, TResult } from './types'
 
-function safeExecute<T>(operation: () => Promise<T>) {
-  return async function(): Promise<{ data?: T; error?: Error }> {
-    try {
-      const data = await operation()
-      return { data }
-    } catch (error) {
-      return { error: error as Error }
-    }
-  }
-}
-
-function create() {
+function create<T extends TEntity>() {
   return function(tableName: string) {
-    return function(data: any) {
+    return function(data: TCreateInput<T>): Promise<TResult<T[]>> {
       return safeExecute(async () => {
         const db = getDb()
         const schema = getSchema()
+        validateTableName(tableName, schema)
         return await db.insert(schema[tableName]).values(data).returning()
-      })()
+      })
     }
   }
 }

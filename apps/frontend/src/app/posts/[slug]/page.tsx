@@ -1,10 +1,16 @@
-"use client";
-
+import Link from "next/link";
 import React from 'react';
 import { TransitionLink } from '@/components/view-transitions';
 import { ArrowLeft } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
+import { BlogViewCounter } from '@/components/blog-view-counter';
 import { blogPosts } from '@/lib/blog-data';
+
+export function generateStaticParams() {
+  return blogPosts.map((post) => ({
+    slug: post.slug,
+  }));
+}
 
 const navigationItems = [
   { label: 'Home', href: '/', isActive: false },
@@ -73,6 +79,14 @@ export default function PostPage({ params }: PostPageProps) {
             <p style={{ fontSize: '16px', color: '#aba9a7', lineHeight: '1.7' }}>
               {post.description}
             </p>
+
+            <div className="mt-4">
+              <BlogViewCounter 
+                blogSlug={post.slug} 
+                blogTitle={post.title}
+                showDetails={true}
+              />
+            </div>
           </div>
           
           <article className="prose prose-invert prose-lg max-w-none" style={{ viewTransitionName: 'blog-content' }}>

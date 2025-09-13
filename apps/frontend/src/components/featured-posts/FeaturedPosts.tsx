@@ -50,7 +50,7 @@ const FeaturedPosts = memo(function FeaturedPosts() {
           return (
             <Component
               key={post.id}
-              href={post.isClickable ? post.href : undefined}
+              href={post.isClickable ? post.href : ""}
               className={`
                 flex items-center justify-between px-4 py-[14px] group transition-all duration-200 w-full
                 ${post.isClickable ? 'hover:bg-stone-600/20 cursor-pointer' : 'cursor-default'}

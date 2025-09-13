@@ -1,0 +1,224 @@
+---
+title: WHERE Clauses
+description: Simple and intuitive WHERE clauses with natural syntax. No complex operators or MongoDB-style queries.
+keywords: [where, filter, query, simple, intuitive, natural]
+---
+
+# WHERE Clauses
+
+Simple filtering with natural, readable syntax.
+
+## Philosophy
+
+Our WHERE clauses use intuitive operators that read like natural language:
+- `age: '>18'` instead of `age: { $gt: 18 }`
+- `name: '*john*'` instead of `name: { $contains: 'john' }`
+- `role: ['admin', 'user']` instead of `role: { $in: ['admin', 'user'] }`
+
+## Basic Usage
+
+```typescript
+type User = {
+  id: string
+  name: string
+  email: string
+  age: number
+  status: 'active' | 'inactive'
+  role: 'admin' | 'user'
+}
+
+// Simple equality
+const activeUsers = await crud.read<User>('users')
+  .where({ status: 'active' })
+  .execute()
+
+// Multiple conditions (AND)
+const adminUsers = await crud.read<User>('users')
+  .where({ status: 'active' })
+  .where({ role: 'admin' })
+  .execute()
+```
+
+## All Operators
+
+### Equality
+
+```typescript
+// Direct equality
+.where({ status: 'active' })
+.where({ isActive: true })
+.where({ count: 0 })
+
+// Not equal
+.where({ status: '!inactive' })
+.where({ role: '!banned' })
+```
+
+### Comparison
+
+For numbers, strings, and dates:
+
+```typescript
+// Numbers
+.where({ age: '>18' })         // Greater than
+.where({ age: '>=21' })        // Greater than or equal
+.where({ price: '<100' })      // Less than
+.where({ rating: '<=4.5' })    // Less than or equal
+
+// Strings (alphabetical)
+.where({ name: '>M' })         // Names starting with N-Z
+
+// Dates
+.where({ createdAt: '>=2024-01-01' })
+```
+
+### String Patterns
+
+```typescript
+// Contains
+.where({ name: '*john*' })     // LIKE '%john%'
+
+// Starts with
+.where({ name: 'john*' })      // LIKE 'john%'
+
+// Ends with
+.where({ email: '*@gmail.com' }) // LIKE '%@gmail.com'
+```
+
+### Arrays (IN operator)
+
+```typescript
+// Match any value in array
+.where({ role: ['admin', 'moderator'] })
+.where({ status: ['active', 'pending'] })
+```
+
+## Real Examples
+
+### E-commerce Store
+
+```typescript
+type Product = {
+  id: string
+  name: string
+  price: number
+  category: string
+  inStock: boolean
+  rating: number
+}
+
+// Affordable, quality products in stock
+const products = await crud.read<Product>('products')
+  .where({ price: '<100' })
+  .where({ inStock: true })
+  .where({ rating: '>=4.0' })
+  .where({ category: ['electronics', 'books'] })
+  .execute()
+```
+
+### User Management
+
+```typescript
+// Active admins created this year
+const admins = await crud.read<User>('users')
+  .where({ role: 'admin' })
+  .where({ status: 'active' })
+  .where({ createdAt: '>=2024-01-01' })
+  .execute()
+
+// Gmail users
+const gmailUsers = await crud.read<User>('users')
+  .where({ email: '*@gmail.com' })
+  .execute()
+```
+
+### Blog Search
+
+```typescript
+type Post = {
+  id: string
+  title: string
+  status: 'draft' | 'published'
+  authorId: string
+}
+
+// Published React posts
+const reactPosts = await crud.read<Post>('posts')
+  .where({ status: 'published' })
+  .where({ title: '*React*' })
+  .execute()
+```
+
+## Type Safety
+
+### IntelliSense Support
+
+When you type `.where({`, the editor shows all available fields and valid values:
+
+```typescript
+.where({
+  // IntelliSense shows: id, name, email, status, role, age, createdAt
+  status: // Shows: 'active' | 'inactive' (union type values)
+  age: // Shows string patterns like '>18', '>=21', '<65'
+  name: // Shows string patterns like '*john*', 'john*', '*@gmail.com'
+})
+```
+
+### Compile-Time Validation
+
+TypeScript catches errors before runtime:
+
+```typescript
+// Valid
+.where({ age: '>18' })
+.where({ status: 'active' })
+.where({ name: '*john*' })
+
+// TypeScript errors
+.where({ age: '*invalid*' })     // String patterns not valid for numbers
+.where({ status: 'invalid' })    // Not a valid union value
+.where({ badField: 'value' })    // Field doesn't exist
+```
+
+## Performance Tips
+
+### Index Your WHERE Fields
+
+Make sure to add database indexes for fields used in WHERE clauses:
+
+```sql
+-- PostgreSQL examples
+CREATE INDEX idx_users_status ON users(status);
+CREATE INDEX idx_users_role_status ON users(role, status);
+CREATE INDEX idx_posts_author_status ON posts(author_id, status);
+```
+
+### Combine Conditions Efficiently
+
+```typescript
+// ✅ Good - specific conditions first
+.where({ status: 'active' })      // Filters many records
+.where({ role: 'admin' })         // Filters fewer records
+.where({ age: { $gt: 18 } })      // Filters remaining records
+
+// ❌ Less efficient - broad conditions first
+.where({ age: { $gt: 18 } })      // Doesn't filter much
+.where({ status: 'active' })      // Still many records to check
+```
+
+## SQL Translation
+
+Simple syntax translates to standard SQL:
+
+```typescript
+// CRUD Builder
+.where({ status: 'active' })
+.where({ age: '>18' })
+.where({ name: '*john*' })
+
+// Generated SQL
+SELECT * FROM users 
+WHERE status = 'active' 
+  AND age > 18 
+  AND name LIKE '%john%'
+```

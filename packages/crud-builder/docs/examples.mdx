@@ -1,0 +1,362 @@
+---
+title: Examples
+description: Real-world examples and use cases for CRUD Builder. Learn how to implement common patterns and best practices.
+keywords: [examples, patterns, use-cases, tutorial, crud, implementation]
+---
+
+# Examples
+
+Real-world examples and common patterns using CRUD Builder.
+
+## Basic Todo App
+
+Complete CRUD operations for a todo application.
+
+### Schema Definition
+
+```typescript
+// schema/todos.ts
+import { pgTable, text, boolean, timestamp } from 'drizzle-orm/pg-core'
+
+export const todos = pgTable('todos', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  description: text('description'),
+  completed: boolean('completed').default(false),
+  priority: text('priority').$type<'low' | 'medium' | 'high'>().default('medium'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export type Todo = typeof todos.$inferSelect
+export type NewTodo = typeof todos.$inferInsert
+```
+
+### Server Actions
+
+```typescript
+// actions/todos.ts
+'use server'
+import { crud } from '@remcostoeten/crud'
+import { revalidatePath } from 'next/cache'
+import type { Todo } from '@/schema/todos'
+
+export async function createTodo(data: { title: string; description?: string }) {
+  const result = await crud.create<Todo>('todos')({
+    id: crypto.randomUUID(),
+    ...data,
+  })
+  
+  if (!result.error) {
+    revalidatePath('/todos')
+  }
+  
+  return result
+}
+
+export async function updateTodo(id: string, data: Partial<Todo>) {
+  const result = await crud.update<Todo>('todos')(id, data)
+  
+  if (!result.error) {
+    revalidatePath('/todos')
+  }
+  
+  return result
+}
+
+export async function destroyTodo(id: string) {
+  const result = await crud.destroy<Todo>('todos')(id)
+  
+  if (!result.error) {
+    revalidatePath('/todos')
+  }
+  
+  return result
+}
+
+export async function getTodos() {
+  return await crud.read<Todo>('todos').all()
+}
+```
+
+### React Component
+
+```typescript
+// components/TodoList.tsx
+'use client'
+import { useOptimisticCrud } from '@remcostoeten/crud'
+import { createTodo, updateTodo, destroyTodo } from '@/actions/todos'
+import type { Todo } from '@/schema/todos'
+
+interface TodoListProps {
+  initialTodos: Todo[]
+}
+
+export function TodoList({ initialTodos }: TodoListProps) {
+  const { data: todos, isPending, optimisticCreate } = useOptimisticCrud(initialTodos)
+  
+  const handleCreate = async (formData: FormData) => {
+    const title = formData.get('title') as string
+    const description = formData.get('description') as string
+    
+    optimisticCreate(
+      { title, description, completed: false, priority: 'medium' },
+      () => createTodo({ title, description })
+    )
+  }
+  
+  const handleToggle = async (todo: Todo) => {
+    await updateTodo(todo.id, { completed: !todo.completed })
+  }
+  
+  const handledestroy = async (id: string) => {
+    await destroyTodo(id)
+  }
+  
+  return (
+    <div>
+      <form action={handleCreate} className="mb-4">
+        <input name="title" placeholder="Todo title" required />
+        <input name="description" placeholder="Description" />
+        <button type="submit" disabled={isPending}>
+          {isPending ? 'Adding...' : 'Add Todo'}
+        </button>
+      </form>
+      
+      <div className="space-y-2">
+        {todos.map(todo => (
+          <div key={todo.id} className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={todo.completed}
+              onChange={() => handleToggle(todo)}
+            />
+            <span className={todo.completed ? 'line-through' : ''}>
+              {todo.title}
+            </span>
+            <button onClick={() => handledestroy(todo.id)}>destroy</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+```
+
+## User Management System
+
+Advanced example with relationships and validation.
+
+### Schema with Relations
+
+```typescript
+// schema/users.ts
+import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core'
+import { relations } from 'drizzle-orm'
+
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  email: text('email').unique().notNull(),
+  name: text('name').notNull(),
+  avatar: text('avatar'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export const posts = pgTable('posts', {
+  id: text('id').primaryKey(),
+  title: text('title').notNull(),
+  content: text('content'),
+  authorId: text('author_id').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+}))
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  author: one(users, { fields: [posts.authorId], references: [users.id] }),
+}))
+
+export type User = typeof users.$inferSelect
+export type Post = typeof posts.$inferSelect
+```
+
+### Typed CRUD Operations
+
+```typescript
+// lib/crud.ts
+import { createFn, readFn, updateFn, destroyFn } from '@remcostoeten/crud'
+import type { User, Post } from '@/schema/users'
+
+// Create typed CRUD functions
+export const createUser = createFn<User>()
+export const readUsers = readFn<User>()
+export const updateUser = updateFn<User>()
+export const destroyUser = destroyFn<User>()
+
+export const createPost = createFn<Post>()
+export const readPosts = readFn<Post>()
+export const updatePost = updateFn<Post>()
+export const destroyPost = destroyFn<Post>()
+
+// Helper functions
+export async function getUserByEmail(email: string) {
+  const { data: users } = await readUsers('users').all()
+  return users?.find(user => user.email === email) || null
+}
+
+export async function getUserPosts(userId: string) {
+  const { data: posts } = await readPosts('posts').all()
+  return posts?.filter(post => post.authorId === userId) || []
+}
+```
+
+### Service Layer
+
+```typescript
+// services/userService.ts
+import { createUser, readUsers, updateUser, destroyUser, getUserByEmail } from '@/lib/crud'
+import type { User } from '@/schema/users'
+
+export class UserService {
+  static async create(userData: { email: string; name: string; avatar?: string }) {
+    // Check if user already exists
+    const existingUser = await getUserByEmail(userData.email)
+    if (existingUser) {
+      return { error: new Error('User already exists') }
+    }
+    
+    return await createUser('users')({
+      id: crypto.randomUUID(),
+      ...userData,
+    })
+  }
+  
+  static async getAll() {
+    return await readUsers('users').all()
+  }
+  
+  static async getById(id: string) {
+    return await readUsers('users').byId(id)
+  }
+  
+  static async update(id: string, data: Partial<User>) {
+    return await updateUser('users')(id, {
+      ...data,
+      updatedAt: new Date(),
+    })
+  }
+  
+  static async deactivate(id: string) {
+    return await updateUser('users')(id, {
+      isActive: false,
+      updatedAt: new Date(),
+    })
+  }
+  
+  static async destroy(id: string) {
+    return await destroyUser('users')(id)
+  }
+}
+```
+
+## Error Handling Patterns
+
+### Centralized Error Handler
+
+```typescript
+// lib/errorHandler.ts
+import type { TResult } from '@remcostoeten/crud'
+
+export function handleCrudResult<T>(result: TResult<T>) {
+  if (result.error) {
+    console.error('CRUD operation failed:', result.error.message)
+    
+    // Log to external service
+    // logError(result.error)
+    
+    return {
+      success: false,
+      message: result.error.message,
+      data: null,
+    }
+  }
+  
+  return {
+    success: true,
+    message: 'Operation completed successfully',
+    data: result.data,
+  }
+}
+
+// Usage
+const result = await crud.create('users')(userData)
+const response = handleCrudResult(result)
+
+if (!response.success) {
+  return Response.json({ error: response.message }, { status: 400 })
+}
+```
+
+### Form Validation
+
+```typescript
+// lib/validation.ts
+import { z } from 'zod'
+
+const userSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2).max(50),
+  avatar: z.string().url().optional(),
+})
+
+export async function createUserWithValidation(data: unknown) {
+  const validation = userSchema.safeParse(data)
+  
+  if (!validation.success) {
+    return {
+      error: new Error(`Validation failed: ${validation.error.message}`),
+    }
+  }
+  
+  return await crud.create('users')({
+    id: crypto.randomUUID(),
+    ...validation.data,
+  })
+}
+```
+
+## Performance Optimization
+
+### Batch Operations
+
+```typescript
+// lib/batch.ts
+import { crud } from '@remcostoeten/crud'
+
+export async function createMultipleUsers(users: Array<{ email: string; name: string }>) {
+  const results = await Promise.allSettled(
+    users.map(user => 
+      crud.create('users')({
+        id: crypto.randomUUID(),
+        ...user,
+      })
+    )
+  )
+  
+  const successful = results
+    .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+    .map(result => result.value.data)
+    .filter(Boolean)
+  
+  const failed = results
+    .filter((result): result is PromiseRejectedResult => result.status === 'rejected')
+    .map(result => result.reason)
+  
+  return { successful, failed }
+}
+```

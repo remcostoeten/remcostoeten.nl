@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { TransitionLink } from '@/components/view-transitions';
+import { BlogViewCounter } from '@/components/blog-view-counter';
 import { ArrowRight } from 'lucide-react';
 import { BlogPostCardProps } from './types';
 
@@ -30,10 +31,16 @@ export function BlogPostCard({ post }: BlogPostCardProps) {
             />
           </div>
         </div>
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex flex-col items-end gap-2">
           <time className="text-stone-500 text-sm font-medium group-hover:text-stone-400 transition-colors duration-200">
             {post.date}
           </time>
+          <BlogViewCounter 
+            blogSlug={post.slug} 
+            blogTitle={post.title}
+            showDetails={false}
+            className="text-xs"
+          />
         </div>
       </div>
     </TransitionLink>

@@ -49,4 +49,5 @@ src/
 
 ## Environment Variables
 
-- `NEXT_PUBLIC_API_URL` - Backend API URL (default: http://localhost:3001)
+- `NEXT_PUBLIC_API_URL` - Backend API URL (default: http://localhost:4001)
+

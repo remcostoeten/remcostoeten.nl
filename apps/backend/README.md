@@ -38,7 +38,7 @@ bun run type-check
 
 ## Environment Variables
 
-- `PORT` - Server port (default: 3001)
+- `PORT` - Server port (default: 4001)
 - `STORAGE_TYPE` - Storage backend: 'memory' or 'sqlite' (default: memory)
 - `DB_PATH` - SQLite database file path (default: ./pageviews.db)
 
@@ -46,7 +46,7 @@ bun run type-check
 
 ### Track a Pageview
 ```bash
-curl -X POST http://localhost:3001/api/pageviews \
+curl -X POST http://localhost:4001/api/pageviews \
   -H "Content-Type: application/json" \
   -d '{
     "url": "https://example.com/page",
@@ -57,12 +57,12 @@ curl -X POST http://localhost:3001/api/pageviews \
 
 ### Get Pageviews
 ```bash
-curl "http://localhost:3001/api/pageviews?limit=10&offset=0"
+curl "http://localhost:4001/api/pageviews?limit=10&offset=0"
 ```
 
 ### Get Statistics
 ```bash
-curl "http://localhost:3001/api/pageviews/stats"
+curl "http://localhost:4001/api/pageviews/stats"
 ```
 
 ## Storage Options

@@ -26,7 +26,6 @@ export function ViewTransitionsProvider({ children }: TProps) {
   }
 
   useEffect(() => {
-    // Add view transition meta tag for better browser support
     if (typeof document !== 'undefined' && isSupported) {
       const meta = document.createElement('meta');
       meta.name = 'view-transition';

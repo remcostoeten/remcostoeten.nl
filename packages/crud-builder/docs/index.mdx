@@ -1,0 +1,197 @@
+---
+title: CRUD Builder
+description: Type-safe CRUD operations for Next.js with Drizzle ORM. Build database operations with full TypeScript support and IntelliSense.
+keywords: [crud, drizzle, orm, typescript, nextjs, database, type-safe, sql]
+author: Remco Stoeten
+category: Database
+tags: [crud, typescript, drizzle, nextjs]
+---
+
+# CRUD Builder
+
+A type-safe CRUD abstraction layer for Next.js applications using Drizzle ORM. Build database operations with full TypeScript support, IntelliSense, and error handling.
+
+## Features
+
+- 🔒 **Type-safe operations** - Full TypeScript support with generics
+- 🚀 **Fluent API** - Clean, chainable interface
+- 🛡️ **Built-in error handling** - Consistent error responses
+- 📝 **IntelliSense support** - Complete autocomplete and hover documentation
+- ⚡ **Multiple databases** - PostgreSQL, MySQL, SQLite support
+- 🎯 **Optimistic updates** - Client-side React hooks included
+
+## Quick Start
+
+### Installation
+
+```bash
+npm install @remcostoeten/crud
+```
+
+### Configuration
+
+```typescript
+import { configure } from '@remcostoeten/crud'
+import { db } from './db'
+import * as schema from './schema'
+
+// Configure once in your app
+configure(db, schema)
+```
+
+### Basic Usage
+
+```typescript
+import { crud } from '@remcostoeten/crud'
+
+type User = {
+  id: string
+  name: string
+  email: string
+  age: number
+  status: 'active' | 'inactive'
+  role: 'admin' | 'user'
+}
+
+// Create
+const { data, error } = await crud.create<User>('users')({ 
+  name: 'John', 
+  email: 'john@example.com',
+  age: 25,
+  status: 'active',
+  role: 'user'
+})
+
+// Read all records
+const { data: users } = await crud.read<User>('users')()
+
+// Simple WHERE conditions
+const { data: activeUsers } = await crud.read<User>('users')
+  .where({ status: 'active' })
+  .execute()
+
+// Advanced filtering
+const { data: results } = await crud.read<User>('users')
+  .where({ age: '>18' })              // Greater than 18
+  .where({ name: '*john*' })          // Contains 'john'
+  .where({ role: ['admin', 'user'] }) // IN array
+  .execute()
+
+// Read by ID
+const { data: user } = await crud.read<User>('users').byId('123')
+
+// Update
+await crud.update<User>('users')('123', { name: 'Jane' })
+
+// destroy
+await crud.destroy<User>('users')('123')
+```
+
+## Simple WHERE Syntax
+
+Intuitive filtering with natural operators:
+
+```typescript
+type Product = {
+  id: string
+  name: string
+  price: number
+  category: string
+  inStock: boolean
+  rating: number
+}
+
+// Comparison operators
+const { data: affordableProducts } = await crud.read<Product>('products')
+  .where({ price: '<100' })        // Less than 100
+  .where({ rating: '>=4.0' })      // 4 stars or higher
+  .execute()
+
+// String matching
+const { data: searchResults } = await crud.read<Product>('products')
+  .where({ name: '*laptop*' })     // Contains 'laptop'
+  .where({ category: 'electronics*' }) // Starts with 'electronics'
+  .execute()
+
+// Array matching (IN operator)
+const { data: categoryProducts } = await crud.read<Product>('products')
+  .where({ category: ['books', 'electronics', 'clothing'] })
+  .execute()
+
+// Not equal
+const { data: availableProducts } = await crud.read<Product>('products')
+  .where({ category: '!discontinued' }) // Not discontinued
+  .execute()
+```
+
+## All WHERE Operators
+
+Complete reference for filtering conditions:
+
+```typescript
+// Direct equality
+{ status: 'active' }           // Exact match
+{ isActive: true }             // Boolean values
+{ count: 0 }                   // Number values
+
+// Comparison (numbers, strings, dates)
+{ age: '>18' }                 // Greater than
+{ age: '>=21' }                // Greater than or equal
+{ price: '<100' }              // Less than
+{ rating: '<=4.5' }            // Less than or equal
+{ status: '!inactive' }        // Not equal
+
+// String patterns
+{ name: '*john*' }             // Contains 'john'
+{ name: 'john*' }              // Starts with 'john'
+{ email: '*@gmail.com' }       // Ends with '@gmail.com'
+
+// Array matching (IN operator)
+{ role: ['admin', 'user'] }    // Match any value in array
+{ category: ['books', 'tech'] } // Multiple categories
+```
+
+## Error Handling
+
+All operations return a consistent result format:
+
+```typescript
+const { data, error } = await crud.create('users')({ name: 'John' })
+
+if (error) {
+  console.error('Operation failed:', error.message)
+  return
+}
+
+console.log('Success:', data)
+```
+
+## Client-Side Hooks
+
+Optimistic updates for React applications:
+
+```typescript
+'use client'
+import { useOptimisticCrud } from '@remcostoeten/crud'
+
+function UserList({ initialUsers }) {
+  const { data, isPending, optimisticCreate } = useOptimisticCrud(initialUsers)
+  
+  const handleCreate = (userData) => {
+    optimisticCreate(userData, () => crud.create('users')(userData))
+  }
+  
+  return (
+    <div>
+      {data.map(user => <div key={user.id}>{user.name}</div>)}
+      {isPending && <div>Creating...</div>}
+    </div>
+  )
+}
+```
+
+## Next Steps
+
+- [API Reference](/api-reference) - Complete API documentation
+- [Examples](/examples) - Real-world usage examples
+- [Migration Guide](/migration) - Upgrading from other ORMs
