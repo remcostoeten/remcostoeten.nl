@@ -16,36 +16,25 @@ const NewPosts = memo(function NewPosts({ posts }: NewPostsProps) {
   // Memoize the posts slice to prevent unnecessary re-renders
   const displayedPosts = useMemo(() => posts.slice(0, 6), [posts]);
 
-  // Optimize event handlers with useCallback
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const cursorLabel = cursorLabelRef.current;
     if (!cursorLabel) return;
     
-    // Use requestAnimationFrame for smooth animation
-    requestAnimationFrame(() => {
-      cursorLabel.style.transform = `translate3d(${e.clientX + 15}px, ${e.clientY - 25}px, 0)`;
-    });
+    cursorLabel.style.left = `${e.clientX + 15}px`;
+    cursorLabel.style.top = `${e.clientY - 25}px`;
   }, []);
 
-  const handlePostEnter = useCallback((e: Event) => {
-    const target = e.target as HTMLElement;
-    const postCard = target.closest('.post-card');
+  const handlePostEnter = useCallback(() => {
     const cursorLabel = cursorLabelRef.current;
-    
-    if (postCard && cursorLabel) {
+    if (cursorLabel) {
       cursorLabel.style.opacity = '1';
-      postCard.classList.add('card-hovering');
     }
   }, []);
 
-  const handlePostLeave = useCallback((e: Event) => {
-    const target = e.target as HTMLElement;
-    const postCard = target.closest('.post-card');
+  const handlePostLeave = useCallback(() => {
     const cursorLabel = cursorLabelRef.current;
-    
-    if (postCard && cursorLabel) {
+    if (cursorLabel) {
       cursorLabel.style.opacity = '0';
-      postCard.classList.remove('card-hovering');
     }
   }, []);
 
@@ -53,15 +42,20 @@ const NewPosts = memo(function NewPosts({ posts }: NewPostsProps) {
     const section = sectionRef.current;
     if (!section) return;
 
-    // Use event delegation for better performance
-    section.addEventListener('mouseenter', handlePostEnter, { passive: true });
-    section.addEventListener('mouseleave', handlePostLeave, { passive: true });
-    section.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mousemove', handleMouseMove);
+    
+    const postCards = section.querySelectorAll('.post-card');
+    postCards.forEach(card => {
+      card.addEventListener('mouseenter', handlePostEnter);
+      card.addEventListener('mouseleave', handlePostLeave);
+    });
 
     return () => {
-      section.removeEventListener('mouseenter', handlePostEnter);
-      section.removeEventListener('mouseleave', handlePostLeave);
-      section.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mousemove', handleMouseMove);
+      postCards.forEach(card => {
+        card.removeEventListener('mouseenter', handlePostEnter);
+        card.removeEventListener('mouseleave', handlePostLeave);
+      });
     };
   }, [handleMouseMove, handlePostEnter, handlePostLeave]);
 

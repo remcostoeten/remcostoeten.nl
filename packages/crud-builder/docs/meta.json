@@ -20,11 +20,6 @@
       "title": "Examples",
       "href": "/examples", 
       "description": "Real-world examples and patterns"
-    },
-    {
-      "title": "Migration Guide",
-      "href": "/migration",
-      "description": "Migrate from other ORMs"
     }
   ]
 }

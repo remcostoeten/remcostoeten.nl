@@ -38,26 +38,35 @@ const { data, error } = await crud.create('users')({
 
 #### crud.read()
 
-Reads records from a table.
+Reads records from a table with chainable WHERE conditions.
 
 ```typescript
 crud.read<T>(tableName: string): {
-  all(): Promise<TResult<T[]>>
+  (): Promise<TResult<T[]>>  // Callable for all records
+  where(condition: TWhereClause<T>): QueryBuilder<T>
   byId(id: string | number): Promise<TResult<T | null>>
 }
 ```
 
 **Methods:**
-- `all()` - Get all records
+- `()` - Get all records (callable)
+- `where(condition)` - Add WHERE condition (chainable)
 - `byId(id)` - Get single record by ID
+- `execute()` - Execute query with WHERE conditions
 
 **Example:**
 ```typescript
 // Get all users
-const { data: users } = await crud.read('users').all()
+const { data: users } = await crud.read('users')()
 
 // Get specific user
 const { data: user } = await crud.read('users').byId('123')
+
+// Filter with WHERE
+const { data: filtered } = await crud.read('users')
+  .where({ status: 'active' })
+  .where({ age: '>18' })
+  .execute()
 ```
 
 #### crud.update()
@@ -97,34 +106,65 @@ const { data } = await crud.destroy('users')('123')
 
 ### createFn()
 
-Creates a typed create function.
+Creates a typed create function for reusable CRUD operations.
 
 ```typescript
 function createFn<T extends TEntity = TEntity>(): (tableName: string) => (data: TCreateInput<T>) => Promise<TResult<T[]>>
 ```
 
+**Example:**
+```typescript
+const create = createFn<User>()
+const { data, error } = await create('users')({ name: 'John', email: 'john@example.com' })
+```
+
 ### readFn()
 
-Creates a typed read function.
+Creates a typed read function with WHERE filtering capabilities.
 
 ```typescript
 function readFn<T extends TEntity = TEntity>(): (tableName: string) => ReadOperations<T>
 ```
 
+**Example:**
+```typescript
+const read = readFn<User>()
+
+// Get all records
+const { data: users } = await read('users')()
+
+// Filter with WHERE
+const { data: filtered } = await read('users')
+  .where({ status: 'active' })
+  .execute()
+```
+
 ### updateFn()
 
-Creates a typed update function.
+Creates a typed update function for modifying existing records.
 
 ```typescript
 function updateFn<T extends TEntity = TEntity>(): (tableName: string) => (id: string | number, data: TUpdateInput<T>) => Promise<TResult<T[]>>
 ```
 
+**Example:**
+```typescript
+const update = updateFn<User>()
+const { data, error } = await update('users')('123', { name: 'Jane' })
+```
+
 ### destroyFn()
 
-Creates a typed destroy function.
+Creates a typed destroy function for deleting records.
 
 ```typescript
 function destroyFn<T extends TEntity = TEntity>(): (tableName: string) => (id: string | number) => Promise<TResult<T[]>>
+```
+
+**Example:**
+```typescript
+const destroy = destroyFn<User>()
+const { data, error } = await destroy('users')('123')
 ```
 
 ## Configuration
@@ -144,7 +184,7 @@ function configure<T extends TDatabase, S extends TSchema>(database: T, schemaOb
 **Example:**
 ```typescript
 import { drizzle } from 'drizzle-orm/neon-http'
-import { configure } from '@remcostoeten/crud'
+import { configure } from '@remcostoeten/drizzleasy'
 import * as schema from './schema'
 
 const db = drizzle(connectionString)

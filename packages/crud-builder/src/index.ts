@@ -1,3 +1,23 @@
+/**
+ * Drizzleasy - Ultra-simple, type-safe CRUD operations for Next.js with Drizzle ORM
+ * 
+ * @example Quick start
+ * ```typescript
+ * import { initializeConnection, readFn, createFn } from '@remcostoeten/drizzleasy'
+ * 
+ * // Auto-configure database
+ * const db = await initializeConnection(process.env.DATABASE_URL!)
+ * 
+ * // Create typed functions
+ * const read = readFn<User>()
+ * const create = createFn<User>()
+ * 
+ * // Use CRUD operations
+ * const { data: users } = await read('users')()
+ * const { data: newUser } = await create('users')({ name: 'John' })
+ * ```
+ */
+
 // Main CRUD interface
 export { crud } from './core'
 

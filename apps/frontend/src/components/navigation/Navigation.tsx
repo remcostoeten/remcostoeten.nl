@@ -11,6 +11,7 @@ import { UserProfile } from './UserProfile';
 const defaultNavigationItems: NavigationItem[] = [
   { label: 'Home', href: '/', isActive: true },
   { label: 'All posts', href: '/posts', isActive: false },
+  { label: 'Analytics', href: '/analytics', isActive: false },
   { label: 'Contact', href: '/contact', isActive: false },
 ];
 

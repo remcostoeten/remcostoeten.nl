@@ -2,7 +2,24 @@ import { drizzle } from 'drizzle-orm/better-sqlite3'
 import Database from 'better-sqlite3'
 
 /**
- * SQLite provider for local file databases
+ * Setup SQLite connection for local file-based databases.
+ * Supports both file paths and in-memory databases.
+ * 
+ * @param url - SQLite database URL (file:./db.sqlite or file::memory:)
+ * @param schema - Drizzle schema object with table definitions
+ * @returns Promise resolving to configured Drizzle database instance
+ * @throws Error if connection fails
+ * 
+ * @example
+ * ```typescript
+ * // File database
+ * const db = await setupSqlite('file:./database.db', schema)
+ * 
+ * // In-memory database
+ * const db = await setupSqlite('file::memory:', schema)
+ * ```
+ * 
+ * @internal Used internally by initializeConnection
  */
 export async function setupSqlite(url: string, schema: any): Promise<any> {
   try {

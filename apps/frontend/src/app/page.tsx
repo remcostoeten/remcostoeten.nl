@@ -3,14 +3,21 @@ import { ProfileSection } from '@/components/profile-section';
 import { FeaturedPosts } from '@/components/featured-posts';
 import { NewPosts } from '@/components/new-posts';
 import { Newsletter } from '@/components/newsletter';
+import { PageTracker } from '@/components/analytics';
 import { blogPosts } from '@/lib/blog-data';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'home-page' }}>
-      <Navigation />
+    <div className="min-h-screen" style={{ background: '#171616' }}>
+      <PageTracker customTitle="Home - Blog" />
+      <Navigation navigationItems={[
+        { label: 'Home', href: '/', isActive: true },
+        { label: 'All posts', href: '/posts', isActive: false },
+        { label: 'Analytics', href: '/analytics', isActive: false },
+        { label: 'Contact', href: '/contact', isActive: false },
+      ]} />
       
-      <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>
+      <main className="pt-24 px-4">
         <div className="max-w-4xl mx-auto">
           <ProfileSection />
           <FeaturedPosts />

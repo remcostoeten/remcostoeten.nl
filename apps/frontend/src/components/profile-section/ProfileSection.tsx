@@ -26,23 +26,14 @@ const ProfileSection = memo(function ProfileSection({
   logoImage = 'https://framerusercontent.com/images/I7EkrYNs1exXfH3WBMmoHA7GHEM.png?scale-down-to=1024',
   className = ''
 }: ProfileSectionProps) {
-  // Memoize social links to prevent unnecessary re-renders
   const memoizedSocialLinks = useMemo(() => socialLinks, [socialLinks]);
   return (
     <section className={`flex flex-col gap-12 max-w-[680px] w-full py-16 relative z-10 transition-all duration-500 ${className}`}>
-      {/* Welcome Section */}
       <div className="flex flex-col gap-5 w-full">
         <div className="flex items-center gap-2">
           <h2 className="text-2xl font-semibold text-white">Welcome</h2>
-          <div className="relative w-[26px] h-[27px] flex-shrink-0 filter brightness-0 invert">
-            <Image
-              src={welcomeIcon}
-              alt="Welcome Icon"
-              fill
-              className="object-cover"
-              sizes="26px"
-              priority
-            />
+          <div className="relative w-[26px] h-[27px] flex-shrink-0 filter brightnes=0 invert">
+          🎉
           </div>
         </div>
         

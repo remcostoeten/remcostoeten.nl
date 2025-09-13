@@ -27,10 +27,10 @@ import type { TEntity, TCreateInput, TUpdateInput, TResult, TWhereClause } from 
  * await crud.update<User>('users')('user-123', { name: 'Jane' })
  * 
  * // Delete
- * await crud.delete<User>('users')('user-123')
+ * await crud.destroy<User>('users')('user-123')
  * ```
  */
-export const crud = {
+const crudBase = {
   /**
    * Create new records in a table.
    * 
@@ -260,7 +260,7 @@ export const crud = {
    * 
    * @example
    * ```typescript
-   * const { data, error } = await crud.delete<User>('users')('user-123')
+   * const { data, error } = await crud.destroy<User>('users')('user-123')
    * 
    * if (error) {
    *   console.error('Failed to delete user:', error.message)
@@ -269,7 +269,7 @@ export const crud = {
    * }
    * ```
    */
-  delete<T extends TEntity>(tableName: string) {
+  destroy<T extends TEntity>(tableName: string) {
     return (id: string | number): Promise<TResult<T[]>> => {
       return safeExecute(async () => {
         const db = getDb()
@@ -280,3 +280,9 @@ export const crud = {
     }
   }
 } as const
+
+// Add delete alias for backward compatibility
+export const crud = {
+  ...crudBase,
+  delete: crudBase.destroy
+}

@@ -1,15 +1,15 @@
 ---
-title: CRUD Builder
-description: Type-safe CRUD operations for Next.js with Drizzle ORM. Build database operations with full TypeScript support and IntelliSense.
-keywords: [crud, drizzle, orm, typescript, nextjs, database, type-safe, sql]
+title: Drizzleasy
+description: Ultra-simple, type-safe CRUD operations for Next.js with Drizzle ORM. Build database operations with full TypeScript support and IntelliSense.
+keywords: [crud, drizzle, orm, typescript, nextjs, database, type-safe, sql, drizzleasy]
 author: Remco Stoeten
 category: Database
-tags: [crud, typescript, drizzle, nextjs]
+tags: [crud, typescript, drizzle, nextjs, drizzleasy]
 ---
 
-# CRUD Builder
+# Drizzleasy
 
-A type-safe CRUD abstraction layer for Next.js applications using Drizzle ORM. Build database operations with full TypeScript support, IntelliSense, and error handling.
+Ultra-simple, type-safe CRUD operations for Next.js with Drizzle ORM. Build database operations with full TypeScript support, IntelliSense, and error handling.
 
 ## Features
 
@@ -17,21 +17,43 @@ A type-safe CRUD abstraction layer for Next.js applications using Drizzle ORM. B
 - 🚀 **Fluent API** - Clean, chainable interface
 - 🛡️ **Built-in error handling** - Consistent error responses
 - 📝 **IntelliSense support** - Complete autocomplete and hover documentation
-- ⚡ **Multiple databases** - PostgreSQL, MySQL, SQLite support
+- ⚡ **Multiple databases** - PostgreSQL, MySQL, SQLite, Turso support
 - 🎯 **Optimistic updates** - Client-side React hooks included
+- 📦 **Dual module support** - Works with both ESM and CommonJS
+- 🔄 **Auto-detection** - Automatically detects database type from connection string
 
 ## Quick Start
 
 ### Installation
 
 ```bash
-npm install @remcostoeten/crud
+npm install @remcostoeten/drizzleasy
 ```
 
-### Configuration
+### Auto-Configuration (Recommended)
 
 ```typescript
-import { configure } from '@remcostoeten/crud'
+import { initializeConnection } from '@remcostoeten/drizzleasy'
+
+// Auto-detects database type and loads schema
+const db = await initializeConnection(process.env.DATABASE_URL!)
+
+// For Turso with auth token
+const db = await initializeConnection(process.env.DATABASE_URL!, {
+  authToken: process.env.TURSO_AUTH_TOKEN
+})
+
+// Environment-based switching
+const db = await initializeConnection({
+  development: 'file:./dev.db',
+  production: process.env.DATABASE_URL!
+})
+```
+
+### Manual Configuration
+
+```typescript
+import { configure } from '@remcostoeten/drizzleasy'
 import { db } from './db'
 import * as schema from './schema'
 
@@ -42,7 +64,7 @@ configure(db, schema)
 ### Basic Usage
 
 ```typescript
-import { crud } from '@remcostoeten/crud'
+import { readFn, createFn, updateFn, destroyFn } from '@remcostoeten/drizzleasy'
 
 type User = {
   id: string
@@ -53,8 +75,14 @@ type User = {
   role: 'admin' | 'user'
 }
 
+// Create factory functions
+const read = readFn<User>()
+const create = createFn<User>()
+const update = updateFn<User>()
+const destroy = destroyFn<User>()
+
 // Create
-const { data, error } = await crud.create<User>('users')({ 
+const { data, error } = await create('users')({ 
   name: 'John', 
   email: 'john@example.com',
   age: 25,
@@ -63,28 +91,28 @@ const { data, error } = await crud.create<User>('users')({
 })
 
 // Read all records
-const { data: users } = await crud.read<User>('users')()
+const { data: users } = await read('users')()
 
 // Simple WHERE conditions
-const { data: activeUsers } = await crud.read<User>('users')
+const { data: activeUsers } = await read('users')
   .where({ status: 'active' })
   .execute()
 
 // Advanced filtering
-const { data: results } = await crud.read<User>('users')
+const { data: results } = await read('users')
   .where({ age: '>18' })              // Greater than 18
   .where({ name: '*john*' })          // Contains 'john'
   .where({ role: ['admin', 'user'] }) // IN array
   .execute()
 
 // Read by ID
-const { data: user } = await crud.read<User>('users').byId('123')
+const { data: user } = await read('users').byId('123')
 
 // Update
-await crud.update<User>('users')('123', { name: 'Jane' })
+await update('users')('123', { name: 'Jane' })
 
-// destroy
-await crud.destroy<User>('users')('123')
+// Delete
+await destroy('users')('123')
 ```
 
 ## Simple WHERE Syntax
@@ -101,25 +129,27 @@ type Product = {
   rating: number
 }
 
+const read = readFn<Product>()
+
 // Comparison operators
-const { data: affordableProducts } = await crud.read<Product>('products')
+const { data: affordableProducts } = await read('products')
   .where({ price: '<100' })        // Less than 100
   .where({ rating: '>=4.0' })      // 4 stars or higher
   .execute()
 
 // String matching
-const { data: searchResults } = await crud.read<Product>('products')
+const { data: searchResults } = await read('products')
   .where({ name: '*laptop*' })     // Contains 'laptop'
   .where({ category: 'electronics*' }) // Starts with 'electronics'
   .execute()
 
 // Array matching (IN operator)
-const { data: categoryProducts } = await crud.read<Product>('products')
+const { data: categoryProducts } = await read('products')
   .where({ category: ['books', 'electronics', 'clothing'] })
   .execute()
 
 // Not equal
-const { data: availableProducts } = await crud.read<Product>('products')
+const { data: availableProducts } = await read('products')
   .where({ category: '!discontinued' }) // Not discontinued
   .execute()
 ```
@@ -156,7 +186,8 @@ Complete reference for filtering conditions:
 All operations return a consistent result format:
 
 ```typescript
-const { data, error } = await crud.create('users')({ name: 'John' })
+const create = createFn<User>()
+const { data, error } = await create('users')({ name: 'John' })
 
 if (error) {
   console.error('Operation failed:', error.message)
@@ -172,13 +203,14 @@ Optimistic updates for React applications:
 
 ```typescript
 'use client'
-import { useOptimisticCrud } from '@remcostoeten/crud'
+import { useOptimisticCrud, createFn } from '@remcostoeten/drizzleasy'
 
 function UserList({ initialUsers }) {
   const { data, isPending, optimisticCreate } = useOptimisticCrud(initialUsers)
+  const create = createFn<User>()
   
   const handleCreate = (userData) => {
-    optimisticCreate(userData, () => crud.create('users')(userData))
+    optimisticCreate(userData, () => create('users')(userData))
   }
   
   return (
@@ -190,8 +222,48 @@ function UserList({ initialUsers }) {
 }
 ```
 
+## Database Support
+
+Drizzleasy supports multiple database providers with auto-detection:
+
+### PostgreSQL
+```typescript
+// Local PostgreSQL
+const db = await initializeConnection('postgresql://user:pass@localhost:5432/mydb')
+
+// Cloud PostgreSQL (Neon, Supabase, etc.)
+const db = await initializeConnection(process.env.DATABASE_URL!)
+```
+
+### SQLite
+```typescript
+// File-based SQLite
+const db = await initializeConnection('file:./database.db')
+
+// In-memory SQLite
+const db = await initializeConnection('file::memory:')
+```
+
+### Turso (LibSQL)
+```typescript
+const db = await initializeConnection(process.env.DATABASE_URL!, {
+  authToken: process.env.TURSO_AUTH_TOKEN
+})
+```
+
+## Module Support
+
+Works with both ESM and CommonJS:
+
+```typescript
+// ESM (recommended)
+import { readFn, createFn, updateFn, destroyFn, initializeConnection } from '@remcostoeten/drizzleasy'
+
+// CommonJS
+const { readFn, createFn, updateFn, destroyFn, initializeConnection } = require('@remcostoeten/drizzleasy')
+```
+
 ## Next Steps
 
 - [API Reference](/api-reference) - Complete API documentation
 - [Examples](/examples) - Real-world usage examples
-- [Migration Guide](/migration) - Upgrading from other ORMs

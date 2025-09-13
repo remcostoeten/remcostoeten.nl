@@ -2,11 +2,16 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { visitorRouter } from './routes/visitors';
-
-type StorageType = 'memory' | 'sqlite';
+import { createPageviewsRouter } from './routes/pageviews';
+import { createPageviewService } from './services/pageviewService';
+import { createMemoryStorage } from './storage/memoryStorage';
 
 export const createApp = () => {
   const app = new Hono();
+
+  // Initialize storage and services
+  const storage = createMemoryStorage();
+  const pageviewService = createPageviewService(storage);
 
   // Middleware
   app.use('*', logger());
@@ -21,13 +26,13 @@ export const createApp = () => {
     return c.json({ 
       status: 'ok', 
       timestamp: new Date().toISOString(),
-      storage: storageType,
-      dbPath: dbPath || 'N/A'
+      storage: 'memory'
     });
   });
 
   // Routes
   app.route('/api/visitors', visitorRouter);
+  app.route('/api/pageviews', createPageviewsRouter(pageviewService));
 
   // Index page with all available endpoints
   let cachedRoutesHtml: string | null = null;

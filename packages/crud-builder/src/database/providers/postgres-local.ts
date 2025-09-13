@@ -2,7 +2,20 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
 
 /**
- * Local PostgreSQL provider for Docker containers
+ * Setup local PostgreSQL connection for Docker containers and local development.
+ * Uses connection pooling and disables SSL for local environments.
+ * 
+ * @param url - PostgreSQL connection URL (typically localhost:5432)
+ * @param schema - Drizzle schema object with table definitions
+ * @returns Promise resolving to configured Drizzle database instance
+ * @throws Error if connection fails
+ * 
+ * @example
+ * ```typescript
+ * const db = await setupPostgresLocal('postgresql://user:pass@localhost:5432/mydb', schema)
+ * ```
+ * 
+ * @internal Used internally by initializeConnection
  */
 export async function setupPostgresLocal(url: string, schema: any): Promise<any> {
   try {

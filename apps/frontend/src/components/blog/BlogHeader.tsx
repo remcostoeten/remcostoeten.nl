@@ -7,6 +7,9 @@ import { BlogHeaderProps } from './types';
 
 export function BlogHeader({ selectedCategory, onCategoryChange, categories }: BlogHeaderProps) {
   const selectedCategoryData = categories.find(cat => cat.slug === selectedCategory);
+  
+  // Check if this is a topic-to-topic transition by looking at the key change pattern
+  const isTopicToTopic = selectedCategory && selectedCategoryData;
 
   return (
     <div className="mb-12">
@@ -14,7 +17,7 @@ export function BlogHeader({ selectedCategory, onCategoryChange, categories }: B
       <div className="mb-8">
         {selectedCategory ? (
           // Category View Header
-          <div className="flex items-center gap-4 mb-6">
+          <div key={selectedCategory} className="flex items-center gap-4 mb-6">
             <button
               onClick={() => onCategoryChange(null)}
               className="
@@ -32,7 +35,7 @@ export function BlogHeader({ selectedCategory, onCategoryChange, categories }: B
           </div>
         ) : (
           // All Posts View Header
-          <h1 className="text-3xl font-semibold text-white mb-2">
+          <h1 key="topics" className="text-3xl font-semibold text-white mb-2 animate-in fade-in slide-in-from-left-4 duration-300">
             Topics
           </h1>
         )}
@@ -49,7 +52,7 @@ export function BlogHeader({ selectedCategory, onCategoryChange, categories }: B
               onClick={() => onCategoryChange(isActive ? null : category.slug)}
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
-                transition-all duration-200 hover:scale-105 active:scale-95
+                transition-all duration-200 ease-out hover:scale-105 active:scale-95
                 ${isActive 
                   ? 'bg-white text-stone-800' 
                   : 'bg-transparent text-stone-300 hover:text-white hover:bg-stone-700/50'
@@ -58,8 +61,8 @@ export function BlogHeader({ selectedCategory, onCategoryChange, categories }: B
             >
               <ArrowRight 
                 size={14} 
-                className={`transition-transform duration-200 ${
-                  isActive ? 'rotate-90' : 'group-hover:translate-x-0.5'
+                className={`transition-transform duration-200 ease-out ${
+                  isActive ? 'rotate-90' : ''
                 }`} 
               />
               {category.name}

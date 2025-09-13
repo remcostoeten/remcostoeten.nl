@@ -74,10 +74,10 @@ export function updateFn<T extends TEntity = TEntity>() {
 }
 
 /**
- * Create a typed delete function for reusable CRUD operations.
+ * Create a typed destroy function for reusable CRUD operations.
  * 
  * @template T - Entity type extending TEntity
- * @returns Typed delete function
+ * @returns Typed destroy function
  * 
  * @example
  * ```typescript
@@ -89,5 +89,5 @@ export function updateFn<T extends TEntity = TEntity>() {
  * ```
  */
 export function destroyFn<T extends TEntity = TEntity>() {
-  return (tableName: string) => crud.delete<T>(tableName)
+  return (tableName: string) => crud.destroy<T>(tableName)
 }

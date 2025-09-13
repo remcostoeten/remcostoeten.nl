@@ -3,7 +3,17 @@ import { resolve, join } from 'path'
 import { glob } from 'glob'
 
 /**
- * Find drizzle.config.ts in project root
+ * Find drizzle.config.ts file in the project root directory.
+ * Searches for common config file extensions in order of preference.
+ * 
+ * @returns Absolute path to the drizzle config file
+ * @throws Error if no config file is found
+ * 
+ * @example
+ * ```typescript
+ * const configPath = findDrizzleConfig()
+ * console.log(configPath) // '/path/to/project/drizzle.config.ts'
+ * ```
  */
 export function findDrizzleConfig(): string {
   const possibleConfigs = [
@@ -23,7 +33,17 @@ export function findDrizzleConfig(): string {
 }
 
 /**
- * Load schema from drizzle.config.ts
+ * Load and merge schema files from drizzle.config.ts configuration.
+ * Automatically resolves glob patterns and imports all schema files.
+ * 
+ * @returns Promise resolving to merged schema object
+ * @throws Error if config file is not found or schema loading fails
+ * 
+ * @example
+ * ```typescript
+ * const schema = await loadSchemaFromConfig()
+ * console.log(Object.keys(schema)) // ['users', 'posts', 'comments']
+ * ```
  */
 export async function loadSchemaFromConfig(): Promise<any> {
   try {
@@ -54,7 +74,13 @@ export async function loadSchemaFromConfig(): Promise<any> {
 }
 
 /**
- * Resolve glob pattern to actual schema files
+ * Resolve glob patterns to actual schema file paths.
+ * Supports both single files and glob patterns like './src/schema/*.ts'.
+ * 
+ * @param pattern - Single file path or array of file paths/glob patterns
+ * @returns Promise resolving to array of resolved file paths
+ * 
+ * @internal Used internally by loadSchemaFromConfig
  */
 async function resolveSchemaFiles(pattern: string | string[]): Promise<string[]> {
   const patterns = Array.isArray(pattern) ? pattern : [pattern]
@@ -75,7 +101,13 @@ async function resolveSchemaFiles(pattern: string | string[]): Promise<string[]>
 }
 
 /**
- * Merge multiple schema objects into one
+ * Merge multiple schema objects into a single schema object.
+ * Combines all exported tables from different schema files.
+ * 
+ * @param schemas - Array of imported schema modules
+ * @returns Merged schema object containing all tables
+ * 
+ * @internal Used internally by loadSchemaFromConfig
  */
 function mergeSchemas(schemas: any[]): any {
   const merged = {}

@@ -2,6 +2,9 @@
 
 Ultra-simple, type-safe CRUD operations for Next.js with Drizzle ORM.
 
+[![npm version](https://badge.fury.io/js/drizzleasy.svg)](https://badge.fury.io/js/drizzleasy)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## Features
 
 - **One-liner setup** - `initializeConnection(url)` replaces complex Drizzle setup
@@ -12,11 +15,13 @@ Ultra-simple, type-safe CRUD operations for Next.js with Drizzle ORM.
 - **Optimistic updates** - Built-in React hooks for smooth UX
 - **Environment switching** - Development/production database configs
 - **Connection caching** - Automatic connection reuse for performance
+- **Dual module support** - Works with both ESM and CommonJS
+- **Zero dependencies** - Only peer dependencies for database drivers
 
 ## Installation
 
 ```bash
-npm install drizzleasy
+npm install @remcostoeten/drizzleasy
 ```
 
 ## Quick Start
@@ -35,7 +40,7 @@ export const db = drizzle(sql, { schema, logger: true })
 
 **After:**
 ```typescript
-import { initializeConnection } from 'drizzleasy'
+import { initializeConnection } from '@remcostoeten/drizzleasy'
 export const db = await initializeConnection(process.env.DATABASE_URL!)
 ```
 
@@ -73,7 +78,7 @@ const dbs = await initializeConnection({
 ### CRUD Operations
 
 ```typescript
-import { crud } from 'drizzleasy'
+import { readFn, createFn, updateFn, destroyFn } from '@remcostoeten/drizzleasy'
 
 type User = {
   id: string
@@ -83,15 +88,24 @@ type User = {
   status: 'active' | 'inactive'
 }
 
+// Create factory functions
+const read = readFn<User>()
+const create = createFn<User>()
+const update = updateFn<User>()
+const destroy = destroyFn<User>()
+
+// Read all records
+const { data: users } = await read('users')()
+
 // Read with natural WHERE syntax
-const { data: activeUsers } = await crud.read<User>('users')
+const { data: activeUsers } = await read('users')
   .where({ status: 'active' })
   .where({ age: '>18' })
   .where({ name: '*john*' })
   .execute()
 
 // Create
-await crud.create<User>('users')({
+const { data, error } = await create('users')({
   name: 'John',
   email: 'john@example.com',
   age: 25,
@@ -99,10 +113,10 @@ await crud.create<User>('users')({
 })
 
 // Update
-await crud.update<User>('users')('user-123', { status: 'inactive' })
+await update('users')('user-123', { status: 'inactive' })
 
 // Delete
-await crud.destroy<User>('users')('user-123')
+await destroy('users')('user-123')
 ```
 
 ## Database Connection
@@ -157,10 +171,38 @@ const dbs = initializeConnection({
 { status: 'active' }
 ```
 
-## Documentation
+## Module Support
 
-Visit [our documentation](https://crud-builder-docs.vercel.app) for complete guides and examples.
+Works with both ESM and CommonJS:
+
+```typescript
+// ESM (recommended)
+import { readFn, createFn, updateFn, destroyFn, initializeConnection } from '@remcostoeten/drizzleasy'
+
+// CommonJS
+const { readFn, createFn, updateFn, destroyFn, initializeConnection } = require('@remcostoeten/drizzleasy')
+```
+
+## Error Handling
+
+All operations return a consistent result format:
+
+```typescript
+const create = createFn<User>()
+const { data, error } = await create('users')({ name: 'John' })
+
+if (error) {
+  console.error('Operation failed:', error.message)
+  return
+}
+
+console.log('Success:', data)
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-MIT
+MIT © [Remco Stoeten](https://github.com/remcostoeten)

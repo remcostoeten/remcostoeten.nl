@@ -18,6 +18,8 @@ Our WHERE clauses use intuitive operators that read like natural language:
 ## Basic Usage
 
 ```typescript
+import { readFn } from '@remcostoeten/drizzleasy'
+
 type User = {
   id: string
   name: string
@@ -27,13 +29,15 @@ type User = {
   role: 'admin' | 'user'
 }
 
+const read = readFn<User>()
+
 // Simple equality
-const activeUsers = await crud.read<User>('users')
+const activeUsers = await read('users')
   .where({ status: 'active' })
   .execute()
 
 // Multiple conditions (AND)
-const adminUsers = await crud.read<User>('users')
+const adminUsers = await read('users')
   .where({ status: 'active' })
   .where({ role: 'admin' })
   .execute()
@@ -107,8 +111,10 @@ type Product = {
   rating: number
 }
 
+const read = readFn<Product>()
+
 // Affordable, quality products in stock
-const products = await crud.read<Product>('products')
+const products = await read('products')
   .where({ price: '<100' })
   .where({ inStock: true })
   .where({ rating: '>=4.0' })
@@ -119,15 +125,17 @@ const products = await crud.read<Product>('products')
 ### User Management
 
 ```typescript
+const read = readFn<User>()
+
 // Active admins created this year
-const admins = await crud.read<User>('users')
+const admins = await read('users')
   .where({ role: 'admin' })
   .where({ status: 'active' })
   .where({ createdAt: '>=2024-01-01' })
   .execute()
 
 // Gmail users
-const gmailUsers = await crud.read<User>('users')
+const gmailUsers = await read('users')
   .where({ email: '*@gmail.com' })
   .execute()
 ```
@@ -142,8 +150,10 @@ type Post = {
   authorId: string
 }
 
+const read = readFn<Post>()
+
 // Published React posts
-const reactPosts = await crud.read<Post>('posts')
+const reactPosts = await read('posts')
   .where({ status: 'published' })
   .where({ title: '*React*' })
   .execute()

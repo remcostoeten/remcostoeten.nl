@@ -47,17 +47,19 @@ export function TransitionLink({
 
     // Use view transitions for internal navigation
     if (isSupported) {
+      document.startViewTransition(() => {
+        if (replace) {
+          replaceWithTransition(href);
+        } else {
+          navigateWithTransition(href);
+        }
+      });
+    } else {
+      // Fallback for browsers without view transitions
       if (replace) {
         replaceWithTransition(href);
       } else {
         navigateWithTransition(href);
-      }
-    } else {
-      // Fallback for browsers without view transitions
-      if (replace) {
-        window.location.replace(href);
-      } else {
-        window.location.href = href;
       }
     }
   }

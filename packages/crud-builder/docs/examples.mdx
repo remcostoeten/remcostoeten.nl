@@ -37,12 +37,18 @@ export type NewTodo = typeof todos.$inferInsert
 ```typescript
 // actions/todos.ts
 'use server'
-import { crud } from '@remcostoeten/crud'
+import { createFn, readFn, updateFn, destroyFn } from '@remcostoeten/drizzleasy'
 import { revalidatePath } from 'next/cache'
 import type { Todo } from '@/schema/todos'
 
+// Create typed CRUD functions
+const create = createFn<Todo>()
+const read = readFn<Todo>()
+const update = updateFn<Todo>()
+const destroy = destroyFn<Todo>()
+
 export async function createTodo(data: { title: string; description?: string }) {
-  const result = await crud.create<Todo>('todos')({
+  const result = await create('todos')({
     id: crypto.randomUUID(),
     ...data,
   })
@@ -55,7 +61,7 @@ export async function createTodo(data: { title: string; description?: string }) 
 }
 
 export async function updateTodo(id: string, data: Partial<Todo>) {
-  const result = await crud.update<Todo>('todos')(id, data)
+  const result = await update('todos')(id, data)
   
   if (!result.error) {
     revalidatePath('/todos')
@@ -65,7 +71,7 @@ export async function updateTodo(id: string, data: Partial<Todo>) {
 }
 
 export async function destroyTodo(id: string) {
-  const result = await crud.destroy<Todo>('todos')(id)
+  const result = await destroy('todos')(id)
   
   if (!result.error) {
     revalidatePath('/todos')
@@ -75,7 +81,7 @@ export async function destroyTodo(id: string) {
 }
 
 export async function getTodos() {
-  return await crud.read<Todo>('todos').all()
+  return await read('todos')()
 }
 ```
 
@@ -84,7 +90,7 @@ export async function getTodos() {
 ```typescript
 // components/TodoList.tsx
 'use client'
-import { useOptimisticCrud } from '@remcostoeten/crud'
+import { useOptimisticCrud } from '@remcostoeten/drizzleasy'
 import { createTodo, updateTodo, destroyTodo } from '@/actions/todos'
 import type { Todo } from '@/schema/todos'
 
@@ -189,7 +195,7 @@ export type Post = typeof posts.$inferSelect
 
 ```typescript
 // lib/crud.ts
-import { createFn, readFn, updateFn, destroyFn } from '@remcostoeten/crud'
+import { createFn, readFn, updateFn, destroyFn } from '@remcostoeten/drizzleasy'
 import type { User, Post } from '@/schema/users'
 
 // Create typed CRUD functions
@@ -205,12 +211,12 @@ export const destroyPost = destroyFn<Post>()
 
 // Helper functions
 export async function getUserByEmail(email: string) {
-  const { data: users } = await readUsers('users').all()
+  const { data: users } = await readUsers('users')()
   return users?.find(user => user.email === email) || null
 }
 
 export async function getUserPosts(userId: string) {
-  const { data: posts } = await readPosts('posts').all()
+  const { data: posts } = await readPosts('posts')()
   return posts?.filter(post => post.authorId === userId) || []
 }
 ```
@@ -237,7 +243,7 @@ export class UserService {
   }
   
   static async getAll() {
-    return await readUsers('users').all()
+    return await readUsers('users')()
   }
   
   static async getById(id: string) {
@@ -270,7 +276,7 @@ export class UserService {
 
 ```typescript
 // lib/errorHandler.ts
-import type { TResult } from '@remcostoeten/crud'
+import type { TResult } from '@remcostoeten/drizzleasy'
 
 export function handleCrudResult<T>(result: TResult<T>) {
   if (result.error) {
@@ -336,12 +342,14 @@ export async function createUserWithValidation(data: unknown) {
 
 ```typescript
 // lib/batch.ts
-import { crud } from '@remcostoeten/crud'
+import { createFn } from '@remcostoeten/drizzleasy'
 
 export async function createMultipleUsers(users: Array<{ email: string; name: string }>) {
+  const create = createFn<User>()
+  
   const results = await Promise.allSettled(
     users.map(user => 
-      crud.create('users')({
+      create('users')({
         id: crypto.randomUUID(),
         ...user,
       })

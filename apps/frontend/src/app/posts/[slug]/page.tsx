@@ -4,6 +4,7 @@ import { TransitionLink } from '@/components/view-transitions';
 import { ArrowLeft } from 'lucide-react';
 import { Navigation } from '@/components/navigation';
 import { BlogViewCounter } from '@/components/blog-view-counter';
+import { PageTracker } from '@/components/analytics';
 import { blogPosts } from '@/lib/blog-data';
 
 export function generateStaticParams() {
@@ -15,6 +16,7 @@ export function generateStaticParams() {
 const navigationItems = [
   { label: 'Home', href: '/', isActive: false },
   { label: 'All posts', href: '/posts', isActive: false },
+  { label: 'Analytics', href: '/analytics', isActive: false },
   { label: 'Contact', href: '/contact', isActive: false },
 ];
 
@@ -49,6 +51,12 @@ export default function PostPage({ params }: PostPageProps) {
 
   return (
     <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'blog-post' }}>
+      <PageTracker 
+        trackBlog={{
+          slug: post.slug,
+          title: post.title
+        }}
+      />
       <Navigation navigationItems={navigationItems} />
       
       <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>

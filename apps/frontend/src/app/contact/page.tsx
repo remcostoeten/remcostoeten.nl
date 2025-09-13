@@ -1,16 +1,19 @@
 "use client";
 
 import { Navigation } from '@/components/navigation';
+import { PageTracker } from '@/components/analytics';
 
 const navigationItems = [
   { label: 'Home', href: '/', isActive: false },
   { label: 'All posts', href: '/posts', isActive: false },
+  { label: 'Analytics', href: '/analytics', isActive: false },
   { label: 'Contact', href: '/contact', isActive: true },
 ];
 
 export default function ContactPage() {
   return (
     <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'contact-page' }}>
+      <PageTracker customTitle="Contact - Blog" />
       <Navigation navigationItems={navigationItems} />
       
       <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>

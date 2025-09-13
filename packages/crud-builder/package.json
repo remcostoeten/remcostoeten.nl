@@ -1,12 +1,37 @@
 {
-  "name": "drizzleasy",
-  "version": "0.0.1",
-  "description": "CRUD abstraction layer for Next.js with Drizzle ORM",
+  "name": "@remcostoeten/drizzleasy",
+  "version": "0.1.0",
+  "description": "Ultra-simple, type-safe CRUD operations for Next.js with Drizzle ORM",
+  "type": "module",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
-
-  "keywords": ["nextjs", "drizzle", "orm", "crud"],
-  "author": "Remco Stoeten",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remcostoeten/drizzleasy.git"
+  },
+  "homepage": "https://github.com/remcostoeten/drizzleasy",
+  "bugs": {
+    "url": "https://github.com/remcostoeten/drizzleasy/issues"
+  },
+  "keywords": ["nextjs", "drizzle", "orm", "crud", "typescript", "react", "database", "sql", "postgresql", "sqlite"],
+  "author": {
+    "name": "Remco Stoeten",
+    "email": "your-email@example.com",
+    "url": "https://github.com/remcostoeten"
+  },
   "license": "MIT",
   "dependencies": {
     "drizzle-orm": "^0.29.0",
@@ -24,18 +49,21 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/react": "^18.0.0",
+    "@types/better-sqlite3": "^7.6.0",
     "typescript": "^5.0.0",
     "vitest": "^1.0.0",
     "@vitest/ui": "^1.0.0",
     "tsup": "^8.0.0"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "vitest",
+    "build": "tsup",
+    "build:tsc": "tsc",
+    "dev": "tsup --watch",
+    "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
-    "prepublishOnly": "npm run build",
-    "release": "npm run build && npm run test && npm publish"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "release": "npm run prepublishOnly && npm publish"
   }
 }
