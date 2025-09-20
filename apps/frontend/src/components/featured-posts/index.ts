@@ -1,1 +1,0 @@
-export { FeaturedPosts } from './FeaturedPosts';

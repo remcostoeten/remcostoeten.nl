@@ -107,7 +107,7 @@ function generateVisitorId(data: TVisitorData): string {
   return newId;
 }
 
-const API_BASE = 'http://localhost:4001/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:4001/api';
 
 export function useAnalytics() {
   const visitorData = useMemo(() => getVisitorData(), []);
@@ -169,8 +169,8 @@ export function useAnalytics() {
   // Blog-specific tracking
   const trackBlogView = useCallback(async (blogSlug: string, blogTitle: string) => {
     try {
-      // Track both visitor and pageview for blog posts
-      const [visitorResult, pageviewResult] = await Promise.all([
+      // Track visitor, pageview, and increment blog view count
+      const [visitorResult, pageviewResult, blogViewResult] = await Promise.all([
         fetch(`${API_BASE}/visitors/track-blog-view`, {
           method: 'POST',
           headers: {
@@ -181,12 +181,16 @@ export function useAnalytics() {
           },
           body: JSON.stringify({ visitorId, blogSlug, blogTitle }),
         }),
-        trackPageview({ title: blogTitle })
+        trackPageview({ title: blogTitle }),
+        fetch(`${API_BASE}/blog/analytics/${blogSlug}/view`, {
+          method: 'POST',
+        })
       ]);
       
       return {
         visitor: await visitorResult.json(),
         pageview: pageviewResult,
+        blogView: await blogViewResult.json(),
       };
     } catch (error) {
       console.error('Error tracking blog view:', error);

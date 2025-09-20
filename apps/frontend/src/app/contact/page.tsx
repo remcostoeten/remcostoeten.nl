@@ -1,33 +1,63 @@
-"use client";
-
-import { Navigation } from '@/components/navigation';
-import { PageTracker } from '@/components/analytics';
-
-const navigationItems = [
-  { label: 'Home', href: '/', isActive: false },
-  { label: 'All posts', href: '/posts', isActive: false },
-  { label: 'Analytics', href: '/analytics', isActive: false },
-  { label: 'Contact', href: '/contact', isActive: true },
-];
+import Link from "next/link";
+import { PageLayout } from "@/components/layout/PageLayout";
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'contact-page' }}>
-      <PageTracker customTitle="Contact - Blog" />
-      <Navigation navigationItems={navigationItems} />
-      
-      <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center py-16">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              Contact
-            </h1>
-            <p style={{ fontSize: '16px', color: '#aba9a7', lineHeight: '1.7' }}>
-              Get in touch for collaborations and inquiries.
-            </p>
-          </div>
+    <PageLayout>
+      <div className="space-y-8">
+        <div>
+          <Link 
+            href="/"
+            className="text-accent hover:underline text-sm mb-4 inline-block"
+          >
+            ← Back to home
+          </Link>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Contact</h1>
+          <p className="text-muted-foreground">
+            Get in touch with me through any of these channels.
+          </p>
         </div>
-      </main>
-    </div>
+
+        <div>
+          <p className="text-foreground leading-relaxed text-base">
+            Find me on{" "}
+            <a 
+              href="https://x.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-accent hover:underline font-medium"
+            >
+              X ↗
+            </a>{" "}
+            and{" "}
+            <a 
+              href="https://github.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-accent hover:underline font-medium"
+            >
+              GitHub ↗
+            </a>{" "}
+            or contact me using{" "}
+            <a 
+              href="mailto:" 
+              className="text-accent hover:underline font-medium"
+            >
+              E-Mail ↗
+            </a>{" "}
+            or{" "}
+            <a 
+              href="https://telegram.org" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-accent hover:underline font-medium"
+            >
+              Telegram ↗
+            </a>
+            .
+          </p>
+        </div>
+      </div>
+    </PageLayout>
   );
 }

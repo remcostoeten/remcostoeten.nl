@@ -1,8 +1,11 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { WebVitals } from '@/components/performance';
-import { ViewTransitionsProvider } from '@/components/view-transitions';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { HelmetProvider } from "react-helmet-async";
+import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
 
 // Optimize font loading with display swap and preload
 const inter = Inter({ 
@@ -71,10 +74,8 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://linkedin.com" />
       </head>
       <body className={`${inter.className} ${inter.variable}`}>
-        <WebVitals />
-        <ViewTransitionsProvider>
-          {children}
-        </ViewTransitionsProvider>
+        <AnalyticsTracker />
+        {children}
       </body>
     </html>
   );

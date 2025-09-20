@@ -1,81 +1,43 @@
-"use client";
+import Link from "next/link";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { Metadata } from "next";
+import { getAllBlogPosts } from "@/lib/blog/filesystem-utils";
+import { BlogPostsClient } from "./blog-posts-client";
 
-import React, { useState, useMemo } from 'react';
-import { Navigation } from '@/components/navigation';
-import { BlogHeader, BlogPostList } from '@/components/blog';
-import { NewPosts } from '@/components/new-posts';
-import { PageTracker } from '@/components/analytics';
-import { categories, blogPosts } from '@/lib/blog-data';
-
-const navigationItems = [
-  { label: 'Home', href: '/', isActive: false },
-  { label: 'All posts', href: '/posts', isActive: true },
-  { label: 'Analytics', href: '/analytics', isActive: false },
-  { label: 'Contact', href: '/contact', isActive: false },
-];
-
-export default function PostsPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [previousCategory, setPreviousCategory] = useState<string | null>(null);
-  const [transitionType, setTransitionType] = useState<'initial' | 'to-topic' | 'to-topics' | 'topic-to-topic'>('initial');
-
-  const filteredPosts = useMemo(() => {
-    if (!selectedCategory) return blogPosts;
-    return blogPosts.filter(post => post.category === selectedCategory);
-  }, [selectedCategory]);
-
-  const handleCategoryChange = (newCategory: string | null) => {
-    const prev = selectedCategory;
-    
-    // Determine transition type
-    if (prev === null && newCategory !== null) {
-      setTransitionType('to-topic');
-    } else if (prev !== null && newCategory === null) {
-      setTransitionType('to-topics');
-    } else if (prev !== null && newCategory !== null && prev !== newCategory) {
-      setTransitionType('topic-to-topic');
-    }
-    
-    setPreviousCategory(selectedCategory);
-    setSelectedCategory(newCategory);
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "Blog | Your Portfolio",
+    description: "Thoughts on frontend development, design, and building better web experiences.",
   };
+}
+
+export default async function PostsPage() {
+  const allPosts = getAllBlogPosts();
 
   return (
-    <div className="min-h-screen" style={{ background: '#171616' }}>
-      <PageTracker customTitle="All Posts - Blog" />
-      <Navigation navigationItems={navigationItems} />
-      
-      <main className="pt-24 px-4">
-        <div className="max-w-4xl mx-auto">
-          <BlogHeader
-            selectedCategory={selectedCategory}
-            onCategoryChange={handleCategoryChange}
-            categories={categories}
-          />
-          
-          <div>
-            {selectedCategory ? (
-              <div 
-                key={selectedCategory}
-                className={
-                  transitionType === 'topic-to-topic'
-                    ? ""
-                    : "animate-in fade-in slide-in-from-right-4 duration-300"
-                }
-              >
-                <BlogPostList posts={filteredPosts} />
-              </div>
-            ) : (
-              <div 
-                key="all-posts"
-                className="animate-in fade-in slide-in-from-left-4 duration-300"
-              >
-                <NewPosts posts={blogPosts.slice(0, 6)} />
-              </div>
-            )}
+    <PageLayout>
+      <div className="py-8 sm:py-12 lg:py-16 space-y-8 sm:space-y-12 lg:space-y-16">
+        <div className="space-y-6 sm:space-y-8">
+          <Link
+            href="/"
+            className="text-accent hover:underline text-sm mb-6 inline-flex items-center gap-2 group"
+          >
+            <span className="group-hover:-translate-x-1 transition-transform">←</span>
+            Back to home
+          </Link>
+          <div className="space-y-4">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
+              Blog
+            </h1>
+            <p className="text-muted-foreground text-base sm:text-lg max-w-3xl leading-relaxed">
+              Thoughts on frontend development, design, and building better web experiences. 
+              Explore articles by category, tags, or search for specific topics.
+            </p>
           </div>
         </div>
-      </main>
-    </div>
+
+        <BlogPostsClient allPosts={allPosts} />
+      </div>
+    </PageLayout>
   );
 }

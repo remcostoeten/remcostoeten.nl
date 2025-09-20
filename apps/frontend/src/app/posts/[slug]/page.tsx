@@ -1,122 +1,121 @@
-import Link from "next/link";
-import React from 'react';
-import { TransitionLink } from '@/components/view-transitions';
-import { ArrowLeft } from 'lucide-react';
-import { Navigation } from '@/components/navigation';
-import { BlogViewCounter } from '@/components/blog-view-counter';
-import { PageTracker } from '@/components/analytics';
-import { blogPosts } from '@/lib/blog-data';
+import { notFound } from 'next/navigation';
+import { PageLayout } from "@/components/layout/PageLayout";
+import { Metadata } from "next";
+import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils";
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import { mdxComponents } from '@/components/mdx/mdx-components';
+import Link from 'next/link';
+import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { BlogPostClient } from './BlogPostClient';
+import { AnalyticsTracker } from '@/components/analytics/analytics-tracker';
+import { BlogAnalytics } from '@/components/blog/blog-analytics';
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({
+interface PostPageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+export async function generateStaticParams() {
+  const posts = getAllBlogPosts();
+  return posts.map((post) => ({
     slug: post.slug,
   }));
 }
 
-const navigationItems = [
-  { label: 'Home', href: '/', isActive: false },
-  { label: 'All posts', href: '/posts', isActive: false },
-  { label: 'Analytics', href: '/analytics', isActive: false },
-  { label: 'Contact', href: '/contact', isActive: false },
-];
+export async function generateMetadata(props: PostPageProps): Promise<Metadata> {
+  const params = await props.params;
+  const post = getBlogPostBySlug(params.slug);
 
-interface PostPageProps {
-  params: {
-    slug: string;
+  if (!post) {
+    return {
+      title: 'Post Not Found',
+    };
+  }
+
+  return {
+    title: post.seo?.title || `${post.title} | Your Portfolio`,
+    description: post.seo?.description || post.excerpt,
+    keywords: post.seo?.keywords || post.tags,
+    openGraph: {
+      title: post.seo?.title || post.title,
+      description: post.seo?.description || post.excerpt,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author],
+      tags: post.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.seo?.title || post.title,
+      description: post.seo?.description || post.excerpt,
+    },
   };
 }
 
-export default function PostPage({ params }: PostPageProps) {
-  const post = blogPosts.find(p => p.slug === params.slug);
+export default async function PostPage(props: PostPageProps) {
+  const params = await props.params;
+  const post = getBlogPostBySlug(params.slug);
 
   if (!post) {
-    return (
-      <div className="min-h-screen" style={{ background: '#171616' }}>
-        <Navigation navigationItems={navigationItems} />
-        <main className="pt-24 px-4">
-          <div className="max-w-4xl mx-auto text-center py-16">
-            <h1 className="text-4xl font-bold text-white mb-4">Post Not Found</h1>
-            <Link
-              href="/posts"
-              className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 transition-colors"
-            >
-              <ArrowLeft size={16} />
-              Back to all posts
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
+    notFound();
   }
 
-  return (
-    <div className="min-h-screen" style={{ background: '#171616', viewTransitionName: 'blog-post' }}>
-      <PageTracker 
-        trackBlog={{
-          slug: post.slug,
-          title: post.title
-        }}
-      />
-      <Navigation navigationItems={navigationItems} />
-      
-      <main className="pt-24 px-4" style={{ viewTransitionName: 'main-content' }}>
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <TransitionLink
-              href="/posts"
-              className="
-                inline-flex items-center gap-2 px-3 py-1.5 rounded-lg
-                bg-stone-700 hover:bg-stone-600 text-white text-sm font-medium
-                transition-all duration-200 hover:scale-105 mb-6
-              "
-            >
-              <ArrowLeft size={14} />
-              All posts
-            </TransitionLink>
-            
-            <div className="mb-4">
-              <time className="text-stone-400 text-sm font-medium">
-                {post.date}
-              </time>
-            </div>
-            
-            <h1 className="text-4xl font-bold text-white mb-4">
-              {post.title}
-            </h1>
-            
-            <p style={{ fontSize: '16px', color: '#aba9a7', lineHeight: '1.7' }}>
-              {post.description}
-            </p>
+  // Get the content from the MDX file
+  const fs = require('fs');
+  const path = require('path');
+  const matter = require('gray-matter');
 
-            <div className="mt-4">
-              <BlogViewCounter 
-                blogSlug={post.slug} 
-                blogTitle={post.title}
-                showDetails={true}
-              />
-            </div>
+  const filePath = path.join(process.cwd(), 'content/blog', `${params.slug}.mdx`);
+  const fileContent = fs.readFileSync(filePath, 'utf8');
+  const { content } = matter(fileContent);
+
+  return (
+    <div className="max-w-4xl mx-auto py-8">
+      <Link
+        href="/posts"
+        className="inline-flex items-center gap-2 text-accent hover:underline text-sm mb-6"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        Back to blog
+      </Link>
+
+      <div className="mb-8">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+          <div className="flex items-center gap-1">
+            <Calendar className="w-4 h-4" />
+            <time dateTime={post.publishedAt}>
+              {new Date(post.publishedAt).toLocaleDateString()}
+            </time>
           </div>
-          
-          <article className="prose prose-invert prose-lg max-w-none" style={{ viewTransitionName: 'blog-content' }}>
-            <div className="bg-stone-700/30 rounded-lg p-8 border border-stone-600/50">
-              <p style={{ fontSize: '16px', color: '#aba9a7', lineHeight: '1.7', marginBottom: '24px' }}>
-                This is a sample blog post content. In a real application, you would fetch the full content 
-                from your CMS or markdown files and render it here.
-              </p>
-              
-              <p style={{ fontSize: '16px', color: '#aba9a7', lineHeight: '1.7', marginBottom: '24px' }}>
-                The post content would include rich text, images, code blocks, and other media elements 
-                that make up a complete blog article.
-              </p>
-              
-              <p style={{ fontSize: '16px', color: '#aba9a7', lineHeight: '1.7' }}>
-                You can extend this template to include features like reading time, tags, related posts, 
-                comments, and social sharing buttons.
-              </p>
-            </div>
-          </article>
+          <div className="flex items-center gap-1">
+            <Clock className="w-4 h-4" />
+            <span>{post.readTime} min read</span>
+          </div>
         </div>
-      </main>
+
+        <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
+        
+        <p className="text-xl text-muted-foreground mb-6">{post.excerpt}</p>
+
+        <div className="flex flex-wrap gap-2">
+          <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20">
+            {post.category}
+          </span>
+          {post.tags.map((tag) => (
+            <span
+              key={tag}
+              className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="prose prose-invert max-w-none">
+        <MDXRemote source={content} components={mdxComponents} />
+      </div>
     </div>
   );
 }

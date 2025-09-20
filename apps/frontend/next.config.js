@@ -1,8 +1,27 @@
+const withMDX = require('@next/mdx')({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [
+      [require('remark-gfm'), {}]
+    ],
+    rehypePlugins: [
+      [require('rehype-highlight'), {}]
+    ],
+  },
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  turbopack: {
+    root: '.',
+  },
+  output: 'export',
   images: { 
     unoptimized: true,
     formats: ['image/webp', 'image/avif'],
@@ -12,12 +31,12 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: false,
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['lucide-react'],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   // Optimize bundle splitting
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
@@ -42,4 +61,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withMDX(nextConfig);

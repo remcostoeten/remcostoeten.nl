@@ -2,36 +2,188 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Prevent white flash during navigation */
+::selection {
+  background: hsl(var(--accent));
+  color: hsl(var(--primary));
+}
+
+/* Typography system */
+:root {
+  /* Typography scale */
+  --text-xs: 0.75rem;      /* 12px */
+  --text-sm: 0.875rem;     /* 14px */
+  --text-base: 1rem;       /* 16px */
+  --text-lg: 1.125rem;     /* 18px */
+  --text-xl: 1.25rem;      /* 20px */
+  --text-2xl: 1.5rem;      /* 24px */
+  
+  /* Line heights */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  
+  /* Spacing scale */
+  --space-1: 0.25rem;      /* 4px */
+  --space-2: 0.5rem;       /* 8px */
+  --space-3: 0.75rem;      /* 12px */
+  --space-4: 1rem;         /* 16px */
+  --space-6: 1.5rem;       /* 24px */
+  --space-8: 2rem;         /* 32px */
+  --space-12: 3rem;        /* 48px */
+}
+
+@layer base {
+  :root {
+    /* Dark theme colors matching the original site */
+    --background: 0 0% 7%;
+    --foreground: 0 0% 85%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 85%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 85%;
+
+    --primary: 0 0% 85%;
+    --primary-foreground: 0 0% 7%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 85%;
+
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 85 100% 75%; /* Green accent color for links */
+    --accent-foreground: 0 0% 7%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 85 100% 75%;
+
+    --radius: 0.5rem;
+
+    /* Highlighted text colors */
+    --highlight-product: 85 100% 75%;
+    --highlight-frontend: 85 100% 75%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-size: var(--text-base);
+    line-height: var(--leading-normal);
+  }
+
+  /* Custom scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+  
+  /* Typography utilities */
+  .text-body {
+    font-size: var(--text-base);
+    line-height: var(--leading-relaxed);
+  }
+  
+  .text-body-sm {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+  }
+  
+  .text-heading {
+    font-size: var(--text-xl);
+    line-height: var(--leading-tight);
+  }
+}
+
+/* Custom animations and styles */
+@layer utilities {
+  /* Custom bounce-in animation */
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-bounce-in {
+    animation: bounce-in 0.6s ease-out;
+  }
+
+  /* Staggered animation delays */
+  .animate-stagger-1 { animation-delay: 0.1s; }
+  .animate-stagger-2 { animation-delay: 0.2s; }
+  .animate-stagger-3 { animation-delay: 0.3s; }
+  
+  /* Custom table styles to override prose */
+  .prose table {
+    @apply !border-collapse !border !border-border !w-full !my-6;
+    border-collapse: collapse !important;
+  }
+  
+  .prose thead {
+    @apply !bg-muted;
+  }
+  
+  .prose tbody {
+    @apply !bg-transparent;
+  }
+  
+  .prose tr {
+    @apply !border-b !border-border;
+  }
+  
+  .prose th {
+    @apply !border !border-border !px-4 !py-2 !text-left !font-semibold !text-foreground;
+  }
+  
+  .prose td {
+    @apply !border !border-border !px-4 !py-2 !text-foreground;
+  }
+}
+
 html, body {
-  background-color: #171616;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
-
-/* Category switching animations */
-@keyframes bounce-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) translateY(20px);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05) translateY(-5px);
-  }
-  70% {
-    opacity: 0.9;
-    transform: scale(0.98) translateY(2px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.animate-bounce-in {
-  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-/* Staggered animations */
-.animate-stagger-1 { animation-delay: 0.1s; }
-.animate-stagger-2 { animation-delay: 0.2s; }
-.animate-stagger-3 { animation-delay: 0.3s; }

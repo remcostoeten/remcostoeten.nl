@@ -1,91 +1,137 @@
-import { BlogPost, Category } from '@/components/blog/types';
+import { TBlogPost } from '@/modules/blog/types';
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 export const categories: Category[] = [
-  { id: '1', name: 'Artificial Intelligence', slug: 'ai' },
-  { id: '2', name: 'Design', slug: 'design' },
-  { id: '3', name: 'Engineering', slug: 'engineering' },
-  { id: '4', name: 'Thoughts', slug: 'thoughts' },
+  { id: '1', name: 'All Posts', slug: 'all' },
+  { id: '2', name: 'Development', slug: 'development' },
+  { id: '3', name: 'Design', slug: 'design' },
+  { id: '4', name: 'Best Practices', slug: 'best-practices' }
 ];
 
-export const blogPosts: BlogPost[] = [
+export const blogPosts: TBlogPost[] = [
   {
-    id: '1',
     title: 'The Philosophy of AI Ethics',
-    description: 'Can machines make moral decisions?',
-    date: '1/12/25',
-    category: 'ai',
-    slug: 'the-philosophy-of-ai-ethics'
+    excerpt: 'Can machines make moral decisions?',
+    content: 'This is a sample blog post content about AI ethics...',
+    publishedAt: '2025-01-12',
+    readTime: 5,
+    tags: ['AI', 'Ethics', 'Philosophy'],
+    category: 'development',
+    slug: 'the-philosophy-of-ai-ethics',
+    status: 'published',
+    views: { total: 1250, unique: 980, recent: 45 }
   },
   {
-    id: '2',
     title: 'How AI is Changing the Way We Work',
-    description: 'AI tools & their impact on productivity.',
-    date: '1/16/25',
-    category: 'ai',
-    slug: 'how-ai-is-changing-the-way-we-work'
+    excerpt: 'AI tools & their impact on productivity.',
+    content: 'This is a sample blog post content about AI in the workplace...',
+    publishedAt: '2025-01-16',
+    readTime: 7,
+    tags: ['AI', 'Productivity', 'Work'],
+    category: 'development',
+    slug: 'how-ai-is-changing-the-way-we-work',
+    status: 'published',
+    views: { total: 2100, unique: 1650, recent: 78 }
   },
   {
-    id: '3',
     title: 'The Ethics of Artificial Intelligence',
-    description: 'Balancing innovation with responsibility.',
-    date: '1/9/25',
-    category: 'ai',
-    slug: 'ethics'
+    excerpt: 'Balancing innovation with responsibility.',
+    content: 'This is a sample blog post content about AI ethics...',
+    publishedAt: '2025-01-09',
+    readTime: 6,
+    tags: ['AI', 'Ethics', 'Innovation'],
+    category: 'best-practices',
+    slug: 'ethics',
+    status: 'published',
+    views: { total: 1800, unique: 1420, recent: 62 }
   },
   {
-    id: '4',
     title: 'AI in Everyday Life',
-    description: 'AI is seamlessly woven into our daily routines.',
-    date: '12/12/24',
-    category: 'ai',
-    slug: 'ai-in-everyday-life'
+    excerpt: 'AI is seamlessly woven into our daily routines.',
+    content: 'This is a sample blog post content about AI in daily life...',
+    publishedAt: '2024-12-12',
+    readTime: 4,
+    tags: ['AI', 'Daily Life', 'Technology'],
+    category: 'development',
+    slug: 'ai-in-everyday-life',
+    status: 'published',
+    views: { total: 950, unique: 780, recent: 23 }
   },
   {
-    id: '5',
     title: 'Modern Design Principles',
-    description: 'Creating intuitive user experiences.',
-    date: '1/8/25',
+    excerpt: 'Creating intuitive user experiences.',
+    content: 'This is a sample blog post content about design principles...',
+    publishedAt: '2025-01-08',
+    readTime: 8,
+    tags: ['Design', 'UX', 'UI'],
     category: 'design',
-    slug: 'modern-design-principles'
+    slug: 'modern-design-principles',
+    status: 'published',
+    views: { total: 1650, unique: 1320, recent: 56 }
   },
   {
-    id: '6',
     title: 'The Art of Minimalism',
-    description: 'Less is more in digital design.',
-    date: '1/5/25',
+    excerpt: 'Less is more in digital design.',
+    content: 'This is a sample blog post content about minimalism in design...',
+    publishedAt: '2025-01-05',
+    readTime: 5,
+    tags: ['Design', 'Minimalism', 'Aesthetics'],
     category: 'design',
-    slug: 'art-of-minimalism'
+    slug: 'art-of-minimalism',
+    status: 'published',
+    views: { total: 1200, unique: 950, recent: 34 }
   },
   {
-    id: '7',
     title: 'Building Scalable Systems',
-    description: 'Engineering for growth and reliability.',
-    date: '1/3/25',
-    category: 'engineering',
-    slug: 'building-scalable-systems'
+    excerpt: 'Engineering for growth and reliability.',
+    content: 'This is a sample blog post content about scalable systems...',
+    publishedAt: '2025-01-03',
+    readTime: 10,
+    tags: ['Engineering', 'Scalability', 'Architecture'],
+    category: 'development',
+    slug: 'building-scalable-systems',
+    status: 'published',
+    views: { total: 2400, unique: 1900, recent: 89 }
   },
   {
-    id: '8',
     title: 'The Future of Web Development',
-    description: 'Emerging trends and technologies.',
-    date: '12/28/24',
-    category: 'engineering',
-    slug: 'future-of-web-development'
+    excerpt: 'Emerging trends and technologies.',
+    content: 'This is a sample blog post content about web development trends...',
+    publishedAt: '2024-12-28',
+    readTime: 9,
+    tags: ['Web Development', 'Technology', 'Future'],
+    category: 'development',
+    slug: 'future-of-web-development',
+    status: 'published',
+    views: { total: 1950, unique: 1580, recent: 67 }
   },
   {
-    id: '9',
     title: 'Reflections on Innovation',
-    description: 'What drives creative breakthroughs?',
-    date: '12/20/24',
-    category: 'thoughts',
-    slug: 'reflections-on-innovation'
+    excerpt: 'What drives creative breakthroughs?',
+    content: 'This is a sample blog post content about innovation...',
+    publishedAt: '2024-12-20',
+    readTime: 6,
+    tags: ['Innovation', 'Creativity', 'Reflection'],
+    category: 'best-practices',
+    slug: 'reflections-on-innovation',
+    status: 'published',
+    views: { total: 1100, unique: 890, recent: 28 }
   },
   {
-    id: '10',
     title: 'The Power of Curiosity',
-    description: 'Why asking questions matters.',
-    date: '12/15/24',
-    category: 'thoughts',
-    slug: 'power-of-curiosity'
+    excerpt: 'Why asking questions matters.',
+    content: 'This is a sample blog post content about curiosity...',
+    publishedAt: '2024-12-15',
+    readTime: 4,
+    tags: ['Curiosity', 'Learning', 'Growth'],
+    category: 'best-practices',
+    slug: 'power-of-curiosity',
+    status: 'published',
+    views: { total: 850, unique: 680, recent: 19 }
   }
 ];
