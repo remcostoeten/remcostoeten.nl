@@ -25,6 +25,7 @@
     
     // Control telemetry / telemetry features if relevant
     "telemetry.enableTelemetry": false,
-    "telemetry.enableCrashReporter": false
+    "telemetry.enableCrashReporter": false,
+    "kiroAgent.configureMCP": "Disabled"
   }
   
