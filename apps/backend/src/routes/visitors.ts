@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { setupVisitorService } from '../services/memory-visitor-service';
+import { createHybridVisitorService } from '../services/hybrid-visitor-service';
 import { generateVisitorFingerprint, extractFingerprintFromRequest } from '../utils/visitor-fingerprint';
 import type { CreateVisitorData, CreateBlogViewData } from '../types/visitor';
 
 // Initialize visitor service
-const visitorService = setupVisitorService();
+const visitorService = createHybridVisitorService();
 
 const visitorRouter = new Hono();
 

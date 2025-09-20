@@ -1,21 +1,21 @@
 import type { Pageview, CreatePageviewData, PageviewFilters, PageviewStats } from '../types/pageview';
-import type { StorageAdapter } from '../storage/types';
+import type { HybridPageviewService } from './hybrid-pageview-service';
 
-export const createPageviewService = (storage: StorageAdapter) => ({
+export const createPageviewService = (hybridService: HybridPageviewService) => ({
   async createPageview(data: CreatePageviewData): Promise<Pageview> {
-    return storage.createPageview(data);
+    return hybridService.createPageview(data);
   },
 
   async getPageviews(filters: PageviewFilters): Promise<Pageview[]> {
-    return storage.getPageviews(filters);
+    return hybridService.getPageviews(filters);
   },
 
   async getTotalCount(filters: Pick<PageviewFilters, 'url'>): Promise<number> {
-    return storage.getTotalCount(filters);
+    return hybridService.getTotalCount(filters);
   },
 
   async getStats(): Promise<PageviewStats> {
-    return storage.getStats();
+    return hybridService.getStats();
   },
 });
 

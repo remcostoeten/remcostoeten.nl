@@ -3,15 +3,30 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { visitorRouter } from './routes/visitors';
 import { createPageviewsRouter } from './routes/pageviews';
+import { createBlogRouter } from './routes/blog';
 import { createPageviewService } from './services/pageviewService';
-import { createMemoryStorage } from './storage/memoryStorage';
+import { createHybridPageviewService } from './services/hybrid-pageview-service';
+import { createBlogMetadataService } from './services/blog-metadata-service';
+import { createMemoryBlogMetadataService } from './services/memory-blog-metadata-service';
+import { db } from './db';
+import { initializeDatabase } from './db';
 
-export const createApp = () => {
+export const createApp = async () => {
   const app = new Hono();
 
-  // Initialize storage and services
-  const storage = createMemoryStorage();
-  const pageviewService = createPageviewService(storage);
+  // Initialize database (optional - will fallback to memory if fails)
+  try {
+    await initializeDatabase();
+  } catch (error) {
+    console.warn('Database initialization failed, using memory storage:', error);
+  }
+
+  // Initialize services with hybrid approach
+  const hybridPageviewService = createHybridPageviewService();
+  const pageviewService = createPageviewService(hybridPageviewService);
+  
+  // Use database service if available, otherwise use memory service
+  const blogMetadataService = db ? createBlogMetadataService() : createMemoryBlogMetadataService();
 
   // Middleware
   app.use('*', logger());
@@ -26,13 +41,14 @@ export const createApp = () => {
     return c.json({ 
       status: 'ok', 
       timestamp: new Date().toISOString(),
-      storage: 'memory'
+      storage: 'hybrid'
     });
   });
 
   // Routes
   app.route('/api/visitors', visitorRouter);
   app.route('/api/pageviews', createPageviewsRouter(pageviewService));
+  app.route('/api/blog', createBlogRouter(blogMetadataService));
 
   // Index page with all available endpoints
   let cachedRoutesHtml: string | null = null;
@@ -63,11 +79,24 @@ export const createApp = () => {
 };
 
 const port = process.env.PORT || 4001;
-const app = createApp();
 
-console.log(`🚀 Server running on http://localhost:${port}`);
+// Initialize and start the server
+let appInstance: any = null;
+
+createApp().then((app) => {
+  appInstance = app;
+  console.log(`🚀 Server running on http://localhost:${port}`);
+}).catch((error) => {
+  console.error('Failed to start server:', error);
+  process.exit(1);
+});
 
 export default {
   port,
-  fetch: app.fetch,
+  fetch: (request: Request) => {
+    if (!appInstance) {
+      throw new Error('Server not initialized yet');
+    }
+    return appInstance.fetch(request);
+  },
 };

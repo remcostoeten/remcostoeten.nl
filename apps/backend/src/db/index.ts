@@ -3,15 +3,29 @@ import { neon } from '@neondatabase/serverless';
 import * as schema from '../schema';
 
 const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL environment variable is required');
+let db: any = null;
+let sql: any = null;
+
+if (databaseUrl) {
+  try {
+    sql = neon(databaseUrl);
+    db = drizzle(sql, { schema, logger: true });
+    console.log('✅ Database configured successfully');
+  } catch (error) {
+    console.warn('⚠️ Database configuration failed, using memory storage:', error);
+  }
+} else {
+  console.log('ℹ️ No DATABASE_URL provided, using memory storage');
 }
 
-const sql = neon(databaseUrl);
-
-export const db = drizzle(sql, { schema, logger: true });
+export { db };
 
 export async function initializeDatabase() {
+  if (!databaseUrl || !sql) {
+    console.log('ℹ️ Skipping database initialization - using memory storage');
+    return;
+  }
+
   try {
     // Test database connection
     await sql`SELECT 1`;
