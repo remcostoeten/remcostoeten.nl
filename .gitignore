@@ -51,4 +51,6 @@ pnpm-lock.yaml
 **/.next/
 **/dist/
 **/build/
-apps/frontend/
+apps/frontend/out/
+*out*
+apps/frontend/out/_next/static/chunks/main-d9c5a1497a39e345.js

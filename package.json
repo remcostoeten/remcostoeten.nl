@@ -22,5 +22,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
+  },
+  "dependencies": {
+    "@remcostoeten/fync": "^5.1.2"
   }
 }

@@ -1,0 +1,25 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Blog: Watch Changes",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/frontend/scripts/watch-blog-changes.ts",
+      "cwd": "${workspaceFolder}/apps",
+      "runtimeExecutable": "tsx",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Blog: Sync Metadata",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/apps/frontend/scripts/sync-blog-metadata.ts",
+      "cwd": "${workspaceFolder}/apps",
+      "runtimeExecutable": "tsx",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}
