@@ -4,10 +4,12 @@ import { logger } from 'hono/logger';
 import { visitorRouter } from './routes/visitors';
 import { createPageviewsRouter } from './routes/pageviews';
 import { createBlogRouter } from './routes/blog';
+import { createBlogViewsRouter } from './routes/blog-views';
 import { createPageviewService } from './services/pageviewService';
 import { createHybridPageviewService } from './services/hybrid-pageview-service';
 import { createBlogMetadataService } from './services/blog-metadata-service';
 import { createMemoryBlogMetadataService } from './services/memory-blog-metadata-service';
+import { createHybridBlogViewService } from './services/hybrid-blog-view-service';
 import { db } from './db';
 import { initializeDatabase } from './db';
 
@@ -27,6 +29,7 @@ export const createApp = async () => {
   
   // Use database service if available, otherwise use memory service
   const blogMetadataService = db ? createBlogMetadataService() : createMemoryBlogMetadataService();
+  const blogViewService = createHybridBlogViewService();
 
   // Middleware
   app.use('*', logger());
@@ -49,6 +52,7 @@ export const createApp = async () => {
   app.route('/api/visitors', visitorRouter);
   app.route('/api/pageviews', createPageviewsRouter(pageviewService));
   app.route('/api/blog', createBlogRouter(blogMetadataService));
+  app.route('/api/blog', createBlogViewsRouter(blogViewService));
 
   // Index page with all available endpoints
   let cachedRoutesHtml: string | null = null;

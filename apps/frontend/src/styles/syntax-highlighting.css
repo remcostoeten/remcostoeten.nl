@@ -1,0 +1,161 @@
+/* Syntax highlighting styles for code blocks */
+/* Based on GitHub Dark theme with custom colors for consistency */
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0;
+  color: hsl(var(--foreground));
+  background: transparent;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: hsl(var(--accent));
+  font-weight: 600;
+}
+
+.hljs-number,
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag .hljs-attr {
+  color: #79c0ff;
+}
+
+.hljs-string,
+.hljs-doctag {
+  color: #a5d6ff;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+  color: #ffa657;
+  font-weight: 600;
+}
+
+.hljs-type,
+.hljs-class .hljs-title {
+  color: #ffa657;
+}
+
+.hljs-tag,
+.hljs-name,
+.hljs-attribute {
+  color: #7ee787;
+  font-weight: normal;
+}
+
+.hljs-regexp,
+.hljs-link {
+  color: #a5d6ff;
+}
+
+.hljs-symbol,
+.hljs-bullet {
+  color: #79c0ff;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+  color: #ffa657;
+}
+
+.hljs-meta {
+  color: hsl(var(--muted-foreground));
+}
+
+.hljs-deletion {
+  background: #ffeef0;
+  color: #82071e;
+}
+
+.hljs-addition {
+  background: #f0fff4;
+  color: #22863a;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Language-specific adjustments */
+.hljs-function .hljs-title {
+  color: #d2a8ff;
+}
+
+.hljs-attr {
+  color: #79c0ff;
+}
+
+.hljs-property {
+  color: #79c0ff;
+}
+
+.hljs-params {
+  color: hsl(var(--foreground));
+}
+
+/* JSX/TSX specific */
+.hljs-tag .hljs-name {
+  color: #7ee787;
+}
+
+.hljs-tag .hljs-attr {
+  color: #79c0ff;
+}
+
+/* CSS specific */
+.hljs-selector-class {
+  color: #ffa657;
+}
+
+.hljs-selector-pseudo {
+  color: #d2a8ff;
+}
+
+/* JSON specific */
+.hljs-attr {
+  color: #79c0ff;
+}
+
+/* Shell/Bash specific */
+.hljs-built_in {
+  color: #ffa657;
+}
+
+/* Make sure code blocks have proper spacing and styling */
+pre code.hljs {
+  padding: 0;
+  background: transparent;
+}
+
+/* Custom scrollbar for code blocks */
+pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+pre::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+
+pre::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}

@@ -9,6 +9,7 @@ import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { BlogPostClient } from './BlogPostClient';
 import { AnalyticsTracker } from '@/components/analytics/analytics-tracker';
 import { BlogAnalytics } from '@/components/blog/blog-analytics';
+import { ViewCounter } from '@/components/blog/ViewCounter';
 
 interface PostPageProps {
   params: Promise<{
@@ -92,6 +93,11 @@ export default async function PostPage(props: PostPageProps) {
             <Clock className="w-4 h-4" />
             <span>{post.readTime} min read</span>
           </div>
+          <ViewCounter 
+            slug={params.slug} 
+            autoIncrement={true}
+            className="flex items-center gap-1 text-sm text-muted-foreground"
+          />
         </div>
 
         <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>

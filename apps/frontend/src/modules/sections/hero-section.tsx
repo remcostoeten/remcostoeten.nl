@@ -9,7 +9,7 @@ export const HeroSection = () => {
       className="text-heading font-medium text-foreground"
       {...ANIMATION_CONFIGS.fadeInUp}
     >
-      I build digital things.
+      I <i className="font-serif">build</i> digital things.
     </motion.h1>
   );
 };

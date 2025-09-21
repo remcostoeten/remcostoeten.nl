@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Eye, Clock, Calendar } from 'lucide-react';
 import { formatBlogDateShort } from '@/lib/blog/date-utils';
+import { useViewCount } from '@/hooks/use-view-count';
 
 interface BlogPost {
   slug: string;
@@ -16,41 +16,15 @@ interface BlogPost {
   readTime: number;
 }
 
-interface BlogAnalytics {
-  totalViews: number;
-  uniqueViews: number;
-}
-
 interface BlogPostCardProps {
   post: BlogPost;
   index?: number;
 }
 
 export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
-  const [analytics, setAnalytics] = useState<BlogAnalytics | null>(null);
-
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:4001/api';
-        const response = await fetch(`${API_BASE}/blog/analytics/${post.slug}`);
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setAnalytics({
-              totalViews: data.data.totalViews,
-              uniqueViews: data.data.uniqueViews
-            });
-          }
-        }
-      } catch (error) {
-        // Silently fail - analytics are not critical
-      }
-    };
-
-    fetchAnalytics();
-  }, [post.slug]);
+  const { viewCount, loading: viewCountLoading } = useViewCount(post.slug, {
+    autoIncrement: false // Don't auto-increment on card view
+  });
 
   return (
     <motion.div
@@ -82,10 +56,10 @@ export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
                 <span className="font-medium">{formatBlogDateShort(post.publishedAt)}</span>
               </div>
             </div>
-            {analytics && analytics.totalViews > 0 && (
+            {!viewCountLoading && viewCount > 0 && (
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4" />
-                <span className="font-medium">{analytics.totalViews.toLocaleString()} views</span>
+                <span className="font-medium">{viewCount.toLocaleString()} views</span>
               </div>
             )}
           </div>

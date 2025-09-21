@@ -4,7 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 // import readingTime from 'reading-time';
-import { TBlogPost, TBlogMetadata, TBlogCategory } from './types';
+import { TBlogPost, TBlogMetadata, TBlogCategory, TEnhancedBlogPost } from './types';
+import { parseHeadingsFromMDX } from './toc-utils';
+import { generateBlogPostBreadcrumbs } from './breadcrumb-utils';
 
 const contentDirectory = path.join(process.cwd(), 'content/blog');
 
@@ -117,6 +119,35 @@ export async function getMdxPostBySlug(slug: string): Promise<TBlogPost | null> 
   };
 }
 
+export async function getEnhancedMdxPostBySlug(slug: string): Promise<TEnhancedBlogPost | null> {
+  const metadata = await getMdxMetadata(slug);
+  if (!metadata || metadata.status !== 'published') {
+    return null;
+  }
+  
+  const content = await getMdxContent(slug);
+  if (!content) {
+    return null;
+  }
+  
+  // Generate TOC from content
+  const headings = parseHeadingsFromMDX(content, 3);
+  
+  // Generate breadcrumbs
+  const breadcrumbs = generateBlogPostBreadcrumbs(
+    metadata.title,
+    metadata.slug,
+    metadata.category !== 'all' ? metadata.category : undefined
+  );
+  
+  return {
+    ...metadata,
+    content,
+    headings,
+    breadcrumbs,
+  };
+}
+
 export async function getMdxPostsByCategory(category: TBlogCategory): Promise<TBlogPost[]> {
   const posts = await getAllMdxPosts();
   if (category === 'all') return posts;
@@ -163,4 +194,90 @@ export async function getRelatedMdxPosts(currentPost: TBlogPost, limit: number =
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map(item => item.post);
+}
+
+export async function getTagData(tag: string): Promise<import('./types').TagData | null> {
+  const posts = await getAllMdxPosts();
+  const tagPosts = posts.filter(post => post.tags.includes(tag));
+  
+  if (tagPosts.length === 0) {
+    return null;
+  }
+  
+  // Get related tags (tags that appear frequently with this tag)
+  const relatedTagsMap = new Map<string, number>();
+  tagPosts.forEach(post => {
+    post.tags.forEach(postTag => {
+      if (postTag !== tag) {
+        relatedTagsMap.set(postTag, (relatedTagsMap.get(postTag) || 0) + 1);
+      }
+    });
+  });
+  
+  const relatedTags = Array.from(relatedTagsMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([tagName]) => tagName);
+  
+  return {
+    name: tag,
+    slug: tag.toLowerCase().replace(/\s+/g, '-'),
+    postCount: tagPosts.length,
+    relatedTags,
+  };
+}
+
+export async function getCategoryData(category: TBlogCategory): Promise<import('./types').CategoryData | null> {
+  if (category === 'all') {
+    return null;
+  }
+  
+  const posts = await getMdxPostsByCategory(category);
+  
+  const categoryDisplayNames: Record<TBlogCategory, string> = {
+    'all': 'All',
+    'development': 'Development',
+    'design': 'Design',
+    'best-practices': 'Best Practices',
+  };
+  
+  const categoryColors: Record<TBlogCategory, string> = {
+    'all': '#6b7280',
+    'development': '#3b82f6',
+    'design': '#8b5cf6',
+    'best-practices': '#10b981',
+  };
+  
+  const categoryDescriptions: Record<TBlogCategory, string> = {
+    'all': 'All blog posts',
+    'development': 'Technical articles about software development',
+    'design': 'Design principles and user experience',
+    'best-practices': 'Industry best practices and methodologies',
+  };
+  
+  return {
+    name: categoryDisplayNames[category],
+    slug: category,
+    description: categoryDescriptions[category],
+    color: categoryColors[category],
+    postCount: posts.length,
+  };
+}
+
+export async function getAllTagsWithData(): Promise<import('./types').TagData[]> {
+  const tags = await getAllMdxTags();
+  const tagDataPromises = tags.map(tag => getTagData(tag));
+  const tagDataResults = await Promise.all(tagDataPromises);
+  
+  return tagDataResults.filter((tagData): tagData is import('./types').TagData => tagData !== null);
+}
+
+export async function getAllCategoriesWithData(): Promise<import('./types').CategoryData[]> {
+  const categories = await getAllMdxCategories();
+  const categoryDataPromises = categories
+    .filter(cat => cat !== 'all')
+    .map(category => getCategoryData(category));
+  const categoryDataResults = await Promise.all(categoryDataPromises);
+  
+  return categoryDataResults.filter((categoryData): categoryData is import('./types').CategoryData => categoryData !== null);
 }

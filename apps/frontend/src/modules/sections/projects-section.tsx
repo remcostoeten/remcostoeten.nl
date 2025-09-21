@@ -8,8 +8,6 @@ import { SimpleProjectCard } from "@/modules/projects/components/SimpleProjectCa
 import { fetchFeaturedProjects } from "@/services/github-service";
 import { TSimpleProject } from "@/modules/projects/types";
 import { LatestActivity } from "./components/latest-activity";
-import { SimpleProject } from "../projects";
-import { SimpleProject } from "../projects";
 
 type TLoadingState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -30,7 +28,7 @@ const INITIAL_STATE: TProjectsState = {
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
-function createProjectFromData(name: string, data: any, fallbackUrl: string): SimpleProject {
+function createProjectFromData(name: string, data: any, fallbackUrl: string): TSimpleProject {
   return {
     name,
     url: data?.deploymentUrl || data?.url || fallbackUrl,
@@ -67,21 +65,27 @@ export function ProjectsSection() {
     }
 
     try {
+      console.log('🔄 Loading featured projects...');
       const { remcostoetenNl, ryoa } = await fetchFeaturedProjects();
+      console.log('📊 Featured projects response:', { remcostoetenNl: !!remcostoetenNl, ryoa: !!ryoa });
 
-      const featuredProjects: SimpleProject[] = [];
+      const featuredProjects: TSimpleProject[] = [];
 
       if (remcostoetenNl) {
+        console.log('✅ Adding remcostoeten.nl project');
         featuredProjects.push(
           createProjectFromData("Remcostoeten.nl", remcostoetenNl, "https://remcostoeten.nl")
         );
       }
 
       if (ryoa) {
+        console.log('✅ Adding RYOA project');
         featuredProjects.push(
           createProjectFromData("RYOA", ryoa, "#")
         );
       }
+
+      console.log('📋 Total featured projects:', featuredProjects.length);
 
       if (featuredProjects.length === 0) {
         throw new Error('No project data received from GitHub API');
@@ -95,6 +99,7 @@ export function ProjectsSection() {
       });
 
     } catch (error) {
+      console.error('❌ Error loading featured projects:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to load project data';
 
       setState(prev => ({
@@ -142,7 +147,7 @@ export function ProjectsSection() {
     >
       <motion.div {...ANIMATION_CONFIGS.staggered(0.2)}>
         <motion.p
-          className="text-body text-foreground"
+          className="text-body text-foreground mb-1"
           {...ANIMATION_CONFIGS.staggered(0.2)}
           role="status"
           aria-live="polite"
@@ -196,7 +201,9 @@ export function ProjectsSection() {
           )}
         </motion.p>
 
-        <LatestActivity />
+        <div className="mt-2">
+          <LatestActivity />
+        </div>
       </motion.div>
     </section>
   );

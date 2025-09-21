@@ -1,0 +1,148 @@
+# Implementation Plan
+
+- [-] 1. Set up enhanced MDX infrastructure and utilities
+  - Create TOC parsing utilities that extract headings from MDX content
+  - Implement breadcrumb generation logic based on current route and post metadata
+  - Set up enhanced type definitions for blog posts with TOC and breadcrumb data
+  - _Requirements: 1.1, 4.1, 4.2_
+
+- [ ] 2. Implement Table of Contents system
+- [ ] 2.1 Create TOC parsing and generation utilities
+  - Write utility functions to parse MDX content and extract heading structure
+  - Implement hierarchical TOC data structure generation
+  - Create heading ID generation and sanitization functions
+  - _Requirements: 1.1_
+
+- [ ] 2.2 Build TOC sidebar component with active section tracking
+  - Create TableOfContents React component with responsive design
+  - Implement Intersection Observer for active section highlighting
+  - Add smooth scrolling functionality with proper offset handling
+  - Write unit tests for TOC component behavior
+  - _Requirements: 1.2, 1.3, 1.4, 1.5_
+
+- [ ] 3. Enhance syntax highlighting with GitHub theme
+- [ ] 3.1 Upgrade CodeBlock component with GitHub theme support
+  - Integrate highlight.js or prism.js with GitHub light/dark themes
+  - Add support for language detection and labeling
+  - Implement line highlighting and line numbers functionality
+  - Write tests for syntax highlighting across multiple languages
+  - _Requirements: 2.1, 2.2, 2.3, 2.4_
+
+- [ ] 3.2 Add copy-to-clipboard functionality to code blocks
+  - Implement clipboard API integration with fallback support
+  - Add visual feedback for successful copy operations
+  - Create accessible copy button with proper ARIA labels
+  - Write tests for copy functionality across different browsers
+  - _Requirements: 2.5_
+
+- [ ] 4. Expand MDX component system
+- [ ] 4.1 Create enhanced MDX components for rich content
+  - Build Callout component for notes, warnings, and tips
+  - Implement ImageWithCaption component with zoom functionality
+  - Create enhanced table components with sorting and filtering
+  - Write unit tests for all new MDX components
+  - _Requirements: 3.1, 3.2, 3.3, 3.4_
+
+- [ ] 4.2 Update mdx-components configuration with new components
+  - Register new components in mdx-components.tsx
+  - Ensure proper TypeScript types for all components
+  - Add error boundaries for component rendering failures
+  - Write integration tests for MDX rendering with new components
+  - _Requirements: 3.5_
+
+- [ ] 5. Implement breadcrumb navigation system
+- [ ] 5.1 Create Breadcrumb component with dynamic generation
+  - Build reusable Breadcrumb component with proper accessibility
+  - Implement breadcrumb data generation from route and post metadata
+  - Add Schema.org structured data for SEO benefits
+  - Write tests for breadcrumb generation logic
+  - _Requirements: 4.1, 4.2, 4.4_
+
+- [ ] 5.2 Integrate breadcrumbs into blog post layout
+  - Add breadcrumb component to blog post page template
+  - Ensure responsive design for mobile devices
+  - Implement proper spacing and visual hierarchy
+  - Write tests for breadcrumb integration and responsive behavior
+  - _Requirements: 4.3, 4.5_
+
+- [ ] 6. Redesign category overview system
+- [ ] 6.1 Create enhanced CategoryOverview component
+  - Build new category card design with improved spacing
+  - Add post count indicators and visual hierarchy
+  - Implement hover effects and smooth transitions
+  - Write tests for category display and interactions
+  - _Requirements: 5.1, 5.2, 5.3, 5.4_
+
+- [ ] 6.2 Make category overview responsive and well-organized
+  - Implement responsive grid layout for different screen sizes
+  - Add proper spacing and visual organization
+  - Ensure accessibility with keyboard navigation
+  - Write tests for responsive behavior across devices
+  - _Requirements: 5.5_
+
+- [ ] 7. Implement functional tag system
+- [ ] 7.1 Create tag display and interaction components
+  - Build enhanced tag display components for blog posts
+  - Implement clickable tag functionality with proper styling
+  - Create tag filtering interface with clear visual feedback
+  - Write tests for tag display and interaction behavior
+  - _Requirements: 6.1, 6.4, 6.5, 6.6_
+
+- [ ] 7.2 Build tag pages and filtering system
+  - Create dynamic tag pages showing posts for specific tags
+  - Implement tag-based post filtering with pagination
+  - Add related tags suggestions and tag cloud visualization
+  - Write tests for tag page functionality and filtering
+  - _Requirements: 6.2, 6.3_
+
+- [ ] 8. Update blog post page with all enhancements
+- [ ] 8.1 Integrate TOC sidebar into blog post layout
+  - Add TOC sidebar to blog post page with responsive positioning
+  - Ensure proper layout on desktop and mobile devices
+  - Implement collapsible TOC for mobile with toggle button
+  - Write tests for TOC integration and responsive behavior
+  - _Requirements: 1.2, 1.5_
+
+- [ ] 8.2 Apply enhanced syntax highlighting to blog posts
+  - Update blog post rendering to use enhanced CodeBlock component
+  - Ensure GitHub theme consistency across all code blocks
+  - Add language labels and copy functionality to existing posts
+  - Write tests for syntax highlighting in full blog post context
+  - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
+
+- [ ] 8.3 Add breadcrumbs and enhanced tag display to blog posts
+  - Integrate breadcrumb component into blog post header
+  - Update tag display with enhanced styling and click functionality
+  - Ensure proper spacing and visual hierarchy with other elements
+  - Write tests for complete blog post layout with all enhancements
+  - _Requirements: 4.1, 4.2, 4.3, 6.1, 6.4_
+
+- [ ] 9. Update blog listing page with enhanced category and tag systems
+- [ ] 9.1 Replace existing category overview with enhanced design
+  - Update blog listing page to use new CategoryOverview component
+  - Ensure proper integration with existing filtering system
+  - Maintain backward compatibility with current URL structure
+  - Write tests for enhanced category overview integration
+  - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
+
+- [ ] 9.2 Enhance tag filtering in blog listing
+  - Update existing tag filtering to use enhanced tag components
+  - Improve visual feedback for selected tags
+  - Add tag suggestions and improved tag organization
+  - Write tests for enhanced tag filtering functionality
+  - _Requirements: 6.5, 6.6_
+
+- [ ] 10. Performance optimization and testing
+- [ ] 10.1 Optimize bundle size and runtime performance
+  - Implement code splitting for syntax highlighting themes
+  - Add lazy loading for TOC generation on large posts
+  - Optimize scroll event handling and intersection observer usage
+  - Write performance tests and measure bundle size impact
+  - _Requirements: All requirements for performance_
+
+- [ ] 10.2 Comprehensive testing and accessibility improvements
+  - Write end-to-end tests for complete blog enhancement workflow
+  - Ensure keyboard navigation works for all new components
+  - Verify screen reader compatibility and ARIA label usage
+  - Test color contrast and visual accessibility for all enhancements
+  - _Requirements: All requirements for accessibility_

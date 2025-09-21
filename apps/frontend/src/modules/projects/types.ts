@@ -17,10 +17,15 @@ export type TGitInfo = {
 };
 
 export type TProjectData = {
+  title: string;
   deploymentUrl?: string;
   url?: string;
+  demoUrl?: string;
   stars: number;
   forks: number;
+  branches?: number;
+  technologies?: string[];
+  highlights?: string[];
   latestCommit?: {
     message: string;
     age: string;

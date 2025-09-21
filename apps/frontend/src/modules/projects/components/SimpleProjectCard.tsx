@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Star, GitBranch, Calendar, Users, GitCommit, Clock } from "lucide-react";
-import { SimpleProject } from "../types";
+import { TSimpleProject } from "../types";
 
-interface SimpleProjectCardProps extends SimpleProject {}
+interface SimpleProjectCardProps extends TSimpleProject {}
 
 export const SimpleProjectCard = ({ name, url, gitInfo }: SimpleProjectCardProps) => {
   // Don't render hover card if no git info is available
@@ -13,7 +13,7 @@ export const SimpleProjectCard = ({ name, url, gitInfo }: SimpleProjectCardProps
     return (
       <a 
         href={url} 
-        className="text-heading text-accent hover:underline font-medium"
+        className="text-accent hover:underline font-medium cursor-pointer border-2 border-dotted border-accent/30 hover:border-accent/60 px-1 rounded transition-colors duration-200"
       >
         {name} ↗
       </a>
@@ -29,7 +29,7 @@ export const SimpleProjectCard = ({ name, url, gitInfo }: SimpleProjectCardProps
     >
       <a 
         href={url} 
-        className="text-heading text-accent hover:underline font-medium"
+        className="text-accent hover:underline font-medium cursor-pointer border-2 border-dotted border-accent/30 hover:border-accent/60 px-1 rounded transition-colors duration-200"
       >
         {name} ↗
       </a>

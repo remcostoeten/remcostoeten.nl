@@ -1,4 +1,4 @@
-import { ProjectData, SimpleProject } from "../types";
+import { TProjectData, TSimpleProject } from "../types";
 import { fetchTargetRepositories } from "@/services/github-service";
 
 // Helper function to determine project technologies based on repo data
@@ -82,12 +82,12 @@ const getHighlights = (repoName: string, description: string, topics: string[]):
 };
 
 // Create a function to get real project data from GitHub
-export const getRealProjectData = async (): Promise<{ featuredProjects: ProjectData[], simpleProjects: SimpleProject[] }> => {
+export const getRealProjectData = async (): Promise<{ featuredProjects: TProjectData[], simpleProjects: TSimpleProject[] }> => {
   try {
     const repoData = await fetchTargetRepositories();
     
-    const featuredProjects: ProjectData[] = [];
-    const simpleProjects: SimpleProject[] = [];
+    const featuredProjects: TProjectData[] = [];
+    const simpleProjects: TSimpleProject[] = [];
     
     // Process each repository
     for (const repoResult of repoData) {
@@ -120,10 +120,15 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: ProjectD
           url: repo.url,
           demoUrl: repo.topics.includes('demo') ? `${repo.url}#demo` : repo.url,
           stars: repo.stars,
+          forks: repo.forks,
           branches: repo.branches || 1,
           technologies,
           lastUpdated: repo.lastUpdated,
-          highlights
+          highlights,
+          language: repo.language,
+          contributors: repo.contributors || 1,
+          totalCommits: repo.totalCommits || 0,
+          startDate: repo.startDate
         });
       } else {
         // Add to simple projects
@@ -159,10 +164,14 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: ProjectD
         description: "Fetching real project data from GitHub...",
         url: "https://github.com/remcostoeten",
         stars: 0,
+        forks: 0,
         branches: 0,
         technologies: ["GitHub API"],
         lastUpdated: "recently",
-        highlights: ["Real-time data from GitHub"]
+        highlights: ["Real-time data from GitHub"],
+        language: "Various",
+        contributors: 1,
+        totalCommits: 0
       }],
       simpleProjects: [{
         name: "GitHub Profile",
@@ -181,5 +190,5 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: ProjectD
 };
 
 // Fallback static data (only used if GitHub API fails completely)
-export const FEATURED_PROJECTS: ProjectData[] = [];
-export const SIMPLE_PROJECTS: SimpleProject[] = [];
+export const FEATURED_PROJECTS: TProjectData[] = [];
+export const SIMPLE_PROJECTS: TSimpleProject[] = [];

@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BookOpen, ArrowRight } from "lucide-react";
+import { BookOpen, ArrowRight, Eye } from "lucide-react";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
+import { useMultipleViewCounts } from "@/hooks/use-multiple-view-counts";
 
 interface BlogPost {
   slug: string;
@@ -17,6 +18,9 @@ interface BlogSectionClientProps {
 }
 
 export function BlogSectionClient({ posts }: BlogSectionClientProps) {
+  const slugs = posts.map(post => post.slug);
+  const { getFormattedViewCount, loading: viewCountsLoading } = useMultipleViewCounts(slugs);
+
   return (
     <motion.div 
       className="py-6 border-t border-border/50"
@@ -43,6 +47,13 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
             </Link>
             <div className="text-xs text-muted-foreground/70 flex items-center gap-2 group-hover:text-muted-foreground transition-colors">
               <span>{post.readTime} min read</span>
+              <span>•</span>
+              <div className="flex items-center gap-1">
+                <Eye className="w-3 h-3" />
+                <span>
+                  {viewCountsLoading ? '...' : getFormattedViewCount(post.slug)}
+                </span>
+              </div>
               <span>•</span>
               <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
             </div>

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import syntax highlighting styles */
+@import '../styles/syntax-highlighting.css';
+
 ::selection {
   background: hsl(var(--accent));
   color: hsl(var(--primary));

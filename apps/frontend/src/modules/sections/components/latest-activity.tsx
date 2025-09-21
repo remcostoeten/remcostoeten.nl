@@ -49,7 +49,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
       const repo = urlParts[urlParts.length - 1];
 
       const data = await fetchRepositoryData(owner, repo);
-      
+
       if (data) {
         setRepoData({
           repositoryName: data.title,
@@ -255,17 +255,17 @@ export function LatestActivity() {
   const hasMultipleActivities = activities.length > 1;
 
   return (
-    <section 
-      className="text-body-sm text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg border border-border/50"
+    <section
+      className="text-body-sm text-muted-foreground mt-1 p-2.5 bg-muted/30 rounded-lg"
       aria-labelledby="latest-activity-heading"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       <h2 id="latest-activity-heading" className="sr-only">Latest Development Activity</h2>
-      
-      <div className="flex items-start gap-2 mb-2">
+
+      <div className="flex items-start gap-2 mb-1.5">
         <GitCommit className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" aria-hidden="true" />
-        
+
         <div className="leading-relaxed min-w-0 flex-1" role="status" aria-live="polite">
           {loading && (
             <span className="animate-pulse">Loading latest activities...</span>

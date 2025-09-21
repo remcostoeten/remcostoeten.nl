@@ -1,5 +1,6 @@
 import type { MDXComponents } from 'mdx/types';
 import { cn } from '@/lib/utils';
+import { CodeBlock, InlineCode } from './CodeBlock';
 
 // Export MDX components with proper styling
 export const mdxComponents: MDXComponents = {
@@ -77,28 +78,57 @@ export const mdxComponents: MDXComponents = {
       </a>
     );
   },
-  code: ({ children, className, ...props }) => (
-    <code
-      className={cn(
-        "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold text-foreground",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </code>
-  ),
-  pre: ({ children, className, ...props }) => (
-    <pre
-      className={cn(
-        "mb-4 mt-6 overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </pre>
-  ),
+  code: ({ children, className, ...props }) => {
+    // Check if this is inside a pre tag (code block) or standalone (inline code)
+    const isInlineCode = !className?.includes('language-');
+    
+    if (isInlineCode) {
+      return <InlineCode className={className} {...props}>{children}</InlineCode>;
+    }
+    
+    // For code blocks, return the code element with syntax highlighting classes
+    return (
+      <code
+        className={cn("hljs", className)}
+        {...props}
+      >
+        {children}
+      </code>
+    );
+  },
+  pre: ({ children, className, ...props }) => {
+    // Check if this contains a code element with language class
+    const hasLanguage = typeof children === 'object' && 
+      children !== null && 
+      'props' in children && 
+      children.props?.className?.includes('language-');
+    
+    if (hasLanguage) {
+      const language = children.props.className?.match(/language-(\w+)/)?.[1];
+      return (
+        <CodeBlock 
+          className={className} 
+          data-language={language}
+          {...props}
+        >
+          {children}
+        </CodeBlock>
+      );
+    }
+    
+    // Fallback for pre without language
+    return (
+      <pre
+        className={cn(
+          "mb-4 mt-6 overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </pre>
+    );
+  },
   blockquote: ({ children, className, ...props }) => (
     <blockquote
       className={cn(
