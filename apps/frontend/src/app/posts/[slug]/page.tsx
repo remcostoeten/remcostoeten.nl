@@ -3,13 +3,17 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import { Metadata } from "next";
 import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils";
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { mdxComponents } from '@/components/mdx/mdx-components';
+import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { BlogPostClient } from './BlogPostClient';
 import { AnalyticsTracker } from '@/components/analytics/analytics-tracker';
 import { BlogAnalytics } from '@/components/blog/blog-analytics';
 import { ViewCounter } from '@/components/blog/ViewCounter';
+import { TOCLayout } from '@/components/blog/toc-layout';
+import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
+import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
+import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 
 interface PostPageProps {
   params: Promise<{
@@ -71,57 +75,84 @@ export default async function PostPage(props: PostPageProps) {
   const fileContent = fs.readFileSync(filePath, 'utf8');
   const { content } = matter(fileContent);
 
+  // Parse headings for TOC
+  const headings = parseHeadingsFromMDX(content, 3);
+
+  // Generate breadcrumbs for the current post
+  const breadcrumbs = generateBlogPostBreadcrumbs(
+    post.title,
+    params.slug,
+    post.category
+  );
+
   return (
-    <div className="max-w-4xl mx-auto py-8">
-      <Link
-        href="/posts"
-        className="inline-flex items-center gap-2 text-accent hover:underline text-sm mb-6"
+    <div className="max-w-7xl mx-auto py-8 px-4">
+      {/* Breadcrumb Navigation */}
+      <BreadcrumbNavigation 
+        items={breadcrumbs}
+        className="mb-6"
+      />
+
+      {/* Fallback "Back to blog" link for users without JavaScript */}
+      <noscript>
+        <Link
+          href="/posts"
+          className="inline-flex items-center gap-2 text-accent hover:underline text-sm mb-6"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to blog
+        </Link>
+      </noscript>
+
+      <TOCLayout 
+        headings={headings}
+        className="w-full"
+        contentClassName="max-w-4xl"
       >
-        <ArrowLeft className="w-4 h-4" />
-        Back to blog
-      </Link>
+        <article>
+          <header className="mb-8">
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+              <div className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                <time dateTime={post.publishedAt}>
+                  {new Date(post.publishedAt).toLocaleDateString()}
+                </time>
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                <span>{post.readTime} min read</span>
+              </div>
+              <ViewCounter 
+                slug={params.slug} 
+                autoIncrement={true}
+                className="flex items-center gap-1 text-sm text-muted-foreground"
+              />
+            </div>
 
-      <div className="mb-8">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-          <div className="flex items-center gap-1">
-            <Calendar className="w-4 h-4" />
-            <time dateTime={post.publishedAt}>
-              {new Date(post.publishedAt).toLocaleDateString()}
-            </time>
+            <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
+            
+            <p className="text-xl text-muted-foreground mb-6">{post.excerpt}</p>
+
+            <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20">
+                {post.category}
+              </span>
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </header>
+
+          <div className="prose prose-invert max-w-none">
+            <MDXRemote source={content} components={mdxComponents} />
           </div>
-          <div className="flex items-center gap-1">
-            <Clock className="w-4 h-4" />
-            <span>{post.readTime} min read</span>
-          </div>
-          <ViewCounter 
-            slug={params.slug} 
-            autoIncrement={true}
-            className="flex items-center gap-1 text-sm text-muted-foreground"
-          />
-        </div>
-
-        <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
-        
-        <p className="text-xl text-muted-foreground mb-6">{post.excerpt}</p>
-
-        <div className="flex flex-wrap gap-2">
-          <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20">
-            {post.category}
-          </span>
-          {post.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="prose prose-invert max-w-none">
-        <MDXRemote source={content} components={mdxComponents} />
-      </div>
+        </article>
+      </TOCLayout>
     </div>
   );
 }

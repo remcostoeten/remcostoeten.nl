@@ -140,3 +140,46 @@ export function findTOCItemById(toc: TOCItem[], id: string): TOCItem | null {
 export function getAllHeadingIds(toc: TOCItem[]): string[] {
   return flattenTOC(toc).map(item => item.id);
 }
+
+/**
+ * Parses headings from rendered DOM elements (client-side)
+ * Useful for generating TOC from already rendered content
+ */
+export function parseHeadingsFromDOM(container: HTMLElement, maxDepth: number = 3): TOCItem[] {
+  const headingSelectors = Array.from({ length: maxDepth }, (_, i) => `h${i + 1}`).join(', ');
+  const headingElements = container.querySelectorAll(headingSelectors);
+  
+  const headings: TOCItem[] = [];
+  
+  headingElements.forEach((element) => {
+    const tagName = element.tagName.toLowerCase();
+    const level = parseInt(tagName.charAt(1));
+    const text = sanitizeHeadingText(element.textContent || '');
+    const id = element.id || generateHeadingId(text);
+    
+    // Ensure the element has an ID for navigation
+    if (!element.id) {
+      element.id = id;
+    }
+    
+    headings.push({
+      id,
+      text,
+      level,
+    });
+  });
+  
+  return buildHierarchicalTOC(headings);
+}
+
+/**
+ * Validates that all TOC items have corresponding DOM elements
+ */
+export function validateTOCWithDOM(toc: TOCItem[], container: HTMLElement): boolean {
+  const flatTOC = flattenTOC(toc);
+  
+  return flatTOC.every(item => {
+    const element = container.querySelector(`#${item.id}`);
+    return element !== null;
+  });
+}

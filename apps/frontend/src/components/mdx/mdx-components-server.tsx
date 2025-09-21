@@ -1,14 +1,15 @@
 import React from 'react';
 import type { MDXComponents } from 'mdx/types';
 import { cn } from '@/lib/utils';
-import { CodeBlock, InlineCode } from './CodeBlock';
+// Import server-safe components
+import { InlineCode } from './CodeBlock';
+import { ServerCodeBlock } from './ServerCodeBlock';
 import { Callout } from './Callout';
 import { ImageWithCaption } from './ImageWithCaption';
 import { EnhancedTable } from './EnhancedTable';
-import { withMDXErrorBoundary } from './MDXErrorBoundary';
 import { generateHeadingId, sanitizeHeadingText } from '@/lib/blog/toc-utils';
 
-// Export MDX components with proper styling
+// Server-safe MDX components without error boundaries
 export const mdxComponents: MDXComponents = {
   h1: ({ children, className, id, ...props }) => {
     const headingId = id || generateHeadingId(sanitizeHeadingText(String(children)));
@@ -107,8 +108,8 @@ export const mdxComponents: MDXComponents = {
         {children}
       </a>
     );
-  },
-  code: ({ children, className, ...props }) => {
+  },  code
+: ({ children, className, ...props }) => {
     // Check if this is inside a pre tag (code block) or standalone (inline code)
     const isInlineCode = !className?.includes('language-');
     
@@ -127,36 +128,40 @@ export const mdxComponents: MDXComponents = {
     );
   },
   pre: ({ children, className, ...props }) => {
-    // Check if this contains a code element with language class
-    const hasLanguage = typeof children === 'object' && 
-      children !== null && 
-      'props' in children && 
-      children.props?.className?.includes('language-');
+    // Always use ServerCodeBlock for better syntax highlighting
+    // Extract language from children if available
+    let language = null;
     
-    if (hasLanguage) {
-      const language = children.props.className?.match(/language-(\w+)/)?.[1];
+    // Check if children has language class
+    if (React.isValidElement(children) && children.props?.className) {
+      const match = children.props.className.match(/language-(\w+)/);
+      language = match?.[1];
+    } else if (typeof children === 'object' && children !== null && 'props' in children && children.props?.className) {
+      const match = children.props.className.match(/language-(\w+)/);
+      language = match?.[1];
+    }
+    
+    // If we have a language, use ServerCodeBlock
+    if (language) {
       return (
-        <CodeBlock 
+        <ServerCodeBlock 
           className={className} 
           data-language={language}
           {...props}
         >
           {children}
-        </CodeBlock>
+        </ServerCodeBlock>
       );
     }
     
-    // Fallback for pre without language
+    // Fallback for pre without language - still use ServerCodeBlock for consistency
     return (
-      <pre
-        className={cn(
-          "mb-4 mt-6 overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm",
-          className
-        )}
+      <ServerCodeBlock 
+        className={className}
         {...props}
       >
         {children}
-      </pre>
+      </ServerCodeBlock>
     );
   },
   blockquote: ({ children, className, ...props }) => (
@@ -267,8 +272,8 @@ export const mdxComponents: MDXComponents = {
       {children}
     </td>
   ),
-  // Enhanced MDX Components with Error Boundaries
-  Callout: withMDXErrorBoundary(Callout),
-  ImageWithCaption: withMDXErrorBoundary(ImageWithCaption),
-  EnhancedTable: withMDXErrorBoundary(EnhancedTable),
+  // Server-safe MDX Components without error boundaries
+  Callout,
+  ImageWithCaption,
+  EnhancedTable,
 };

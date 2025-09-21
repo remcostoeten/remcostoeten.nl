@@ -5,8 +5,11 @@
 /* Import syntax highlighting styles */
 @import '../styles/syntax-highlighting.css';
 
+/* Import TOC styles */
+@import '../styles/toc.css';
+
 ::selection {
-  background: hsl(var(--accent));
+  background: calc(hsl(var(--accent)) * 0.6);
   color: hsl(var(--primary));
 }
 
@@ -189,4 +192,9 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+}
+
+a,
+a:hover {
+  text-decoration: none;
 }

@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint",
+    "test": "vitest",
+    "test:run": "vitest run",
     "blog:sync": "tsx scripts/sync-blog-metadata.ts",
     "blog:list": "tsx scripts/blog-management.ts list",
     "blog:create": "tsx scripts/blog-management.ts create",
@@ -58,6 +60,7 @@
     "embla-carousel-react": "^8.3.0",
     "framer-motion": "^12.23.3",
     "gray-matter": "^4.0.3",
+    "highlight.js": "^11.11.1",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
     "next": "15.5.3",
@@ -83,6 +86,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/chokidar": "^2.1.7",
     "@types/node": "^20",
     "@types/react": "19.1.13",
@@ -90,9 +96,11 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^8",
     "eslint-config-next": "15.5.3",
+    "jsdom": "^27.0.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "@types/react": "19.1.13",

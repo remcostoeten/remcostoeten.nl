@@ -1,5 +1,5 @@
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { mdxComponents } from '@/components/mdx/mdx-components';
+import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import { TBlogPost } from '@/lib/blog/types';
 import { formatPostDate, getRelatedPostsClient } from '@/lib/blog/client';
 import { Badge } from '@/components/ui/badge';

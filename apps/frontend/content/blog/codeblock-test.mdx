@@ -1,0 +1,197 @@
+---
+title: "CodeBlock Enhancement Test"
+description: "Testing the enhanced CodeBlock component with GitHub themes"
+date: "2024-01-01"
+category: "testing"
+tags: ["test", "codeblock", "syntax-highlighting"]
+---
+
+# CodeBlock Enhancement Test
+
+This post tests the enhanced CodeBlock component with GitHub theme support.
+
+## JavaScript Example
+
+```javascript
+// This is a JavaScript example
+const greeting = 'Hello, World!';
+const numbers = [1, 2, 3, 4, 5];
+
+function calculateSum(arr) {
+  return arr.reduce((sum, num) => sum + num, 0);
+}
+
+console.log(greeting);
+console.log('Sum:', calculateSum(numbers));
+```
+
+## TypeScript Example
+
+```typescript
+// TypeScript with type annotations
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+class UserService {
+  private users: User[] = [];
+
+  addUser(user: User): void {
+    this.users.push(user);
+  }
+
+  findUser(id: number): User | undefined {
+    return this.users.find(user => user.id === id);
+  }
+}
+
+const service = new UserService();
+```
+
+## Python Example
+
+```python
+# Python example with classes and functions
+class Calculator:
+    def __init__(self):
+        self.history = []
+    
+    def add(self, a: int, b: int) -> int:
+        result = a + b
+        self.history.append(f"{a} + {b} = {result}")
+        return result
+    
+    def get_history(self) -> list:
+        return self.history
+
+# Usage
+calc = Calculator()
+result = calc.add(5, 3)
+print(f"Result: {result}")
+```
+
+## CSS Example
+
+```css
+/* Modern CSS with custom properties */
+:root {
+  --primary-color: #3b82f6;
+  --secondary-color: #64748b;
+  --border-radius: 0.5rem;
+}
+
+.card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+```
+
+## JSON Example
+
+```json
+{
+  "name": "enhanced-codeblock",
+  "version": "1.0.0",
+  "description": "Enhanced CodeBlock component with GitHub themes",
+  "features": [
+    "Syntax highlighting",
+    "GitHub light/dark themes",
+    "Language detection",
+    "Copy to clipboard",
+    "Line numbers",
+    "Line highlighting"
+  ],
+  "languages": {
+    "supported": ["javascript", "typescript", "python", "css", "json", "bash"],
+    "aliases": {
+      "js": "javascript",
+      "ts": "typescript",
+      "py": "python"
+    }
+  }
+}
+```
+
+## Bash Example
+
+```bash
+#!/bin/bash
+# Deployment script example
+
+set -e
+
+echo "Starting deployment..."
+
+# Build the application
+npm run build
+
+# Run tests
+npm test
+
+# Deploy to production
+if [ "$NODE_ENV" = "production" ]; then
+  echo "Deploying to production..."
+  rsync -avz --delete ./dist/ user@server:/var/www/app/
+  echo "Deployment complete!"
+else
+  echo "Not in production environment, skipping deployment"
+fi
+```
+
+## Inline Code
+
+Here's some inline code: `const example = 'inline code'` and `npm install package`.
+
+## Testing Features
+
+The enhanced CodeBlock should support:
+
+1. **Language Detection**: Automatic detection from className or data-language
+2. **GitHub Themes**: Both light and dark themes
+3. **Copy Functionality**: Click to copy code to clipboard
+4. **Line Numbers**: Optional line numbering
+5. **Line Highlighting**: Highlight specific lines
+6. **Accessibility**: Proper ARIA labels and keyboard navigation
+
+## Copy Functionality Tests
+
+Test the copy functionality with these methods:
+
+1. **Click the Copy button** - Should show "Copied" feedback
+2. **Keyboard navigation** - Tab to the copy button and press Enter/Space
+3. **Ctrl+C shortcut** - Focus the code block and press Ctrl+C (or Cmd+C on Mac)
+4. **Error handling** - Should show "Failed" if clipboard access is denied
+
+```javascript
+// Test copying this code
+function testCopyFunctionality() {
+  const message = "This code should be copyable!";
+  console.log(message);
+  
+  // Try different copy methods:
+  // 1. Click the copy button
+  // 2. Use keyboard navigation
+  // 3. Use Ctrl+C when focused
+  
+  return "Copy test complete";
+}
+
+testCopyFunctionality();
+```
+
+## Accessibility Features
+
+- **ARIA Labels**: Copy button has descriptive labels
+- **Keyboard Support**: Full keyboard navigation
+- **Focus Management**: Proper focus indicators
+- **Screen Reader**: Compatible with screen readers
+- **Error States**: Clear error feedback

@@ -7,13 +7,15 @@ import {
   ContactSection,
   TimezoneSection,
   BlogSection
-} from "@/modules/sections";
+} from "@/modules/sections"; 
+ import {  LatestActivityRedesign } from "@/components/latest-activity-redesign";
 
 export default async function HomePage() {
   return (
     <PageLayout>
       <HeroSection />
       <AboutSection />
+      <LatestActivityRedesign />
       <ProjectsSection />
       <LatestProjectSection />
       <BlogSection />

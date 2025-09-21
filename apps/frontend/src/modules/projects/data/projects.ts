@@ -4,7 +4,7 @@ import { fetchTargetRepositories } from "@/services/github-service";
 // Helper function to determine project technologies based on repo data
 const getTechnologies = (repoName: string, language: string, topics: string[]): string[] => {
   const baseTech = language ? [language] : [];
-  
+
   // Add specific technologies based on repo name and topics
   if (repoName.includes('nextjs') || topics.includes('nextjs')) {
     baseTech.push('Next.js', 'React');
@@ -27,14 +27,14 @@ const getTechnologies = (repoName: string, language: string, topics: string[]): 
   if (topics.includes('database') || repoName.includes('db')) {
     baseTech.push('Database');
   }
-  
+
   return Array.from(new Set(baseTech)); // Remove duplicates
 };
 
 // Helper function to generate highlights based on repo data
 const getHighlights = (repoName: string, description: string, topics: string[]): string[] => {
   const highlights: string[] = [];
-  
+
   if (repoName.includes('fync')) {
     highlights.push(
       "Unified architecture across 9 different APIs",
@@ -68,12 +68,12 @@ const getHighlights = (repoName: string, description: string, topics: string[]):
       "Blog with MDX support"
     );
   }
-  
+
   // Add generic highlights based on topics
   if (topics.includes('typescript')) highlights.push("Full TypeScript support");
   if (topics.includes('react')) highlights.push("Modern React patterns");
   if (topics.includes('api')) highlights.push("RESTful API design");
-  
+
   return highlights.length > 0 ? highlights : [
     "Modern development practices",
     "Clean, maintainable code",
@@ -85,24 +85,24 @@ const getHighlights = (repoName: string, description: string, topics: string[]):
 export const getRealProjectData = async (): Promise<{ featuredProjects: TProjectData[], simpleProjects: TSimpleProject[] }> => {
   try {
     const repoData = await fetchTargetRepositories();
-    
+
     const featuredProjects: TProjectData[] = [];
     const simpleProjects: TSimpleProject[] = [];
-    
+
     // Process each repository
     for (const repoResult of repoData) {
       if (!repoResult.data) continue;
-      
+
       const repo = repoResult.data;
       const technologies = getTechnologies(repo.title, repo.language, repo.topics);
       const highlights = getHighlights(repo.title, repo.description, repo.topics);
-      
+
       // Determine if this should be a featured project or simple project
-      const isFeatured = repo.title.includes('fync') || 
-                        repo.title.includes('auth') || 
-                        repo.title.includes('turso') ||
-                        repo.stars > 5; // Projects with more stars are featured
-      
+      const isFeatured = repo.title.includes('fync') ||
+        repo.title.includes('auth') ||
+        repo.title.includes('turso') ||
+        repo.stars > 5; // Projects with more stars are featured
+
       if (isFeatured) {
         // Add to featured projects
         let title = repo.title;
@@ -113,7 +113,7 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: TProject
         } else if (repo.title.includes('turso')) {
           title = `${repo.title} - Database CLI Tool`;
         }
-        
+
         featuredProjects.push({
           title,
           description: repo.description || `A ${repo.language} project with ${repo.stars} stars`,
@@ -146,17 +146,17 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: TProject
         });
       }
     }
-    
+
     // Sort featured projects by stars (descending)
     featuredProjects.sort((a, b) => b.stars - a.stars);
-    
+
     // Sort simple projects by stars (descending)
     simpleProjects.sort((a, b) => (b.gitInfo?.stars || 0) - (a.gitInfo?.stars || 0));
-    
+
     return { featuredProjects, simpleProjects };
   } catch (error) {
     console.error('Error fetching real project data:', error);
-    
+
     // Return minimal fallback data
     return {
       featuredProjects: [{

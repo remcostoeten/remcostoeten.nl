@@ -166,7 +166,6 @@ export function ProjectsSection() {
                 onClick={handleRetry}
                 className="text-accent hover:underline focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-sm"
                 aria-label={`${retryButtonText} loading projects`}
-                disabled={state.loadingState === 'loading'}
               >
                 {retryButtonText}
               </button>

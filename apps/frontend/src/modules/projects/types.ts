@@ -2,6 +2,7 @@ export type TSimpleProject = {
   name: string;
   url: string;
   gitInfo: TGitInfo;
+  index: number;
 };
 
 export type TGitInfo = {

@@ -20,60 +20,60 @@
   - Write unit tests for TOC component behavior
   - _Requirements: 1.2, 1.3, 1.4, 1.5_
 
-- [ ] 3. Enhance syntax highlighting with GitHub theme
-- [x] 3.1 Upgrade CodeBlock component with GitHub theme support
+- [-] 3. Enhance syntax highlighting with GitHub theme
+- [-] 3.1 Upgrade CodeBlock component with GitHub theme support
   - Integrate highlight.js or prism.js with GitHub light/dark themes
   - Add support for language detection and labeling
   - Implement line highlighting and line numbers functionality
   - Write tests for syntax highlighting across multiple languages
   - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [x] 3.2 Add copy-to-clipboard functionality to code blocks
+- [ ] 3.2 Add copy-to-clipboard functionality to code blocks
   - Implement clipboard API integration with fallback support
   - Add visual feedback for successful copy operations
   - Create accessible copy button with proper ARIA labels
   - Write tests for copy functionality across different browsers
   - _Requirements: 2.5_
 
-- [x] 4. Expand MDX component system
-- [x] 4.1 Create enhanced MDX components for rich content
+- [ ] 4. Expand MDX component system
+- [ ] 4.1 Create enhanced MDX components for rich content
   - Build Callout component for notes, warnings, and tips
   - Implement ImageWithCaption component with zoom functionality
   - Create enhanced table components with sorting and filtering
   - Write unit tests for all new MDX components
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [x] 4.2 Update mdx-components configuration with new components
+- [ ] 4.2 Update mdx-components configuration with new components
   - Register new components in mdx-components.tsx
   - Ensure proper TypeScript types for all components
   - Add error boundaries for component rendering failures
   - Write integration tests for MDX rendering with new components
   - _Requirements: 3.5_
 
-- [x] 5. Implement breadcrumb navigation system
-- [x] 5.1 Create Breadcrumb component with dynamic generation
+- [ ] 5. Implement breadcrumb navigation system
+- [ ] 5.1 Create Breadcrumb component with dynamic generation
   - Build reusable Breadcrumb component with proper accessibility
   - Implement breadcrumb data generation from route and post metadata
   - Add Schema.org structured data for SEO benefits
   - Write tests for breadcrumb generation logic
   - _Requirements: 4.1, 4.2, 4.4_
 
-- [x] 5.2 Integrate breadcrumbs into blog post layout
+- [ ] 5.2 Integrate breadcrumbs into blog post layout
   - Add breadcrumb component to blog post page template
   - Ensure responsive design for mobile devices
   - Implement proper spacing and visual hierarchy
   - Write tests for breadcrumb integration and responsive behavior
   - _Requirements: 4.3, 4.5_
 
-- [x] 6. Redesign category overview system
-- [x] 6.1 Create enhanced CategoryOverview component
+- [ ] 6. Redesign category overview system
+- [ ] 6.1 Create enhanced CategoryOverview component
   - Build new category card design with improved spacing
   - Add post count indicators and visual hierarchy
   - Implement hover effects and smooth transitions
   - Write tests for category display and interactions
   - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-- [x] 6.2 Make category overview responsive and well-organized
+- [ ] 6.2 Make category overview responsive and well-organized
   - Implement responsive grid layout for different screen sizes
   - Add proper spacing and visual organization
   - Ensure accessibility with keyboard navigation
