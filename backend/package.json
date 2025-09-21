@@ -1,0 +1,27 @@
+{
+  "name": "@monorepo/backend",
+  "version": "1.0.0",
+  "description": "Hono.js backend for pageviews tracking",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "type-check": "tsc --noEmit",
+    "gen": "drizzle-kit generate --config=drizzle.config.ts",
+    "push": "drizzle-kit push --config=drizzle.config.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.8.0",
+    "@hono/zod-validator": "^0.2.0",
+    "@neondatabase/serverless": "^1.0.1",
+    "drizzle-orm": "^0.44.5",
+    "hono": "^4.0.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.0.0",
+    "drizzle-kit": "^0.31.4",
+    "typescript": "^5.0.0"
+  }
+}

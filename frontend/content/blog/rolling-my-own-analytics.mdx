@@ -1,0 +1,160 @@
+---
+title: "Rolling your own analytics system in Hono & Next.js"
+excerpt: "Building a custom analytics system from scratch using Hono.js backend and Next.js frontend with PostgreSQL for real-time tracking and insights."
+date: "19-09-2025"
+author: "Remco Stoeten"
+tags: ["analytics", "DIY", "hono","next.js","backend"]
+category: "development"
+status: "published"
+---
+
+You could just use something like [Posthog](https://posthog.com)or [Matomo](https://matomo.org), they’ve got funding and probably better engineers behind them than you and me. But hitting `npm install` and dropping in a provider doesn’t solve skillissues. Previously I [rolled my own auth](https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication) system from scratch, which was a fun project and turned out great. So I decided to roll my own analytics instead, and it’s been a fun project to dig into.
+
+## Stack & setup
+Front-end we're using Next.JS. Why? Because. Because I want to learn fullstack development I went with Hono as a backend rather than server actions or api routes. 
+
+### Setup
+I use a mono repo, you do whatever you want. Well follow a simple structure for this guide.
+
+```bash
+mkdir analytics-project;
+cd analytics-project;
+pnpm dlx create-next-app@latest frontend --typescript --eslint --approuter;
+pnpm create hono@latest backend
+```
+### Backend
+We'll leave the front-end for now. Starting off with the backend.
+
+Going to be needing an ORM because we lack SQL skills and also a database driver, we use neon postgres.
+```bash
+pnpm add drizzle-orm; 
+pnpm add drizzle-kit -D; 
+pnpm add @neondatabase/serverless;
+```
+
+### ORM
+Drizzle requires a config in the root. `touch backend/drizzle.config.ts` 
+
+It's a object that contains the path to the schema, dialect, where your migration files go and the database credentials.
+
+```typescript
+import { Config } from 'drizzle-kit';
+
+export default {
+  schema: './src/api/schema/index.ts',
+  dialect: 'postgresql', // or turso, sqlite, mysql.
+  out: './drizzle',
+  dbCredentials: {
+    url: process.env.DATABASE_URL!, /
+  },
+} satisfies Config;
+```
+
+### Schema
+Great, now the schema. We want to track pageviews and visitors for the MVP. Thus we need those tables to store the data.
+
+```bash
+touch backend/src/api/schema/schema.ts; 
+touch backend/src/api/schema/visitors.ts;
+touch backend/src/api/schema/pageviews.ts;
+```
+
+backend/src/api/schema/index.ts
+```typescript
+export * from './visitors';
+export * from './pageviews';
+```
+
+backend/src/api/schema/pageviews.ts
+```typescript
+import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+
+export const pageviews = pgTable('pageviews', {
+  id: text('id').primaryKey(),
+  url: text('url').notNull(),
+  title: text('title'),
+  referrer: text('referrer'),
+  userAgent: text('user_agent'),
+  timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`NOW()`),
+});
+```
+
+backend/src/api/schema/visitors.ts
+```typescript
+import { pgTable, text, boolean, timestamp, integer } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+    
+export const visitors = pgTable('visitors', {
+  id: text('id').primaryKey(),
+  visitorId: text('visitor_id').notNull().unique(),
+  isNewVisitor: boolean('is_new_visitor').notNull().default(true),
+  firstVisitAt: timestamp('first_visit_at', { withTimezone: true }).notNull(),
+  lastVisitAt: timestamp('last_visit_at', { withTimezone: true }).notNull(),
+  totalVisits: integer('total_visits').notNull().default(1),
+  userAgent: text('user_agent'),
+  ipAddress: text('ip_address'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`NOW()`),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`NOW()`),
+});
+```
+
+Let your imaginataion go loose, you can track whatever you want. Have a look at these rabbit holes for more ideas.
+- [MDN: Navigator API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator) – browser, OS, user agent, language, hardware concurrency  
+- [MDN: Window.screen](https://developer.mozilla.org/en-US/docs/Web/API/Screen) – screen width, height, color depth  
+- [MDN: Document.referrer](https://developer.mozilla.org/en-US/docs/Web/API/Document/referrer) – referring URL  
+- [MDN: Performance API](https://developer.mozilla.org/en-US/docs/Web/API/Performance) – timing, navigation, resource metrics  
+- [MDN: Client Hints](https://developer.mozilla.org/en-US/docs/Web/HTTP/Client_hints) – user agent hints, device memory, viewport width  
+- [Fetch & Request headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers) – user-agent, accept-language, etc.  
+<small><i>gl hf</i></small>
+
+## Push it to the database
+
+Ok, schema done. Grab your (database url)[https://neon.tech/], either through docker locallly (switch the neon package out for `pg` or `postgres`). Paste it in your .env in the backend like so:
+
+```bash
+DATABASE_URL="postgresql://neondb_owner.....aws.neon.tech/neondb?ssl..."
+```
+Now we're going to generate and push it through the database through `drizzle-kit`. If you get an error it's most likely  because you're missing a database url, or your path to the schema is wrong in `.drizzle.config.ts`.
+`npx drizzle-kit generate` 
+`npx drizzle-kit push`
+Et voila, we've got a database with tables.
+
+### Routes
+We'll be needing a few routes which the frontend can query against. Were going to create:
+`/api/visitors`
+`/api/pageviews`
+`/api/health`
+
+Lets start of with health. Inside the `backend/src/index.ts`. Leave what's already in t here and just add this in the middle.
+
+```typescript
+ app.get('/health', (c) => {
+    return c.json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      storage: 'hybrid'
+    });
+  });
+```
+Run the backend server with `bun run dev` and check if u get a result with `curl http://localhost:4001/health`. It should return something like this:
+```bash
+{
+    "status": "ok",
+    "timestamp": "2025-09-19T10:10:10.101Z",
+    "storage": "hybrid"
+}
+```
+
+
+
+
+
+Next up we'll be creating the routes for visitors and pageviews.
+
+```typescript
+app.route('/api/visitors', visitorRouter);
+app.route('/api/pageviews', createPageviewsRouter(pageviewService));
+app.route('/api/blog', createBlogRouter(blogMetadataService));
+```

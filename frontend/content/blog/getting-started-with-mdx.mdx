@@ -1,0 +1,99 @@
+---
+title: "Getting Started with MDX"
+excerpt: "Learn how to create rich, interactive blog posts using MDX in your Next.js application."
+publishedAt: "2024-01-20"
+tags: ["MDX", "Next.js", "React", "Markdown"]
+category: "development"
+status: "published"
+author: "Remco Stoeten"
+seo:
+  title: "Getting Started with MDX - Complete Guide"
+  description: "Learn how to create rich, interactive blog posts using MDX in your Next.js application. Includes examples and best practices."
+  keywords: ["MDX", "Next.js", "React", "Markdown", "blog", "tutorial"]
+---
+
+# Getting Started with MDX
+
+MDX is a powerful format that allows you to write JSX directly in your Markdown files. This means you can create rich, interactive content that combines the simplicity of Markdown with the power of React components.
+
+## What is MDX?
+
+MDX is a format that lets you write JSX directly in your Markdown files. It's perfect for creating:
+
+- **Interactive documentation**
+- **Rich blog posts**
+- **Educational content**
+- **Component showcases**
+
+## Why Use MDX?
+
+There are several benefits to using MDX:
+
+1. **Familiar syntax**: If you know Markdown, you already know most of MDX
+2. **Component integration**: Use React components directly in your content
+3. **Type safety**: Full TypeScript support
+4. **Performance**: Server-side rendering with Next.js
+
+## Basic Example
+
+Here's a simple MDX file:
+
+```jsx
+import { Button } from '@/components/ui/button'
+
+# My Blog Post
+
+This is a regular paragraph with **bold text** and *italic text*.
+
+<Button>Click me!</Button>
+
+## Code Example
+
+```javascript
+function greet(name) {
+  return `Hello, ${name}!`;
+}
+```
+
+## Advanced Features
+
+### Custom Components
+
+You can create custom components for your MDX content:
+
+```jsx
+<Callout type="info">
+  This is an informational callout with custom styling.
+</Callout>
+```
+
+### Interactive Elements
+
+MDX allows you to include interactive React components:
+
+```jsx
+<Counter initialValue={0} />
+```
+
+### Tables
+
+| Feature | MDX | Markdown |
+|---------|-----|----------|
+| JSX Support | ✅ | ❌ |
+| Components | ✅ | ❌ |
+| Type Safety | ✅ | ❌ |
+
+## Best Practices
+
+1. **Keep components simple**: Don't overcomplicate your MDX components
+2. **Use TypeScript**: Take advantage of type safety
+3. **Optimize images**: Use Next.js Image component for better performance
+4. **Test your content**: Make sure all components work correctly
+
+## Conclusion
+
+MDX is a powerful tool for creating rich, interactive content. It combines the best of Markdown and React, making it perfect for modern web applications.
+
+> **Pro tip**: Start with simple Markdown and gradually add components as needed.
+
+Happy writing! 🚀

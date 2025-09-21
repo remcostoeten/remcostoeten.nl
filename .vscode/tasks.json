@@ -1,0 +1,117 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Blog: Sync Metadata",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "blog:sync"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Blog: Watch Changes",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "blog:watch"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "blog-watcher",
+        "pattern": {
+          "regexp": "^(.*)$",
+          "file": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "👀 Watching for blog content changes",
+          "endsPattern": "Press Ctrl\\+C to stop"
+        }
+      }
+    },
+    {
+      "label": "Blog: List Posts",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "blog:list"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Blog: Create Post",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "blog:create"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Blog: Setup Git Hooks",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "blog:hooks"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps"
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Blog: Full Setup",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Blog: Setup Git Hooks",
+        "Blog: Sync Metadata"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ]
+}
