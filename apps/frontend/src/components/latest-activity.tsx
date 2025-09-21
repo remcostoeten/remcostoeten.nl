@@ -220,8 +220,8 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
                 <div className="pt-3 border-t border-border/60 space-y-2">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Latest commit:</span>
-                    <time className="text-accent font-medium" dateTime={activity.timestamp}>
-                      {formatTimestamp(activity.timestamp)}
+                    <time className="text-accent font-medium">
+                      {activity.timestamp}
                     </time>
                   </div>
                   <a
@@ -709,8 +709,8 @@ export function LatestActivity() {
                       filter: { duration: 0.4 }
                     }}
                   >
-                    <time dateTime={currentActivity.timestamp} className="text-xs text-muted-foreground font-medium">
-                      ({formatTimestamp(currentActivity.timestamp)})
+                    <time className="text-xs text-muted-foreground font-medium">
+                      ({currentActivity.timestamp})
                     </time>
                   </motion.span>
                 </AnimatePresence>
