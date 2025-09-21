@@ -38,6 +38,7 @@ interface ServerCodeBlockProps {
   children: React.ReactNode;
   className?: string;
   'data-language'?: string;
+  'data-filename'?: string;
 }
 
 function getCodeContent(children: React.ReactNode): string {
@@ -56,6 +57,23 @@ function getCodeContent(children: React.ReactNode): string {
   return String(children || '');
 }
 
+function extractFilePathAndCode(content: string): { filePath: string | null; cleanCode: string } {
+  // Look for file paths at the beginning of the code block
+  // Patterns like: backend/src/api/schema/visitors.ts
+  // Or: ./src/components/MyComponent.tsx
+  // Or: /path/to/file.js
+  const filePathRegex = /^([^\n]*\.(ts|tsx|js|jsx|py|css|scss|html|json|yaml|yml|md|sql|sh|bash|env|config|txt|xml))\s*\n/i;
+  const match = content.match(filePathRegex);
+  
+  if (match) {
+    const filePath = match[1].trim();
+    const cleanCode = content.substring(match[0].length);
+    return { filePath, cleanCode };
+  }
+  
+  return { filePath: null, cleanCode: content };
+}
+
 function normalizeLanguage(lang: string): string {
   const langMap: Record<string, string> = {
     'js': 'javascript',
@@ -70,15 +88,20 @@ function normalizeLanguage(lang: string): string {
   return langMap[lang.toLowerCase()] || lang.toLowerCase();
 }
 
-export function ServerCodeBlock({ children, className, 'data-language': dataLanguage, ...props }: ServerCodeBlockProps) {
+export function ServerCodeBlock({ children, className, 'data-language': dataLanguage, 'data-filename': dataFilename, ...props }: ServerCodeBlockProps) {
   // Extract language from className or data-language
   const classLanguage = className?.match(/language-(\w+)/)?.[1];
   const rawLanguage = dataLanguage || classLanguage;
   const normalizedLanguage = rawLanguage ? normalizeLanguage(rawLanguage) : null;
   const displayLanguage = rawLanguage || 'code';
 
-  // Get the code content
-  const codeContent = getCodeContent(children);
+  // Get the code content and extract file path if present
+  const rawCodeContent = getCodeContent(children);
+  const { filePath: extractedFilePath, cleanCode } = extractFilePathAndCode(rawCodeContent);
+  
+  // Use provided filename or extracted file path
+  const filePath = dataFilename || extractedFilePath;
+  const codeContent = filePath ? cleanCode : rawCodeContent;
   
   // Apply syntax highlighting on the server
   let highlightedCode = codeContent;
@@ -101,12 +124,20 @@ export function ServerCodeBlock({ children, className, 'data-language': dataLang
 
   return (
     <div className="relative group">
-      {/* Header with language label */}
+      {/* Header with language label and file path */}
       <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border rounded-t-lg">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             {displayLanguage}
           </span>
+          {filePath && (
+            <>
+              <div className="w-px h-4 bg-border"></div>
+              <span className="text-xs font-mono text-foreground bg-muted/60 px-2 py-1 rounded">
+                {filePath}
+              </span>
+            </>
+          )}
         </div>
       </div>
 

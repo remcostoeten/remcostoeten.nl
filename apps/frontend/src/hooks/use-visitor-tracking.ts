@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from 'react';
+import { API, apiFetch } from '@/config/api.config';
 
 type TVisitorData = {
   userAgent: string;
@@ -76,61 +77,39 @@ export function useVisitorTracking() {
 
   return useMemo(() => ({
     async trackVisitor() {
-      try {
-        const response = await fetch('http://localhost:4001/api/visitors/track-visitor', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Screen-Resolution': visitorData.screenResolution,
-            'X-Timezone': visitorData.timezone,
-            'X-Platform': visitorData.platform,
-          },
-          body: JSON.stringify({ visitorId, ...visitorData }),
-        });
-        return await response.json();
-      } catch (error) {
-        console.error('Error tracking visitor:', error);
-        return null;
-      }
+      const result = await apiFetch(API.visitors.track(), {
+        method: 'POST',
+        headers: {
+          'X-Screen-Resolution': visitorData.screenResolution,
+          'X-Timezone': visitorData.timezone,
+          'X-Platform': visitorData.platform,
+        },
+        body: JSON.stringify({ visitorId, ...visitorData }),
+      });
+      return result.success ? result.data : null;
     },
 
     async trackBlogView(blogSlug: string, blogTitle: string) {
-      try {
-        const response = await fetch('http://localhost:4001/api/visitors/track-blog-view', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Screen-Resolution': visitorData.screenResolution,
-            'X-Timezone': visitorData.timezone,
-            'X-Platform': visitorData.platform,
-          },
-          body: JSON.stringify({ visitorId, blogSlug, blogTitle, ...visitorData }),
-        });
-        return await response.json();
-      } catch (error) {
-        console.error('Error tracking blog view:', error);
-        return null;
-      }
+      const result = await apiFetch(API.visitors.trackBlogView(), {
+        method: 'POST',
+        headers: {
+          'X-Screen-Resolution': visitorData.screenResolution,
+          'X-Timezone': visitorData.timezone,
+          'X-Platform': visitorData.platform,
+        },
+        body: JSON.stringify({ visitorId, blogSlug, blogTitle, ...visitorData }),
+      });
+      return result.success ? result.data : null;
     },
 
     async getBlogViewCount(blogSlug: string) {
-      try {
-        const response = await fetch(`http://localhost:4001/api/visitors/blog/${blogSlug}/views`);
-        return await response.json();
-      } catch (error) {
-        console.error('Error getting blog view count:', error);
-        return null;
-      }
+      const result = await apiFetch(API.visitors.blogViews(blogSlug));
+      return result.success ? result.data : null;
     },
 
     async getVisitorStats() {
-      try {
-        const response = await fetch('http://localhost:4001/api/visitors/stats');
-        return await response.json();
-      } catch (error) {
-        console.error('Error getting visitor stats:', error);
-        return null;
-      }
+      const result = await apiFetch(API.visitors.stats());
+      return result.success ? result.data : null;
     },
   }), [visitorData, visitorId]);
 }

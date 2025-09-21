@@ -1,4 +1,5 @@
 import { getSessionId } from '@/lib/session';
+import { API, apiFetch } from '@/config/api.config';
 
 // Service for handling view counts with backend integration
 export interface ViewCount {
@@ -17,24 +18,16 @@ export interface RecordViewResponse {
 }
 
 export class ViewsService {
-  private static baseUrl = '/api';
-
   // Get view count for a specific post
   static async getViewCount(slug: string): Promise<ViewCount> {
     try {
-      const response = await fetch(`${this.baseUrl}/blog/views/${encodeURIComponent(slug)}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
+      const result = await apiFetch<ViewCount>(API.blog.views.get(slug));
       
       if (!result.success) {
-        throw new Error(result.message || 'Failed to fetch view count');
+        throw new Error(result.error || 'Failed to fetch view count');
       }
       
-      return result.data;
+      return result.data!;
     } catch (error) {
       console.error(`Error fetching view count for ${slug}:`, error);
       return {
@@ -50,11 +43,8 @@ export class ViewsService {
     try {
       const sessionId = getSessionId();
       
-      const response = await fetch(`${this.baseUrl}/blog/views`, {
+      const result = await apiFetch<RecordViewResponse>(API.blog.views.record(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ 
           slug,
           sessionId,
@@ -63,14 +53,8 @@ export class ViewsService {
         }),
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result: RecordViewResponse = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to record view');
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to record view');
       }
 
       // Get updated view count
@@ -78,7 +62,7 @@ export class ViewsService {
       
       return {
         success: true,
-        isNewView: result.data.isNewView,
+        isNewView: result.data.data.isNewView,
         viewCount
       };
     } catch (error) {
@@ -100,22 +84,13 @@ export class ViewsService {
     try {
       if (slugs.length === 0) return {};
 
-      const response = await fetch(`${this.baseUrl}/blog/views/multiple`, {
+      const result = await apiFetch<ViewCount[]>(API.blog.views.multiple(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ slugs }),
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      
-      if (!result.success) {
-        throw new Error(result.message || 'Failed to fetch view counts');
+      if (!result.success || !result.data) {
+        throw new Error(result.error || 'Failed to fetch view counts');
       }
 
       const viewCounts: Record<string, ViewCount> = {};
@@ -156,16 +131,10 @@ export class ViewsService {
   // Get blog view statistics
   static async getStats(): Promise<any> {
     try {
-      const response = await fetch(`${this.baseUrl}/blog/views/stats`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
+      const result = await apiFetch(API.blog.views.stats());
       
       if (!result.success) {
-        throw new Error(result.message || 'Failed to fetch stats');
+        throw new Error(result.error || 'Failed to fetch stats');
       }
       
       return result.data;

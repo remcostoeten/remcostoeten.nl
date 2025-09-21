@@ -6,6 +6,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
+import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/api-environment-switcher";
 
 // Optimize font loading with display swap and preload
 const inter = Inter({ 
@@ -76,6 +77,8 @@ export default function RootLayout({
       <body className={`${inter.className} ${inter.variable}`}>
         <AnalyticsTracker />
         {children}
+        <ApiEnvironmentSwitcher />
+        <ApiEnvironmentIndicator />
       </body>
     </html>
   );
