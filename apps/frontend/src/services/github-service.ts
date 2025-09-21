@@ -373,7 +373,6 @@ export interface LatestActivities {
   totalFound: number;
 }
 
-// Function to fetch the latest 5 push activities from remcostoeten's GitHub account
 export const fetchLatestActivities = async (): Promise<LatestActivities> => {
   try {
     console.log('🔄 Fetching latest 5 activities from GitHub account (public + private repos)...');

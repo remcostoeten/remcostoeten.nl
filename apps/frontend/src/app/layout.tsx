@@ -1,12 +1,11 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { HelmetProvider } from "react-helmet-async";
 import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
-import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/api-environment-switcher";
+import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_api-environment-switcher";
+import { Analytics } from "@vercel/analytics/next"
 
 // Optimize font loading with display swap and preload
 const inter = Inter({ 
@@ -74,11 +73,14 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://producthunt.com" />
         <link rel="dns-prefetch" href="https://linkedin.com" />
       </head>
-      <body className={`${inter.className} ${inter.variable}`}>
+      <body className={`${inter.className} ${inter.variable}`} suppressHydrationWarning>
+        <TooltipProvider delayDuration={0}>
         <AnalyticsTracker />
         {children}
         <ApiEnvironmentSwitcher />
         <ApiEnvironmentIndicator />
+        </TooltipProvider>
+    <Analytics/>
       </body>
     </html>
   );

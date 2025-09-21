@@ -7,7 +7,7 @@ import { SOCIAL_LINKS } from "@/modules/contact";
 import { SimpleProjectCard } from "@/modules/projects/components/SimpleProjectCard";
 import { fetchFeaturedProjects } from "@/services/github-service";
 import { TSimpleProject } from "@/modules/projects/types";
-import { LatestActivity } from "./components/latest-activity";
+import { LatestActivity } from "@/components/latest-activity";
 
 type TLoadingState = 'idle' | 'loading' | 'success' | 'error';
 

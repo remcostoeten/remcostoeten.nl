@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GitCommit, Star, GitBranch, Calendar, Users, Clock, ExternalLink, Music, Play, Pause } from "lucide-react";
+import { GitCommit, Star, GitBranch, Users, Clock, ExternalLink, Music, Play } from "lucide-react";
 import { fetchLatestActivities, LatestActivity as TLatestActivity, fetchRepositoryData } from "@/services/github-service";
-import { getCurrentOrRecentMusic, SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
+import { getCurrentOrRecentMusic, getRecentMusicTracks, SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
 
 type TRepositoryData = {
   repositoryName: string;
@@ -19,7 +19,8 @@ type TRepositoryData = {
 }
 
 type TSpotifyData = {
-  track: SpotifyTrack | SpotifyRecentTrack | null;
+  tracks: (SpotifyTrack | SpotifyRecentTrack)[];
+  currentTrack: SpotifyTrack | SpotifyRecentTrack | null;
   loading: boolean;
   error: string | null;
 }
@@ -36,6 +37,31 @@ function formatNumber(num: number): string {
     return (num / 1000).toFixed(1) + 'k';
   }
   return num.toString();
+}
+
+function formatTimestamp(timestamp: string | Date): string {
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+  const now = new Date();
+  const diffInMs = now.getTime() - date.getTime();
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInMinutes < 1) {
+    return 'just now';
+  } else if (diffInMinutes < 60) {
+    return `${diffInMinutes} minute${diffInMinutes === 1 ? '' : 's'} ago`;
+  } else if (diffInHours < 24) {
+    return `${diffInHours} hour${diffInHours === 1 ? '' : 's'} ago`;
+  } else if (diffInDays < 7) {
+    return `${diffInDays} day${diffInDays === 1 ? '' : 's'} ago`;
+  } else {
+    return date.toLocaleDateString([], { 
+      month: 'short', 
+      day: 'numeric',
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+    });
+  }
 }
 
 function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TCommitHoverCardProps) {
@@ -90,7 +116,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.96 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute left-0 top-full z-50 w-96 max-w-[90vw]"
+          className="absolute left-0 top-full z-[9999] w-96 max-w-[90vw]"
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           role="tooltip"
@@ -194,7 +220,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Latest commit:</span>
                     <time className="text-accent font-medium" dateTime={activity.timestamp}>
-                      {activity.timestamp}
+                      {formatTimestamp(activity.timestamp)}
                     </time>
                   </div>
                   <a
@@ -218,24 +244,59 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
 
 function RealSpotifyIntegration() {
   const [spotifyData, setSpotifyData] = useState<TSpotifyData>({
-    track: null,
+    tracks: [],
+    currentTrack: null,
     loading: true,
     error: null
   });
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   const loadSpotifyData = useCallback(async () => {
     try {
       setSpotifyData(prev => ({ ...prev, loading: true, error: null }));
-      const track = await getCurrentOrRecentMusic();
-      setSpotifyData({
-        track,
-        loading: false,
-        error: track ? null : 'No music data available'
+      
+      // First try to get currently playing track
+      const currentTrack = await getCurrentOrRecentMusic();
+      
+      // Then get recent tracks for rotation
+      const recentTracks = await getRecentMusicTracks(5);
+      
+      let allTracks: (SpotifyTrack | SpotifyRecentTrack)[] = [];
+      
+      // If we have a currently playing track, add it first
+      if (currentTrack && 'is_playing' in currentTrack && currentTrack.is_playing) {
+        allTracks.push(currentTrack);
+      }
+      
+      // Add recent tracks, avoiding duplicates
+      recentTracks.forEach(track => {
+        const isDuplicate = allTracks.some(existing => 
+          existing.name === track.name && existing.artist === track.artist
+        );
+        if (!isDuplicate) {
+          allTracks.push(track);
+        }
       });
+      
+      // If no tracks at all, try to get at least one
+      if (allTracks.length === 0 && currentTrack) {
+        allTracks.push(currentTrack);
+      }
+      
+      setSpotifyData({
+        tracks: allTracks,
+        currentTrack: allTracks[0] || null,
+        loading: false,
+        error: allTracks.length === 0 ? 'No music data available' : null
+      });
+      
+      setCurrentTrackIndex(0);
     } catch (error) {
       console.error('Failed to load Spotify data:', error);
       setSpotifyData({
-        track: null,
+        tracks: [],
+        currentTrack: null,
         loading: false,
         error: 'Failed to load music data'
       });
@@ -249,7 +310,28 @@ function RealSpotifyIntegration() {
     return () => clearInterval(interval);
   }, [loadSpotifyData]);
 
-  const { track, loading, error } = spotifyData;
+  // Cycle through tracks
+  useEffect(() => {
+    if (spotifyData.tracks.length <= 1 || isPaused) return;
+
+    const interval = setInterval(() => {
+      setCurrentTrackIndex((prev) => {
+        const nextIndex = (prev + 1) % spotifyData.tracks.length;
+        setSpotifyData(prevData => ({
+          ...prevData,
+          currentTrack: prevData.tracks[nextIndex]
+        }));
+        return nextIndex;
+      });
+    }, 4000); // Same timing as commits
+
+    return () => clearInterval(interval);
+  }, [spotifyData.tracks.length, isPaused]);
+
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
+
+  const { currentTrack, loading, error } = spotifyData;
 
   if (loading) {
     return (
@@ -257,14 +339,20 @@ function RealSpotifyIntegration() {
         <div className="p-1.5 bg-green-500/10 rounded-lg">
           <Music className="w-4 h-4 text-green-500 animate-pulse" />
         </div>
-        <div className="text-sm text-muted-foreground">
-          Loading music data...
+        <div className="flex-1 min-w-0">
+          <div className="text-sm text-muted-foreground leading-tight">
+            <div className="h-4 bg-muted/60 rounded-md w-64 animate-pulse"></div>
+          </div>
+          <div className="text-xs text-muted-foreground leading-tight mt-1">
+            <div className="h-3 bg-muted/40 rounded-md w-32 animate-pulse"></div>
+          </div>
         </div>
+        <div className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"></div>
       </div>
     );
   }
 
-  if (error || !track) {
+  if (error || !currentTrack) {
     return (
       <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30">
         <div className="p-1.5 bg-muted/50 rounded-lg">
@@ -277,8 +365,8 @@ function RealSpotifyIntegration() {
     );
   }
 
-  const isCurrentlyPlaying = 'is_playing' in track && track.is_playing;
-  const isRecentTrack = 'played_at' in track;
+  const isCurrentlyPlaying = 'is_playing' in currentTrack && currentTrack.is_playing;
+  const isRecentTrack = 'played_at' in currentTrack;
 
   return (
     <motion.div 
@@ -286,6 +374,8 @@ function RealSpotifyIntegration() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="p-1.5 bg-green-500/10 rounded-lg">
         {isCurrentlyPlaying ? (
@@ -296,53 +386,125 @@ function RealSpotifyIntegration() {
       </div>
       
       <div className="flex-1 min-w-0">
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground leading-tight">
           {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
-          <a
-            href={track.external_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-semibold text-foreground hover:text-accent transition-colors"
-            title={`Listen to ${track.name} on Spotify`}
-          >
-            {track.name}
-          </a>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={`track-${currentTrackIndex}`}
+              className="inline-block"
+              initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+              transition={{
+                duration: 0.7,
+                ease: [0.16, 1, 0.3, 1],
+                filter: { duration: 0.4 }
+              }}
+            >
+              <a
+                href={currentTrack.external_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5"
+                title={`Listen to ${currentTrack.name} on Spotify`}
+              >
+                {currentTrack.name}
+              </a>
+            </motion.span>
+          </AnimatePresence>
           {" "}by{" "}
-          <span className="font-medium text-foreground">
-            {track.artist}
-          </span>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={`artist-${currentTrackIndex}`}
+              className="inline-block"
+              initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+              transition={{
+                duration: 0.7,
+                delay: 0.05,
+                ease: [0.16, 1, 0.3, 1],
+                filter: { duration: 0.4 }
+              }}
+            >
+              <span className="font-medium text-foreground" title={currentTrack.artist}>
+                {currentTrack.artist}
+              </span>
+            </motion.span>
+          </AnimatePresence>
+        </div>
+        <div className="text-xs text-muted-foreground leading-tight mt-1">
+          {currentTrack.album && (
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={`album-${currentTrackIndex}`}
+                className="inline-block"
+                initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                transition={{
+                  duration: 0.7,
+                  delay: 0.1,
+                  ease: [0.16, 1, 0.3, 1],
+                  filter: { duration: 0.4 }
+                }}
+              >
+                from <span className="italic truncate max-w-[200px] inline-block align-bottom" title={currentTrack.album}>{currentTrack.album}</span>
+              </motion.span>
+            </AnimatePresence>
+          )}
+          {!currentTrack.album && <span>&nbsp;</span>}
           {isRecentTrack && (
-            <span className="text-xs ml-2 text-muted-foreground">
-              ({new Date(track.played_at).toLocaleTimeString([], { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })})
-            </span>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={`timestamp-${currentTrackIndex}`}
+                className="inline-block ml-2"
+                initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                transition={{
+                  duration: 0.7,
+                  delay: 0.15,
+                  ease: [0.16, 1, 0.3, 1],
+                  filter: { duration: 0.4 }
+                }}
+              >
+                ({formatTimestamp(currentTrack.played_at)})
+              </motion.span>
+            </AnimatePresence>
           )}
         </div>
-        
-        {track.album && (
-          <div className="text-xs text-muted-foreground mt-1">
-            from <span className="italic">{track.album}</span>
-          </div>
-        )}
       </div>
 
-      {track.image_url && (
-        <div className="w-10 h-10 rounded-lg overflow-hidden bg-muted/50 flex-shrink-0">
-          <img
-            src={track.image_url}
-            alt={`${track.album} album cover`}
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
+      {currentTrack.image_url && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`image-${currentTrackIndex}`}
+            className="w-10 h-10 rounded-lg overflow-hidden bg-muted/50 flex-shrink-0"
+            initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+            transition={{
+              duration: 0.5,
+              delay: 0.2,
+              ease: [0.16, 1, 0.3, 1],
+              filter: { duration: 0.3 }
+            }}
+          >
+            <img
+              src={currentTrack.image_url}
+              alt={`${currentTrack.album} album cover`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </motion.div>
+        </AnimatePresence>
       )}
     </motion.div>
   );
 }
 
-export function LatestActivityRedesign() {
+export function LatestActivity() {
   const [activities, setActivities] = useState<TLatestActivity[]>([]);
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -434,7 +596,6 @@ export function LatestActivityRedesign() {
   }
 
   const currentActivity = activities[currentActivityIndex];
-  const hasMultipleActivities = activities.length > 1;
 
   return (
     <motion.div 
@@ -455,9 +616,14 @@ export function LatestActivityRedesign() {
 
         <div className="leading-relaxed min-w-0 flex-1 text-sm" role="status" aria-live="polite">
           {loading && (
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-              <span className="text-muted-foreground">Loading latest activities...</span>
+            <div className="text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <span>The latest thing I've done is</span>
+                <div className="h-4 bg-muted/60 rounded-md w-32 animate-pulse inline-block"></div>
+                <span>on</span>
+                <div className="h-4 bg-muted/60 rounded-md w-24 animate-pulse inline-block"></div>
+                <div className="h-3 bg-muted/40 rounded-md w-16 animate-pulse inline-block"></div>
+              </div>
             </div>
           )}
 
@@ -477,19 +643,7 @@ export function LatestActivityRedesign() {
 
           {!loading && !error && activities.length > 0 && (
             <div className="relative">
-              {hasMultipleActivities && (
-                <motion.div
-                  className="inline-flex items-center gap-1 px-2 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium mb-2"
-                  key={`counter-${currentActivityIndex}`}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
-                  aria-label={`Activity ${currentActivityIndex + 1} of ${activities.length}`}
-                >
-                  <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></div>
-                  {currentActivityIndex + 1} of {activities.length}
-                </motion.div>
-              )}
+
 
               <div className="text-muted-foreground">
                 The latest thing I've done is{" "}
@@ -568,7 +722,7 @@ export function LatestActivityRedesign() {
                     }}
                   >
                     <time dateTime={currentActivity.timestamp} className="text-xs text-muted-foreground font-medium">
-                      ({currentActivity.timestamp})
+                      ({formatTimestamp(currentActivity.timestamp)})
                     </time>
                   </motion.span>
                 </AnimatePresence>

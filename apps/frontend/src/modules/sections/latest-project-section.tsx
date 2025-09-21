@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { Folder } from "lucide-react"
 import { useEffect, useState } from "react"
+import { fetchSpecificFeaturedProjects, type RepoData } from "@/services/github-service"
 
 const ANIMATION_CONFIGS = {
   container: {
@@ -31,7 +32,6 @@ const ANIMATION_CONFIGS = {
   },
 }
 
-// Mock data and services since we don't have access to the original modules
 interface SimpleProject {
   name: string
   url: string
@@ -48,37 +48,6 @@ interface SimpleProject {
   }
 }
 
-const fetchSpecificFeaturedProjects = async (): Promise<any[]> => {
-  // Mock implementation - replace with actual service
-  await new Promise((resolve) => setTimeout(resolve, 1000))
-  return [
-    {
-      title: "Portfolio Website",
-      deploymentUrl: "https://example.com",
-      stars: 42,
-      forks: 8,
-      language: "TypeScript",
-      description: "Personal portfolio built with Next.js",
-    },
-    {
-      title: "Task Manager",
-      deploymentUrl: "https://tasks.example.com",
-      stars: 28,
-      forks: 5,
-      language: "React",
-      description: "A modern task management application",
-    },
-    {
-      title: "Weather App",
-      deploymentUrl: "https://weather.example.com",
-      stars: 15,
-      forks: 3,
-      language: "JavaScript",
-      description: "Real-time weather tracking app",
-    },
-  ]
-}
-
 export const LatestProjectSection = () => {
   const [featuredProjects, setFeaturedProjects] = useState<SimpleProject[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -88,10 +57,10 @@ export const LatestProjectSection = () => {
     const loadFeaturedProjects = async () => {
       try {
         console.log("🔄 Fetching featured projects from GitHub API...")
-        const repoDataArray = await fetchSpecificFeaturedProjects()
+        const repoDataArray: RepoData[] = await fetchSpecificFeaturedProjects()
 
         if (repoDataArray && repoDataArray.length > 0) {
-          // Transform the repo data into SimpleProject format for hover functionality
+          // Transform the repo data into SimpleProject format
           const projectsData: SimpleProject[] = repoDataArray.map((repoData) => ({
             name: repoData.title,
             url: repoData.deploymentUrl || repoData.url,

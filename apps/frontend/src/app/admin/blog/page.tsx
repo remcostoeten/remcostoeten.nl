@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 
-// Fix for React 19 compatibility with forwardRef components
 declare module 'react' {
   interface ReactElement {
     children?: React.ReactNode;

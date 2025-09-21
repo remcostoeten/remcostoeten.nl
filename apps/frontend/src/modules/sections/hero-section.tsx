@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
+import { S } from "./serif";
 
 export const HeroSection = () => {
   return (
@@ -9,7 +10,7 @@ export const HeroSection = () => {
       className="text-heading font-medium text-foreground"
       {...ANIMATION_CONFIGS.fadeInUp}
     >
-      I <i className="font-serif">build</i> digital things.
+      I, <S i>build</S> a lot<S i >.</S>
     </motion.h1>
   );
 };

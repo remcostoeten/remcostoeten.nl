@@ -39,7 +39,7 @@ describe('CategoryOverview Responsive Behavior', () => {
   describe('Grid Layout Responsiveness', () => {
     it('applies responsive grid classes', () => {
       const { container } = render(<CategoryOverview categories={mockCategories} />);
-      
+
       const gridContainer = container.firstChild as HTMLElement;
       expect(gridContainer).toHaveClass('grid');
       expect(gridContainer).toHaveClass('grid-cols-1');
@@ -50,7 +50,7 @@ describe('CategoryOverview Responsive Behavior', () => {
 
     it('maintains proper spacing between grid items', () => {
       const { container } = render(<CategoryOverview categories={mockCategories} />);
-      
+
       const gridContainer = container.firstChild as HTMLElement;
       expect(gridContainer).toHaveClass('gap-6');
     });
@@ -61,7 +61,7 @@ describe('CategoryOverview Responsive Behavior', () => {
       const { container } = render(
         <CategoryOverview categories={mockCategories} layout="list" />
       );
-      
+
       const listContainer = container.firstChild as HTMLElement;
       expect(listContainer).toHaveClass('space-y-3');
     });
@@ -70,7 +70,7 @@ describe('CategoryOverview Responsive Behavior', () => {
   describe('Accessibility', () => {
     it('maintains proper focus indicators', () => {
       render(<CategoryOverview categories={mockCategories} />);
-      
+
       const categoryElements = screen.getAllByRole('button');
       categoryElements.forEach(element => {
         expect(element).toHaveClass('focus-within:ring-2');

@@ -189,6 +189,9 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: TProject
   }
 };
 
-// Fallback static data (only used if GitHub API fails completely)
+// Export the function as the primary way to get project data
+export { getRealProjectData };
+
+// No static fallback data - we always fetch from GitHub API
 export const FEATURED_PROJECTS: TProjectData[] = [];
 export const SIMPLE_PROJECTS: TSimpleProject[] = [];
