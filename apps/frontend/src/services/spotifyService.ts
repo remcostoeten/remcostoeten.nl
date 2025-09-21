@@ -237,3 +237,26 @@ export const getCurrentOrRecentMusic = async (): Promise<SpotifyTrack | SpotifyR
     return null;
   }
 };
+
+// Function to get multiple recent tracks (client-side)
+export const getRecentMusicTracks = async (limit: number = 5): Promise<SpotifyRecentTrack[]> => {
+  try {
+    console.log(`🎵 Fetching ${limit} recent Spotify tracks from API...`);
+    
+    const response = await fetch(`/api/spotify/recent?limit=${limit}`);
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.warn('🎵 Spotify recent tracks API error:', errorData.error);
+      return [];
+    }
+
+    const tracks = await response.json();
+    console.log('🎵 Successfully fetched', tracks.length, 'recent Spotify tracks');
+    
+    return tracks;
+  } catch (error) {
+    console.error('🎵 Error fetching recent Spotify tracks:', error);
+    return [];
+  }
+};
