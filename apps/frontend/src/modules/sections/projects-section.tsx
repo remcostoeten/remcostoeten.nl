@@ -1,8 +1,6 @@
 'use client';
 
-import { motion } from "framer-motion";
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { SOCIAL_LINKS } from "@/modules/contact";
 import { SimpleProjectCard } from "@/modules/projects/components/SimpleProjectCard";
 import { fetchFeaturedProjects } from "@/services/github-service";
@@ -145,10 +143,9 @@ export function ProjectsSection() {
       itemScope
       itemType="https://schema.org/CollectionPage"
     >
-      <motion.div {...ANIMATION_CONFIGS.staggered(0.2)}>
-        <motion.p
+      <div>
+        <p
           className="text-body text-foreground mb-1"
-          {...ANIMATION_CONFIGS.staggered(0.2)}
           role="status"
           aria-live="polite"
           aria-atomic="true"
@@ -198,12 +195,12 @@ export function ProjectsSection() {
               No project data available from GitHub API.
             </span>
           )}
-        </motion.p>
+        </p>
 
         <div className="mt-2">
           <LatestActivity />
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

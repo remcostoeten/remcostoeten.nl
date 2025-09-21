@@ -1,15 +1,10 @@
 'use client';
 
-import { motion } from "framer-motion";
-import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { SOCIAL_LINKS } from "@/modules/contact";
 
 export const ContactSection = () => {
   return (
-    <motion.p 
-      className="text-foreground leading-relaxed text-base"
-      {...ANIMATION_CONFIGS.staggered(0.3)}
-    >
+    <p className="text-foreground leading-relaxed text-base">
       Find me on{" "}
       <a 
         href={SOCIAL_LINKS.x} 
@@ -45,6 +40,6 @@ export const ContactSection = () => {
         Telegram ↗
       </a>
       .
-    </motion.p>
+    </p>
   );
 };
