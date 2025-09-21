@@ -145,14 +145,18 @@ export function ProjectsSection() {
     >
       <div>
         <p
-          className="text-body text-foreground mb-1"
+          className="text-body text-foreground mb-1 min-h-[1.5em]"
           role="status"
           aria-live="polite"
           aria-atomic="true"
         >
           {state.loadingState === 'loading' && (
             <span className="animate-pulse" aria-label="Loading projects">
-              Loading real project data from GitHub API...
+              Lately I have been building{" "}
+              <span className="inline-block bg-muted/60 rounded w-24 h-4 align-middle animate-pulse"></span>
+              {" "}and{" "}
+              <span className="inline-block bg-muted/60 rounded w-16 h-4 align-middle animate-pulse"></span>
+              . Additional projects are on GitHub ↗.
             </span>
           )}
 

@@ -117,7 +117,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.96 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute left-0 top-full z-[9999] w-96 max-w-[90vw] isolate"
+          className="absolute left-0 top-full z-[99999] w-96 max-w-[90vw]"
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           role="tooltip"
@@ -125,7 +125,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
         >
           <div className="h-2 w-full" aria-hidden="true" />
 
-          <div className="bg-card/98 backdrop-blur-md border border-border/60 rounded-xl shadow-2xl p-5 ring-1 ring-black/10 relative z-[9999]">
+          <div className="bg-card backdrop-blur-lg border border-border rounded-xl shadow-2xl p-5 ring-1 ring-black/20 relative z-[99999]">
             <div className="flex items-start justify-between mb-4">
               <div className="min-w-0 flex-1">
                 <h3 className="font-semibold text-lg text-foreground truncate">
