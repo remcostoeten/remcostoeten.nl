@@ -1,7 +1,7 @@
-export { HeroSection } from './HeroSection';
-export { AboutSection } from './AboutSection';
-export { ProjectsSection } from './ProjectsSection';
-export { LatestProjectSection } from './LatestProjectSection';
-export { BlogSection } from './BlogSection';
-export { ContactSection } from './ContactSection';
-export { TimezoneSection } from './TimezoneSection';
+export { HeroSection } from './hero-section';
+export { AboutSection } from './about-section';
+export { ProjectsSection } from './projects-section';
+export { LatestProjectSection } from './latest-project-section';
+export { BlogSection } from './blog-section';
+export { ContactSection } from './contact-section';
+export { TimezoneSection } from './timezone-section';

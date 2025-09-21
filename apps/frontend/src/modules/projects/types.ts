@@ -1,27 +1,35 @@
-export interface ProjectData {
-  title: string;
-  description: string;
-  url: string;
-  demoUrl?: string;
-  stars: number;
-  branches: number;
-  technologies: string[];
-  lastUpdated: string;
-  highlights: string[];
-}
-
-export interface SimpleProject {
+export type TSimpleProject = {
   name: string;
   url: string;
-  gitInfo?: {
-    stars: number;
-    forks: number;
-    lastCommit: string;
-    language: string;
-    contributors: number;
-    description: string;
-    totalCommits?: number;
-    startDate?: string;
-    lastCommitDate?: string;
+  gitInfo: TGitInfo;
+};
+
+export type TGitInfo = {
+  stars: number;
+  forks: number;
+  lastCommit: string;
+  language: string;
+  contributors: number;
+  description: string;
+  totalCommits: number;
+  startDate?: string;
+  lastCommitDate?: string;
+};
+
+export type TProjectData = {
+  deploymentUrl?: string;
+  url?: string;
+  stars: number;
+  forks: number;
+  latestCommit?: {
+    message: string;
+    age: string;
+    date: string;
   };
-}
+  lastUpdated: string;
+  language: string;
+  contributors: number;
+  description: string;
+  totalCommits: number;
+  startDate?: string;
+};

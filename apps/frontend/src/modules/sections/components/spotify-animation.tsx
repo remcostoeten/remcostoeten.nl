@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Music, ExternalLink, Clock, Calendar, Play, Pause } from "lucide-react";
-import { getCurrentOrRecentMusic, getRecentMusicTracks, SpotifyTrack, SpotifyRecentTrack } from "@/services/spotifyService";
+import { getCurrentOrRecentMusic, getRecentMusicTracks, SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const FALLBACK_SONGS = [

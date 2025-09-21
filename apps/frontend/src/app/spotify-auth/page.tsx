@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getSpotifyAuthUrl } from '@/services/spotifyService';
+import { getSpotifyAuthUrl } from '@/services/spotify-service';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Music, Copy, CheckCircle, AlertCircle } from 'lucide-react';

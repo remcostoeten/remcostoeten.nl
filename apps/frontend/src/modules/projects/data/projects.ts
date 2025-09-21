@@ -1,5 +1,5 @@
 import { ProjectData, SimpleProject } from "../types";
-import { fetchTargetRepositories } from "@/services/githubService";
+import { fetchTargetRepositories } from "@/services/github-service";
 
 // Helper function to determine project technologies based on repo data
 const getTechnologies = (repoName: string, language: string, topics: string[]): string[] => {

@@ -1,5 +1,5 @@
 import { getAllBlogPosts } from "@/lib/blog/filesystem-utils";
-import { BlogSectionClient } from "./BlogSectionClient";
+import { BlogSectionClient } from "./blog-section-client";
 
 export async function BlogSection() {
   // Get posts from filesystem

@@ -4,8 +4,7 @@ import { motion } from "framer-motion";
 import { Folder } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
-import { SimpleProjectCard } from "@/modules/projects/components/SimpleProjectCard";
-import { fetchSpecificFeaturedProjects } from "@/services/githubService";
+import { fetchSpecificFeaturedProjects } from "@/services/github-service";
 import { SimpleProject } from "@/modules/projects/types";
 
 export const LatestProjectSection = () => {
