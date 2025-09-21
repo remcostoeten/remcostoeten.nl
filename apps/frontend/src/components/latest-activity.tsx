@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GitCommit, Star, GitBranch, Users, Clock, ExternalLink, Music, Play } from "lucide-react";
 import { fetchLatestActivities, LatestActivity as TLatestActivity, fetchRepositoryData } from "@/services/github-service";
 import { getCurrentOrRecentMusic, getRecentMusicTracks, SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
+import { LatestActivitySkeleton } from "./latest-activity-skeleton";
 
 type TRepositoryData = {
   repositoryName: string;
@@ -369,11 +370,8 @@ function RealSpotifyIntegration() {
   const isRecentTrack = 'played_at' in currentTrack;
 
   return (
-    <motion.div 
+    <div 
       className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -500,7 +498,7 @@ function RealSpotifyIntegration() {
           </motion.div>
         </AnimatePresence>
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -597,12 +595,14 @@ export function LatestActivity() {
 
   const currentActivity = activities[currentActivityIndex];
 
+  // Show skeleton while initial loading
+  if (loading) {
+    return <LatestActivitySkeleton />;
+  }
+
   return (
-    <motion.div 
+    <div 
       className="mt-6 p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.1 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       aria-labelledby="latest-activity-heading"
@@ -615,19 +615,7 @@ export function LatestActivity() {
         </div>
 
         <div className="leading-relaxed min-w-0 flex-1 text-sm" role="status" aria-live="polite">
-          {loading && (
-            <div className="text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <span>The latest thing I've done is</span>
-                <div className="h-4 bg-muted/60 rounded-md w-32 animate-pulse inline-block"></div>
-                <span>on</span>
-                <div className="h-4 bg-muted/60 rounded-md w-24 animate-pulse inline-block"></div>
-                <div className="h-3 bg-muted/40 rounded-md w-16 animate-pulse inline-block"></div>
-              </div>
-            </div>
-          )}
-
-          {!loading && (error || activities.length === 0) && (
+          {(error || activities.length === 0) && (
             <div className="text-muted-foreground">
               Unable to load latest activities.{" "}
               <button
@@ -641,7 +629,7 @@ export function LatestActivity() {
             </div>
           )}
 
-          {!loading && !error && activities.length > 0 && (
+          {!error && activities.length > 0 && (
             <div className="relative">
 
 
@@ -733,12 +721,9 @@ export function LatestActivity() {
       </div>
 
       {/* Project Statistics */}
-      {!loading && !error && activities.length > 0 && (
-        <motion.div 
+      {!error && activities.length > 0 && (
+        <div 
           className="flex items-center gap-4 mt-3 pt-3 border-t border-border/30"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
         >
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
@@ -772,10 +757,10 @@ export function LatestActivity() {
               </span>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
 
       <RealSpotifyIntegration />
-    </motion.div>
+    </div>
   );
 }
