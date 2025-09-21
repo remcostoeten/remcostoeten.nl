@@ -33,10 +33,38 @@ export const createApp = async () => {
 
   // Middleware
   app.use('*', logger());
+  
+  // Configure CORS for both development and production
+  const corsOrigins = process.env.CORS_ORIGINS 
+    ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
+    : ['http://localhost:3000', 'http://localhost:4001'];
+  
   app.use('*', cors({
-    origin: ['http://localhost:3000', 'http://localhost:4001'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: (origin, c) => {
+      // Allow requests with no origin (like mobile apps, Postman, etc.)
+      if (!origin) return '*';
+      
+      // Check if the origin is in our allowed list
+      if (corsOrigins.some(allowed => 
+        allowed === '*' || 
+        origin === allowed || 
+        (allowed.includes('*') && new RegExp(allowed.replace('*', '.*')).test(origin))
+      )) {
+        return origin;
+      }
+      
+      // Default to allowing localhost in development
+      if (process.env.NODE_ENV !== 'production' && origin.includes('localhost')) {
+        return origin;
+      }
+      
+      return null;
+    },
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization', 'X-Screen-Resolution', 'X-Timezone', 'X-Platform'],
+    exposeHeaders: ['Content-Length', 'X-Request-Id'],
+    maxAge: 86400,
+    credentials: true,
   }));
 
   // Health check
