@@ -5948,8 +5948,55 @@ function iife(fn, ...args) {
 }
 
 // node_modules/.pnpm/drizzle-orm@0.44.5_@neondatabase+serverless@1.0.1_@types+pg@8.15.5_bun-types@1.2.22_@types+react@19.1.13_/node_modules/drizzle-orm/pg-core/unique-constraint.js
+function unique(name) {
+  return new UniqueOnConstraintBuilder(name);
+}
 function uniqueKeyName(table, columns) {
   return `${table[TableName]}_${columns.join("_")}_unique`;
+}
+
+class UniqueConstraintBuilder {
+  constructor(columns, name) {
+    this.name = name;
+    this.columns = columns;
+  }
+  static [entityKind] = "PgUniqueConstraintBuilder";
+  columns;
+  nullsNotDistinctConfig = false;
+  nullsNotDistinct() {
+    this.nullsNotDistinctConfig = true;
+    return this;
+  }
+  build(table) {
+    return new UniqueConstraint(table, this.columns, this.nullsNotDistinctConfig, this.name);
+  }
+}
+
+class UniqueOnConstraintBuilder {
+  static [entityKind] = "PgUniqueOnConstraintBuilder";
+  name;
+  constructor(name) {
+    this.name = name;
+  }
+  on(...columns) {
+    return new UniqueConstraintBuilder(columns, this.name);
+  }
+}
+
+class UniqueConstraint {
+  constructor(table, columns, nullsNotDistinct, name) {
+    this.table = table;
+    this.columns = columns;
+    this.name = name ?? uniqueKeyName(this.table, this.columns.map((column) => column.name));
+    this.nullsNotDistinct = nullsNotDistinct;
+  }
+  static [entityKind] = "PgUniqueConstraint";
+  columns;
+  name;
+  nullsNotDistinct = false;
+  getName() {
+    return this.name;
+  }
 }
 
 // node_modules/.pnpm/drizzle-orm@0.44.5_@neondatabase+serverless@1.0.1_@types+pg@8.15.5_bun-types@1.2.22_@types+react@19.1.13_/node_modules/drizzle-orm/pg-core/utils/array.js
@@ -8661,6 +8708,14 @@ function mapRelationalRow(tablesConfig, tableConfig, row, buildQueryResultSelect
     }
   }
   return result;
+}
+
+// node_modules/.pnpm/drizzle-orm@0.44.5_@neondatabase+serverless@1.0.1_@types+pg@8.15.5_bun-types@1.2.22_@types+react@19.1.13_/node_modules/drizzle-orm/sql/functions/aggregate.js
+function count(expression) {
+  return sql`count(${expression || sql.raw("*")})`.mapWith(Number);
+}
+function countDistinct(expression) {
+  return sql`count(distinct ${expression})`.mapWith(Number);
 }
 
 // node_modules/.pnpm/@neondatabase+serverless@1.0.1/node_modules/@neondatabase/serverless/index.mjs
@@ -15692,8 +15747,6 @@ __export(exports_schema, {
   visitors: () => visitors,
   pageviewsIndexes: () => pageviewsIndexes,
   pageviews: () => pageviews,
-  blogViewsIndexes: () => blogViewsIndexes,
-  blogViews: () => blogViews,
   blogMetadataIndexes: () => blogMetadataIndexes,
   blogMetadata: () => blogMetadata,
   blogAnalyticsIndexes: () => blogAnalyticsIndexes,
@@ -15728,12 +15781,6 @@ var visitorsIndexes = {
   visitorId: "idx_visitors_visitor_id",
   lastVisitAt: "idx_visitors_last_visit_at",
   isNewVisitor: "idx_visitors_is_new_visitor"
-};
-var blogViewsIndexes = {
-  visitorId: "idx_blog_views_visitor_id",
-  blogSlug: "idx_blog_views_blog_slug",
-  lastViewedAt: "idx_blog_views_last_viewed_at",
-  visitorBlog: "idx_blog_views_visitor_blog"
 };
 // src/schema/pageviews.ts
 var pageviews = pgTable("pageviews", {
@@ -15788,6 +15835,19 @@ var blogAnalyticsIndexes = {
   totalViews: "idx_blog_analytics_total_views",
   lastViewedAt: "idx_blog_analytics_last_viewed_at"
 };
+// src/schema/blog-views.ts
+var blogViews2 = pgTable("blog_views", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull(),
+  sessionId: text("session_id").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+}, (table) => ({
+  uniqueSessionSlug: unique().on(table.sessionId, table.slug)
+}));
 // src/db/index.ts
 var databaseUrl = process.env.DATABASE_URL;
 var db = null;
@@ -15951,7 +16011,7 @@ function setupVisitorService() {
 
 // src/services/memory-visitor-service.ts
 var visitors3 = [];
-var blogViews2 = [];
+var blogViews3 = [];
 function setupVisitorService2() {
   return {
     async trackVisitor(data) {
@@ -15984,7 +16044,7 @@ function setupVisitorService2() {
     },
     async trackBlogView(data) {
       const now = new Date().toISOString();
-      const existingView = blogViews2.find((v2) => v2.visitorId === data.visitorId && v2.blogSlug === data.blogSlug);
+      const existingView = blogViews3.find((v2) => v2.visitorId === data.visitorId && v2.blogSlug === data.blogSlug);
       if (existingView) {
         existingView.viewCount += 1;
         existingView.lastViewedAt = now;
@@ -16002,7 +16062,7 @@ function setupVisitorService2() {
           createdAt: now,
           updatedAt: now
         };
-        blogViews2.push(newView);
+        blogViews3.push(newView);
         return newView;
       }
     },
@@ -16010,9 +16070,9 @@ function setupVisitorService2() {
       const totalVisitors = visitors3.length;
       const newVisitors = visitors3.filter((v2) => v2.isNewVisitor).length;
       const returningVisitors = totalVisitors - newVisitors;
-      const totalBlogViews = blogViews2.reduce((sum, view) => sum + view.viewCount, 0);
-      const uniqueBlogViews = blogViews2.length;
-      const blogStats = blogViews2.reduce((acc, view) => {
+      const totalBlogViews = blogViews3.reduce((sum, view) => sum + view.viewCount, 0);
+      const uniqueBlogViews = blogViews3.length;
+      const blogStats = blogViews3.reduce((acc, view) => {
         if (!acc[view.blogSlug]) {
           acc[view.blogSlug] = {
             slug: view.blogSlug,
@@ -16048,7 +16108,7 @@ function setupVisitorService2() {
       };
     },
     async getBlogViewCount(blogSlug) {
-      const blogViewsForSlug = blogViews2.filter((view) => view.blogSlug === blogSlug);
+      const blogViewsForSlug = blogViews3.filter((view) => view.blogSlug === blogSlug);
       const totalViews = blogViewsForSlug.reduce((sum, view) => sum + view.viewCount, 0);
       const uniqueViewers = new Set(blogViewsForSlug.map((view) => view.visitorId)).size;
       return {
@@ -16566,6 +16626,160 @@ var createBlogRouter = (blogService) => {
   return blogRouter;
 };
 
+// src/routes/blog-views.ts
+var createBlogViewsRouter = (blogViewService) => {
+  const blogViewsRouter = new Hono2;
+  const recordViewSchema = exports_external.object({
+    slug: exports_external.string().min(1),
+    sessionId: exports_external.string().min(1),
+    ipAddress: exports_external.string().optional(),
+    userAgent: exports_external.string().optional(),
+    referrer: exports_external.string().optional(),
+    timestamp: exports_external.string().datetime().optional()
+  });
+  const querySchema = exports_external.object({
+    limit: exports_external.string().transform(Number).optional(),
+    offset: exports_external.string().transform(Number).optional(),
+    slug: exports_external.string().optional(),
+    sessionId: exports_external.string().optional(),
+    startDate: exports_external.string().datetime().optional(),
+    endDate: exports_external.string().datetime().optional()
+  });
+  const slugsSchema = exports_external.object({
+    slugs: exports_external.array(exports_external.string()).min(1).max(50)
+  });
+  blogViewsRouter.post("/views", zValidator("json", recordViewSchema), async (c) => {
+    try {
+      const viewData = c.req.valid("json");
+      if (!viewData.ipAddress) {
+        viewData.ipAddress = c.req.header("x-forwarded-for") || c.req.header("x-real-ip") || "unknown";
+      }
+      if (!viewData.userAgent) {
+        viewData.userAgent = c.req.header("user-agent") || "unknown";
+      }
+      const result = await blogViewService.recordView(viewData);
+      if (!result.success) {
+        return c.json({
+          success: false,
+          message: "Failed to record view"
+        }, 500);
+      }
+      return c.json({
+        success: true,
+        data: {
+          isNewView: result.isNewView,
+          view: result.view
+        },
+        message: result.isNewView ? "New view recorded" : "View already exists for this session"
+      }, result.isNewView ? 201 : 200);
+    } catch (error) {
+      console.error("Error recording blog view:", error);
+      return c.json({
+        success: false,
+        message: "Failed to record view"
+      }, 500);
+    }
+  });
+  blogViewsRouter.get("/views/:slug", async (c) => {
+    try {
+      const slug = c.req.param("slug");
+      if (!slug) {
+        return c.json({
+          success: false,
+          message: "Slug is required"
+        }, 400);
+      }
+      const viewCount = await blogViewService.getViewCount(slug);
+      return c.json({
+        success: true,
+        data: viewCount
+      });
+    } catch (error) {
+      console.error("Error fetching view count:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch view count"
+      }, 500);
+    }
+  });
+  blogViewsRouter.post("/views/multiple", zValidator("json", slugsSchema), async (c) => {
+    try {
+      const { slugs } = c.req.valid("json");
+      const viewCounts = await blogViewService.getMultipleViewCounts(slugs);
+      return c.json({
+        success: true,
+        data: viewCounts
+      });
+    } catch (error) {
+      console.error("Error fetching multiple view counts:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch view counts"
+      }, 500);
+    }
+  });
+  blogViewsRouter.get("/views", zValidator("query", querySchema), async (c) => {
+    try {
+      const filters = c.req.valid("query");
+      const views = await blogViewService.getViews(filters);
+      const total = await blogViewService.getTotalViewCount(filters);
+      return c.json({
+        success: true,
+        data: {
+          views,
+          pagination: {
+            total,
+            limit: filters.limit || 50,
+            offset: filters.offset || 0,
+            hasMore: (filters.offset || 0) + (filters.limit || 50) < total
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching blog views:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch blog views"
+      }, 500);
+    }
+  });
+  blogViewsRouter.get("/views/stats", async (c) => {
+    try {
+      const stats = await blogViewService.getStats();
+      return c.json({
+        success: true,
+        data: stats
+      });
+    } catch (error) {
+      console.error("Error fetching blog view stats:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch statistics"
+      }, 500);
+    }
+  });
+  blogViewsRouter.delete("/views/cleanup", async (c) => {
+    try {
+      const daysOld = Number(c.req.query("days")) || 365;
+      const deletedCount = await blogViewService.deleteOldViews(daysOld);
+      return c.json({
+        success: true,
+        data: {
+          deletedCount,
+          message: `Deleted ${deletedCount} views older than ${daysOld} days`
+        }
+      });
+    } catch (error) {
+      console.error("Error cleaning up old views:", error);
+      return c.json({
+        success: false,
+        message: "Failed to cleanup old views"
+      }, 500);
+    }
+  });
+  return blogViewsRouter;
+};
+
 // src/services/pageviewService.ts
 var createPageviewService = (hybridService) => ({
   async createPageview(data) {
@@ -16702,7 +16916,7 @@ var createMemoryStorage = () => {
         acc[pv.url] = (acc[pv.url] || 0) + 1;
         return acc;
       }, {});
-      const topPages = Object.entries(urlCounts).sort(([, a2], [, b2]) => b2 - a2).slice(0, 10).map(([url, count]) => ({ url, count }));
+      const topPages = Object.entries(urlCounts).sort(([, a2], [, b2]) => b2 - a2).slice(0, 10).map(([url, count2]) => ({ url, count: count2 }));
       return {
         total,
         today: todayCount,
@@ -16999,6 +17213,280 @@ function createMemoryBlogMetadataService() {
   };
 }
 
+// src/services/blog-view-service.ts
+function createBlogViewService() {
+  return {
+    async recordView(data) {
+      const now = new Date().toISOString();
+      try {
+        const existingView = await db.select().from(blogViews2).where(and(eq(blogViews2.slug, data.slug), eq(blogViews2.sessionId, data.sessionId))).limit(1);
+        if (existingView.length > 0) {
+          return {
+            success: true,
+            isNewView: false,
+            view: existingView[0]
+          };
+        }
+        const newView = await db.insert(blogViews2).values({
+          id: crypto.randomUUID(),
+          slug: data.slug,
+          sessionId: data.sessionId,
+          ipAddress: data.ipAddress,
+          userAgent: data.userAgent,
+          referrer: data.referrer,
+          timestamp: data.timestamp || now,
+          createdAt: now
+        }).returning();
+        return {
+          success: true,
+          isNewView: true,
+          view: newView[0]
+        };
+      } catch (error) {
+        console.error("Error recording blog view:", error);
+        return {
+          success: false,
+          isNewView: false
+        };
+      }
+    },
+    async getViewCount(slug) {
+      const [totalResult, uniqueResult] = await Promise.all([
+        db.select({ count: count() }).from(blogViews2).where(eq(blogViews2.slug, slug)),
+        db.select({ count: countDistinct(blogViews2.sessionId) }).from(blogViews2).where(eq(blogViews2.slug, slug))
+      ]);
+      return {
+        slug,
+        totalViews: totalResult[0]?.count || 0,
+        uniqueViews: uniqueResult[0]?.count || 0
+      };
+    },
+    async getMultipleViewCounts(slugs) {
+      if (slugs.length === 0)
+        return [];
+      const results = await Promise.all(slugs.map((slug) => this.getViewCount(slug)));
+      return results;
+    },
+    async getViews(filters) {
+      let query = db.select().from(blogViews2);
+      const conditions = [];
+      if (filters.slug) {
+        conditions.push(eq(blogViews2.slug, filters.slug));
+      }
+      if (filters.sessionId) {
+        conditions.push(eq(blogViews2.sessionId, filters.sessionId));
+      }
+      if (filters.startDate) {
+        conditions.push(gte(blogViews2.timestamp, filters.startDate));
+      }
+      if (filters.endDate) {
+        conditions.push(lte(blogViews2.timestamp, filters.endDate));
+      }
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      const results = await query.orderBy(desc(blogViews2.timestamp)).limit(filters.limit || 50).offset(filters.offset || 0);
+      return results;
+    },
+    async getTotalViewCount(filters) {
+      let query = db.select({ count: count() }).from(blogViews2);
+      const conditions = [];
+      if (filters.slug) {
+        conditions.push(eq(blogViews2.slug, filters.slug));
+      }
+      if (filters.startDate) {
+        conditions.push(gte(blogViews2.timestamp, filters.startDate));
+      }
+      if (filters.endDate) {
+        conditions.push(lte(blogViews2.timestamp, filters.endDate));
+      }
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions));
+      }
+      const result = await query;
+      return result[0]?.count || 0;
+    },
+    async getStats() {
+      const now = new Date;
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const [
+        totalResult,
+        uniqueResult,
+        todayResult,
+        thisWeekResult,
+        thisMonthResult,
+        topPostsResult
+      ] = await Promise.all([
+        db.select({ count: count() }).from(blogViews2),
+        db.select({ count: countDistinct(blogViews2.sessionId) }).from(blogViews2),
+        db.select({ count: count() }).from(blogViews2).where(gte(blogViews2.timestamp, today.toISOString())),
+        db.select({ count: count() }).from(blogViews2).where(gte(blogViews2.timestamp, weekAgo.toISOString())),
+        db.select({ count: count() }).from(blogViews2).where(gte(blogViews2.timestamp, monthAgo.toISOString())),
+        db.select({
+          slug: blogViews2.slug,
+          totalViews: count(),
+          uniqueViews: countDistinct(blogViews2.sessionId)
+        }).from(blogViews2).groupBy(blogViews2.slug).orderBy(desc(count())).limit(10)
+      ]);
+      return {
+        totalViews: totalResult[0]?.count || 0,
+        uniqueViews: uniqueResult[0]?.count || 0,
+        viewsToday: todayResult[0]?.count || 0,
+        viewsThisWeek: thisWeekResult[0]?.count || 0,
+        viewsThisMonth: thisMonthResult[0]?.count || 0,
+        topPosts: topPostsResult.map((row) => ({
+          slug: row.slug,
+          totalViews: row.totalViews,
+          uniqueViews: row.uniqueViews
+        }))
+      };
+    },
+    async deleteOldViews(daysOld = 365) {
+      const cutoffDate = new Date;
+      cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+      const result = await db.delete(blogViews2).where(lte(blogViews2.createdAt, cutoffDate.toISOString()));
+      return result.rowCount || 0;
+    }
+  };
+}
+
+// src/services/memory-blog-view-service.ts
+var blogViews4 = new Map;
+var sessionViews = new Set;
+function createMemoryBlogViewService() {
+  return {
+    async recordView(data) {
+      const sessionSlugKey = `${data.sessionId}:${data.slug}`;
+      if (sessionViews.has(sessionSlugKey)) {
+        const existingView = Array.from(blogViews4.values()).find((view2) => view2.sessionId === data.sessionId && view2.slug === data.slug);
+        return {
+          success: true,
+          isNewView: false,
+          view: existingView
+        };
+      }
+      const now = new Date().toISOString();
+      const view = {
+        id: crypto.randomUUID(),
+        slug: data.slug,
+        sessionId: data.sessionId,
+        ipAddress: data.ipAddress,
+        userAgent: data.userAgent,
+        referrer: data.referrer,
+        timestamp: data.timestamp || now,
+        createdAt: now
+      };
+      blogViews4.set(view.id, view);
+      sessionViews.add(sessionSlugKey);
+      return {
+        success: true,
+        isNewView: true,
+        view
+      };
+    },
+    async getViewCount(slug) {
+      const views = Array.from(blogViews4.values()).filter((view) => view.slug === slug);
+      const uniqueSessions = new Set(views.map((view) => view.sessionId));
+      return {
+        slug,
+        totalViews: views.length,
+        uniqueViews: uniqueSessions.size
+      };
+    },
+    async getMultipleViewCounts(slugs) {
+      return Promise.all(slugs.map((slug) => this.getViewCount(slug)));
+    },
+    async getViews(filters) {
+      let views = Array.from(blogViews4.values());
+      if (filters.slug) {
+        views = views.filter((view) => view.slug === filters.slug);
+      }
+      if (filters.sessionId) {
+        views = views.filter((view) => view.sessionId === filters.sessionId);
+      }
+      if (filters.startDate) {
+        views = views.filter((view) => view.timestamp >= filters.startDate);
+      }
+      if (filters.endDate) {
+        views = views.filter((view) => view.timestamp <= filters.endDate);
+      }
+      views.sort((a2, b2) => new Date(b2.timestamp).getTime() - new Date(a2.timestamp).getTime());
+      const offset = filters.offset || 0;
+      const limit = filters.limit || 50;
+      return views.slice(offset, offset + limit);
+    },
+    async getTotalViewCount(filters) {
+      let views = Array.from(blogViews4.values());
+      if (filters.slug) {
+        views = views.filter((view) => view.slug === filters.slug);
+      }
+      if (filters.startDate) {
+        views = views.filter((view) => view.timestamp >= filters.startDate);
+      }
+      if (filters.endDate) {
+        views = views.filter((view) => view.timestamp <= filters.endDate);
+      }
+      return views.length;
+    },
+    async getStats() {
+      const now = new Date;
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const allViews = Array.from(blogViews4.values());
+      const uniqueSessions = new Set(allViews.map((view) => view.sessionId));
+      const todayViews = allViews.filter((view) => new Date(view.timestamp) >= today);
+      const weekViews = allViews.filter((view) => new Date(view.timestamp) >= weekAgo);
+      const monthViews = allViews.filter((view) => new Date(view.timestamp) >= monthAgo);
+      const postCounts = new Map;
+      allViews.forEach((view) => {
+        if (!postCounts.has(view.slug)) {
+          postCounts.set(view.slug, { total: 0, unique: new Set });
+        }
+        const postData = postCounts.get(view.slug);
+        postData.total++;
+        postData.unique.add(view.sessionId);
+      });
+      const topPosts = Array.from(postCounts.entries()).map(([slug, data]) => ({
+        slug,
+        totalViews: data.total,
+        uniqueViews: data.unique.size
+      })).sort((a2, b2) => b2.totalViews - a2.totalViews).slice(0, 10);
+      return {
+        totalViews: allViews.length,
+        uniqueViews: uniqueSessions.size,
+        viewsToday: todayViews.length,
+        viewsThisWeek: weekViews.length,
+        viewsThisMonth: monthViews.length,
+        topPosts
+      };
+    },
+    async deleteOldViews(daysOld = 365) {
+      const cutoffDate = new Date;
+      cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+      const viewsToDelete = Array.from(blogViews4.entries()).filter(([_, view]) => new Date(view.createdAt) < cutoffDate);
+      viewsToDelete.forEach(([id, view]) => {
+        blogViews4.delete(id);
+        sessionViews.delete(`${view.sessionId}:${view.slug}`);
+      });
+      return viewsToDelete.length;
+    }
+  };
+}
+
+// src/services/hybrid-blog-view-service.ts
+function createHybridBlogViewService() {
+  if (db) {
+    console.log("\u2705 Using database blog view service");
+    return createBlogViewService();
+  } else {
+    console.log("\u26A0\uFE0F Using memory blog view service (database not available)");
+    return createMemoryBlogViewService();
+  }
+}
+
 // src/index.ts
 var createApp = async () => {
   const app = new Hono2;
@@ -17010,6 +17498,7 @@ var createApp = async () => {
   const hybridPageviewService = createHybridPageviewService();
   const pageviewService = createPageviewService(hybridPageviewService);
   const blogMetadataService = db ? createBlogMetadataService() : createMemoryBlogMetadataService();
+  const blogViewService = createHybridBlogViewService();
   app.use("*", logger());
   app.use("*", cors({
     origin: ["http://localhost:3000", "http://localhost:4001"],
@@ -17026,6 +17515,7 @@ var createApp = async () => {
   app.route("/api/visitors", visitorRouter);
   app.route("/api/pageviews", createPageviewsRouter(pageviewService));
   app.route("/api/blog", createBlogRouter(blogMetadataService));
+  app.route("/api/blog", createBlogViewsRouter(blogViewService));
   let cachedRoutesHtml = null;
   app.get("/", (c) => {
     if (!cachedRoutesHtml) {

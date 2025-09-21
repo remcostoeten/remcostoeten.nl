@@ -54,18 +54,24 @@ export const createApp = async () => {
   app.route('/api/blog', createBlogRouter(blogMetadataService));
   app.route('/api/blog', createBlogViewsRouter(blogViewService));
 
-  // Index page with all available endpoints
-  let cachedRoutesHtml: string | null = null;
-  
-  app.get('/', (c) => {
-    if (!cachedRoutesHtml) {
+  // Serve the beautiful API documentation page
+  app.get('/', async (c) => {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const htmlPath = path.join(process.cwd(), 'src', 'api-docs.html');
+      const html = await fs.readFile(htmlPath, 'utf-8');
+      return c.html(html);
+    } catch (error) {
+      console.error('Error loading API docs:', error);
+      // Fallback to simple list if file not found
       const routes = app.routes.map((route) => {
         return `<li><a href="${route.path}">${route.method} ${route.path}</a></li>`;
       });
       
-      cachedRoutesHtml = `<html>
+      return c.html(`<html>
         <head>
-          <title>Hono App Endpoints</title>
+          <title>API Endpoints</title>
         </head>
         <body>
           <h1>Available Endpoints</h1>
@@ -73,10 +79,8 @@ export const createApp = async () => {
             ${routes.join('')}
           </ul>
         </body>
-      </html>`;
+      </html>`);
     }
-
-    return c.html(cachedRoutesHtml);
   });
 
   return app;
