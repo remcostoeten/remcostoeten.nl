@@ -33,12 +33,20 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
   try {
     console.log(`🔄 Fetching repository data for ${owner}/${repo}...`);
     
+    // Prepare headers with optional GitHub token
+    const headers: Record<string, string> = {
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'remcostoeten-portfolio'
+    };
+
+    const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    if (githubToken) {
+      headers['Authorization'] = `Bearer ${githubToken}`;
+    }
+
     // Fetch repository data using native fetch
     const response = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'remcostoeten-portfolio'
-      }
+      headers
     });
     
     if (!response.ok) {
@@ -60,10 +68,7 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
     // Fetch branches
     try {
       const branchesResponse = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}/branches`, {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'remcostoeten-portfolio'
-        }
+        headers
       });
       if (branchesResponse.ok) {
         const branchesData = await branchesResponse.json();
@@ -76,10 +81,7 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
     // Fetch contributors
     try {
       const contributorsResponse = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}/contributors`, {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'remcostoeten-portfolio'
-        }
+        headers
       });
       if (contributorsResponse.ok) {
         const contributorsData = await contributorsResponse.json();
@@ -92,10 +94,7 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
     // Fetch latest commit
     try {
       const commitsResponse = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}/commits?per_page=1`, {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'remcostoeten-portfolio'
-        }
+        headers
       });
       if (commitsResponse.ok) {
         const commitsData = await commitsResponse.json();
@@ -127,10 +126,7 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
       // GitHub API doesn't have a direct endpoint for total commits count
       // We'll use the commits endpoint with pagination to get an approximate count
       const commitsCountResponse = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}/commits?per_page=1&page=1`, {
-        headers: {
-          'Accept': 'application/vnd.github.v3+json',
-          'User-Agent': 'remcostoeten-portfolio'
-        }
+        headers
       });
       
       if (commitsCountResponse.ok) {
@@ -146,10 +142,7 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
           // If no pagination, we can try to count commits more directly
           // But this is limited to the first 100 commits due to API limitations
           const allCommitsResponse = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}/commits?per_page=100`, {
-            headers: {
-              'Accept': 'application/vnd.github.v3+json',
-              'User-Agent': 'remcostoeten-portfolio'
-            }
+            headers
           });
           if (allCommitsResponse.ok) {
             const commitsData = await allCommitsResponse.json();
@@ -364,4 +357,142 @@ export const fetchSpecificFeaturedProjects = async (): Promise<RepoData[]> => {
     console.error('❌ Error fetching specific featured projects:', error);
     return [];
   }
+};
+
+// Interface for latest activity data
+export interface LatestActivity {
+  latestCommit: string;
+  project: string;
+  timestamp: string;
+  commitUrl: string;
+  repositoryUrl: string;
+}
+
+export interface LatestActivities {
+  activities: LatestActivity[];
+  totalFound: number;
+}
+
+// Function to fetch the latest 5 push activities from remcostoeten's GitHub account
+export const fetchLatestActivities = async (): Promise<LatestActivities> => {
+  try {
+    console.log('🔄 Fetching latest 5 activities from GitHub account (public + private repos)...');
+    
+    // Fetch user events (this includes push events)
+    const headers: Record<string, string> = {
+      'Accept': 'application/vnd.github.v3+json',
+      'User-Agent': 'remcostoeten-portfolio'
+    };
+
+    // Add GitHub token if available
+    const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    if (githubToken) {
+      headers['Authorization'] = `Bearer ${githubToken}`;
+      console.log('🔑 Using GitHub token for authentication');
+    } else {
+      console.warn('⚠️ No GitHub token found, using unauthenticated requests');
+    }
+
+    // Use authenticated endpoint to get both public and private events
+    const response = await fetch(`${GITHUB_API_BASE}/user/events?per_page=50`, {
+      headers
+    });
+    
+    console.log('📡 GitHub API Response Status:', response.status, response.statusText);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ GitHub API Error Response:', errorText);
+      
+      if (response.status === 401) {
+        throw new Error('GitHub token authentication failed. Please check your GITHUB_TOKEN permissions.');
+      } else if (response.status === 403) {
+        throw new Error('GitHub API rate limit exceeded or insufficient permissions.');
+      }
+      
+      throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+    }
+    
+    const events = await response.json();
+    console.log('📊 Total events received:', events.length);
+    
+    // Find all push events
+    const pushEvents = events.filter((event: any) => event.type === 'PushEvent');
+    console.log('🔍 Push events found:', pushEvents.length);
+    
+    if (pushEvents.length === 0) {
+      console.warn('⚠️ No recent push events found');
+      return { activities: [], totalFound: 0 };
+    }
+    
+    // Process up to 5 most recent push events
+    const activities: LatestActivity[] = [];
+    const maxActivities = Math.min(5, pushEvents.length);
+    
+    for (let i = 0; i < maxActivities; i++) {
+      const pushEvent = pushEvents[i];
+      
+      // Extract commit information
+      const commits = pushEvent.payload?.commits || [];
+      const latestCommit = commits[commits.length - 1]; // Get the most recent commit in the push
+      
+      if (!latestCommit) {
+        console.warn('⚠️ No commits found in push event, skipping...');
+        continue;
+      }
+      
+      // Calculate time ago
+      const eventDate = new Date(pushEvent.created_at);
+      const now = new Date();
+      const diffInMinutes = Math.floor((now.getTime() - eventDate.getTime()) / (1000 * 60));
+      
+      let timestamp: string;
+      if (diffInMinutes < 1) {
+        timestamp = 'just now';
+      } else if (diffInMinutes < 60) {
+        timestamp = `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+      } else if (diffInMinutes < 1440) { // Less than 24 hours
+        const hours = Math.floor(diffInMinutes / 60);
+        timestamp = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      } else {
+        const days = Math.floor(diffInMinutes / 1440);
+        timestamp = `${days} day${days > 1 ? 's' : ''} ago`;
+      }
+      
+      const repoName = pushEvent.repo?.name?.split('/')[1] || 'unknown-repo';
+      const commitMessage = latestCommit.message || 'No commit message';
+      
+      activities.push({
+        latestCommit: commitMessage,
+        project: repoName,
+        timestamp,
+        commitUrl: `https://github.com/${pushEvent.repo.name}/commit/${latestCommit.sha}`,
+        repositoryUrl: `https://github.com/${pushEvent.repo.name}`
+      });
+    }
+    
+    console.log('✅ Successfully fetched', activities.length, 'activities');
+    return { activities, totalFound: pushEvents.length };
+    
+  } catch (error) {
+    console.error('❌ Error fetching latest activities:', error);
+    
+    // Return fallback activities
+    return {
+      activities: [{
+        latestCommit: 'working on various projects',
+        project: 'GitHub',
+        timestamp: 'recently',
+        commitUrl: 'https://github.com/remcostoeten',
+        repositoryUrl: 'https://github.com/remcostoeten'
+      }],
+      totalFound: 1
+    };
+  }
+};
+
+// Function to fetch the latest push activity from remcostoeten's GitHub account (backwards compatibility)
+export const fetchLatestActivity = async (): Promise<LatestActivity | null> => {
+  const result = await fetchLatestActivities();
+  return result.activities.length > 0 ? result.activities[0] : null;
 };

@@ -1,0 +1,128 @@
+/**
+ * View Transitions CSS
+ * 
+ * Provides smooth transitions between pages using the View Transitions API
+ */
+
+/* Enable view transitions for supported browsers */
+@view-transition {
+  navigation: auto;
+}
+
+/* Default page transition */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+::view-transition-old(root) {
+  animation-name: slide-out-to-left;
+}
+
+::view-transition-new(root) {
+  animation-name: slide-in-from-right;
+}
+
+/* Slide animations */
+@keyframes slide-out-to-left {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Fade transition for same-level navigation */
+.fade-transition::view-transition-old(root),
+.fade-transition::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+.fade-transition::view-transition-old(root) {
+  animation-name: fade-out;
+}
+
+.fade-transition::view-transition-new(root) {
+  animation-name: fade-in;
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scale transition for modal-like navigation */
+.scale-transition::view-transition-old(root) {
+  animation-name: scale-out;
+}
+
+.scale-transition::view-transition-new(root) {
+  animation-name: scale-in;
+}
+
+@keyframes scale-out {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(1.05);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.1s;
+    animation-timing-function: ease;
+  }
+  
+  ::view-transition-old(root) {
+    animation-name: fade-out;
+  }
+  
+  ::view-transition-new(root) {
+    animation-name: fade-in;
+  }
+}
