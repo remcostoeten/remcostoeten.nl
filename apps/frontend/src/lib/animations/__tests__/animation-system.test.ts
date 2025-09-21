@@ -94,7 +94,7 @@ describe('Animation System', () => {
 
     it('should handle reduced motion', () => {
       // Mock reduced motion preference
-      window.matchMedia = jest.fn().mockImplementation(query => ({
+      (window.matchMedia as jest.Mock) = jest.fn().mockImplementation(query => ({
         matches: query === '(prefers-reduced-motion: reduce)',
         media: query,
         onchange: null,
@@ -110,7 +110,7 @@ describe('Animation System', () => {
       
       expect(config.initial).toEqual({ opacity: 0 });
       expect(config.animate).toEqual({ opacity: 1 });
-      expect(config.transition.duration).toBe(0.1);
+      expect((config as any).transition.duration).toBe(0.1);
     });
   });
 });

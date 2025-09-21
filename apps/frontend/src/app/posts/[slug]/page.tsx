@@ -10,7 +10,7 @@ import { BlogPostClient } from './BlogPostClient';
 import { AnalyticsTracker } from '@/components/analytics/analytics-tracker';
 import { BlogAnalytics } from '@/components/blog/blog-analytics';
 import { ViewCounter } from '@/components/blog/ViewCounter';
-import { TOCLayout } from '@/components/blog/toc-layout';
+import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
@@ -104,9 +104,9 @@ export default async function PostPage(props: PostPageProps) {
         </Link>
       </noscript>
 
-      <TOCLayout 
+      <TOCLayoutRedesign 
         headings={headings}
-        className="w-full"
+        className="w-full max-w-6xl mx-auto"
         contentClassName="max-w-4xl"
       >
         <article>
@@ -152,7 +152,7 @@ export default async function PostPage(props: PostPageProps) {
             <MDXRemote source={content} components={mdxComponents} />
           </div>
         </article>
-      </TOCLayout>
+      </TOCLayoutRedesign>
     </div>
   );
 }

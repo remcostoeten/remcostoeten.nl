@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ViewsService } from '@/services/views-service';
+import { ViewsService, ViewCount } from '@/services/views-service';
 
 export interface UseViewCountOptions {
   // Whether to automatically increment view count on mount
@@ -13,7 +13,7 @@ export interface UseViewCountOptions {
 export function useViewCount(slug: string, options: UseViewCountOptions = {}) {
   const { autoIncrement = false, incrementDelay = 2000 } = options;
   
-  const [viewCount, setViewCount] = useState<ViewsService.ViewCount>({
+  const [viewCount, setViewCount] = useState<ViewCount>({
     slug,
     totalViews: 0,
     uniqueViews: 0

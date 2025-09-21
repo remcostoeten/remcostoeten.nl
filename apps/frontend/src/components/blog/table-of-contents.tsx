@@ -2,19 +2,20 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { TOCItem, TableOfContentsProps } from '@/lib/blog/types';
+import { TableOfContentsProps } from '@/lib/blog/types';
+import { TOCItem } from '@/lib/blog/toc-utils';
 import { useTOC } from './toc-context';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 
-interface TOCItemComponentProps {
+type Props = {
   item: TOCItem;
   activeId: string | null;
   onItemClick: (id: string) => void;
   level?: number;
 }
 
-function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: TOCItemComponentProps) {
+function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: Props) {
   const isActive = activeId === item.id;
   const hasChildren = item.children && item.children.length > 0;
 
@@ -87,13 +88,12 @@ export function TableOfContents({ className, ...props }: TableOfContentsProps) {
   );
 }
 
-// Mobile TOC component with collapsible design
-interface MobileTOCProps extends TableOfContentsProps {
+interface IProps extends TableOfContentsProps {
   isOpen: boolean;
   onToggle: () => void;
 }
 
-export function MobileTOC({ isOpen, onToggle, className, ...props }: MobileTOCProps) {
+export function MobileTOC({ isOpen, onToggle, className, ...props }: IProps) {
   const { items, activeId, scrollToHeading } = useTOC();
 
   if (!items || items.length === 0) {
@@ -102,7 +102,7 @@ export function MobileTOC({ isOpen, onToggle, className, ...props }: MobileTOCPr
 
   const handleItemClick = (id: string) => {
     scrollToHeading(id);
-    onToggle(); // Close mobile TOC after navigation
+    onToggle();
   };
 
   return (

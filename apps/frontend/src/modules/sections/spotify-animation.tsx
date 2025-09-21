@@ -149,10 +149,10 @@ export const SpotifyAnimation = () => {
               >
                 {useRealSpotify && "external_url" in displayTrack ? (
                   <span className="hover:text-accent transition-colors inline-flex items-center gap-1">
-                    {displayTrack.name}
+                    {'name' in displayTrack ? displayTrack.name : (displayTrack as any).title}
                   </span>
                 ) : (
-                  displayTrack.name || displayTrack.title
+                  'name' in displayTrack ? displayTrack.name : (displayTrack as any).title
                 )}
               </motion.span>{" "}
               by{" "}

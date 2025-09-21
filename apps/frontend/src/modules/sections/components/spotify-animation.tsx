@@ -123,10 +123,10 @@ export const SpotifyAnimation = () => {
               >
                 {useRealSpotify && 'external_url' in displayTrack ? (
                   <span className="hover:text-accent transition-colors inline-flex items-center gap-1">
-                    {displayTrack.name}
+                    {'name' in displayTrack ? displayTrack.name : (displayTrack as any).title}
                   </span>
                 ) : (
-                  displayTrack.name || displayTrack.title
+                  'name' in displayTrack ? displayTrack.name : (displayTrack as any).title
                 )}
               </motion.span>
               {" "}by{" "}
@@ -186,7 +186,7 @@ export const SpotifyAnimation = () => {
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {allTracks.slice(0, 5).map((track, index) => {
                 const isCurrentTrack = currentlyPlaying ? index === 0 : index === currentTrackIndex;
-                const trackName = track.name || (track as any).title;
+                const trackName = 'name' in track ? track.name : (track as any).title;
                 const trackArtist = track.artist;
                 const trackAlbum = track.album;
                 const playedAt = 'played_at' in track ? track.played_at : new Date().toISOString();

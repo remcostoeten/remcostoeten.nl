@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/use-theme';
 import hljs from 'highlight.js/lib/core';
 
-// Import commonly used languages
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
 import python from 'highlight.js/lib/languages/python';
@@ -23,7 +22,6 @@ import rust from 'highlight.js/lib/languages/rust';
 import ruby from 'highlight.js/lib/languages/ruby';
 import csharp from 'highlight.js/lib/languages/csharp';
 
-// Register languages
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('python', python);
@@ -44,7 +42,6 @@ hljs.registerLanguage('ruby', ruby);
 hljs.registerLanguage('csharp', csharp);
 hljs.registerLanguage('c#', csharp);
 
-// Language aliases
 const languageAliases: Record<string, string> = {
   'js': 'javascript',
   'ts': 'typescript',
@@ -60,7 +57,7 @@ const languageAliases: Record<string, string> = {
   'cs': 'csharp',
 };
 
-interface CodeBlockProps {
+type Props = {
   children: React.ReactNode;
   className?: string;
   'data-language'?: string;
@@ -79,29 +76,33 @@ export function CodeBlock({
   highlightLines = [],
   theme,
   ...props 
-}: CodeBlockProps) {
+}: Props) {
   const [copied, setCopied] = useState<boolean | 'error'>(false);
   const codeRef = useRef<HTMLElement>(null);
   const detectedTheme = useTheme();
   
-  // Use provided theme or auto-detect based on current theme
   const activeTheme = theme || (detectedTheme === 'dark' ? 'github-dark' : 'github-light');
 
-  // Extract the code content for copying and highlighting
   const getCodeContent = (node: React.ReactNode): string => {
     if (typeof node === 'string') return node;
     if (Array.isArray(node)) return node.map(getCodeContent).join('');
-    if (node && typeof node === 'object' && 'props' in node) {
-      return getCodeContent(node.props.children);
+    if (
+      node &&
+      typeof node === 'object' &&
+      'props' in node &&
+      node.props &&
+      typeof node.props === 'object' &&
+      'children' in node.props
+    ) {
+      return getCodeContent((node as { props: { children: React.ReactNode } }).props.children);
     }
     return '';
   };
 
-  const handleCopy = async () => {
-    const code = getCodeContent(children);
+  async function handleCopy() {
+  const code = getCodeContent(children);
     
     try {
-      // Try modern clipboard API first
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(code);
         setCopied(true);
@@ -109,7 +110,6 @@ export function CodeBlock({
         return;
       }
       
-      // Fallback for older browsers or non-secure contexts
       const textArea = document.createElement('textarea');
       textArea.value = code;
       textArea.style.position = 'fixed';
@@ -137,46 +137,39 @@ export function CodeBlock({
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       handleCopy();
     }
   };
 
-  // Extract and normalize language
   const rawLanguage = language || className?.match(/language-(\w+)/)?.[1];
   const normalizedLanguage = rawLanguage ? (languageAliases[rawLanguage.toLowerCase()] || rawLanguage.toLowerCase()) : null;
   const displayLanguage = rawLanguage || 'code';
 
-  // Check clipboard support
   const clipboardSupported = typeof navigator !== 'undefined' && 
     (navigator.clipboard || document.execCommand);
 
-  // Apply syntax highlighting
   useEffect(() => {
     if (codeRef.current && normalizedLanguage) {
       const code = getCodeContent(children);
       
       try {
-        // Check if language is registered
         if (hljs.getLanguage(normalizedLanguage)) {
           const result = hljs.highlight(code, { language: normalizedLanguage });
           codeRef.current.innerHTML = result.value;
         } else {
-          // Fallback to auto-detection
           const result = hljs.highlightAuto(code);
           codeRef.current.innerHTML = result.value;
         }
       } catch (error) {
         console.warn('Syntax highlighting failed:', error);
-        // Fallback to plain text
         codeRef.current.textContent = code;
       }
     }
   }, [children, normalizedLanguage]);
 
-  // Generate line numbers if enabled
   const codeContent = getCodeContent(children);
   const lines = codeContent.split('\n');
   const shouldShowLineNumbers = showLineNumbers && lines.length > 1;
@@ -335,12 +328,12 @@ export function CodeBlock({
   );
 }
 
-interface InlineCodeProps {
+type TProps = {  
   children: React.ReactNode;
   className?: string;
 }
 
-export function InlineCode({ children, className, ...props }: InlineCodeProps) {
+export function InlineCode({ children, className, ...props }: TProps) {
   return (
     <code
       className={cn(

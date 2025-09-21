@@ -32,15 +32,15 @@ export const SequentialAnimation: React.FC<SequentialAnimationProps> = ({
   as: Component = 'div'
 }) => {
   const config = createAnimationConfig(variant, delay);
+  const MotionComponent = motion[Component as keyof typeof motion] as any;
   
   return (
-    <motion.div
-      as={Component}
+    <MotionComponent
       className={className}
       {...config}
     >
       {children}
-    </motion.div>
+    </MotionComponent>
   );
 };
 
@@ -61,15 +61,15 @@ export const StaggeredList: React.FC<StaggeredListProps> = ({
   as: Component = 'div'
 }) => {
   const containerConfig = createContainerConfig(staggerDelay, delayChildren);
+  const MotionComponent = motion[Component as keyof typeof motion] as any;
   
   return (
-    <motion.div
-      as={Component}
+    <MotionComponent
       className={className}
       {...containerConfig}
     >
       {children}
-    </motion.div>
+    </MotionComponent>
   );
 };
 
@@ -92,15 +92,15 @@ export const StaggeredItem: React.FC<StaggeredItemProps> = ({
   as: Component = 'div'
 }) => {
   const config = createStaggeredConfig(index, variant, customIncrement);
+  const MotionComponent = motion[Component as keyof typeof motion] as any;
   
   return (
-    <motion.div
-      as={Component}
+    <MotionComponent
       className={className}
       {...config}
     >
       {children}
-    </motion.div>
+    </MotionComponent>
   );
 };
 

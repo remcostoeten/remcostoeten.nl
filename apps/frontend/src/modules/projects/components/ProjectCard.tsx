@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Code, Star, GitBranch, Eye, Calendar } from "lucide-react";
-import { ProjectData } from "../types";
+import { TProjectData } from "../types";
 
-interface ProjectCardProps extends ProjectData {}
+interface ProjectCardProps extends TProjectData {}
 
 export const ProjectCard = ({
   title,

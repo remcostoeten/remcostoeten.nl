@@ -38,6 +38,7 @@ Drizzle requires a config in the root. `touch backend/drizzle.config.ts`
 It's a object that contains the path to the schema, dialect, where your migration files go and the database credentials.
 
 ```typescript
+backend/drizzle.config.ts
 import { Config } from 'drizzle-kit';
 
 export default {
@@ -59,14 +60,14 @@ touch backend/src/api/schema/visitors.ts;
 touch backend/src/api/schema/pageviews.ts;
 ```
 
-backend/src/api/schema/index.ts
 ```typescript
+backend/src/api/schema/index.ts
 export * from './visitors';
 export * from './pageviews';
 ```
 
-backend/src/api/schema/pageviews.ts
 ```typescript
+backend/src/api/schema/pageviews.ts
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
@@ -81,8 +82,8 @@ export const pageviews = pgTable('pageviews', {
 });
 ```
 
-backend/src/api/schema/visitors.ts
 ```typescript
+backend/src/api/schema/visitors.ts
 import { pgTable, text, boolean, timestamp, integer } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
     
@@ -114,6 +115,7 @@ Let your imaginataion go loose, you can track whatever you want. Have a look at 
 Ok, schema done. Grab your (database url)[https://neon.tech/], either through docker locallly (switch the neon package out for `pg` or `postgres`). Paste it in your .env in the backend like so:
 
 ```bash
+backend/.env
 DATABASE_URL="postgresql://neondb_owner.....aws.neon.tech/neondb?ssl..."
 ```
 Now we're going to generate and push it through the database through `drizzle-kit`. If you get an error it's most likely  because you're missing a database url, or your path to the schema is wrong in `.drizzle.config.ts`.
@@ -130,6 +132,7 @@ We'll be needing a few routes which the frontend can query against. Were going t
 Lets start of with health. Inside the `backend/src/index.ts`. Leave what's already in t here and just add this in the middle.
 
 ```typescript
+backend/src/index.ts
  app.get('/health', (c) => {
     return c.json({ 
       status: 'ok', 
@@ -154,6 +157,7 @@ Run the backend server with `bun run dev` and check if u get a result with `curl
 Next up we'll be creating the routes for visitors and pageviews.
 
 ```typescript
+backend/src/index.ts
 app.route('/api/visitors', visitorRouter);
 app.route('/api/pageviews', createPageviewsRouter(pageviewService));
 app.route('/api/blog', createBlogRouter(blogMetadataService));

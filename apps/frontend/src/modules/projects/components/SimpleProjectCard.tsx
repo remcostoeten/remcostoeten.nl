@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GitCommit, Star, GitBranch, Calendar, Users, Clock, ExternalLink } from "lucide-react";
 import { fetchLatestActivities, LatestActivity as LatestActivityType, fetchRepositoryData } from "@/services/github-service";
 import { TSimpleProject } from "../types";
-import { SpotifyAnimation } from "@/modules/sections/spotify-animation";
+import { SpotifyAnimation } from "@/modules/sections/components/spotify-animation";
 type TCommitHoverData = {
   repositoryName: string;
   description: string;

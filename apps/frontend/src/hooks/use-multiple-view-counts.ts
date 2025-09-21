@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { ViewsService } from '@/services/views-service';
+import { ViewsService, ViewCount } from '@/services/views-service';
 
 export function useMultipleViewCounts(slugs: string[]) {
-  const [viewCounts, setViewCounts] = useState<Record<string, ViewsService.ViewCount>>({});
+  const [viewCounts, setViewCounts] = useState<Record<string, ViewCount>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,7 +48,7 @@ export function useMultipleViewCounts(slugs: string[]) {
 
   const getFormattedViewCount = useCallback((slug: string) => {
     const viewCount = viewCounts[slug];
-    return ViewsService.formatViewCount(viewCount || 0);
+    return ViewsService.formatViewCount(viewCount || { slug, totalViews: 0, uniqueViews: 0 });
   }, [viewCounts]);
 
   return {

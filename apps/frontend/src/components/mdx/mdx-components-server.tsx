@@ -108,8 +108,8 @@ export const mdxComponents: MDXComponents = {
         {children}
       </a>
     );
-  },  code
-: ({ children, className, ...props }) => {
+  },
+  code: ({ children, className, ...props }) => {
     // Check if this is inside a pre tag (code block) or standalone (inline code)
     const isInlineCode = !className?.includes('language-');
     
@@ -136,9 +136,12 @@ export const mdxComponents: MDXComponents = {
     if (React.isValidElement(children) && children.props?.className) {
       const match = children.props.className.match(/language-(\w+)/);
       language = match?.[1];
-    } else if (typeof children === 'object' && children !== null && 'props' in children && children.props?.className) {
-      const match = children.props.className.match(/language-(\w+)/);
-      language = match?.[1];
+    } else if (typeof children === 'object' && children !== null && 'props' in children) {
+      const childProps = (children as any).props;
+      if (childProps?.className) {
+        const match = childProps.className.match(/language-(\w+)/);
+        language = match?.[1];
+      }
     }
     
     // If we have a language, use ServerCodeBlock
