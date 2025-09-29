@@ -4,10 +4,10 @@ import { cn } from '@/lib/utils';
 // Import server-safe components
 import { InlineCode } from './CodeBlock';
 import { ServerCodeBlock } from './ServerCodeBlock';
-import { Callout } from './Callout';
 import { ImageWithCaption } from './ImageWithCaption';
 import { EnhancedTable } from './EnhancedTable';
 import { generateHeadingId, sanitizeHeadingText } from '@/lib/blog/toc-utils';
+import { Callout } from '.';
 
 // Server-safe MDX components without error boundaries
 export const mdxComponents: MDXComponents = {

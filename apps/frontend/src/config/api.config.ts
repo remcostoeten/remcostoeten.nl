@@ -130,13 +130,14 @@ export const API = {
       increment: (slug: string) => apiUrl(`/blog/analytics/${slug}/view`),
       get: (slug: string) => apiUrl(`/blog/analytics/${slug}`),
     },
+    // Note: The backend uses analytics endpoints, not separate views endpoints
     views: {
-      record: () => apiUrl('/blog/views'),
-      get: (slug: string) => apiUrl(`/blog/views/${slug}`),
-      multiple: () => apiUrl('/blog/views/multiple'),
-      list: () => apiUrl('/blog/views'),
-      stats: () => apiUrl('/blog/views/stats'),
-      cleanup: () => apiUrl('/blog/views/cleanup'),
+      record: () => apiUrl('/blog/analytics/record'), // This will need to be created or use analytics
+      get: (slug: string) => apiUrl(`/blog/analytics/${slug}`),
+      multiple: () => apiUrl('/blog/analytics/multiple'), // This will need to be created
+      list: () => apiUrl('/blog/analytics'),
+      stats: () => apiUrl('/blog/analytics/stats'),
+      cleanup: () => apiUrl('/blog/analytics/cleanup'),
     },
   },
   

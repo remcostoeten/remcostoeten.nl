@@ -24,7 +24,7 @@ export default async function PostsPage() {
 
   return (
     <PageLayout>
-      <div className="py-8 sm:py-12 lg:py-16 space-y-8 sm:space-y-12 lg:space-y-16">
+      <div className="py-6 sm:py-8 lg:py-12 space-y-6 sm:space-y-8 lg:space-y-12 max-w-[120rem] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-6 sm:space-y-8">
           {/* Breadcrumb Navigation */}
           <BreadcrumbNavigation 

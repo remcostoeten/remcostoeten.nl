@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { createBlogMetadataService, TBlogMetadataService } from '../services/blog-metadata-service';
+import { TBlogMetadataService } from '../services/blog-metadata-service';
 
 export const createBlogRouter = (blogService: TBlogMetadataService) => {
   const blogRouter = new Hono();
