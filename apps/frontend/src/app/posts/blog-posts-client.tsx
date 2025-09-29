@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, X, Hash, Folder, Calendar, SortAsc, SortDesc } from "lucide-react";
+import { Search, Filter, X, Hash, Folder, Calendar, SortAsc, SortDesc, SlidersHorizontal } from "lucide-react";
+import { FilterDrawer } from "@/components/ui/filter-drawer";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
 
@@ -101,70 +102,89 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
   const hasActiveFilters = searchQuery || selectedCategory || selectedTags.length > 0 || sortBy !== 'newest';
 
   return (
-    <div className="space-y-8 sm:space-y-10">
+<div className="space-y-6 sm:space-y-8">
       {/* Search and Filter Controls */}
       <motion.div 
-        className="space-y-6"
+        className="space-y-4"
         {...ANIMATION_CONFIGS.fadeInUp}
       >
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search posts, tags, or categories..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-6 py-4 border border-border rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all text-base"
-          />
+        {/* Search and Controls Row */}
+        <div className="flex items-center gap-3">
+          {/* Search Bar */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-3 h-9 border border-border rounded-lg bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all text-sm"
+            aria-label="Search posts"
+            role="searchbox"
+            />
+          </div>
+
+          {/* Filter Toggle - Mobile */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-background/50 hover:bg-muted transition-colors relative touch-manipulation"
+            aria-label="Open filters"
+            aria-expanded={showFilters}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            {hasActiveFilters && (
+              <span className="absolute top-0 right-0 w-2 h-2 bg-accent rounded-full transform translate-x-1/2 -translate-y-1/2" />
+            )}
+          </button>
+
+          {/* Sort Dropdown */}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="w-auto h-9 pl-3 pr-8 border border-border rounded-lg bg-background/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all appearance-none touch-manipulation"
+            aria-label="Sort posts by"
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="title">A-Z</option>
+            <option value="readTime">Time</option>
+          </select>
         </div>
 
-        {/* Filter Toggle and Sort */}
-        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-          <div className="flex flex-wrap gap-3">
+        {/* Desktop Filters */}
+        <div className="hidden md:block">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition-colors ${
+              aria-expanded={showFilters}
+              aria-label="Toggle filters"
+              className={`flex items-center gap-2 h-9 px-3 rounded-lg border transition-colors ${
                 showFilters 
                   ? 'bg-accent text-accent-foreground border-accent' 
-                  : 'bg-background border-border hover:bg-muted'
+                  : 'bg-background/50 border-border hover:bg-muted'
               }`}
             >
               <Filter className="w-4 h-4" />
               <span className="text-sm font-medium">Filters</span>
               {hasActiveFilters && (
-                <span className="w-2 h-2 bg-accent rounded-full"></span>
+                <span className="w-2 h-2 bg-accent rounded-full" />
               )}
             </button>
 
             {hasActiveFilters && (
               <button
                 onClick={clearAllFilters}
-                className="flex items-center gap-2 px-4 py-3 rounded-xl border border-border hover:bg-muted transition-colors text-sm font-medium"
+                aria-label="Clear all filters"
+                className="flex items-center gap-2 h-9 px-3 rounded-lg border border-border hover:bg-muted transition-colors text-sm font-medium bg-background/50"
               >
                 <X className="w-4 h-4" />
                 Clear all
               </button>
             )}
           </div>
-
-          {/* Sort Options */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground font-medium">Sort by:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className="px-4 py-3 border border-border rounded-xl bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
-            >
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
-              <option value="title">Title A-Z</option>
-              <option value="readTime">Read time</option>
-            </select>
-          </div>
         </div>
 
-        {/* Expandable Filters */}
+        {/* Desktop Expandable Filters */}
         <AnimatePresence>
           {showFilters && (
             <motion.div
@@ -172,9 +192,9 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="overflow-hidden"
+              className="overflow-hidden hidden md:block"
             >
-              <div className="p-6 border border-border rounded-xl bg-muted/30 space-y-6">
+              <div className="p-4 sm:p-6 border border-border rounded-lg bg-muted/10 space-y-4 sm:space-y-6">
                 {/* Categories */}
                 <div>
                   <div className="flex items-center gap-2 mb-4">
@@ -186,10 +206,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                       <button
                         key={category}
                         onClick={() => setSelectedCategory(selectedCategory === category ? '' : category)}
-                        className={`px-4 py-2 rounded-full text-sm border transition-colors font-medium ${
+                        className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
                           selectedCategory === category
                             ? 'bg-accent text-accent-foreground border-accent'
-                            : 'bg-background border-border hover:bg-muted'
+                            : 'bg-background/50 border-border hover:bg-muted'
                         }`}
                       >
                         {category}
@@ -209,10 +229,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                       <button
                         key={tag}
                         onClick={() => toggleTag(tag)}
-                        className={`px-4 py-2 rounded-full text-sm border transition-colors font-medium ${
+                        className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
                           selectedTags.includes(tag)
                             ? 'bg-accent text-accent-foreground border-accent'
-                            : 'bg-background border-border hover:bg-muted'
+                            : 'bg-background/50 border-border hover:bg-muted'
                         }`}
                       >
                         {tag}
@@ -230,16 +250,16 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-wrap gap-2 items-center"
+            className="hidden md:flex flex-wrap gap-2 items-center py-2"
           >
-            <span className="text-sm text-muted-foreground">Active filters:</span>
+            <span className="text-xs text-muted-foreground font-medium">Active filters:</span>
             {selectedCategory && (
-              <span className="flex items-center gap-1 px-2 py-1 bg-accent/10 text-accent text-xs rounded border border-accent/20">
+              <span className="flex items-center gap-1 px-2 py-1 bg-accent/10 text-accent text-xs rounded-full border border-accent/20">
                 <Folder className="w-3 h-3" />
                 {selectedCategory}
                 <button
                   onClick={() => setSelectedCategory('')}
-                  className="ml-1 hover:bg-accent/20 rounded"
+                  className="ml-1 hover:bg-accent/20 rounded-full p-0.5 transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -248,13 +268,13 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             {selectedTags.map(tag => (
               <span
                 key={tag}
-                className="flex items-center gap-1 px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded"
+                className="flex items-center gap-1 px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded-full"
               >
                 <Hash className="w-3 h-3" />
                 {tag}
                 <button
                   onClick={() => toggleTag(tag)}
-                  className="ml-1 hover:bg-secondary/80 rounded"
+                  className="ml-1 hover:bg-secondary/80 rounded-full p-0.5 transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -275,12 +295,121 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </span>
       </motion.div>
 
+      {/* Mobile Filter Drawer */}
+      <FilterDrawer 
+        isOpen={showFilters} 
+        onClose={() => setShowFilters(false)}
+      >
+        <div className="space-y-6 py-2">
+          {/* Categories */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Folder className="w-4 h-4 text-muted-foreground" />
+              <h3 className="font-medium text-sm">Categories</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => {
+                    setSelectedCategory(selectedCategory === category ? '' : category);
+                    setShowFilters(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
+                    selectedCategory === category
+                      ? 'bg-accent text-accent-foreground border-accent'
+                      : 'bg-background/50 border-border hover:bg-muted'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Hash className="w-4 h-4 text-muted-foreground" />
+              <h3 className="font-medium text-sm">Tags</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {tags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => {
+                    toggleTag(tag);
+                    setShowFilters(false);
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
+                    selectedTags.includes(tag)
+                      ? 'bg-accent text-accent-foreground border-accent'
+                      : 'bg-background/50 border-border hover:bg-muted'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile Active Filters */}
+          {hasActiveFilters && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-medium">Active Filters</span>
+                <button
+                  onClick={() => {
+                    clearAllFilters();
+                    setShowFilters(false);
+                  }}
+                  className="text-sm text-accent hover:underline"
+                >
+                  Clear all
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {selectedCategory && (
+                  <span className="flex items-center gap-1 px-2 py-1 bg-accent/10 text-accent text-xs rounded-full border border-accent/20">
+                    <Folder className="w-3 h-3" />
+                    {selectedCategory}
+                    <button
+                      onClick={() => setSelectedCategory('')}
+                      className="ml-1 hover:bg-accent/20 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                {selectedTags.map(tag => (
+                  <span
+                    key={tag}
+                    className="flex items-center gap-1 px-2 py-1 bg-secondary text-secondary-foreground text-xs rounded-full"
+                  >
+                    <Hash className="w-3 h-3" />
+                    {tag}
+                    <button
+                      onClick={() => toggleTag(tag)}
+                      className="ml-1 hover:bg-secondary/80 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </FilterDrawer>
+
       {/* Posts Grid */}
       <AnimatePresence mode="wait">
         {filteredPosts.length > 0 ? (
           <motion.div
             key="posts-grid"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 sm:gap-8"
+            role="list"
+            aria-label="Blog posts grid"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

@@ -131,14 +131,27 @@ export function createMemoryBlogMetadataService(): TBlogMetadataService {
     },
 
     async incrementViewCount(slug: string): Promise<void> {
-      const analytics = analyticsStore.get(slug);
-      if (!analytics) return;
+      const now = new Date().toISOString();
+      let analytics = analyticsStore.get(slug);
+      
+      if (!analytics) {
+        // Create new analytics record if it doesn't exist
+        analytics = {
+          id: crypto.randomUUID(),
+          slug,
+          totalViews: 0,
+          uniqueViews: 0,
+          recentViews: 0,
+          createdAt: now,
+          updatedAt: now,
+        };
+      }
 
       const updated: TBlogAnalytics = {
         ...analytics,
         totalViews: analytics.totalViews + 1,
-        lastViewedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        lastViewedAt: now,
+        updatedAt: now,
       };
 
       analyticsStore.set(slug, updated);

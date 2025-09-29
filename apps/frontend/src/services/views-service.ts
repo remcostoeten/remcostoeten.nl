@@ -21,13 +21,19 @@ export class ViewsService {
   // Get view count for a specific post
   static async getViewCount(slug: string): Promise<ViewCount> {
     try {
-      const result = await apiFetch<ViewCount>(API.blog.views.get(slug));
+      const result = await apiFetch(API.blog.analytics.get(slug));
       
-      if (!result.success) {
+      if (!result.success || !result.data) {
         throw new Error(result.error || 'Failed to fetch view count');
       }
       
-      return result.data!;
+      // Transform the analytics data to ViewCount format
+      const analytics = result.data.data || result.data;
+      return {
+        slug,
+        totalViews: analytics.viewCount || analytics.views || 0,
+        uniqueViews: analytics.uniqueViews || 0
+      };
     } catch (error) {
       console.error(`Error fetching view count for ${slug}:`, error);
       return {
@@ -41,19 +47,12 @@ export class ViewsService {
   // Record a view for a post (only increments if new session)
   static async recordView(slug: string): Promise<{ success: boolean; isNewView: boolean; viewCount: ViewCount }> {
     try {
-      const sessionId = getSessionId();
-      
-      const result = await apiFetch<RecordViewResponse>(API.blog.views.record(), {
+      // Use the analytics increment endpoint that actually exists
+      const result = await apiFetch(API.blog.analytics.increment(slug), {
         method: 'POST',
-        body: JSON.stringify({ 
-          slug,
-          sessionId,
-          referrer: typeof window !== 'undefined' ? document.referrer : undefined,
-          timestamp: new Date().toISOString()
-        }),
       });
       
-      if (!result.success || !result.data) {
+      if (!result.success) {
         throw new Error(result.error || 'Failed to record view');
       }
 
@@ -62,7 +61,7 @@ export class ViewsService {
       
       return {
         success: true,
-        isNewView: result.data.data.isNewView,
+        isNewView: true, // Assume it's a new view since we incremented
         viewCount
       };
     } catch (error) {

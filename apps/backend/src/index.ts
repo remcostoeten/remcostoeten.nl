@@ -4,12 +4,11 @@ import { logger } from 'hono/logger';
 import { visitorRouter } from './routes/visitors';
 import { createPageviewsRouter } from './routes/pageviews';
 import { createBlogRouter } from './routes/blog';
-import { createBlogViewsRouter } from './routes/blog-views';
 import { createPageviewService } from './services/pageviewService';
 import { createHybridPageviewService } from './services/hybrid-pageview-service';
 import { createBlogMetadataService } from './services/blog-metadata-service';
 import { createMemoryBlogMetadataService } from './services/memory-blog-metadata-service';
-import { createHybridBlogViewService } from './services/hybrid-blog-view-service';
+
 import { db } from './db';
 import { initializeDatabase } from './db';
 
@@ -26,38 +25,37 @@ export const createApp = async () => {
   // Initialize services with hybrid approach
   const hybridPageviewService = createHybridPageviewService();
   const pageviewService = createPageviewService(hybridPageviewService);
-  
+
   // Use database service if available, otherwise use memory service
   const blogMetadataService = db ? createBlogMetadataService() : createMemoryBlogMetadataService();
-  const blogViewService = createHybridBlogViewService();
 
   // Middleware
   app.use('*', logger());
-  
+
   // Configure CORS for both development and production
-  const corsOrigins = process.env.CORS_ORIGINS 
+  const corsOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
     : ['http://localhost:3000', 'http://localhost:4001'];
-  
+
   app.use('*', cors({
     origin: (origin, c) => {
       // Allow requests with no origin (like mobile apps, Postman, etc.)
       if (!origin) return '*';
-      
+
       // Check if the origin is in our allowed list
-      if (corsOrigins.some(allowed => 
-        allowed === '*' || 
-        origin === allowed || 
+      if (corsOrigins.some(allowed =>
+        allowed === '*' ||
+        origin === allowed ||
         (allowed.includes('*') && new RegExp(allowed.replace('*', '.*')).test(origin))
       )) {
         return origin;
       }
-      
+
       // Default to allowing localhost in development
       if (process.env.NODE_ENV !== 'production' && origin.includes('localhost')) {
         return origin;
       }
-      
+
       return null;
     },
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -69,8 +67,8 @@ export const createApp = async () => {
 
   // Health check
   app.get('/health', (c) => {
-    return c.json({ 
-      status: 'ok', 
+    return c.json({
+      status: 'ok',
       timestamp: new Date().toISOString(),
       storage: 'hybrid'
     });
@@ -80,7 +78,6 @@ export const createApp = async () => {
   app.route('/api/visitors', visitorRouter);
   app.route('/api/pageviews', createPageviewsRouter(pageviewService));
   app.route('/api/blog', createBlogRouter(blogMetadataService));
-  app.route('/api/blog', createBlogViewsRouter(blogViewService));
 
   // Serve the beautiful API documentation page
   app.get('/', async (c) => {
@@ -96,7 +93,7 @@ export const createApp = async () => {
       const routes = app.routes.map((route) => {
         return `<li><a href="${route.path}">${route.method} ${route.path}</a></li>`;
       });
-      
+
       return c.html(`<html>
         <head>
           <title>API Endpoints</title>

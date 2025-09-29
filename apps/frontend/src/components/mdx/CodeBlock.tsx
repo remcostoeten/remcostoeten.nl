@@ -190,7 +190,7 @@ export function CodeBlock({
       aria-label={`Code block in ${displayLanguage}`}
     >
       {/* Header with language label, filename, and copy button */}
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border rounded-t-lg">
+      <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b  border-border rounded-t-lg">
         <div className="flex items-center gap-2">
           {filename && (
             <span className="text-xs font-medium text-foreground">
@@ -248,7 +248,7 @@ export function CodeBlock({
       </div>
       
       {/* Code content */}
-      <div className="relative">
+      <div className="relative  !hidden">
         <pre
           className={cn(
             "overflow-x-auto rounded-b-lg bg-muted text-sm leading-relaxed",

@@ -1,19 +1,15 @@
 import { notFound } from 'next/navigation';
-import { PageLayout } from "@/components/layout/PageLayout";
 import { Metadata } from "next";
 import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils";
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
-import { BlogPostClient } from './BlogPostClient';
-import { AnalyticsTracker } from '@/components/analytics/analytics-tracker';
-import { BlogAnalytics } from '@/components/blog/blog-analytics';
 import { ViewCounter } from '@/components/blog/ViewCounter';
-import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
+import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
 
 interface PostPageProps {
   params: Promise<{
@@ -87,13 +83,11 @@ export default async function PostPage(props: PostPageProps) {
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4">
-      {/* Breadcrumb Navigation */}
-      <BreadcrumbNavigation 
+      <BreadcrumbNavigation
         items={breadcrumbs}
         className="mb-6"
       />
 
-      {/* Fallback "Back to blog" link for users without JavaScript */}
       <noscript>
         <Link
           href="/posts"
@@ -104,7 +98,7 @@ export default async function PostPage(props: PostPageProps) {
         </Link>
       </noscript>
 
-      <TOCLayoutRedesign 
+      <TOCLayoutRedesign
         headings={headings}
         className="w-full max-w-6xl mx-auto"
         contentClassName="max-w-4xl"
@@ -122,15 +116,15 @@ export default async function PostPage(props: PostPageProps) {
                 <Clock className="w-4 h-4" />
                 <span>{post.readTime} min read</span>
               </div>
-              <ViewCounter 
-                slug={params.slug} 
+              <ViewCounter
+                slug={params.slug}
                 autoIncrement={true}
                 className="flex items-center gap-1 text-sm text-muted-foreground"
               />
             </div>
 
             <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
-            
+
             <p className="text-xl text-muted-foreground mb-6">{post.excerpt}</p>
 
             <div className="flex flex-wrap gap-2">

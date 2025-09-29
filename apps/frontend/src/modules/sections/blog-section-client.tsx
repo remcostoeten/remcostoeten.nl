@@ -1,9 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { BookOpen, ArrowRight, Eye } from "lucide-react";
-import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { useMultipleViewCounts } from "@/hooks/use-multiple-view-counts";
 
 interface BlogPost {
@@ -22,21 +20,17 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
   const { getFormattedViewCount, loading: viewCountsLoading } = useMultipleViewCounts(slugs);
 
   return (
-    <motion.div 
-      className="py-6 border-t border-border/50"
-      {...ANIMATION_CONFIGS.staggered(0.3)}
-    >
-      <motion.div className="flex items-center gap-3 mb-3" {...ANIMATION_CONFIGS.fadeInUp}>
+    <div className="py-6 border-t border-border/50">
+      <div className="flex items-center gap-3 mb-3">
         <BookOpen className="w-4 h-4 text-accent" />
         <h2 className="text-heading font-medium text-foreground">Latest Thoughts</h2>
-      </motion.div>
+      </div>
       
-      <motion.div className="space-y-2 mb-4" {...ANIMATION_CONFIGS.staggered(0.1)}>
-        {posts.map((post, index) => (
-          <motion.div 
+      <div className="space-y-2 mb-4">
+        {posts.map((post) => (
+          <div 
             key={post.slug} 
             className="flex items-center justify-between group hover:bg-muted/30 -mx-2 px-2 py-1 rounded transition-all duration-200"
-            {...ANIMATION_CONFIGS.staggered(0.05 * index)}
           >
             <Link 
               href={`/posts/${post.slug}`}
@@ -57,11 +51,11 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
               <span>•</span>
               <span>{new Date(post.publishedAt).toLocaleDateString()}</span>
             </div>
-          </motion.div>
+          </div>
         ))}
-      </motion.div>
+      </div>
       
-      <motion.div {...ANIMATION_CONFIGS.fadeInUp}>
+      <div>
         <Link 
           href="/posts"
           className="inline-flex items-center gap-2 text-accent hover:underline font-medium group"
@@ -69,7 +63,7 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
           <span>View all posts</span>
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </Link>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }

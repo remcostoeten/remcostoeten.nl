@@ -22,23 +22,28 @@ interface BlogPostCardProps {
 }
 
 export function BlogPostCard({ post, index = 0 }: BlogPostCardProps) {
+  const postUrl = `/posts/${post.slug}`;
   const { viewCount, loading: viewCountLoading } = useViewCount(post.slug, {
     autoIncrement: false // Don't auto-increment on card view
   });
 
   return (
     <motion.div
-      className="group border border-border rounded-xl p-6 sm:p-8 hover:bg-muted/30 hover:border-accent/50 transition-all duration-200 h-full flex flex-col"
+      className="group border border-border rounded-2xl p-6 sm:p-8 hover:bg-muted/30 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 h-full flex flex-col bg-card/50 backdrop-blur-sm focus-within:ring-2 focus-within:ring-accent focus-within:ring-offset-2"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
+      role="listitem"
     >
-      <Link href={`/posts/${post.slug}`} className="h-full flex flex-col">
+      <Link 
+        href={postUrl} 
+        className="h-full flex flex-col outline-none"
+        aria-label={`Read ${post.title}`}>
         <div className="flex-1">
-          <h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-3 group-hover:text-accent transition-colors line-clamp-2 leading-tight">
+<h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-accent transition-colors line-clamp-2 leading-tight">
             {post.title}
           </h3>
-          <p className="text-muted-foreground mb-6 line-clamp-3 text-base sm:text-lg leading-relaxed">
+          <p className="text-muted-foreground mb-6 line-clamp-3 text-base leading-relaxed">
             {post.excerpt}
           </p>
         </div>

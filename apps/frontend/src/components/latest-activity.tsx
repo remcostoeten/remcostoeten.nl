@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GitCommit, Star, GitBranch, Users, Clock, ExternalLink, Music, Play } from "lucide-react";
 import { fetchLatestActivities, LatestActivity as TLatestActivity, fetchRepositoryData } from "@/services/github-service";
 import { getCurrentOrRecentMusic, getRecentMusicTracks, SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
+import { LatestActivitySkeleton } from "./latest-activity-skeleton";
 
 type TRepositoryData = {
   repositoryName: string;
@@ -116,7 +117,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.96 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute left-0 top-full z-[9999] w-96 max-w-[90vw]"
+          className="absolute left-0 top-full z-[99999] w-96 max-w-[90vw]"
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
           role="tooltip"
@@ -124,7 +125,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
         >
           <div className="h-2 w-full" aria-hidden="true" />
 
-          <div className="bg-card/95 backdrop-blur-sm border border-border/60 rounded-xl shadow-xl p-5 ring-1 ring-black/5">
+          <div className="bg-card backdrop-blur-lg border border-border rounded-xl shadow-2xl p-5 ring-1 ring-black/20 relative z-[99999]">
             <div className="flex items-start justify-between mb-4">
               <div className="min-w-0 flex-1">
                 <h3 className="font-semibold text-lg text-foreground truncate">
@@ -219,8 +220,8 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TC
                 <div className="pt-3 border-t border-border/60 space-y-2">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Latest commit:</span>
-                    <time className="text-accent font-medium" dateTime={activity.timestamp}>
-                      {formatTimestamp(activity.timestamp)}
+                    <time className="text-accent font-medium">
+                      {activity.timestamp}
                     </time>
                   </div>
                   <a
@@ -369,11 +370,8 @@ function RealSpotifyIntegration() {
   const isRecentTrack = 'played_at' in currentTrack;
 
   return (
-    <motion.div 
+    <div 
       className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -500,7 +498,7 @@ function RealSpotifyIntegration() {
           </motion.div>
         </AnimatePresence>
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -597,12 +595,14 @@ export function LatestActivity() {
 
   const currentActivity = activities[currentActivityIndex];
 
+  // Show skeleton while initial loading
+  if (loading) {
+    return <LatestActivitySkeleton />;
+  }
+
   return (
-    <motion.div 
+    <div 
       className="mt-6 p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: 0.1 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       aria-labelledby="latest-activity-heading"
@@ -615,19 +615,7 @@ export function LatestActivity() {
         </div>
 
         <div className="leading-relaxed min-w-0 flex-1 text-sm" role="status" aria-live="polite">
-          {loading && (
-            <div className="text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <span>The latest thing I've done is</span>
-                <div className="h-4 bg-muted/60 rounded-md w-32 animate-pulse inline-block"></div>
-                <span>on</span>
-                <div className="h-4 bg-muted/60 rounded-md w-24 animate-pulse inline-block"></div>
-                <div className="h-3 bg-muted/40 rounded-md w-16 animate-pulse inline-block"></div>
-              </div>
-            </div>
-          )}
-
-          {!loading && (error || activities.length === 0) && (
+          {(error || activities.length === 0) && (
             <div className="text-muted-foreground">
               Unable to load latest activities.{" "}
               <button
@@ -641,7 +629,7 @@ export function LatestActivity() {
             </div>
           )}
 
-          {!loading && !error && activities.length > 0 && (
+          {!error && activities.length > 0 && (
             <div className="relative">
 
 
@@ -721,8 +709,8 @@ export function LatestActivity() {
                       filter: { duration: 0.4 }
                     }}
                   >
-                    <time dateTime={currentActivity.timestamp} className="text-xs text-muted-foreground font-medium">
-                      ({formatTimestamp(currentActivity.timestamp)})
+                    <time className="text-xs text-muted-foreground font-medium">
+                      ({currentActivity.timestamp})
                     </time>
                   </motion.span>
                 </AnimatePresence>
@@ -733,12 +721,9 @@ export function LatestActivity() {
       </div>
 
       {/* Project Statistics */}
-      {!loading && !error && activities.length > 0 && (
-        <motion.div 
+      {!error && activities.length > 0 && (
+        <div 
           className="flex items-center gap-4 mt-3 pt-3 border-t border-border/30"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
         >
           <div className="flex items-center gap-6 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
@@ -772,10 +757,10 @@ export function LatestActivity() {
               </span>
             </div>
           </div>
-        </motion.div>
+        </div>
       )}
 
       <RealSpotifyIntegration />
-    </motion.div>
+    </div>
   );
 }

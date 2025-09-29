@@ -31,11 +31,15 @@ export function createBlogMetadataService(): TBlogMetadataService {
   return {
     async createMetadata(data: TCreateBlogMetadataData): Promise<TBlogMetadata> {
       const id = crypto.randomUUID();
-      const now = new Date().toISOString();
+      const now = new Date();
+      
+      // Convert publishedAt string to Date object for database
+      const publishedAtDate = new Date(data.publishedAt);
       
       const [metadata] = await db.insert(blogMetadata).values({
         id,
         ...data,
+        publishedAt: publishedAtDate,
         createdAt: now,
         updatedAt: now,
       }).returning();
@@ -99,11 +103,17 @@ export function createBlogMetadataService(): TBlogMetadataService {
     },
 
     async updateMetadata(slug: string, data: TUpdateBlogMetadataData): Promise<TBlogMetadata | null> {
+      // Convert publishedAt string to Date object if provided
+      const updateData = { ...data };
+      if (updateData.publishedAt) {
+        updateData.publishedAt = new Date(updateData.publishedAt) as any;
+      }
+      
       const [result] = await db
         .update(blogMetadata)
         .set({
-          ...data,
-          updatedAt: new Date().toISOString(),
+          ...updateData,
+          updatedAt: new Date(),
         })
         .where(eq(blogMetadata.slug, slug))
         .returning();
@@ -190,16 +200,32 @@ export function createBlogMetadataService(): TBlogMetadataService {
     },
 
     async incrementViewCount(slug: string): Promise<void> {
-      const now = new Date().toISOString();
+      const now = new Date();
       
-      await db
+      // First, try to update existing analytics record
+      const result = await db
         .update(blogAnalytics)
         .set({
           totalViews: sql`${blogAnalytics.totalViews} + 1`,
           lastViewedAt: now,
           updatedAt: now,
         })
-        .where(eq(blogAnalytics.slug, slug));
+        .where(eq(blogAnalytics.slug, slug))
+        .returning({ id: blogAnalytics.id });
+
+      // If no record was updated, create a new analytics record
+      if (result.length === 0) {
+        await db.insert(blogAnalytics).values({
+          id: crypto.randomUUID(),
+          slug,
+          totalViews: 1,
+          uniqueViews: 1,
+          recentViews: 1,
+          lastViewedAt: now,
+          createdAt: now,
+          updatedAt: now,
+        });
+      }
     },
 
     async getAnalyticsBySlug(slug: string): Promise<TBlogAnalytics | null> {
