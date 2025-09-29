@@ -9,7 +9,7 @@
 @import '../styles/toc.css';
 
 /* Import Miscellaneous styles */
-@import '.,/styles/misc.css'
+@import '../styles/misc.css';
 
 ::selection {
   background: calc(hsl(var(--accent)) * 0.9);
