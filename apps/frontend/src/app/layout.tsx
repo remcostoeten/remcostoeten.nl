@@ -72,7 +72,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://producthunt.com" />
         <link rel="dns-prefetch" href="https://linkedin.com" />
       </head>
-      <body className={`${inter.className} ${inter.variable}`} suppressHydrationWarning>
+      <body className={`${inter.className} ${inter.variable} overflow-x-hidden`} suppressHydrationWarning>
         <TooltipProvider delayDuration={0}>
           <AnalyticsTracker />
           {children}

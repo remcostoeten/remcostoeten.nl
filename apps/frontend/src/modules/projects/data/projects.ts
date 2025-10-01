@@ -1,88 +1,52 @@
 import { TProjectData, TSimpleProject } from "../types";
 import { fetchTargetRepositories } from "@/services/github-service";
 
-// Helper function to determine project technologies based on repo data
-const getTechnologies = (repoName: string, language: string, topics: string[]): string[] => {
-  const baseTech = language ? [language] : [];
 
-  // Add specific technologies based on repo name and topics
-  if (repoName.includes('nextjs') || topics.includes('nextjs')) {
-    baseTech.push('Next.js', 'React');
-  }
-  if (repoName.includes('auth') || topics.includes('authentication')) {
-    baseTech.push('Authentication');
-  }
-  if (topics.includes('typescript') || language === 'TypeScript') {
-    baseTech.push('TypeScript');
-  }
-  if (topics.includes('tailwindcss') || topics.includes('tailwind')) {
-    baseTech.push('Tailwind CSS');
-  }
-  if (topics.includes('api') || repoName.includes('api')) {
-    baseTech.push('REST API');
-  }
-  if (topics.includes('cli')) {
-    baseTech.push('CLI');
-  }
-  if (topics.includes('database') || repoName.includes('db')) {
-    baseTech.push('Database');
+function getTechnologies(language: string, topics: string[]): string[] {
+  const technologies: string[] = [];
+
+  if (language) {
+    technologies.push(language);
   }
 
-  return Array.from(new Set(baseTech)); // Remove duplicates
-};
+  topics.forEach(topic => {
+    const formattedTopic = topic.charAt(0).toUpperCase() + topic.slice(1);
+    if (!technologies.includes(formattedTopic)) {
+      technologies.push(formattedTopic);
+    }
+  });
 
-// Helper function to generate highlights based on repo data
-const getHighlights = (repoName: string, description: string, topics: string[]): string[] => {
+  return technologies;
+}
+
+// Helper function to generate highlights based on repo data (dynamic)
+function getHighlights(description: string, topics: string[], stars: number, language: string): string[] {
   const highlights: string[] = [];
 
-  if (repoName.includes('fync')) {
-    highlights.push(
-      "Unified architecture across 9 different APIs",
-      "GitHub, GitLab, Spotify, Discord, Notion integrations",
-      "Zero dependencies except undici for HTTP",
-      "Tree-shakeable with dual package support",
-      "100% TypeScript with comprehensive type definitions"
-    );
-  } else if (repoName.includes('auth')) {
-    highlights.push(
-      "Custom authentication implementation",
-      "Next.js 15 App Router",
-      "TypeScript throughout",
-      "No external auth dependencies",
-      "Modern React patterns"
-    );
-  } else if (repoName.includes('turso') || repoName.includes('db')) {
-    highlights.push(
-      "One-command database creation",
-      "Automatic credential management",
-      "Clipboard integration with .env format",
-      "Smart credential overwriting",
-      "Sub-10 second deployment workflow"
-    );
-  } else if (repoName.includes('portfolio') || repoName.includes('remcostoeten.nl')) {
-    highlights.push(
-      "Modern React architecture",
-      "Server-side rendering with Next.js",
-      "Real-time analytics integration",
-      "Responsive design system",
-      "Blog with MDX support"
-    );
+  // Add description as first highlight if available
+  if (description) {
+    highlights.push(description);
   }
 
-  // Add generic highlights based on topics
-  if (topics.includes('typescript')) highlights.push("Full TypeScript support");
-  if (topics.includes('react')) highlights.push("Modern React patterns");
-  if (topics.includes('api')) highlights.push("RESTful API design");
+  // Add dynamic highlights based on actual repo data
+  if (stars > 0) {
+    highlights.push(`${stars} GitHub stars`);
+  }
 
-  return highlights.length > 0 ? highlights : [
-    "Modern development practices",
-    "Clean, maintainable code",
-    "Comprehensive documentation"
-  ];
-};
+  if (language) {
+    highlights.push(`Built with ${language}`);
+  }
+
+  // Add topic-based highlights (dynamic)
+  if (topics.length > 0) {
+    highlights.push(`Topics: ${topics.slice(0, 3).join(', ')}`);
+  }
+
+  return highlights.length > 0 ? highlights : ["Active development project"];
+}
 
 // Create a function to get real project data from GitHub
-export const getRealProjectData = async (): Promise<{ featuredProjects: TProjectData[], simpleProjects: TSimpleProject[] }> => {
+export async function getRealProjectData(): Promise<{ featuredProjects: TProjectData[], simpleProjects: TSimpleProject[] }> {
   try {
     const repoData = await fetchTargetRepositories();
 
@@ -94,25 +58,18 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: TProject
       if (!repoResult.data) continue;
 
       const repo = repoResult.data;
-      const technologies = getTechnologies(repo.title, repo.language, repo.topics);
-      const highlights = getHighlights(repo.title, repo.description, repo.topics);
+      const technologies = getTechnologies(repo.language, repo.topics);
+      const highlights = getHighlights(repo.description, repo.topics, repo.stars, repo.language);
 
-      // Determine if this should be a featured project or simple project
-      const isFeatured = repo.title.includes('fync') ||
-        repo.title.includes('auth') ||
-        repo.title.includes('turso') ||
-        repo.stars > 5; // Projects with more stars are featured
+      // Determine if this should be a featured project or simple project (dynamic criteria)
+      const isFeatured = repo.stars > 3 || // Projects with more stars are featured
+        repo.forks > 1 || // Projects with forks are featured
+        (repo.totalCommits && repo.totalCommits > 10) || // Active projects are featured
+        repo.topics.length > 2; // Well-tagged projects are featured
 
       if (isFeatured) {
-        // Add to featured projects
-        let title = repo.title;
-        if (repo.title.includes('fync')) {
-          title = `${repo.title} - Unified API Library`;
-        } else if (repo.title.includes('auth')) {
-          title = `${repo.title} - Next.js Authentication`;
-        } else if (repo.title.includes('turso')) {
-          title = `${repo.title} - Database CLI Tool`;
-        }
+        // Add to featured projects with dynamic title
+        const title = repo.title;
 
         featuredProjects.push({
           title,
@@ -131,7 +88,6 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: TProject
           startDate: repo.startDate
         });
       } else {
-        // Add to simple projects
         simpleProjects.push({
           name: repo.title,
           url: repo.url,
@@ -147,17 +103,14 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: TProject
       }
     }
 
-    // Sort featured projects by stars (descending)
     featuredProjects.sort((a, b) => b.stars - a.stars);
 
-    // Sort simple projects by stars (descending)
     simpleProjects.sort((a, b) => (b.gitInfo?.stars || 0) - (a.gitInfo?.stars || 0));
 
     return { featuredProjects, simpleProjects };
   } catch (error) {
     console.error('Error fetching real project data:', error);
 
-    // Return minimal fallback data
     return {
       featuredProjects: [{
         title: "Loading Projects...",
@@ -187,11 +140,7 @@ export const getRealProjectData = async (): Promise<{ featuredProjects: TProject
       }]
     };
   }
-};
+}
 
-// Export the function as the primary way to get project data
-export { getRealProjectData };
-
-// No static fallback data - we always fetch from GitHub API
 export const FEATURED_PROJECTS: TProjectData[] = [];
 export const SIMPLE_PROJECTS: TSimpleProject[] = [];

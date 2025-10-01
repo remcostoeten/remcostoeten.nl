@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createTimeUpdater, getTimeComponents } from "../utils/time";
 
-export const useCurrentTime = () => {
+export function useCurrentTime() {
   const [currentTime, setCurrentTime] = useState<string>("");
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export const useCurrentTime = () => {
   return currentTime;
 };
 
-export const useTimeComponents = () => {
+export function useTimeComponents() {
   const [timeComponents, setTimeComponents] = useState(getTimeComponents);
 
   useEffect(() => {

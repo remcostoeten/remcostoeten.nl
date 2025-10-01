@@ -1,6 +1,8 @@
+import { cn } from '@/lib/utils'
 import React from 'react'
 
 type TProps = {
+  className?: string
   i?: boolean
   children: React.ReactNode
 }
@@ -14,11 +16,9 @@ type TProps = {
  * @example
  * <S i>Text</S>
  */
-export function S({ children, i = false }: TProps) {
-  const className = i ? 'font-serif italic' : 'font-serif'
-  
+export function S({ className, children, i = false }: TProps) {
   return (
-    <span className={className}>
+    <span className={cn('font-serif', { italic: i }, className)}>
       {children}
     </span>
   )

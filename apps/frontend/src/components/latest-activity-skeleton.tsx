@@ -8,12 +8,29 @@ export function LatestActivitySkeleton() {
         </div>
         
         <div className="leading-relaxed min-w-0 flex-1 text-sm">
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="text-muted-foreground">The latest thing I've done is</span>
-            <div className="h-4 bg-muted/60 rounded-md w-32 animate-pulse inline-block"></div>
-            <span className="text-muted-foreground">on</span>
-            <div className="h-4 bg-muted/60 rounded-md w-24 animate-pulse inline-block"></div>
-            <div className="h-3 bg-muted/40 rounded-md w-16 animate-pulse inline-block"></div>
+          {/* Fixed height container matching the actual component */}
+          <div className="min-h-[4.5rem] flex flex-col justify-start">
+            {/* First paragraph skeleton */}
+            <div className="mb-2">
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="text-muted-foreground">The latest thing I've done is</span>
+                <div className="h-4 bg-muted/60 rounded-md w-32 animate-pulse inline-block"></div>
+                <span className="text-muted-foreground">on</span>
+                <div className="h-4 bg-muted/60 rounded-md w-24 animate-pulse inline-block"></div>
+                <div className="h-3 bg-muted/40 rounded-md w-16 animate-pulse inline-block"></div>
+              </div>
+            </div>
+            
+            {/* Second paragraph skeleton */}
+            <div className="text-xs text-muted-foreground">
+              <div className="flex items-center gap-1 flex-wrap">
+                <span className="opacity-60">This commit is part of my ongoing work across</span>
+                <div className="h-3 bg-muted/40 rounded-md w-20 animate-pulse inline-block"></div>
+                <span className="opacity-60">and represents one of</span>
+                <div className="h-3 bg-muted/40 rounded-md w-24 animate-pulse inline-block"></div>
+                <span className="opacity-60">in my development journey.</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

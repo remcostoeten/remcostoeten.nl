@@ -1,4 +1,4 @@
-import { PageLayout } from "@/components/layout/PageLayout";
+// PageLayout is now handled by template.tsx
 import {
   HeroSection,
   AboutSection,
@@ -11,14 +11,15 @@ import {
 
 export default async function HomePage() {
   return (
-    <PageLayout>
-      <HeroSection />
-      <AboutSection />
+    <div className='home'>
+      <div className="space-y-12"><HeroSection />
+        <AboutSection />
+      </div>
       <ProjectsSection />
       <LatestProjectSection />
       <BlogSection />
       <ContactSection />
       <TimezoneSection />
-    </PageLayout>
+    </div>
   );
 }

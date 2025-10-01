@@ -12,7 +12,7 @@ export const getCurrentTimeUTCPlus2 = (): string => {
 /**
  * Get time components for NumberFlow animation
  */
-export const getTimeComponents = () => {
+export function getTimeComponents() {
   const now = new Date();
   const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
   const utcPlus2 = new Date(utcTime + (2 * 3600000));
@@ -27,7 +27,7 @@ export const getTimeComponents = () => {
 /**
  * Updates time every second
  */
-export const createTimeUpdater = (callback: (time: string) => void) => {
+export function createTimeUpdater(callback: (time: string) => void) {
   const updateTime = () => {
     callback(getCurrentTimeUTCPlus2());
   };

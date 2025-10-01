@@ -1,5 +1,6 @@
 {
-    // Exclude large folders from search, watchers, etc
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "files.watcherExclude": {
       "**/node_modules/**": true,
       "**/dist/**": true,
@@ -26,6 +27,9 @@
     // Control telemetry / telemetry features if relevant
     "telemetry.enableTelemetry": false,
     "telemetry.enableCrashReporter": false,
-    "kiroAgent.configureMCP": "Disabled"
+    "kiroAgent.configureMCP": "Disabled",
+    "[typescriptreact]": {
+      "editor.defaultFormatter": "vscode.typescript-language-features"
+    }
   }
   

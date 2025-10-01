@@ -8,7 +8,7 @@ declare module 'react' {
   }
 }
 import { motion } from 'framer-motion';
-import { PageLayout } from '@/components/layout/PageLayout';
+// PageLayout removed - now handled by template.tsx
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -82,31 +82,28 @@ export default function BlogAdminPage() {
 
   if (loading) {
     return (
-      <PageLayout>
-        <div className="space-y-6">
-          <div className="animate-pulse">
-            <div className="h-8 bg-secondary rounded w-1/3 mb-2"></div>
-            <div className="h-4 bg-secondary rounded w-2/3"></div>
-          </div>
-          <div className="grid gap-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="border border-border rounded-lg p-6 bg-card animate-pulse">
-                <div className="h-6 bg-secondary rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-secondary rounded w-1/2 mb-4"></div>
-                <div className="flex gap-2">
-                  <div className="h-6 bg-secondary rounded w-16"></div>
-                  <div className="h-6 bg-secondary rounded w-20"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-secondary rounded w-1/3 mb-2"></div>
+          <div className="h-4 bg-secondary rounded w-2/3"></div>
         </div>
-      </PageLayout>
+        <div className="grid gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="border border-border rounded-lg p-6 bg-card animate-pulse">
+              <div className="h-6 bg-secondary rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-secondary rounded w-1/2 mb-4"></div>
+              <div className="flex gap-2">
+                <div className="h-6 bg-secondary rounded w-16"></div>
+                <div className="h-6 bg-secondary rounded w-20"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
   return (
-    <PageLayout>
       <div className="space-y-6">
         <motion.div {...ANIMATION_CONFIGS.fadeInUp}>
           <div className="flex items-center justify-between">
@@ -221,6 +218,5 @@ export default function BlogAdminPage() {
           </motion.div>
         )}
       </div>
-    </PageLayout>
   );
 }
