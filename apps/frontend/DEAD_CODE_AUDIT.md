@@ -9,16 +9,22 @@
 ### **2. Unused Dependencies**
 - `react-helmet-async` - Only used in unused BlogSEO component
 
-### **3. Unused Test Files**
-- `src/components/blog/__tests__/breadcrumb-integration.test.tsx`
-- `src/components/blog/__tests__/breadcrumb-navigation.test.tsx`
-- `src/components/blog/__tests__/category-overview-integration.test.tsx`
-- `src/components/blog/__tests__/category-overview-responsive.test.tsx`
-- `src/components/blog/__tests__/category-overview.test.tsx`
-- `src/components/blog/__tests__/table-of-contents.test.tsx`
+### **3. All Test Files & Configuration**
+- `vitest.config.ts` - Vitest configuration
+- `scripts/test-spotify-auth.ts` - Test script for Spotify auth
+- `scripts/debug-spotify-redirect.ts` - Debug script for Spotify
+- `src/components/blog/__tests__/` (entire directory with 6 test files)
 - `src/components/mdx/__tests__/` (entire directory)
 - `src/lib/animations/__tests__/` (entire directory)
 - `src/lib/blog/__tests__/` (entire directory)
+- `src/app/github-test/` - Test page for GitHub integration
+- `src/app/spotify-test/` - Test page for Spotify integration
+- Test dependencies in package.json:
+  - `@testing-library/jest-dom`
+  - `@testing-library/react`
+  - `@testing-library/user-event`
+  - `vitest`
+  - `jsdom`
 
 ### **4. Unused Components**
 - `src/components/effects/animated-folder-icon.tsx` - Never imported
@@ -66,12 +72,17 @@
 - 1 unused dependency to remove
 - Cleaner codebase for future development
 
-## 🧹 **CLI Command to Clean Everything**
+## 🧹 **CLI Command to  Clean Everything**
 
 ```bash
 # Single command to remove all dead code
+# Complete cleanup command - removes ALL test files and dead code
 rm -rf \
+  vitest.config.ts \
+  scripts/test-spotify-auth.ts \
+  scripts/debug-spotify-redirect.ts \
   src/components/seo/ \
+  src/components/effects/animated-folder-icon.tsx \
   src/components/blog/__tests__/ \
   src/components/mdx/__tests__/ \
   src/lib/animations/__tests__/ \
@@ -93,8 +104,24 @@ rm -rf \
   src/app/github-test/ \
   src/app/spotify-test/ \
   src/app/spotify-de/ && \
-npm uninstall react-helmet-async && \
-echo "🧹 Dead code cleanup complete!"
+npm uninstall react-helmet-async @testing-library/jest-dom @testing-library/react @testing-library/user-event vitest jsdom && \
+npm pkg delete scripts.test scripts.test:run && \
+echo "🧹 Complete cleanup finished! All test files and dead code removed."
+
+# Test files ONLY command:
+rm -rf \
+  vitest.config.ts \
+  scripts/test-spotify-auth.ts \
+  scripts/debug-spotify-redirect.ts \
+  src/components/blog/__tests__/ \
+  src/components/mdx/__tests__/ \
+  src/lib/animations/__tests__/ \
+  src/lib/blog/__tests__/ \
+  src/app/github-test/ \
+  src/app/spotify-test/ && \
+npm uninstall @testing-library/jest-dom @testing-library/react @testing-library/user-event vitest jsdom && \
+npm pkg delete scripts.test scripts.test:run && \
+echo "🧪 All test files removed!"
 ```
 
 ## ⚠️ **Before Running**
