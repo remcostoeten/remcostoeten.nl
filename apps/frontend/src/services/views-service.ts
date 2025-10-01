@@ -83,7 +83,7 @@ export class ViewsService {
     try {
       if (slugs.length === 0) return {};
 
-      const result = await apiFetch<ViewCount[]>(API.blog.views.multiple(), {
+      const result = await apiFetch<ViewCount[]>(API.blog.analytics.multiple(), {
         method: 'POST',
         body: JSON.stringify({ slugs }),
       });
@@ -94,7 +94,10 @@ export class ViewsService {
 
       const viewCounts: Record<string, ViewCount> = {};
       
-      result.data.forEach((viewCount: ViewCount) => {
+      // Handle both array and object responses
+      const dataArray = Array.isArray(result.data) ? result.data : [result.data];
+      
+      dataArray.forEach((viewCount: ViewCount) => {
         viewCounts[viewCount.slug] = viewCount;
       });
       

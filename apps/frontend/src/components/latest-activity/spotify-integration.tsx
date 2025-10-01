@@ -1,0 +1,325 @@
+'use client';
+
+import { useState, useEffect, useCallback, memo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Music, Play } from "lucide-react";
+import { getCurrentOrRecentMusic, getRecentMusicTracks, type SpotifyTrack, type SpotifyRecentTrack } from "@/services/spotify-service";
+import { formatTimestamp } from "./utils";
+import { SpotifyHoverCard } from "./spotify-hover-card";
+import { AnimatedTimestamp } from "./animated-timestamp";
+import type { TSpotifyData } from "./types";
+
+export const SpotifyIntegration = memo(function SpotifyIntegration() {
+  const [spotifyData, setSpotifyData] = useState<TSpotifyData>({
+    tracks: [],
+    currentTrack: null,
+    loading: true,
+    error: null
+  });
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [hoveredTrack, setHoveredTrack] = useState<number | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const loadSpotifyData = useCallback(async () => {
+    try {
+      setSpotifyData(prev => ({ ...prev, loading: true, error: null }));
+
+      const [currentTrack, recentTracks] = await Promise.all([
+        getCurrentOrRecentMusic(),
+        getRecentMusicTracks(5)
+      ]);
+
+      const allTracks: (SpotifyTrack | SpotifyRecentTrack)[] = [];
+
+      if (currentTrack && 'is_playing' in currentTrack && currentTrack.is_playing) {
+        allTracks.push(currentTrack);
+      }
+
+      const trackSet = new Set(allTracks.map(t => `${t.name}-${t.artist}`));
+      recentTracks.forEach(track => {
+        const key = `${track.name}-${track.artist}`;
+        if (!trackSet.has(key)) {
+          allTracks.push(track);
+          trackSet.add(key);
+        }
+      });
+
+      if (allTracks.length === 0 && currentTrack) {
+        allTracks.push(currentTrack);
+      }
+
+      setSpotifyData({
+        tracks: allTracks,
+        currentTrack: allTracks[0] || null,
+        loading: false,
+        error: allTracks.length === 0 ? 'No music data available' : null
+      });
+
+      setCurrentTrackIndex(0);
+    } catch (error) {
+      console.error('Failed to load Spotify data:', error);
+      setSpotifyData({
+        tracks: [],
+        currentTrack: null,
+        loading: false,
+        error: 'Failed to load music data'
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSpotifyData();
+    const interval = setInterval(loadSpotifyData, 30000);
+    return () => clearInterval(interval);
+  }, [loadSpotifyData]);
+
+  useEffect(() => {
+    if (spotifyData.tracks.length <= 1 || isPaused) return;
+
+    const interval = setInterval(() => {
+      setCurrentTrackIndex((prev) => {
+        const nextIndex = (prev + 1) % spotifyData.tracks.length;
+        setSpotifyData(prevData => ({
+          ...prevData,
+          currentTrack: prevData.tracks[nextIndex]
+        }));
+        return nextIndex;
+      });
+    }, 5950);
+
+    return () => clearInterval(interval);
+  }, [spotifyData.tracks.length, isPaused]);
+
+  const handleMouseEnter = useCallback(() => {
+    setIsPaused(true);
+    setHoveredTrack(currentTrackIndex);
+  }, [currentTrackIndex]);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsPaused(false);
+    setHoveredTrack(null);
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // Use clientX/clientY for viewport-relative coordinates
+    setMousePosition({ 
+      x: e.clientX, 
+      y: e.clientY 
+    });
+  }, []);
+  
+
+
+  const { currentTrack, loading, error } = spotifyData;
+
+  if (loading) {
+    return (
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: 0.6, 
+          delay: 0.8,
+          ease: [0.16, 1, 0.3, 1] 
+        }}
+        className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30" 
+        aria-labelledby="spotify-heading"
+      >
+        <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
+        <div className="p-1.5 bg-green-500/10 rounded-lg">
+          <Music className="w-4 h-4 text-green-500 animate-pulse" aria-hidden="true" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm text-muted-foreground leading-tight">
+            <div className="h-4 bg-muted/60 rounded-md w-64 animate-pulse"></div>
+          </div>
+          <div className="text-xs text-muted-foreground leading-tight mt-1">
+            <div className="h-3 bg-muted/40 rounded-md w-32 animate-pulse"></div>
+          </div>
+        </div>
+        <div className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"></div>
+      </motion.section>
+    );
+  }
+
+  if (error || !currentTrack) {
+    return (
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ 
+          duration: 0.6, 
+          delay: 0.8,
+          ease: [0.16, 1, 0.3, 1] 
+        }}
+        className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30" 
+        aria-labelledby="spotify-heading"
+      >
+        <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
+        <div className="p-1.5 bg-muted/50 rounded-lg">
+          <Music className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+        </div>
+        <div className="text-sm text-muted-foreground">
+          No music playing right now
+        </div>
+      </motion.section>
+    );
+  }
+
+  const isCurrentlyPlaying = 'is_playing' in currentTrack && currentTrack.is_playing;
+  const isRecentTrack = 'played_at' in currentTrack;
+
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ 
+        duration: 0.6, 
+        delay: 0.8,
+        ease: [0.16, 1, 0.3, 1] 
+      }}
+      className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onMouseMove={handleMouseMove}
+      aria-labelledby="spotify-heading"
+    >
+      <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
+      <div className="p-1.5 bg-green-500/10 rounded-lg">
+        {isCurrentlyPlaying ? (
+          <Play className="w-4 h-4 text-green-500" aria-hidden="true" />
+        ) : (
+          <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
+        )}
+      </div>
+
+      <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
+        <div className="text-sm text-muted-foreground leading-tight min-h-[1.25rem] transition-all duration-300 ease-out">
+          {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={`track-${currentTrackIndex}`}
+              className="inline-block relative"
+              initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+              transition={{
+                duration: 0.6,
+                ease: [0.16, 1, 0.3, 1],
+                filter: { duration: 0.3 }
+              }}
+
+            >
+              <a
+                href={currentTrack.external_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5"
+                title={`Listen to ${currentTrack.name} on Spotify`}
+              >
+                {currentTrack.name}
+              </a>
+
+
+            </motion.span>
+          </AnimatePresence>
+          {" "}by{" "}
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={`artist-${currentTrackIndex}`}
+              className="inline-block"
+              initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+              transition={{
+                duration: 0.6,
+                delay: 0.03,
+                ease: [0.16, 1, 0.3, 1],
+                filter: { duration: 0.3 }
+              }}
+            >
+              <span className="font-medium text-foreground" title={currentTrack.artist}>
+                {currentTrack.artist}
+              </span>
+            </motion.span>
+          </AnimatePresence>
+        </div>
+        <div className="text-xs text-muted-foreground leading-tight mt-1 min-h-[1rem] flex items-baseline gap-2 transition-all duration-300 ease-out">
+          {currentTrack.album && (
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={`album-${currentTrackIndex}`}
+                className="inline-block flex-shrink-0"
+                initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.06,
+                  ease: [0.16, 1, 0.3, 1],
+                  filter: { duration: 0.3 }
+                }}
+              >
+                from <span className="italic truncate max-w-[180px] inline-block align-bottom" title={currentTrack.album}>{currentTrack.album}</span>
+              </motion.span>
+            </AnimatePresence>
+          )}
+          {isRecentTrack && (
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={`timestamp-${currentTrackIndex}`}
+                className="inline-block flex-shrink-0 text-[10px]"
+                initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                transition={{
+                  duration: 0.6,
+                  delay: 0.09,
+                  ease: [0.16, 1, 0.3, 1],
+                  filter: { duration: 0.3 }
+                }}
+              >
+                (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={150} />)
+              </motion.span>
+            </AnimatePresence>
+          )}
+          {!currentTrack.album && !isRecentTrack && <span>&nbsp;</span>}
+        </div>
+      </div>
+
+      {currentTrack.image_url && (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`image-${currentTrackIndex}`}
+            className="w-10 h-10 rounded-lg overflow-hidden bg-muted/50 flex-shrink-0"
+            initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+            transition={{
+              duration: 0.5,
+              delay: 0.2,
+              ease: [0.16, 1, 0.3, 1],
+              filter: { duration: 0.3 }
+            }}
+          >
+            <img
+              src={currentTrack.image_url}
+              alt={`${currentTrack.album} album cover`}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </motion.div>
+        </AnimatePresence>
+      )}
+
+      <SpotifyHoverCard
+        track={currentTrack}
+        isVisible={hoveredTrack === currentTrackIndex}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        mousePosition={mousePosition}
+      />
+    </motion.section>
+  );
+});

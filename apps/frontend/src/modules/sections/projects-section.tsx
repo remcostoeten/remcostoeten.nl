@@ -173,26 +173,6 @@ export function ProjectsSection() {
             </span>
           )}
 
-          {state.loadingState === 'success' && state.projects.length > 0 && (
-            <>
-              <span itemProp="description">
-                Lately I have been building{" "}
-                {projectText}
-              </span>
-              . Additional projects are on{" "}
-              <a
-                href={SOCIAL_LINKS.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-accent hover:underline font-medium focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 rounded-sm"
-                aria-label="View more projects on GitHub (opens in new tab)"
-                itemProp="url"
-              >
-                GitHub ↗
-              </a>
-              .
-            </>
-          )}
 
           {state.loadingState === 'success' && state.projects.length === 0 && (
             <span className="text-muted-foreground">

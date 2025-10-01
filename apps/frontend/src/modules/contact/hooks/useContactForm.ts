@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export const useContactForm = () => {
+export function useContactForm() {
   const [isContactHovered, setIsContactHovered] = useState(false);
   const [shouldOpenAbove, setShouldOpenAbove] = useState(false);
 

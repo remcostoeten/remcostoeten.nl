@@ -129,12 +129,13 @@ export const API = {
     analytics: {
       increment: (slug: string) => apiUrl(`/blog/analytics/${slug}/view`),
       get: (slug: string) => apiUrl(`/blog/analytics/${slug}`),
+      multiple: () => apiUrl('/blog/analytics/multiple'),
     },
     // Note: The backend uses analytics endpoints, not separate views endpoints
     views: {
       record: () => apiUrl('/blog/analytics/record'), // This will need to be created or use analytics
       get: (slug: string) => apiUrl(`/blog/analytics/${slug}`),
-      multiple: () => apiUrl('/blog/analytics/multiple'), // This will need to be created
+      multiple: () => apiUrl('/blog/analytics/multiple'),
       list: () => apiUrl('/blog/analytics'),
       stats: () => apiUrl('/blog/analytics/stats'),
       cleanup: () => apiUrl('/blog/analytics/cleanup'),

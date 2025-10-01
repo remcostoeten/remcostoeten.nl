@@ -59,7 +59,7 @@ export const getSpotifyAuthUrl = (): string => {
 };
 
 // Exchange authorization code for tokens
-export const exchangeCodeForTokens = async (code: string) => {
+export async function exchangeCodeForTokens(code: string) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
   const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
@@ -107,7 +107,7 @@ export const exchangeCodeForTokens = async (code: string) => {
 };
 
 // Refresh access token using refresh token
-export const refreshAccessToken = async (refreshToken: string) => {
+export async function refreshAccessToken(refreshToken: string) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -260,3 +260,4 @@ export const getRecentMusicTracks = async (limit: number = 5): Promise<SpotifyRe
     return [];
   }
 };
+
