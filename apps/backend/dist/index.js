@@ -8726,14 +8726,6 @@ function mapRelationalRow(tablesConfig, tableConfig, row, buildQueryResultSelect
   return result;
 }
 
-// ../../node_modules/drizzle-orm/sql/functions/aggregate.js
-function count(expression) {
-  return sql`count(${expression || sql.raw("*")})`.mapWith(Number);
-}
-function countDistinct(expression) {
-  return sql`count(distinct ${expression})`.mapWith(Number);
-}
-
 // ../../node_modules/@neondatabase/serverless/index.mjs
 var So = Object.create;
 var Ie = Object.defineProperty;
@@ -16642,6 +16634,136 @@ var createBlogRouter = (blogService) => {
   return blogRouter;
 };
 
+// src/services/spotify-service.ts
+var SPOTIFY_API_BASE = "https://api.spotify.com/v1";
+var SPOTIFY_ACCOUNTS_BASE = "https://accounts.spotify.com";
+var refreshAccessToken = async (refreshToken) => {
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  const response = await fetch(`${SPOTIFY_ACCOUNTS_BASE}/api/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`
+    },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken
+    })
+  });
+  return await response.json();
+};
+var getCurrentTrack = async (accessToken) => {
+  try {
+    const response = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    if (response.status === 204 || !response.ok) {
+      return null;
+    }
+    const data = await response.json();
+    if (!data.item)
+      return null;
+    return {
+      name: data.item.name,
+      artist: data.item.artists.map((artist) => artist.name).join(", "),
+      album: data.item.album.name,
+      external_url: data.item.external_urls.spotify,
+      preview_url: data.item.preview_url,
+      image_url: data.item.album.images[0]?.url,
+      is_playing: data.is_playing,
+      progress_ms: data.progress_ms,
+      duration_ms: data.item.duration_ms
+    };
+  } catch (error) {
+    console.error("Error fetching current track:", error);
+    return null;
+  }
+};
+var getRecentTracks = async (accessToken, limit = 10) => {
+  try {
+    const response = await fetch(`${SPOTIFY_API_BASE}/me/player/recently-played?limit=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data.items.map((item) => ({
+      name: item.track.name,
+      artist: item.track.artists.map((artist) => artist.name).join(", "),
+      album: item.track.album.name,
+      external_url: item.track.external_urls.spotify,
+      image_url: item.track.album.images[0]?.url,
+      played_at: item.played_at
+    }));
+  } catch (error) {
+    console.error("Error fetching recent tracks:", error);
+    return [];
+  }
+};
+var getValidAccessToken = async () => {
+  try {
+    const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
+    if (!refreshToken) {
+      console.warn("No Spotify refresh token found");
+      return null;
+    }
+    const tokenData = await refreshAccessToken(refreshToken);
+    if (tokenData.error) {
+      console.error("Error refreshing Spotify token:", tokenData.error);
+      return null;
+    }
+    return tokenData.access_token;
+  } catch (error) {
+    console.error("Error getting valid access token:", error);
+    return null;
+  }
+};
+
+// src/routes/spotify.ts
+var spotifyRouter = new Hono2;
+spotifyRouter.use("*", async (c, next) => {
+  const accessToken = await getValidAccessToken();
+  if (!accessToken) {
+    return c.json({ error: "Could not retrieve Spotify access token" }, 500);
+  }
+  c.set("accessToken", accessToken);
+  await next();
+});
+spotifyRouter.get("/current", async (c) => {
+  const accessToken = c.get("accessToken");
+  try {
+    const currentTrack = await getCurrentTrack(accessToken);
+    if (currentTrack) {
+      return c.json(currentTrack);
+    }
+    const recentTracks = await getRecentTracks(accessToken, 1);
+    if (recentTracks.length > 0) {
+      return c.json(recentTracks[0]);
+    }
+    return c.json({ message: "No recent tracks found" }, 404);
+  } catch (error) {
+    console.error("Error in /current route:", error);
+    return c.json({ error: "Failed to fetch data from Spotify" }, 500);
+  }
+});
+spotifyRouter.get("/recent", async (c) => {
+  const accessToken = c.get("accessToken");
+  const limit = c.req.query("limit") ? parseInt(c.req.query("limit"), 10) : 5;
+  try {
+    const recentTracks = await getRecentTracks(accessToken, limit);
+    return c.json(recentTracks);
+  } catch (error) {
+    console.error("Error in /recent route:", error);
+    return c.json({ error: "Failed to fetch recent tracks from Spotify" }, 500);
+  }
+});
+
 // src/services/pageviewService.ts
 var createPageviewService = (hybridService) => ({
   async createPageview(data) {
@@ -16778,7 +16900,7 @@ var createMemoryStorage = () => {
         acc[pv.url] = (acc[pv.url] || 0) + 1;
         return acc;
       }, {});
-      const topPages = Object.entries(urlCounts).sort(([, a2], [, b2]) => b2 - a2).slice(0, 10).map(([url, count2]) => ({ url, count: count2 }));
+      const topPages = Object.entries(urlCounts).sort(([, a2], [, b2]) => b2 - a2).slice(0, 10).map(([url, count]) => ({ url, count }));
       return {
         total,
         today: todayCount,
@@ -16857,10 +16979,12 @@ function createBlogMetadataService() {
   return {
     async createMetadata(data) {
       const id = crypto.randomUUID();
-      const now = new Date().toISOString();
+      const now = new Date;
+      const publishedAtDate = new Date(data.publishedAt);
       const [metadata] = await db.insert(blogMetadata).values({
         id,
         ...data,
+        publishedAt: publishedAtDate,
         createdAt: now,
         updatedAt: now
       }).returning();
@@ -16904,9 +17028,13 @@ function createBlogMetadataService() {
       return await query;
     },
     async updateMetadata(slug, data) {
+      const updateData = { ...data };
+      if (updateData.publishedAt) {
+        updateData.publishedAt = new Date(updateData.publishedAt);
+      }
       const [result] = await db.update(blogMetadata).set({
-        ...data,
-        updatedAt: new Date().toISOString()
+        ...updateData,
+        updatedAt: new Date
       }).where(eq(blogMetadata.slug, slug)).returning();
       return result || null;
     },
@@ -16959,12 +17087,24 @@ function createBlogMetadataService() {
       }));
     },
     async incrementViewCount(slug) {
-      const now = new Date().toISOString();
-      await db.update(blogAnalytics).set({
+      const now = new Date;
+      const result = await db.update(blogAnalytics).set({
         totalViews: sql`${blogAnalytics.totalViews} + 1`,
         lastViewedAt: now,
         updatedAt: now
-      }).where(eq(blogAnalytics.slug, slug));
+      }).where(eq(blogAnalytics.slug, slug)).returning({ id: blogAnalytics.id });
+      if (result.length === 0) {
+        await db.insert(blogAnalytics).values({
+          id: crypto.randomUUID(),
+          slug,
+          totalViews: 1,
+          uniqueViews: 1,
+          recentViews: 1,
+          lastViewedAt: now,
+          createdAt: now,
+          updatedAt: now
+        });
+      }
     },
     async getAnalyticsBySlug(slug) {
       const [result] = await db.select().from(blogAnalytics).where(eq(blogAnalytics.slug, slug)).limit(1);
@@ -17058,14 +17198,24 @@ function createMemoryBlogMetadataService() {
       }));
     },
     async incrementViewCount(slug) {
-      const analytics = analyticsStore.get(slug);
-      if (!analytics)
-        return;
+      const now = new Date().toISOString();
+      let analytics = analyticsStore.get(slug);
+      if (!analytics) {
+        analytics = {
+          id: crypto.randomUUID(),
+          slug,
+          totalViews: 0,
+          uniqueViews: 0,
+          recentViews: 0,
+          createdAt: now,
+          updatedAt: now
+        };
+      }
       const updated = {
         ...analytics,
         totalViews: analytics.totalViews + 1,
-        lastViewedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        lastViewedAt: now,
+        updatedAt: now
       };
       analyticsStore.set(slug, updated);
     },
@@ -17073,280 +17223,6 @@ function createMemoryBlogMetadataService() {
       return analyticsStore.get(slug) || null;
     }
   };
-}
-
-// src/services/blog-view-service.ts
-function createBlogViewService() {
-  return {
-    async recordView(data) {
-      const now = new Date().toISOString();
-      try {
-        const existingView = await db.select().from(blogViews2).where(and(eq(blogViews2.slug, data.slug), eq(blogViews2.sessionId, data.sessionId))).limit(1);
-        if (existingView.length > 0) {
-          return {
-            success: true,
-            isNewView: false,
-            view: existingView[0]
-          };
-        }
-        const newView = await db.insert(blogViews2).values({
-          id: crypto.randomUUID(),
-          slug: data.slug,
-          sessionId: data.sessionId,
-          ipAddress: data.ipAddress,
-          userAgent: data.userAgent,
-          referrer: data.referrer,
-          timestamp: data.timestamp || now,
-          createdAt: now
-        }).returning();
-        return {
-          success: true,
-          isNewView: true,
-          view: newView[0]
-        };
-      } catch (error) {
-        console.error("Error recording blog view:", error);
-        return {
-          success: false,
-          isNewView: false
-        };
-      }
-    },
-    async getViewCount(slug) {
-      const [totalResult, uniqueResult] = await Promise.all([
-        db.select({ count: count() }).from(blogViews2).where(eq(blogViews2.slug, slug)),
-        db.select({ count: countDistinct(blogViews2.sessionId) }).from(blogViews2).where(eq(blogViews2.slug, slug))
-      ]);
-      return {
-        slug,
-        totalViews: totalResult[0]?.count || 0,
-        uniqueViews: uniqueResult[0]?.count || 0
-      };
-    },
-    async getMultipleViewCounts(slugs) {
-      if (slugs.length === 0)
-        return [];
-      const results = await Promise.all(slugs.map((slug) => this.getViewCount(slug)));
-      return results;
-    },
-    async getViews(filters) {
-      let query = db.select().from(blogViews2);
-      const conditions = [];
-      if (filters.slug) {
-        conditions.push(eq(blogViews2.slug, filters.slug));
-      }
-      if (filters.sessionId) {
-        conditions.push(eq(blogViews2.sessionId, filters.sessionId));
-      }
-      if (filters.startDate) {
-        conditions.push(gte(blogViews2.timestamp, filters.startDate));
-      }
-      if (filters.endDate) {
-        conditions.push(lte(blogViews2.timestamp, filters.endDate));
-      }
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
-      }
-      const results = await query.orderBy(desc(blogViews2.timestamp)).limit(filters.limit || 50).offset(filters.offset || 0);
-      return results;
-    },
-    async getTotalViewCount(filters) {
-      let query = db.select({ count: count() }).from(blogViews2);
-      const conditions = [];
-      if (filters.slug) {
-        conditions.push(eq(blogViews2.slug, filters.slug));
-      }
-      if (filters.startDate) {
-        conditions.push(gte(blogViews2.timestamp, filters.startDate));
-      }
-      if (filters.endDate) {
-        conditions.push(lte(blogViews2.timestamp, filters.endDate));
-      }
-      if (conditions.length > 0) {
-        query = query.where(and(...conditions));
-      }
-      const result = await query;
-      return result[0]?.count || 0;
-    },
-    async getStats() {
-      const now = new Date;
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-      const [
-        totalResult,
-        uniqueResult,
-        todayResult,
-        thisWeekResult,
-        thisMonthResult,
-        topPostsResult
-      ] = await Promise.all([
-        db.select({ count: count() }).from(blogViews2),
-        db.select({ count: countDistinct(blogViews2.sessionId) }).from(blogViews2),
-        db.select({ count: count() }).from(blogViews2).where(gte(blogViews2.timestamp, today.toISOString())),
-        db.select({ count: count() }).from(blogViews2).where(gte(blogViews2.timestamp, weekAgo.toISOString())),
-        db.select({ count: count() }).from(blogViews2).where(gte(blogViews2.timestamp, monthAgo.toISOString())),
-        db.select({
-          slug: blogViews2.slug,
-          totalViews: count(),
-          uniqueViews: countDistinct(blogViews2.sessionId)
-        }).from(blogViews2).groupBy(blogViews2.slug).orderBy(desc(count())).limit(10)
-      ]);
-      return {
-        totalViews: totalResult[0]?.count || 0,
-        uniqueViews: uniqueResult[0]?.count || 0,
-        viewsToday: todayResult[0]?.count || 0,
-        viewsThisWeek: thisWeekResult[0]?.count || 0,
-        viewsThisMonth: thisMonthResult[0]?.count || 0,
-        topPosts: topPostsResult.map((row) => ({
-          slug: row.slug,
-          totalViews: row.totalViews,
-          uniqueViews: row.uniqueViews
-        }))
-      };
-    },
-    async deleteOldViews(daysOld = 365) {
-      const cutoffDate = new Date;
-      cutoffDate.setDate(cutoffDate.getDate() - daysOld);
-      const result = await db.delete(blogViews2).where(lte(blogViews2.createdAt, cutoffDate.toISOString()));
-      return result.rowCount || 0;
-    }
-  };
-}
-
-// src/services/memory-blog-view-service.ts
-var blogViews4 = new Map;
-var sessionViews = new Set;
-function createMemoryBlogViewService() {
-  return {
-    async recordView(data) {
-      const sessionSlugKey = `${data.sessionId}:${data.slug}`;
-      if (sessionViews.has(sessionSlugKey)) {
-        const existingView = Array.from(blogViews4.values()).find((view2) => view2.sessionId === data.sessionId && view2.slug === data.slug);
-        return {
-          success: true,
-          isNewView: false,
-          view: existingView
-        };
-      }
-      const now = new Date().toISOString();
-      const view = {
-        id: crypto.randomUUID(),
-        slug: data.slug,
-        sessionId: data.sessionId,
-        ipAddress: data.ipAddress,
-        userAgent: data.userAgent,
-        referrer: data.referrer,
-        timestamp: data.timestamp || now,
-        createdAt: now
-      };
-      blogViews4.set(view.id, view);
-      sessionViews.add(sessionSlugKey);
-      return {
-        success: true,
-        isNewView: true,
-        view
-      };
-    },
-    async getViewCount(slug) {
-      const views = Array.from(blogViews4.values()).filter((view) => view.slug === slug);
-      const uniqueSessions = new Set(views.map((view) => view.sessionId));
-      return {
-        slug,
-        totalViews: views.length,
-        uniqueViews: uniqueSessions.size
-      };
-    },
-    async getMultipleViewCounts(slugs) {
-      return Promise.all(slugs.map((slug) => this.getViewCount(slug)));
-    },
-    async getViews(filters) {
-      let views = Array.from(blogViews4.values());
-      if (filters.slug) {
-        views = views.filter((view) => view.slug === filters.slug);
-      }
-      if (filters.sessionId) {
-        views = views.filter((view) => view.sessionId === filters.sessionId);
-      }
-      if (filters.startDate) {
-        views = views.filter((view) => view.timestamp >= filters.startDate);
-      }
-      if (filters.endDate) {
-        views = views.filter((view) => view.timestamp <= filters.endDate);
-      }
-      views.sort((a2, b2) => new Date(b2.timestamp).getTime() - new Date(a2.timestamp).getTime());
-      const offset = filters.offset || 0;
-      const limit = filters.limit || 50;
-      return views.slice(offset, offset + limit);
-    },
-    async getTotalViewCount(filters) {
-      let views = Array.from(blogViews4.values());
-      if (filters.slug) {
-        views = views.filter((view) => view.slug === filters.slug);
-      }
-      if (filters.startDate) {
-        views = views.filter((view) => view.timestamp >= filters.startDate);
-      }
-      if (filters.endDate) {
-        views = views.filter((view) => view.timestamp <= filters.endDate);
-      }
-      return views.length;
-    },
-    async getStats() {
-      const now = new Date;
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-      const allViews = Array.from(blogViews4.values());
-      const uniqueSessions = new Set(allViews.map((view) => view.sessionId));
-      const todayViews = allViews.filter((view) => new Date(view.timestamp) >= today);
-      const weekViews = allViews.filter((view) => new Date(view.timestamp) >= weekAgo);
-      const monthViews = allViews.filter((view) => new Date(view.timestamp) >= monthAgo);
-      const postCounts = new Map;
-      allViews.forEach((view) => {
-        if (!postCounts.has(view.slug)) {
-          postCounts.set(view.slug, { total: 0, unique: new Set });
-        }
-        const postData = postCounts.get(view.slug);
-        postData.total++;
-        postData.unique.add(view.sessionId);
-      });
-      const topPosts = Array.from(postCounts.entries()).map(([slug, data]) => ({
-        slug,
-        totalViews: data.total,
-        uniqueViews: data.unique.size
-      })).sort((a2, b2) => b2.totalViews - a2.totalViews).slice(0, 10);
-      return {
-        totalViews: allViews.length,
-        uniqueViews: uniqueSessions.size,
-        viewsToday: todayViews.length,
-        viewsThisWeek: weekViews.length,
-        viewsThisMonth: monthViews.length,
-        topPosts
-      };
-    },
-    async deleteOldViews(daysOld = 365) {
-      const cutoffDate = new Date;
-      cutoffDate.setDate(cutoffDate.getDate() - daysOld);
-      const viewsToDelete = Array.from(blogViews4.entries()).filter(([_, view]) => new Date(view.createdAt) < cutoffDate);
-      viewsToDelete.forEach(([id, view]) => {
-        blogViews4.delete(id);
-        sessionViews.delete(`${view.sessionId}:${view.slug}`);
-      });
-      return viewsToDelete.length;
-    }
-  };
-}
-
-// src/services/hybrid-blog-view-service.ts
-function createHybridBlogViewService() {
-  if (db) {
-    console.log("\u2705 Using database blog view service");
-    return createBlogViewService();
-  } else {
-    console.log("\u26A0\uFE0F Using memory blog view service (database not available)");
-    return createMemoryBlogViewService();
-  }
 }
 
 // src/index.ts
@@ -17360,7 +17236,6 @@ var createApp = async () => {
   const hybridPageviewService = createHybridPageviewService();
   const pageviewService = createPageviewService(hybridPageviewService);
   const blogMetadataService = db ? createBlogMetadataService() : createMemoryBlogMetadataService();
-  const blogViewService = createHybridBlogViewService();
   app.use("*", logger());
   const corsOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim()) : ["http://localhost:3000", "http://localhost:4001"];
   app.use("*", cors({
@@ -17391,6 +17266,7 @@ var createApp = async () => {
   app.route("/api/visitors", visitorRouter);
   app.route("/api/pageviews", createPageviewsRouter(pageviewService));
   app.route("/api/blog", createBlogRouter(blogMetadataService));
+  app.route("/api/spotify", spotifyRouter);
   app.get("/", async (c) => {
     try {
       const fs = await import("fs/promises");

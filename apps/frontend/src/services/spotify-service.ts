@@ -25,7 +25,7 @@ export interface SpotifyRecentTrack {
 // Generate Spotify authorization URL
 export const getSpotifyAuthUrl = (): string => {
   const clientId = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
-  const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI || 'http://127.0.0.1:3000/api/spotify/callback';
+  const redirectUri = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI;
   
   console.log('🔍 Spotify Auth Debug:', {
     clientId: clientId ? `${clientId.substring(0, 8)}...` : 'MISSING',
@@ -48,7 +48,7 @@ export const getSpotifyAuthUrl = (): string => {
     response_type: 'code',
     client_id: clientId,
     scope: scopes,
-    redirect_uri: redirectUri,
+    redirect_uri: redirectUri || 'http://127.0.0.1:3000/api/auth/spotify/callback',
     show_dialog: 'true'
   });
 
@@ -220,7 +220,7 @@ export const getCurrentOrRecentMusic = async (): Promise<SpotifyTrack | SpotifyR
   try {
     console.log('🎵 Fetching Spotify music from API...');
     
-    const response = await fetch('/api/spotify/current');
+    const response = await fetch('/api/auth/spotify/current');
     
     if (!response.ok) {
       const errorData = await response.json();
@@ -243,7 +243,7 @@ export const getRecentMusicTracks = async (limit: number = 5): Promise<SpotifyRe
   try {
     console.log(`🎵 Fetching ${limit} recent Spotify tracks from API...`);
     
-    const response = await fetch(`/api/spotify/recent?limit=${limit}`);
+    const response = await fetch(`/api/auth/spotify/recent?limit=${limit}`);
     
     if (!response.ok) {
       const errorData = await response.json();

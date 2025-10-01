@@ -7,7 +7,7 @@ import { ServerCodeBlock } from './ServerCodeBlock';
 import { ImageWithCaption } from './ImageWithCaption';
 import { EnhancedTable } from './EnhancedTable';
 import { generateHeadingId, sanitizeHeadingText } from '@/lib/blog/toc-utils';
-import { Callout } from '.';
+import { Callout } from './Callout';
 
 // Server-safe MDX components without error boundaries
 export const mdxComponents: MDXComponents = {

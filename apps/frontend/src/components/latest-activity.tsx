@@ -526,6 +526,14 @@ export function LatestActivity() {
       setLoading(true);
       setError(null);
       const result = await fetchLatestActivities();
+      
+      if (!result.activities || result.activities.length === 0) {
+        setError('No recent GitHub activities found');
+        setActivities([]);
+        setProjectStats(prev => ({ ...prev, loading: false }));
+        return;
+      }
+      
       setActivities(result.activities);
       
       // Calculate project statistics
@@ -564,7 +572,8 @@ export function LatestActivity() {
       
     } catch (err) {
       console.error('Failed to load latest activities:', err);
-      setError('Failed to load latest activities');
+      setError('Unable to load GitHub activities. Please check your GitHub token configuration.');
+      setActivities([]);
       setProjectStats(prev => ({ ...prev, loading: false }));
     } finally {
       setLoading(false);
@@ -614,17 +623,17 @@ export function LatestActivity() {
           <GitCommit className="w-4 h-4 text-accent" aria-hidden="true" />
         </div>
 
-        <div className="leading-relaxed min-w-0 flex-1 text-sm" role="status" aria-live="polite">
+        <div className="leading-relaxed min-w-0 flex-1 text-sm min-h-[3rem] flex items-start" role="status" aria-live="polite">
           {(error || activities.length === 0) && (
             <div className="text-muted-foreground">
-              Unable to load latest activities.{" "}
+              {error || 'No recent GitHub activities found.'}{" "}
               <button
                 onClick={loadActivities}
                 className="text-accent hover:underline focus:underline focus:outline-none transition-colors"
                 disabled={loading}
                 aria-label="Retry loading activities"
               >
-                Retry
+                {loading ? 'Loading...' : 'Retry'}
               </button>
             </div>
           )}
@@ -654,10 +663,13 @@ export function LatestActivity() {
                       href={currentActivity.commitUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-foreground hover:text-accent transition-colors focus:text-accent focus:outline-none focus:underline px-1 py-0.5 rounded hover:bg-accent/5"
+                      className="font-semibold text-foreground hover:text-accent transition-colors focus:text-accent focus:outline-none focus:underline px-1 py-0.5 rounded hover:bg-accent/5 line-clamp-2 break-words"
                       aria-label={`View commit ${currentActivity.latestCommit} on GitHub`}
+                      title={currentActivity.latestCommit}
                     >
-                      {currentActivity.latestCommit}
+                      {currentActivity.latestCommit.length > 80 
+                        ? `${currentActivity.latestCommit.substring(0, 80)}...` 
+                        : currentActivity.latestCommit}
                     </a>
 
                     <CommitHoverCard

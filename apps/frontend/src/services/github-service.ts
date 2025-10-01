@@ -431,17 +431,18 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
     
     // Process up to 5 most recent push events
     const activities: LatestActivity[] = [];
-    const maxActivities = Math.min(5, pushEvents.length);
+    const maxActivities = 5;
+    let processedCount = 0;
     
-    for (let i = 0; i < maxActivities; i++) {
+    for (let i = 0; i < pushEvents.length && processedCount < maxActivities; i++) {
       const pushEvent = pushEvents[i];
       
       // Extract commit information
       const commits = pushEvent.payload?.commits || [];
       const latestCommit = commits[commits.length - 1]; // Get the most recent commit in the push
       
-      if (!latestCommit) {
-        console.warn('⚠️ No commits found in push event, skipping...');
+      if (!latestCommit || !latestCommit.message) {
+        console.warn('⚠️ No valid commit found in push event, skipping...');
         continue;
       }
       
@@ -464,7 +465,13 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
       }
       
       const repoName = pushEvent.repo?.name?.split('/')[1] || 'unknown-repo';
-      const commitMessage = latestCommit.message || 'No commit message';
+      const commitMessage = latestCommit.message.split('\n')[0].trim(); // Only first line, trimmed
+      
+      // Skip if commit message is empty after trimming
+      if (!commitMessage) {
+        console.warn('⚠️ Empty commit message after trimming, skipping...');
+        continue;
+      }
       
       activities.push({
         latestCommit: commitMessage,
@@ -473,6 +480,8 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
         commitUrl: `https://github.com/${pushEvent.repo.name}/commit/${latestCommit.sha}`,
         repositoryUrl: `https://github.com/${pushEvent.repo.name}`
       });
+      
+      processedCount++;
     }
     
     console.log('✅ Successfully fetched', activities.length, 'activities');
@@ -481,33 +490,8 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
   } catch (error) {
     console.error('❌ Error fetching latest activities:', error);
     
-    // Return fallback activities with more realistic recent commits
-    return {
-      activities: [
-        {
-          latestCommit: 'Fix Spotify integration and GitHub token scopes',
-          project: 'remcostoeten.nl',
-          timestamp: 'recently',
-          commitUrl: 'https://github.com/remcostoeten/remcostoeten.nl',
-          repositoryUrl: 'https://github.com/remcostoeten/remcostoeten.nl'
-        },
-        {
-          latestCommit: 'Update portfolio animations and components',
-          project: 'nextjs-15-roll-your-own-authentication',
-          timestamp: '2 hours ago',
-          commitUrl: 'https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication',
-          repositoryUrl: 'https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication'
-        },
-        {
-          latestCommit: 'Add new project showcase features',
-          project: 'Beautiful-interactive-file-tree',
-          timestamp: '1 day ago',
-          commitUrl: 'https://github.com/remcostoeten/Beautiful-interactive-file-tree',
-          repositoryUrl: 'https://github.com/remcostoeten/Beautiful-interactive-file-tree'
-        }
-      ],
-      totalFound: 3
-    };
+    // Don't return fallback data - let the component handle the error
+    throw error;
   }
 };
 

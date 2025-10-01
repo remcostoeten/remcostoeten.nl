@@ -4,6 +4,7 @@ import { logger } from 'hono/logger';
 import { visitorRouter } from './routes/visitors';
 import { createPageviewsRouter } from './routes/pageviews';
 import { createBlogRouter } from './routes/blog';
+import { spotifyRouter } from './routes/spotify'; // Add this line
 import { createPageviewService } from './services/pageviewService';
 import { createHybridPageviewService } from './services/hybrid-pageview-service';
 import { createBlogMetadataService } from './services/blog-metadata-service';
@@ -78,6 +79,7 @@ export const createApp = async () => {
   app.route('/api/visitors', visitorRouter);
   app.route('/api/pageviews', createPageviewsRouter(pageviewService));
   app.route('/api/blog', createBlogRouter(blogMetadataService));
+  app.route('/api/spotify', spotifyRouter); // Add this line
 
   // Serve the beautiful API documentation page
   app.get('/', async (c) => {

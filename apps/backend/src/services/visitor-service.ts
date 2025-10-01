@@ -15,7 +15,7 @@ function setupVisitorService() {
   return {
     // Visitor management
     async trackVisitor(data: CreateVisitorData): Promise<Visitor> {
-      const now = new Date().toISOString();
+      const now = new Date();
       
       // Check if visitor already exists
       const existingVisitor = await db
@@ -64,7 +64,7 @@ function setupVisitorService() {
 
     // Blog view tracking
     async trackBlogView(data: CreateBlogViewData): Promise<BlogView> {
-      const now = new Date().toISOString();
+      const now = new Date();
       
       // Check if this visitor has already viewed this blog
       const existingView = await db
