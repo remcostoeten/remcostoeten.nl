@@ -11,7 +11,7 @@ import type {
 function createDatabasePageviewService() {
   return {
     async createPageview(data: CreatePageviewData): Promise<Pageview> {
-      const now = new Date().toISOString();
+      const now = new Date();
       
       const newPageview = await db
         .insert(pageviews)
@@ -71,14 +71,14 @@ function createDatabasePageviewService() {
       ] = await Promise.all([
         db.select({ count: sql<number>`count(*)` }).from(pageviews),
         db.select({ count: sql<number>`count(*)` }).from(pageviews)
-          .where(gte(pageviews.timestamp, today.toISOString())),
+          .where(gte(pageviews.timestamp, today)),
         db.select({ count: sql<number>`count(*)` }).from(pageviews)
           .where(and(
-            gte(pageviews.timestamp, yesterday.toISOString()),
-            lte(pageviews.timestamp, today.toISOString())
+            gte(pageviews.timestamp, yesterday),
+            lte(pageviews.timestamp, today)
           )),
         db.select({ count: sql<number>`count(*)` }).from(pageviews)
-          .where(gte(pageviews.timestamp, weekAgo.toISOString())),
+          .where(gte(pageviews.timestamp, weekAgo)),
         db.select({ count: sql<number>`count(distinct ${pageviews.url})` }).from(pageviews),
         db.select({
           url: pageviews.url,

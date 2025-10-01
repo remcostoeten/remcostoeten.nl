@@ -2,13 +2,12 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { HelmetProvider } from "react-helmet-async";
+
 import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
 import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_api-environment-switcher";
 import { Analytics } from "@vercel/analytics/next"
 
-// Optimize font loading with display swap and preload
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
@@ -16,9 +15,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Frank Price - Product Designer & Writer',
+  title: 'Remco Stoeten - Software engineer',
   description: 'Thoughts on design, engineering, AI, and the random sparks of inspiration that keep me going.',
-  keywords: ['design', 'engineering', 'AI', 'product design', 'blog', 'technology'],
+  keywords: ['frontend', 'engineering', 'AI', 'software development', 'blog', 'technology'],
   authors: [{ name: 'Frank Price' }],
   creator: 'Frank Price',
   publisher: 'Frank Price',
@@ -64,7 +63,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://framerusercontent.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* DNS prefetch for external links */}
         <link rel="dns-prefetch" href="https://medium.com" />
         <link rel="dns-prefetch" href="https://substack.com" />
@@ -75,12 +74,12 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} ${inter.variable}`} suppressHydrationWarning>
         <TooltipProvider delayDuration={0}>
-        <AnalyticsTracker />
-        {children}
-        <ApiEnvironmentSwitcher />
-        <ApiEnvironmentIndicator />
+          <AnalyticsTracker />
+          {children}
+          <ApiEnvironmentSwitcher />
+          <ApiEnvironmentIndicator />
         </TooltipProvider>
-    <Analytics/>
+        <Analytics />
       </body>
     </html>
   );

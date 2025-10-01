@@ -35,7 +35,7 @@ export default function SpotifySetupPage() {
     setTestResult(null);
     
     try {
-      const response = await fetch('/api/spotify/current');
+      const response = await fetch('/api/auth/spotify/current');
       const data = await response.json();
       
       if (response.ok) {
