@@ -27,14 +27,20 @@ export const ActivityContent = memo(function ActivityContent({
 
     const commitText = currentActivity.latestCommit;
     const projectText = currentActivity.project.replace(/-/g, ' '); // Replace dashes with spaces
-    
-    // Simple truncation - much more generous
-    const truncatedCommit = commitText.length > 40 
-      ? `${commitText.substring(0, 40)}...` 
+
+    // Responsive truncation based on screen size
+    // Mobile: shorter, Desktop: longer
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+
+    const commitMaxLength = isMobile ? 25 : 40;
+    const projectMaxLength = isMobile ? 15 : 25;
+
+    const truncatedCommit = commitText.length > commitMaxLength
+      ? `${commitText.substring(0, commitMaxLength)}...`
       : commitText;
-      
-    const truncatedProject = projectText.length > 25 
-      ? `${projectText.substring(0, 25)}...` 
+
+    const truncatedProject = projectText.length > projectMaxLength
+      ? `${projectText.substring(0, projectMaxLength)}...`
       : projectText;
 
     return { truncatedCommit, truncatedProject };
@@ -42,12 +48,13 @@ export const ActivityContent = memo(function ActivityContent({
 
   return (
     <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
-      <div className="text-sm text-muted-foreground leading-tight min-h-[1.25rem] transition-all duration-300 ease-out">
-        The latest thing I've done is{" "}
+      {/* First line - fixed height to prevent layout shift */}
+      <div className="text-sm text-muted-foreground leading-tight h-5 flex items-center transition-all duration-300 ease-out">
+        <span className="flex-shrink-0">The latest thing I've done is</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`commit-${currentActivityIndex}`}
-            className="inline-block"
+            className="inline-block min-w-0 flex-1 ml-1"
             initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
@@ -61,7 +68,7 @@ export const ActivityContent = memo(function ActivityContent({
               href={currentActivity.commitUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5"
+              className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 truncate inline-block max-w-full"
               title={currentActivity.latestCommit}
             >
               {truncatedCommit}
@@ -69,11 +76,14 @@ export const ActivityContent = memo(function ActivityContent({
           </motion.span>
         </AnimatePresence>
       </div>
-      <div className="text-xs text-muted-foreground leading-tight mt-1 min-h-[1rem] flex items-baseline gap-2 transition-all duration-300 ease-out">
+
+      {/* Second line - project and timestamp */}
+      <div className="text-xs text-muted-foreground leading-tight h-4 flex items-center gap-1 transition-all duration-300 ease-out">
+        <span className="flex-shrink-0">on</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`project-${currentActivityIndex}`}
-            className="inline-block flex-shrink-0"
+            className="inline-block min-w-0 flex-shrink"
             initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
@@ -84,11 +94,11 @@ export const ActivityContent = memo(function ActivityContent({
               filter: { duration: 0.3 }
             }}
           >
-            on <Link
+            <Link
               href={currentActivity.repositoryUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5"
+              className="font-medium text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 truncate inline-block max-w-[120px] sm:max-w-[180px]"
               title={currentActivity.project}
             >
               {truncatedProject}
@@ -98,7 +108,7 @@ export const ActivityContent = memo(function ActivityContent({
         <AnimatePresence mode="wait">
           <motion.span
             key={`timestamp-${currentActivityIndex}`}
-            className="inline-block flex-shrink-0 text-[10px]"
+            className="inline-block flex-shrink-0 text-[10px] ml-auto"
             initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}

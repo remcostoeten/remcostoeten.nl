@@ -103,39 +103,39 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     // Use clientX/clientY for viewport-relative coordinates
-    setMousePosition({ 
-      x: e.clientX, 
-      y: e.clientY 
+    setMousePosition({
+      x: e.clientX,
+      y: e.clientY
     });
   }, []);
-  
+
 
 
   const { currentTrack, loading, error } = spotifyData;
 
   if (loading) {
     return (
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          duration: 0.6, 
+        transition={{
+          duration: 0.6,
           delay: 0.8,
-          ease: [0.16, 1, 0.3, 1] 
+          ease: [0.16, 1, 0.3, 1]
         }}
-        className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30" 
+        className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
         aria-labelledby="spotify-heading"
       >
         <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
-        <div className="p-1.5 bg-green-500/10 rounded-lg">
+        <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0">
           <Music className="w-4 h-4 text-green-500 animate-pulse" aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-sm text-muted-foreground leading-tight">
-            <div className="h-4 bg-muted/60 rounded-md w-64 animate-pulse"></div>
+          <div className="text-sm text-muted-foreground leading-tight h-5 flex items-center">
+            <div className="h-4 bg-muted/60 rounded-md w-full max-w-[200px] xs:max-w-[250px] animate-pulse"></div>
           </div>
-          <div className="text-xs text-muted-foreground leading-tight mt-1">
-            <div className="h-3 bg-muted/40 rounded-md w-32 animate-pulse"></div>
+          <div className="text-xs text-muted-foreground leading-tight h-4 flex items-center mt-1">
+            <div className="h-3 bg-muted/40 rounded-md w-full max-w-[120px] xs:max-w-[150px] animate-pulse"></div>
           </div>
         </div>
         <div className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"></div>
@@ -145,22 +145,22 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
 
   if (error || !currentTrack) {
     return (
-      <motion.section 
+      <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ 
-          duration: 0.6, 
+        transition={{
+          duration: 0.6,
           delay: 0.8,
-          ease: [0.16, 1, 0.3, 1] 
+          ease: [0.16, 1, 0.3, 1]
         }}
-        className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30" 
+        className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
         aria-labelledby="spotify-heading"
       >
         <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
-        <div className="p-1.5 bg-muted/50 rounded-lg">
+        <div className="p-1.5 bg-muted/50 rounded-lg flex-shrink-0">
           <Music className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
         </div>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground h-5 flex items-center">
           No music playing right now
         </div>
       </motion.section>
@@ -174,19 +174,19 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
     <motion.section
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
-        duration: 0.6, 
+      transition={{
+        duration: 0.6,
         delay: 0.8,
-        ease: [0.16, 1, 0.3, 1] 
+        ease: [0.16, 1, 0.3, 1]
       }}
-      className="flex items-center gap-3 mt-3 pt-3 border-t border-border/30"
+      className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
       aria-labelledby="spotify-heading"
     >
       <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
-      <div className="p-1.5 bg-green-500/10 rounded-lg">
+      <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0">
         {isCurrentlyPlaying ? (
           <Play className="w-4 h-4 text-green-500" aria-hidden="true" />
         ) : (
@@ -195,12 +195,15 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
       </div>
 
       <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
-        <div className="text-sm text-muted-foreground leading-tight min-h-[1.25rem] transition-all duration-300 ease-out">
-          {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
+        {/* First line - always fixed height to prevent layout shift */}
+        <div className="text-sm text-muted-foreground leading-tight h-5 flex items-center transition-all duration-300 ease-out">
+          <span className="flex-shrink-0">
+            {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
+          </span>
           <AnimatePresence mode="wait">
             <motion.span
               key={`track-${currentTrackIndex}`}
-              className="inline-block relative"
+              className="inline-block relative min-w-0 flex-1"
               initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
@@ -209,26 +212,27 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                 ease: [0.16, 1, 0.3, 1],
                 filter: { duration: 0.3 }
               }}
-
             >
               <a
                 href={currentTrack.external_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5"
+                className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 truncate inline-block max-w-full"
                 title={`Listen to ${currentTrack.name} on Spotify`}
               >
                 {currentTrack.name}
               </a>
-
-
             </motion.span>
           </AnimatePresence>
-          {" "}by{" "}
+        </div>
+
+        {/* Second line - artist and album info */}
+        <div className="text-xs text-muted-foreground leading-tight h-4 flex items-center gap-1 transition-all duration-300 ease-out">
+          <span className="flex-shrink-0">by</span>
           <AnimatePresence mode="wait">
             <motion.span
               key={`artist-${currentTrackIndex}`}
-              className="inline-block"
+              className="inline-block min-w-0 flex-shrink"
               initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
@@ -239,37 +243,42 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                 filter: { duration: 0.3 }
               }}
             >
-              <span className="font-medium text-foreground" title={currentTrack.artist}>
+              <span className="font-medium text-foreground truncate inline-block max-w-[120px] sm:max-w-[160px]" title={currentTrack.artist}>
                 {currentTrack.artist}
               </span>
             </motion.span>
           </AnimatePresence>
-        </div>
-        <div className="text-xs text-muted-foreground leading-tight mt-1 min-h-[1rem] flex items-baseline gap-2 transition-all duration-300 ease-out">
+
           {currentTrack.album && (
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={`album-${currentTrackIndex}`}
-                className="inline-block flex-shrink-0"
-                initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.06,
-                  ease: [0.16, 1, 0.3, 1],
-                  filter: { duration: 0.3 }
-                }}
-              >
-                from <span className="italic truncate max-w-[180px] inline-block align-bottom" title={currentTrack.album}>{currentTrack.album}</span>
-              </motion.span>
-            </AnimatePresence>
+            <>
+              <span className="flex-shrink-0 hidden xs:inline">from</span>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={`album-${currentTrackIndex}`}
+                  className="inline-block min-w-0 flex-shrink hidden xs:inline"
+                  initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.06,
+                    ease: [0.16, 1, 0.3, 1],
+                    filter: { duration: 0.3 }
+                  }}
+                >
+                  <span className="italic truncate inline-block max-w-[100px] sm:max-w-[140px]" title={currentTrack.album}>
+                    {currentTrack.album}
+                  </span>
+                </motion.span>
+              </AnimatePresence>
+            </>
           )}
+
           {isRecentTrack && (
             <AnimatePresence mode="wait">
               <motion.span
                 key={`timestamp-${currentTrackIndex}`}
-                className="inline-block flex-shrink-0 text-[10px]"
+                className="inline-block flex-shrink-0 text-[10px] ml-auto"
                 initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
@@ -284,7 +293,6 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
               </motion.span>
             </AnimatePresence>
           )}
-          {!currentTrack.album && !isRecentTrack && <span>&nbsp;</span>}
         </div>
       </div>
 

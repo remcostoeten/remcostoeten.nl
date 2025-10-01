@@ -75,7 +75,7 @@ export function LatestActivity() {
 
   return (
     <section
-      className="mt-6 p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative"
+      className="mt-6 p-3 xs:p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       aria-labelledby="latest-activity-heading"
@@ -83,26 +83,29 @@ export function LatestActivity() {
     >
       <h2 id="latest-activity-heading" className="sr-only">Latest Development Activity</h2>
 
-      <div className="flex items-start gap-3 mb-3">
-        <div className="p-1.5 bg-accent/10 rounded-lg" aria-hidden="true">
+      <div className="flex items-start gap-2 xs:gap-3 mb-3">
+        <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0" aria-hidden="true">
           <GitCommit className="w-4 h-4 text-accent" />
         </div>
 
         <div className="leading-relaxed min-w-0 flex-1 text-sm" role="status" aria-live="polite" aria-atomic="true">
-          <div className="min-h-[2.5rem] flex flex-col justify-start">
-            <div className="text-muted-foreground mb-2">
+          {/* Fixed height container to prevent layout shift */}
+          <div className="h-[2.5rem] flex flex-col justify-start">
+            <div className="text-muted-foreground">
               {(error || activities.length === 0) ? (
-                <>
-                  {error || 'No recent GitHub activities found.'}{" "}
+                <div className="h-5 flex items-center">
+                  <span className="truncate">
+                    {error || 'No recent GitHub activities found.'}{" "}
+                  </span>
                   <button
                     onClick={loadActivities}
-                    className="text-accent hover:underline focus:underline focus:outline-none transition-colors"
+                    className="text-accent hover:underline focus:underline focus:outline-none transition-colors ml-1 flex-shrink-0"
                     disabled={loading}
                     aria-label="Retry loading activities"
                   >
                     {loading ? 'Loading...' : 'Retry'}
                   </button>
-                </>
+                </div>
               ) : (
                 <ActivityContent
                   currentActivity={currentActivity}
@@ -113,7 +116,6 @@ export function LatestActivity() {
                 />
               )}
             </div>
-
           </div>
         </div>
       </div>

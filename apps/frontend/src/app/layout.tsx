@@ -2,10 +2,10 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
 import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_api-environment-switcher";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,27 +16,36 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Remco Stoeten - Software engineer',
-  description: 'Thoughts on design, engineering, AI, and the random sparks of inspiration that keep me going.',
-  keywords: ['frontend', 'engineering', 'AI', 'software development', 'blog', 'technology'],
-  authors: [{ name: 'Frank Price' }],
-  creator: 'Frank Price',
-  publisher: 'Frank Price',
+  description: 'Sharing thoughts and projects about web development, React, Next.js, and building useful tools.',
+  keywords: [
+    'frontend',
+    'React',
+    'Next.js',
+    'TypeScript',
+    'web development',
+    'software engineer',
+    'projects',
+    'tools'
+  ],
+  authors: [{ name: 'Remco Stoeten' }],
+  creator: 'Remco Stoeten',
+  publisher: 'Remco Stoeten',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://frankprice.dev'),
+  metadataBase: new URL('https://remcostoeten.nl'),
   openGraph: {
-    title: 'Frank Price - Product Designer & Writer',
-    description: 'Thoughts on design, engineering, AI, and the random sparks of inspiration that keep me going.',
+    title: 'Remco Stoeten - Software engineer',
+    description: 'Sharing thoughts and projects about web development, React, Next.js, and building useful tools.',
     type: 'website',
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Frank Price - Product Designer & Writer',
-    description: 'Thoughts on design, engineering, AI, and the random sparks of inspiration that keep me going.',
+    title: 'Remco Stoeten - Software engineer',
+    description: 'Sharing thoughts and projects about web development, React, Next.js, and building useful tools.',
   },
   robots: {
     index: true,
@@ -80,6 +89,7 @@ export default function RootLayout({
           <ApiEnvironmentIndicator />
         </TooltipProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

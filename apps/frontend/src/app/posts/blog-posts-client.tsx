@@ -6,6 +6,7 @@ import { Search, Filter, X, Hash, Folder, Calendar, SortAsc, SortDesc, SlidersHo
 import { FilterDrawer } from "@/components/ui/filter-drawer";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
+import { formatBlogDateShort } from "@/lib/blog/date-utils";
 
 interface BlogPost {
   slug: string;
@@ -43,7 +44,7 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
       // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
-        const matchesSearch = 
+        const matchesSearch =
           post.title.toLowerCase().includes(query) ||
           post.excerpt.toLowerCase().includes(query) ||
           post.tags.some(tag => tag.toLowerCase().includes(query)) ||
@@ -85,8 +86,8 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
   }, [allPosts, searchQuery, selectedCategory, selectedTags, sortBy]);
 
   const toggleTag = (tag: string) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
+    setSelectedTags(prev =>
+      prev.includes(tag)
         ? prev.filter(t => t !== tag)
         : [...prev, tag]
     );
@@ -102,9 +103,9 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
   const hasActiveFilters = searchQuery || selectedCategory || selectedTags.length > 0 || sortBy !== 'newest';
 
   return (
-<div className="space-y-6 sm:space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Search and Filter Controls */}
-      <motion.div 
+      <motion.div
         className="space-y-4"
         {...ANIMATION_CONFIGS.fadeInUp}
       >
@@ -118,9 +119,9 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
               placeholder="Search posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 h-9 border border-border rounded-lg bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all text-sm"
-            aria-label="Search posts"
-            role="searchbox"
+              className="w-full pl-9 pr-3 h-9 border border-border rounded-lg bg-background/50 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all text-sm"
+              aria-label="Search posts"
+              role="searchbox"
             />
           </div>
 
@@ -158,11 +159,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
               onClick={() => setShowFilters(!showFilters)}
               aria-expanded={showFilters}
               aria-label="Toggle filters"
-              className={`flex items-center gap-2 h-9 px-3 rounded-lg border transition-colors ${
-                showFilters 
-                  ? 'bg-accent text-accent-foreground border-accent' 
-                  : 'bg-background/50 border-border hover:bg-muted'
-              }`}
+              className={`flex items-center gap-2 h-9 px-3 rounded-lg border transition-colors ${showFilters
+                ? 'bg-accent text-accent-foreground border-accent'
+                : 'bg-background/50 border-border hover:bg-muted'
+                }`}
             >
               <Filter className="w-4 h-4" />
               <span className="text-sm font-medium">Filters</span>
@@ -206,11 +206,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                       <button
                         key={category}
                         onClick={() => setSelectedCategory(selectedCategory === category ? '' : category)}
-                        className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
-                          selectedCategory === category
-                            ? 'bg-accent text-accent-foreground border-accent'
-                            : 'bg-background/50 border-border hover:bg-muted'
-                        }`}
+                        className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${selectedCategory === category
+                          ? 'bg-accent text-accent-foreground border-accent'
+                          : 'bg-background/50 border-border hover:bg-muted'
+                          }`}
                       >
                         {category}
                       </button>
@@ -229,11 +228,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                       <button
                         key={tag}
                         onClick={() => toggleTag(tag)}
-                        className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
-                          selectedTags.includes(tag)
-                            ? 'bg-accent text-accent-foreground border-accent'
-                            : 'bg-background/50 border-border hover:bg-muted'
-                        }`}
+                        className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${selectedTags.includes(tag)
+                          ? 'bg-accent text-accent-foreground border-accent'
+                          : 'bg-background/50 border-border hover:bg-muted'
+                          }`}
                       >
                         {tag}
                       </button>
@@ -284,6 +282,31 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         )}
       </motion.div>
 
+      {/* Stats Section */}
+      <motion.div
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6"
+        {...ANIMATION_CONFIGS.fadeInUp}
+      >
+        <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div className="text-2xl font-bold text-foreground">{allPosts.length}</div>
+          <div className="text-sm text-muted-foreground">Total Posts</div>
+        </div>
+        <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div className="text-2xl font-bold text-foreground">{categories.length}</div>
+          <div className="text-sm text-muted-foreground">Categories</div>
+        </div>
+        <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div className="text-2xl font-bold text-foreground">{tags.length}</div>
+          <div className="text-sm text-muted-foreground">Tags</div>
+        </div>
+        <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
+          <div className="text-2xl font-bold text-foreground">
+            {Math.round(allPosts.reduce((acc, post) => acc + post.readTime, 0) / allPosts.length) || 0}
+          </div>
+          <div className="text-sm text-muted-foreground">Avg Read</div>
+        </div>
+      </motion.div>
+
       {/* Results Count */}
       <motion.div
         className="flex items-center justify-between text-sm text-muted-foreground py-2"
@@ -293,11 +316,19 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
           {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'} found
           {allPosts.length !== filteredPosts.length && ` of ${allPosts.length} total`}
         </span>
+        {hasActiveFilters && (
+          <button
+            onClick={clearAllFilters}
+            className="text-accent hover:underline font-medium text-xs"
+          >
+            Clear filters
+          </button>
+        )}
       </motion.div>
 
       {/* Mobile Filter Drawer */}
-      <FilterDrawer 
-        isOpen={showFilters} 
+      <FilterDrawer
+        isOpen={showFilters}
         onClose={() => setShowFilters(false)}
       >
         <div className="space-y-6 py-2">
@@ -315,11 +346,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                     setSelectedCategory(selectedCategory === category ? '' : category);
                     setShowFilters(false);
                   }}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
-                    selectedCategory === category
-                      ? 'bg-accent text-accent-foreground border-accent'
-                      : 'bg-background/50 border-border hover:bg-muted'
-                  }`}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${selectedCategory === category
+                    ? 'bg-accent text-accent-foreground border-accent'
+                    : 'bg-background/50 border-border hover:bg-muted'
+                    }`}
                 >
                   {category}
                 </button>
@@ -341,11 +371,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                     toggleTag(tag);
                     setShowFilters(false);
                   }}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${
-                    selectedTags.includes(tag)
-                      ? 'bg-accent text-accent-foreground border-accent'
-                      : 'bg-background/50 border-border hover:bg-muted'
-                  }`}
+                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors font-medium ${selectedTags.includes(tag)
+                    ? 'bg-accent text-accent-foreground border-accent'
+                    : 'bg-background/50 border-border hover:bg-muted'
+                    }`}
                 >
                   {tag}
                 </button>
@@ -402,12 +431,12 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </div>
       </FilterDrawer>
 
-      {/* Posts Grid */}
+      {/* Posts Grid - Magazine Style Layout */}
       <AnimatePresence mode="wait">
         {filteredPosts.length > 0 ? (
           <motion.div
             key="posts-grid"
-            className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 sm:gap-8"
+            className="space-y-12"
             role="list"
             aria-label="Blog posts grid"
             initial={{ opacity: 0 }}
@@ -415,9 +444,64 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {filteredPosts.map((post, index) => (
-              <BlogPostCard key={post.slug} post={post} index={index} />
-            ))}
+            {/* Featured Post - First post gets special treatment */}
+            {filteredPosts.length > 0 && (
+              <motion.div
+                className="relative"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="text-sm font-medium text-accent mb-4 flex items-center gap-2">
+                  <div className="w-1 h-4 bg-accent rounded-full"></div>
+                  Featured Post
+                </div>
+                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                  <div className="order-2 lg:order-1">
+                    <BlogPostCard
+                      post={filteredPosts[0]}
+                      index={0}
+                      variant="featured"
+                    />
+                  </div>
+                  <div className="order-1 lg:order-2">
+                    <div className="aspect-[4/3] bg-gradient-to-br from-accent/10 to-accent/5 rounded-2xl border border-accent/20 flex items-center justify-center">
+                      <div className="text-center space-y-3">
+                        <div className="w-16 h-16 bg-accent/20 rounded-2xl flex items-center justify-center mx-auto">
+                          <Calendar className="w-8 h-8 text-accent" />
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-accent">Latest Article</p>
+                          <p className="text-xs text-muted-foreground">
+                            Published {formatBlogDateShort(filteredPosts[0].publishedAt)}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Regular Posts Grid */}
+            {filteredPosts.length > 1 && (
+              <div className="space-y-8">
+                <div className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                  <div className="w-1 h-4 bg-muted-foreground/30 rounded-full"></div>
+                  All Posts
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+                  {filteredPosts.slice(1).map((post, index) => (
+                    <BlogPostCard
+                      key={post.slug}
+                      post={post}
+                      index={index + 1}
+                      variant="default"
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         ) : (
           <motion.div
