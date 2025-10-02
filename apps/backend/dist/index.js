@@ -16631,6 +16631,47 @@ var createBlogRouter = (blogService) => {
       }, 500);
     }
   });
+  blogRouter.post("/analytics/multiple", zValidator("json", exports_external.object({
+    slugs: exports_external.array(exports_external.string().min(1))
+  })), async (c) => {
+    try {
+      const { slugs } = c.req.valid("json");
+      if (slugs.length === 0) {
+        return c.json({
+          success: true,
+          data: []
+        });
+      }
+      const analyticsPromises = slugs.map(async (slug) => {
+        try {
+          const analytics = await blogService.getAnalyticsBySlug(slug);
+          return {
+            slug,
+            totalViews: analytics?.viewCount || 0,
+            uniqueViews: analytics?.uniqueViews || 0
+          };
+        } catch (error) {
+          console.error(`Error fetching analytics for ${slug}:`, error);
+          return {
+            slug,
+            totalViews: 0,
+            uniqueViews: 0
+          };
+        }
+      });
+      const results = await Promise.all(analyticsPromises);
+      return c.json({
+        success: true,
+        data: results
+      });
+    } catch (error) {
+      console.error("Error fetching multiple blog analytics:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch multiple blog analytics"
+      }, 500);
+    }
+  });
   return blogRouter;
 };
 

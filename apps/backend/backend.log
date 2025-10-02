@@ -298,3 +298,4 @@ Query: select "id", "slug", "total_views", "unique_views", "recent_views", "last
 Query: select "id", "slug", "total_views", "unique_views", "recent_views", "last_viewed_at", "created_at", "updated_at" from "blog_analytics" where "blog_analytics"."slug" = $1 limit $2 -- params: ["rolling-my-own-analytics", 1]
 Query: select "id", "slug", "total_views", "unique_views", "recent_views", "last_viewed_at", "created_at", "updated_at" from "blog_analytics" where "blog_analytics"."slug" = $1 limit $2 -- params: ["getting-started-with-mdx", 1]
 --> POST /api/blog/analytics/multiple [32m200[0m 16ms
+error: script "dev" was terminated by signal SIGHUP (Terminal hung up)
