@@ -75,7 +75,7 @@ export function LatestActivity() {
 
   return (
     <section
-      className="mt-6 p-3 xs:p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden"
+      className="mt-6 p-3 xs:p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden min-h-[140px] xs:min-h-[120px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       aria-labelledby="latest-activity-heading"
@@ -88,34 +88,31 @@ export function LatestActivity() {
           <GitCommit className="w-4 h-4 text-accent" />
         </div>
 
-        <div className="leading-relaxed min-w-0 flex-1 text-sm" role="status" aria-live="polite" aria-atomic="true">
-          {/* Fixed height container to prevent layout shift */}
-          <div className="h-[2.5rem] flex flex-col justify-start">
-            <div className="text-muted-foreground">
-              {(error || activities.length === 0) ? (
-                <div className="h-5 flex items-center">
-                  <span className="truncate">
-                    {error || 'No recent GitHub activities found.'}{" "}
-                  </span>
-                  <button
-                    onClick={loadActivities}
-                    className="text-accent hover:underline focus:underline focus:outline-none transition-colors ml-1 flex-shrink-0"
-                    disabled={loading}
-                    aria-label="Retry loading activities"
-                  >
-                    {loading ? 'Loading...' : 'Retry'}
-                  </button>
-                </div>
-              ) : (
-                <ActivityContent
-                  currentActivity={currentActivity}
-                  currentActivityIndex={currentActivityIndex}
-                  hoveredCommit={hoveredCommit}
-                  onCommitMouseEnter={handleCommitMouseEnter}
-                  onCommitMouseLeave={handleCommitMouseLeave}
-                />
-              )}
-            </div>
+        <div className="leading-relaxed min-w-0 flex-1 text-body" role="status" aria-live="polite" aria-atomic="true">
+          <div className="text-muted-foreground">
+            {(error || activities.length === 0) ? (
+              <div className="flex items-center">
+                <span className="truncate">
+                  {error || 'No recent GitHub activities found.'}{" "}
+                </span>
+                <button
+                  onClick={loadActivities}
+                  className="text-accent hover:underline focus:underline focus:outline-none transition-colors ml-1 flex-shrink-0"
+                  disabled={loading}
+                  aria-label="Retry loading activities"
+                >
+                  {loading ? 'Loading...' : 'Retry'}
+                </button>
+              </div>
+            ) : (
+              <ActivityContent
+                currentActivity={currentActivity}
+                currentActivityIndex={currentActivityIndex}
+                hoveredCommit={hoveredCommit}
+                onCommitMouseEnter={handleCommitMouseEnter}
+                onCommitMouseLeave={handleCommitMouseLeave}
+              />
+            )}
           </div>
         </div>
       </div>

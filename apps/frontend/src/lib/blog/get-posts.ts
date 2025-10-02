@@ -1,8 +1,8 @@
 'use server';
 
 import { TBlogPost, TBlogCategory } from './types';
-// Import MDX utilities directly (server-side only)
-import { 
+// Import MDX utilities (filesystem-based)
+import {
   getAllMdxPosts,
   getMdxPostBySlug,
   getMdxPostsByCategory,
@@ -10,15 +10,13 @@ import {
   getAllMdxTags,
   getAllMdxCategories,
   getRelatedMdxPosts
-} from './static-mdx-utils';
+} from './mdx-utils';
 
 export async function getAllPosts(): Promise<TBlogPost[]> {
-  // Always use static data for now to avoid build issues
   return getAllMdxPosts();
 }
 
 export async function getPostBySlug(slug: string): Promise<TBlogPost | null> {
-  // Always use static data for now to avoid build issues
   return getMdxPostBySlug(slug);
 }
 

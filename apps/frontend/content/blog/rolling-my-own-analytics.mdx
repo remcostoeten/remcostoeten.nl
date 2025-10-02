@@ -8,10 +8,12 @@ category: "development"
 status: "published"
 ---
 
-You could just use something like [Posthog](https://posthog.com)or [Matomo](https://matomo.org), they’ve got funding and probably better engineers behind them than you and me. But hitting `npm install` and dropping in a provider doesn’t solve skillissues. Previously I [rolled my own auth](https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication) system from scratch, which was a fun project and turned out great. So I decided to roll my own analytics instead, and it’s been a fun project to dig into.
+You could just use something like [Posthog](https://posthog.com)or [Matomo](https://matomo.org), they’ve got funding and probably better engineers behind them than you and me. But hitting `npm install` and dropping in a provider doesn’t solve skillissues. 
+
+Previously I [rolled my own auth](https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication) system from scratch, which was a fun project and turned out great. So I decided to roll my own analytics instead, and it’s been a fun project to dig into.
 
 ## Stack & setup
-Front-end we're using Next.JS. Why? Because. Because I want to learn fullstack development I went with Hono as a backend rather than server actions or api routes. 
+Front-end we're using Next.JS. Why? Because. Since I want to learn fullstack development I went with Hono as a backend rather than server actions or api routes. 
 
 ### Setup
 I use a mono repo, you do whatever you want. Well follow a simple structure for this guide.
@@ -44,7 +46,7 @@ import { Config } from 'drizzle-kit';
 export default {
   schema: './src/api/schema/index.ts',
   dialect: 'postgresql', // or turso, sqlite, mysql.
-  out: './drizzle',
+  out: './src/api/migrations',
   dbCredentials: {
     url: process.env.DATABASE_URL!, /
   },

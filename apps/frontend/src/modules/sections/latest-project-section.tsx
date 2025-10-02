@@ -1,6 +1,6 @@
 "use client"
 
-import { Folder } from "lucide-react"
+import { Folder, Star, GitBranch, Calendar, ExternalLink } from "lucide-react"
 import { useEffect, useState } from "react"
 import { fetchSpecificFeaturedProjects, type RepoData } from "@/services/github-service"
 
@@ -18,6 +18,52 @@ interface SimpleProject {
     startDate?: string
     lastCommitDate?: string
   }
+}
+
+// Helper function to generate topic labels based on project names
+function getProjectTopics(projectName: string): string[] {
+  const topics: string[] = []
+  const name = projectName.toLowerCase()
+
+  // React/Next.js projects
+  if (name.includes('react') || name.includes('next') || name.includes('jsx')) {
+    topics.push('React')
+  }
+
+  // Emoji/feedback projects
+  if (name.includes('emoji') || name.includes('feedback')) {
+    topics.push('UI/UX')
+  }
+
+  // File tree projects
+  if (name.includes('file') && name.includes('tree')) {
+    topics.push('File Management')
+  }
+
+  // Code block/syntax highlighting projects
+  if (name.includes('code') && name.includes('block')) {
+    topics.push('Syntax Highlighting')
+  }
+
+  // API/analytics projects
+  if (name.includes('api') || name.includes('analytics')) {
+    topics.push('API')
+  }
+
+  // TypeScript projects
+  if (name.includes('ts') || name.includes('type')) {
+    topics.push('TypeScript')
+  }
+
+  // Add some default topics if no specific ones match
+  if (topics.length === 0) {
+    topics.push('Web Development')
+    if (name.includes('widget') || name.includes('component')) {
+      topics.push('Components')
+    }
+  }
+
+  return topics.slice(0, 2) // Limit to 2 topics max
 }
 
 export const LatestProjectSection = () => {
@@ -71,83 +117,106 @@ export const LatestProjectSection = () => {
 
   return (
     <div className="py-6">
-      <div className="flex items-center gap-3 mb-3">
+      <div className="flex items-center gap-2 mb-4">
         <Folder className="w-4 h-4 text-accent" />
         <h2 className="text-lg font-medium text-foreground">Featured Projects</h2>
       </div>
 
       {isLoading ? (
-        <div className="space-y-2 mb-4">
-          {[...Array(3)].map((_, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between group hover:bg-muted/30 -mx-2 px-2 py-1 rounded transition-colors duration-200"
-            >
-              <div className="animate-pulse flex items-center gap-2">
-                <div className="w-4 h-4 bg-muted rounded"></div>
-                <div className="h-4 bg-muted rounded w-48"></div>
-              </div>
-              <div className="animate-pulse flex items-center gap-2">
-                <div className="h-3 bg-muted rounded w-16"></div>
-                <div className="w-1 h-1 bg-muted rounded-full"></div>
-                <div className="h-3 bg-muted rounded w-12"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {[...Array(4)].map((_, index) => (
+            <div key={index} className="animate-pulse">
+              <div className="bg-muted/50 rounded-lg p-4 border border-border/30">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="h-5 bg-muted rounded w-32"></div>
+                  <div className="h-4 bg-muted rounded w-16"></div>
+                </div>
+                <div className="space-y-2 mb-3">
+                  <div className="h-3 bg-muted rounded w-full"></div>
+                  <div className="h-3 bg-muted rounded w-3/4"></div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="h-3 bg-muted rounded w-12"></div>
+                  <div className="h-3 bg-muted rounded w-12"></div>
+                  <div className="h-3 bg-muted rounded w-12"></div>
+                </div>
               </div>
             </div>
           ))}
         </div>
       ) : error ? (
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center justify-between group hover:bg-muted/30 -mx-2 px-2 py-1 rounded transition-colors duration-200">
-            <div className="text-xs text-muted-foreground flex items-center gap-2">
-              <span>⚠</span>
-              {error}
-            </div>
-            <button
-              onClick={() => window.location.reload()}
-              className="text-xs text-accent hover:underline transition-colors"
-            >
-              Retry
-            </button>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
+          <div className="flex items-center gap-2 text-destructive text-sm">
+            <span>⚠</span>
+            <span>{error}</span>
           </div>
         </div>
       ) : featuredProjects.length > 0 ? (
-        <div className="space-y-2 mb-4">
-          {featuredProjects.map((project) => (
-            <div
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {featuredProjects.slice(0, 4).map((project) => (
+            <a
               key={project.name}
-              className="flex items-center justify-between group hover:bg-muted/30 -mx-2 px-2 py-1 rounded transition-all duration-200"
+              href={project.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-card border border-border/50 rounded-lg p-4 hover:border-accent/50 hover:shadow-lg hover:-rotate-1 transition-all duration-300 hover:scale-105 block"
             >
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground group-hover:text-foreground transition-colors duration-200 inline-flex items-center gap-2"
-              >
-                <span className="transition-transform group-hover:translate-x-1 duration-200">→</span>
-                {project.name}
-              </a>
-              <div className="text-xs text-muted-foreground/70 flex items-center gap-2 group-hover:text-muted-foreground transition-colors duration-200">
-                <span>{project.gitInfo?.stars || 0} stars</span>
-                <span>•</span>
-                <span>{project.gitInfo?.language || "Unknown"}</span>
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="font-medium text-foreground group-hover:text-accent transition-colors">
+                  {project.name}
+                </h3>
+                <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors flex-shrink-0" />
               </div>
-            </div>
+
+              {project.gitInfo?.description && (
+                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  {project.gitInfo.description}
+                </p>
+              )}
+
+              {/* Topic labels */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {getProjectTopics(project.name).map((topic) => (
+                  <span
+                    key={topic}
+                    className="px-2 py-0.5 bg-accent/10 text-accent text-xs rounded-full font-medium"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Star className="w-3 h-3" />
+                  <span>{project.gitInfo?.stars || 0}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <GitBranch className="w-3 h-3" />
+                  <span>{project.gitInfo?.language || "Unknown"}</span>
+                </div>
+                {project.gitInfo?.lastCommitDate && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    <span>Updated {new Date(project.gitInfo.lastCommitDate).toLocaleDateString()}</span>
+                  </div>
+                )}
+              </div>
+            </a>
           ))}
         </div>
       ) : (
-        <div className="space-y-2 mb-4">
-          <div className="flex items-center justify-center py-4">
-            <div className="text-xs text-muted-foreground">No project data available</div>
-          </div>
+        <div className="bg-muted/30 border border-border/50 rounded-lg p-8 text-center mb-6">
+          <div className="text-sm text-muted-foreground">No project data available</div>
         </div>
       )}
 
-      <div>
+      <div className="pt-4">
         <a
           href="https://github.com/remcostoeten"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-accent hover:underline font-medium group transition-colors duration-200"
+          className="inline-flex items-center gap-2 text-accent hover:text-accent/80 font-medium group transition-all duration-200 text-sm border border-accent/20 hover:border-accent/40 px-4 py-2 rounded-lg hover:bg-accent/5"
         >
           <span>View all projects</span>
           <span className="transition-transform group-hover:translate-x-1 duration-200">↗</span>

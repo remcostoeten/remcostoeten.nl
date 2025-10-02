@@ -103,10 +103,59 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
   const hasActiveFilters = searchQuery || selectedCategory || selectedTags.length > 0 || sortBy !== 'newest';
 
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {/* Search and Filter Controls */}
+    <div className="space-y-8 sm:space-y-10 lg:space-y-12">
+      {/* Mobile Hero Section - Featured Post First */}
+      {filteredPosts.length > 0 && (
+        <motion.div
+          className="block sm:hidden"
+          {...ANIMATION_CONFIGS.fadeInUp}
+        >
+          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 -mx-4 px-4 py-3 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search posts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-12 h-10 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                aria-label="Search posts"
+                role="searchbox"
+              />
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 rounded-md border border-border bg-background/50 hover:bg-muted transition-colors flex items-center justify-center"
+                aria-label="Open filters"
+                aria-expanded={showFilters}
+              >
+                <SlidersHorizontal className="w-3 h-3" />
+                {hasActiveFilters && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full" />
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Hero Featured Post */}
+          <div className="relative">
+            <div className="text-sm font-medium text-accent mb-4 flex items-center gap-2">
+              <div className="w-1 h-4 bg-accent rounded-full"></div>
+              Latest Article
+            </div>
+            <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card">
+              <BlogPostCard
+                post={filteredPosts[0]}
+                index={0}
+                variant="hero"
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Desktop Search and Filter Controls */}
       <motion.div
-        className="space-y-4"
+        className="hidden sm:block space-y-6"
         {...ANIMATION_CONFIGS.fadeInUp}
       >
         {/* Search and Controls Row */}
@@ -282,9 +331,9 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         )}
       </motion.div>
 
-      {/* Stats Section */}
+      {/* Stats Section - Hidden on mobile, shown on desktop */}
       <motion.div
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6"
+        className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-6 py-8"
         {...ANIMATION_CONFIGS.fadeInUp}
       >
         <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
@@ -307,9 +356,9 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </div>
       </motion.div>
 
-      {/* Results Count */}
+      {/* Results Count - Mobile optimized */}
       <motion.div
-        className="flex items-center justify-between text-sm text-muted-foreground py-2"
+        className="flex items-center justify-between text-sm text-muted-foreground py-4"
         {...ANIMATION_CONFIGS.fadeInUp}
       >
         <span className="font-medium">
@@ -431,7 +480,7 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </div>
       </FilterDrawer>
 
-      {/* Posts Grid - Magazine Style Layout */}
+      {/* Posts Grid - Desktop Magazine Style Layout */}
       <AnimatePresence mode="wait">
         {filteredPosts.length > 0 ? (
           <motion.div
@@ -444,19 +493,19 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Featured Post - First post gets special treatment */}
+            {/* Desktop Featured Post - First post gets special treatment */}
             {filteredPosts.length > 0 && (
               <motion.div
-                className="relative"
+                className="hidden sm:block relative"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
               >
-                <div className="text-sm font-medium text-accent mb-4 flex items-center gap-2">
+                <div className="text-sm font-medium text-accent mb-6 flex items-center gap-2">
                   <div className="w-1 h-4 bg-accent rounded-full"></div>
                   Featured Post
                 </div>
-                <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                   <div className="order-2 lg:order-1">
                     <BlogPostCard
                       post={filteredPosts[0]}
@@ -483,25 +532,23 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
               </motion.div>
             )}
 
-            {/* Regular Posts Grid */}
-            {filteredPosts.length > 1 && (
-              <div className="space-y-8">
-                <div className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <div className="w-1 h-4 bg-muted-foreground/30 rounded-full"></div>
-                  All Posts
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-                  {filteredPosts.slice(1).map((post, index) => (
-                    <BlogPostCard
-                      key={post.slug}
-                      post={post}
-                      index={index + 1}
-                      variant="default"
-                    />
-                  ))}
-                </div>
+            {/* Regular Posts Grid - Mobile shows all posts, Desktop shows remaining */}
+            <div className="space-y-10">
+              <div className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <div className="w-1 h-4 bg-muted-foreground/30 rounded-full"></div>
+                {filteredPosts.length === 1 ? 'All Posts' : 'More Posts'}
               </div>
-            )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10 xl:gap-12">
+                {filteredPosts.map((post, index) => (
+                  <BlogPostCard
+                    key={post.slug}
+                    post={post}
+                    index={index}
+                    variant={index === 0 ? "featured" : "default"}
+                  />
+                ))}
+              </div>
+            </div>
           </motion.div>
         ) : (
           <motion.div

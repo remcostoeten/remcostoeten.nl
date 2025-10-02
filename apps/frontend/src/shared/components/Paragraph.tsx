@@ -4,12 +4,13 @@ import React from 'react';
 type TProps = {
   children: React.ReactNode;
   className?: string;
-  size?: 'sm' | 'md'
+  size?: 'sm' | 'md' | 'lg'
 };
 
 const sizeClasses: Record<NonNullable<TProps['size']>, string> = {
   sm: 'text-[16px]',
   md: 'text-[18px]',
+  lg: 'text-[20px]',
 };
 
 export function Paragraph({ children, className, size = 'sm' }: TProps) {

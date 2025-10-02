@@ -1,11 +1,11 @@
-export { CodeBlock, InlineCode } from './CodeBlock';
-export { Callout } from './Callout';
-export { ImageWithCaption } from './ImageWithCaption';
-export { EnhancedTable } from './EnhancedTable';
-export { MDXErrorBoundary, withMDXErrorBoundary } from './MDXErrorBoundary';
+export { InlineCode } from './code-block';
+export { Callout } from './callout';
+export { ImageWithCaption } from './image-with-caption';
+export { EnhancedTable } from './enhanced-table';
+export { MDXErrorBoundary, withMDXErrorBoundary } from './mdx-boundary';
 export { mdxComponents } from './mdx-components';
 export { mdxComponents as mdxComponentsServer } from './mdx-components-server';
 
-export type { CalloutProps } from './Callout';
-export type { ImageWithCaptionProps } from './ImageWithCaption';
-export type { EnhancedTableProps, TableColumn } from './EnhancedTable';
+export type { CalloutProps } from './callout';
+export type { ImageWithCaptionProps } from './image-with-caption';
+export type { EnhancedTableProps, TableColumn } from './enhanced-table';

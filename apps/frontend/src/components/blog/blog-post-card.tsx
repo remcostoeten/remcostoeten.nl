@@ -19,7 +19,7 @@ interface BlogPost {
 interface BlogPostCardProps {
   post: BlogPost;
   index?: number;
-  variant?: 'default' | 'featured';
+  variant?: 'default' | 'featured' | 'hero';
 }
 
 export function BlogPostCard({ post, index = 0, variant = 'default' }: BlogPostCardProps) {
@@ -29,12 +29,15 @@ export function BlogPostCard({ post, index = 0, variant = 'default' }: BlogPostC
   });
 
   const isFeatured = variant === 'featured';
+  const isHero = variant === 'hero';
 
   return (
     <motion.div
-      className={`group border border-border rounded-2xl hover:bg-muted/30 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 h-full flex flex-col bg-card/50 backdrop-blur-sm focus-within:ring-2 focus-within:ring-accent focus-within:ring-offset-2 ${isFeatured
-        ? 'p-8 lg:p-10'
-        : 'p-6 sm:p-8'
+      className={`group border border-border rounded-2xl hover:bg-muted/30 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5 transition-all duration-300 h-full flex flex-col bg-card/50 backdrop-blur-sm focus-within:ring-2 focus-within:ring-accent focus-within:ring-offset-2 ${isHero
+        ? 'p-6 sm:p-8 shadow-lg'
+        : isFeatured
+          ? 'p-8 lg:p-10'
+          : 'p-6 sm:p-8'
         }`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -46,37 +49,41 @@ export function BlogPostCard({ post, index = 0, variant = 'default' }: BlogPostC
         className="h-full flex flex-col outline-none"
         aria-label={`Read ${post.title}`}>
         <div className="flex-1">
-          <h3 className={`font-semibold text-foreground mb-3 group-hover:text-accent transition-colors line-clamp-2 leading-tight ${isFeatured
-            ? 'text-2xl lg:text-3xl mb-4'
-            : 'text-xl'
+          <h3 className={`font-semibold text-foreground mb-3 group-hover:text-accent transition-colors line-clamp-2 leading-tight ${isHero
+            ? 'text-xl sm:text-2xl mb-4'
+            : isFeatured
+              ? 'text-2xl lg:text-3xl mb-4'
+              : 'text-xl'
             }`}>
             {post.title}
           </h3>
-          <p className={`text-muted-foreground mb-6 leading-relaxed ${isFeatured
-            ? 'text-lg line-clamp-4 mb-8'
-            : 'text-base line-clamp-3'
+          <p className={`text-muted-foreground mb-6 leading-relaxed ${isHero
+            ? 'text-base line-clamp-4 mb-6'
+            : isFeatured
+              ? 'text-lg line-clamp-4 mb-8'
+              : 'text-base line-clamp-3'
             }`}>
             {post.excerpt}
           </p>
         </div>
 
-        <div className={`mt-auto ${isFeatured ? 'space-y-6' : 'space-y-4'}`}>
+        <div className={`mt-auto ${isHero ? 'space-y-5' : isFeatured ? 'space-y-6' : 'space-y-4'}`}>
           {/* Meta information */}
-          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-muted-foreground ${isFeatured ? 'text-base' : 'text-sm'
+          <div className={`flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 text-muted-foreground ${isHero ? 'text-sm' : isFeatured ? 'text-base' : 'text-sm'
             }`}>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Clock className={`${isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
+                <Clock className={`${isHero ? 'w-4 h-4' : isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
                 <span className="font-medium">{post.readTime} min</span>
               </div>
               <div className="flex items-center gap-2">
-                <Calendar className={`${isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
+                <Calendar className={`${isHero ? 'w-4 h-4' : isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
                 <span className="font-medium">{formatBlogDateShort(post.publishedAt)}</span>
               </div>
             </div>
             {!viewCountLoading && viewCount > 0 && (
               <div className="flex items-center gap-2">
-                <Eye className={`${isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
+                <Eye className={`${isHero ? 'w-4 h-4' : isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
                 <span className="font-medium">{viewCount.toLocaleString()} views</span>
               </div>
             )}

@@ -24,7 +24,7 @@ export default async function PostsPage() {
   return (
     <>
       {/* Header section - stays in container */}
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNavigation
           items={breadcrumbs}

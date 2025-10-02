@@ -195,131 +195,135 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
       </div>
 
       <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
-        {/* First line - always fixed height to prevent layout shift */}
-        <div className="text-sm text-muted-foreground leading-tight h-5 flex items-center transition-all duration-300 ease-out">
-          <span className="flex-shrink-0">
-            {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
-          </span>
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={`track-${currentTrackIndex}`}
-              className="inline-block relative min-w-0 flex-1"
-              initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-              transition={{
-                duration: 0.6,
-                ease: [0.16, 1, 0.3, 1],
-                filter: { duration: 0.3 }
-              }}
-            >
-              <a
-                href={currentTrack.external_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 truncate inline-block max-w-full"
-                title={`Listen to ${currentTrack.name} on Spotify`}
-              >
-                {currentTrack.name}
-              </a>
-            </motion.span>
-          </AnimatePresence>
-        </div>
-
-        {/* Second line - artist and album info */}
-        <div className="text-xs text-muted-foreground leading-tight h-4 flex items-center gap-1 transition-all duration-300 ease-out">
-          <span className="flex-shrink-0">by</span>
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={`artist-${currentTrackIndex}`}
-              className="inline-block min-w-0 flex-shrink"
-              initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-              transition={{
-                duration: 0.6,
-                delay: 0.03,
-                ease: [0.16, 1, 0.3, 1],
-                filter: { duration: 0.3 }
-              }}
-            >
-              <span className="font-medium text-foreground truncate inline-block max-w-[120px] sm:max-w-[160px]" title={currentTrack.artist}>
-                {currentTrack.artist}
+        {/* Main content area - single row layout */}
+        <div className="flex items-center gap-3">
+          {/* Text content */}
+          <div className="flex-1 min-w-0">
+            <div className="text-sm text-muted-foreground leading-tight">
+              <span className="flex-shrink-0">
+                {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
               </span>
-            </motion.span>
-          </AnimatePresence>
-
-          {currentTrack.album && (
-            <>
-              <span className="flex-shrink-0 hidden xs:inline">from</span>
               <AnimatePresence mode="wait">
                 <motion.span
-                  key={`album-${currentTrackIndex}`}
-                  className="inline-block min-w-0 flex-shrink hidden xs:inline"
+                  key={`track-${currentTrackIndex}`}
+                  className="inline-block font-semibold text-foreground"
                   initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
                   transition={{
                     duration: 0.6,
-                    delay: 0.06,
                     ease: [0.16, 1, 0.3, 1],
                     filter: { duration: 0.3 }
                   }}
                 >
-                  <span className="italic truncate inline-block max-w-[100px] sm:max-w-[140px]" title={currentTrack.album}>
-                    {currentTrack.album}
+                  <a
+                    href={currentTrack.external_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-accent transition-colors"
+                    title={`Listen to ${currentTrack.name} on Spotify`}
+                  >
+                    {currentTrack.name}
+                  </a>
+                </motion.span>
+              </AnimatePresence>
+              <span className="flex-shrink-0"> by </span>
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={`artist-${currentTrackIndex}`}
+                  className="inline-block font-medium text-foreground"
+                  initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.03,
+                    ease: [0.16, 1, 0.3, 1],
+                    filter: { duration: 0.3 }
+                  }}
+                >
+                  <span title={currentTrack.artist}>
+                    {currentTrack.artist}
                   </span>
                 </motion.span>
               </AnimatePresence>
-            </>
-          )}
+              {currentTrack.album && (
+                <>
+                  <span className="flex-shrink-0"> from </span>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={`album-${currentTrackIndex}`}
+                      className="inline-block italic"
+                      initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                      transition={{
+                        duration: 0.6,
+                        delay: 0.06,
+                        ease: [0.16, 1, 0.3, 1],
+                        filter: { duration: 0.3 }
+                      }}
+                    >
+                      <span title={currentTrack.album}>
+                        {currentTrack.album}
+                      </span>
+                    </motion.span>
+                  </AnimatePresence>
+                </>
+              )}
+            </div>
+          </div>
 
-          {isRecentTrack && (
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={`timestamp-${currentTrackIndex}`}
-                className="inline-block flex-shrink-0 text-[10px] ml-auto"
-                initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.09,
-                  ease: [0.16, 1, 0.3, 1],
-                  filter: { duration: 0.3 }
-                }}
-              >
-                (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={150} />)
-              </motion.span>
-            </AnimatePresence>
-          )}
+          {/* Right side - timestamp and album cover */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isRecentTrack && (
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={`timestamp-${currentTrackIndex}`}
+                  className="text-[10px] text-muted-foreground"
+                  initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                  transition={{
+                    duration: 0.6,
+                    delay: 0.09,
+                    ease: [0.16, 1, 0.3, 1],
+                    filter: { duration: 0.3 }
+                  }}
+                >
+                  (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={150} />)
+                </motion.span>
+              </AnimatePresence>
+            )}
+
+            {currentTrack.image_url && (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`image-${currentTrackIndex}`}
+                  className="w-10 h-10 rounded-lg overflow-hidden bg-muted/50"
+                  initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.2,
+                    ease: [0.16, 1, 0.3, 1],
+                    filter: { duration: 0.3 }
+                  }}
+                >
+                  <img
+                    src={currentTrack.image_url}
+                    alt={`${currentTrack.album} album cover`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
         </div>
       </div>
 
-      {currentTrack.image_url && (
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`image-${currentTrackIndex}`}
-            className="w-10 h-10 rounded-lg overflow-hidden bg-muted/50 flex-shrink-0"
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
-            transition={{
-              duration: 0.5,
-              delay: 0.2,
-              ease: [0.16, 1, 0.3, 1],
-              filter: { duration: 0.3 }
-            }}
-          >
-            <img
-              src={currentTrack.image_url}
-              alt={`${currentTrack.album} album cover`}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </motion.div>
-        </AnimatePresence>
-      )}
 
       <SpotifyHoverCard
         track={currentTrack}

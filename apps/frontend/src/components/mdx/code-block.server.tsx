@@ -1,8 +1,10 @@
+'use client'
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import hljs from 'highlight.js/lib/core';
+import { Copy } from 'lucide-react';
 
-// Import commonly used languages for server-side highlighting
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
 import bash from 'highlight.js/lib/languages/bash';
@@ -14,7 +16,6 @@ import sql from 'highlight.js/lib/languages/sql';
 import yaml from 'highlight.js/lib/languages/yaml';
 import markdown from 'highlight.js/lib/languages/markdown';
 
-// Register languages
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('js', javascript);
 hljs.registerLanguage('typescript', typescript);
@@ -45,15 +46,15 @@ function getCodeContent(children: React.ReactNode): string {
   if (typeof children === 'string') {
     return children;
   }
-  
-  if (React.isValidElement(children) && children.props?.children) {
-    return getCodeContent(children.props.children);
+
+  if (React.isValidElement(children) && (children as any).props?.children) {
+    return getCodeContent((children as any).props.children);
   }
-  
+
   if (Array.isArray(children)) {
     return children.map(child => getCodeContent(child)).join('');
   }
-  
+
   return String(children || '');
 }
 
@@ -64,13 +65,13 @@ function extractFilePathAndCode(content: string): { filePath: string | null; cle
   // Or: /path/to/file.js
   const filePathRegex = /^([^\n]*\.(ts|tsx|js|jsx|py|css|scss|html|json|yaml|yml|md|sql|sh|bash|env|config|txt|xml))\s*\n/i;
   const match = content.match(filePathRegex);
-  
+
   if (match) {
     const filePath = match[1].trim();
     const cleanCode = content.substring(match[0].length);
     return { filePath, cleanCode };
   }
-  
+
   return { filePath: null, cleanCode: content };
 }
 
@@ -84,7 +85,7 @@ function normalizeLanguage(lang: string): string {
     'py': 'python',
     'md': 'markdown',
   };
-  
+
   return langMap[lang.toLowerCase()] || lang.toLowerCase();
 }
 
@@ -98,14 +99,14 @@ export function ServerCodeBlock({ children, className, 'data-language': dataLang
   // Get the code content and extract file path if present
   const rawCodeContent = getCodeContent(children);
   const { filePath: extractedFilePath, cleanCode } = extractFilePathAndCode(rawCodeContent);
-  
+
   // Use provided filename or extracted file path
   const filePath = dataFilename || extractedFilePath;
   const codeContent = filePath ? cleanCode : rawCodeContent;
-  
+
   // Apply syntax highlighting on the server
   let highlightedCode = codeContent;
-  
+
   if (normalizedLanguage) {
     try {
       if (hljs.getLanguage(normalizedLanguage)) {
@@ -123,22 +124,72 @@ export function ServerCodeBlock({ children, className, 'data-language': dataLang
   }
 
   return (
-    <div className="relative group">
-      {/* Header with language label and file path */}
+    <div className="my-4 relative group">
       <div className="flex items-center justify-between px-4 py-2 bg-muted/50 border-b border-border rounded-t-lg">
         <div className="flex items-center gap-3">
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-            {displayLanguage}
+            <span className="sm:hidden">
+              {displayLanguage === 'typescript' ? 'TS' :
+                displayLanguage === 'javascript' ? 'JS' :
+                  displayLanguage === 'markdown' ? 'MD' :
+                    displayLanguage === 'python' ? 'PY' :
+                      displayLanguage === 'bash' ? 'SH' :
+                        displayLanguage.length > 3 ? displayLanguage.substring(0, 3).toUpperCase() :
+                          displayLanguage.toUpperCase()}
+            </span>
+            <span className="hidden sm:inline">{displayLanguage}</span>
           </span>
           {filePath && (
             <>
               <div className="w-px h-4 bg-border"></div>
-              <span className="text-xs font-mono text-foreground bg-muted/60 px-2 py-1 rounded">
-                {filePath}
+              <span
+                className="text-xs font-mono text-foreground bg-muted/60 px-2 py-1 rounded max-w-[200px] sm:max-w-[300px] truncate cursor-move select-none"
+                title={filePath}
+                draggable="true"
+                onDragStart={(e) => {
+                  if (e.dataTransfer) {
+                    e.dataTransfer.setData('text/plain', filePath);
+                    e.dataTransfer.effectAllowed = 'copy';
+                  }
+                }}
+              >
+                <span className="sm:hidden">
+                  {filePath.length > 20 ? `${filePath.substring(0, 18)}...` : filePath}
+                </span>
+                <span className="hidden sm:inline">{filePath}</span>
               </span>
             </>
           )}
         </div>
+        <button
+          onClick={() => {
+            if (typeof window !== 'undefined' && navigator.clipboard) {
+              navigator.clipboard.writeText(codeContent).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = codeContent;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                  document.execCommand('copy');
+                } catch (err) {
+                  console.error('Failed to copy code:', err);
+                }
+                document.body.removeChild(textArea);
+              });
+            }
+          }}
+          className="flex items-center gap-1 px-2 py-1 text-xs transition-colors rounded opacity-70 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 text-muted-foreground hover:text-foreground"
+          title="Copy code to clipboard"
+          aria-label="Copy code to clipboard"
+        >
+          <Copy className="w-3 h-3" />
+          <span className="hidden sm:inline">Copy</span>
+        </button>
       </div>
 
       {/* Code content */}

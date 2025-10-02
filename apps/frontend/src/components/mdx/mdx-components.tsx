@@ -1,11 +1,11 @@
 import React from 'react';
 import type { MDXComponents } from 'mdx/types';
 import { cn } from '@/lib/utils';
-import { CodeBlock, InlineCode } from './CodeBlock';
-import { Callout } from './Callout';
-import { ImageWithCaption } from './ImageWithCaption';
-import { EnhancedTable } from './EnhancedTable';
-import { withMDXErrorBoundary } from './MDXErrorBoundary';
+import { InlineCode } from './code-block';
+import { Callout } from './callout';
+import { ImageWithCaption } from './image-with-caption';
+import { EnhancedTable } from './enhanced-table';
+import { withMDXErrorBoundary } from './mdx-boundary';
 import { generateHeadingId, sanitizeHeadingText } from '@/lib/blog/toc-utils';
 
 // Export MDX components with proper styling
@@ -13,7 +13,7 @@ export const mdxComponents: MDXComponents = {
   h1: ({ children, className, id, ...props }) => {
     const headingId = id || generateHeadingId(sanitizeHeadingText(String(children)));
     return (
-      <h1 
+      <h1
         id={headingId}
         className={cn("text-4xl lg:text-5xl font-bold text-foreground mb-6 mt-8 first:mt-0 scroll-m-20", className)}
         {...props}
@@ -25,7 +25,7 @@ export const mdxComponents: MDXComponents = {
   h2: ({ children, className, id, ...props }) => {
     const headingId = id || generateHeadingId(sanitizeHeadingText(String(children)));
     return (
-      <h2 
+      <h2
         id={headingId}
         className={cn("text-3xl font-semibold text-foreground mb-4 mt-8 first:mt-0 scroll-m-20", className)}
         {...props}
@@ -37,7 +37,7 @@ export const mdxComponents: MDXComponents = {
   h3: ({ children, className, id, ...props }) => {
     const headingId = id || generateHeadingId(sanitizeHeadingText(String(children)));
     return (
-      <h3 
+      <h3
         id={headingId}
         className={cn("text-2xl font-semibold text-foreground mb-3 mt-6 first:mt-0 scroll-m-20", className)}
         {...props}
@@ -49,7 +49,7 @@ export const mdxComponents: MDXComponents = {
   h4: ({ children, className, id, ...props }) => {
     const headingId = id || generateHeadingId(sanitizeHeadingText(String(children)));
     return (
-      <h4 
+      <h4
         id={headingId}
         className={cn("text-xl font-semibold text-foreground mb-2 mt-4 first:mt-0 scroll-m-20", className)}
         {...props}
@@ -61,7 +61,7 @@ export const mdxComponents: MDXComponents = {
   h5: ({ children, className, id, ...props }) => {
     const headingId = id || generateHeadingId(sanitizeHeadingText(String(children)));
     return (
-      <h5 
+      <h5
         id={headingId}
         className={cn("text-lg font-semibold text-foreground mb-2 mt-4 first:mt-0 scroll-m-20", className)}
         {...props}
@@ -73,7 +73,7 @@ export const mdxComponents: MDXComponents = {
   h6: ({ children, className, id, ...props }) => {
     const headingId = id || generateHeadingId(sanitizeHeadingText(String(children)));
     return (
-      <h6 
+      <h6
         id={headingId}
         className={cn("text-base font-semibold text-foreground mb-2 mt-3 first:mt-0 scroll-m-20", className)}
         {...props}
@@ -83,7 +83,7 @@ export const mdxComponents: MDXComponents = {
     );
   },
   p: ({ children, className, ...props }) => (
-    <p 
+    <p
       className={cn("leading-7 [&:not(:first-child)]:mt-6 text-foreground", className)}
       {...props}
     >
@@ -92,7 +92,7 @@ export const mdxComponents: MDXComponents = {
   ),
   a: ({ href, children, className, ...props }) => {
     const isExternal = href?.startsWith('http');
-    
+
     return (
       <a
         href={href}
@@ -111,11 +111,11 @@ export const mdxComponents: MDXComponents = {
   code: ({ children, className, ...props }) => {
     // Check if this is inside a pre tag (code block) or standalone (inline code)
     const isInlineCode = !className?.includes('language-');
-    
+
     if (isInlineCode) {
       return <InlineCode className={className} {...props}>{children}</InlineCode>;
     }
-    
+
     // For code blocks, return the code element with syntax highlighting classes
     return (
       <code
@@ -127,25 +127,6 @@ export const mdxComponents: MDXComponents = {
     );
   },
   pre: ({ children, className, ...props }) => {
-    // Check if this contains a code element with language class
-    const hasLanguage = typeof children === 'object' && 
-      children !== null && 
-      'props' in children && 
-      children.props?.className?.includes('language-');
-    
-    if (hasLanguage) {
-      const language = children.props.className?.match(/language-(\w+)/)?.[1];
-      return (
-        <CodeBlock 
-          className={className} 
-          data-language={language}
-          {...props}
-        >
-          {children}
-        </CodeBlock>
-      );
-    }
-    
     // Fallback for pre without language
     return (
       <pre
