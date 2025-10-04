@@ -33,13 +33,7 @@ function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: Props) {
           isActive && "text-accent border-l-accent font-medium"
         )}
       >
-        <div className="flex items-start gap-2">
-          {level === 0 && (
-            <div className={cn(
-              "w-1.5 h-1.5 rounded-full mt-2 transition-colors",
-              isActive ? "bg-accent" : "bg-muted-foreground/40"
-            )} />
-          )}
+        <div className="flex items-start">
           <span className={cn(
             "text-sm leading-relaxed transition-colors",
             level === 0 && "font-medium text-foreground",
@@ -53,7 +47,7 @@ function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: Props) {
       </button>
       
       {hasChildren && (
-        <ul className="mt-1 space-y-0.5">
+        <ul className="mb-1">
           {item.children!.map((child) => (
             <TOCItemComponent
               key={child.id}
@@ -78,19 +72,19 @@ export function TableOfContentsRedesign({ className, ...props }: TableOfContents
 
   return (
     <nav 
-      className={cn("space-y-4", className)}
+      className={className}
       aria-label="Table of contents"
       {...props}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 pb-2 border-b border-border/30">
-        <List className="w-4 h-4 text-muted-foreground" />
+      <div className="flex items-center pb-2 border-b border-border/30 mb-4">
+        <List className="w-4 h-4 text-muted-foreground mr-2" />
         <h3 className="text-sm font-medium text-foreground">Contents</h3>
       </div>
       
       {/* TOC Items */}
-      <div className="space-y-1">
-        <ul className="space-y-1">
+      <div>
+        <ul>
           {items.map((item) => (
             <TOCItemComponent
               key={item.id}
@@ -135,8 +129,8 @@ export function MobileTOCRedesign({ isOpen, onToggle, className, ...props }: Mob
         aria-expanded={isOpen}
         aria-controls="mobile-toc"
       >
-        <div className="flex items-center gap-2">
-          <List className="w-4 h-4" />
+        <div className="flex items-center">
+          <List className="w-4 h-4 mr-2" />
           <span>Table of Contents</span>
         </div>
         <ChevronRight 
@@ -150,10 +144,10 @@ export function MobileTOCRedesign({ isOpen, onToggle, className, ...props }: Mob
       {isOpen && (
         <div 
           id="mobile-toc"
-          className="mt-3 p-4 rounded-lg border bg-card/50 backdrop-blur-sm"
+          className="p-4 rounded-lg border bg-card/50 backdrop-blur-sm mb-4"
         >
           <div className="max-h-80 overflow-y-auto">
-            <ul className="space-y-1">
+            <ul>
               {items.map((item) => (
                 <TOCItemComponent
                   key={item.id}
