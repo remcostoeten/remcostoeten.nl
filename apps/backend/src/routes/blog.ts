@@ -198,11 +198,17 @@ export const createBlogRouter = (
     async (c) => {
       try {
         const { slug } = c.req.valid('param');
-        await blogService.incrementViewCount(slug);
+        
+        // Import session utilities
+        const { getSessionData } = await import('../utils/session');
+        const sessionData = getSessionData(c);
+        
+        // Try to increment view count with session tracking
+        const wasIncremented = await blogService.incrementViewCount(slug, sessionData);
         
         return c.json({
           success: true,
-          message: 'View count incremented'
+          message: wasIncremented ? 'View count incremented' : 'View already recorded for this session'
         });
       } catch (error) {
         console.error('Error incrementing view count:', error);

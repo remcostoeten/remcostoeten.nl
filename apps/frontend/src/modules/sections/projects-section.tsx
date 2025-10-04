@@ -141,7 +141,6 @@ export function ProjectsSection() {
         >
           {state.loadingState === 'loading' && (
             <span className="animate-pulse" aria-label="Loading projects">
-              Lately I have been building{" "}
               <span className="inline-block bg-muted/60 rounded w-24 h-4 align-middle animate-pulse"></span>
               {" "}and{" "}
               <span className="inline-block bg-muted/60 rounded w-16 h-4 align-middle animate-pulse"></span>

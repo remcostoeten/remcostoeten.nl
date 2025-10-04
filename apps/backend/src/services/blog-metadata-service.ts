@@ -199,10 +199,39 @@ export function createBlogMetadataService(): TBlogMetadataService {
       }));
     },
 
-    async incrementViewCount(slug: string): Promise<void> {
+    async incrementViewCount(slug: string, sessionData?: { sessionId?: string; ipAddress?: string; userAgent?: string; referrer?: string }): Promise<boolean> {
       const now = new Date();
       
-      // First, try to update existing analytics record
+      // If session data is provided, try to record a unique view first
+      if (sessionData?.sessionId) {
+        try {
+          // Import blog views schema
+          const { blogViews } = await import('../schema/blog-views');
+          
+          // Try to insert a new blog view record (will fail if already exists due to unique constraint)
+          await db.insert(blogViews).values({
+            id: crypto.randomUUID(),
+            slug,
+            sessionId: sessionData.sessionId,
+            ipAddress: sessionData.ipAddress,
+            userAgent: sessionData.userAgent,
+            referrer: sessionData.referrer,
+            timestamp: now,
+            createdAt: now,
+          });
+          
+          // If insert succeeded, this is a new unique view
+        } catch (error: any) {
+          // If we get a unique constraint violation, this session already viewed this post
+          if (error.code === '23505' || error.constraint === 'blog_views_session_id_slug_unique') {
+            return false; // View already recorded for this session
+          }
+          // Re-throw other errors
+          throw error;
+        }
+      }
+      
+      // Increment the analytics counter
       const result = await db
         .update(blogAnalytics)
         .set({
@@ -226,6 +255,8 @@ export function createBlogMetadataService(): TBlogMetadataService {
           updatedAt: now,
         });
       }
+      
+      return true; // View was incremented
     },
 
     async getAnalyticsBySlug(slug: string): Promise<TBlogAnalytics | null> {

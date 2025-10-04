@@ -130,7 +130,16 @@ export function createMemoryBlogMetadataService(): TBlogMetadataService {
       }));
     },
 
-    async incrementViewCount(slug: string): Promise<void> {
+    async incrementViewCount(slug: string, sessionData?: { sessionId?: string; ipAddress?: string; userAgent?: string; referrer?: string }): Promise<boolean> {
+      // Track viewed sessions for each slug
+      const viewedSessionsKey = `viewed_sessions_${slug}`;
+      let viewedSessions = new Set<string>(JSON.parse(globalThis[viewedSessionsKey] || '[]'));
+      
+      // Check if this session has already viewed this post
+      if (sessionData?.sessionId && viewedSessions.has(sessionData.sessionId)) {
+        return false; // View already recorded for this session
+      }
+      
       const now = new Date().toISOString();
       let analytics = analyticsStore.get(slug);
       
@@ -155,6 +164,14 @@ export function createMemoryBlogMetadataService(): TBlogMetadataService {
       };
 
       analyticsStore.set(slug, updated);
+      
+      // Mark this session as having viewed this post
+      if (sessionData?.sessionId) {
+        viewedSessions.add(sessionData.sessionId);
+        globalThis[viewedSessionsKey] = JSON.stringify(Array.from(viewedSessions));
+      }
+      
+      return true;
     },
 
     async getAnalyticsBySlug(slug: string): Promise<TBlogAnalytics | null> {

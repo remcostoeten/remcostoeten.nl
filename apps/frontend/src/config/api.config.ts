@@ -161,6 +161,7 @@ export async function apiFetch<T = any>(
   try {
     const response = await fetch(url, {
       ...options,
+      credentials: 'include', // Include cookies for session tracking
       headers: {
         'Content-Type': 'application/json',
         ...options?.headers,

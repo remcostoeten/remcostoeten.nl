@@ -326,12 +326,19 @@ export const fetchRemcostoetenPortfolio = async (): Promise<RepoData & {
 // Function to fetch the specific featured repositories you requested
 export const fetchSpecificFeaturedProjects = async (): Promise<RepoData[]> => {
   const featuredRepos = [
+    { owner: 'remcostoeten', repo: 'dotfiles' },
+    { owner: 'remcostoeten', repo: 'expense-calendar' },
+    { owner: 'remcostoeten', repo: 'drizzleasy' },
+    { owner: 'remcostoeten', repo: 'Turso-db-creator-auto-retrieve-env-credentials' },
+    { owner: 'remcostoeten', repo: 'fync' },
+    { owner: 'remcostoeten', repo: 'Hygienic' },
+    { owner: 'remcostoeten', repo: 'Docki' },
+    { owner: 'remcostoeten', repo: 'gh-select' },
+    { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
     { owner: 'remcostoeten', repo: 'emoji-feedback-widget' },
     { owner: 'remcostoeten', repo: 'Beautiful-interactive-file-tree' },
     { owner: 'remcostoeten', repo: 'react-beautiful-featurerich-codeblock' },
-    { owner: 'remcostoeten', repo: 'HonoJS-api-page-analytics' },
-    { owner: 'remcostoeten', repo: 'Hygienic' },
-    { owner: 'remcostoeten', repo: 'Docki' }
+    { owner: 'remcostoeten', repo: 'HonoJS-api-page-analytics' }
   ];
 
   try {
