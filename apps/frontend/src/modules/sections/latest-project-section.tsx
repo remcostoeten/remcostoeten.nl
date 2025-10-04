@@ -4,6 +4,8 @@ import { Folder, Star, GitBranch, Calendar, ExternalLink, Filter, X, Sparkles } 
 import { Link } from "@/shared/components/link"
 import { useEffect, useState, useReducer, useRef } from "react"
 import { fetchSpecificFeaturedProjects, type RepoData } from "@/services/github-service"
+
+type RepoDataWithCategory = RepoData & { category: 'APIs' | 'DX tooling' | 'projects' }
 import {
   projectFilterReducer,
   initialProjectFilterState,
@@ -12,15 +14,15 @@ import {
 } from "@/reducers/project-filter-reducer"
 import { S } from "./serif"
 
-export const LatestProjectSection = () => {
+
+export function LatestProjectSection() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filterState, dispatch] = useReducer(projectFilterReducer, initialProjectFilterState)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const previousCategoryRef = useRef('All')
 
-  const availableCategories = [
-    'All',
+  const CATEGORIES = [
     'APIs',
     'DX tooling',
     'projects'
@@ -66,7 +68,7 @@ export const LatestProjectSection = () => {
     const loadFeaturedProjects = async () => {
       try {
         console.log("🔄 Fetching featured projects from GitHub API...")
-        const repoDataArray: RepoData[] = await fetchSpecificFeaturedProjects()
+        const repoDataArray: RepoDataWithCategory[] = await fetchSpecificFeaturedProjects()
 
         if (repoDataArray && repoDataArray.length > 0) {
           // Transform the repo data into SimpleProject format
@@ -121,13 +123,13 @@ export const LatestProjectSection = () => {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
           </div>
-          <p className="text-sm text-muted-foreground mt-1">This <S>simple</S> personal site actally has resulted in <S>A LOT</S> of custom packages, api's and allround experiments. If you are curious what I exactly build? <Link href='/blog/i-might-have-overengineerd'>Read it here</Link>.</p>
+          <p className="text-sm text-muted-foreground mt-1">This <S>simple</S> personal site actally has resulted in <S>A LOT</S> of custom packages, api's and allround experiments. If you are curious what I exactly build? <Link href='/blog/i-might-have-overengineerd' variant='underline'>Read it here</Link>.</p>
         </div>
       </div>
 
       <div className="mb-8">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {availableCategories.map((category) => {
+          {CATEGORIES.map((category) => {
             const isActive = filterState.currentCategory === category
             const projectCount = category === 'All'
               ? filterState.allProjects.length
@@ -143,7 +145,7 @@ export const LatestProjectSection = () => {
                 onClick={() => handleCategoryChange(category)}
                 disabled={isTransitioning}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${isActive
-                  ? 'bg-accent text-accent-foreground shadow-sm'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25'
                   : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   } ${isTransitioning ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
@@ -155,33 +157,7 @@ export const LatestProjectSection = () => {
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
-          {[...Array(4)].map((_, index) => (
-            <div key={index} className="animate-pulse">
-              <div className="bg-muted/30 rounded-xl p-6 border border-border/20">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="h-6 bg-muted rounded w-36"></div>
-                  <div className="h-8 w-8 bg-muted rounded-lg"></div>
-                </div>
-                <div className="space-y-2 mb-4">
-                  <div className="h-3 bg-muted rounded w-full"></div>
-                  <div className="h-3 bg-muted rounded w-4/5"></div>
-                </div>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="h-5 bg-muted rounded-full w-16"></div>
-                  <div className="h-5 bg-muted rounded-full w-20"></div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="h-3 bg-muted rounded w-16"></div>
-                  <div className="h-3 bg-muted rounded w-16"></div>
-                  <div className="h-3 bg-muted rounded w-24"></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : error ? (
+      {error ? (
         <div className="bg-destructive/5 border border-destructive/10 rounded-xl p-6 mb-8">
           <div className="flex items-center gap-3 text-destructive">
             <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center">
@@ -193,11 +169,10 @@ export const LatestProjectSection = () => {
       ) : filterState.filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
           {filterState.filteredProjects.slice(0, 4).map((project, index) => (
-            <a
+            <Link
               key={project.name}
               href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
+              external
               style={{
                 viewTransitionName: `project-${project.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
                 animationDelay: `${index * 50}ms`
@@ -255,7 +230,7 @@ export const LatestProjectSection = () => {
                   )}
                 </div>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       ) : (

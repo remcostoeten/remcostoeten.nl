@@ -23,7 +23,7 @@ Developer tools, utilities, and workflow improvements:
 ### Projects (Show 4 out of 6)
 Frontend applications, websites, and complete solutions:
 - **remcostoeten.nl** - Personal portfolio website
-- **expenses-calendar** - Expense tracking calendar application
+- **expense-calendar** - Expense tracking calendar application
 - **nextjs-15-roll-your-own-authentication** - Authentication implementation example
 - **emoji-feedback-widget** - Interactive feedback widget component
 - **Beautiful-interactive-file-tree** - File tree component

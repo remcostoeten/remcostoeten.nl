@@ -10,17 +10,55 @@ interface TProjectOverrides {
     demoUrl?: string;
     technologies?: string[];
     highlights?: string[];
+    packageInfo?: {
+      npmUrl?: string;
+      githubUrl?: string;
+      isPackage?: boolean;
+    };
+    originLabel?: {
+      text: string;
+      description?: string;
+      color?: 'website' | 'community' | 'personal' | 'client';
+      icon?: string;
+    };
   };
 }
 
 const PROJECT_OVERRIDES: TProjectOverrides = {
-  // Example overrides - customize as needed
-  // "remcostoeten.nl": {
-  //   title: "Personal Portfolio",
-  //   description: "A modern portfolio showcasing my work and skills",
-  //   technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
-  //   highlights: ["Responsive design", "Modern animations", "SEO optimized"]
-  // }
+  // API packages with npm links
+  "fync": {
+    packageInfo: {
+      npmUrl: "https://www.npmjs.com/package/fync",
+      githubUrl: "https://github.com/remcostoeten/fync",
+      isPackage: true
+    },
+    originLabel: {
+      text: "Born from this site",
+      description: "Created while building remcostoeten.nl",
+      color: "website",
+      icon: "🚀"
+    }
+  },
+  "drizzleasy": {
+    packageInfo: {
+      npmUrl: "https://www.npmjs.com/package/drizzleasy",
+      githubUrl: "https://github.com/remcostoeten/drizzleasy",
+      isPackage: true
+    },
+    originLabel: {
+      text: "Born from this site",
+      description: "Created while building remcostoeten.nl",
+      color: "website",
+      icon: "⚡"
+    }
+  },
+  "hono-analytics": {
+    packageInfo: {
+      npmUrl: "https://www.npmjs.com/package/hono-analytics",
+      githubUrl: "https://github.com/remcostoeten/hono-analytics",
+      isPackage: true
+    }
+  }
 };
 
 
@@ -112,7 +150,9 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
           contributors: repo.contributors || 1,
           totalCommits: repo.totalCommits || 0,
           startDate: repo.startDate,
-          category
+          category,
+          packageInfo: override?.packageInfo,
+          originLabel: override?.originLabel
         });
       } else {
         // Use overrides if available, otherwise use GitHub data as defaults
@@ -131,7 +171,9 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
             language: repo.language,
             contributors: repo.contributors || 1,
             description
-          }
+          },
+          packageInfo: override?.packageInfo,
+          originLabel: override?.originLabel
         });
       }
     }

@@ -25,16 +25,42 @@ type TProps = {
   onMouseLeave: () => void;
 };
 
-export function SimpleProjectCard({ name, url, gitInfo }: TSimpleProject) {
+export function SimpleProjectCard({ name, url, gitInfo, originLabel }: TSimpleProject) {
+  const getOriginLabelStyles = (color?: string) => {
+    switch (color) {
+      case 'website':
+        return 'bg-gradient-to-r from-accent/20 to-accent/10 text-accent border-accent/30 shadow-accent/20';
+      case 'community':
+        return 'bg-gradient-to-r from-blue-500/20 to-blue-500/10 text-blue-600 border-blue-500/30 shadow-blue-500/20';
+      case 'personal':
+        return 'bg-gradient-to-r from-green-500/20 to-green-500/10 text-green-600 border-green-500/30 shadow-green-500/20';
+      case 'client':
+        return 'bg-gradient-to-r from-purple-500/20 to-purple-500/10 text-purple-600 border-purple-500/30 shadow-purple-500/20';
+      default:
+        return 'bg-gradient-to-r from-muted/20 to-muted/10 text-muted-foreground border-muted/30';
+    }
+  };
+
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-accent hover:underline font-medium"
-    >
-      {name}
-    </a>
+    <div className="flex items-center gap-2 flex-wrap">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-accent hover:underline font-medium"
+      >
+        {name}
+      </a>
+      {originLabel && (
+        <span 
+          className={`px-2 py-1 text-xs font-medium border rounded-full shadow-sm ${getOriginLabelStyles(originLabel.color)}`}
+          title={originLabel.description}
+        >
+          {originLabel.icon && <span className="mr-1">{originLabel.icon}</span>}
+          {originLabel.text}
+        </span>
+      )}
+    </div>
   );
 }
 

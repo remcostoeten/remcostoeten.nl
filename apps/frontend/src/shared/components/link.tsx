@@ -21,6 +21,8 @@ interface BaseLinkProps extends Omit<NextLinkProps, 'as'> {
   external?: boolean;
   /** Whether to show an external link icon for external links */
   showExternalIcon?: boolean;
+  /** Inline styles */
+  style?: React.CSSProperties;
 }
 
 /**
@@ -46,11 +48,6 @@ interface LinkAsLink extends BaseLinkProps {
   /** Link text size */
   size?: VariantProps<typeof linkVariants>['size'];
 }
-
-/**
- * Combined type for all possible link configurations
- */
-type LinkComponentProps = LinkAsButton | LinkAsLink;
 
 /**
  * Variant styles for the Link component using class-variance-authority (cva).
@@ -95,26 +92,28 @@ const linkVariants = cva(
   }
 );
 
-interface BaseLinkProps extends Omit<NextLinkProps, 'as'> {
-  className?: string;
-  children?: React.ReactNode;
-  external?: boolean;
-  showExternalIcon?: boolean;
-}
-
 interface LinkAsButton extends BaseLinkProps {
+  /** Must be 'button' to render as button-style */
   as: 'button';
+  /** Button variant (from button component) */
   variant?: VariantProps<typeof buttonVariants>['variant'];
+  /** Button size (from button component) */
   size?: VariantProps<typeof buttonVariants>['size'];
 }
 
 interface LinkAsLink extends BaseLinkProps {
+  /** Render as link (default) or omit for link-style */
   as?: 'link' | never;
+  /** Link text variant */
   variant?: VariantProps<typeof linkVariants>['variant'];
+  /** Link text size */
   size?: VariantProps<typeof linkVariants>['size'];
 }
 
-type LinkProps = LinkAsButton | LinkAsLink;
+/**
+ * Combined type for all possible link configurations
+ */
+type LinkComponentProps = LinkAsButton | LinkAsLink;
 
 /**
  * Flexible link component that can render as either a Next.js Link or a button-style link.
@@ -201,7 +200,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkComponentProps>(
 Link.displayName = "Link";
 
 export { Link, linkVariants };
-export type { LinkProps, LinkComponentProps };
+export type { LinkComponentProps };
 
 /**
  * USAGE EXAMPLES:

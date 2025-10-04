@@ -3,6 +3,21 @@ export type TSimpleProject = {
   url: string;
   category: 'APIs' | 'DX tooling' | 'projects';
   gitInfo?: TGitInfo;
+  packageInfo?: TPackageInfo;
+  originLabel?: TOriginLabel;
+};
+
+export type TPackageInfo = {
+  npmUrl?: string;
+  githubUrl?: string;
+  isPackage?: boolean;
+};
+
+export type TOriginLabel = {
+  text: string;
+  description?: string;
+  color?: 'website' | 'community' | 'personal' | 'client';
+  icon?: string;
 };
 
 export type TGitInfo = {
@@ -33,4 +48,6 @@ export type TProjectData = {
   totalCommits: number;
   startDate?: string;
   category: 'APIs' | 'DX tooling' | 'projects';
+  packageInfo?: TPackageInfo;
+  originLabel?: TOriginLabel;
 };

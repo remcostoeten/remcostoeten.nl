@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { TSimpleProject } from '../types';
 import { SimpleProjectCard } from './SimpleProjectCard';
+import { PackagePopover } from './PackagePopover';
 import { groupProjectsByCategory, getCategoryOrder } from '../utils/categorize-project';
 
 type TProps = {
   projects: TSimpleProject[];
-  isLoading?: boolean;
 };
 
 type TExpandedSections = Record<string, boolean>;
@@ -54,28 +54,8 @@ function getCategoryDescription(category: string): string {
   }
 }
 
-export function CategorizedProjects({ projects, isLoading = false }: TProps) {
+export function CategorizedProjects({ projects }: TProps) {
   const [expandedSections, setExpandedSections] = useState<TExpandedSections>({});
-
-  if (isLoading) {
-    return (
-      <div className="space-y-8">
-        {getCategoryOrder().map((category) => (
-          <div key={category} className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-24 bg-muted animate-pulse rounded" />
-              <div className="h-4 w-32 bg-muted animate-pulse rounded" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {Array.from({ length: getInitialItemsToShow(category) }).map((_, i) => (
-                <div key={i} className="h-16 bg-muted animate-pulse rounded-lg" />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   const groupedProjects = groupProjectsByCategory(projects);
   const categories = getCategoryOrder();
@@ -132,7 +112,15 @@ export function CategorizedProjects({ projects, isLoading = false }: TProps) {
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <SimpleProjectCard {...project} />
+                        <div className="flex items-center gap-2 mb-1">
+                          <SimpleProjectCard {...project} />
+                          {project.packageInfo?.isPackage && (
+                            <PackagePopover 
+                              packageInfo={project.packageInfo} 
+                              projectName={project.name} 
+                            />
+                          )}
+                        </div>
                         {project.gitInfo?.description && (
                           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                             {project.gitInfo.description}
@@ -199,7 +187,15 @@ export function CategorizedProjects({ projects, isLoading = false }: TProps) {
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <SimpleProjectCard {...project} />
+                            <div className="flex items-center gap-2 mb-1">
+                              <SimpleProjectCard {...project} />
+                              {project.packageInfo?.isPackage && (
+                                <PackagePopover 
+                                  packageInfo={project.packageInfo} 
+                                  projectName={project.name} 
+                                />
+                              )}
+                            </div>
                             {project.gitInfo?.description && (
                               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                                 {project.gitInfo.description}

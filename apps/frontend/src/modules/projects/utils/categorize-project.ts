@@ -23,8 +23,8 @@ const PROJECT_CATEGORY_MAPPING: Record<string, ProjectCategory> = {
   
   // Projects category
   'remcostoeten.nl': 'projects',
-  'expenses-calendar': 'projects',
-  'nextjs-15-roll-your-own-authentication': 'projects', 
+  'expense-calendar': 'projects',
+  'nextjs-15-roll-your-own-authentication': 'projects',
   'emoji-feedback-widget': 'projects',
   'Beautiful-interactive-file-tree': 'projects',
   'beautiful-interactive-file-tree': 'projects',

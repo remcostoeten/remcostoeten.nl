@@ -61,8 +61,10 @@ export function LatestActivitySkeleton({ className }: TProps) {
 
         <div className="flex items-start gap-3 flex-1">
           <div className="flex-1 min-w-0">
-            <div className="text-body text-muted-foreground leading-tight mb-1">
-              <div className="h-5 bg-muted/60 rounded-md animate-pulse w-full max-w-[280px] xs:max-w-[340px] inline-block"></div>
+            <div className="text-body text-muted-foreground leading-tight mb-1 flex items-center gap-2">
+              <div className="h-5 bg-muted/60 rounded-md animate-pulse w-full max-w-[120px] xs:max-w-[150px]"></div>
+              <div className="h-5 bg-muted/50 rounded-md animate-pulse w-6 flex-shrink-0"></div>
+              <div className="h-5 bg-muted/60 rounded-md animate-pulse w-full max-w-[100px] xs:max-w-[120px]"></div>
             </div>
             <div className="text-sm text-muted-foreground leading-tight">
               <div className="h-4 bg-muted/40 rounded-md animate-pulse w-full max-w-[180px] xs:max-w-[220px] inline-block"></div>

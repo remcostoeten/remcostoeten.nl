@@ -26,8 +26,8 @@ export const ActivityContent = memo(function ActivityContent({
   const MAX_LENGTH = 40
 
   return (
-    <div className="flex-1 min-w-0 transition-all duration-300 ease-out overflow-hidden relative group">
-      <div className="text-body text-muted-foreground leading-relaxed mb-2 line-clamp-2">
+    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
+      <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
         <span className="inline">The latest thing I've done is </span>
         <AnimatePresence mode="wait">
           <motion.span
@@ -57,7 +57,7 @@ export const ActivityContent = memo(function ActivityContent({
         </AnimatePresence>
       </div>
 
-      <div className="text-sm text-muted-foreground leading-relaxed flex flex-wrap items-baseline gap-1">
+      <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1">
         <span className="whitespace-nowrap">on</span>
         <AnimatePresence mode="wait">
           <motion.span

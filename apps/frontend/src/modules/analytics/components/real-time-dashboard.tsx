@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import { Activity, Users, Eye, TrendingUp, Clock, Globe } from "lucide-react";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { useRealAnalytics } from "@/hooks/use-real-analytics";
+import { useSmartInterval } from "@/hooks/use-smart-interval";
+import { getPollingConfig } from "@/config/polling-config";
+import { ActivityStatus } from "@/components/shared/activity-status";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
@@ -14,17 +17,18 @@ export const RealTimeDashboard = () => {
   const [isAutoRefresh, setIsAutoRefresh] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  // Auto-refresh every 30 seconds
-  useEffect(() => {
-    if (!isAutoRefresh) return;
+  const handleRefreshWithTimestamp = () => {
+    refreshStats();
+    setLastUpdated(new Date());
+  };
 
-    const interval = setInterval(() => {
-      refreshStats();
-      setLastUpdated(new Date());
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [isAutoRefresh, refreshStats]);
+  // Use smart interval for activity-aware polling
+  const config = getPollingConfig('analytics');
+  const { isPolling, isActive, isVisible, timeSinceActive } = useSmartInterval(handleRefreshWithTimestamp, {
+    ...config,
+    runImmediately: true,
+    enabled: isAutoRefresh,
+  });
 
   const toggleAutoRefresh = () => {
     setIsAutoRefresh(!isAutoRefresh);
@@ -142,6 +146,13 @@ export const RealTimeDashboard = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ActivityStatus
+            isActive={isActive}
+            isVisible={isVisible}
+            isPolling={isPolling && isAutoRefresh}
+            timeSinceActive={timeSinceActive}
+            className="mr-2"
+          />
           <Button
             onClick={toggleAutoRefresh}
             variant={isAutoRefresh ? "default" : "outline"}

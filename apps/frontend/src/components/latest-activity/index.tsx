@@ -1,11 +1,18 @@
 'use client';
 
 import { useState, useEffect, useCallback } from "react";
-import { GitCommit } from "lucide-react";
 import { fetchLatestActivities, type LatestActivity as TLatestActivity } from "@/services/github-service";
-import { LatestActivitySkeleton } from "../latest-activity-skeleton";
-import { ActivityContent } from "./activity-content";
-import { SpotifyIntegration } from "./spotify-integration";
+import { ActivityShell } from "./activity-shell";
+import { GitHubActivityContent, GitHubActivitySkeletonContent, GitHubActivityErrorContent } from "./github-content";
+import { OptimizedSpotifyIntegration } from "./optimized-spotify-integration";
+
+/**
+ * LatestActivity - Main component with zero layout shift architecture
+ * 
+ * This component uses the ActivityShell to provide consistent layout structure
+ * while different content states (loading, error, success) are swapped in/out
+ * without affecting the overall dimensions.
+ */
 
 export function LatestActivity() {
   const [activities, setActivities] = useState<TLatestActivity[]>([]);
@@ -61,57 +68,42 @@ export function LatestActivity() {
     setHoveredCommit(null);
   }, []);
 
-  if (loading) {
-    return <LatestActivitySkeleton />;
-  }
-
   const currentActivity = activities[currentActivityIndex];
 
+  // Determine GitHub content based on state
+  const githubContent = (() => {
+    if (loading) {
+      return <GitHubActivitySkeletonContent />;
+    }
+    if (error || activities.length === 0) {
+      return (
+        <GitHubActivityErrorContent
+          error={error || 'No recent GitHub activities found.'}
+          onRetry={loadActivities}
+          loading={loading}
+        />
+      );
+    }
+    return (
+      <GitHubActivityContent
+        currentActivity={currentActivity}
+        currentActivityIndex={currentActivityIndex}
+        hoveredCommit={hoveredCommit}
+        onCommitMouseEnter={handleCommitMouseEnter}
+        onCommitMouseLeave={handleCommitMouseLeave}
+      />
+    );
+  })();
+
   return (
-    <section
-      className="p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden min-h-[140px] xs:min-h-[120px]"
+    <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      aria-labelledby="latest-activity-heading"
-      style={{ zIndex: 1 }}
     >
-      <h2 id="latest-activity-heading" className="sr-only">Latest Development Activity</h2>
-
-      <div className="flex items-start gap-3 mb-4">
-        <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0" aria-hidden="true">
-          <GitCommit className="w-4 h-4 text-accent" />
-        </div>
-
-        <div className="leading-relaxed min-w-0 flex-1 text-body" role="status" aria-live="polite" aria-atomic="true">
-          <div className="text-muted-foreground">
-            {(error || activities.length === 0) ? (
-              <div className="flex items-center">
-                <span className="truncate">
-                  {error || 'No recent GitHub activities found.'}{" "}
-                </span>
-                <button
-                  onClick={loadActivities}
-                  className="text-accent hover:underline focus:underline focus:outline-none transition-colors ml-1 flex-shrink-0"
-                  disabled={loading}
-                  aria-label="Retry loading activities"
-                >
-                  {loading ? 'Loading...' : 'Retry'}
-                </button>
-              </div>
-            ) : (
-              <ActivityContent
-                currentActivity={currentActivity}
-                currentActivityIndex={currentActivityIndex}
-                hoveredCommit={hoveredCommit}
-                onCommitMouseEnter={handleCommitMouseEnter}
-                onCommitMouseLeave={handleCommitMouseLeave}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      <SpotifyIntegration />
-    </section>
+      <ActivityShell
+        githubContent={githubContent}
+        spotifyContent={<OptimizedSpotifyIntegration />}
+      />
+    </div>
   );
 }

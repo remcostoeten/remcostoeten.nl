@@ -26,57 +26,21 @@ export const SpotifyHoverCard = memo(function SpotifyHoverCard({
   const isCurrentlyPlaying = 'is_playing' in track && track.is_playing;
   const isRecentTrack = 'played_at' in track;
 
-  // Calculate optimal position
-  const cardWidth = 320;
-  const cardHeight = 200;
-  const offset = 12;
-  
-  let left = mousePosition.x + offset;
-  let top = mousePosition.y + offset;
-  
-  // Adjust if card would go off screen
-  if (typeof window !== 'undefined') {
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    
-    // Check right edge
-    if (left + cardWidth > viewportWidth - 20) {
-      left = mousePosition.x - cardWidth - offset;
-    }
-    
-    // Check bottom edge
-    if (top + cardHeight > viewportHeight - 20) {
-      top = mousePosition.y - cardHeight - offset;
-    }
-    
-    // Ensure card doesn't go off left edge
-    if (left < 20) {
-      left = 20;
-    }
-    
-    // Ensure card doesn't go off top edge
-    if (top < 20) {
-      top = 20;
-    }
-  }
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.96 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.96 }}
+      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 8, scale: 0.96 }}
       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed w-80 max-w-[90vw] isolate pointer-events-none"
-      style={{ 
-        zIndex: 999999,
-        left: `${left}px`,
-        top: `${top}px`
-      }}
+      className="absolute left-0 top-full w-80 max-w-[90vw] isolate"
+      style={{ zIndex: 999999 }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       role="tooltip"
       aria-live="polite"
     >
+      {/* Invisible bridge to prevent hover loss */}
+      <div className="h-2 w-full" aria-hidden="true" />
       <div className="bg-card border border-border rounded-xl shadow-2xl p-5 relative backdrop-blur-xl pointer-events-auto"
         style={{ zIndex: 999999 }}>
         <div className="flex items-start gap-4">

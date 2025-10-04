@@ -139,7 +139,7 @@ export const CommitHoverCard = memo(function CommitHoverCard({
 
         {!loading && !error && repoData && (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-tight">
               {repoData.description}
             </p>
 

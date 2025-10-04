@@ -49,8 +49,26 @@ export function ProjectsSection() {
       const { featuredProjects, simpleProjects } = await getRealProjectData();
       console.log('📊 Projects response:', { featuredCount: featuredProjects.length, simpleCount: simpleProjects.length });
 
-      // Use simple projects as they include categories
-      const allProjects = simpleProjects;
+      // Convert featured projects to simple format if no simple projects exist
+      // or combine both if they exist
+      const allProjects: TSimpleProject[] = [
+        ...simpleProjects,
+        ...featuredProjects.map(fp => ({
+          name: fp.title,
+          url: fp.url,
+          category: fp.category,
+          gitInfo: {
+            stars: fp.stars,
+            forks: fp.forks,
+            lastCommit: fp.lastUpdated,
+            language: fp.language,
+            contributors: fp.contributors,
+            description: fp.description
+          },
+          packageInfo: fp.packageInfo,
+          originLabel: fp.originLabel
+        }))
+      ];
 
       if (allProjects.length === 0) {
         throw new Error('No project data received');
@@ -129,7 +147,6 @@ export function ProjectsSection() {
         <div className="mt-6">
           <CategorizedProjects 
             projects={state.projects}
-            isLoading={state.loadingState === 'loading'}
           />
         </div>
         

@@ -1,6 +1,31 @@
 // Using native fetch instead of fync library due to module resolution issues
 const GITHUB_API_BASE = 'https://api.github.com';
 
+// Import categorization function
+import { categorizeProject } from '../modules/projects/utils/categorize-project';
+
+// Fallback categorization function
+function fallbackCategorizeProject(title: string): 'APIs' | 'DX tooling' | 'projects' {
+  const PROJECT_CATEGORY_MAPPING: Record<string, 'APIs' | 'DX tooling' | 'projects'> = {
+    'fync': 'APIs',
+    'drizzleasy': 'APIs',
+    'hono-analytics': 'APIs',
+    'honolytics': 'APIs',
+    'Hygienic': 'DX tooling',
+    'Docki': 'DX tooling',
+    'Turso-db-creator-auto-retrieve-env-credentials': 'DX tooling',
+    'gh-select': 'DX tooling',
+    'dotfiles': 'DX tooling',
+    'remcostoeten.nl': 'projects',
+    'expense-calendar': 'projects',
+    'nextjs-15-roll-your-own-authentication': 'projects',
+    'emoji-feedback-widget': 'projects',
+    'Beautiful-interactive-file-tree': 'projects',
+    'react-beautiful-featurerich-codeblock': 'projects'
+  };
+  return PROJECT_CATEGORY_MAPPING[title] || 'projects';
+}
+
 export interface RepoData {
   title: string;
   description: string;
@@ -50,6 +75,12 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
     });
 
     if (!response.ok) {
+      if (response.status === 403) {
+        const rateLimitReset = response.headers.get('x-ratelimit-reset');
+        const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+        console.warn(`⚠️  GitHub API rate limit exceeded for ${owner}/${repo}. Remaining: ${rateLimitRemaining}, Reset: ${rateLimitReset}`);
+        throw new Error(`GitHub API rate limit exceeded. Try again later.`);
+      }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
@@ -274,7 +305,7 @@ export async function fetchTargetRepositories() {
     
     // Projects category
     { owner: 'remcostoeten', repo: 'remcostoeten.nl' },
-    { owner: 'remcostoeten', repo: 'expenses-calendar' },
+    { owner: 'remcostoeten', repo: 'expense-calendar' },
     { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
     { owner: 'remcostoeten', repo: 'emoji-feedback-widget' },
     { owner: 'remcostoeten', repo: 'Beautiful-interactive-file-tree' },
@@ -356,7 +387,7 @@ export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { cat
     
     // Projects category
     { owner: 'remcostoeten', repo: 'remcostoeten.nl' },
-    { owner: 'remcostoeten', repo: 'expenses-calendar' },
+    { owner: 'remcostoeten', repo: 'expense-calendar' },
     { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
     { owner: 'remcostoeten', repo: 'emoji-feedback-widget' },
     { owner: 'remcostoeten', repo: 'Beautiful-interactive-file-tree' },
@@ -365,13 +396,24 @@ export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { cat
 
   try {
     console.log('🔄 Fetching specific featured projects from GitHub API...');
+    console.log(`   Attempting to fetch ${featuredRepos.length} repositories`);
 
     const results = await Promise.allSettled(
       featuredRepos.map(({ owner, repo }) => fetchRepositoryData(owner, repo))
     );
 
-    // Import categorization function
-    const { categorizeProject } = await import('../modules/projects/utils/categorize-project');
+    // Log detailed results for debugging
+    const fulfilled = results.filter(r => r.status === 'fulfilled').length;
+    const rejected = results.filter(r => r.status === 'rejected').length;
+    console.log(`📊 Promise.allSettled results: ${fulfilled} fulfilled, ${rejected} rejected`);
+
+    // Log any rejections for debugging
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        const { owner, repo } = featuredRepos[index];
+        console.warn(`⚠️  Failed to fetch ${owner}/${repo}:`, result.reason?.message || result.reason);
+      }
+    });
 
     const successfulResults = results
       .map((result, index) => ({
@@ -381,19 +423,44 @@ export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { cat
       .filter(result => result.data !== null)
       .map(result => {
         const repoData = result.data!;
-        const category = categorizeProject(repoData.title, repoData.description, [repoData.language], repoData.topics);
-        return {
-          ...repoData,
-          category
-        };
+        try {
+          const category = categorizeProject(repoData.title, repoData.description, [repoData.language], repoData.topics);
+          return {
+            ...repoData,
+            category
+          };
+        } catch (categorizationError) {
+          console.warn(`⚠️  Failed to categorize ${repoData.title}, using fallback:`, categorizationError);
+          const fallbackCategory = fallbackCategorizeProject(repoData.title);
+          return {
+            ...repoData,
+            category: fallbackCategory
+          };
+        }
       });
 
-    console.log(`✅ Successfully fetched ${successfulResults.length} featured projects with categories`);
+    console.log(`✅ Successfully processed ${successfulResults.length}/${featuredRepos.length} featured projects with categories`);
+    
+    // Log category breakdown for debugging
+    const categoryBreakdown = successfulResults.reduce((acc, proj) => {
+      acc[proj.category] = (acc[proj.category] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    console.log('📋 Category breakdown:', categoryBreakdown);
+    
+    // Ensure we always return some data, even if some fetches failed
+    if (successfulResults.length === 0) {
+      console.error('❌ No repositories were successfully fetched. This might indicate a GitHub API issue.');
+      // Instead of returning empty array, throw an error that can be caught and handled
+      throw new Error(`Failed to fetch any repository data. Attempted ${featuredRepos.length} repositories but all failed.`);
+    }
+
     return successfulResults;
 
   } catch (error) {
-    console.error('❌ Error fetching specific featured projects:', error);
-    return [];
+    console.error('❌ Error in fetchSpecificFeaturedProjects:', error);
+    // Re-throw the error so components can handle it appropriately
+    throw new Error(`GitHub API fetch failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };
 

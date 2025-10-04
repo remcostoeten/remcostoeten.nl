@@ -21,47 +21,44 @@ export const SpotifyAnimation = () => {
   const [useRealSpotify, setUseRealSpotify] = useState(false);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<SpotifyTrack | null>(null);
 
-  // Try to load real Spotify data
-  useEffect(() => {
-    const loadSpotifyData = async () => {
-      try {
-        // First check if something is currently playing
-        const currentTrack = await getCurrentOrRecentMusic();
-        const isCurrentlyPlaying = currentTrack && 'is_playing' in currentTrack && currentTrack.is_playing;
+  // Load Spotify data function
+  const loadSpotifyData = async () => {
+    try {
+      // First check if something is currently playing
+      const currentTrack = await getCurrentOrRecentMusic();
+      const isCurrentlyPlaying = currentTrack && 'is_playing' in currentTrack && currentTrack.is_playing;
+      
+      if (isCurrentlyPlaying) {
+        setCurrentlyPlaying(currentTrack as SpotifyTrack);
+        setUseRealSpotify(true);
+        console.log('🎵 [SpotifyAnimation] Currently playing:', currentTrack.name, 'by', currentTrack.artist);
+      } else {
+        setCurrentlyPlaying(null);
         
-        if (isCurrentlyPlaying) {
-          setCurrentlyPlaying(currentTrack as SpotifyTrack);
+        // Get recent tracks for cycling
+        const tracks = await getRecentMusicTracks(5);
+        if (tracks.length > 0) {
+          setRecentTracks(tracks);
           setUseRealSpotify(true);
-          console.log('🎵 Currently playing:', currentTrack.name, 'by', currentTrack.artist);
+          console.log('🎵 [SpotifyAnimation] Loaded', tracks.length, 'recent Spotify tracks');
         } else {
-          setCurrentlyPlaying(null);
-          
-          // Get recent tracks for cycling
-          const tracks = await getRecentMusicTracks(5);
-          if (tracks.length > 0) {
-            setRecentTracks(tracks);
-            setUseRealSpotify(true);
-            console.log('🎵 Loaded', tracks.length, 'recent Spotify tracks');
-          } else {
-            console.log('🎵 No Spotify data available, using fallback songs');
-            setUseRealSpotify(false);
-            setRecentTracks(FALLBACK_SONGS);
-          }
+          console.log('🎵 [SpotifyAnimation] No Spotify data available, using fallback songs');
+          setUseRealSpotify(false);
+          setRecentTracks(FALLBACK_SONGS);
         }
-      } catch (error) {
-        console.error('🎵 Error loading Spotify data:', error);
-        setUseRealSpotify(false);
-        setRecentTracks(FALLBACK_SONGS);
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (error) {
+      console.error('🎵 [SpotifyAnimation] Error loading Spotify data:', error);
+      setUseRealSpotify(false);
+      setRecentTracks(FALLBACK_SONGS);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Load data only on mount - no polling
+  useEffect(() => {
     loadSpotifyData();
-    
-    // Refresh Spotify data every 30 seconds
-    const interval = setInterval(loadSpotifyData, 30000);
-    return () => clearInterval(interval);
   }, []);
 
   // Cycle through tracks every 4 seconds (only if not currently playing)
@@ -261,7 +258,7 @@ export const SpotifyAnimation = () => {
             {useRealSpotify && (
               <div className="mt-3 pt-3 border-t border-border">
                 <p className="text-xs text-muted-foreground text-center">
-                  Powered by Spotify • Updates every 30s
+                  Powered by Spotify • Loaded on page refresh
                 </p>
               </div>
             )}
