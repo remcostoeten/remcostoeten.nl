@@ -1,5 +1,6 @@
 import { TProjectData, TSimpleProject } from "../types";
 import { fetchTargetRepositories } from "@/services/github-service";
+import { categorizeProject } from "../utils/categorize-project";
 
 // Project overrides - allows customizing project data while using GitHub as defaults
 interface TProjectOverrides {
@@ -81,6 +82,7 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
       const repo = repoResult.data;
       const technologies = getTechnologies(repo.language, repo.topics);
       const highlights = getHighlights(repo.description, repo.topics, repo.stars, repo.language);
+      const category = categorizeProject(repo.title, repo.description, technologies, repo.topics);
 
       // Determine if this should be a featured project or simple project (dynamic criteria)
       const isFeatured = repo.stars > 3 || // Projects with more stars are featured
@@ -109,7 +111,8 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
           language: repo.language,
           contributors: repo.contributors || 1,
           totalCommits: repo.totalCommits || 0,
-          startDate: repo.startDate
+          startDate: repo.startDate,
+          category
         });
       } else {
         // Use overrides if available, otherwise use GitHub data as defaults
@@ -120,6 +123,7 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
         simpleProjects.push({
           name,
           url: repo.url,
+          category,
           gitInfo: {
             stars: repo.stars,
             forks: repo.forks,
@@ -153,11 +157,13 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
         highlights: ["Real-time data from GitHub"],
         language: "Various",
         contributors: 1,
-        totalCommits: 0
+        totalCommits: 0,
+        category: 'projects' as const
       }],
       simpleProjects: [{
         name: "GitHub Profile",
         url: "https://github.com/remcostoeten",
+        category: 'projects' as const,
         gitInfo: {
           stars: 0,
           forks: 0,

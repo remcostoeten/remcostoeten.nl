@@ -1,6 +1,7 @@
 export type TSimpleProject = {
   name: string;
   url: string;
+  category: 'APIs' | 'DX tooling' | 'projects';
   gitInfo?: TGitInfo;
 };
 
@@ -31,4 +32,5 @@ export type TProjectData = {
   contributors: number;
   totalCommits: number;
   startDate?: string;
+  category: 'APIs' | 'DX tooling' | 'projects';
 };

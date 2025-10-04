@@ -1,3 +1,6 @@
 export { ProjectCard } from './components/ProjectCard';
-export { FEATURED_PROJECTS, SIMPLE_PROJECTS } from './data/projects';
+export { SimpleProjectCard } from './components/SimpleProjectCard';
+export { CategorizedProjects } from './components/CategorizedProjects';
+export { FEATURED_PROJECTS, SIMPLE_PROJECTS, getRealProjectData } from './data/projects';
+export { categorizeProject, groupProjectsByCategory, getCategoryOrder } from './utils/categorize-project';
 export type { TProjectData, TSimpleProject } from './types';

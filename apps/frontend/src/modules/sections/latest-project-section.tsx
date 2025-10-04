@@ -1,13 +1,13 @@
 "use client"
 
-import { Folder, Star, GitBranch, Calendar, ExternalLink, Filter, X } from "lucide-react"
+import { Folder, Star, GitBranch, Calendar, ExternalLink, Filter, X, Sparkles } from "lucide-react"
 import { Link } from "@/shared/components/link"
 import { useEffect, useState, useReducer, useRef } from "react"
 import { fetchSpecificFeaturedProjects, type RepoData } from "@/services/github-service"
 import {
   projectFilterReducer,
   initialProjectFilterState,
-  getProjectTopics,
+  getProjectCategories,
   type SimpleProject
 } from "@/reducers/project-filter-reducer"
 import { S } from "./serif"
@@ -111,31 +111,28 @@ export const LatestProjectSection = () => {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
         </div>
-        <p className="text-sm text-muted-foreground mt-1">This <S i>simple</S> personal site actally has resulted in <S i>A LOT</S> of custom packages, api's and allround experiments. If you are curious what I exactly build? <Link href='/blog/i-might-have-overengineerd'>Read it here</Link>.</p>
+        <p className="text-sm text-muted-foreground mt-1">This <S>simple</S> personal site actally has resulted in <S>A LOT</S> of custom packages, api's and allround experiments. If you are curious what I exactly build? <Link href='/blog/i-might-have-overengineerd'>Read it here</Link>.</p>
       </div>
 
       <div className="mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-4 h-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-muted-foreground">Filter by technology</span>
-          {filterState.currentCategory !== 'All' && (
-            <button
-              onClick={handleReset}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-accent/20 text-accent rounded-full hover:bg-accent/30 transition-colors"
-            >
-              <X className="w-3 h-3" />
-              Clear
-            </button>
-          )}
+        <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent rounded-full">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span className="text-xs font-medium uppercase tracking-wider">Projects</span>
+          </div>
         </div>
+        <h2 className="text-2xl font-semibold text-foreground">Latest Projects</h2>
+        <p className="text-sm text-muted-foreground mt-1">Exploring code through building</p>
+      </div>
 
+      <div className="mb-8">
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {availableCategories.map((category) => {
             const isActive = filterState.currentCategory === category
             const projectCount = category === 'All'
               ? filterState.allProjects.length
               : filterState.allProjects.filter(project =>
-                getProjectTopics(project.name).includes(category)
+                getProjectCategories(project).includes(category)
               ).length
 
             if (category !== 'All' && projectCount === 0) return null
@@ -227,7 +224,7 @@ export const LatestProjectSection = () => {
 
                 {/* Topic labels */}
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {getProjectTopics(project.name).map((topic) => (
+                  {getProjectCategories(project).map((topic) => (
                     <span
                       key={topic}
                       className="px-2.5 py-1 bg-muted/50 text-muted-foreground text-xs rounded-full font-medium"

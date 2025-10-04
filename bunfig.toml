@@ -1,0 +1,26 @@
+[install]
+# Optimize for production builds
+frozenLockfile = true
+production = false
+optional = true
+
+# Cache configuration for faster installs
+cache = true
+cacheDisabled = false
+
+# Peer dependency handling
+peer = true
+auto = true
+
+[install.scopes]
+# Optimize package resolution
+"@types" = { registry = "https://registry.npmjs.org/" }
+"@radix-ui" = { registry = "https://registry.npmjs.org/" }
+
+[build]
+# Enable source maps in development
+sourcemap = "external"
+
+[runtime]
+# Optimize runtime performance
+jsx = "automatic"

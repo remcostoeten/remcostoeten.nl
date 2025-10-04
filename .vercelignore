@@ -1,7 +1,44 @@
+# Lock files from other package managers
 pnpm-lock.yaml
 yarn.lock
 package-lock.json
-.git
+
+# Ignore backend and other non-frontend files during deployment
+apps/backend
+packages
+.github
+README.md
+*.md
+.gitignore
+
+# Node modules and build artifacts
 node_modules
 .next
+.vercel
 .turbo
+dist
+build
+
+# Development files
+.vscode
+.idea
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git

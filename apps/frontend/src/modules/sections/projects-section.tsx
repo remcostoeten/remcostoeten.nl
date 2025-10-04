@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { SOCIAL_LINKS } from "@/modules/contact";
-import { SimpleProjectCard } from "@/modules/projects/components/SimpleProjectCard";
-import { fetchFeaturedProjects } from "@/services/github-service";
+import { CategorizedProjects } from "@/modules/projects/components/CategorizedProjects";
+import { getRealProjectData } from "@/modules/projects/data/projects";
 import { TSimpleProject } from "@/modules/projects/types";
 import { LatestActivity } from '@/components/latest-activity';
 import { LatestActivitySkeleton } from '@/components/latest-activity-skeleton';
@@ -27,25 +27,6 @@ const INITIAL_STATE: TProjectsState = {
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
-function createProjectFromData(name: string, data: any, fallbackUrl: string): TSimpleProject {
-  return {
-    name,
-    url: data?.deploymentUrl || data?.url || fallbackUrl,
-    gitInfo: {
-      stars: data?.stars || 0,
-      forks: data?.forks || 0,
-      lastCommit: data?.latestCommit
-        ? `${data.latestCommit.message} (${data.latestCommit.age})`
-        : data?.lastUpdated || 'Unknown',
-      language: data?.language || 'TypeScript',
-      contributors: data?.contributors || 1,
-      description: data?.description || `${name} - Portfolio project`,
-      totalCommits: data?.totalCommits || 0,
-      startDate: data?.startDate,
-      lastCommitDate: data?.latestCommit?.date
-    }
-  };
-}
 
 function delay(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -54,7 +35,7 @@ function delay(ms: number): Promise<void> {
 export function ProjectsSection() {
   const [state, setState] = useState<TProjectsState>(INITIAL_STATE);
 
-  const loadFeaturedProjects = useCallback(async (isRetry = false): Promise<void> => {
+  const loadProjects = useCallback(async (isRetry = false): Promise<void> => {
     if (!isRetry) {
       setState(prev => ({
         ...prev,
@@ -64,41 +45,26 @@ export function ProjectsSection() {
     }
 
     try {
-      console.log('🔄 Loading featured projects...');
-      const { remcostoetenNl, ryoa } = await fetchFeaturedProjects();
-      console.log('📊 Featured projects response:', { remcostoetenNl: !!remcostoetenNl, ryoa: !!ryoa });
+      console.log('🔄 Loading projects with categories...');
+      const { featuredProjects, simpleProjects } = await getRealProjectData();
+      console.log('📊 Projects response:', { featuredCount: featuredProjects.length, simpleCount: simpleProjects.length });
 
-      const featuredProjects: TSimpleProject[] = [];
+      // Use simple projects as they include categories
+      const allProjects = simpleProjects;
 
-      if (remcostoetenNl) {
-        console.log('✅ Adding remcostoeten.nl project');
-        featuredProjects.push(
-          createProjectFromData("Remcostoeten.nl", remcostoetenNl, "https://remcostoeten.nl")
-        );
-      }
-
-      if (ryoa) {
-        console.log('✅ Adding RYOA project');
-        featuredProjects.push(
-          createProjectFromData("RYOA", ryoa, "#")
-        );
-      }
-
-      console.log('📋 Total featured projects:', featuredProjects.length);
-
-      if (featuredProjects.length === 0) {
-        throw new Error('No project data received from GitHub API');
+      if (allProjects.length === 0) {
+        throw new Error('No project data received');
       }
 
       setState({
-        projects: featuredProjects,
+        projects: allProjects,
         loadingState: 'success',
         error: null,
         retryCount: 0
       });
 
     } catch (error) {
-      console.error('❌ Error loading featured projects:', error);
+      console.error('❌ Error loading projects:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to load project data';
 
       setState(prev => ({
@@ -113,15 +79,15 @@ export function ProjectsSection() {
   const handleRetry = useCallback(async (): Promise<void> => {
     if (state.retryCount < MAX_RETRIES) {
       await delay(RETRY_DELAY * state.retryCount);
-      await loadFeaturedProjects(true);
+      await loadProjects(true);
     } else {
       window.location.reload();
     }
-  }, [loadFeaturedProjects, state.retryCount]);
+  }, [loadProjects, state.retryCount]);
 
   useEffect(() => {
-    loadFeaturedProjects();
-  }, [loadFeaturedProjects]);
+    loadProjects();
+  }, [loadProjects]);
 
 
   const retryButtonText = state.retryCount >= MAX_RETRIES ? 'Refresh Page' : 'Retry';
@@ -160,7 +126,14 @@ export function ProjectsSection() {
           )}
         </p>
 
-        <div className="mt-2">
+        <div className="mt-6">
+          <CategorizedProjects 
+            projects={state.projects}
+            isLoading={state.loadingState === 'loading'}
+          />
+        </div>
+        
+        <div className="mt-8">
           <LatestActivity />
         </div>
       </div>

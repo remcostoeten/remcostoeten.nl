@@ -3,30 +3,44 @@
   "version": "1.0.0",
   "description": "Monorepo with Next.js frontend and Hono.js backend",
   "private": true,
+  "packageManager": "bun@1.2.22",
   "workspaces": [
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
-    "dev:bun": "concurrently \"cd apps/frontend && bun run dev\" \"cd apps/backend && bun run dev\"",
-    "dev:frontend": "cd apps/frontend && npm run dev",
+    "dev": "concurrently \"bun run dev:frontend\" \"bun run dev:backend\"",
+    "dev:frontend": "cd apps/frontend && bun run dev",
     "dev:backend": "cd apps/backend && bun run dev",
-    "build": "npm run build:frontend && npm run build:backend",
-    "build:frontend": "cd apps/frontend && npm run build",
+    "build": "bun run build:frontend && bun run build:backend",
+    "build:frontend": "cd apps/frontend && NODE_ENV=production bun run build",
     "build:backend": "cd apps/backend && bun run build",
-    "install:all": "npm install && cd apps/frontend && npm install && cd ../backend && bun install",
+    "install:all": "bun install",
     "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist apps/*/.next",
     "gen": "cd apps/backend && bun run gen",
     "push": "cd apps/backend && bun run push",
-    "release:crud": "node scripts/release.js"
+    "deploy": "./scripts/deploy.sh",
+    "deploy:prod": "./scripts/deploy.sh --production",
+    "release:crud": "bun scripts/release.js"
   },
   "devDependencies": {
     "concurrently": "^8.2.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "scheduler": "^0.27.0"
   },
   "dependencies": {
     "@remcostoeten/fync": "^5.1.2"
+  },
+  "resolutions": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0"
+  },
+  "overrides": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0"
   }
 }
