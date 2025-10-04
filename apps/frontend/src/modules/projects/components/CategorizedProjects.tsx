@@ -14,7 +14,19 @@ type TProps = {
 
 type TExpandedSections = Record<string, boolean>;
 
-const ITEMS_TO_SHOW_INITIALLY = 4;
+// Different initial display counts per category
+function getInitialItemsToShow(category: string): number {
+  switch (category) {
+    case 'APIs':
+      return 10; // Show all APIs (currently 3)
+    case 'DX tooling': 
+      return 4; // Show 4 out of 5 DX tools
+    case 'projects':
+      return 4; // Show 4 out of 6 projects
+    default:
+      return 4;
+  }
+}
 
 function getCategoryDisplayName(category: string): string {
   switch (category) {
@@ -55,7 +67,7 @@ export function CategorizedProjects({ projects, isLoading = false }: TProps) {
               <div className="h-4 w-32 bg-muted animate-pulse rounded" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {Array.from({ length: 4 }).map((_, i) => (
+              {Array.from({ length: getInitialItemsToShow(category) }).map((_, i) => (
                 <div key={i} className="h-16 bg-muted animate-pulse rounded-lg" />
               ))}
             </div>
@@ -82,11 +94,12 @@ export function CategorizedProjects({ projects, isLoading = false }: TProps) {
         if (categoryProjects.length === 0) return null;
 
         const isExpanded = expandedSections[category];
-        const hasMoreItems = categoryProjects.length > ITEMS_TO_SHOW_INITIALLY;
+        const itemsToShowInitially = getInitialItemsToShow(category);
+        const hasMoreItems = categoryProjects.length > itemsToShowInitially;
         const visibleProjects = isExpanded
           ? categoryProjects
-          : categoryProjects.slice(0, ITEMS_TO_SHOW_INITIALLY);
-        const hiddenCount = categoryProjects.length - ITEMS_TO_SHOW_INITIALLY;
+          : categoryProjects.slice(0, itemsToShowInitially);
+        const hiddenCount = categoryProjects.length - itemsToShowInitially;
 
         return (
           <div key={category} className="space-y-4">
@@ -173,7 +186,7 @@ export function CategorizedProjects({ projects, isLoading = false }: TProps) {
                     transition={{ duration: 0.2 }}
                     className="grid grid-cols-1 md:grid-cols-2 gap-3"
                   >
-                    {categoryProjects.slice(ITEMS_TO_SHOW_INITIALLY).map((project, index) => (
+                    {categoryProjects.slice(itemsToShowInitially).map((project, index) => (
                       <motion.div
                         key={`${project.name}-expanded-${index}`}
                         initial={{ opacity: 0, y: 20 }}

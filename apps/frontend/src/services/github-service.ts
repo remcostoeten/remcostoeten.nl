@@ -260,10 +260,25 @@ export async function fetchMultipleRepos(repos: Array<{ owner: string; repo: str
 
 export async function fetchTargetRepositories() {
   const targetRepos = [
-    { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
-    { owner: 'remcostoeten', repo: 'remcostoeten.nl' },
+    // APIs category
     { owner: 'remcostoeten', repo: 'fync' },
-    { owner: 'remcostoeten', repo: 'Turso-db-creator-auto-retrieve-env-credentials' }
+    { owner: 'remcostoeten', repo: 'drizzleasy' },
+    { owner: 'remcostoeten', repo: 'hono-analytics' },
+    
+    // DX tooling category  
+    { owner: 'remcostoeten', repo: 'Hygienic' },
+    { owner: 'remcostoeten', repo: 'Docki' },
+    { owner: 'remcostoeten', repo: 'Turso-db-creator-auto-retrieve-env-credentials' },
+    { owner: 'remcostoeten', repo: 'gh-select' },
+    { owner: 'remcostoeten', repo: 'dotfiles' },
+    
+    // Projects category
+    { owner: 'remcostoeten', repo: 'remcostoeten.nl' },
+    { owner: 'remcostoeten', repo: 'expenses-calendar' },
+    { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
+    { owner: 'remcostoeten', repo: 'emoji-feedback-widget' },
+    { owner: 'remcostoeten', repo: 'Beautiful-interactive-file-tree' },
+    { owner: 'remcostoeten', repo: 'react-beautiful-featurerich-codeblock' }
   ];
 
   return await fetchMultipleRepos(targetRepos);
@@ -323,22 +338,29 @@ export const fetchRemcostoetenPortfolio = async (): Promise<RepoData & {
   }
 };
 
-// Function to fetch the specific featured repositories you requested
-export const fetchSpecificFeaturedProjects = async (): Promise<RepoData[]> => {
+// Function to fetch the specific featured repositories you requested with categorization
+export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { category: 'APIs' | 'DX tooling' | 'projects' })[]> => {
+  // Use the same repos as fetchTargetRepositories for consistency
   const featuredRepos = [
-    { owner: 'remcostoeten', repo: 'dotfiles' },
-    { owner: 'remcostoeten', repo: 'expense-calendar' },
-    { owner: 'remcostoeten', repo: 'drizzleasy' },
-    { owner: 'remcostoeten', repo: 'Turso-db-creator-auto-retrieve-env-credentials' },
+    // APIs category
     { owner: 'remcostoeten', repo: 'fync' },
+    { owner: 'remcostoeten', repo: 'drizzleasy' },
+    { owner: 'remcostoeten', repo: 'hono-analytics' },
+    
+    // DX tooling category  
     { owner: 'remcostoeten', repo: 'Hygienic' },
     { owner: 'remcostoeten', repo: 'Docki' },
+    { owner: 'remcostoeten', repo: 'Turso-db-creator-auto-retrieve-env-credentials' },
     { owner: 'remcostoeten', repo: 'gh-select' },
+    { owner: 'remcostoeten', repo: 'dotfiles' },
+    
+    // Projects category
+    { owner: 'remcostoeten', repo: 'remcostoeten.nl' },
+    { owner: 'remcostoeten', repo: 'expenses-calendar' },
     { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
     { owner: 'remcostoeten', repo: 'emoji-feedback-widget' },
     { owner: 'remcostoeten', repo: 'Beautiful-interactive-file-tree' },
-    { owner: 'remcostoeten', repo: 'react-beautiful-featurerich-codeblock' },
-    { owner: 'remcostoeten', repo: 'HonoJS-api-page-analytics' }
+    { owner: 'remcostoeten', repo: 'react-beautiful-featurerich-codeblock' }
   ];
 
   try {
@@ -348,15 +370,25 @@ export const fetchSpecificFeaturedProjects = async (): Promise<RepoData[]> => {
       featuredRepos.map(({ owner, repo }) => fetchRepositoryData(owner, repo))
     );
 
+    // Import categorization function
+    const { categorizeProject } = await import('../modules/projects/utils/categorize-project');
+
     const successfulResults = results
       .map((result, index) => ({
         ...featuredRepos[index],
         data: result.status === 'fulfilled' ? result.value : null
       }))
       .filter(result => result.data !== null)
-      .map(result => result.data!);
+      .map(result => {
+        const repoData = result.data!;
+        const category = categorizeProject(repoData.title, repoData.description, [repoData.language], repoData.topics);
+        return {
+          ...repoData,
+          category
+        };
+      });
 
-    console.log(`✅ Successfully fetched ${successfulResults.length} featured projects`);
+    console.log(`✅ Successfully fetched ${successfulResults.length} featured projects with categories`);
     return successfulResults;
 
   } catch (error) {
@@ -565,5 +597,5 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
 // Function to fetch the latest push activity from remcostoeten's GitHub account (backwards compatibility)
 export const fetchLatestActivity = async (): Promise<LatestActivity | null> => {
   const result = await fetchLatestActivities();
-  return result.activities.length > 0 ? result.activities[0] : null;
+  return result.activities[0] || null;
 };

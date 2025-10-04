@@ -21,7 +21,7 @@ export const LatestProjectSection = () => {
 
   const availableCategories = [
     'All',
-    "API's",
+    'APIs',
     'DX tooling',
     'projects'
   ]
@@ -73,6 +73,7 @@ export const LatestProjectSection = () => {
           const projectsData: SimpleProject[] = repoDataArray.map((repoData) => ({
             name: repoData.title,
             url: repoData.deploymentUrl || repoData.url,
+            category: repoData.category, // Use the category from the fetched data
             gitInfo: {
               stars: repoData.stars,
               forks: repoData.forks,
@@ -108,11 +109,7 @@ export const LatestProjectSection = () => {
 
   return (
     <section className="py-12">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-        </div>
-        <p className="text-sm text-muted-foreground mt-1">This <S>simple</S> personal site actally has resulted in <S>A LOT</S> of custom packages, api's and allround experiments. If you are curious what I exactly build? <Link href='/blog/i-might-have-overengineerd'>Read it here</Link>.</p>
-      </div>
+
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
@@ -121,8 +118,11 @@ export const LatestProjectSection = () => {
             <span className="text-xs font-medium uppercase tracking-wider">Projects</span>
           </div>
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">Latest Projects</h2>
-        <p className="text-sm text-muted-foreground mt-1">Exploring code through building</p>
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">This <S>simple</S> personal site actally has resulted in <S>A LOT</S> of custom packages, api's and allround experiments. If you are curious what I exactly build? <Link href='/blog/i-might-have-overengineerd'>Read it here</Link>.</p>
+        </div>
       </div>
 
       <div className="mb-8">

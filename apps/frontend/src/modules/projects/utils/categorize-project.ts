@@ -3,6 +3,35 @@ import type { TSimpleProject, TProjectData } from '../types';
 type ProjectCategory = 'APIs' | 'DX tooling' | 'projects';
 
 /**
+ * Predefined project categorization mapping
+ */
+const PROJECT_CATEGORY_MAPPING: Record<string, ProjectCategory> = {
+  // APIs category
+  'fync': 'APIs',
+  'drizzleasy': 'APIs', 
+  'hono-analytics': 'APIs',
+  
+  // DX tooling category
+  'Hygienic': 'DX tooling',
+  'hygienic': 'DX tooling',
+  'Docki': 'DX tooling',
+  'docki': 'DX tooling', 
+  'Turso-db-creator-auto-retrieve-env-credentials': 'DX tooling',
+  'turso-db-creator-auto-retrieve-env-credentials': 'DX tooling',
+  'gh-select': 'DX tooling',
+  'dotfiles': 'DX tooling',
+  
+  // Projects category
+  'remcostoeten.nl': 'projects',
+  'expenses-calendar': 'projects',
+  'nextjs-15-roll-your-own-authentication': 'projects', 
+  'emoji-feedback-widget': 'projects',
+  'Beautiful-interactive-file-tree': 'projects',
+  'beautiful-interactive-file-tree': 'projects',
+  'react-beautiful-featurerich-codeblock': 'projects'
+};
+
+/**
  * Categorizes a project based on its name, description, technologies, and topics
  */
 export function categorizeProject(
@@ -11,6 +40,13 @@ export function categorizeProject(
   technologies?: string[],
   topics?: string[]
 ): ProjectCategory {
+  // First check explicit mapping
+  const explicitCategory = PROJECT_CATEGORY_MAPPING[name] || PROJECT_CATEGORY_MAPPING[name.toLowerCase()];
+  if (explicitCategory) {
+    return explicitCategory;
+  }
+
+  // Fall back to automatic categorization for unknown projects
   const searchTerms = [
     name.toLowerCase(),
     description?.toLowerCase() || '',
