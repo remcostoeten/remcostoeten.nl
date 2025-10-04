@@ -2,8 +2,12 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { TBlogMetadataService } from '../services/blog-metadata-service';
+import { TBlogFeedbackService } from '../services/blog-feedback-service';
 
-export const createBlogRouter = (blogService: TBlogMetadataService) => {
+export const createBlogRouter = (
+  blogService: TBlogMetadataService,
+  feedbackService?: TBlogFeedbackService
+) => {
   const blogRouter = new Hono();
 
   // Validation schemas
@@ -291,6 +295,131 @@ export const createBlogRouter = (blogService: TBlogMetadataService) => {
       }
     }
   );
+
+  // Feedback endpoints - only if service is provided
+  if (feedbackService) {
+    // Validation schema for feedback submission
+    const feedbackSchema = z.object({
+      emoji: z.string().min(1, 'Emoji is required').max(10),
+      message: z.string().optional(),
+      url: z.string().optional(),
+      userAgent: z.string().optional(),
+    });
+
+    // POST /api/blog/feedback/:slug - Submit feedback
+    blogRouter.post(
+      '/feedback/:slug',
+      zValidator('param', slugParamSchema),
+      zValidator('json', feedbackSchema),
+      async (c) => {
+        try {
+          const { slug } = c.req.valid('param');
+          const feedbackData = c.req.valid('json');
+          const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip');
+          
+          const feedback = await feedbackService.submitFeedback(
+            slug,
+            feedbackData,
+            ip
+          );
+          
+          return c.json({
+            success: true,
+            data: feedback,
+            message: 'Feedback submitted successfully'
+          }, 201);
+        } catch (error) {
+          console.error('Error submitting feedback:', error);
+          return c.json({
+            success: false,
+            message: 'Failed to submit feedback'
+          }, 500);
+        }
+      }
+    );
+
+    // GET /api/blog/feedback/:slug - Get feedback stats
+    blogRouter.get(
+      '/feedback/:slug',
+      zValidator('param', slugParamSchema),
+      async (c) => {
+        try {
+          const { slug } = c.req.valid('param');
+          const stats = await feedbackService.getFeedbackBySlug(slug);
+          
+          return c.json({
+            success: true,
+            data: stats
+          });
+        } catch (error) {
+          console.error('Error fetching feedback stats:', error);
+          return c.json({
+            success: false,
+            message: 'Failed to fetch feedback stats'
+          }, 500);
+        }
+      }
+    );
+
+    // GET /api/blog/feedback/:slug/reactions - Get feedback reactions
+    blogRouter.get(
+      '/feedback/:slug/reactions',
+      zValidator('param', slugParamSchema),
+      async (c) => {
+        try {
+          const { slug } = c.req.valid('param');
+          const reactions = await feedbackService.getFeedbackReactions(slug);
+          
+          return c.json({
+            success: true,
+            data: reactions
+          });
+        } catch (error) {
+          console.error('Error fetching feedback reactions:', error);
+          return c.json({
+            success: false,
+            message: 'Failed to fetch feedback reactions'
+          }, 500);
+        }
+      }
+    );
+
+    // GET /api/blog/feedback/:slug/user - Get user's feedback
+    blogRouter.get(
+      '/feedback/:slug/user',
+      zValidator('param', slugParamSchema),
+      async (c) => {
+        try {
+          const { slug } = c.req.valid('param');
+          const fingerprint = c.req.query('fingerprint');
+          
+          if (!fingerprint) {
+            return c.json({
+              success: false,
+              message: 'Fingerprint is required'
+            }, 400);
+          }
+          
+          const userFeedback = await feedbackService.getUserFeedback(
+            slug,
+            fingerprint
+          );
+          
+          return c.json({
+            success: true,
+            data: userFeedback,
+            hasSubmitted: !!userFeedback
+          });
+        } catch (error) {
+          console.error('Error fetching user feedback:', error);
+          return c.json({
+            success: false,
+            message: 'Failed to fetch user feedback'
+          }, 500);
+        }
+      }
+    );
+  }
 
   return blogRouter;
 };

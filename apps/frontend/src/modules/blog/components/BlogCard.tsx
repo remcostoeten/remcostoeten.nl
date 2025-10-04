@@ -11,7 +11,7 @@ interface BlogCardProps {
 export const BlogCard = ({ post, index }: BlogCardProps) => {
   return (
     <motion.article
-      className="border border-border rounded-lg p-6 bg-card hover:bg-secondary/50 transition-colors"
+      className="font-noto border border-border rounded-lg p-6 bg-card hover:bg-secondary/50 transition-colors"
       {...ANIMATION_CONFIGS.staggered(index * 0.1)}
     >
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">

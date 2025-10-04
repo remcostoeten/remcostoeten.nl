@@ -140,6 +140,13 @@ export const API = {
       stats: () => apiUrl('/blog/analytics/stats'),
       cleanup: () => apiUrl('/blog/analytics/cleanup'),
     },
+    // Feedback endpoints
+    feedback: {
+      submit: (slug: string) => apiUrl(`/blog/feedback/${slug}`),
+      get: (slug: string) => apiUrl(`/blog/feedback/${slug}`),
+      reactions: (slug: string) => apiUrl(`/blog/feedback/${slug}/reactions`),
+      userFeedback: (slug: string) => apiUrl(`/blog/feedback/${slug}/user`),
+    },
   },
   
   // Health check

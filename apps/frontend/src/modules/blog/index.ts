@@ -6,3 +6,7 @@ export * from "./components/TagFilter";
 export * from "./components/SearchFilter";
 export * from "./utils/blogUtils";
 export * from "@/lib/blog";
+
+// Export feedback functionality
+export * from "./feedback-service";
+export * from "./use-feedback";

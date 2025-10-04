@@ -9,6 +9,7 @@ import { createPageviewService } from './services/pageviewService';
 import { createHybridPageviewService } from './services/hybrid-pageview-service';
 import { createBlogMetadataService } from './services/blog-metadata-service';
 import { createMemoryBlogMetadataService } from './services/memory-blog-metadata-service';
+import { createBlogFeedbackService } from './services/blog-feedback-service';
 
 import { db } from './db';
 import { initializeDatabase } from './db';
@@ -29,6 +30,9 @@ export const createApp = async () => {
 
   // Use database service if available, otherwise use memory service
   const blogMetadataService = db ? createBlogMetadataService() : createMemoryBlogMetadataService();
+  
+  // Initialize feedback service (only with database)
+  const blogFeedbackService = db ? createBlogFeedbackService(db) : undefined;
 
   // Middleware
   app.use('*', logger());
@@ -78,7 +82,7 @@ export const createApp = async () => {
   // Routes
   app.route('/api/visitors', visitorRouter);
   app.route('/api/pageviews', createPageviewsRouter(pageviewService));
-  app.route('/api/blog', createBlogRouter(blogMetadataService));
+  app.route('/api/blog', createBlogRouter(blogMetadataService, blogFeedbackService));
   app.route('/api/spotify', spotifyRouter); // Add this line
 
   // Serve the beautiful API documentation page

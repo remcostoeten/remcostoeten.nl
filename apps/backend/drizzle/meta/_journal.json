@@ -22,6 +22,13 @@
       "when": 1758278157657,
       "tag": "0002_violet_puma",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759544919220,
+      "tag": "0003_quick_luckman",
+      "breakpoints": true
     }
   ]
 }

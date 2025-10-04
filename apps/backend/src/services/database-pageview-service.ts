@@ -8,10 +8,19 @@ import type {
   PageviewStats 
 } from '../types/pageview';
 
+function serializePageview(pageview: any): Pageview {
+  return {
+    ...pageview,
+    timestamp: pageview.timestamp instanceof Date ? pageview.timestamp.toISOString() : pageview.timestamp,
+    createdAt: pageview.createdAt instanceof Date ? pageview.createdAt.toISOString() : pageview.createdAt,
+  };
+}
+
 function createDatabasePageviewService() {
   return {
     async createPageview(data: CreatePageviewData): Promise<Pageview> {
       const now = new Date();
+      const timestampDate = data.timestamp ? new Date(data.timestamp) : now;
       
       const newPageview = await db
         .insert(pageviews)
@@ -21,12 +30,12 @@ function createDatabasePageviewService() {
           title: data.title,
           referrer: data.referrer,
           userAgent: data.userAgent,
-          timestamp: data.timestamp || now,
+          timestamp: timestampDate,
           createdAt: now,
         })
         .returning();
 
-      return newPageview[0];
+      return serializePageview(newPageview[0]);
     },
 
     async getPageviews(filters: PageviewFilters): Promise<Pageview[]> {
@@ -41,7 +50,7 @@ function createDatabasePageviewService() {
         .limit(filters.limit || 50)
         .offset(filters.offset || 0);
 
-      return results;
+      return results.map(serializePageview);
     },
 
     async getTotalCount(filters: Pick<PageviewFilters, 'url'>): Promise<number> {

@@ -39,34 +39,38 @@ export function LatestActivitySkeleton({ className }: TProps) {
       )}
       aria-label="Loading activity"
     >
-      <div className="flex items-start mb-3">
-        <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0 animate-pulse mr-2">
+      <div className="flex items-start gap-2 xs:gap-3 mb-3">
+        <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0 animate-pulse">
           <GitCommit className="w-4 h-4 text-accent" />
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="mb-1">
-            <div className="h-5 bg-muted/60 rounded-md animate-pulse w-full max-w-[280px] xs:max-w-[320px]"></div>
+        <div className="leading-relaxed min-w-0 flex-1 text-body">
+          <div className="text-muted-foreground">
+            <div className="space-y-1">
+              <div className="h-5 bg-muted/60 rounded-md animate-pulse w-full max-w-[320px] xs:max-w-[380px]"></div>
+              <div className="h-5 bg-muted/40 rounded-md animate-pulse w-full max-w-[200px] xs:max-w-[240px]"></div>
+            </div>
           </div>
-          <div className="h-4 bg-muted/40 rounded-md animate-pulse w-full max-w-[160px] xs:max-w-[200px] mb-3"></div>
         </div>
       </div>
 
-      <div className="border-t border-border/30 mb-3"></div>
-
-      <div className="flex items-center">
-        <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0 animate-pulse mr-2">
+      <div className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30">
+        <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0 animate-pulse">
           <Music className="w-4 h-4 text-green-500" />
         </div>
 
-        <div className="flex-1 min-w-0 mr-2">
-          <div className="mb-1">
-            <div className="h-5 bg-muted/60 rounded-md animate-pulse w-full max-w-[240px] xs:max-w-[280px]"></div>
+        <div className="flex items-start gap-3 flex-1">
+          <div className="flex-1 min-w-0">
+            <div className="text-body text-muted-foreground leading-tight mb-1">
+              <div className="h-5 bg-muted/60 rounded-md animate-pulse w-full max-w-[280px] xs:max-w-[340px] inline-block"></div>
+            </div>
+            <div className="text-sm text-muted-foreground leading-tight">
+              <div className="h-4 bg-muted/40 rounded-md animate-pulse w-full max-w-[180px] xs:max-w-[220px] inline-block"></div>
+            </div>
           </div>
-          <div className="h-4 bg-muted/40 rounded-md animate-pulse w-full max-w-[140px] xs:max-w-[180px]"></div>
-        </div>
 
-        <div className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"></div>
+          <div className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"></div>
+        </div>
       </div>
     </section>
   );

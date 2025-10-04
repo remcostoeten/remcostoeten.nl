@@ -149,6 +149,22 @@
   .text-body-lg {
     @apply text-lg leading-relaxed;
   }
+
+  /* Prose styles with Noto Sans */
+  .prose {
+    @apply font-noto;
+  }
+
+  /* Keep code blocks monospace */
+  .prose code,
+  .prose pre,
+  .prose pre code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  }
+
+  .prose :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  }
 }
 
 /* Custom animations and styles */

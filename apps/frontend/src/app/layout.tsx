@@ -1,6 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Noto_Sans } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
@@ -12,6 +12,14 @@ const inter = Inter({
   display: 'swap',
   preload: true,
   variable: '--font-inter'
+});
+
+const notoSans = Noto_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  preload: true,
+  variable: '--font-noto-sans'
 });
 
 export const metadata: Metadata = {
@@ -164,7 +172,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://producthunt.com" />
         <link rel="dns-prefetch" href="https://linkedin.com" />
       </head>
-      <body className={`${inter.className} ${inter.variable} overflow-x-hidden`} suppressHydrationWarning>
+      <body className={`${inter.className} ${inter.variable} ${notoSans.variable} overflow-x-hidden`} suppressHydrationWarning>
         <TooltipProvider delayDuration={0}>
           <AnalyticsTracker />
           {children}

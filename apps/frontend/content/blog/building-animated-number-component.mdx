@@ -1,11 +1,19 @@
 ---
-title: "Building an Animated Number Component"
+title: "Create aesthetic number animation"
 publishedAt: "04-10-2025"
 author: "Remco Stoeten"
 tags: ["React", "Animation", "UX", "Accessibility", "TypeScript"]
 category: "development"
 status: "published"
 ---
+
+Animations are hard. Bezier curves are hard. Luckily for use, librarys like motion exist. But even with motion the same problem remains: timing, bezier curves, sequences are hard. I came across [this](https://number-flow.barvian.me/) gem.
+
+In essence a dead simple api
+```tsx
+import NumberFlow from '@number-flow/react'
+<NumberFlow value={123} />
+```
 
 Numbers. They're everywhere in web apps – counters, statistics, prices, percentages. But plain old numbers are boring. They sit there, static and lifeless, until you refresh the page.
 

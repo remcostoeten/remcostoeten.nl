@@ -26,6 +26,10 @@ export default {
 			'2xl': '1536px',
 		},
 		extend: {
+			fontFamily: {
+				sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+				'noto': ['var(--font-noto-sans)', 'system-ui', 'sans-serif'],
+			},
 			spacing: {
 				'1': 'var(--space-1)',
 				'2': 'var(--space-2)',

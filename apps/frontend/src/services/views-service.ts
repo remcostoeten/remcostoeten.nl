@@ -28,10 +28,11 @@ export class ViewsService {
       }
       
       // Transform the analytics data to ViewCount format
+      // Backend returns 'totalViews', map it to our ViewCount interface
       const analytics = result.data.data || result.data;
       return {
         slug,
-        totalViews: analytics.viewCount || analytics.views || 0,
+        totalViews: analytics.totalViews || analytics.viewCount || analytics.views || 0,
         uniqueViews: analytics.uniqueViews || 0
       };
     } catch (error) {

@@ -10,6 +10,7 @@ import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
+import { FeedbackWidget } from '@/components/blog/feedback';
 
 type TPostPageProps = {
   params: Promise<{
@@ -46,18 +47,18 @@ export async function generateMetadata(props: TPostPageProps): Promise<Metadata>
     alternates: {
       canonical: canonicalUrl,
     },
-    openGraph: {
-      title: post.seo?.title || post.title,
-      description: post.seo?.description || post.excerpt,
-      url: canonicalUrl,
-      siteName: 'Remco Stoeten',
-      locale: 'en_US',
-      type: 'article',
-      publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt || post.publishedAt,
-      authors: [post.author || 'Remco Stoeten'],
-      tags: post.tags,
-    },
+      openGraph: {
+        title: post.seo?.title || post.title,
+        description: post.seo?.description || post.excerpt,
+        url: canonicalUrl,
+        siteName: 'Remco Stoeten',
+        locale: 'en_US',
+        type: 'article',
+        publishedTime: post.publishedAt,
+        modifiedTime: post.publishedAt,
+        authors: [post.author || 'Remco Stoeten'],
+        tags: post.tags,
+      },
     twitter: {
       card: 'summary_large_image',
       title: post.seo?.title || post.title,
@@ -109,9 +110,9 @@ export default async function PostPage(props: TPostPageProps) {
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
-    image: post.coverImage || 'https://remcostoeten.nl/og-image.png',
+    image: 'https://remcostoeten.nl/og-image.png',
     datePublished: post.publishedAt,
-    dateModified: post.updatedAt || post.publishedAt,
+    dateModified: post.publishedAt,
     author: {
       '@type': 'Person',
       name: post.author || 'Remco Stoeten',
@@ -128,7 +129,7 @@ export default async function PostPage(props: TPostPageProps) {
     },
     keywords: post.tags.join(', '),
     articleSection: post.category,
-    wordCount: post.content?.split(/\s+/).length || 0,
+    wordCount: content?.split(/\s+/).length || 0,
     timeRequired: `PT${post.readTime}M`,
   };
 
@@ -159,6 +160,7 @@ export default async function PostPage(props: TPostPageProps) {
         <article
           itemScope
           itemType="https://schema.org/BlogPosting"
+          className="font-noto"
         >
           <header itemProp="headline">
             <div className="flex items-center text-sm text-muted-foreground mb-4">
@@ -203,6 +205,9 @@ export default async function PostPage(props: TPostPageProps) {
           </div>
         </article>
       </TOCLayoutRedesign>
+
+      {/* Feedback Widget */}
+      <FeedbackWidget slug={params.slug} />
     </div>
     </>
   );
