@@ -10,6 +10,19 @@ import { AnimatedTimestamp } from "./animated-timestamp";
 import type { TSpotifyData } from "./types";
 
 export const SpotifyIntegration = memo(function SpotifyIntegration() {
+  const STAGGER_DURATION = 0.6;
+  const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+  const DELAY_STEP = 0.03;
+
+  function buildTransition(order: number) {
+    return {
+      duration: STAGGER_DURATION,
+      delay: order * DELAY_STEP,
+      ease: STAGGER_EASE,
+      filter: { duration: 0.3 }
+    };
+  }
+
   const [spotifyData, setSpotifyData] = useState<TSpotifyData>({
     tracks: [],
     currentTrack: null,
@@ -116,13 +129,9 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
   if (loading) {
     return (
       <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: 0.6,
-          delay: 0.8,
-          ease: [0.16, 1, 0.3, 1]
-        }}
+        initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        transition={buildTransition(0)}
         className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
         aria-labelledby="spotify-heading"
       >
@@ -146,13 +155,9 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
   if (error || !currentTrack) {
     return (
       <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: 0.6,
-          delay: 0.8,
-          ease: [0.16, 1, 0.3, 1]
-        }}
+        initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        transition={buildTransition(0)}
         className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
         aria-labelledby="spotify-heading"
       >
@@ -172,13 +177,9 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.6,
-        delay: 0.8,
-        ease: [0.16, 1, 0.3, 1]
-      }}
+      initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      transition={buildTransition(0)}
       className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -210,11 +211,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                   initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.16, 1, 0.3, 1],
-                    filter: { duration: 0.3 }
-                  }}
+                  transition={buildTransition(0)}
                 >
                   <a
                     href={currentTrack.external_url}
@@ -235,12 +232,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                   initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.03,
-                    ease: [0.16, 1, 0.3, 1],
-                    filter: { duration: 0.3 }
-                  }}
+                  transition={buildTransition(1)}
                 >
                   <span title={currentTrack.artist}>
                     {currentTrack.artist}
@@ -261,12 +253,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                       initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                       exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-                      transition={{
-                        duration: 0.6,
-                        delay: 0.06,
-                        ease: [0.16, 1, 0.3, 1],
-                        filter: { duration: 0.3 }
-                      }}
+                      transition={buildTransition(2)}
                     >
                       <span title={currentTrack.album}>
                         {currentTrack.album}
@@ -283,12 +270,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                     initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-                    transition={{
-                      duration: 0.6,
-                      delay: 0.09,
-                      ease: [0.16, 1, 0.3, 1],
-                      filter: { duration: 0.3 }
-                    }}
+                    transition={buildTransition(3)}
                   >
                     (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={150} />)
                   </motion.span>
@@ -307,9 +289,9 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                 exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
                 transition={{
-                  duration: 0.5,
-                  delay: 0.2,
-                  ease: [0.16, 1, 0.3, 1],
+                  duration: STAGGER_DURATION,
+                  delay: 4 * DELAY_STEP,
+                  ease: STAGGER_EASE,
                   filter: { duration: 0.3 }
                 }}
               >

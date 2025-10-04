@@ -110,19 +110,72 @@
   }
 }
 
+/* Project card transitions with masonry effect */
+::view-transition-old(project-*),
+::view-transition-new(project-*) {
+  animation-duration: 0.35s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+::view-transition-old(project-*) {
+  animation-name: project-fade-out;
+}
+
+::view-transition-new(project-*) {
+  animation-name: project-fade-in;
+}
+
+@keyframes project-fade-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+}
+
+@keyframes project-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Staggered animation for project cards */
+@keyframes stagger-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root),
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-old(project-*),
+  ::view-transition-new(project-*) {
     animation-duration: 0.1s;
     animation-timing-function: ease;
   }
   
-  ::view-transition-old(root) {
+  ::view-transition-old(root),
+  ::view-transition-old(project-*) {
     animation-name: fade-out;
   }
   
-  ::view-transition-new(root) {
+  ::view-transition-new(root),
+  ::view-transition-new(project-*) {
     animation-name: fade-in;
   }
 }

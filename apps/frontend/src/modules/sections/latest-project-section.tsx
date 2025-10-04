@@ -1,7 +1,7 @@
 "use client"
 
 import { Folder, Star, GitBranch, Calendar, ExternalLink, Filter, X } from "lucide-react"
-import { useEffect, useState, useReducer } from "react"
+import { useEffect, useState, useReducer, useRef } from "react"
 import { fetchSpecificFeaturedProjects, type RepoData } from "@/services/github-service"
 import { 
   projectFilterReducer, 
@@ -14,6 +14,8 @@ export const LatestProjectSection = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [filterState, dispatch] = useReducer(projectFilterReducer, initialProjectFilterState)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const previousCategoryRef = useRef('All')
   
   const availableCategories = [
     'All',
@@ -28,6 +30,42 @@ export const LatestProjectSection = () => {
     'Developer Tools',
     'DevOps'
   ]
+
+  function handleCategoryChange(category: string) {
+    if (category === filterState.currentCategory) return
+    
+    setIsTransitioning(true)
+    previousCategoryRef.current = filterState.currentCategory
+    
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        dispatch({ type: 'SET_CATEGORY', payload: category })
+      }).finished.then(() => {
+        setIsTransitioning(false)
+      })
+    } else {
+      dispatch({ type: 'SET_CATEGORY', payload: category })
+      setTimeout(() => setIsTransitioning(false), 300)
+    }
+  }
+
+  function handleReset() {
+    if (filterState.currentCategory === 'All') return
+    
+    setIsTransitioning(true)
+    previousCategoryRef.current = filterState.currentCategory
+    
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        dispatch({ type: 'RESET' })
+      }).finished.then(() => {
+        setIsTransitioning(false)
+      })
+    } else {
+      dispatch({ type: 'RESET' })
+      setTimeout(() => setIsTransitioning(false), 300)
+    }
+  }
 
   useEffect(() => {
     const loadFeaturedProjects = async () => {
@@ -92,7 +130,7 @@ export const LatestProjectSection = () => {
           <span className="text-sm font-medium text-muted-foreground">Filter by technology</span>
           {filterState.currentCategory !== 'All' && (
             <button
-              onClick={() => dispatch({ type: 'RESET' })}
+              onClick={handleReset}
               className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-accent/20 text-accent rounded-full hover:bg-accent/30 transition-colors"
             >
               <X className="w-3 h-3" />
@@ -115,12 +153,13 @@ export const LatestProjectSection = () => {
             return (
               <button
                 key={category}
-                onClick={() => dispatch({ type: 'SET_CATEGORY', payload: category })}
+                onClick={() => handleCategoryChange(category)}
+                disabled={isTransitioning}
                 className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                   isActive 
                     ? 'bg-accent text-accent-foreground shadow-sm' 
                     : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                }`}
+                } ${isTransitioning ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
                 {category}
                 <span className="text-xs opacity-75">({projectCount})</span>
@@ -166,14 +205,18 @@ export const LatestProjectSection = () => {
           </div>
         </div>
       ) : filterState.filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-          {filterState.filteredProjects.slice(0, 12).map((project) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
+          {filterState.filteredProjects.slice(0, 4).map((project, index) => (
             <a
               key={project.name}
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative bg-card border border-border/30 rounded-xl p-6 hover:border-accent/30 transition-all duration-300 block overflow-hidden"
+              style={{
+                viewTransitionName: `project-${project.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`,
+                animationDelay: `${index * 50}ms`
+              } as React.CSSProperties}
+              className="group relative bg-card border border-border/30 rounded-xl p-6 hover:border-accent/30 transition-all duration-300 block overflow-hidden animate-in fade-in slide-in-from-bottom-4"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               
@@ -239,7 +282,7 @@ export const LatestProjectSection = () => {
           </div>
           {filterState.currentCategory !== 'All' && (
             <button
-              onClick={() => dispatch({ type: 'RESET' })}
+              onClick={handleReset}
               className="mt-3 text-sm text-accent hover:text-accent/80 transition-colors"
             >
               View all projects
