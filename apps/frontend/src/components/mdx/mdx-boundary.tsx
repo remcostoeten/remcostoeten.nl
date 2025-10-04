@@ -64,7 +64,7 @@ export class MDXErrorBoundary extends React.Component<
     if (process.env.NODE_ENV === 'development') {
       console.error('MDX Component Error:', error, errorInfo);
     }
-    
+
     // In production, you might want to log to an error reporting service
     // logErrorToService(error, errorInfo);
   }
@@ -91,6 +91,6 @@ export function withMDXErrorBoundary<P extends object>(
   );
 
   WrappedComponent.displayName = `withMDXErrorBoundary(${Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 }

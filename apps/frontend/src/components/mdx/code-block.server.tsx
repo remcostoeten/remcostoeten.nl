@@ -40,6 +40,7 @@ interface ServerCodeBlockProps {
   className?: string;
   'data-language'?: string;
   'data-filename'?: string;
+  'data-max-height'?: string;
 }
 
 function getCodeContent(children: React.ReactNode): string {
@@ -89,7 +90,7 @@ function normalizeLanguage(lang: string): string {
   return langMap[lang.toLowerCase()] || lang.toLowerCase();
 }
 
-export function ServerCodeBlock({ children, className, 'data-language': dataLanguage, 'data-filename': dataFilename, ...props }: ServerCodeBlockProps) {
+export function ServerCodeBlock({ children, className, 'data-language': dataLanguage, 'data-filename': dataFilename, 'data-max-height': maxHeight, ...props }: ServerCodeBlockProps) {
   // Extract language from className or data-language
   const classLanguage = className?.match(/language-(\w+)/)?.[1];
   const rawLanguage = dataLanguage || classLanguage;
@@ -200,6 +201,10 @@ export function ServerCodeBlock({ children, className, 'data-language': dataLang
             "text-sm font-mono leading-relaxed",
             className
           )}
+          style={{
+            maxHeight: maxHeight || undefined,
+            overflowY: maxHeight ? 'auto' : undefined,
+          }}
           {...props}
         >
           <code

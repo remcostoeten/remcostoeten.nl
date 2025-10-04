@@ -29,14 +29,15 @@ const nextConfig = {
   },
 };
 
-// Temporarily disable MDX to fix build issues
-// const withMDX = require('@next/mdx')({
-//   extension: /\.mdx?$/,
-//   options: {
-//     remarkPlugins: [require('remark-gfm')],
-//     rehypePlugins: [require('rehype-highlight')],
-//   },
-// });
+const withMDX = require('@next/mdx')({
+  extension: /\.mdx?$/,
+  options: {
+    remarkPlugins: [require('remark-gfm')],
+    rehypePlugins: [
+      require('rehype-highlight'),
+      require('./src/lib/mdx/rehype-code-height.js'),
+    ],
+  },
+});
 
-// module.exports = withMDX(nextConfig);
-module.exports = nextConfig;
+module.exports = withMDX(nextConfig);

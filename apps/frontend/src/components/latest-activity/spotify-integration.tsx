@@ -6,7 +6,7 @@ import { Music, Play } from "lucide-react";
 import { getCurrentOrRecentMusic, getRecentMusicTracks, type SpotifyTrack, type SpotifyRecentTrack } from "@/services/spotify-service";
 import { formatTimestamp } from "./utils";
 import { SpotifyHoverCard } from "./spotify-hover-card";
-import { AnimatedTimestamp } from "./animated-timestamp";
+import { AnimatedTimestamp } from "../../shared/components/animated-numbers";
 import type { TSpotifyData } from "./types";
 
 export const SpotifyIntegration = memo(function SpotifyIntegration() {
@@ -132,7 +132,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
         initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={buildTransition(0)}
-        className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
+        className="flex items-center gap-3 mt-4 pt-4 border-t border-border/30 overflow-hidden"
         aria-labelledby="spotify-heading"
       >
         <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
@@ -140,10 +140,10 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
           <Music className="w-4 h-4 text-green-500 animate-pulse" aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-body text-muted-foreground leading-tight h-5 flex items-center">
+          <div className="text-body text-muted-foreground leading-relaxed h-5 flex items-center">
             <div className="h-4 bg-muted/60 rounded-md w-full max-w-[200px] xs:max-w-[250px] animate-pulse"></div>
           </div>
-          <div className="text-sm text-muted-foreground leading-tight h-4 flex items-center mt-1">
+          <div className="text-sm text-muted-foreground leading-relaxed h-4 flex items-center mt-1">
             <div className="h-3 bg-muted/40 rounded-md w-full max-w-[120px] xs:max-w-[150px] animate-pulse"></div>
           </div>
         </div>
@@ -158,14 +158,14 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
         initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={buildTransition(0)}
-        className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
+        className="flex items-center gap-3 mt-4 pt-4 border-t border-border/30 overflow-hidden"
         aria-labelledby="spotify-heading"
       >
         <h3 id="spotify-heading" className="sr-only">Music Activity</h3>
         <div className="p-1.5 bg-muted/50 rounded-lg flex-shrink-0">
           <Music className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
         </div>
-        <div className="text-body text-muted-foreground h-5 flex items-center">
+        <div className="text-body text-muted-foreground leading-relaxed h-5 flex items-center">
           No music playing right now
         </div>
       </motion.section>
@@ -180,7 +180,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
       initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={buildTransition(0)}
-      className="flex items-center gap-2 xs:gap-3 mt-3 pt-3 border-t border-border/30 overflow-hidden"
+      className="flex items-center gap-3 mt-4 pt-4 border-t border-border/30 overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
@@ -200,7 +200,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
           {/* Text content - two lines like GitHub activity */}
           <div className="flex-1 min-w-0">
             {/* First line - track and artist */}
-            <div className="text-body text-muted-foreground leading-tight mb-1">
+            <div className="text-body text-muted-foreground leading-relaxed mb-2">
               <span className="flex-shrink-0">
                 {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
               </span>
@@ -242,7 +242,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
             </div>
 
             {/* Second line - album and timestamp */}
-            <div className="text-sm text-muted-foreground leading-tight">
+            <div className="text-sm text-muted-foreground leading-relaxed">
               {currentTrack.album && (
                 <>
                   <span className="flex-shrink-0">from</span>

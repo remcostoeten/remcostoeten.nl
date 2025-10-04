@@ -1,13 +1,14 @@
 "use client"
 
 import { Folder, Star, GitBranch, Calendar, ExternalLink, Filter, X } from "lucide-react"
+import { Link } from "@/shared/components/link"
 import { useEffect, useState, useReducer, useRef } from "react"
 import { fetchSpecificFeaturedProjects, type RepoData } from "@/services/github-service"
-import { 
-  projectFilterReducer, 
-  initialProjectFilterState, 
+import {
+  projectFilterReducer,
+  initialProjectFilterState,
   getProjectTopics,
-  type SimpleProject 
+  type SimpleProject
 } from "@/reducers/project-filter-reducer"
 
 export const LatestProjectSection = () => {
@@ -16,27 +17,20 @@ export const LatestProjectSection = () => {
   const [filterState, dispatch] = useReducer(projectFilterReducer, initialProjectFilterState)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const previousCategoryRef = useRef('All')
-  
+
   const availableCategories = [
     'All',
-    'Next.js',
-    'TypeScript', 
-    'Authentication',
-    'Database',
-    'CLI Tools',
-    'Productivity',
-    'UI Components',
-    'API & Analytics',
-    'Developer Tools',
-    'DevOps'
+    'APIs',
+    'Tooling',
+    'Projects'
   ]
 
   function handleCategoryChange(category: string) {
     if (category === filterState.currentCategory) return
-    
+
     setIsTransitioning(true)
     previousCategoryRef.current = filterState.currentCategory
-    
+
     if (document.startViewTransition) {
       document.startViewTransition(() => {
         dispatch({ type: 'SET_CATEGORY', payload: category })
@@ -51,10 +45,10 @@ export const LatestProjectSection = () => {
 
   function handleReset() {
     if (filterState.currentCategory === 'All') return
-    
+
     setIsTransitioning(true)
     previousCategoryRef.current = filterState.currentCategory
-    
+
     if (document.startViewTransition) {
       document.startViewTransition(() => {
         dispatch({ type: 'RESET' })
@@ -123,7 +117,7 @@ export const LatestProjectSection = () => {
         <h2 className="text-2xl font-semibold text-foreground">Featured Work</h2>
         <p className="text-sm text-muted-foreground mt-1">Recent projects and experiments</p>
       </div>
-      
+
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="w-4 h-4 text-muted-foreground" />
@@ -138,28 +132,27 @@ export const LatestProjectSection = () => {
             </button>
           )}
         </div>
-        
+
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {availableCategories.map((category) => {
             const isActive = filterState.currentCategory === category
-            const projectCount = category === 'All' 
+            const projectCount = category === 'All'
               ? filterState.allProjects.length
-              : filterState.allProjects.filter(project => 
-                  getProjectTopics(project.name).includes(category)
-                ).length
-            
+              : filterState.allProjects.filter(project =>
+                getProjectTopics(project.name).includes(category)
+              ).length
+
             if (category !== 'All' && projectCount === 0) return null
-            
+
             return (
               <button
                 key={category}
                 onClick={() => handleCategoryChange(category)}
                 disabled={isTransitioning}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-accent text-accent-foreground shadow-sm' 
-                    : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                } ${isTransitioning ? 'opacity-60 cursor-not-allowed' : ''}`}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 ${isActive
+                  ? 'bg-accent text-accent-foreground shadow-sm'
+                  : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                  } ${isTransitioning ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
                 {category}
                 <span className="text-xs opacity-75">({projectCount})</span>
@@ -219,7 +212,7 @@ export const LatestProjectSection = () => {
               className="group relative bg-card border border-border/30 rounded-xl p-6 hover:border-accent/30 transition-all duration-300 block overflow-hidden animate-in fade-in slide-in-from-bottom-4"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
+
               <div className="relative">
                 <div className="flex items-start justify-between mb-4">
                   <h3 className="font-semibold text-lg text-foreground group-hover:text-accent transition-colors duration-200 pr-2">
@@ -275,36 +268,36 @@ export const LatestProjectSection = () => {
       ) : (
         <div className="bg-muted/30 border border-border/50 rounded-lg p-8 text-center mb-6">
           <div className="text-sm text-muted-foreground">
-            {filterState.currentCategory === 'All' 
-              ? 'No projects available' 
+            {filterState.currentCategory === 'All'
+              ? 'No projects available'
               : `No projects found for "${filterState.currentCategory}"`
             }
           </div>
           {filterState.currentCategory !== 'All' && (
-            <button
-              onClick={handleReset}
-              className="mt-3 text-sm text-accent hover:text-accent/80 transition-colors"
+            <Link
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleReset();
+              }}
+              variant="accent"
+              className="mt-3"
             >
               View all projects
-            </button>
+            </Link>
           )}
         </div>
       )}
 
       <div className="flex items-center justify-between">
-        <a
+        <Link
           href="https://github.com/remcostoeten"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-accent transition-colors duration-200"
+          variant="underline"
+          showExternalIcon
         >
-          <span className="relative">
-            View all projects
-            <span className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-accent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          </span>
-          <ExternalLink className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </a>
-        
+          View all projects
+        </Link>
+
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <GitBranch className="w-3.5 h-3.5" />
           <span>

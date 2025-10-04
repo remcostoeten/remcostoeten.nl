@@ -69,7 +69,7 @@ export function LatestActivity() {
 
   return (
     <section
-      className="p-3 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden min-h-[140px] xs:min-h-[120px]"
+      className="p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden min-h-[140px] xs:min-h-[120px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       aria-labelledby="latest-activity-heading"
@@ -77,7 +77,7 @@ export function LatestActivity() {
     >
       <h2 id="latest-activity-heading" className="sr-only">Latest Development Activity</h2>
 
-      <div className="flex items-start gap-2 xs:gap-3 mb-3">
+      <div className="flex items-start gap-3 mb-4">
         <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0" aria-hidden="true">
           <GitCommit className="w-4 h-4 text-accent" />
         </div>

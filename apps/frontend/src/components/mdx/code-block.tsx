@@ -61,6 +61,7 @@ type Props = {
     children: React.ReactNode;
     className?: string;
     'data-language'?: string;
+    'data-max-height'?: string;
     filename?: string;
     showLineNumbers?: boolean;
     highlightLines?: number[];
@@ -71,6 +72,7 @@ export function CodeBlock({
     children,
     className,
     'data-language': language,
+    'data-max-height': maxHeight,
     filename,
     showLineNumbers = false,
     highlightLines = [],
@@ -257,6 +259,10 @@ export function CodeBlock({
                         shouldShowLineNumbers ? "pl-0" : "p-4",
                         className
                     )}
+                    style={{
+                        maxHeight: maxHeight || undefined,
+                        overflowY: maxHeight ? 'auto' : undefined,
+                    }}
                     {...props}
                 >
                     <div className={cn("flex", shouldShowLineNumbers && "min-h-full")}>

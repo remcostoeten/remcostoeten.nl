@@ -12,48 +12,105 @@ Animations are hard. Bezier curves are hard. Luckily for use, librarys like moti
 In essence a dead simple api
 ```tsx
 import NumberFlow from '@number-flow/react'
+
 <NumberFlow value={123} />
 ```
+Which will give you this result:
 
-Numbers. They're everywhere in web apps – counters, statistics, prices, percentages. But plain old numbers are boring. They sit there, static and lifeless, until you refresh the page.
+<AnimatedNumberDemo />
+It's an excelent [package](https://github.com/barvian/number-flow) which does provide more than enough options in the api for most usecases. Althrough, getting it to work with your own non-dummy data can be frustrating.
 
-What if numbers could dance? What if they could smoothly transition from one value to another, respecting user preferences, and work across all devices? That's exactly what I built.
+Since my second name is "_abstraction_", I obviously opted for a abstraction around the package which solves some small things and makes my life, and who knows yours easier. My version: 
 
-## The Problem
+We'll get into real usecases latter.<small>Source can be seen [](https://github.com/remcostoeten/remcostoeten.nl/tree/master/apps/frontend/src/shared/components/animated-numbers.tsx)here.</small>
 
-Most animated number libraries are either:
-- Heavy and bloated with features you don't need
-- Not accessible (flashing numbers everywhere)
-- Hard to customize for different formats
-- Don't respect user motion preferences
 
-I wanted something lightweight, accessible, and flexible. Enter my `AnimatedNumber` component.
 
-## The Solution
-
-Built on top of [NumberFlow](https://number-flow.github.io/number-flow/), this component provides:
+## Usage Examples
 
 ```tsx
 import { AnimatedNumber } from '@/components/ui/animated-number'
 
+// Basic counter
 <AnimatedNumber value={counter} />
-// That's it! Smooth animation from 0 to your counter value
 
+// Currency formatting
 <AnimatedNumber value={9999.99} format="currency" decimals={2} />
-// €9,999.99 with smooth transitions
 
+// Percentage display
 <AnimatedNumber value={0.75} format="percentage" decimals={1} />
-// 75.0% with proper formatting
+
+// With dramatic reveal effect
+<AnimatedNumber
+  value={5000}
+  randomStart={true}
+  randomRange={2000}
+/>
+
+## Code Block Height Limiting
+
+You can now limit the height of code blocks in MDX using these syntaxes:
+
+### Syntax 1: Language with height
+```tsx 300px
+// This code block will have a maximum height of 300px
+// and will scroll if the content is longer
+
+function MyComponent() {
+  return (
+    <div>
+      <h1>Hello World</h1>
+      <p>This is a very long component with lots of content...</p>
+      <p>More content here...</p>
+      <p>Even more content...</p>
+      <p>And even more...</p>
+      <p>This keeps going...</p>
+      <p>Until it exceeds 300px...</p>
+    </div>
+  );
+}
+```
+
+### Syntax 2: Language with max=height
+```typescript max=400px
+// This TypeScript code block will be limited to 400px height
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  preferences: {
+    theme: 'light' | 'dark';
+    notifications: boolean;
+    language: string;
+  };
+}
+
+class UserService {
+  private users: User[] = [];
+
+  async getUser(id: number): Promise<User | null> {
+    return this.users.find(user => user.id === id) || null;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User | null> {
+    const userIndex = this.users.findIndex(user => user.id === id);
+    if (userIndex === -1) return null;
+
+    this.users[userIndex] = { ...this.users[userIndex], ...updates };
+    return this.users[userIndex];
+  }
+}
+```
+```
 ```
 
 ## Features That Matter
 
 ### Motion Preferences
-```tsx
+```ts
 <AnimatedNumber
   value={42}
-  respectMotionPreference={true} // Respects user's reduced motion setting
-/>
+  />
 ```
 
 No more seizure-inducing animations for users who need reduced motion. The component automatically detects and respects the user's accessibility preferences.

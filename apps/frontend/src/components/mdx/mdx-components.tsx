@@ -126,7 +126,7 @@ export const mdxComponents: MDXComponents = {
       </code>
     );
   },
-  pre: ({ children, className, ...props }) => {
+  pre: ({ children, className, 'data-max-height': maxHeight, ...props }) => {
     // Fallback for pre without language
     return (
       <pre
@@ -134,6 +134,10 @@ export const mdxComponents: MDXComponents = {
           "mb-4 mt-6 overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm",
           className
         )}
+        style={{
+          maxHeight: maxHeight || undefined,
+          overflowY: maxHeight ? 'auto' : undefined,
+        }}
         {...props}
       >
         {children}

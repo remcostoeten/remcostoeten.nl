@@ -31,48 +31,19 @@ function getProjectTopics(projectName: string): string[] {
   const topics: string[] = []
   const name = projectName.toLowerCase()
 
-  if (name.includes('next') || name.includes('react') || name.includes('jsx')) {
-    topics.push('Next.js')
-  }
-  
-  if (name.includes('ts') || name.includes('type') || name.includes('typescript')) {
-    topics.push('TypeScript')
-  }
-  
-  if (name.includes('auth') || name.includes('authentication') || name.includes('login')) {
-    topics.push('Authentication')
-  }
-  
-  if (name.includes('db') || name.includes('database') || name.includes('drizzle') || name.includes('turso')) {
-    topics.push('Database')
-  }
-  
-  if (name.includes('cli') || name.includes('select') || name.includes('gh-') || name.includes('dotfiles')) {
-    topics.push('CLI Tools')
-  }
-  
-  if (name.includes('calendar') || name.includes('expense') || name.includes('tracker')) {
-    topics.push('Productivity')
-  }
-  
-  if (name.includes('widget') || name.includes('component') || name.includes('ui')) {
-    topics.push('UI Components')
-  }
-  
-  if (name.includes('api') || name.includes('analytics') || name.includes('hono')) {
-    topics.push('API & Analytics')
-  }
-  
-  if (name.includes('file') || name.includes('tree') || name.includes('code') && name.includes('block')) {
-    topics.push('Developer Tools')
-  }
-  
-  if (name.includes('docker') || name.includes('dock')) {
-    topics.push('DevOps')
+  // Map to the three main categories: APIs, Tooling, and Projects
+  if (name.includes('api') || name.includes('hono') || name.includes('endpoint') || name.includes('server')) {
+    topics.push('APIs')
   }
 
+  if (name.includes('cli') || name.includes('tool') || name.includes('utility') || name.includes('script') ||
+      name.includes('generator') || name.includes('builder') || name.includes('crud') || name.includes('devtool')) {
+    topics.push('Tooling')
+  }
+
+  // If it's not APIs or Tooling, categorize as Projects (most common case)
   if (topics.length === 0) {
-    topics.push('Web Development')
+    topics.push('Projects')
   }
 
   return topics

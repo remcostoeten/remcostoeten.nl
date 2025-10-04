@@ -1,6 +1,27 @@
 import { TProjectData, TSimpleProject } from "../types";
 import { fetchTargetRepositories } from "@/services/github-service";
 
+// Project overrides - allows customizing project data while using GitHub as defaults
+interface TProjectOverrides {
+  [key: string]: {
+    title?: string;
+    description?: string;
+    demoUrl?: string;
+    technologies?: string[];
+    highlights?: string[];
+  };
+}
+
+const PROJECT_OVERRIDES: TProjectOverrides = {
+  // Example overrides - customize as needed
+  // "remcostoeten.nl": {
+  //   title: "Personal Portfolio",
+  //   description: "A modern portfolio showcasing my work and skills",
+  //   technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
+  //   highlights: ["Responsive design", "Modern animations", "SEO optimized"]
+  // }
+};
+
 
 function getTechnologies(language: string, topics: string[]): string[] {
   const technologies: string[] = [];
@@ -68,28 +89,36 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
         repo.topics.length > 2; // Well-tagged projects are featured
 
       if (isFeatured) {
-        // Add to featured projects with dynamic title
-        const title = repo.title;
+        // Use overrides if available, otherwise use GitHub data as defaults
+        const override = PROJECT_OVERRIDES[repo.title];
+        const title = override?.title || repo.title;
+        const description = override?.description || repo.description || `A ${repo.language} project with ${repo.stars} stars`;
+        const demoUrl = override?.demoUrl || (repo.topics.includes('demo') ? `${repo.url}#demo` : repo.url);
 
         featuredProjects.push({
           title,
-          description: repo.description || `A ${repo.language} project with ${repo.stars} stars`,
+          description,
           url: repo.url,
-          demoUrl: repo.topics.includes('demo') ? `${repo.url}#demo` : repo.url,
+          demoUrl,
           stars: repo.stars,
           forks: repo.forks,
           branches: repo.branches || 1,
-          technologies,
+          technologies: override?.technologies || technologies,
           lastUpdated: repo.lastUpdated,
-          highlights,
+          highlights: override?.highlights || highlights,
           language: repo.language,
           contributors: repo.contributors || 1,
           totalCommits: repo.totalCommits || 0,
           startDate: repo.startDate
         });
       } else {
+        // Use overrides if available, otherwise use GitHub data as defaults
+        const override = PROJECT_OVERRIDES[repo.title];
+        const name = override?.title || repo.title;
+        const description = override?.description || repo.description || `A ${repo.language} project`;
+
         simpleProjects.push({
-          name: repo.title,
+          name,
           url: repo.url,
           gitInfo: {
             stars: repo.stars,
@@ -97,7 +126,7 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
             lastCommit: repo.lastUpdated,
             language: repo.language,
             contributors: repo.contributors || 1,
-            description: repo.description || `A ${repo.language} project`
+            description
           }
         });
       }

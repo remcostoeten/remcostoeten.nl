@@ -11,7 +11,6 @@ interface AnimatedTimestampProps {
 export function AnimatedTimestamp({ timestamp, delay = 0 }: AnimatedTimestampProps) {
   const [displayValue, setDisplayValue] = useState<number>(0);
 
-  // Parse the timestamp to extract number and unit
   const parseTimestamp = (ts: string) => {
     const match = ts.match(/^(\d+)\s+(minute|hour|day)s?\s+ago$/);
     if (match) {
@@ -30,13 +29,10 @@ export function AnimatedTimestamp({ timestamp, delay = 0 }: AnimatedTimestampPro
     if (!parsed) return;
 
     const targetValue = parsed.number;
-    
-    // Start with the target value initially (no animation yet)
+
     setDisplayValue(targetValue);
 
-    // After the initial delay, start the spin animation
     const initialTimer = setTimeout(() => {
-      // Start with a random value for the spin effect
       const randomStart = Math.floor(Math.random() * 50) + 10;
       setDisplayValue(randomStart);
 
@@ -52,22 +48,17 @@ export function AnimatedTimestamp({ timestamp, delay = 0 }: AnimatedTimestampPro
   }, [timestamp, parsed?.number, delay]);
 
   if (!parsed) {
-    // For timestamps like "just now" or dates, return as-is
     return <>{timestamp}</>;
   }
 
-  // Dynamic width based on number of digits
-  const widthClass = parsed.number < 10 ? "w-2" : "w-3";
-
   return (
-    <>
-      <span className={`inline-block ${widthClass} text-right`}>
+    <span className="inline-flex items-baseline gap-0.5">
+      <span className="inline-block text-right">
         <NumberFlow value={displayValue} />
       </span>
-      {" "}
-      {parsed.unit}
-      {parsed.isPlural ? "s" : ""}
-      {" ago"}
-    </>
+      <span>
+        {parsed.unit}{parsed.isPlural ? "s" : ""} ago
+      </span>
+    </span>
   );
 }

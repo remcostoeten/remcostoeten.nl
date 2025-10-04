@@ -7,6 +7,7 @@ import { EnhancedTable } from './enhanced-table';
 import { generateHeadingId, sanitizeHeadingText } from '@/lib/blog/toc-utils';
 import { Callout } from './callout';
 import { InlineCode } from './code-block';
+import { AnimatedNumberDemo } from '@/components/blog/animated-number-demo';
 
 export const mdxComponents: MDXComponents = {
   h1: ({ children, className, id, ...props }) => {
@@ -125,7 +126,7 @@ export const mdxComponents: MDXComponents = {
       </code>
     );
   },
-  pre: ({ children, className, ...props }) => {
+  pre: ({ children, className, 'data-max-height': maxHeight, ...props }) => {
     // Always use ServerCodeBlock for better syntax highlighting
     // Extract language from children if available
     let language = null;
@@ -148,6 +149,7 @@ export const mdxComponents: MDXComponents = {
         <ServerCodeBlock
           className={className}
           data-language={language}
+          data-max-height={maxHeight}
           {...props}
         >
           {children}
@@ -159,6 +161,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <ServerCodeBlock
         className={className}
+        data-max-height={maxHeight}
         {...props}
       >
         {children}
@@ -277,4 +280,5 @@ export const mdxComponents: MDXComponents = {
   Callout,
   ImageWithCaption,
   EnhancedTable,
+  AnimatedNumberDemo,
 };

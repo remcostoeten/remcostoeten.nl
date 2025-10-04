@@ -139,15 +139,6 @@ export function ProjectsSection() {
           aria-live="polite"
           aria-atomic="true"
         >
-          {state.loadingState === 'loading' && (
-            <span className="animate-pulse" aria-label="Loading projects">
-              <span className="inline-block bg-muted/60 rounded w-24 h-4 align-middle animate-pulse"></span>
-              {" "}and{" "}
-              <span className="inline-block bg-muted/60 rounded w-16 h-4 align-middle animate-pulse"></span>
-              . Additional projects are on GitHub ↗.
-            </span>
-          )}
-
           {state.loadingState === 'error' && (
             <span className="text-muted-foreground">
               Failed to load project data from GitHub API.{" "}
