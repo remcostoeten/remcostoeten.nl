@@ -131,10 +131,10 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
           <Music className="w-4 h-4 text-green-500 animate-pulse" aria-hidden="true" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-sm text-muted-foreground leading-tight h-5 flex items-center">
+          <div className="text-body text-muted-foreground leading-tight h-5 flex items-center">
             <div className="h-4 bg-muted/60 rounded-md w-full max-w-[200px] xs:max-w-[250px] animate-pulse"></div>
           </div>
-          <div className="text-xs text-muted-foreground leading-tight h-4 flex items-center mt-1">
+          <div className="text-sm text-muted-foreground leading-tight h-4 flex items-center mt-1">
             <div className="h-3 bg-muted/40 rounded-md w-full max-w-[120px] xs:max-w-[150px] animate-pulse"></div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
         <div className="p-1.5 bg-muted/50 rounded-lg flex-shrink-0">
           <Music className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
         </div>
-        <div className="text-sm text-muted-foreground h-5 flex items-center">
+        <div className="text-body text-muted-foreground h-5 flex items-center">
           No music playing right now
         </div>
       </motion.section>
@@ -199,7 +199,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
         <div className="flex items-center gap-3">
           {/* Text content */}
           <div className="flex-1 min-w-0">
-            <div className="text-sm text-muted-foreground leading-tight">
+            <div className="text-body text-muted-foreground leading-tight">
               <span className="flex-shrink-0">
                 {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
               </span>
@@ -280,7 +280,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
               <AnimatePresence mode="wait">
                 <motion.span
                   key={`timestamp-${currentTrackIndex}`}
-                  className="text-[10px] text-muted-foreground"
+                  className="text-sm text-muted-foreground"
                   initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
