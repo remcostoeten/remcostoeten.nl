@@ -195,11 +195,11 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
       </div>
 
       <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
-        {/* Main content area - single row layout */}
-        <div className="flex items-center gap-3">
-          {/* Text content */}
+        <div className="flex items-start gap-3">
+          {/* Text content - two lines like GitHub activity */}
           <div className="flex-1 min-w-0">
-            <div className="text-body text-muted-foreground leading-tight">
+            {/* First line - track and artist */}
+            <div className="text-body text-muted-foreground leading-tight mb-1">
               <span className="flex-shrink-0">
                 {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
               </span>
@@ -247,13 +247,17 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                   </span>
                 </motion.span>
               </AnimatePresence>
+            </div>
+
+            {/* Second line - album and timestamp */}
+            <div className="text-sm text-muted-foreground leading-tight">
               {currentTrack.album && (
                 <>
-                  <span className="flex-shrink-0"> from </span>
+                  <span className="flex-shrink-0">from</span>
                   <AnimatePresence mode="wait">
                     <motion.span
                       key={`album-${currentTrackIndex}`}
-                      className="inline-block italic"
+                      className="inline-block ml-1 italic"
                       initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
                       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                       exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
@@ -271,56 +275,53 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
                   </AnimatePresence>
                 </>
               )}
+              {isRecentTrack && (
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={`timestamp-${currentTrackIndex}`}
+                    className="inline-block ml-2 text-muted-foreground"
+                    initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
+                    transition={{
+                      duration: 0.6,
+                      delay: 0.09,
+                      ease: [0.16, 1, 0.3, 1],
+                      filter: { duration: 0.3 }
+                    }}
+                  >
+                    (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={150} />)
+                  </motion.span>
+                </AnimatePresence>
+              )}
             </div>
           </div>
 
-          {/* Right side - timestamp and album cover */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {isRecentTrack && (
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={`timestamp-${currentTrackIndex}`}
-                  className="text-sm text-muted-foreground"
-                  initial={{ opacity: 0, y: 8, filter: "blur(1px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -8, filter: "blur(1px)" }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.09,
-                    ease: [0.16, 1, 0.3, 1],
-                    filter: { duration: 0.3 }
-                  }}
-                >
-                  (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={150} />)
-                </motion.span>
-              </AnimatePresence>
-            )}
-
-            {currentTrack.image_url && (
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={`image-${currentTrackIndex}`}
-                  className="w-10 h-10 rounded-lg overflow-hidden bg-muted/50"
-                  initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
-                  transition={{
-                    duration: 0.5,
-                    delay: 0.2,
-                    ease: [0.16, 1, 0.3, 1],
-                    filter: { duration: 0.3 }
-                  }}
-                >
-                  <img
-                    src={currentTrack.image_url}
-                    alt={`${currentTrack.album} album cover`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </motion.div>
-              </AnimatePresence>
-            )}
-          </div>
+          {/* Right side - album cover only */}
+          {currentTrack.image_url && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`image-${currentTrackIndex}`}
+                className="w-10 h-10 rounded-lg overflow-hidden bg-muted/50 flex-shrink-0"
+                initial={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                exit={{ opacity: 0, scale: 0.8, filter: "blur(2px)" }}
+                transition={{
+                  duration: 0.5,
+                  delay: 0.2,
+                  ease: [0.16, 1, 0.3, 1],
+                  filter: { duration: 0.3 }
+                }}
+              >
+                <img
+                  src={currentTrack.image_url}
+                  alt={`${currentTrack.album} album cover`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
       </div>
 
