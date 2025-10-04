@@ -12,6 +12,9 @@ import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
 import { FeedbackWidget } from '@/components/blog/feedback';
 
+// Force dynamic rendering to avoid React version conflicts during static generation
+export const dynamic = 'force-dynamic'
+
 type TPostPageProps = {
   params: Promise<{
     slug: string;

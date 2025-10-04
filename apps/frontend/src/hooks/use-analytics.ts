@@ -113,8 +113,18 @@ export function useAnalytics() {
   const visitorData = useMemo(() => getVisitorData(), []);
   const visitorId = useMemo(() => generateVisitorId(visitorData), [visitorData]);
   
-  // Cache for request deduplication
-  const requestCache = useRef(new Map<string, Promise<any>>());
+  // Cache for request deduplication - only initialize on client side
+  const requestCacheRef = useRef<Map<string, Promise<any>> | null>(null);
+  
+  // Lazy initialization of cache
+  const getRequestCache = () => {
+    if (typeof window === 'undefined') return null;
+    
+    if (!requestCacheRef.current) {
+      requestCacheRef.current = new Map<string, Promise<any>>();
+    }
+    return requestCacheRef.current;
+  };
 
   // General pageview tracking (for all pages)
   const trackPageview = useCallback(async (pageData?: Partial<TPageviewData>) => {
@@ -234,10 +244,11 @@ export function useAnalytics() {
   // Get combined analytics stats with caching
   const getAnalyticsStats = useCallback(async (): Promise<TAnalyticsStats | null> => {
     const cacheKey = 'analytics-stats';
+    const requestCache = getRequestCache();
     
-    // Check if we already have a pending request
-    if (requestCache.current.has(cacheKey)) {
-      return requestCache.current.get(cacheKey);
+    // Check if we already have a pending request (only on client side)
+    if (requestCache && requestCache.has(cacheKey)) {
+      return requestCache.get(cacheKey);
     }
     
     const request = (async () => {
@@ -260,13 +271,19 @@ export function useAnalytics() {
         return null;
       } finally {
         // Clear cache after request completes
-        requestCache.current.delete(cacheKey);
+        const cache = getRequestCache();
+        if (cache) {
+          cache.delete(cacheKey);
+        }
       }
     })();
     
-    requestCache.current.set(cacheKey, request);
+    const cache = getRequestCache();
+    if (cache) {
+      cache.set(cacheKey, request);
+    }
     return request;
-  }, [getPageviewStats, getVisitorStats]);
+  }, [getPageviewStats, getVisitorStats, getRequestCache]);
 
   // Auto-track page views with session deduplication
   const autoTrackPageview = useCallback(async () => {

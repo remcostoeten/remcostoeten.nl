@@ -10,6 +10,7 @@ import {
   getProjectTopics,
   type SimpleProject
 } from "@/reducers/project-filter-reducer"
+import { S } from "./serif"
 
 export const LatestProjectSection = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -20,9 +21,9 @@ export const LatestProjectSection = () => {
 
   const availableCategories = [
     'All',
-    'APIs',
-    'Tooling',
-    'Projects'
+    "API's",
+    'DX tooling',
+    'projects'
   ]
 
   function handleCategoryChange(category: string) {
@@ -109,13 +110,8 @@ export const LatestProjectSection = () => {
     <section className="py-12">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent rounded-full">
-            <Folder className="w-3.5 h-3.5" />
-            <span className="text-xs font-medium uppercase tracking-wider">Projects</span>
-          </div>
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">Featured Work</h2>
-        <p className="text-sm text-muted-foreground mt-1">Recent projects and experiments</p>
+        <p className="text-sm text-muted-foreground mt-1">This <S i>simple</S> personal site actally has resulted in <S i>A LOT</S> of custom packages, api's and allround experiments. If you are curious what I exactly build? <Link href='/blog/i-might-have-overengineerd'>Read it here</Link>.</p>
       </div>
 
       <div className="mb-8">

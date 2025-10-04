@@ -3,9 +3,10 @@ import type { Metadata } from 'next';
 import { Inter, Noto_Sans } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { AnalyticsTracker } from "@/components/analytics/analytics-tracker";
+import { ClientAnalyticsWrapper } from "@/components/analytics/client-analytics-wrapper";
 import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_api-environment-switcher";
 import { Analytics } from "@vercel/analytics/next";
+import { ClientOnlyWrapper } from "@/components/client-only-wrapper";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -173,12 +174,11 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://linkedin.com" />
       </head>
       <body className={`${inter.className} ${inter.variable} ${notoSans.variable} overflow-x-hidden`} suppressHydrationWarning>
-        <TooltipProvider delayDuration={0}>
-          <AnalyticsTracker />
-          {children}
-          <ApiEnvironmentSwitcher />
-          <ApiEnvironmentIndicator />
-        </TooltipProvider>
+        <ClientOnlyWrapper>
+          <TooltipProvider delayDuration={0}>
+            {children}
+          </TooltipProvider>
+        </ClientOnlyWrapper>
         <Analytics />
         <SpeedInsights />
       </body>

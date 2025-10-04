@@ -7,7 +7,7 @@ import { EnhancedTable } from './enhanced-table';
 import { generateHeadingId, sanitizeHeadingText } from '@/lib/blog/toc-utils';
 import { Callout } from './callout';
 import { InlineCode } from './code-block';
-import { AnimatedNumberDemo } from '@/components/blog/animated-number-demo';
+import { ClientAnimatedNumberDemo as AnimatedNumberDemo } from './client-animated-number-demo';
 
 export const mdxComponents: MDXComponents = {
   h1: ({ children, className, id, ...props }) => {

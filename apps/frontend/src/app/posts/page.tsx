@@ -5,6 +5,9 @@ import { BlogPostsClient } from "./blog-posts-client";
 import { BreadcrumbNavigation } from "@/components/blog/breadcrumb-navigation";
 import { BreadcrumbItem } from "@/lib/blog/breadcrumb-utils";
 
+// Force dynamic rendering to prevent SSR issues with client components
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Blog | Your Portfolio",

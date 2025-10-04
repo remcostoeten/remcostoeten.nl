@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+// Force dynamic rendering to prevent SSR issues
+export const dynamic = 'force-dynamic';
+
 export default function ContactPage() {
   return (
     <div className="space-y-8">

@@ -2,6 +2,9 @@ import Link from "next/link";
 import { BlogAnalyticsOverview } from "@/components/blog/blog-analytics-overview";
 import { RealAnalyticsOverview } from "@/modules/analytics/components/real-analytics-overview";
 
+// Force dynamic rendering to avoid SSR issues with analytics hooks
+export const dynamic = 'force-dynamic';
+
 export default async function AnalyticsPage() {
   return (
     <div className="space-y-8">
