@@ -15,19 +15,25 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Remco Stoeten - Software engineer',
-  description: 'Sharing thoughts and projects about web development, React, Next.js, and building useful tools.',
+  title: 'Remco Stoeten - Software Engineer | React & Next.js Developer',
+  description: 'Remco Stoeten is a software engineer specializing in React, Next.js, and TypeScript. Building modern web applications and sharing development insights. Portfolio, blog, and projects.',
   keywords: [
-    'frontend',
+    'Remco Stoeten',
+    'Stoeten',
+    'software engineer',
+    'React developer',
+    'Next.js developer',
+    'TypeScript',
+    'frontend engineer',
+    'web development',
     'React',
     'Next.js',
-    'TypeScript',
-    'web development',
-    'software engineer',
-    'projects',
-    'tools'
+    'JavaScript',
+    'full-stack developer',
+    'portfolio',
+    'blog'
   ],
-  authors: [{ name: 'Remco Stoeten' }],
+  authors: [{ name: 'Remco Stoeten', url: 'https://remcostoeten.nl' }],
   creator: 'Remco Stoeten',
   publisher: 'Remco Stoeten',
   formatDetection: {
@@ -37,15 +43,28 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://remcostoeten.nl'),
   openGraph: {
-    title: 'Remco Stoeten - Software engineer',
-    description: 'Sharing thoughts and projects about web development, React, Next.js, and building useful tools.',
-    type: 'website',
+    title: 'Remco Stoeten - Software Engineer | React & Next.js Developer',
+    description: 'Remco Stoeten is a software engineer specializing in React, Next.js, and TypeScript. Building modern web applications and sharing development insights.',
+    url: 'https://remcostoeten.nl',
+    siteName: 'Remco Stoeten',
+    type: 'profile',
     locale: 'en_US',
+    images: [
+      {
+        url: 'https://remcostoeten.nl/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Remco Stoeten - Software Engineer',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Remco Stoeten - Software engineer',
-    description: 'Sharing thoughts and projects about web development, React, Next.js, and building useful tools.',
+    title: 'Remco Stoeten - Software Engineer',
+    description: 'Software engineer specializing in React, Next.js, and TypeScript. Portfolio, blog, and projects.',
+    creator: '@remcostoeten',
+    site: '@remcostoeten',
+    images: ['https://remcostoeten.nl/og-image.png'],
   },
   robots: {
     index: true,
@@ -65,9 +84,73 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const personSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: 'Remco Stoeten',
+    url: 'https://remcostoeten.nl',
+    image: 'https://remcostoeten.nl/remco-stoeten.jpg',
+    jobTitle: 'Software Engineer',
+    description: 'Software engineer specializing in React, Next.js, TypeScript, and modern web development. Building useful tools and sharing knowledge.',
+    worksFor: {
+      '@type': 'Organization',
+      name: 'Independent',
+    },
+    knowsAbout: [
+      'React',
+      'Next.js',
+      'TypeScript',
+      'JavaScript',
+      'Frontend Development',
+      'Web Development',
+      'Software Engineering',
+      'UI/UX Development',
+    ],
+    sameAs: [
+      'https://github.com/remcostoeten',
+      'https://twitter.com/remcostoeten',
+      'https://linkedin.com/in/remcostoeten',
+    ],
+    alumniOf: {
+      '@type': 'EducationalOrganization',
+      name: 'Self-taught Developer',
+    },
+  };
+
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Remco Stoeten',
+    alternateName: 'Stoeten',
+    url: 'https://remcostoeten.nl',
+    description: 'Personal website and blog of Remco Stoeten, software engineer specializing in React and Next.js',
+    author: {
+      '@type': 'Person',
+      name: 'Remco Stoeten',
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://remcostoeten.nl/posts?search={search_term_string}',
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html lang="en" className="dark">
       <head>
+        {/* Structured Data for Knowledge Graph */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        
         {/* Preconnect to external domains for faster loading */}
         <link rel="preconnect" href="https://framerusercontent.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

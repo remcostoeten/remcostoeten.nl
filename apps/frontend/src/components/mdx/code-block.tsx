@@ -281,7 +281,6 @@ export function CodeBlock({
                             </div>
                         )}
 
-                        {/* Code content */}
                         <code
                             ref={codeRef}
                             className={cn(

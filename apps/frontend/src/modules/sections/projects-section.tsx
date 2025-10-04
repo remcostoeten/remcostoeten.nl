@@ -5,7 +5,8 @@ import { SOCIAL_LINKS } from "@/modules/contact";
 import { SimpleProjectCard } from "@/modules/projects/components/SimpleProjectCard";
 import { fetchFeaturedProjects } from "@/services/github-service";
 import { TSimpleProject } from "@/modules/projects/types";
-import { LatestActivity } from "@/components/latest-activity";
+import { LatestActivity } from '@/components/latest-activity';
+import { LatestActivitySkeleton } from '@/components/latest-activity-skeleton';
 
 type TLoadingState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -122,18 +123,6 @@ export function ProjectsSection() {
     loadFeaturedProjects();
   }, [loadFeaturedProjects]);
 
-  const projectText = useMemo(() => {
-    if (state.projects.length === 0) return null;
-
-    return state.projects.map((project, index) => (
-      <span key={project.name}>
-        <SimpleProjectCard {...project} />
-        {index < state.projects.length - 1 && (
-          index === state.projects.length - 2 ? " and " : ", "
-        )}
-      </span>
-    ));
-  }, [state.projects]);
 
   const retryButtonText = state.retryCount >= MAX_RETRIES ? 'Refresh Page' : 'Retry';
 

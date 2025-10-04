@@ -1,0 +1,210 @@
+---
+title: "Building an Animated Number Component"
+publishedAt: "04-10-2025"
+author: "Remco Stoeten"
+tags: ["React", "Animation", "UX", "Accessibility", "TypeScript"]
+category: "development"
+status: "published"
+---
+
+Numbers. They're everywhere in web apps – counters, statistics, prices, percentages. But plain old numbers are boring. They sit there, static and lifeless, until you refresh the page.
+
+What if numbers could dance? What if they could smoothly transition from one value to another, respecting user preferences, and work across all devices? That's exactly what I built.
+
+## The Problem
+
+Most animated number libraries are either:
+- Heavy and bloated with features you don't need
+- Not accessible (flashing numbers everywhere)
+- Hard to customize for different formats
+- Don't respect user motion preferences
+
+I wanted something lightweight, accessible, and flexible. Enter my `AnimatedNumber` component.
+
+## The Solution
+
+Built on top of [NumberFlow](https://number-flow.github.io/number-flow/), this component provides:
+
+```tsx
+import { AnimatedNumber } from '@/components/ui/animated-number'
+
+<AnimatedNumber value={counter} />
+// That's it! Smooth animation from 0 to your counter value
+
+<AnimatedNumber value={9999.99} format="currency" decimals={2} />
+// €9,999.99 with smooth transitions
+
+<AnimatedNumber value={0.75} format="percentage" decimals={1} />
+// 75.0% with proper formatting
+```
+
+## Features That Matter
+
+### Motion Preferences
+```tsx
+<AnimatedNumber
+  value={42}
+  respectMotionPreference={true} // Respects user's reduced motion setting
+/>
+```
+
+No more seizure-inducing animations for users who need reduced motion. The component automatically detects and respects the user's accessibility preferences.
+
+### Multiple Formats
+```tsx
+// Currency
+<AnimatedNumber value={2999.99} format="currency" decimals={2} />
+
+// Percentage
+<AnimatedNumber value={0.85} format="percentage" decimals={1} />
+
+// Custom decimal places
+<AnimatedNumber value={3.14159} format="decimal" decimals={3} />
+```
+
+### Dramatic Reveals
+```tsx
+<AnimatedNumber
+  value={5000}
+  randomStart={true}
+  randomRange={2000}
+/>
+// Starts at a random value between 3000-7000, then animates to 5000
+// Perfect for "Wow, look at this big number!" moments
+```
+
+### Locale Support
+```tsx
+<AnimatedNumber
+  value={1234567.89}
+  locale="de-DE"
+  format="currency"
+/>
+// Shows: 1.234.567,89 € (German formatting)
+```
+
+## Under the Hood
+
+The component uses NumberFlow's Web Animations API under the hood, which means:
+- **60fps smooth animations** on modern browsers
+- **Hardware acceleration** where possible
+- **No layout thrashing** - animations don't trigger reflows
+- **Memory efficient** - cleans up animations properly
+
+## Real-World Usage
+
+```tsx
+// Blog post view counter
+<AnimatedNumber
+  value={post.views}
+  format="number"
+  className="text-2xl font-bold text-accent"
+/>
+
+// E-commerce price updates
+<AnimatedNumber
+  value={product.price}
+  format="currency"
+  decimals={2}
+  locale="en-US"
+/>
+
+// Progress indicators
+<AnimatedNumber
+  value={completionPercentage}
+  format="percentage"
+  decimals={1}
+/>
+```
+
+## Why Not Just Use CSS?
+
+You could animate numbers with CSS transitions, but:
+
+- **No accessibility**: CSS animations don't respect motion preferences
+- **Poor performance**: CSS transitions on text changes cause repaints
+- **Limited control**: Hard to customize easing and formatting
+- **Browser inconsistencies**: Different animation behaviors across browsers
+
+## The Code
+
+Here's the component in all its glory:
+
+```tsx
+"use client"
+import { useEffect, useState } from "react"
+import NumberFlow from "@number-flow/react"
+import { useCanAnimate, usePrefersReducedMotion } from "@number-flow/react"
+import { cn } from "@/lib/utils"
+
+export function AnimatedNumber({
+  value,
+  prefix = "",
+  suffix = "",
+  format = "number",
+  decimals = 0,
+  locale = "en-US",
+  className,
+  respectMotionPreference = true,
+  // ... other props
+}: TProps) {
+  const canAnimate = useCanAnimate({ respectMotionPreference })
+  const prefersReducedMotion = usePrefersReducedMotion()
+
+  if (!canAnimate || prefersReducedMotion) {
+    return (
+      <span className={className}>
+        {prefix}
+        {value.toLocaleString(locale, FORMAT_CONFIG[format](decimals))}
+        {suffix}
+      </span>
+    )
+  }
+
+  return (
+    <NumberFlow
+      value={value}
+      format={FORMAT_CONFIG[format](decimals)}
+      locales={locale}
+      prefix={prefix}
+      suffix={suffix}
+      className={cn(className)}
+    />
+  )
+}
+```
+
+## Installation
+
+```bash
+npm install @number-flow/react
+# That's it! One dependency for all your animation needs
+```
+
+## Performance Notes
+
+The component is surprisingly lightweight:
+- **Bundle size**: ~3KB gzipped
+- **Runtime cost**: Minimal - only animates when values change
+- **Memory usage**: Cleans up animations automatically
+- **Battery friendly**: Respects motion preferences
+
+## When to Use It
+
+- **Counters and statistics** that update frequently
+- **Price displays** in e-commerce (with dramatic reveals)
+- **Progress indicators** and completion percentages
+- **Dashboard metrics** that need to feel alive
+- **Any number that benefits from motion**
+
+## When NOT to Use It
+
+- **Static numbers** that never change
+- **Content that needs to be copy-paste friendly**
+- **Situations where reduced motion is critical**
+
+## The Result
+
+You get numbers that feel alive, respect user preferences, work across all devices, and integrate seamlessly into your React app. No more boring, static counters!
+
+Sometimes the simplest improvements – making numbers dance – can make your entire app feel more polished and engaging. Give it a try in your next project.

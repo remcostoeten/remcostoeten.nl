@@ -11,7 +11,7 @@ import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
 
-interface PostPageProps {
+type TPostPageProps = {
   params: Promise<{
     slug: string;
   }>;
@@ -24,7 +24,7 @@ export async function generateStaticParams() {
   }));
 }
 
-export async function generateMetadata(props: PostPageProps): Promise<Metadata> {
+export async function generateMetadata(props: TPostPageProps): Promise<Metadata> {
   const params = await props.params;
   const post = getBlogPostBySlug(params.slug);
 
@@ -34,27 +34,53 @@ export async function generateMetadata(props: PostPageProps): Promise<Metadata> 
     };
   }
 
+  const canonicalUrl = `https://remcostoeten.nl/posts/${params.slug}`;
+  
   return {
-    title: post.seo?.title || `${post.title} | Your Portfolio`,
+    title: post.seo?.title || `${post.title} | Remco Stoeten`,
     description: post.seo?.description || post.excerpt,
     keywords: post.seo?.keywords || post.tags,
+    authors: [{ name: post.author || 'Remco Stoeten' }],
+    creator: post.author || 'Remco Stoeten',
+    publisher: 'Remco Stoeten',
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: post.seo?.title || post.title,
       description: post.seo?.description || post.excerpt,
+      url: canonicalUrl,
+      siteName: 'Remco Stoeten',
+      locale: 'en_US',
       type: 'article',
       publishedTime: post.publishedAt,
-      authors: [post.author],
+      modifiedTime: post.updatedAt || post.publishedAt,
+      authors: [post.author || 'Remco Stoeten'],
       tags: post.tags,
     },
     twitter: {
       card: 'summary_large_image',
       title: post.seo?.title || post.title,
       description: post.seo?.description || post.excerpt,
+      creator: '@remcostoeten',
+      site: '@remcostoeten',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      nocache: false,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   };
 }
 
-export default async function PostPage(props: PostPageProps) {
+export default async function PostPage(props: TPostPageProps) {
   const params = await props.params;
   const post = getBlogPostBySlug(params.slug);
 
@@ -62,7 +88,6 @@ export default async function PostPage(props: PostPageProps) {
     notFound();
   }
 
-  // Get the content from the MDX file
   const fs = require('fs');
   const path = require('path');
   const matter = require('gray-matter');
@@ -71,29 +96,57 @@ export default async function PostPage(props: PostPageProps) {
   const fileContent = fs.readFileSync(filePath, 'utf8');
   const { content } = matter(fileContent);
 
-  // Parse headings for TOC
   const headings = parseHeadingsFromMDX(content, 3);
 
-  // Generate breadcrumbs for the current post
   const breadcrumbs = generateBlogPostBreadcrumbs(
     post.title,
     params.slug,
     post.category
   );
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.coverImage || 'https://remcostoeten.nl/og-image.png',
+    datePublished: post.publishedAt,
+    dateModified: post.updatedAt || post.publishedAt,
+    author: {
+      '@type': 'Person',
+      name: post.author || 'Remco Stoeten',
+      url: 'https://remcostoeten.nl',
+    },
+    publisher: {
+      '@type': 'Person',
+      name: 'Remco Stoeten',
+      url: 'https://remcostoeten.nl',
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://remcostoeten.nl/posts/${params.slug}`,
+    },
+    keywords: post.tags.join(', '),
+    articleSection: post.category,
+    wordCount: post.content?.split(/\s+/).length || 0,
+    timeRequired: `PT${post.readTime}M`,
+  };
+
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4">
-      <BreadcrumbNavigation
-        items={breadcrumbs}
-        className="mb-6"
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <div className="max-w-7xl mx-auto py-8 px-4">
+        <BreadcrumbNavigation items={breadcrumbs} className="mb-8" />
 
       <noscript>
         <Link
           href="/posts"
-          className="inline-flex items-center gap-2 text-accent hover:underline text-sm mb-6"
+          className="inline-flex items-center text-accent hover:underline text-sm mb-8"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Back to blog
         </Link>
       </noscript>
@@ -103,38 +156,41 @@ export default async function PostPage(props: PostPageProps) {
         className="w-full max-w-6xl mx-auto"
         contentClassName="max-w-4xl"
       >
-        <article>
-          <header className="mb-8">
-            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
+        <article
+          itemScope
+          itemType="https://schema.org/BlogPosting"
+        >
+          <header itemProp="headline">
+            <div className="flex items-center text-sm text-muted-foreground mb-4">
+              <div className="flex items-center mr-4">
+                <Calendar className="w-4 h-4 mr-1" />
                 <time dateTime={post.publishedAt}>
                   {new Date(post.publishedAt).toLocaleDateString()}
                 </time>
               </div>
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
+              <div className="flex items-center mr-4">
+                <Clock className="w-4 h-4 mr-1" />
                 <span>{post.readTime} min read</span>
               </div>
               <ViewCounter
                 slug={params.slug}
                 autoIncrement={true}
-                className="flex items-center gap-1 text-sm text-muted-foreground"
+                className="flex items-center text-sm text-muted-foreground"
               />
             </div>
 
             <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
 
-            <p className="text-xl text-muted-foreground mb-6">{post.excerpt}</p>
+            <p className="text-xl text-muted-foreground mb-8">{post.excerpt}</p>
 
-            <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20">
+            <div className="flex flex-wrap">
+              <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
                 {post.category}
               </span>
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded"
+                  className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded mr-2 mb-2"
                 >
                   {tag}
                 </span>
@@ -148,5 +204,6 @@ export default async function PostPage(props: PostPageProps) {
         </article>
       </TOCLayoutRedesign>
     </div>
+    </>
   );
 }

@@ -50,7 +50,7 @@ export function BreadcrumbNavigation({
         />
       )}
       
-      <Breadcrumb className={cn('mb-6', className)}>
+      <Breadcrumb className={className}>
         <BreadcrumbList>
           {items.map((item, index) => (
             <React.Fragment key={`${item.href}-${index}`}>

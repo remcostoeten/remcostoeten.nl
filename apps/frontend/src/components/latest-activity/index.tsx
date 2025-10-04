@@ -21,12 +21,6 @@ export function LatestActivity() {
       setError(null);
       const result = await fetchLatestActivities();
 
-      if (!result.activities || result.activities.length === 0) {
-        setError('No recent GitHub activities found');
-        setActivities([]);
-        return;
-      }
-
       setActivities(result.activities);
     } catch (err) {
       console.error('Failed to load latest activities:', err);
@@ -67,15 +61,15 @@ export function LatestActivity() {
     setHoveredCommit(null);
   }, []);
 
-  const currentActivity = activities[currentActivityIndex];
-
   if (loading) {
     return <LatestActivitySkeleton />;
   }
 
+  const currentActivity = activities[currentActivityIndex];
+
   return (
     <section
-      className="mt-6 p-3 xs:p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden min-h-[140px] xs:min-h-[120px]"
+      className="p-3 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative overflow-hidden min-h-[140px] xs:min-h-[120px]"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       aria-labelledby="latest-activity-heading"

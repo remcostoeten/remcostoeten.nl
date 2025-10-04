@@ -1,0 +1,20 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://remcostoeten.nl/sitemap.xml
+
+# Crawl-delay for polite bots
+Crawl-delay: 0
+
+# Disallow admin/dev pages (if any)
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow all important pages
+Allow: /posts/
+Allow: /projects/
+Allow: /about
+Allow: /contact
