@@ -17,7 +17,7 @@ type TProjectOverrides = {
       isPackage?: boolean;
     };
     originLabel?: {
-      text: string;
+      text?: string;
       description?: string;
       color?: 'website' | 'community' | 'personal' | 'client' | 'component' | 'tool' | 'config' | 'tutorial' | 'blog';
       icon?: string;
@@ -29,32 +29,18 @@ type TProjectOverrides = {
 
 const PROJECT_OVERRIDES: TProjectOverrides = {
   "fync": {
-    title: "Fync",
     packageInfo: {
       npmUrl: "https://www.npmjs.com/package/fync",
       githubUrl: "https://github.com/remcostoeten/fync",
       isPackage: true
     },
-    originLabel: {
-      text: "Born from this site",
-      description: "Created while building remcostoeten.nl",
-      color: "website",
-      icon: "🚀"
-    },
-    anchor: "/projects/fync" // Example: custom anchor for this project
+    anchor: "/projects/fync"
   },
   "drizzleasy": {
-    title: "Drizzleasy",
     packageInfo: {
       npmUrl: "https://www.npmjs.com/package/drizzleasy",
       githubUrl: "https://github.com/remcostoeten/drizzleasy",
       isPackage: true
-    },
-    originLabel: {
-      text: "Born from this site",
-      description: "Created while building remcostoeten.nl",
-      color: "website",
-      icon: "⚡"
     }
   },
   "hono-analytics": {
@@ -62,123 +48,38 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
       npmUrl: "https://www.npmjs.com/package/hono-analytics",
       githubUrl: "https://github.com/remcostoeten/hono-analytics",
       isPackage: true
-    },
-    originLabel: {
-      text: "Born from this site",
-      description: "Created while building remcostoeten.nl",
-      color: "website",
-      icon: "🚀"
     }
   },
   "beautiful-interactive-file-tree": {
-    title: "Beautiful file tree component",
-    demoUrl: "https://beautiful-file-tree-v2.vercel.app/",
-    originLabel: {
-      text: "Born from this site",
-      description: "Created while building remcostoeten.nl",
-      color: "website",
-      icon: "🌳"
-    }
+    demoUrl: "https://beautiful-file-tree-v2.vercel.app/"
   },
   "react-beautiful-featurerich-codeblock": {
-    title: "Beautiful rich code block",
-    demoUrl: "https://react-beautiful-featurerich-codeblo.vercel.app/",
-    originLabel: {
-      text: "Born from this site",
-      description: "Created while building remcostoeten.nl",
-      color: "website",
-      icon: "📝"
-    }
+    title: "Beautifull featurerich codeblock",
+    description: "A polished, highly customizable code block with copy, line numbers, highlighting, and theming.",
+    demoUrl: "https://react-beautiful-featurerich-codeblo.vercel.app/"
   },
   "emoji-picker-component": {
-    title: "Emoji Picker Component",
-    demoUrl: "https://emoji-picker-demo.vercel.app/",
-    originLabel: {
-      text: "Interactive component",
-      description: "A reusable emoji picker built with React",
-      color: "component",
-      icon: "😀"
-    }
+    title: "Emoji picker component",
+    description: "Lightweight emoji picker with categories, recent history, search, and keyboard navigation.",
+    demoUrl: "https://emoji-picker-demo.vercel.app/"
   },
-  "Hygienic": {
-    title: "Hygienic",
-    originLabel: {
-      text: "Code quality tool",
-      description: "TypeScript/JavaScript code quality and consistency tool",
-      color: "tool",
-      icon: "🧹"
-    }
-  },
-  "Docki": {
-    title: "Docki",
-    originLabel: {
-      text: "Docker utility",
-      description: "Enhanced Docker workflow and management tool",
-      color: "tool",
-      icon: "🐳"
-    }
-  },
-  "Turso-db-creator-auto-retrieve-env-credentials": {
-    title: "Turso DB Creator",
-    originLabel: {
-      text: "Database utility",
-      description: "Automated Turso database creation with credential management",
-      color: "tool",
-      icon: "🗄️"
-    }
-  },
-  "gh-select": {
-    title: "GitHub CLI Select",
-    originLabel: {
-      text: "GitHub utility",
-      description: "Enhanced GitHub CLI with interactive selection",
-      color: "tool",
-      icon: "🔧"
-    }
-  },
-  "dotfiles": {
-    title: "Dotfiles",
-    originLabel: {
-      text: "Configuration files",
-      description: "Personal development environment configuration",
-      color: "config",
-      icon: "⚙️"
-    }
-  },
+  "Hygienic": {},
+  "Docki": {},
+  "Turso-db-creator-auto-retrieve-env-credentials": {},
+  "gh-select": {},
+  "dotfiles": {},
   "remcostoeten.nl": {
-    title: "Remcostoeten.nl",
     originLabel: {
-      text: "read",
-      description: "Portfolio and blog built with Next.js - click to read the story",
-      icon: "→",
       blogUrl: "/posts/building-remcostoeten-nl"
     }
   },
   "expense-calendar": {
-    title: "Expense Calendar",
-    originLabel: {
-      text: "Finance app",
-      description: "Visual expense tracking and budgeting application",
-      icon: "💰"
-    }
+    title: "Work commute tracking",
+    description: "A full‑stack app to track my daily commuting kilometers and submit accurate reimbursement claims to HR."
   },
-  "nextjs-15-roll-your-own-authentication": {
-    title: "Next.js Auth Guide",
-    originLabel: {
-      text: "Tutorial project",
-      description: "Complete guide to building custom authentication in Next.js 15",
-      color: "tutorial",
-      icon: "📚"
-    }
-  },
+  "nextjs-15-roll-your-own-authentication": {},
   "emoji-feedback-widget": {
-    title: "Emoji Feedback Widget",
-    originLabel: {
-      text: "Interactive widget",
-      description: "React component for collecting emoji-based feedback",
-      color: "component",
-      icon: "⭐"
-    }
+    title: "Emoji feedback widget"
   }
 };
 

@@ -58,7 +58,7 @@ export function BlogSectionClient({ posts }: TBlogSectionClientProps) {
             <Link
               key={post.slug}
               href={`/posts/${post.slug}`}
-              className="group relative block"
+              className={`group relative block ${index < posts.length - 1 ? 'after:content-[""] after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-border/50 after:to-transparent' : ''}`}
             >
               <div className="absolute -inset-x-4 -inset-y-2 bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -102,9 +102,7 @@ export function BlogSectionClient({ posts }: TBlogSectionClientProps) {
                 </div>
               </article>
 
-              {index < posts.length - 1 && (
-                <div className="mt-6 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-              )}
+              {/* divider now handled by the Link pseudo-element */}
             </Link>
           );
         })}

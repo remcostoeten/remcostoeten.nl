@@ -7,11 +7,9 @@ interface AnalyticsOverviewProps {
   totalUniqueViews: number;
   recentViews: number;
   totalPosts: number;
-  // Optional props for calculating percentage changes
   previousTotalViews?: number;
   previousUniqueViews?: number;
   previousRecentViews?: number;
-  // Optional props for category data
   categoryStats?: Array<{ category: string; count: number }>;
 }
 

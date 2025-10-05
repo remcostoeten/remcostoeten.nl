@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from "react";
+import { Sparkles } from "lucide-react";
 import { SOCIAL_LINKS } from "@/modules/contact";
 import { CategorizedProjects } from "@/modules/projects/components/CategorizedProjects";
 import { ProjectsSkeleton } from "@/modules/projects/components/ProjectsSkeleton";
@@ -112,13 +113,17 @@ export function ProjectsSection() {
       itemScope
       itemType="https://schema.org/CollectionPage"
     >
-      {/* Main Projects Section Heading */}
-      <div className="mb-4">
-        <h2 className="text-3xl font-bold text-foreground mb-2">Projects</h2>
-        <p className="text-muted-foreground">
-          A collection of my open-source projects, tools, and applications built with modern technologies.
+      <header>
+        <div className="flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent rounded-full w-fit">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span id="projects-heading" className="text-xs font-medium uppercase tracking-wider">
+            Projects
+          </span>
+        </div>
+        <p className="mt-2 text-sm text-muted-foreground">
+          A selection of open‑source projects, tools, and experiments. Focused on DX, UI, and pragmatic architecture.
         </p>
-      </div>
+      </header>
 
       <div>
         {state.loadingState === 'error' && (

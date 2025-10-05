@@ -16,7 +16,7 @@ export default async function HomePage() {
     <main id="main-content" role="main" className='home'>
       <div className="space-y-8">
         <AnnouncementBanner />
-        <HeroSection />
+        {/* <HeroSection /> */}
         <AboutSection />
         <LatestActivitySection />
         <ProjectsSection />

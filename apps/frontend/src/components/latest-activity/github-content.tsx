@@ -100,7 +100,6 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
             </Link>
           </motion.span>
         </AnimatePresence>
-        <span className="whitespace-nowrap">repository</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`timestamp-${currentActivityIndex}`}
@@ -175,8 +174,6 @@ export function GitHubActivitySkeletonContent() {
             transition={buildStaggerTransition(1)}
           />
         </span>
-        <span className="whitespace-nowrap">repository</span>
-        {/* Skeleton for timestamp */}
         <span className="inline-flex items-center text-muted-foreground whitespace-nowrap">
           (<motion.span
             className="h-4 bg-muted/40 rounded-md w-[60px] inline-block align-middle animate-pulse"

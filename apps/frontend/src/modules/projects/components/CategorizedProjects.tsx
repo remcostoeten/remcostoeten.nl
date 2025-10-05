@@ -106,7 +106,7 @@ export function CategorizedProjects({ projects }: TProps) {
         ← Swipe to navigate categories →
       </div>
 
-      <div className="mb-8">
+      <div className="mb-0">
         <div className="flex items-center gap-2 mb-4">
           <span className="sr-only">Filter by category</span>
         </div>
@@ -122,8 +122,8 @@ export function CategorizedProjects({ projects }: TProps) {
                 key={category}
                 onClick={() => handleCategoryChange(category)}
                 disabled={isTransitioning}
-                className={`inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 min-h-[36px] ${isActive
-                  ? 'bg-accent text-accent-foreground shadow-sm border border-accent/20 ring-1 ring-accent/30'
+                className={`inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-colors duration-200 min-h-[36px] ${isActive
+                  ? 'bg-transparent text-foreground border border-border/60'
                   : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   } ${isTransitioning ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
@@ -189,7 +189,7 @@ export function CategorizedProjects({ projects }: TProps) {
                 {(() => {
                   const firstProject = projectsToShow[0];
                   return (
-                    <div className="relative p-4 bg-card border border-border rounded-lg hover:border-accent/60 hover:shadow-xl hover:shadow-accent/10 hover:bg-gradient-to-br hover:from-card hover:via-card/95 hover:to-accent/5 transition-all duration-300 touch-manipulation group overflow-hidden">
+                    <div className="relative p-4 bg-card border border-border rounded-lg hover:border-border/80 hover:bg-muted/5 transition-colors duration-200 touch-manipulation group overflow-hidden">
                       {firstProject.packageInfo?.isPackage && (
                         <div className="absolute top-3 right-3">
                           <PackagePopover
@@ -267,7 +267,7 @@ export function CategorizedProjects({ projects }: TProps) {
                         ease: [0.25, 0.46, 0.45, 0.94]
                       }
                     }}
-                    className="relative p-4 bg-card border border-border rounded-lg hover:border-accent/60 hover:shadow-xl hover:shadow-accent/10 hover:bg-gradient-to-br hover:from-card hover:via-card/95 hover:to-accent/5 transition-all duration-300 touch-manipulation group overflow-hidden"
+                    className="relative p-4 bg-card border border-border rounded-lg hover:border-border/80 hover:bg-muted/5 transition-colors duration-200 touch-manipulation group overflow-hidden"
                   >
                     {project.packageInfo?.isPackage && (
                       <div className="absolute top-3 right-3">
