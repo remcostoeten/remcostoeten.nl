@@ -2,14 +2,15 @@ import { TProjectData, TSimpleProject } from "../types";
 import { fetchTargetRepositories } from "@/services/github-service";
 import { categorizeProject } from "../utils/categorize-project";
 
-// Project overrides - allows customizing project data while using GitHub as defaults
-interface TProjectOverrides {
+type TProjectOverrides = {
   [key: string]: {
     title?: string;
     description?: string;
     demoUrl?: string;
     technologies?: string[];
     highlights?: string[];
+    category?: 'APIs' | 'DX tooling' | 'projects';
+    anchor?: string;
     packageInfo?: {
       npmUrl?: string;
       githubUrl?: string;
@@ -21,11 +22,11 @@ interface TProjectOverrides {
       color?: 'website' | 'community' | 'personal' | 'client';
       icon?: string;
     };
+    [key: string]: any;
   };
 }
 
 const PROJECT_OVERRIDES: TProjectOverrides = {
-  // API packages with npm links
   "fync": {
     packageInfo: {
       npmUrl: "https://www.npmjs.com/package/fync",
@@ -37,7 +38,8 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
       description: "Created while building remcostoeten.nl",
       color: "website",
       icon: "🚀"
-    }
+    },
+    anchor: "/projects/fync" // Example: custom anchor for this project
   },
   "drizzleasy": {
     packageInfo: {
@@ -57,6 +59,32 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
       npmUrl: "https://www.npmjs.com/package/hono-analytics",
       githubUrl: "https://github.com/remcostoeten/hono-analytics",
       isPackage: true
+    },
+    originLabel: {
+      text: "Born from this site",
+      description: "Created while building remcostoeten.nl",
+      color: "website",
+      icon: "🚀"
+    }
+  },
+  "beautiful-interactive-file-tree": {
+    title: "The most beautifull file tree",
+    demoUrl: "https://beautiful-file-tree-v2.vercel.app/",
+    originLabel: {
+      text: "Born from this site",
+      description: "Created while building remcostoeten.nl",
+      color: "website",
+      icon: "🌳"
+    }
+  },
+  "react-beautiful-featurerich-codeblock": {
+    title: "The most beautifull code block",
+    demoUrl: "https://react-beautiful-featurerich-codeblo.vercel.app/",
+    originLabel: {
+      text: "Born from this site",
+      description: "Created while building remcostoeten.nl",
+      color: "website",
+      icon: "📝"
     }
   }
 };
@@ -120,7 +148,8 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
       const repo = repoResult.data;
       const technologies = getTechnologies(repo.language, repo.topics);
       const highlights = getHighlights(repo.description, repo.topics, repo.stars, repo.language);
-      const category = categorizeProject(repo.title, repo.description, technologies, repo.topics);
+      const override = PROJECT_OVERRIDES[repo.title];
+      const category = override?.category || categorizeProject(repo.title, repo.description, technologies, repo.topics);
 
       // Determine if this should be a featured project or simple project (dynamic criteria)
       const isFeatured = repo.stars > 3 || // Projects with more stars are featured
@@ -134,6 +163,7 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
         const title = override?.title || repo.title;
         const description = override?.description || repo.description || `A ${repo.language} project with ${repo.stars} stars`;
         const demoUrl = override?.demoUrl || (repo.topics.includes('demo') ? `${repo.url}#demo` : repo.url);
+        const overrideCategory = override?.category;
 
         featuredProjects.push({
           title,
@@ -150,20 +180,22 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
           contributors: repo.contributors || 1,
           totalCommits: repo.totalCommits || 0,
           startDate: repo.startDate,
-          category,
+          category: overrideCategory || category,
           packageInfo: override?.packageInfo,
-          originLabel: override?.originLabel
+          originLabel: override?.originLabel,
+          anchor: override?.anchor
         });
       } else {
         // Use overrides if available, otherwise use GitHub data as defaults
         const override = PROJECT_OVERRIDES[repo.title];
         const name = override?.title || repo.title;
         const description = override?.description || repo.description || `A ${repo.language} project`;
+        const overrideCategory = override?.category;
 
         simpleProjects.push({
           name,
           url: repo.url,
-          category,
+          category: overrideCategory || category,
           gitInfo: {
             stars: repo.stars,
             forks: repo.forks,
@@ -173,7 +205,8 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
             description
           },
           packageInfo: override?.packageInfo,
-          originLabel: override?.originLabel
+          originLabel: override?.originLabel,
+          anchor: override?.anchor
         });
       }
     }
@@ -219,5 +252,3 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
   }
 }
 
-export const FEATURED_PROJECTS: TProjectData[] = [];
-export const SIMPLE_PROJECTS: TSimpleProject[] = [];

@@ -116,7 +116,6 @@ export function useAnalytics() {
   // Cache for request deduplication - only initialize on client side
   const requestCacheRef = useRef<Map<string, Promise<any>> | null>(null);
   
-  // Lazy initialization of cache
   const getRequestCache = () => {
     if (typeof window === 'undefined') return null;
     
@@ -126,10 +125,9 @@ export function useAnalytics() {
     return requestCacheRef.current;
   };
 
-  // General pageview tracking (for all pages)
   const trackPageview = useCallback(async (pageData?: Partial<TPageviewData>) => {
     if (typeof window === 'undefined') return null;
-    
+
     const pageviewData: TPageviewData = {
       url: window.location.href,
       title: document.title,
@@ -154,7 +152,7 @@ export function useAnalytics() {
       console.error('Error tracking pageview:', error);
       return null;
     }
-  }, [visitorData]);
+  }, [visitorData.screenResolution, visitorData.timezone, visitorData.platform]);
 
   // Visitor tracking (for user identification)
   const trackVisitor = useCallback(async () => {
@@ -196,7 +194,7 @@ export function useAnalytics() {
           method: 'POST',
         })
       ]);
-      
+
       return {
         visitor: await visitorResult.json(),
         pageview: pageviewResult,
@@ -206,7 +204,7 @@ export function useAnalytics() {
       console.error('Error tracking blog view:', error);
       return null;
     }
-  }, [visitorData, visitorId, trackPageview]);
+  }, [visitorData.screenResolution, visitorData.timezone, visitorData.platform, visitorId, trackPageview]);
 
   // Get blog view count
   const getBlogViewCount = useCallback(async (blogSlug: string) => {

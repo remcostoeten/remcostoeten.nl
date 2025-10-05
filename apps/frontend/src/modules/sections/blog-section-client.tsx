@@ -28,8 +28,6 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
             <span className="text-xs font-medium uppercase tracking-wider">Writing</span>
           </div>
         </div>
-        <h2 className="text-2xl font-semibold text-foreground">Latest Thoughts</h2>
-        <p className="text-sm text-muted-foreground mt-1">Exploring ideas through words</p>
       </div>
 
       <div className="space-y-6 mb-8">
@@ -40,7 +38,7 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
             className="group relative block"
           >
             <div className="absolute -inset-x-4 -inset-y-2 bg-gradient-to-r from-accent/0 via-accent/5 to-accent/0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
+
             <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-start gap-3">
@@ -55,10 +53,10 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5 opacity-60" />
                         <time dateTime={post.publishedAt}>
-                          {new Date(post.publishedAt).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric' 
+                          {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
                           })}
                         </time>
                       </div>
@@ -78,14 +76,14 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex-shrink-0 ml-auto sm:ml-0">
                 <div className="w-10 h-10 rounded-full bg-muted/50 group-hover:bg-accent/20 flex items-center justify-center transition-all duration-200 group-hover:scale-110">
                   <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors duration-200" />
                 </div>
               </div>
             </article>
-            
+
             {index < posts.length - 1 && (
               <div className="mt-6 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
             )}
@@ -104,7 +102,7 @@ export function BlogSectionClient({ posts }: BlogSectionClientProps) {
           </span>
           <ArrowUpRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </Link>
-        
+
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <BookOpen className="w-3.5 h-3.5" />
           <span>{posts.length} recent articles</span>

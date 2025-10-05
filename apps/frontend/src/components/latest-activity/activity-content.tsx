@@ -7,7 +7,7 @@ import { CommitHoverCard } from "./commit-hover-card";
 import { AnimatedTimestamp } from "../../shared/components/animated-numbers";
 import Link from "next/link";
 
-interface ActivityContentProps {
+type TProps = {
   currentActivity: TLatestActivity;
   currentActivityIndex: number;
   hoveredCommit: number | null;
@@ -21,7 +21,7 @@ export const ActivityContent = memo(function ActivityContent({
   hoveredCommit,
   onCommitMouseEnter,
   onCommitMouseLeave
-}: ActivityContentProps) {
+}: TProps) {
 
   const MAX_LENGTH = 40
 

@@ -20,7 +20,7 @@ function fallbackCategorizeProject(title: string): 'APIs' | 'DX tooling' | 'proj
     'expense-calendar': 'projects',
     'nextjs-15-roll-your-own-authentication': 'projects',
     'emoji-feedback-widget': 'projects',
-    'Beautiful-interactive-file-tree': 'projects',
+    'The most beautifull file tree': 'projects',
     'react-beautiful-featurerich-codeblock': 'projects'
   };
   return PROJECT_CATEGORY_MAPPING[title] || 'projects';
@@ -56,7 +56,6 @@ export interface RepoData {
 
 export const fetchRepositoryData = async (owner: string, repo: string): Promise<RepoData | null> => {
   try {
-    console.log(`🔄 Fetching repository data for ${owner}/${repo}...`);
 
     // Prepare headers with optional GitHub token
     const headers: Record<string, string> = {
@@ -85,7 +84,6 @@ export const fetchRepositoryData = async (owner: string, repo: string): Promise<
     }
 
     const repository = await response.json();
-    console.log(`✅ Successfully fetched repository data for ${repository.name}`);
 
     // Get additional data
     let branches = 0;
@@ -308,7 +306,7 @@ export async function fetchTargetRepositories() {
     { owner: 'remcostoeten', repo: 'expense-calendar' },
     { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
     { owner: 'remcostoeten', repo: 'emoji-feedback-widget' },
-    { owner: 'remcostoeten', repo: 'Beautiful-interactive-file-tree' },
+    { owner: 'remcostoeten', repo: 'beautiful-interactive-file-tree' },
     { owner: 'remcostoeten', repo: 'react-beautiful-featurerich-codeblock' }
   ];
 
@@ -321,7 +319,6 @@ export const fetchFeaturedProjects = async (): Promise<{
   ryoa: RepoData | null;
 }> => {
   try {
-    console.log('🔄 Fetching featured projects: remcostoeten.nl and RYOA...');
 
     const [remcostoetenResult, ryoaResult] = await Promise.allSettled([
       fetchRepositoryData('remcostoeten', 'remcostoeten.nl'),
@@ -331,7 +328,6 @@ export const fetchFeaturedProjects = async (): Promise<{
     const remcostoetenNl = remcostoetenResult.status === 'fulfilled' ? remcostoetenResult.value : null;
     const ryoa = ryoaResult.status === 'fulfilled' ? ryoaResult.value : null;
 
-    console.log('✅ Successfully fetched featured projects data');
     return { remcostoetenNl, ryoa };
 
   } catch (error) {
@@ -348,7 +344,6 @@ export const fetchRemcostoetenPortfolio = async (): Promise<RepoData & {
   size?: number;
 }> => {
   try {
-    console.log('🔄 Fetching enhanced remcostoeten.nl project data...');
 
     const baseData = await fetchRepositoryData('remcostoeten', 'remcostoeten.nl');
     if (!baseData) {
@@ -358,7 +353,6 @@ export const fetchRemcostoetenPortfolio = async (): Promise<RepoData & {
     // Additional data is now fetched in the base fetchRepositoryData function
     // No need for duplicate API calls
 
-    console.log('✅ Successfully fetched enhanced remcostoeten.nl data');
     return baseData;
 
   } catch (error) {
@@ -390,13 +384,11 @@ export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { cat
     { owner: 'remcostoeten', repo: 'expense-calendar' },
     { owner: 'remcostoeten', repo: 'nextjs-15-roll-your-own-authentication' },
     { owner: 'remcostoeten', repo: 'emoji-feedback-widget' },
-    { owner: 'remcostoeten', repo: 'Beautiful-interactive-file-tree' },
+    { owner: 'remcostoeten', repo: 'beautiful-interactive-file-tree' },
     { owner: 'remcostoeten', repo: 'react-beautiful-featurerich-codeblock' }
   ];
 
   try {
-    console.log('🔄 Fetching specific featured projects from GitHub API...');
-    console.log(`   Attempting to fetch ${featuredRepos.length} repositories`);
 
     const results = await Promise.allSettled(
       featuredRepos.map(({ owner, repo }) => fetchRepositoryData(owner, repo))
@@ -439,7 +431,6 @@ export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { cat
         }
       });
 
-    console.log(`✅ Successfully processed ${successfulResults.length}/${featuredRepos.length} featured projects with categories`);
     
     // Log category breakdown for debugging
     const categoryBreakdown = successfulResults.reduce((acc, proj) => {
@@ -480,7 +471,6 @@ export interface LatestActivities {
 
 export const fetchLatestActivities = async (): Promise<LatestActivities> => {
   try {
-    console.log('🔄 Fetching latest activities from GitHub account (up to 1 month old)...');
 
     // Fetch user events (this includes push events)
     const headers: Record<string, string> = {
@@ -607,7 +597,7 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
     // Select up to 2 commits per project, prioritizing recent ones
     const selectedActivities: LatestActivity[] = [];
 
-    for (const [project, projectCommits] of commitsByProject.entries()) {
+    for (const [project, projectCommits] of Array.from(commitsByProject.entries())) {
       // Sort commits by recency (most recent first) and take up to 2
       const sortedCommits = projectCommits.slice(0, 2);
       selectedActivities.push(...sortedCommits);
@@ -618,7 +608,7 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
       const remainingSlots = 10 - selectedActivities.length;
       const additionalCommits: LatestActivity[] = [];
 
-      for (const [project, projectCommits] of commitsByProject.entries()) {
+      for (const [project, projectCommits] of Array.from(commitsByProject.entries())) {
         if (projectCommits.length > 2) {
           // Add the 3rd, 4th, etc. commits from this project
           const extraCommits = projectCommits.slice(2);
@@ -642,26 +632,15 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
     // Take up to 10 activities
     const finalActivities = shuffledActivities.slice(0, 10);
 
-    console.log('✅ Successfully processed activities:');
-    console.log(`   - Total projects: ${commitsByProject.size}`);
-    console.log(`   - Selected activities: ${finalActivities.length}`);
-    console.log(`   - Activities by project:`,
-      Array.from(commitsByProject.entries()).map(([project, commits]) =>
-        `${project}: ${Math.min(commits.length, 2)} commits`
-      ).join(', ')
-    );
-
     return { activities: finalActivities, totalFound: recentPushEvents.length };
 
   } catch (error) {
     console.error('❌ Error fetching latest activities:', error);
 
-    // Don't return fallback data - let the component handle the error
     throw error;
   }
 };
 
-// Function to fetch the latest push activity from remcostoeten's GitHub account (backwards compatibility)
 export const fetchLatestActivity = async (): Promise<LatestActivity | null> => {
   const result = await fetchLatestActivities();
   return result.activities[0] || null;

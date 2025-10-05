@@ -26,8 +26,8 @@ Frontend applications, websites, and complete solutions:
 - **expense-calendar** - Expense tracking calendar application
 - **nextjs-15-roll-your-own-authentication** - Authentication implementation example
 - **emoji-feedback-widget** - Interactive feedback widget component
-- **Beautiful-interactive-file-tree** - File tree component
-- **react-beautiful-featurerich-codeblock** - Code block component
+- **The most beautifull file tree** - File tree component (@https://beautiful-file-tree-v2.vercel.app/)
+- **The most beautifull code block** - Code block component (@https://react-beautiful-featurerich-codeblo.vercel.app/)
 
 ## Implementation Details
 

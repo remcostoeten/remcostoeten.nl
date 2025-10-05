@@ -147,9 +147,48 @@ export default function RootLayout({
     },
   };
 
+  const profilePageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    mainEntity: {
+      '@type': 'Person',
+      '@id': 'https://remcostoeten.nl/#person',
+      name: 'Remco Stoeten',
+      givenName: 'Remco',
+      familyName: 'Stoeten',
+      alternateName: ['Stoeten', 'Remco'],
+      url: 'https://remcostoeten.nl',
+      image: 'https://remcostoeten.nl/remco-stoeten.jpg',
+      jobTitle: 'Software Engineer',
+      description: 'Software engineer specializing in React, Next.js, TypeScript, and modern web development',
+      knowsAbout: [
+        'React',
+        'Next.js',
+        'TypeScript',
+        'JavaScript',
+        'Frontend Development',
+        'Web Development',
+        'Software Engineering',
+      ],
+      sameAs: [
+        'https://github.com/remcostoeten',
+        'https://twitter.com/remcostoeten',
+        'https://linkedin.com/in/remcostoeten',
+      ],
+    },
+  };
+
   return (
     <html lang="en" className="dark">
       <head>
+        {/* Additional SEO Meta Tags */}
+        <meta name="author" content="Remco Stoeten" />
+        <meta name="geo.region" content="NL" />
+        <meta name="geo.placename" content="Netherlands" />
+        <meta property="profile:first_name" content="Remco" />
+        <meta property="profile:last_name" content="Stoeten" />
+        <link rel="canonical" href="https://remcostoeten.nl" />
+
         {/* Structured Data for Knowledge Graph */}
         <script
           type="application/ld+json"
@@ -159,7 +198,11 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
-        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageSchema) }}
+        />
+
         {/* Preconnect to external domains for faster loading */}
         <link rel="preconnect" href="https://framerusercontent.com" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

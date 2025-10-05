@@ -5,6 +5,7 @@ export type TSimpleProject = {
   gitInfo?: TGitInfo;
   packageInfo?: TPackageInfo;
   originLabel?: TOriginLabel;
+  anchor?: string;
 };
 
 export type TPackageInfo = {
@@ -50,4 +51,5 @@ export type TProjectData = {
   category: 'APIs' | 'DX tooling' | 'projects';
   packageInfo?: TPackageInfo;
   originLabel?: TOriginLabel;
+  anchor?: string;
 };

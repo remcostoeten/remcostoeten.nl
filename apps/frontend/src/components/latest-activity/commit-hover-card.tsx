@@ -8,11 +8,11 @@ import { getFromCache, setInCache } from "./cache";
 import { formatNumber } from "./utils";
 import type { TCommitHoverCardProps, TRepositoryData } from "./types";
 
-export const CommitHoverCard = memo(function CommitHoverCard({ 
-  activity, 
-  isVisible, 
-  onMouseEnter, 
-  onMouseLeave 
+export const CommitHoverCard = memo(function CommitHoverCard({
+  activity,
+  isVisible,
+  onMouseEnter,
+  onMouseLeave
 }: TCommitHoverCardProps) {
   const [repoData, setRepoData] = useState<TRepositoryData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export const CommitHoverCard = memo(function CommitHoverCard({
   const cacheKey = useMemo(() => activity.repositoryUrl, [activity.repositoryUrl]);
 
   useEffect(() => {
-    if (!isVisible || repoData || loading) return;
+    if (!isVisible || repoData) return;
 
     const cached = getFromCache(cacheKey);
     if (cached) {
@@ -58,9 +58,11 @@ export const CommitHoverCard = memo(function CommitHoverCard({
           setRepoData(repoInfo);
           setInCache(cacheKey, repoInfo);
         } else {
+          // If fetchRepositoryData returns null, set error state
           setError(true);
         }
-      } catch {
+      } catch (error) {
+        console.error('Failed to fetch repository data for hover card:', error);
         if (!cancelled) {
           setError(true);
         }
@@ -76,7 +78,7 @@ export const CommitHoverCard = memo(function CommitHoverCard({
     return () => {
       cancelled = true;
     };
-  }, [isVisible, activity.repositoryUrl, repoData, loading, cacheKey]);
+  }, [isVisible, activity.repositoryUrl, cacheKey]);
 
   if (!isVisible) return null;
 

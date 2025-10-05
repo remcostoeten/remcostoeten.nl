@@ -99,6 +99,18 @@
     @apply border-border;
   }
 
+  /* Focus indicators for accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Remove outline for mouse users while keeping it for keyboard users */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-size: var(--text-base);
@@ -137,6 +149,47 @@
 }
 
 @layer components {
+  /* Screen reader only utility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Show element when focused (for skip links) */
+  .focus\:not-sr-only:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: inherit;
+    margin: inherit;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Touch target sizing for mobile accessibility */
+  .touch-target {
+    @apply relative;
+  }
+
+  .touch-target::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px;
+    min-height: 44px;
+    z-index: -1;
+  }
+
   /* Typography utilities */
   .text-body {
     @apply text-base leading-relaxed;

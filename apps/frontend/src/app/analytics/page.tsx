@@ -1,11 +1,19 @@
+"use client";
+
 import Link from "next/link";
-import { BlogAnalyticsOverview } from "@/components/blog/blog-analytics-overview";
-import { RealAnalyticsOverview } from "@/modules/analytics/components/real-analytics-overview";
+import dynamic from "next/dynamic";
 
-// Force dynamic rendering to avoid SSR issues with analytics hooks
-export const dynamic = 'force-dynamic';
+const BlogAnalyticsOverview = dynamic(() => import("@/components/blog/blog-analytics-overview").then(mod => ({ default: mod.BlogAnalyticsOverview })), {
+  ssr: false,
+  loading: () => <div className="animate-pulse h-32 bg-muted rounded-lg" />
+});
 
-export default async function AnalyticsPage() {
+const RealAnalyticsOverview = dynamic(() => import("@/modules/analytics/components/real-analytics-overview").then(mod => ({ default: mod.RealAnalyticsOverview })), {
+  ssr: false,
+  loading: () => <div className="animate-pulse h-32 bg-muted rounded-lg" />
+});
+
+export default function AnalyticsPage() {
   return (
     <div className="space-y-8">
       <div>

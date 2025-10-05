@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAnalytics } from '@/hooks/use-analytics';
 
 type TAnalyticsTrackerProps = {
@@ -13,18 +13,22 @@ type TAnalyticsTrackerProps = {
 
 export function AnalyticsTracker({ pageTitle, trackBlogView }: TAnalyticsTrackerProps) {
   const { autoTrackPageview, trackBlogView: trackBlog } = useAnalytics();
+  const hasTrackedRef = useRef(false);
 
   useEffect(() => {
+    if (hasTrackedRef.current) return;
+
     const trackPage = async () => {
       if (trackBlogView) {
         await trackBlog(trackBlogView.blogSlug, trackBlogView.blogTitle);
       } else {
         await autoTrackPageview();
       }
+      hasTrackedRef.current = true;
     };
 
     trackPage();
-  }, [autoTrackPageview, trackBlog, trackBlogView]);
+  }, [trackBlog, trackBlogView, autoTrackPageview]);
 
   return null;
 }

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Code, Star, GitBranch, Eye, Calendar } from "lucide-react";
 import { TProjectData } from "../types";
 
-interface ProjectCardProps extends TProjectData {}
+interface ProjectCardProps extends TProjectData { }
 
 export const ProjectCard = ({
   title,
@@ -38,7 +38,7 @@ export const ProjectCard = ({
 
   return (
     <div
-      className="relative cursor-pointer"
+      className="relative cursor-pointer group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -47,20 +47,11 @@ export const ProjectCard = ({
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-accent hover:underline font-medium inline-flex items-center gap-1.5 group"
+          className="text-accent hover:text-accent/80 font-medium inline-flex items-center gap-1.5 transition-all duration-200"
         >
           {title}
           <ExternalLink className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </a>
-        {originLabel && (
-          <span 
-            className={`px-2 py-1 text-xs font-medium border rounded-full shadow-sm ${getOriginLabelStyles(originLabel.color)}`}
-            title={originLabel.description}
-          >
-            {originLabel.icon && <span className="mr-1">{originLabel.icon}</span>}
-            {originLabel.text}
-          </span>
-        )}
       </div>
 
       <AnimatePresence>
@@ -72,19 +63,10 @@ export const ProjectCard = ({
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="absolute left-0 top-full mt-2 z-50 w-96 max-w-[90vw]"
           >
-            <div className="bg-card border border-border rounded-lg shadow-lg p-6">
+            <div className="bg-gradient-to-br from-card via-card/98 to-card/95 border border-border/80 rounded-lg shadow-2xl shadow-accent/5 backdrop-blur-sm p-6 group-hover:shadow-accent/10 group-hover:shadow-2xl transition-all duration-300">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex flex-col gap-2">
                   <h3 className="font-semibold text-lg text-foreground">{title}</h3>
-                  {originLabel && (
-                    <span 
-                      className={`px-2 py-1 text-xs font-medium border rounded-full shadow-sm self-start ${getOriginLabelStyles(originLabel.color)}`}
-                      title={originLabel.description}
-                    >
-                      {originLabel.icon && <span className="mr-1">{originLabel.icon}</span>}
-                      {originLabel.text}
-                    </span>
-                  )}
                 </div>
                 <div className="flex gap-2 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">

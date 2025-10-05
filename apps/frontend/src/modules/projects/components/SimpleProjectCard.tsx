@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GitCommit, Star, GitBranch, Calendar, Users, Clock, ExternalLink } from "lucide-react";
 import { fetchLatestActivities, LatestActivity as LatestActivityType, fetchRepositoryData } from "@/services/github-service";
-import { TSimpleProject } from "../types";
+import { TSimpleProject, TProjectData } from "../types";
 import { SpotifyAnimation } from "@/modules/sections/components/spotify-animation";
+import Link from "next/link";
+
 type TCommitHoverData = {
   repositoryName: string;
   description: string;
@@ -25,7 +27,21 @@ type TProps = {
   onMouseLeave: () => void;
 };
 
-export function SimpleProjectCard({ name, url, gitInfo, originLabel }: TSimpleProject) {
+export function SimpleProjectCard(props: TSimpleProject | TProjectData) {
+  // Handle both TSimpleProject and TProjectData formats
+  const { name, url, gitInfo, originLabel, anchor, title, description, stars, forks, language } = props as any;
+
+  // Normalize the data - use name/title, and create gitInfo if it doesn't exist
+  const projectName = name || title;
+  const normalizedGitInfo = gitInfo || (stars !== undefined ? {
+    stars,
+    forks: forks || 0,
+    language: language || 'Unknown',
+    description: description || 'No description available',
+    contributors: 1,
+    lastCommit: 'recently',
+    totalCommits: 0
+  } : undefined);
   const getOriginLabelStyles = (color?: string) => {
     switch (color) {
       case 'website':
@@ -41,23 +57,53 @@ export function SimpleProjectCard({ name, url, gitInfo, originLabel }: TSimplePr
     }
   };
 
+  const cardContent = (
+    <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
+      <span className="text-accent font-medium min-w-0 truncate">
+        {projectName}
+      </span>
+      {originLabel && (
+        <span
+          className={`px-1.5 py-0.5 text-[10px] font-medium border rounded-full shadow-sm whitespace-nowrap sm:px-2 sm:py-1 sm:text-xs ${getOriginLabelStyles(originLabel.color)}`}
+          title={originLabel.description}
+        >
+          {originLabel.icon && <span className="mr-0.5 sm:mr-1">{originLabel.icon}</span>}
+          <span className="hidden sm:inline">{originLabel.text}</span>
+          <span className="sm:hidden">●</span>
+        </span>
+      )}
+    </div>
+  );
+
+  if (anchor) {
+    return (
+      <Link
+        href={anchor}
+        className="block transition-all duration-200 hover:opacity-80"
+      >
+        {cardContent}
+      </Link>
+    );
+  }
+
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      <a
+    <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
+      <Link
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent hover:underline font-medium"
+        className="text-accent hover:text-accent/80 font-medium transition-all duration-200 inline-block min-w-0 truncate"
       >
-        {name}
-      </a>
+        {projectName}
+      </Link>
       {originLabel && (
-        <span 
-          className={`px-2 py-1 text-xs font-medium border rounded-full shadow-sm ${getOriginLabelStyles(originLabel.color)}`}
+        <span
+          className={`px-1.5 py-0.5 text-[10px] font-medium border rounded-full shadow-sm whitespace-nowrap sm:px-2 sm:py-1 sm:text-xs ${getOriginLabelStyles(originLabel.color)}`}
           title={originLabel.description}
         >
-          {originLabel.icon && <span className="mr-1">{originLabel.icon}</span>}
-          {originLabel.text}
+          {originLabel.icon && <span className="mr-0.5 sm:mr-1">{originLabel.icon}</span>}
+          <span className="hidden sm:inline">{originLabel.text}</span>
+          <span className="sm:hidden">●</span>
         </span>
       )}
     </div>
@@ -77,7 +123,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TP
   }, [activity.repositoryUrl]);
 
   useEffect(() => {
-    if (!isVisible || repoData || loading) return;
+    if (!isVisible || repoData) return;
 
     setLoading(true);
     fetchRepositoryData(owner, repo)
@@ -94,11 +140,38 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TP
             totalCommits: data.totalCommits || 0,
             repositoryAge: data.repositoryAge || 'Unknown age'
           });
+        } else {
+          // If fetchRepositoryData returns null, set error state
+          setRepoData({
+            repositoryName: activity.project,
+            description: 'Unable to load repository details',
+            stars: 0,
+            forks: 0,
+            language: 'Unknown',
+            lastUpdated: 'Unknown',
+            contributors: 1,
+            totalCommits: 0,
+            repositoryAge: 'Unknown'
+          });
         }
       })
-      .catch(() => { })
+      .catch((error) => {
+        console.error('Failed to fetch repository data:', error);
+        // Set a fallback state so the skeleton doesn't show forever
+        setRepoData({
+          repositoryName: activity.project,
+          description: 'Unable to load repository details',
+          stars: 0,
+          forks: 0,
+          language: 'Unknown',
+          lastUpdated: 'Unknown',
+          contributors: 1,
+          totalCommits: 0,
+          repositoryAge: 'Unknown'
+        });
+      })
       .finally(() => setLoading(false));
-  }, [isVisible, owner, repo, repoData, loading]);
+  }, [isVisible, owner, repo, activity.project]);
 
   if (!isVisible) return null;
 
@@ -113,7 +186,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TP
       onMouseLeave={onMouseLeave}
     >
       <div className="h-4 w-full -mx-2" />
-      <div className="bg-card border border-border rounded-lg shadow-lg p-4">
+      <div className="bg-gradient-to-br from-card via-card/98 to-card/95 border border-border/80 rounded-lg shadow-2xl shadow-accent/5 backdrop-blur-sm p-4">
         <div className="flex items-start justify-between mb-3">
           <div>
             <h3 className="font-semibold text-base text-foreground">{activity.project}</h3>

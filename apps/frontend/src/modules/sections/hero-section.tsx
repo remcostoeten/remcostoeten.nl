@@ -3,27 +3,32 @@
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@/shared/components/link";
 import { S } from "./serif";
-import { } from "@radix-ui/react-tooltip";
 
 export function HeroSection() {
   return (
-    <h1 className="text-heading font-medium text-foreground">
-      I, <Tooltip>
-        <TooltipTrigger asChild>
-          <Link
-            href="#"
-            variant="underline"
-            size="lg"
-            className="font-medium text-foreground hover:text-accent cursor-help"
-            onClick={(e) => e.preventDefault()}
-          >
-            <S i>build</S> a lot<S i>.</S>
-          </Link>
-        </TooltipTrigger>
-        <TooltipContent>
-          But ship very little.
-        </TooltipContent>
-      </Tooltip>
-    </h1>
+    <header role="banner" className="text-2xl"> {/* <- Set base size here */}
+      <h1 className="sr-only">
+        Remco Stoeten - Software Engineer specializing in React and Next.js
+      </h1>
+
+      <div className="text-foreground text-2xl" aria-label="Introduction">
+        I, <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              href="#"
+              variant="underline"
+              className="text-2xl hover:text-accent cursor-help"
+              onClick={(e) => e.preventDefault()}
+              aria-label="I build a lot of projects"
+            >
+              <S i>build</S> a lot<S i>.</S>
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>But ship very little.</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </header>
   );
 };

@@ -1,3 +1,36 @@
 /* Miscellaneous styles that don't fit in other categories */
 
+/* Mobile touch optimizations */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Improve tap targets for mobile */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Scrollbar hiding utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Better mobile text selection */
+@media (max-width: 768px) {
+  .touch-manipulation {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
 /* Add any custom styles that don't belong in components or other specific CSS files */

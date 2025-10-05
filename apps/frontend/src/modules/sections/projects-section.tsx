@@ -3,10 +3,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { SOCIAL_LINKS } from "@/modules/contact";
 import { CategorizedProjects } from "@/modules/projects/components/CategorizedProjects";
+import { ProjectsSkeleton } from "@/modules/projects/components/ProjectsSkeleton";
 import { getRealProjectData } from "@/modules/projects/data/projects";
 import { TSimpleProject } from "@/modules/projects/types";
-import { LatestActivity } from '@/components/latest-activity';
-import { LatestActivitySkeleton } from '@/components/latest-activity-skeleton';
 
 type TLoadingState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -28,9 +27,6 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
 
-function delay(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export function ProjectsSection() {
   const [state, setState] = useState<TProjectsState>(INITIAL_STATE);
@@ -96,7 +92,7 @@ export function ProjectsSection() {
 
   const handleRetry = useCallback(async (): Promise<void> => {
     if (state.retryCount < MAX_RETRIES) {
-      await delay(RETRY_DELAY * state.retryCount);
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * state.retryCount));
       await loadProjects(true);
     } else {
       window.location.reload();
@@ -145,13 +141,13 @@ export function ProjectsSection() {
         </p>
 
         <div className="mt-6">
-          <CategorizedProjects 
-            projects={state.projects}
-          />
-        </div>
-        
-        <div className="mt-8">
-          <LatestActivity />
+          {state.loadingState === 'loading' ? (
+            <ProjectsSkeleton />
+          ) : (
+            <CategorizedProjects
+              projects={state.projects}
+            />
+          )}
         </div>
       </div>
     </section>

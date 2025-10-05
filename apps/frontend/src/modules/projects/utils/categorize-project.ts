@@ -26,8 +26,7 @@ const PROJECT_CATEGORY_MAPPING: Record<string, ProjectCategory> = {
   'expense-calendar': 'projects',
   'nextjs-15-roll-your-own-authentication': 'projects',
   'emoji-feedback-widget': 'projects',
-  'Beautiful-interactive-file-tree': 'projects',
-  'beautiful-interactive-file-tree': 'projects',
+  'The most beautifull file tree': 'projects',
   'react-beautiful-featurerich-codeblock': 'projects'
 };
 
