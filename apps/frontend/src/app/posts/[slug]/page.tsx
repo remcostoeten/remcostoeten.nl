@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from "next";
+import { buildSeo } from "@/lib/seo";
 import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils";
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/mdx-components-server';
@@ -39,7 +40,7 @@ export async function generateMetadata(props: TPostPageProps): Promise<Metadata>
   }
 
   const canonicalUrl = `https://remcostoeten.nl/posts/${params.slug}`;
-  
+
   return {
     title: post.seo?.title || `${post.title} | Remco Stoeten`,
     description: post.seo?.description || post.excerpt,
@@ -50,25 +51,11 @@ export async function generateMetadata(props: TPostPageProps): Promise<Metadata>
     alternates: {
       canonical: canonicalUrl,
     },
-      openGraph: {
-        title: post.seo?.title || post.title,
-        description: post.seo?.description || post.excerpt,
-        url: canonicalUrl,
-        siteName: 'Remco Stoeten',
-        locale: 'en_US',
-        type: 'article',
-        publishedTime: post.publishedAt,
-        modifiedTime: post.publishedAt,
-        authors: [post.author || 'Remco Stoeten'],
-        tags: post.tags,
-      },
-    twitter: {
-      card: 'summary_large_image',
+    ...buildSeo({
       title: post.seo?.title || post.title,
       description: post.seo?.description || post.excerpt,
-      creator: '@remcostoeten',
-      site: '@remcostoeten',
-    },
+      url: canonicalUrl,
+    }),
     robots: {
       index: true,
       follow: true,
@@ -159,73 +146,73 @@ export default async function PostPage(props: TPostPageProps) {
       <div className="max-w-7xl mx-auto py-8 px-4">
         <BreadcrumbNavigation items={breadcrumbs} className="mb-8" />
 
-      <noscript>
-        <Link
-          href="/posts"
-          className="inline-flex items-center text-accent hover:underline text-sm mb-8"
+        <noscript>
+          <Link
+            href="/posts"
+            className="inline-flex items-center text-accent hover:underline text-sm mb-8"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to blog
+          </Link>
+        </noscript>
+
+        <TOCLayoutRedesign
+          headings={headings}
+          className="w-full max-w-6xl mx-auto"
+          contentClassName="max-w-4xl"
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to blog
-        </Link>
-      </noscript>
-
-      <TOCLayoutRedesign
-        headings={headings}
-        className="w-full max-w-6xl mx-auto"
-        contentClassName="max-w-4xl"
-      >
-        <article
-          itemScope
-          itemType="https://schema.org/BlogPosting"
-          className="font-noto"
-        >
-          <header itemProp="headline">
-            <div className="flex items-center text-sm text-muted-foreground mb-4">
-              <div className="flex items-center mr-4">
-                <Calendar className="w-4 h-4 mr-1" />
-                <time dateTime={post.publishedAt}>
-                  {new Date(post.publishedAt).toLocaleDateString()}
-                </time>
+          <article
+            itemScope
+            itemType="https://schema.org/BlogPosting"
+            className="font-noto"
+          >
+            <header itemProp="headline">
+              <div className="flex items-center text-sm text-muted-foreground mb-4">
+                <div className="flex items-center mr-4">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  <time dateTime={post.publishedAt}>
+                    {new Date(post.publishedAt).toLocaleDateString()}
+                  </time>
+                </div>
+                <div className="flex items-center mr-4">
+                  <Clock className="w-4 h-4 mr-1" />
+                  <span>{post.readTime} min read</span>
+                </div>
+                <ViewCounter
+                  slug={params.slug}
+                  autoIncrement={true}
+                  className="flex items-center text-sm text-muted-foreground"
+                />
               </div>
-              <div className="flex items-center mr-4">
-                <Clock className="w-4 h-4 mr-1" />
-                <span>{post.readTime} min read</span>
-              </div>
-              <ViewCounter
-                slug={params.slug}
-                autoIncrement={true}
-                className="flex items-center text-sm text-muted-foreground"
-              />
-            </div>
 
-            <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
+              <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
 
-            <p className="text-xl text-muted-foreground mb-8">{post.excerpt}</p>
+              <p className="text-xl text-muted-foreground mb-8">{post.excerpt}</p>
 
-            <div className="flex flex-wrap">
-              <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
-                {post.category}
-              </span>
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded mr-2 mb-2"
-                >
-                  {tag}
+              <div className="flex flex-wrap">
+                <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
+                  {post.category}
                 </span>
-              ))}
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded mr-2 mb-2"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </header>
+
+            <div className="prose prose-invert max-w-none">
+              <MDXRemote source={content} components={mdxComponents} />
             </div>
-          </header>
+          </article>
+        </TOCLayoutRedesign>
 
-          <div className="prose prose-invert max-w-none">
-            <MDXRemote source={content} components={mdxComponents} />
-          </div>
-        </article>
-      </TOCLayoutRedesign>
-
-      {/* Feedback Widget */}
-      <FeedbackWidget slug={params.slug} />
-    </div>
+        {/* Feedback Widget */}
+        <FeedbackWidget slug={params.slug} />
+      </div>
     </>
   );
 }

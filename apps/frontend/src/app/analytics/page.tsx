@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Metadata } from "next";
+import { buildSeo } from "@/lib/seo";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,6 +26,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://remcostoeten.nl/analytics",
   },
+  ...buildSeo({
+    title: "Analytics | Remco Stoeten",
+    description: "Real-time and historical analytics for blog performance, views, and engagement.",
+    url: "https://remcostoeten.nl/analytics",
+  }),
 };
 
 export default function AnalyticsPage() {

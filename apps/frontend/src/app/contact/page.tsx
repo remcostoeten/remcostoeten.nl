@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
 import type { Metadata } from "next";
+import { buildSeo } from "@/lib/seo";
 import { MapPin, Clock, ExternalLink } from "lucide-react";
 
 // Force dynamic rendering to prevent SSR issues
@@ -18,6 +19,11 @@ export const metadata: Metadata = {
     type: 'website',
     url: 'https://remcostoeten.nl/contact',
   },
+  ...buildSeo({
+    title: 'Contact - Remco Stoeten',
+    description: 'Get in touch with Remco Stoeten, software engineer specializing in React, Next.js, and TypeScript.',
+    url: 'https://remcostoeten.nl/contact',
+  }),
 };
 
 export default function ContactPage() {

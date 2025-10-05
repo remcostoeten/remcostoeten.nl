@@ -7,8 +7,8 @@
   - [x] `<link rel="canonical">` on every indexable page
   - [x] Normalize trailing slash and query params
 - [ ] Open Graph & Twitter
-  - [ ] `og:title`, `og:description`, `og:image (1200x630)`
-  - [ ] `twitter:card=summary_large_image`
+  - [x] `og:title`, `og:description`, `og:image (1200x630)`
+  - [x] `twitter:card=summary_large_image`
 - [ ] Structured Data (JSON-LD)
   - [ ] Person/Website on home
   - [x] Blog/ItemList on posts index
