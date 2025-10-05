@@ -1,44 +1,34 @@
-# Lock files from other package managers
-pnpm-lock.yaml
-yarn.lock
-package-lock.json
+# Dependencies
+node_modules/
+apps/*/node_modules/
 
-# Ignore backend and other non-frontend files during deployment
-apps/backend
-packages
-.github
-README.md
-*.md
-.gitignore
+# Build outputs
+.next/
+apps/*/dist/
+apps/*/.next/
 
-# Node modules and build artifacts
-node_modules
-.next
-.vercel
-.turbo
-dist
-build
-
-# Development files
-.vscode
-.idea
+# Environment files
+.env*
 
 # Logs
-logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-bun-debug.log*
 
-# OS generated files
+# IDE files
+.vscode/
+.idea/
+
+# OS files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# Git
-.git
+# Documentation
+*.md
+!README.md
+
+# Backend specific
+apps/backend/
+
+# Package manager files (keep only bun.lockb)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock

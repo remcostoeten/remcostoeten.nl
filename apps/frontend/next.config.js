@@ -2,7 +2,6 @@ const path = require('path');
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  outputFileTracingRoot: path.join(__dirname, '../..'),
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -23,10 +22,6 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
-  // Disable static optimization for problematic pages
-  generateBuildId: async () => {
-    return 'build-' + Date.now()
-  },
 };
 
 const withMDX = require('@next/mdx')({

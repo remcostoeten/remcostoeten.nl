@@ -1,10 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd apps/frontend && NODE_ENV=production bun run build",
+  "buildCommand": "cd apps/frontend && bun install && NODE_ENV=production bun run build",
   "devCommand": "cd apps/frontend && bun run dev",
-  "installCommand": "bun install --frozen-lockfile",
+  "installCommand": "bun install",
   "outputDirectory": "apps/frontend/.next",
-  "framework": null,
+  "framework": "nextjs",
   "ignoreCommand": "git diff --quiet $$VERCEL_GIT_PREVIOUS_SHA $$VERCEL_GIT_COMMIT_SHA ./apps/frontend",
   "env": {
     "NODE_ENV": "production"
