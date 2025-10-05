@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Metadata } from "next";
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,14 @@ import { RealTimeDashboard } from "@/modules/analytics/components/real-time-dash
 // Import blog data and utilities
 import { getAllPosts } from "@/lib/blog";
 import type { TBlogPost } from "@/lib/blog/types";
+
+export const metadata: Metadata = {
+  title: "Analytics | Remco Stoeten",
+  description: "Real-time and historical analytics for blog performance, views, and engagement.",
+  alternates: {
+    canonical: "https://remcostoeten.nl/analytics",
+  },
+};
 
 export default function AnalyticsPage() {
   const [blogPosts, setBlogPosts] = useState<TBlogPost[]>([]);

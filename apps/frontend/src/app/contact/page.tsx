@@ -1,17 +1,22 @@
 import Link from "next/link";
 import { siteConfig } from "@/config/site";
+import type { Metadata } from "next";
 import { MapPin, Clock, ExternalLink } from "lucide-react";
 
 // Force dynamic rendering to prevent SSR issues
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Contact - Remco Stoeten',
   description: 'Get in touch with Remco Stoeten, software engineer specializing in React, Next.js, and TypeScript. Available for freelance projects and collaborations.',
+  alternates: {
+    canonical: 'https://remcostoeten.nl/contact',
+  },
   openGraph: {
     title: 'Contact - Remco Stoeten',
     description: 'Get in touch with Remco Stoeten, software engineer specializing in React, Next.js, and TypeScript.',
     type: 'website',
+    url: 'https://remcostoeten.nl/contact',
   },
 };
 

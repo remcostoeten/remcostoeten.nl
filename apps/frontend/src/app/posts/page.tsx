@@ -10,8 +10,11 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "Blog | Your Portfolio",
-    description: "Thoughts on frontend development, design, and building better web experiences.",
+    title: "Blog | Remco Stoeten",
+    description: "Articles on frontend engineering, React, Next.js, TypeScript, and building scalable UX.",
+    alternates: {
+      canonical: "https://remcostoeten.nl/posts",
+    },
   };
 }
 
