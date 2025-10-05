@@ -3,7 +3,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { ChevronDown, ChevronRight, ChevronUp, Filter } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { TSimpleProject } from '../types';
 import { SimpleProjectCard } from './SimpleProjectCard';
 import { PackagePopover } from './PackagePopover';
@@ -63,10 +63,8 @@ export function CategorizedProjects({ projects }: TProps) {
 
     if (Math.abs(info.offset.x) > threshold || Math.abs(velocity) > 500) {
       if (info.offset.x > 0 && currentCategoryIndex > 0) {
-        // Swipe right - go to previous category
         handleCategoryChange(categories[currentCategoryIndex - 1]);
       } else if (info.offset.x < 0 && currentCategoryIndex < categories.length - 1) {
-        // Swipe left - go to next category
         handleCategoryChange(categories[currentCategoryIndex + 1]);
       }
     }
@@ -112,7 +110,7 @@ export function CategorizedProjects({ projects }: TProps) {
         <div className="flex items-center gap-2 mb-4">
           <span className="sr-only">Filter by category</span>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {availableCategories.map((category) => {
             const isActive = currentCategory === category;
             const projectCount = getCategoryProjectCount(category);
@@ -124,8 +122,8 @@ export function CategorizedProjects({ projects }: TProps) {
                 key={category}
                 onClick={() => handleCategoryChange(category)}
                 disabled={isTransitioning}
-                className={`inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 ${isActive
-                  ? 'bg-primary text-primary-foreground shadow-sm border border-primary/20'
+                className={`inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all duration-200 min-h-[36px] ${isActive
+                  ? 'bg-accent text-accent-foreground shadow-sm border border-accent/20 ring-1 ring-accent/30'
                   : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
                   } ${isTransitioning ? 'opacity-60 cursor-not-allowed' : ''}`}
               >
@@ -133,39 +131,16 @@ export function CategorizedProjects({ projects }: TProps) {
                 <span className="sm:hidden">{category === 'APIs' ? 'APIs' : category === 'DX tooling' ? 'Tools' : 'Projects'}</span>
                 <span className="text-xs opacity-75">({projectCount})</span>
               </button>
+
+
+
             );
           })}
+
         </div>
       </div>
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`header-${currentCategory}`}
-          initial={{ opacity: 0, y: -8, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -8, scale: 0.96 }}
-          transition={{
-            duration: 0.4,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            scale: { duration: 0.3, ease: [0.34, 1.56, 0.64, 1] }
-          }}
-          className="mb-6"
-        >
-          <div className="space-y-1">
-            <h3 className="text-xl font-semibold text-foreground">
-              {getCategoryDisplayName(currentCategory)}
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
-                ({filteredProjects.length})
-              </span>
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              {getCategoryDescription(currentCategory)}
-            </p>
-          </div>
-        </motion.div>
-      </AnimatePresence>
 
-      {/* Main swipeable content area */}
       <motion.div
         ref={containerRef}
         drag="x"

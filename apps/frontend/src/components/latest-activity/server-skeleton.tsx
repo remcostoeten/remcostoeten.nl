@@ -40,7 +40,7 @@ export function ServerActivitySkeleton({ className }: TProps) {
             <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
               {/* First Line - Static text + Dynamic commit message */}
               <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
-                <span className="inline">The latest thing I've done is </span>
+                <span className="inline">Been busy with  </span>
                 {/* Skeleton for commit message - matches exact dimensions */}
                 <span className="inline-block">
                   <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[280px] max-w-[calc(100vw-120px)] inline-block align-middle"></span>
@@ -49,11 +49,12 @@ export function ServerActivitySkeleton({ className }: TProps) {
 
               {/* Second Line - Static text + Dynamic project + timestamp */}
               <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1">
-                <span className="whitespace-nowrap">on</span>
+                <span className="whitespace-nowrap">on my</span>
                 {/* Skeleton for project name */}
                 <span className="inline-block">
                   <span className="h-4 bg-muted/40 rounded-md animate-pulse w-[120px] max-w-[200px] inline-block align-middle"></span>
                 </span>
+                <span className="whitespace-nowrap">repository</span>
                 {/* Skeleton for timestamp */}
                 <span className="inline-flex items-center text-muted-foreground whitespace-nowrap">
                   (<span className="h-4 bg-muted/40 rounded-md animate-pulse w-[60px] inline-block align-middle"></span>)
@@ -67,7 +68,7 @@ export function ServerActivitySkeleton({ className }: TProps) {
       {/* Spotify Activity Section - Server Rendered Structure */}
       <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border/30">
         <h3 className="sr-only">Music Activity</h3>
-        
+
         {/* Icon - Rendered on Server */}
         <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0">
           <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
@@ -80,15 +81,15 @@ export function ServerActivitySkeleton({ className }: TProps) {
             <div className="flex-1 min-w-0">
               {/* First line - Static text + dynamic track and artist */}
               <div className="text-body text-muted-foreground leading-tight mb-2">
-                <span className="flex-shrink-0">Recently played </span>
+                <span className="flex-shrink-0">Whilst probably listening to </span>
                 {/* Skeleton for track name */}
                 <span className="inline-block font-semibold text-foreground">
-                  <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[160px] max-w-[250px] inline-block align-middle"></span>
+                  <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[140px] max-w-[220px] inline-block align-middle"></span>
                 </span>
                 <span className="flex-shrink-0"> by </span>
                 {/* Skeleton for artist name */}
                 <span className="inline-block font-medium text-foreground">
-                  <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[120px] max-w-[180px] inline-block align-middle"></span>
+                  <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[100px] max-w-[150px] inline-block align-middle"></span>
                 </span>
               </div>
 
@@ -130,17 +131,18 @@ export function GitHubActivitySkeleton() {
         <div className="text-muted-foreground">
           <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
             <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
-              <span className="inline">The latest thing I've done is </span>
+              <span className="inline">Been busy with  </span>
               <span className="inline-block">
                 <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[280px] max-w-[calc(100vw-120px)] inline-block align-middle"></span>
               </span>
             </div>
 
             <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1">
-              <span className="whitespace-nowrap">on</span>
+              <span className="whitespace-nowrap">on my</span>
               <span className="inline-block">
                 <span className="h-4 bg-muted/40 rounded-md animate-pulse w-[120px] max-w-[200px] inline-block align-middle"></span>
               </span>
+              <span className="whitespace-nowrap">repository</span>
               <span className="inline-flex items-center text-muted-foreground whitespace-nowrap">
                 (<span className="h-4 bg-muted/40 rounded-md animate-pulse w-[60px] inline-block align-middle"></span>)
               </span>
@@ -172,14 +174,14 @@ export function SpotifyActivitySkeleton({ showCurrentlyPlaying = false }: { show
           <div className="flex-1 min-w-0">
             <div className="text-body text-muted-foreground leading-tight mb-2">
               <span className="flex-shrink-0">
-                {showCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
+                {showCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
               </span>
               <span className="inline-block font-semibold text-foreground">
-                <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[160px] max-w-[250px] inline-block align-middle"></span>
+                <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[140px] max-w-[220px] inline-block align-middle"></span>
               </span>
               <span className="flex-shrink-0"> by </span>
               <span className="inline-block font-medium text-foreground">
-                <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[120px] max-w-[180px] inline-block align-middle"></span>
+                <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[100px] max-w-[150px] inline-block align-middle"></span>
               </span>
             </div>
 

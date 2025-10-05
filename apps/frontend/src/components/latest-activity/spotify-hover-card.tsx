@@ -14,10 +14,10 @@ interface SpotifyHoverCardProps {
   mousePosition: { x: number; y: number };
 }
 
-export const SpotifyHoverCard = memo(function SpotifyHoverCard({ 
-  track, 
-  isVisible, 
-  onMouseEnter, 
+export const SpotifyHoverCard = memo(function SpotifyHoverCard({
+  track,
+  isVisible,
+  onMouseEnter,
   onMouseLeave,
   mousePosition
 }: SpotifyHoverCardProps) {
@@ -86,7 +86,7 @@ export const SpotifyHoverCard = memo(function SpotifyHoverCard({
               <div className="flex items-center gap-2 text-sm">
                 <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
                 <span className="text-muted-foreground">
-                  {isCurrentlyPlaying ? 'Currently playing' : 'Recently played'}
+                  {isCurrentlyPlaying ? 'Currently playing' : 'Whilst probably listening to'}
                 </span>
               </div>
 

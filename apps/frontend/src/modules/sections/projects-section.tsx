@@ -112,14 +112,22 @@ export function ProjectsSection() {
       itemScope
       itemType="https://schema.org/CollectionPage"
     >
+      {/* Main Projects Section Heading */}
+      <div className="mb-4">
+        <h2 className="text-3xl font-bold text-foreground mb-2">Projects</h2>
+        <p className="text-muted-foreground">
+          A collection of my open-source projects, tools, and applications built with modern technologies.
+        </p>
+      </div>
+
       <div>
-        <p
-          className="text-body text-foreground mb-1 min-h-[1.5em]"
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {state.loadingState === 'error' && (
+        {state.loadingState === 'error' && (
+          <p
+            className="text-body text-foreground mb-1 min-h-[1.5em]"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             <span className="text-muted-foreground">
               Failed to load project data from GitHub API.{" "}
               <button
@@ -130,15 +138,15 @@ export function ProjectsSection() {
                 {retryButtonText}
               </button>
             </span>
-          )}
+          </p>
+        )}
 
 
-          {state.loadingState === 'success' && state.projects.length === 0 && (
-            <span className="text-muted-foreground">
-              No project data available from GitHub API.
-            </span>
-          )}
-        </p>
+        {state.loadingState === 'success' && state.projects.length === 0 && (
+          <span className="text-muted-foreground">
+            No project data available from GitHub API.
+          </span>
+        )}
 
         <div className="mt-6">
           {state.loadingState === 'loading' ? (
@@ -150,6 +158,6 @@ export function ProjectsSection() {
           )}
         </div>
       </div>
-    </section>
+    </section >
   );
 }

@@ -4,7 +4,7 @@ export function ProjectsSkeleton() {
     return (
         <div className="space-y-6">
             {/* Category filter buttons skeleton */}
-            <div className="mb-8">
+            <div className="mb-4">
                 <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                     {[1, 2, 3].map((i) => (
                         <div

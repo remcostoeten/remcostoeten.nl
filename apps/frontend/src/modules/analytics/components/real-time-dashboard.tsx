@@ -12,17 +12,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Pause, Play } from "lucide-react";
 
-export const RealTimeDashboard = () => {
+export function RealTimeDashboard() {
   const { stats, loading, error, refreshStats } = useRealAnalytics();
   const [isAutoRefresh, setIsAutoRefresh] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  const handleRefreshWithTimestamp = () => {
+  function handleRefreshWithTimestamp() {
     refreshStats();
     setLastUpdated(new Date());
   };
 
-  // Use smart interval for activity-aware polling
   const config = getPollingConfig('analytics');
   const { isPolling, isActive, isVisible, timeSinceActive } = useSmartInterval(handleRefreshWithTimestamp, {
     ...config,
@@ -30,7 +29,7 @@ export const RealTimeDashboard = () => {
     enabled: isAutoRefresh,
   });
 
-  const toggleAutoRefresh = () => {
+  function toggleAutoRefresh() {
     setIsAutoRefresh(!isAutoRefresh);
   };
 
@@ -137,7 +136,6 @@ export const RealTimeDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Real-Time Dashboard</h2>
@@ -177,7 +175,6 @@ export const RealTimeDashboard = () => {
         </div>
       </div>
 
-      {/* Real-time metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {realTimeMetrics.map((metric, index) => {
           const Icon = metric.icon;
@@ -207,7 +204,6 @@ export const RealTimeDashboard = () => {
         })}
       </div>
 
-      {/* Top pages */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>

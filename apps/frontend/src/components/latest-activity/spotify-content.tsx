@@ -64,7 +64,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
         <div className="flex-1 min-w-0">
           <div className="text-body text-muted-foreground leading-tight mb-2">
             <span className="flex-shrink-0">
-              {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
+              {isCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
             </span>
             <AnimatePresence mode="wait">
               <motion.span
@@ -225,7 +225,7 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
         {/* First line - Static text + skeleton content */}
         <div className="text-body text-muted-foreground leading-tight mb-2">
           <span className="flex-shrink-0">
-            {showCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
+            {showCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
           </span>
           {/* Skeleton for track name */}
           <span className="inline-block font-semibold text-foreground">

@@ -7,32 +7,55 @@ interface AnalyticsOverviewProps {
   totalUniqueViews: number;
   recentViews: number;
   totalPosts: number;
+  // Optional props for calculating percentage changes
+  previousTotalViews?: number;
+  previousUniqueViews?: number;
+  previousRecentViews?: number;
+  // Optional props for category data
+  categoryStats?: Array<{ category: string; count: number }>;
 }
 
-export const AnalyticsOverview = ({ 
-  totalViews, 
-  totalUniqueViews, 
-  recentViews, 
-  totalPosts 
+export const AnalyticsOverview = ({
+  totalViews,
+  totalUniqueViews,
+  recentViews,
+  totalPosts,
+  previousTotalViews,
+  previousUniqueViews,
+  previousRecentViews,
+  categoryStats
 }: AnalyticsOverviewProps) => {
+  // Helper function to calculate percentage change
+  const calculateChange = (current: number, previous?: number): string | undefined => {
+    if (!previous || previous === 0) return undefined;
+    const change = ((current - previous) / previous) * 100;
+    const sign = change >= 0 ? '+' : '';
+    return `${sign}${change.toFixed(1)}%`;
+  };
+
+  // Get most popular category
+  const mostPopularCategory = categoryStats?.length ?
+    categoryStats.reduce((prev, current) =>
+      prev.count > current.count ? prev : current
+    ).category : 'General';
   const metrics = [
     {
       label: "Total Views",
       value: totalViews.toLocaleString(),
       icon: Eye,
-      change: "+12.5%"
+      change: calculateChange(totalViews, previousTotalViews)
     },
     {
-      label: "Unique Visitors", 
+      label: "Unique Visitors",
       value: totalUniqueViews.toLocaleString(),
       icon: Users,
-      change: "+8.2%"
+      change: calculateChange(totalUniqueViews, previousUniqueViews)
     },
     {
       label: "Recent Views (30d)",
-      value: recentViews.toLocaleString(), 
+      value: recentViews.toLocaleString(),
       icon: TrendingUp,
-      change: "+15.7%"
+      change: calculateChange(recentViews, previousRecentViews)
     },
     {
       label: "Total Posts",
@@ -47,12 +70,12 @@ export const AnalyticsOverview = ({
       value: Math.round(totalViews / totalPosts).toLocaleString()
     },
     {
-      label: "View Conversion Rate", 
+      label: "View Conversion Rate",
       value: `${Math.round((totalUniqueViews / totalViews) * 100)}%`
     },
     {
       label: "Most Popular Category",
-      value: "Development"
+      value: mostPopularCategory
     }
   ];
 
@@ -78,7 +101,7 @@ export const AnalyticsOverview = ({
                   </span>
                 )}
               </div>
-              
+
               <div className="space-y-1">
                 <p className="text-2xl font-bold text-foreground">
                   {metric.value}

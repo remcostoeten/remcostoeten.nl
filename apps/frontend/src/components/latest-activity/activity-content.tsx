@@ -28,7 +28,7 @@ export const ActivityContent = memo(function ActivityContent({
   return (
     <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
       <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
-        <span className="inline">The latest thing I've done is </span>
+        <span className="inline">Been busy with  </span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`commit-${currentActivityIndex}`}

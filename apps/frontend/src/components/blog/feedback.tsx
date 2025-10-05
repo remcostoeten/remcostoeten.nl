@@ -39,12 +39,10 @@ export const FeedbackWidget = ({ slug }: TFeedbackWidgetProps) => {
       const scrollingUp = currentScrollY < lastScrollY.current;
       const scrolledPastThreshold = currentScrollY > 200;
 
-      // Clear previous timeout
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
       }
 
-      // Show on reverse scroll, hide when scrolling down
       if (scrollingUp && scrolledPastThreshold) {
         setIsVisible(true);
       } else if (!scrollingUp && !isExpanded) {
@@ -167,97 +165,97 @@ export const FeedbackWidget = ({ slug }: TFeedbackWidgetProps) => {
             animation: "spring-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
           }}
         >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--feedback-border))]">
-          <div className="flex items-center gap-2">
-            <span className="text-3xl">{selectedEmoji}</span>
-            <h3 className="text-sm font-semibold text-foreground">Thanks for the feedback!</h3>
-          </div>
-          <button
-            onClick={() => {
-              setIsExpanded(false);
-              setSelectedEmoji(null);
-              setMessage("");
-              resetError();
-            }}
-            className="p-1 rounded-lg hover:bg-[hsl(var(--feedback-hover))] transition-colors"
-          >
-            <X className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="px-4 py-2 bg-red-500/10 border-b border-red-500/20">
-            <div className="flex items-center gap-2 text-sm text-red-400">
-              <AlertCircle className="w-4 h-4" />
-              <span>{error}</span>
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--feedback-border))]">
+            <div className="flex items-center gap-2">
+              <span className="text-3xl">{selectedEmoji}</span>
+              <h3 className="text-sm font-semibold text-foreground">Thanks for the feedback!</h3>
             </div>
-          </div>
-        )}
-
-        {/* Rate limit message */}
-        {isRateLimited && (
-          <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/20">
-            <div className="text-sm text-yellow-400">
-              <span>Rate limit exceeded. Please try again in {Math.ceil((remainingTime || 0) / (60 * 1000))} minutes.</span>
-            </div>
-          </div>
-        )}
-
-        {/* Optional message field */}
-        <div className="p-4 space-y-3">
-          <p className="text-xs text-muted-foreground">Want to add more? (optional)</p>
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Share your thoughts..."
-            className={cn(
-              "w-full px-3 py-2 rounded-lg resize-none",
-              "bg-[hsl(var(--feedback-hover))] border border-[hsl(var(--feedback-border))]",
-              "text-sm text-foreground placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-2 focus:ring-[hsl(var(--feedback-glow))] focus:ring-opacity-50",
-              "transition-all duration-200"
-            )}
-            rows={3}
-            maxLength={280}
-          />
-          
-          <div className="flex gap-2">
             <button
-              onClick={handleSkipWrapper}
-              disabled={isSubmitting || isRateLimited}
-              className={cn(
-                "flex-1 px-4 py-2 rounded-lg text-sm font-medium",
-                "bg-[hsl(var(--feedback-hover))] text-foreground/80",
-                "hover:bg-[hsl(var(--feedback-border))] transition-colors",
-                "disabled:opacity-50"
-              )}
+              onClick={() => {
+                setIsExpanded(false);
+                setSelectedEmoji(null);
+                setMessage("");
+                resetError();
+              }}
+              className="p-1 rounded-lg hover:bg-[hsl(var(--feedback-hover))] transition-colors"
             >
-              Skip
-            </button>
-            <button
-              onClick={handleSubmitWrapper}
-              disabled={isSubmitting || isRateLimited}
-              className={cn(
-                "flex-1 px-4 py-2 rounded-lg text-sm font-medium",
-                "bg-[hsl(var(--feedback-glow))] text-[hsl(var(--feedback-bg))]",
-                "hover:opacity-90 transition-all",
-                "disabled:opacity-50 flex items-center justify-center gap-2",
-                "shadow-lg hover:shadow-xl"
-              )}
-            >
-              {isSubmitting ? (
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  Send
-                </>
-              )}
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
-        </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="px-4 py-2 bg-red-500/10 border-b border-red-500/20">
+              <div className="flex items-center gap-2 text-sm text-red-400">
+                <AlertCircle className="w-4 h-4" />
+                <span>{error}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Rate limit message */}
+          {isRateLimited && (
+            <div className="px-4 py-2 bg-yellow-500/10 border-b border-yellow-500/20">
+              <div className="text-sm text-yellow-400">
+                <span>Rate limit exceeded. Please try again in {Math.ceil((remainingTime || 0) / (60 * 1000))} minutes.</span>
+              </div>
+            </div>
+          )}
+
+          {/* Optional message field */}
+          <div className="p-4 space-y-3">
+            <p className="text-xs text-muted-foreground">Want to add more? (optional)</p>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Share your thoughts..."
+              className={cn(
+                "w-full px-3 py-2 rounded-lg resize-none",
+                "bg-[hsl(var(--feedback-hover))] border border-[hsl(var(--feedback-border))]",
+                "text-sm text-foreground placeholder:text-muted-foreground",
+                "focus:outline-none focus:ring-2 focus:ring-[hsl(var(--feedback-glow))] focus:ring-opacity-50",
+                "transition-all duration-200"
+              )}
+              rows={3}
+              maxLength={280}
+            />
+
+            <div className="flex gap-2">
+              <button
+                onClick={handleSkipWrapper}
+                disabled={isSubmitting || isRateLimited}
+                className={cn(
+                  "flex-1 px-4 py-2 rounded-lg text-sm font-medium",
+                  "bg-[hsl(var(--feedback-hover))] text-foreground/80",
+                  "hover:bg-[hsl(var(--feedback-border))] transition-colors",
+                  "disabled:opacity-50"
+                )}
+              >
+                Skip
+              </button>
+              <button
+                onClick={handleSubmitWrapper}
+                disabled={isSubmitting || isRateLimited}
+                className={cn(
+                  "flex-1 px-4 py-2 rounded-lg text-sm font-medium",
+                  "bg-[hsl(var(--feedback-glow))] text-[hsl(var(--feedback-bg))]",
+                  "hover:opacity-90 transition-all",
+                  "disabled:opacity-50 flex items-center justify-center gap-2",
+                  "shadow-lg hover:shadow-xl"
+                )}
+              >
+                {isSubmitting ? (
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <Send className="w-4 h-4" />
+                    Send
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>

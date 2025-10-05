@@ -19,8 +19,9 @@ type TProjectOverrides = {
     originLabel?: {
       text: string;
       description?: string;
-      color?: 'website' | 'community' | 'personal' | 'client';
+      color?: 'website' | 'community' | 'personal' | 'client' | 'component' | 'tool' | 'config' | 'tutorial' | 'blog';
       icon?: string;
+      blogUrl?: string;
     };
     [key: string]: any;
   };
@@ -28,6 +29,7 @@ type TProjectOverrides = {
 
 const PROJECT_OVERRIDES: TProjectOverrides = {
   "fync": {
+    title: "Fync",
     packageInfo: {
       npmUrl: "https://www.npmjs.com/package/fync",
       githubUrl: "https://github.com/remcostoeten/fync",
@@ -42,6 +44,7 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
     anchor: "/projects/fync" // Example: custom anchor for this project
   },
   "drizzleasy": {
+    title: "Drizzleasy",
     packageInfo: {
       npmUrl: "https://www.npmjs.com/package/drizzleasy",
       githubUrl: "https://github.com/remcostoeten/drizzleasy",
@@ -68,7 +71,7 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
     }
   },
   "beautiful-interactive-file-tree": {
-    title: "The most beautifull file tree",
+    title: "Beautiful file tree component",
     demoUrl: "https://beautiful-file-tree-v2.vercel.app/",
     originLabel: {
       text: "Born from this site",
@@ -78,13 +81,103 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
     }
   },
   "react-beautiful-featurerich-codeblock": {
-    title: "The most beautifull code block",
+    title: "Beautiful rich code block",
     demoUrl: "https://react-beautiful-featurerich-codeblo.vercel.app/",
     originLabel: {
       text: "Born from this site",
       description: "Created while building remcostoeten.nl",
       color: "website",
       icon: "📝"
+    }
+  },
+  "emoji-picker-component": {
+    title: "Emoji Picker Component",
+    demoUrl: "https://emoji-picker-demo.vercel.app/",
+    originLabel: {
+      text: "Interactive component",
+      description: "A reusable emoji picker built with React",
+      color: "component",
+      icon: "😀"
+    }
+  },
+  "Hygienic": {
+    title: "Hygienic",
+    originLabel: {
+      text: "Code quality tool",
+      description: "TypeScript/JavaScript code quality and consistency tool",
+      color: "tool",
+      icon: "🧹"
+    }
+  },
+  "Docki": {
+    title: "Docki",
+    originLabel: {
+      text: "Docker utility",
+      description: "Enhanced Docker workflow and management tool",
+      color: "tool",
+      icon: "🐳"
+    }
+  },
+  "Turso-db-creator-auto-retrieve-env-credentials": {
+    title: "Turso DB Creator",
+    originLabel: {
+      text: "Database utility",
+      description: "Automated Turso database creation with credential management",
+      color: "tool",
+      icon: "🗄️"
+    }
+  },
+  "gh-select": {
+    title: "GitHub CLI Select",
+    originLabel: {
+      text: "GitHub utility",
+      description: "Enhanced GitHub CLI with interactive selection",
+      color: "tool",
+      icon: "🔧"
+    }
+  },
+  "dotfiles": {
+    title: "Dotfiles",
+    originLabel: {
+      text: "Configuration files",
+      description: "Personal development environment configuration",
+      color: "config",
+      icon: "⚙️"
+    }
+  },
+  "remcostoeten.nl": {
+    title: "Remcostoeten.nl",
+    originLabel: {
+      text: "read",
+      description: "Portfolio and blog built with Next.js - click to read the story",
+      icon: "→",
+      blogUrl: "/posts/building-remcostoeten-nl"
+    }
+  },
+  "expense-calendar": {
+    title: "Expense Calendar",
+    originLabel: {
+      text: "Finance app",
+      description: "Visual expense tracking and budgeting application",
+      icon: "💰"
+    }
+  },
+  "nextjs-15-roll-your-own-authentication": {
+    title: "Next.js Auth Guide",
+    originLabel: {
+      text: "Tutorial project",
+      description: "Complete guide to building custom authentication in Next.js 15",
+      color: "tutorial",
+      icon: "📚"
+    }
+  },
+  "emoji-feedback-widget": {
+    title: "Emoji Feedback Widget",
+    originLabel: {
+      text: "Interactive widget",
+      description: "React component for collecting emoji-based feedback",
+      color: "component",
+      icon: "⭐"
     }
   }
 };
@@ -151,14 +244,12 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
       const override = PROJECT_OVERRIDES[repo.title];
       const category = override?.category || categorizeProject(repo.title, repo.description, technologies, repo.topics);
 
-      // Determine if this should be a featured project or simple project (dynamic criteria)
       const isFeatured = repo.stars > 3 || // Projects with more stars are featured
         repo.forks > 1 || // Projects with forks are featured
         (repo.totalCommits && repo.totalCommits > 10) || // Active projects are featured
         repo.topics.length > 2; // Well-tagged projects are featured
 
       if (isFeatured) {
-        // Use overrides if available, otherwise use GitHub data as defaults
         const override = PROJECT_OVERRIDES[repo.title];
         const title = override?.title || repo.title;
         const description = override?.description || repo.description || `A ${repo.language} project with ${repo.stars} stars`;
@@ -186,7 +277,6 @@ export async function getRealProjectData(): Promise<{ featuredProjects: TProject
           anchor: override?.anchor
         });
       } else {
-        // Use overrides if available, otherwise use GitHub data as defaults
         const override = PROJECT_OVERRIDES[repo.title];
         const name = override?.title || repo.title;
         const description = override?.description || repo.description || `A ${repo.language} project`;

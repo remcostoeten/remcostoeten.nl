@@ -17,8 +17,9 @@ export type TPackageInfo = {
 export type TOriginLabel = {
   text: string;
   description?: string;
-  color?: 'website' | 'community' | 'personal' | 'client';
+  color?: 'website' | 'community' | 'personal' | 'client' | 'blog';
   icon?: string;
+  blogUrl?: string;
 };
 
 export type TGitInfo = {

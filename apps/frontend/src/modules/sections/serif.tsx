@@ -3,21 +3,52 @@ import { cn } from '@/lib/utils'
 type TProps = {
   className?: string
   i?: boolean
+  color?: 'default' | 'accent' | 'muted' | 'primary'
+  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl'
+  weight?: 'normal' | 'medium' | 'semibold' | 'bold'
   children: React.ReactNode
 }
 
-/**
- * A component that renders a span with font-serif and optionally configurable via props to become italic
- * @param children - The content to render inside the span
- * @param i - Whether to apply italic styling
- * @example
- * <S>text</S>
- * @example
- * <S i>Text</S>
- */
-export function S({ className, children, i = false }: TProps) {
+export function S({
+  className,
+  children,
+  i = false,
+  color = 'default',
+  size = 'base',
+  weight = 'normal'
+}: TProps) {
+  const colorClasses = {
+    default: 'text-foreground',
+    accent: 'text-accent',
+    muted: 'text-muted-foreground',
+    primary: 'text-primary'
+  };
+
+  const sizeClasses = {
+    xs: 'text-xs',
+    sm: 'text-sm',
+    base: 'text-base',
+    lg: 'text-lg',
+    xl: 'text-xl',
+    '2xl': 'text-2xl'
+  };
+
+  const weightClasses = {
+    normal: 'font-normal',
+    medium: 'font-medium',
+    semibold: 'font-semibold',
+    bold: 'font-bold'
+  };
+
   return (
-    <span className={cn('font-serif', { italic: i }, className)}>
+    <span className={cn(
+      'font-serif',
+      colorClasses[color],
+      sizeClasses[size],
+      weightClasses[weight],
+      { italic: i },
+      className
+    )}>
       {children}
     </span>
   )

@@ -203,7 +203,7 @@ export const SpotifyIntegration = memo(function SpotifyIntegration() {
             {/* First line - track and artist */}
             <div className="text-body text-muted-foreground leading-tight mb-2">
               <span className="flex-shrink-0">
-                {isCurrentlyPlaying ? 'Currently listening to' : 'Recently played'}{" "}
+                {isCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
               </span>
               <AnimatePresence mode="wait">
                 <motion.span

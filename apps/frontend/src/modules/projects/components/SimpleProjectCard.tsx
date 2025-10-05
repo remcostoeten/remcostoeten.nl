@@ -6,6 +6,7 @@ import { GitCommit, Star, GitBranch, Calendar, Users, Clock, ExternalLink } from
 import { fetchLatestActivities, LatestActivity as LatestActivityType, fetchRepositoryData } from "@/services/github-service";
 import { TSimpleProject, TProjectData } from "../types";
 import { SpotifyAnimation } from "@/modules/sections/components/spotify-animation";
+import { OriginLabel } from "./OriginLabel";
 import Link from "next/link";
 
 type TCommitHoverData = {
@@ -63,14 +64,11 @@ export function SimpleProjectCard(props: TSimpleProject | TProjectData) {
         {projectName}
       </span>
       {originLabel && (
-        <span
-          className={`px-1.5 py-0.5 text-[10px] font-medium border rounded-full shadow-sm whitespace-nowrap sm:px-2 sm:py-1 sm:text-xs ${getOriginLabelStyles(originLabel.color)}`}
-          title={originLabel.description}
-        >
-          {originLabel.icon && <span className="mr-0.5 sm:mr-1">{originLabel.icon}</span>}
-          <span className="hidden sm:inline">{originLabel.text}</span>
-          <span className="sm:hidden">●</span>
-        </span>
+        <OriginLabel
+          label={originLabel}
+          size="sm"
+          blogUrl={originLabel.blogUrl}
+        />
       )}
     </div>
   );
@@ -97,14 +95,11 @@ export function SimpleProjectCard(props: TSimpleProject | TProjectData) {
         {projectName}
       </Link>
       {originLabel && (
-        <span
-          className={`px-1.5 py-0.5 text-[10px] font-medium border rounded-full shadow-sm whitespace-nowrap sm:px-2 sm:py-1 sm:text-xs ${getOriginLabelStyles(originLabel.color)}`}
-          title={originLabel.description}
-        >
-          {originLabel.icon && <span className="mr-0.5 sm:mr-1">{originLabel.icon}</span>}
-          <span className="hidden sm:inline">{originLabel.text}</span>
-          <span className="sm:hidden">●</span>
-        </span>
+        <OriginLabel
+          label={originLabel}
+          size="sm"
+          blogUrl={originLabel.blogUrl}
+        />
       )}
     </div>
   );

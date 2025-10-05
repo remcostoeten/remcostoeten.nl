@@ -31,12 +31,11 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
   onCommitMouseLeave
 }: GitHubActivityContentProps) {
 
-  const MAX_LENGTH = 40;
+  const MAX_LENGTH = 50;
 
-  // Staggered animation constants
   const STAGGER_DURATION = 0.8;
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-  const BASE_DELAY = 0.1; // Base delay before first element starts
+  const BASE_DELAY = 0.1;
   const STAGGER_DELAY = 0.15; // Delay between each element
 
   function buildStaggerTransition(order: number) {
@@ -50,9 +49,8 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
 
   return (
     <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
-      {/* First Line - Static text is rendered by shell, only dynamic content here */}
       <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
-        <span className="inline">The latest thing I've done is </span>
+        <span className="inline">Been busy with  </span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`commit-${currentActivityIndex}`}
@@ -60,7 +58,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-            transition={buildStaggerTransition(0)} // First element
+            transition={buildStaggerTransition(0)}
           >
             <Link
               href={currentActivity.commitUrl}
@@ -79,7 +77,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
 
       {/* Second Line - Static text + dynamic content */}
       <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1">
-        <span className="whitespace-nowrap">on</span>
+        <span className="whitespace-nowrap">on my</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`project-${currentActivityIndex}`}
@@ -87,7 +85,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-            transition={buildStaggerTransition(1)} // Second element
+            transition={buildStaggerTransition(1)}
           >
             <Link
               href={currentActivity.repositoryUrl}
@@ -102,6 +100,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
             </Link>
           </motion.span>
         </AnimatePresence>
+        <span className="whitespace-nowrap">repository</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`timestamp-${currentActivityIndex}`}
@@ -116,7 +115,6 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
         </AnimatePresence>
       </div>
 
-      {/* Hover Card */}
       <div className="absolute left-0 top-full mt-2 z-[999999] w-96 max-w-[90vw]">
         <CommitHoverCard
           activity={currentActivity}
@@ -153,10 +151,10 @@ export function GitHubActivitySkeletonContent() {
     <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
       {/* First Line - Matches the static text + dynamic content structure */}
       <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
-        <span className="inline">The latest thing I've done is </span>
+        <span className="inline">Been busy with  </span>
         {/* Skeleton for commit message - matches exact dimensions */}
         <span className="inline-block">
-          <motion.span 
+          <motion.span
             className="h-5 bg-muted/60 rounded-md w-[280px] max-w-[calc(100vw-120px)] inline-block align-middle animate-pulse"
             initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
@@ -167,19 +165,20 @@ export function GitHubActivitySkeletonContent() {
 
       {/* Second Line - Matches static text + dynamic project + timestamp structure */}
       <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1">
-        <span className="whitespace-nowrap">on</span>
+        <span className="whitespace-nowrap">on my</span>
         {/* Skeleton for project name */}
         <span className="inline-block">
-          <motion.span 
+          <motion.span
             className="h-4 bg-muted/40 rounded-md w-[120px] max-w-[200px] inline-block align-middle animate-pulse"
             initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
             transition={buildStaggerTransition(1)}
           />
         </span>
+        <span className="whitespace-nowrap">repository</span>
         {/* Skeleton for timestamp */}
         <span className="inline-flex items-center text-muted-foreground whitespace-nowrap">
-          (<motion.span 
+          (<motion.span
             className="h-4 bg-muted/40 rounded-md w-[60px] inline-block align-middle animate-pulse"
             initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
