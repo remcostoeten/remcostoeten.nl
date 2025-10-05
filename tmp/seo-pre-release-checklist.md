@@ -22,7 +22,7 @@
   - [x] Remove `noindex` in prod for real pages
 - [ ] Core Web Vitals
   - [ ] LCP optimized (hero image, font preload)
-  - [ ] CLS stable (image dimensions, font swap)
+  - [x] CLS stable (image dimensions, font swap)
   - [ ] JS minimized, route-level code-splitting
 - [ ] Accessibility
   - [ ] One `h1` per page

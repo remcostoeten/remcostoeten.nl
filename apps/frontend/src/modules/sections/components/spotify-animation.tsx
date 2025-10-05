@@ -202,6 +202,11 @@ export const SpotifyAnimation = () => {
                         src={imageUrl} 
                         alt={trackAlbum}
                         className="w-10 h-10 rounded object-cover flex-shrink-0"
+                        width={40}
+                        height={40}
+                        loading="lazy"
+                        decoding="async"
+                        sizes="40px"
                       />
                     ) : (
                       <div className="w-10 h-10 rounded bg-muted flex items-center justify-center flex-shrink-0">
