@@ -56,7 +56,7 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
   "react-beautiful-featurerich-codeblock": {
     title: "Beautifull featurerich codeblock",
     description: "A polished, highly customizable code block with copy, line numbers, highlighting, and theming.",
-    demoUrl: "https://react-beautiful-featurerich-codeblo.vercel.app/"
+    demoUrl: "https://beautiful-codeblock.vercel.app/"
   },
   "emoji-picker-component": {
     title: "Emoji picker component",
