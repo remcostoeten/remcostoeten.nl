@@ -95,6 +95,10 @@ export default async function PostPage(props: TPostPageProps) {
     post.category
   );
 
+  const relatedPosts = getAllBlogPosts()
+    .filter((p) => p.slug !== params.slug && (p.category === post.category || p.tags.some((t) => post.tags.includes(t))))
+    .slice(0, 3);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -212,6 +216,22 @@ export default async function PostPage(props: TPostPageProps) {
 
         {/* Feedback Widget */}
         <FeedbackWidget slug={params.slug} />
+
+        {relatedPosts.length > 0 && (
+          <div className="mt-12 border-t border-border pt-8">
+            <h2 className="text-2xl font-semibold mb-4">Related posts</h2>
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {relatedPosts.map((rp) => (
+                <li key={rp.slug}>
+                  <Link href={`/posts/${rp.slug}`} className="text-accent hover:underline">
+                    {rp.title}
+                  </Link>
+                  <p className="text-sm text-muted-foreground">{rp.excerpt}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </>
   );

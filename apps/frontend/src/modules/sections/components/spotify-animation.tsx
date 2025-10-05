@@ -27,14 +27,14 @@ export const SpotifyAnimation = () => {
       // First check if something is currently playing
       const currentTrack = await getCurrentOrRecentMusic();
       const isCurrentlyPlaying = currentTrack && 'is_playing' in currentTrack && currentTrack.is_playing;
-      
+
       if (isCurrentlyPlaying) {
         setCurrentlyPlaying(currentTrack as SpotifyTrack);
         setUseRealSpotify(true);
         console.log('🎵 [SpotifyAnimation] Currently playing:', currentTrack.name, 'by', currentTrack.artist);
       } else {
         setCurrentlyPlaying(null);
-        
+
         // Get recent tracks for cycling
         const tracks = await getRecentMusicTracks(5);
         if (tracks.length > 0) {
@@ -64,7 +64,7 @@ export const SpotifyAnimation = () => {
   // Cycle through tracks every 4 seconds (only if not currently playing)
   useEffect(() => {
     if (currentlyPlaying || recentTracks.length <= 1) return;
-    
+
     const interval = setInterval(() => {
       setCurrentTrackIndex((prev) => (prev + 1) % recentTracks.length);
     }, 4000);
@@ -82,7 +82,7 @@ export const SpotifyAnimation = () => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
+
     if (diffInMinutes < 1) return 'just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
@@ -142,7 +142,7 @@ export const SpotifyAnimation = () => {
               >
                 {displayTrack.artist}
               </motion.span>
-              
+
               {useRealSpotify && (
                 <motion.span
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -152,9 +152,9 @@ export const SpotifyAnimation = () => {
                   🎵
                 </motion.span>
               )}
-              
+
               {recentTracks.length > 1 && !currentlyPlaying && (
-                <motion.span 
+                <motion.span
                   className="text-xs text-muted-foreground ml-2"
                   key={`counter-${currentTrackIndex}`}
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -167,7 +167,7 @@ export const SpotifyAnimation = () => {
             </span>
           </button>
         </PopoverTrigger>
-        
+
         <PopoverContent className="w-80 p-0" align="start">
           <div className="p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -179,7 +179,7 @@ export const SpotifyAnimation = () => {
                 <span className="text-xs text-green-500">🎵 Live</span>
               )}
             </div>
-            
+
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {allTracks.slice(0, 5).map((track, index) => {
                 const isCurrentTrack = currentlyPlaying ? index === 0 : index === currentTrackIndex;
@@ -189,17 +189,16 @@ export const SpotifyAnimation = () => {
                 const playedAt = 'played_at' in track ? track.played_at : new Date().toISOString();
                 const externalUrl = 'external_url' in track ? track.external_url : undefined;
                 const imageUrl = 'image_url' in track ? track.image_url : undefined;
-                
+
                 return (
                   <div
                     key={`${trackName}-${index}`}
-                    className={`flex items-center gap-3 p-2 rounded-md transition-colors ${
-                      isCurrentTrack ? 'bg-accent/10 border border-accent/20' : 'hover:bg-muted/50'
-                    }`}
+                    className={`flex items-center gap-3 p-2 rounded-md transition-colors ${isCurrentTrack ? 'bg-accent/10 border border-accent/20' : 'hover:bg-muted/50'
+                      }`}
                   >
                     {imageUrl ? (
-                      <img 
-                        src={imageUrl} 
+                      <img
+                        src={imageUrl}
                         alt={trackAlbum}
                         className="w-10 h-10 rounded object-cover flex-shrink-0"
                         width={40}
@@ -213,7 +212,7 @@ export const SpotifyAnimation = () => {
                         <Music className="w-4 h-4 text-muted-foreground" />
                       </div>
                     )}
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-medium text-sm truncate">
@@ -244,7 +243,7 @@ export const SpotifyAnimation = () => {
                       <p className="text-xs text-muted-foreground truncate">{trackArtist}</p>
                       <p className="text-xs text-muted-foreground/70 truncate">{trackAlbum}</p>
                     </div>
-                    
+
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
                       {currentlyPlaying && index === 0 ? (
                         <span className="text-xs text-green-500 font-medium">Now</span>
@@ -259,7 +258,7 @@ export const SpotifyAnimation = () => {
                 );
               })}
             </div>
-            
+
             {useRealSpotify && (
               <div className="mt-3 pt-3 border-t border-border">
                 <p className="text-xs text-muted-foreground text-center">

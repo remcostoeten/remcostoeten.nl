@@ -1,12 +1,12 @@
+import dynamic from 'next/dynamic';
 import {
-  HeroSection,
   AboutSection,
   ProjectsSection,
-  LatestActivitySection,
   ContactSection,
   TimezoneSection,
-  BlogSection
 } from "@/modules/sections";
+const LatestActivitySection = dynamic(() => import("@/modules/sections").then(m => m.LatestActivitySection), { ssr: true });
+const BlogSection = dynamic(() => import("@/modules/sections").then(m => m.BlogSection), { ssr: true });
 import { AnnouncementBanner } from "@/shared/components/announcement";
 import type { Metadata } from 'next';
 import { buildSeo } from "@/lib/seo";
@@ -27,6 +27,7 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   return (
     <main id="main-content" role="main" className='home'>
+      <h1 className="sr-only">Remco Stoeten — Software Engineer</h1>
       <div className="space-y-8">
         <AnnouncementBanner />
         {/* <HeroSection /> */}

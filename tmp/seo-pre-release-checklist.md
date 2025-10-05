@@ -23,14 +23,14 @@
 - [ ] Core Web Vitals
   - [ ] LCP optimized (hero image, font preload)
   - [x] CLS stable (image dimensions, font swap)
-  - [ ] JS minimized, route-level code-splitting
+- [x] JS minimized, route-level code-splitting
 - [ ] Accessibility
-  - [ ] One `h1` per page
-  - [ ] Alt text for images
-  - [ ] Landmarks and focus styles
+  - [x] One `h1` per page
+  - [x] Alt text for images
+  - [x] Landmarks and focus styles
 - [ ] Internal Linking
   - [ ] Cornerstone pages linked
-  - [ ] Related posts links
+  - [x] Related posts links
 
 Scope of this PR:
 - [x] Implement metadata (title/description) and canonical for core routes
