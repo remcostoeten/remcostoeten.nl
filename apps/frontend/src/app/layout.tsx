@@ -181,6 +181,22 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <link rel="alternate" type="application/rss+xml" title="Remco Stoeten Blog RSS" href="/rss" />
+
+        {/* Site Navigation structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            itemListElement: [
+              { '@type': 'SiteNavigationElement', name: 'Home', url: 'https://remcostoeten.nl' },
+              { '@type': 'SiteNavigationElement', name: 'Blog', url: 'https://remcostoeten.nl/posts' },
+              { '@type': 'SiteNavigationElement', name: 'Analytics', url: 'https://remcostoeten.nl/analytics' },
+              { '@type': 'SiteNavigationElement', name: 'Contact', url: 'https://remcostoeten.nl/contact' },
+            ]
+          }) }}
+        />
         {/* Additional SEO Meta Tags */}
         <meta name="author" content="Remco Stoeten" />
         <meta name="geo.region" content="NL" />

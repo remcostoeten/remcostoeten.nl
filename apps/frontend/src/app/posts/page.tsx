@@ -26,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function PostsPage() {
   const allPosts = getAllBlogPosts();
+  const cornerstone = allPosts.slice(0, 3);
 
   // Generate breadcrumbs for blog listing page
   const breadcrumbs: BreadcrumbItem[] = [
@@ -126,6 +127,21 @@ export default async function PostsPage() {
       <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 mt-12">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
+            {cornerstone.length > 0 && (
+              <div className="mb-8 rounded-lg border border-border p-4">
+                <h2 className="text-xl font-semibold mb-3">Featured posts</h2>
+                <ul className="grid gap-3 sm:grid-cols-3">
+                  {cornerstone.map((p) => (
+                    <li key={p.slug}>
+                      <Link href={`/posts/${p.slug}`} className="text-accent hover:underline">
+                        {p.title}
+                      </Link>
+                      <p className="text-sm text-muted-foreground">{p.excerpt}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <BlogPostsClient allPosts={allPosts} />
           </div>
         </div>

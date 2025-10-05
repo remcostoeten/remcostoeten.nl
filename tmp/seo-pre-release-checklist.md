@@ -29,7 +29,7 @@
   - [x] Alt text for images
   - [x] Landmarks and focus styles
 - [ ] Internal Linking
-  - [ ] Cornerstone pages linked
+  - [x] Cornerstone pages linked
   - [x] Related posts links
 
 Scope of this PR:

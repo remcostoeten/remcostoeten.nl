@@ -12,10 +12,12 @@ export interface BlogPostMetadata {
   category: string;
   status: string;
   author: string;
+  ogImage?: string;
   seo?: {
     title?: string;
     description?: string;
     keywords?: string[];
+    image?: string;
   };
 }
 
@@ -29,10 +31,12 @@ export interface BlogPost {
   status: string;
   author: string;
   readTime: number;
+  ogImage?: string;
   seo?: {
     title?: string;
     description?: string;
     keywords?: string[];
+    image?: string;
   };
 }
 
@@ -87,6 +91,7 @@ export function getAllBlogPosts(): BlogPost[] {
       status: data.status || 'published',
       author: data.author || 'Remco Stoeten',
       readTime: calculateReadTime(content),
+      ogImage: data.ogImage || data.image,
       seo: data.seo
     });
   }

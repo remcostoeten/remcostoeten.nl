@@ -1,17 +1,18 @@
-import dynamic from 'next/dynamic';
 import {
   AboutSection,
   ProjectsSection,
   ContactSection,
   TimezoneSection,
 } from "@/modules/sections";
+
+export const dynamic = 'force-dynamic';
+
 const LatestActivitySection = dynamic(() => import("@/modules/sections").then(m => m.LatestActivitySection), { ssr: true });
 const BlogSection = dynamic(() => import("@/modules/sections").then(m => m.BlogSection), { ssr: true });
 import { AnnouncementBanner } from "@/shared/components/announcement";
 import type { Metadata } from 'next';
 import { buildSeo } from "@/lib/seo";
 
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: "Remco Stoeten | Software Engineer (React, Next.js, TypeScript)",

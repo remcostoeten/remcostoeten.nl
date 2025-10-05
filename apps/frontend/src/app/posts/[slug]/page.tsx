@@ -55,6 +55,7 @@ export async function generateMetadata(props: TPostPageProps): Promise<Metadata>
       title: post.seo?.title || post.title,
       description: post.seo?.description || post.excerpt,
       url: canonicalUrl,
+      image: post.seo?.image || post.ogImage || 'https://remcostoeten.nl/og-image.png',
     }),
     robots: {
       index: true,
