@@ -15,11 +15,11 @@
   - [x] Article on post pages
   - [x] BreadcrumbList
 - [ ] Sitemap & Robots
-  - [ ] `app/sitemap.ts` lists all indexable routes with `lastmod`
-  - [ ] `robots.txt` references sitemap
+  - [x] `app/sitemap.ts` lists all indexable routes with `lastmod`
+  - [x] `robots.txt` references sitemap
 - [ ] Indexing Controls
-  - [ ] `noindex` for thin/utility pages
-  - [ ] Remove `noindex` in prod for real pages
+  - [x] `noindex` for thin/utility pages
+  - [x] Remove `noindex` in prod for real pages
 - [ ] Core Web Vitals
   - [ ] LCP optimized (hero image, font preload)
   - [ ] CLS stable (image dimensions, font swap)
