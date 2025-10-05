@@ -187,7 +187,7 @@ export default function RootLayout({
         <meta name="geo.placename" content="Netherlands" />
         <meta property="profile:first_name" content="Remco" />
         <meta property="profile:last_name" content="Stoeten" />
-        
+
 
         {/* Structured Data for Knowledge Graph */}
         <script

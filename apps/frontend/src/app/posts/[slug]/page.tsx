@@ -136,11 +136,25 @@ export default async function PostPage(props: TPostPageProps) {
     timeRequired: `PT${post.readTime}M`,
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://remcostoeten.nl' },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://remcostoeten.nl/posts' },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `https://remcostoeten.nl/posts/${params.slug}` },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <div className="max-w-7xl mx-auto py-8 px-4">
         <BreadcrumbNavigation items={breadcrumbs} className="mb-8" />

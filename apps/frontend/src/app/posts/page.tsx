@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Metadata } from "next";
+import { buildSeo } from "@/lib/seo";
 import { getAllBlogPosts } from "@/lib/blog/filesystem-utils";
 import { BlogPostsClient } from "./blog-posts-client";
 import { BreadcrumbNavigation } from "@/components/blog/breadcrumb-navigation";
@@ -15,6 +16,11 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: "https://remcostoeten.nl/posts",
     },
+    ...buildSeo({
+      title: "Blog | Remco Stoeten",
+      description: "Articles on frontend engineering, React, Next.js, TypeScript, and building scalable UX.",
+      url: "https://remcostoeten.nl/posts",
+    }),
   };
 }
 
@@ -27,8 +33,65 @@ export default async function PostsPage() {
     { label: 'Blog', href: '/posts', current: true },
   ];
 
+  const siteUrl = 'https://remcostoeten.nl';
+
+  const blogSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Remco Stoeten Blog',
+    url: `${siteUrl}/posts`,
+    description: 'Articles on frontend engineering, React, Next.js, TypeScript, and scalable UX.',
+    publisher: {
+      '@type': 'Person',
+      name: 'Remco Stoeten',
+      url: siteUrl,
+    },
+  };
+
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: allPosts.map((post, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      url: `${siteUrl}/posts/${post.slug}`,
+      name: post.title,
+    })),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: `${siteUrl}/posts`,
+      },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       {/* Header section - stays in container */}
       <div className="space-y-10">
         {/* Breadcrumb Navigation */}

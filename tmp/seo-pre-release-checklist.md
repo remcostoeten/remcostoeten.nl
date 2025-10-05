@@ -11,9 +11,9 @@
   - [ ] `twitter:card=summary_large_image`
 - [ ] Structured Data (JSON-LD)
   - [ ] Person/Website on home
-  - [ ] Blog/ItemList on posts index
-  - [ ] Article on post pages
-  - [ ] BreadcrumbList
+  - [x] Blog/ItemList on posts index
+  - [x] Article on post pages
+  - [x] BreadcrumbList
 - [ ] Sitemap & Robots
   - [ ] `app/sitemap.ts` lists all indexable routes with `lastmod`
   - [ ] `robots.txt` references sitemap
