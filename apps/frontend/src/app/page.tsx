@@ -7,11 +7,13 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-const LatestActivitySection = dynamic(() => import("@/modules/sections").then(m => m.LatestActivitySection), { ssr: true });
-const BlogSection = dynamic(() => import("@/modules/sections").then(m => m.BlogSection), { ssr: true });
+import nextDynamic from "next/dynamic";
 import { AnnouncementBanner } from "@/shared/components/announcement";
 import type { Metadata } from 'next';
 import { buildSeo } from "@/lib/seo";
+
+const LatestActivitySection = nextDynamic(() => import("@/modules/sections").then(m => m.LatestActivitySection), { ssr: true });
+const BlogSection = nextDynamic(() => import("@/modules/sections").then(m => m.BlogSection), { ssr: true });
 
 
 export const metadata: Metadata = {

@@ -153,7 +153,7 @@ export function ProjectsSection() {
           </span>
         )}
 
-        <div className="mt-6">
+        <div className="mt-3">
           {state.loadingState === 'loading' ? (
             <ProjectsSkeleton />
           ) : (

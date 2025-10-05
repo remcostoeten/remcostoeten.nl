@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { TSimpleProject } from '../types';
@@ -54,6 +54,21 @@ export function CategorizedProjects({ projects }: TProps) {
   const categories = getCategoryOrder();
   const availableCategories: CategoryFilter[] = [...categories];
   const currentCategoryIndex = categories.indexOf(currentCategory);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const q = (url.searchParams.get('q') || url.searchParams.get('category') || '').toLowerCase();
+    if (q) {
+      const match = categories.find(c => c.toLowerCase().replace(/\s+/g, '-') === q || c.toLowerCase() === q);
+      if (match) setCurrentCategory(match as CategoryFilter);
+    } else {
+      setCurrentCategory('APIs');
+      const next = new URL(window.location.href);
+      next.searchParams.set('category', 'apis');
+      window.history.replaceState({}, '', next.toString());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const filteredProjects = groupedProjects[currentCategory] || [];
 
@@ -120,7 +135,12 @@ export function CategorizedProjects({ projects }: TProps) {
             return (
               <button
                 key={category}
-                onClick={() => handleCategoryChange(category)}
+                onClick={() => {
+                  handleCategoryChange(category);
+                  const next = new URL(window.location.href);
+                  next.searchParams.set('category', category.toLowerCase().replace(/\s+/g, '-'));
+                  window.history.pushState({}, '', next.toString());
+                }}
                 disabled={isTransitioning}
                 className={`inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-colors duration-200 min-h-[36px] ${isActive
                   ? 'bg-transparent text-foreground border border-border/60'
