@@ -5863,12 +5863,124 @@ var init_pg_core = __esm(() => {
   init_view();
 });
 
-// src/schema/blog-views.ts
-var exports_blog_views = {};
-__export(exports_blog_views, {
-  blogViewsIndexes: () => blogViewsIndexes2,
-  blogViews: () => blogViews2
+// src/schema/visitors.ts
+var visitors, blogViews, visitorsIndexes, blogViewsIndexes;
+var init_visitors = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  visitors = pgTable("visitors", {
+    id: text("id").primaryKey(),
+    visitorId: text("visitor_id").notNull().unique(),
+    isNewVisitor: boolean("is_new_visitor").notNull().default(true),
+    firstVisitAt: timestamp("first_visit_at", { withTimezone: true }).notNull(),
+    lastVisitAt: timestamp("last_visit_at", { withTimezone: true }).notNull(),
+    totalVisits: integer("total_visits").notNull().default(1),
+    userAgent: text("user_agent"),
+    ipAddress: text("ip_address"),
+    country: text("country"),
+    region: text("region"),
+    city: text("city"),
+    timezone: text("timezone"),
+    language: text("language"),
+    screenResolution: text("screen_resolution"),
+    platform: text("platform"),
+    browser: text("browser"),
+    os: text("os"),
+    deviceType: text("device_type"),
+    referrer: text("referrer"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  blogViews = pgTable("blog_views", {
+    id: text("id").primaryKey(),
+    visitorId: text("visitor_id").notNull(),
+    blogSlug: text("blog_slug").notNull(),
+    blogTitle: text("blog_title").notNull(),
+    viewCount: integer("view_count").notNull().default(1),
+    firstViewedAt: timestamp("first_viewed_at", { withTimezone: true }).notNull(),
+    lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  visitorsIndexes = {
+    visitorId: "idx_visitors_visitor_id",
+    lastVisitAt: "idx_visitors_last_visit_at",
+    isNewVisitor: "idx_visitors_is_new_visitor"
+  };
+  blogViewsIndexes = {
+    visitorId: "idx_blog_views_visitor_id",
+    blogSlug: "idx_blog_views_blog_slug",
+    lastViewedAt: "idx_blog_views_last_viewed_at",
+    visitorBlog: "idx_blog_views_visitor_blog"
+  };
 });
+
+// src/schema/pageviews.ts
+var pageviews, pageviewsIndexes;
+var init_pageviews = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  pageviews = pgTable("pageviews", {
+    id: text("id").primaryKey(),
+    url: text("url").notNull(),
+    title: text("title"),
+    referrer: text("referrer"),
+    userAgent: text("user_agent"),
+    timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  pageviewsIndexes = {
+    url: "idx_pageviews_url",
+    timestamp: "idx_pageviews_timestamp",
+    createdAt: "idx_pageviews_created_at"
+  };
+});
+
+// src/schema/blog-metadata.ts
+var blogMetadata, blogAnalytics, blogMetadataIndexes, blogAnalyticsIndexes;
+var init_blog_metadata = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  blogMetadata = pgTable("blog_metadata", {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt").notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }).notNull(),
+    readTime: integer("read_time").notNull(),
+    tags: json("tags").$type().notNull().default([]),
+    category: text("category").notNull(),
+    status: text("status").notNull().default("published"),
+    author: text("author"),
+    seo: json("seo").$type(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  blogAnalytics = pgTable("blog_analytics", {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    totalViews: integer("total_views").notNull().default(0),
+    uniqueViews: integer("unique_views").notNull().default(0),
+    recentViews: integer("recent_views").notNull().default(0),
+    lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  blogMetadataIndexes = {
+    slug: "idx_blog_metadata_slug",
+    publishedAt: "idx_blog_metadata_published_at",
+    category: "idx_blog_metadata_category",
+    status: "idx_blog_metadata_status",
+    tags: "idx_blog_metadata_tags"
+  };
+  blogAnalyticsIndexes = {
+    slug: "idx_blog_analytics_slug",
+    totalViews: "idx_blog_analytics_total_views",
+    lastViewedAt: "idx_blog_analytics_last_viewed_at"
+  };
+});
+
+// src/schema/blog-views.ts
 var blogViews2, blogViewsIndexes2;
 var init_blog_views = __esm(() => {
   init_pg_core();
@@ -5891,6 +6003,58 @@ var init_blog_views = __esm(() => {
     timestamp: "idx_blog_views_timestamp",
     createdAt: "idx_blog_views_created_at"
   };
+});
+
+// src/schema/blog-feedback.ts
+var blogFeedback, blogFeedbackRelations;
+var init_blog_feedback = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  blogFeedback = pgTable("blog_feedback", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    slug: text("slug").notNull(),
+    emoji: varchar("emoji", { length: 10 }).notNull(),
+    message: text("message"),
+    url: text("url"),
+    userAgent: text("user_agent"),
+    ipHash: varchar("ip_hash", { length: 64 }),
+    fingerprint: varchar("fingerprint", { length: 64 }),
+    timestamp: timestamp("timestamp", { mode: "string" }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow()
+  }, (table3) => ({
+    slugIdx: index("blog_feedback_slug_idx").on(table3.slug),
+    timestampIdx: index("blog_feedback_timestamp_idx").on(table3.timestamp),
+    emojiIdx: index("blog_feedback_emoji_idx").on(table3.emoji),
+    fingerprintIdx: index("blog_feedback_fingerprint_idx").on(table3.fingerprint),
+    slugFingerprintUnique: uniqueIndex("blog_feedback_slug_fingerprint_unique").on(table3.slug, table3.fingerprint)
+  }));
+  blogFeedbackRelations = relations(blogFeedback, ({ one }) => ({}));
+});
+
+// src/schema/index.ts
+var exports_schema = {};
+__export(exports_schema, {
+  visitorsIndexes: () => visitorsIndexes,
+  visitors: () => visitors,
+  pageviewsIndexes: () => pageviewsIndexes,
+  pageviews: () => pageviews,
+  blogViewsIndexes: () => blogViewsIndexes,
+  blogViews: () => blogViews,
+  blogSessionViewsIndexes: () => blogViewsIndexes2,
+  blogSessionViews: () => blogViews2,
+  blogMetadataIndexes: () => blogMetadataIndexes,
+  blogMetadata: () => blogMetadata,
+  blogFeedbackRelations: () => blogFeedbackRelations,
+  blogFeedback: () => blogFeedback,
+  blogAnalyticsIndexes: () => blogAnalyticsIndexes,
+  blogAnalytics: () => blogAnalytics
+});
+var init_schema2 = __esm(() => {
+  init_visitors();
+  init_pageviews();
+  init_blog_metadata();
+  init_blog_views();
+  init_blog_feedback();
 });
 
 // src/utils/session.ts
@@ -16587,157 +16751,8 @@ function drizzle(...params) {
   drizzle2.mock = mock;
 })(drizzle || (drizzle = {}));
 
-// src/schema/index.ts
-var exports_schema = {};
-__export(exports_schema, {
-  visitorsIndexes: () => visitorsIndexes,
-  visitors: () => visitors,
-  pageviewsIndexes: () => pageviewsIndexes,
-  pageviews: () => pageviews,
-  blogViewsIndexes: () => blogViewsIndexes,
-  blogViews: () => blogViews,
-  blogSessionViewsIndexes: () => blogViewsIndexes2,
-  blogSessionViews: () => blogViews2,
-  blogMetadataIndexes: () => blogMetadataIndexes,
-  blogMetadata: () => blogMetadata,
-  blogFeedbackRelations: () => blogFeedbackRelations,
-  blogFeedback: () => blogFeedback,
-  blogAnalyticsIndexes: () => blogAnalyticsIndexes,
-  blogAnalytics: () => blogAnalytics
-});
-
-// src/schema/visitors.ts
-init_pg_core();
-init_drizzle_orm();
-var visitors = pgTable("visitors", {
-  id: text("id").primaryKey(),
-  visitorId: text("visitor_id").notNull().unique(),
-  isNewVisitor: boolean("is_new_visitor").notNull().default(true),
-  firstVisitAt: timestamp("first_visit_at", { withTimezone: true }).notNull(),
-  lastVisitAt: timestamp("last_visit_at", { withTimezone: true }).notNull(),
-  totalVisits: integer("total_visits").notNull().default(1),
-  userAgent: text("user_agent"),
-  ipAddress: text("ip_address"),
-  country: text("country"),
-  region: text("region"),
-  city: text("city"),
-  timezone: text("timezone"),
-  language: text("language"),
-  screenResolution: text("screen_resolution"),
-  platform: text("platform"),
-  browser: text("browser"),
-  os: text("os"),
-  deviceType: text("device_type"),
-  referrer: text("referrer"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var blogViews = pgTable("blog_views", {
-  id: text("id").primaryKey(),
-  visitorId: text("visitor_id").notNull(),
-  blogSlug: text("blog_slug").notNull(),
-  blogTitle: text("blog_title").notNull(),
-  viewCount: integer("view_count").notNull().default(1),
-  firstViewedAt: timestamp("first_viewed_at", { withTimezone: true }).notNull(),
-  lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var visitorsIndexes = {
-  visitorId: "idx_visitors_visitor_id",
-  lastVisitAt: "idx_visitors_last_visit_at",
-  isNewVisitor: "idx_visitors_is_new_visitor"
-};
-var blogViewsIndexes = {
-  visitorId: "idx_blog_views_visitor_id",
-  blogSlug: "idx_blog_views_blog_slug",
-  lastViewedAt: "idx_blog_views_last_viewed_at",
-  visitorBlog: "idx_blog_views_visitor_blog"
-};
-// src/schema/pageviews.ts
-init_pg_core();
-init_drizzle_orm();
-var pageviews = pgTable("pageviews", {
-  id: text("id").primaryKey(),
-  url: text("url").notNull(),
-  title: text("title"),
-  referrer: text("referrer"),
-  userAgent: text("user_agent"),
-  timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var pageviewsIndexes = {
-  url: "idx_pageviews_url",
-  timestamp: "idx_pageviews_timestamp",
-  createdAt: "idx_pageviews_created_at"
-};
-// src/schema/blog-metadata.ts
-init_pg_core();
-init_drizzle_orm();
-var blogMetadata = pgTable("blog_metadata", {
-  id: text("id").primaryKey(),
-  slug: text("slug").notNull().unique(),
-  title: text("title").notNull(),
-  excerpt: text("excerpt").notNull(),
-  publishedAt: timestamp("published_at", { withTimezone: true }).notNull(),
-  readTime: integer("read_time").notNull(),
-  tags: json("tags").$type().notNull().default([]),
-  category: text("category").notNull(),
-  status: text("status").notNull().default("published"),
-  author: text("author"),
-  seo: json("seo").$type(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var blogAnalytics = pgTable("blog_analytics", {
-  id: text("id").primaryKey(),
-  slug: text("slug").notNull().unique(),
-  totalViews: integer("total_views").notNull().default(0),
-  uniqueViews: integer("unique_views").notNull().default(0),
-  recentViews: integer("recent_views").notNull().default(0),
-  lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var blogMetadataIndexes = {
-  slug: "idx_blog_metadata_slug",
-  publishedAt: "idx_blog_metadata_published_at",
-  category: "idx_blog_metadata_category",
-  status: "idx_blog_metadata_status",
-  tags: "idx_blog_metadata_tags"
-};
-var blogAnalyticsIndexes = {
-  slug: "idx_blog_analytics_slug",
-  totalViews: "idx_blog_analytics_total_views",
-  lastViewedAt: "idx_blog_analytics_last_viewed_at"
-};
-
-// src/schema/index.ts
-init_blog_views();
-
-// src/schema/blog-feedback.ts
-init_pg_core();
-init_drizzle_orm();
-var blogFeedback = pgTable("blog_feedback", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  slug: text("slug").notNull(),
-  emoji: varchar("emoji", { length: 10 }).notNull(),
-  message: text("message"),
-  url: text("url"),
-  userAgent: text("user_agent"),
-  ipHash: varchar("ip_hash", { length: 64 }),
-  fingerprint: varchar("fingerprint", { length: 64 }),
-  timestamp: timestamp("timestamp", { mode: "string" }).notNull().defaultNow(),
-  createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow()
-}, (table3) => ({
-  slugIdx: index("blog_feedback_slug_idx").on(table3.slug),
-  timestampIdx: index("blog_feedback_timestamp_idx").on(table3.timestamp),
-  emojiIdx: index("blog_feedback_emoji_idx").on(table3.emoji),
-  fingerprintIdx: index("blog_feedback_fingerprint_idx").on(table3.fingerprint),
-  slugFingerprintUnique: uniqueIndex("blog_feedback_slug_fingerprint_unique").on(table3.slug, table3.fingerprint)
-}));
-var blogFeedbackRelations = relations(blogFeedback, ({ one }) => ({}));
 // src/db/index.ts
+init_schema2();
 var storageType = process.env.STORAGE_TYPE || "memory";
 var databaseUrl = process.env.DATABASE_URL;
 var db2 = null;
@@ -16766,6 +16781,9 @@ async function initializeDatabase() {
     throw error;
   }
 }
+
+// src/services/visitor-service.ts
+init_visitors();
 
 // src/utils/geolocation.ts
 async function getGeolocationFromIP(ipAddress) {
@@ -17913,6 +17931,7 @@ spotifyRouter.get("/recent", async (c) => {
 
 // src/routes/analytics.ts
 init_drizzle_orm();
+init_schema2();
 var createAnalyticsRouter = () => {
   const analyticsRouter = new Hono2;
   analyticsRouter.get("/visitors", async (c) => {
@@ -18035,6 +18054,7 @@ var createPageviewService = (hybridService) => ({
 
 // src/services/database-pageview-service.ts
 init_drizzle_orm();
+init_pageviews();
 function serializePageview(pageview) {
   return {
     ...pageview,
@@ -18238,6 +18258,7 @@ function createHybridPageviewService() {
 
 // src/services/blog-metadata-service.ts
 init_drizzle_orm();
+init_blog_metadata();
 function createBlogMetadataService() {
   return {
     async createMetadata(data) {
@@ -18351,10 +18372,29 @@ function createBlogMetadataService() {
     },
     async incrementViewCount(slug, sessionData) {
       const now = new Date;
-      if (sessionData?.sessionId) {
-        try {
-          const { blogViews: blogViews4 } = await Promise.resolve().then(() => (init_blog_views(), exports_blog_views));
-          await db2.insert(blogViews4).values({
+      try {
+        const existingRecord = await db2.select().from(blogAnalytics).where(eq(blogAnalytics.slug, slug)).limit(1);
+        if (existingRecord.length === 0) {
+          await db2.insert(blogAnalytics).values({
+            id: crypto.randomUUID(),
+            slug,
+            totalViews: 1,
+            uniqueViews: 1,
+            recentViews: 1,
+            lastViewedAt: now,
+            createdAt: now,
+            updatedAt: now
+          });
+        } else {
+          await db2.update(blogAnalytics).set({
+            totalViews: sql`${blogAnalytics.totalViews} + 1`,
+            lastViewedAt: now,
+            updatedAt: now
+          }).where(eq(blogAnalytics.slug, slug));
+        }
+        if (sessionData?.sessionId) {
+          const { blogSessionViews } = await Promise.resolve().then(() => (init_schema2(), exports_schema));
+          await db2.insert(blogSessionViews).values({
             id: crypto.randomUUID(),
             slug,
             sessionId: sessionData.sessionId,
@@ -18363,32 +18403,13 @@ function createBlogMetadataService() {
             referrer: sessionData.referrer,
             timestamp: now,
             createdAt: now
-          });
-        } catch (error) {
-          if (error.code === "23505" || error.constraint === "blog_views_session_id_slug_unique") {
-            return false;
-          }
-          throw error;
+          }).onConflictDoNothing({ target: [blogSessionViews.sessionId, blogSessionViews.slug] });
         }
+        return true;
+      } catch (error) {
+        console.error("Error incrementing view count:", error);
+        throw error;
       }
-      const result = await db2.update(blogAnalytics).set({
-        totalViews: sql`${blogAnalytics.totalViews} + 1`,
-        lastViewedAt: now,
-        updatedAt: now
-      }).where(eq(blogAnalytics.slug, slug)).returning({ id: blogAnalytics.id });
-      if (result.length === 0) {
-        await db2.insert(blogAnalytics).values({
-          id: crypto.randomUUID(),
-          slug,
-          totalViews: 1,
-          uniqueViews: 1,
-          recentViews: 1,
-          lastViewedAt: now,
-          createdAt: now,
-          updatedAt: now
-        });
-      }
-      return true;
     },
     async getAnalyticsBySlug(slug) {
       const [result] = await db2.select().from(blogAnalytics).where(eq(blogAnalytics.slug, slug)).limit(1);
@@ -18522,6 +18543,7 @@ function createMemoryBlogMetadataService() {
 
 // src/services/blog-feedback-service.ts
 init_drizzle_orm();
+init_blog_feedback();
 import crypto2 from "crypto";
 function createBlogFeedbackService(db3) {
   function hashIP(ip) {

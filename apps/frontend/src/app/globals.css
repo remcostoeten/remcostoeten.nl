@@ -388,3 +388,21 @@ a:hover {
 .opacity-in {
   animation: opacity-in 1.5s ease-in-out;
 }
+
+/* Zen Mode Styles */
+.zen-mode .zen-mode\:hidden {
+  display: none !important;
+}
+
+.zen-mode .zen-mode\:opacity-0 {
+  opacity: 0 !important;
+}
+
+.zen-mode .zen-mode\:scale-95 {
+  transform: scale(0.95) !important;
+}
+
+/* Smooth transitions for zen mode */
+.zen-mode * {
+  transition: opacity 0.3s ease, transform 0.3s ease, display 0.3s ease;
+}
