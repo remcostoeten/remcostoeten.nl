@@ -89,6 +89,7 @@ export function AnnouncementBanner() {
     const lastScrollYRef = React.useRef(0)
     const wrapperRef = React.useRef<HTMLDivElement | null>(null)
     const [bannerHeight, setBannerHeight] = React.useState(80)
+    const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
     React.useEffect(function init() {
         const dismissed = typeof window !== "undefined" && window.localStorage.getItem("announcement-dismissed") === "true"
@@ -101,16 +102,34 @@ export function AnnouncementBanner() {
         function onScroll() {
             const currentY = window.scrollY || 0
             const delta = currentY - (lastScrollYRef.current || 0)
-            // More sensitive scroll detection
-            if (currentY > 50 && delta > 1) {
-                setIsHiddenByScroll(true)
-            } else if (delta < -1 || currentY <= 50) {
-                setIsHiddenByScroll(false)
+            
+            // Clear any existing timeout
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current)
             }
+            
+            // Debounce the scroll state change to prevent flickering
+            scrollTimeoutRef.current = setTimeout(() => {
+                // Hide when scrolling down more than 100px
+                if (currentY > 100 && delta > 5) {
+                    setIsHiddenByScroll(true)
+                } 
+                // Show when scrolling up or at the top
+                else if (delta < -5 || currentY <= 100) {
+                    setIsHiddenByScroll(false)
+                }
+            }, 50)
+            
             lastScrollYRef.current = currentY
         }
+        
         window.addEventListener("scroll", onScroll, { passive: true })
-        return () => window.removeEventListener("scroll", onScroll)
+        return () => {
+            window.removeEventListener("scroll", onScroll)
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current)
+            }
+        }
     }, [])
 
     React.useLayoutEffect(
@@ -157,8 +176,9 @@ export function AnnouncementBanner() {
             <div
                 className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit animate-in slide-in-from-top-full duration-500 ease-out pointer-events-auto overflow-visible"
                 style={{
-                    transform: `translateY(${(isHiddenByScroll ? -bannerHeight : 0) + dragY}px)`,
-                    transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    transform: `translateY(${(isHiddenByScroll ? -bannerHeight - 20 : 0) + dragY}px)`,
+                    opacity: isHiddenByScroll ? 0 : 1,
+                    transition: isDragging ? "none" : "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out",
                 }}
                 ref={wrapperRef}
                 onMouseDown={handleDragStart}

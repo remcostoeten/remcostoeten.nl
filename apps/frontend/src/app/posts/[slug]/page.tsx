@@ -5,14 +5,13 @@ import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils"
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import Link from 'next/link';
-import { Calendar, Clock, ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { ViewCounter } from '@/components/blog/ViewCounter';
+import { Calendar, Clock, ArrowLeft } from 'lucide-react';
+import { ViewCounter } from '@/components/blog/view-counter';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
 import { FeedbackWidget } from '@/components/blog/feedback';
-// import { ZenModeToggle } from '@/components/blog/zen-mode-toggle';
 
 // Force dynamic rendering to avoid React version conflicts during static generation
 export const dynamic = 'force-dynamic'
@@ -220,7 +219,11 @@ export default async function PostPage(props: TPostPageProps) {
                 <div className="flex items-center mr-4">
                   <Calendar className="w-4 h-4 mr-1" />
                   <time dateTime={post.publishedAt}>
-                    {new Date(post.publishedAt).toLocaleDateString()}
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
                   </time>
                 </div>
                 <div className="flex items-center mr-4">
@@ -274,7 +277,11 @@ export default async function PostPage(props: TPostPageProps) {
                 <div className="flex items-center mr-4">
                   <Calendar className="w-4 h-4 mr-1" />
                   <time dateTime={post.publishedAt}>
-                    {new Date(post.publishedAt).toLocaleDateString()}
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
                   </time>
                 </div>
                 <div className="flex items-center mr-4">

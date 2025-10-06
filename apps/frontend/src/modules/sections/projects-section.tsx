@@ -1,6 +1,6 @@
 import { Sparkles } from "lucide-react";
 import { S } from "./serif";
-import { CategorizedProjects } from "@/modules/projects/components/CategorizedProjects";
+import { CategorizedProjects } from "@/modules/projects/components/categorized-projects";
 import { getProjects } from "@/modules/projects/api/get-projects";
 import { TSimpleProject } from "@/modules/projects/types";
 

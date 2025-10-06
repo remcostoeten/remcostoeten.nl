@@ -7,11 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { RefreshCw, TrendingUp } from "lucide-react";
 import { AnalyticsOverview } from "@/modules/analytics/components/analytics-overview";
-import { PostPerformanceTable } from "@/modules/analytics/components/PostPerformanceTable";
+import { PostPerformanceTable } from "@/modules/analytics/components/post-performance-table";
 import { RealAnalyticsOverview } from "@/modules/analytics/components/real-analytics-overview";
 import { RealPostPerformanceTable } from "@/modules/analytics/components/real-post-performance-table";
 import { RealTimeDashboard } from "@/modules/analytics/components/real-time-dashboard";
-import { BlogAnalyticsDashboard } from "@/components/analytics/BlogAnalyticsDashboard";
+import { BlogAnalyticsDashboard } from "@/components/analytics/blog-analytics-dashboard";
 import { getAllPosts } from "@/lib/blog/get-posts";
 import type { TBlogPost } from "@/lib/blog/types";
 

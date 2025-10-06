@@ -4,8 +4,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { TSimpleProject } from '../types';
-import { SimpleProjectCard } from './SimpleProjectCard';
-import { PackagePopover } from './PackagePopover';
+import { SimpleProjectCard } from './simple-project-card';
+import { PackagePopover } from './package-popover';
 import { groupProjectsByCategory, getCategoryOrder } from '../utils/categorize-project';
 import { AnimatedNumberIntersection } from '@/components/ui/animated-number-intersection';
 

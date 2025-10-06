@@ -20,11 +20,11 @@ type TBlogSectionClientProps = {
 };
 
 function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
+  const dateObj = new Date(date);
+  const month = dateObj.toLocaleDateString('en-US', { month: 'short' });
+  const day = dateObj.getDate();
+  const year = dateObj.getFullYear();
+  return `${month} ${day}, ${year}`;
 }
 
 function MetaItem({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) {
