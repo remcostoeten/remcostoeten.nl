@@ -2,11 +2,12 @@ import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
 import * as schema from '../schema';
 
+const storageType = process.env.STORAGE_TYPE || 'memory';
 const databaseUrl = process.env.DATABASE_URL;
 let db: any = null;
 let sql: any = null;
 
-if (databaseUrl) {
+if (storageType === 'postgres' && databaseUrl) {
   try {
     sql = neon(databaseUrl);
     db = drizzle(sql, { schema, logger: true });
@@ -15,13 +16,13 @@ if (databaseUrl) {
     console.warn('⚠️ Database configuration failed, using memory storage:', error);
   }
 } else {
-  console.log('ℹ️ No DATABASE_URL provided, using memory storage');
+  console.log('ℹ️ Using memory storage (STORAGE_TYPE != postgres or no DATABASE_URL)');
 }
 
 export { db };
 
 export async function initializeDatabase() {
-  if (!databaseUrl || !sql) {
+  if (storageType !== 'postgres' || !databaseUrl || !sql) {
     console.log('ℹ️ Skipping database initialization - using memory storage');
     return;
   }

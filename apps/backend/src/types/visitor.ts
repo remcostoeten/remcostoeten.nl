@@ -7,6 +7,18 @@ export interface Visitor {
   totalVisits: number;
   userAgent?: string;
   ipAddress?: string;
+  // Enhanced analytics fields
+  country?: string;
+  region?: string;
+  city?: string;
+  timezone?: string;
+  language?: string;
+  screenResolution?: string;
+  platform?: string;
+  browser?: string;
+  os?: string;
+  deviceType?: string; // mobile, desktop, tablet
+  referrer?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,6 +39,18 @@ export interface CreateVisitorData {
   visitorId: string;
   userAgent?: string;
   ipAddress?: string;
+  // Enhanced analytics fields
+  country?: string;
+  region?: string;
+  city?: string;
+  timezone?: string;
+  language?: string;
+  screenResolution?: string;
+  platform?: string;
+  browser?: string;
+  os?: string;
+  deviceType?: string; // mobile, desktop, tablet
+  referrer?: string;
 }
 
 export interface CreateBlogViewData {

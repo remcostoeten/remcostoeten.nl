@@ -3,10 +3,11 @@ import type { Metadata } from 'next';
 import { Inter, Noto_Sans } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { ClientAnalyticsWrapper } from "@/components/analytics/client-analytics-wrapper";
+import { ClientAnalyticsWrapper } from "@/shared/components/analytics";
 import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_api-environment-switcher";
 import { Analytics } from "@vercel/analytics/next";
 import { ClientOnlyWrapper } from "@/components/client-only-wrapper";
+import { TimezoneSection } from "@/modules/sections";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -239,6 +240,7 @@ export default function RootLayout({
           <TooltipProvider delayDuration={0}>
             {children}
           </TooltipProvider>
+          <TimezoneSection />
         </ClientOnlyWrapper>
         <Analytics />
         <SpeedInsights />

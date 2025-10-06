@@ -1,6 +1,6 @@
-import { eq, and, desc, sql } from 'drizzle-orm';
-import { TDrizzleDb } from '../db/config';
-import { blogFeedback, TBlogFeedback, TNewBlogFeedback } from '../schema/blog-feedback';
+import { eq, and, desc, sql, gte } from 'drizzle-orm';
+import { blogFeedback } from '../schema/blog-feedback';
+import type { TBlogFeedback, TNewBlogFeedback } from '../schema/blog-feedback';
 import crypto from 'crypto';
 
 type TFeedbackReaction = {
@@ -28,6 +28,8 @@ type TFeedbackData = {
 
 export type TBlogFeedbackService = ReturnType<typeof createBlogFeedbackService>;
 
+type TDrizzleDb = any;
+
 export function createBlogFeedbackService(db: TDrizzleDb) {
   function hashIP(ip: string): string {
     return crypto.createHash('sha256').update(ip).digest('hex');
@@ -44,43 +46,87 @@ export function createBlogFeedbackService(db: TDrizzleDb) {
     ip?: string
   ): Promise<TFeedbackData> {
     const ipHash = ip ? hashIP(ip) : undefined;
-    const fingerprint = data.userAgent && ip 
-      ? generateFingerprint(data.userAgent, ip) 
+    const fingerprint = data.userAgent && ip
+      ? generateFingerprint(data.userAgent, ip)
       : undefined;
 
-    const [feedback] = await db.insert(blogFeedback)
-      .values({
-        slug,
-        emoji: data.emoji,
-        message: data.message,
-        url: data.url,
-        userAgent: data.userAgent,
-        ipHash,
-        fingerprint,
-      })
-      .returning();
+    // Simple server-side rate limiting: max 3 per 24h per ipHash per slug
+    if (ipHash) {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const recent = await db
+        .select({ count: sql<number>`count(*)`.mapWith(Number) })
+        .from(blogFeedback)
+        .where(and(
+          eq(blogFeedback.slug, slug),
+          eq(blogFeedback.ipHash, ipHash),
+          gte(blogFeedback.timestamp, since as unknown as any)
+        ));
+      const recentCount = Array.isArray(recent) ? (recent[0]?.count || 0) : 0;
+      if (recentCount >= 3) {
+        throw Object.assign(new Error('Rate limit exceeded'), { code: 'RATE_LIMIT' });
+      }
+    }
 
-    return {
-      emoji: feedback.emoji,
-      message: feedback.message || undefined,
-      timestamp: feedback.timestamp,
-    };
+    // Upsert by (slug, fingerprint): if duplicate, update emoji/message/url and updated timestamp
+    try {
+      const [inserted] = await db.insert(blogFeedback)
+        .values({
+          slug,
+          emoji: data.emoji,
+          message: data.message,
+          url: data.url,
+          userAgent: data.userAgent,
+          ipHash,
+          fingerprint,
+        })
+        .returning();
+
+      return {
+        emoji: inserted.emoji,
+        message: inserted.message || undefined,
+        timestamp: inserted.timestamp,
+      };
+    } catch (err: any) {
+      // Unique violation -> update existing row for this (slug,fingerprint)
+      const isUnique = err?.code === '23505' || String(err?.message || '').includes('slug_fingerprint');
+      if (!isUnique || !fingerprint) throw err;
+
+      const [updated] = await db
+        .update(blogFeedback)
+        .set({
+          emoji: data.emoji,
+          message: data.message,
+          url: data.url,
+          userAgent: data.userAgent,
+          timestamp: sql`NOW()` as unknown as string,
+        })
+        .where(and(
+          eq(blogFeedback.slug, slug),
+          eq(blogFeedback.fingerprint, fingerprint)
+        ))
+        .returning();
+
+      return {
+        emoji: updated.emoji,
+        message: updated.message || undefined,
+        timestamp: updated.timestamp,
+      };
+    }
   }
 
   async function getFeedbackBySlug(slug: string): Promise<TFeedbackStats> {
-    const allFeedback = await db.select()
+    const allFeedback: TBlogFeedback[] = await db.select()
       .from(blogFeedback)
       .where(eq(blogFeedback.slug, slug))
       .orderBy(desc(blogFeedback.timestamp));
 
-    const reactionCounts = allFeedback.reduce((acc, feedback) => {
+    const reactionCounts = allFeedback.reduce<Record<string, number>>((acc, feedback) => {
       acc[feedback.emoji] = (acc[feedback.emoji] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
 
-    const reactions: TFeedbackReaction[] = Object.entries(reactionCounts)
-      .map(([emoji, count]) => ({ emoji, count }))
-      .sort((a, b) => b.count - a.count);
+    const reactionsEntries = Object.entries(reactionCounts).map(([emoji, count]) => ({ emoji, count }));
+    const reactions: TFeedbackReaction[] = reactionsEntries.sort((a, b) => b.count - a.count) as TFeedbackReaction[];
 
     const recentFeedback = allFeedback
       .slice(0, 10)
@@ -107,7 +153,7 @@ export function createBlogFeedbackService(db: TDrizzleDb) {
       .groupBy(blogFeedback.emoji)
       .orderBy(desc(sql`count(*)`));
 
-    return result;
+    return result as unknown as TFeedbackReaction[];
   }
 
   async function getUserFeedback(

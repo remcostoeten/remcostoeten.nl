@@ -1,55 +1,41 @@
 'use client';
 
-import NumberFlow from "@number-flow/react";
-import { TIMEZONE_INFO, useTimeComponents } from "@/modules/time";
+import { AnimatedNumber } from "@/components/ui/animated-number";
+import { useTimeComponents } from "@/modules/time";
 
 export const TimezoneSection = () => {
   const { hours, minutes, seconds } = useTimeComponents();
 
   return (
-    <p className="text-foreground leading-relaxed text-base">
-      My current timezone is{" "}
-      <span 
-        className="font-medium px-1 py-0.5 rounded"
-        style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' }}
-      >
-        {TIMEZONE_INFO.timezone}
-      </span>{" "}
-      which includes countries like{" "}
-      {TIMEZONE_INFO.countries.map((country, index) => (
-        <span key={country}>
-          <span 
-            className="font-medium px-1 py-0.5 rounded"
-            style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' }}
-          >
-            {country}
-          </span>
-          {index < TIMEZONE_INFO.countries.length - 1 && (
-            index === TIMEZONE_INFO.countries.length - 2 ? " and " : ", "
-          )}
-        </span>
-      ))}
-      . Right now it is{" "}
-      <span 
-        className="font-medium px-1 py-0.5 rounded inline-flex items-center gap-0.5"
-        style={{ backgroundColor: 'hsl(var(--muted))', color: 'hsl(var(--foreground))' }}
-      >
-        <NumberFlow 
-          value={hours} 
-          format={{ minimumIntegerDigits: 2 }}
-        />
-        :
-        <NumberFlow 
-          value={minutes} 
-          format={{ minimumIntegerDigits: 2 }}
-        />
-        :
-        <NumberFlow 
-          value={seconds} 
-          format={{ minimumIntegerDigits: 2 }}
-        />
-      </span>
-      .
-    </p>
+    <div className="fixed top-4 right-4 z-50 animate-in fade-in slide-in-from-top-2 duration-500">
+      <div className="flex items-center gap-2 px-3 py-2 bg-background/90 backdrop-blur-md border border-border/60 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300">
+        <div className="text-xs text-muted-foreground font-medium tracking-wide">CEST</div>
+        <div className="flex items-center gap-1 text-sm font-mono">
+          <AnimatedNumber
+            value={hours}
+            format="number"
+            decimals={0}
+            className="w-6 text-center tabular-nums transition-all duration-200 hover:scale-105"
+            randomStart={false}
+          />
+          <span className="text-muted-foreground animate-pulse">:</span>
+          <AnimatedNumber
+            value={minutes}
+            format="number"
+            decimals={0}
+            className="w-6 text-center tabular-nums transition-all duration-200 hover:scale-105"
+            randomStart={false}
+          />
+          <span className="text-muted-foreground animate-pulse">:</span>
+          <AnimatedNumber
+            value={seconds}
+            format="number"
+            decimals={0}
+            className="w-6 text-center tabular-nums transition-all duration-200 hover:scale-105"
+            randomStart={false}
+          />
+        </div>
+      </div>
+    </div>
   );
 };

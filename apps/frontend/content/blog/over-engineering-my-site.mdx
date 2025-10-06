@@ -1,0 +1,220 @@
+---
+title: "Over-engineering My Personal Site"
+excerpt: "A candid look at how I turned a simple personal website into an over-engineered masterpiece of unnecessary complexity, complete with custom analytics, real-time features, and way too many moving parts."
+publishedAt: "2025-01-15"
+author: "Remco Stoeten"
+tags: ["over-engineering", "personal", "website", "analytics", "complexity"]
+category: "development"
+status: "published"
+---
+
+You know that feeling when you start a simple project and somehow end up with a distributed microservices architecture for a to-do list? That's exactly what happened with my personal site. What began as "I'll just throw together a simple portfolio" turned into a full-stack application with custom analytics, real-time features, and enough complexity to make a senior engineer weep.
+
+## The Simple Beginning
+
+It all started innocently enough. I wanted a personal website to showcase my projects and write about my coding journey. Simple, right? Just a few pages, maybe a blog, and we're done.
+
+```bash
+# What I should have done
+npx create-next-app@latest my-site
+# Add some content
+# Deploy
+# Done.
+```
+
+But no, that's not how developers work. We see a simple problem and think, "What if I made this unnecessarily complex?"
+
+## The Descent into Madness
+
+### Phase 1: "Let's Add Analytics"
+
+First, I thought, "Wouldn't it be cool to see who visits my site?" So I built a custom analytics system from scratch using Hono.js and PostgreSQL. Because Google Analytics is too mainstream, apparently.
+
+```typescript
+// Because why use existing solutions when you can build your own?
+export const pageviews = pgTable('pageviews', {
+  id: text('id').primaryKey(),
+  url: text('url').notNull(),
+  title: text('title'),
+  referrer: text('referrer'),
+  userAgent: text('user_agent'),
+  timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`NOW()`),
+});
+```
+
+I spent weeks building visitor tracking, page view analytics, and a real-time dashboard. All for a personal site that gets maybe 10 visitors a month.
+
+### Phase 2: "Real-time Everything"
+
+Then I thought, "What if my site was real-time?" So I added WebSocket connections, live visitor counts, and real-time activity feeds. Because nothing says "personal portfolio" like a live visitor counter.
+
+```typescript
+// Real-time visitor tracking because why not?
+const { stats, loading, error, refreshStats } = useRealAnalytics();
+const { isPolling, isActive, isVisible, timeSinceActive } = useSmartInterval(
+  handleRefreshWithTimestamp,
+  { ...config, runImmediately: true, enabled: isAutoRefresh }
+);
+```
+
+### Phase 3: "Let's Make It a Monorepo"
+
+At some point, I decided that a simple Next.js app wasn't complex enough. So I turned it into a monorepo with separate frontend and backend applications, complete with shared packages and complex build processes.
+
+```json
+{
+  "name": "@monorepo/frontend",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start"
+  }
+}
+```
+
+### Phase 4: "Custom Everything"
+
+Why use existing solutions when you can build everything from scratch?
+
+- **Custom analytics system** instead of Google Analytics
+- **Custom authentication** instead of Auth0 or Clerk
+- **Custom database schema** with Drizzle ORM
+- **Custom API routes** with Hono.js
+- **Custom UI components** with Radix UI
+- **Custom syntax highlighting** with highlight.js
+- **Custom blog system** with MDX
+
+## The Architecture That Shouldn't Exist
+
+Here's what my "simple personal site" has become:
+
+```
+my-site/
+├── apps/
+│   ├── frontend/          # Next.js app
+│   │   ├── src/
+│   │   │   ├── app/       # App router
+│   │   │   ├── components/ # Custom components
+│   │   │   ├── hooks/     # Custom hooks
+│   │   │   ├── lib/       # Utilities
+│   │   │   └── modules/   # Feature modules
+│   │   └── content/       # MDX blog posts
+│   └── backend/           # Hono.js API
+│       ├── src/
+│       │   ├── routes/    # API routes
+│       │   ├── services/  # Business logic
+│       │   ├── schema/    # Database schema
+│       │   └── utils/     # Utilities
+│       └── drizzle/        # Database migrations
+├── packages/              # Shared packages
+└── tools/                # Build tools
+```
+
+## The Features Nobody Asked For
+
+### Real-time Analytics Dashboard
+A live dashboard showing visitor counts, page views, and real-time activity. Because apparently, I need to know the exact moment someone visits my "About" page.
+
+### Custom Blog System
+Instead of using a headless CMS or even a simple markdown setup, I built a custom blog system with:
+- MDX support for interactive components
+- Custom syntax highlighting
+- Table of contents generation
+- Reading time calculation
+- SEO optimization
+- Social media previews
+
+### Advanced Table of Contents
+The TOC isn't just a simple list - it's a sophisticated component with:
+- Active section highlighting
+- Smooth scrolling
+- Mobile-responsive design
+- Custom styling
+- Intersection Observer API
+- Accessibility features
+
+### Custom Authentication
+Because why use Auth0 when you can build your own auth system with:
+- JWT tokens
+- Session management
+- Password hashing
+- Rate limiting
+- CSRF protection
+
+## The Performance Paradox
+
+Here's the funny part: I spent so much time optimizing for performance that I probably made it slower.
+
+- **Bundle analysis** to reduce JavaScript
+- **Image optimization** with custom components
+- **Lazy loading** for everything
+- **Code splitting** at the component level
+- **Service worker** for caching
+- **Database indexing** for analytics queries
+
+All for a personal site that could probably run on a single HTML file.
+
+## The Maintenance Nightmare
+
+What started as a simple site now requires:
+
+- **Database migrations** for analytics data
+- **API versioning** for the backend
+- **Dependency updates** across multiple packages
+- **Build process optimization**
+- **Deployment coordination** between frontend and backend
+- **Monitoring and logging**
+- **Error tracking and reporting**
+
+## The Lessons Learned
+
+### What I Should Have Done
+1. Used a simple static site generator like Astro or even plain HTML
+2. Used Google Analytics instead of building custom analytics
+3. Used a headless CMS for the blog
+4. Deployed to Vercel or Netlify with zero configuration
+5. Focused on content instead of architecture
+
+### What I Actually Did
+1. Built a distributed system for a personal portfolio
+2. Created a real-time analytics dashboard
+3. Implemented custom authentication
+4. Built a complex monorepo structure
+5. Spent more time on infrastructure than content
+
+## The Silver Lining
+
+Despite the over-engineering, I learned a lot:
+
+- **Full-stack development** with modern tools
+- **Database design** and optimization
+- **Real-time features** with WebSockets
+- **Analytics and monitoring**
+- **DevOps and deployment**
+- **Performance optimization**
+
+And honestly, it was fun to build. Sometimes the journey is more important than the destination.
+
+## The Current State
+
+My "simple personal site" now has:
+- ✅ Custom analytics with real-time updates
+- ✅ Advanced blog system with MDX
+- ✅ Responsive design with custom components
+- ✅ SEO optimization
+- ✅ Performance monitoring
+- ✅ Error tracking
+- ✅ A maintenance burden that would make a startup jealous
+
+## The Moral of the Story
+
+Sometimes the best solution is the simplest one. But where's the fun in that?
+
+If you're reading this and thinking, "This sounds like my project," then welcome to the club. We're all over-engineers at heart, building distributed systems for to-do lists and microservices for personal blogs.
+
+The important thing is that we're learning, we're building, and we're having fun. Even if our personal sites have more moving parts than most enterprise applications.
+
+*P.S. - If you want to see the over-engineered mess in action, check out the source code. It's a beautiful disaster.*
+
+<small><i>gl hf</i></small>

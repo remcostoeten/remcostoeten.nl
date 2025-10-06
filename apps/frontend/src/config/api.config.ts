@@ -50,8 +50,8 @@ const API_ENDPOINTS = {
     analytics: 'http://localhost:4001/api',
   },
   production: {
-    base: 'https://analytics-api-backend.fly.dev',
-    analytics: 'https://analytics-api-backend.fly.dev/api',
+    base: 'https://backend-thrumming-cloud-5273.fly.dev',
+    analytics: 'https://backend-thrumming-cloud-5273.fly.dev/api',
   },
 } as const;
 

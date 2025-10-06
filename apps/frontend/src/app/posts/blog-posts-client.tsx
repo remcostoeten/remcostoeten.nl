@@ -7,6 +7,7 @@ import { FilterDrawer } from "@/components/ui/filter-drawer";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { formatBlogDateShort } from "@/lib/blog/date-utils";
+import { useMultipleViewCounts } from "@/hooks/use-multiple-view-counts";
 
 interface BlogPost {
   slug: string;
@@ -30,6 +31,13 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showFilters, setShowFilters] = useState(false);
+
+  // Get view counts for all posts
+  const allSlugs = useMemo(() => allPosts.map(post => post.slug), [allPosts]);
+  const { viewCounts, loading: viewCountsLoading, totalViews, totalUniqueViews } = useMultipleViewCounts(allSlugs, {
+    autoRefresh: true,
+    refreshInterval: 60000 // Refresh every minute
+  });
 
   // Get all unique categories and tags
   const { categories, tags } = useMemo(() => {
@@ -110,7 +118,7 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
           className="block sm:hidden"
           {...ANIMATION_CONFIGS.fadeInUp}
         >
-          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 -mx-4 px-4 py-3 mb-6">
+          <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 -mx-5 px-5 py-3 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
@@ -147,6 +155,8 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                 post={filteredPosts[0]}
                 index={0}
                 variant="hero"
+                viewCount={viewCounts[filteredPosts[0].slug]?.totalViews || 0}
+                showExcerpt={false}
               />
             </div>
           </div>
@@ -341,12 +351,14 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
           <div className="text-sm text-muted-foreground">Total Posts</div>
         </div>
         <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
-          <div className="text-2xl font-bold text-foreground">{categories.length}</div>
-          <div className="text-sm text-muted-foreground">Categories</div>
+          <div className="text-2xl font-bold text-foreground">
+            {viewCountsLoading ? '...' : totalViews.toLocaleString()}
+          </div>
+          <div className="text-sm text-muted-foreground">Total Views</div>
         </div>
         <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
-          <div className="text-2xl font-bold text-foreground">{tags.length}</div>
-          <div className="text-sm text-muted-foreground">Tags</div>
+          <div className="text-2xl font-bold text-foreground">{categories.length}</div>
+          <div className="text-sm text-muted-foreground">Categories</div>
         </div>
         <div className="text-center p-4 rounded-xl bg-muted/30 border border-border/50">
           <div className="text-2xl font-bold text-foreground">
@@ -488,7 +500,7 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             className="space-y-12"
             role="list"
             aria-label="Blog posts grid"
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
@@ -497,9 +509,9 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             {filteredPosts.length > 0 && (
               <motion.div
                 className="hidden sm:block relative"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
+                initial={false}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="text-sm font-medium text-accent mb-6 flex items-center gap-2">
                   <div className="w-1 h-4 bg-accent rounded-full"></div>
@@ -511,6 +523,8 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                       post={filteredPosts[0]}
                       index={0}
                       variant="featured"
+                      viewCount={viewCounts[filteredPosts[0].slug]?.totalViews || 0}
+                      showExcerpt={false}
                     />
                   </div>
                   <div className="order-1 lg:order-2">
@@ -545,6 +559,8 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                     post={post}
                     index={index}
                     variant={index === 0 ? "featured" : "default"}
+                    viewCount={viewCounts[post.slug]?.totalViews || 0}
+                    showExcerpt={false}
                   />
                 ))}
               </div>

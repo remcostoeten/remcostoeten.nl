@@ -34,6 +34,7 @@ export function SimpleProjectCard(props: TSimpleProject | TProjectData) {
 
   // Normalize the data - use name/title, and create gitInfo if it doesn't exist
   const projectName = name || title;
+  const displayName = typeof projectName === 'string' ? projectName.replace(/-/g, ' ') : projectName;
   const normalizedGitInfo = gitInfo || (stars !== undefined ? {
     stars,
     forks: forks || 0,
@@ -59,9 +60,9 @@ export function SimpleProjectCard(props: TSimpleProject | TProjectData) {
   };
 
   const cardContent = (
-    <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
-      <span className="text-accent font-medium min-w-0 truncate">
-        {projectName}
+    <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0 max-w-full">
+      <span className="text-accent font-medium min-w-0 truncate max-w-[200px] sm:max-w-[250px]">
+        {displayName}
       </span>
       {originLabel && (
         <OriginLabel
@@ -85,14 +86,14 @@ export function SimpleProjectCard(props: TSimpleProject | TProjectData) {
   }
 
   return (
-    <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0">
+    <div className="flex items-center gap-1 sm:gap-2 flex-wrap min-w-0 max-w-full">
       <Link
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-accent hover:text-accent/80 font-medium transition-all duration-200 inline-block min-w-0 truncate"
+        className="text-accent hover:text-accent/80 font-medium transition-all duration-200 inline-block min-w-0 truncate max-w-[200px] sm:max-w-[250px]"
       >
-        {projectName}
+        {displayName}
       </Link>
       {originLabel && (
         <OriginLabel
@@ -171,11 +172,7 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TP
   if (!isVisible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+    <div
       className="absolute left-0 top-full z-50 w-80 max-w-[90vw]"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -273,6 +270,6 @@ function CommitHoverCard({ activity, isVisible, onMouseEnter, onMouseLeave }: TP
           </p>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

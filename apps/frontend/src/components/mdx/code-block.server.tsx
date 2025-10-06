@@ -15,6 +15,8 @@ import python from 'highlight.js/lib/languages/python';
 import sql from 'highlight.js/lib/languages/sql';
 import yaml from 'highlight.js/lib/languages/yaml';
 import markdown from 'highlight.js/lib/languages/markdown';
+import dockerfile from 'highlight.js/lib/languages/dockerfile';
+import ini from 'highlight.js/lib/languages/ini';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('js', javascript);
@@ -23,6 +25,8 @@ hljs.registerLanguage('ts', typescript);
 hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('shell', bash);
 hljs.registerLanguage('sh', bash);
+hljs.registerLanguage('zsh', bash);
+hljs.registerLanguage('fish', bash);
 hljs.registerLanguage('css', css);
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('html', xml);
@@ -34,6 +38,10 @@ hljs.registerLanguage('yaml', yaml);
 hljs.registerLanguage('yml', yaml);
 hljs.registerLanguage('markdown', markdown);
 hljs.registerLanguage('md', markdown);
+hljs.registerLanguage('dockerfile', dockerfile);
+hljs.registerLanguage('docker', dockerfile);
+hljs.registerLanguage('ini', ini);
+hljs.registerLanguage('toml', ini);
 
 interface ServerCodeBlockProps {
   children: React.ReactNode;
@@ -82,9 +90,13 @@ function normalizeLanguage(lang: string): string {
     'ts': 'typescript',
     'sh': 'bash',
     'shell': 'bash',
+    'zsh': 'bash',
+    'fish': 'bash',
     'yml': 'yaml',
     'py': 'python',
     'md': 'markdown',
+    'docker': 'dockerfile',
+    'toml': 'ini',
   };
 
   return langMap[lang.toLowerCase()] || lang.toLowerCase();
@@ -208,7 +220,7 @@ export function ServerCodeBlock({ children, className, 'data-language': dataLang
           {...props}
         >
           <code
-            className="hljs"
+            className="hljs hljs-github-dark"
             dangerouslySetInnerHTML={{ __html: highlightedCode }}
           />
         </pre>

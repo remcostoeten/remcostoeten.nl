@@ -2,7 +2,7 @@ import {
   AboutSection,
   ProjectsSection,
   ContactSection,
-  TimezoneSection,
+  Footer,
 } from "@/modules/sections";
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +13,7 @@ import type { Metadata } from 'next';
 import { buildSeo } from "@/lib/seo";
 
 const LatestActivitySection = nextDynamic(() => import("@/modules/sections").then(m => m.LatestActivitySection), { ssr: true });
-const BlogSection = nextDynamic(() => import("@/modules/sections").then(m => m.BlogSection), { ssr: true });
+const BlogSection = nextDynamic(() => import("@/modules/sections/blog-section").then(m => m.BlogSection), { ssr: true });
 
 
 export const metadata: Metadata = {
@@ -39,7 +39,7 @@ export default async function HomePage() {
         <ProjectsSection />
         <BlogSection />
         <ContactSection />
-        <TimezoneSection />
+        <Footer />
       </div>
     </main>
   );

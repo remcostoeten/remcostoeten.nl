@@ -1,55 +1,41 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Center } from '@/shared/components/center'
+import { AlertTriangle } from 'lucide-react'
 
-interface GlobalErrorProps {
+type TProps = {
   error: Error & { digest?: string }
   reset: () => void
 }
 
-export default function GlobalError({ error, reset }: GlobalErrorProps) {
+export default function GlobalError({ error, reset }: TProps) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error('Global error:', error)
   }, [error])
 
   return (
     <html>
-      <body>
-        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', maxWidth: '400px', padding: '20px' }}>
-            <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '16px' }}>Application Error</h1>
-            <p style={{ marginBottom: '20px', color: '#666' }}>
-              A critical error occurred in the application.
-            </p>
-            <button
-              onClick={reset}
-              style={{
-                backgroundColor: '#dc2626',
-                color: 'white',
-                border: 'none',
-                padding: '12px 24px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '14px',
-                marginRight: '8px'
-              }}
-            >
-              Try again
-            </button>
-            <a 
-              href="/"
-              style={{
-                color: '#0070f3',
-                textDecoration: 'none',
-                padding: '12px 24px',
-                display: 'inline-block'
-              }}
-            >
-              Return home
-            </a>
+      <body className="bg-background">
+        <Center fullHeight>
+          <div className="relative mx-auto max-w-xl text-center px-6">
+            <div className="pointer-events-none absolute inset-0 -z-10 mx-auto h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
+              <AlertTriangle className="h-4 w-4 text-primary" />
+              Application error
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Something went wrong</h1>
+            <p className="mt-3 text-muted-foreground">A critical error occurred in the application.</p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button size="lg" onClick={reset}>Try again</Button>
+              <Button asChild variant="outline" size="lg">
+                <Link href="/">Return home</Link>
+              </Button>
+            </div>
           </div>
-        </div>
+        </Center>
       </body>
     </html>
   )

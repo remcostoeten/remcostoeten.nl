@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, AlertCircle } from "lucide-react";
+import { X, Send, AlertCircle } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useFeedback } from "../../modules/blog/use-feedback";
 
@@ -13,7 +13,7 @@ export const FeedbackWidget = ({ slug }: TFeedbackWidgetProps) => {
   const [isVisible, setIsVisible] = useState(false);
   const [message, setMessage] = useState("");
   const lastScrollY = useRef(0);
-  const scrollTimeout = useRef<NodeJS.Timeout>();
+  const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     reactions,
@@ -49,7 +49,6 @@ export const FeedbackWidget = ({ slug }: TFeedbackWidgetProps) => {
         setIsVisible(false);
       }
 
-      // Auto-hide after scroll stops (when reading)
       scrollTimeout.current = setTimeout(() => {
         if (!isExpanded && !scrollingUp) {
           setIsVisible(false);
@@ -174,7 +173,7 @@ export const FeedbackWidget = ({ slug }: TFeedbackWidgetProps) => {
             <button
               onClick={() => {
                 setIsExpanded(false);
-                setSelectedEmoji(null);
+                setSelectedEmoji("");
                 setMessage("");
                 resetError();
               }}

@@ -8,6 +8,8 @@ type TVisitorData = {
   screenResolution: string;
   timezone: string;
   platform: string;
+  language: string;
+  referrer: string;
 };
 
 type TPageviewData = {
@@ -56,15 +58,19 @@ function getVisitorData(): TVisitorData {
       screenResolution: '1920x1080',
       timezone: 'UTC',
       platform: 'server',
+      language: 'en-US',
+      referrer: '',
     };
   }
-  
+
   return {
     userAgent: navigator.userAgent,
     acceptLanguage: navigator.language,
     screenResolution: `${screen.width}x${screen.height}`,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     platform: navigator.platform,
+    language: navigator.language,
+    referrer: document.referrer,
   };
 }
 
@@ -72,53 +78,92 @@ function generateVisitorId(data: TVisitorData): string {
   if (typeof window === 'undefined') {
     return 'server-id';
   }
-  
+
   // Try to get existing visitor ID from localStorage first
   const existingId = localStorage.getItem('analytics-visitor-id');
   if (existingId) {
     return existingId;
   }
-  
-  // Generate new ID - use crypto.randomUUID if available, fallback to fingerprint
+
+  // Generate new ID - use crypto.randomUUID if available, fallback to enhanced fingerprint
   let newId: string;
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
     newId = crypto.randomUUID();
   } else {
-    // Fallback fingerprinting for older browsers
+    // Enhanced fingerprinting for older browsers - more stable fingerprint
     const fingerprint = [
       data.userAgent,
       data.acceptLanguage,
       data.screenResolution,
       data.timezone,
       data.platform,
-      Date.now().toString(),
+      // Add canvas fingerprint for better uniqueness (if available)
+      getCanvasFingerprint(),
+      // Add timezone offset for additional uniqueness
+      new Date().getTimezoneOffset().toString(),
     ].join('|');
-    
-    let hash = 0;
-    for (let i = 0; i < fingerprint.length; i++) {
-      const char = fingerprint.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
+
+    // Use crypto.subtle for better hashing if available
+    if (typeof crypto !== 'undefined' && crypto.subtle) {
+      // Use Web Crypto API for better hashing
+      const encoder = new TextEncoder();
+      const dataBuffer = encoder.encode(fingerprint);
+      crypto.subtle.digest('SHA-256', dataBuffer).then(hashBuffer => {
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        newId = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+      });
+    } else {
+      // Fallback to simple hash
+      let hash = 0;
+      for (let i = 0; i < fingerprint.length; i++) {
+        const char = fingerprint.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      newId = Math.abs(hash).toString(16).substring(0, 16);
     }
-    newId = Math.abs(hash).toString(16).substring(0, 16);
   }
-  
+
   localStorage.setItem('analytics-visitor-id', newId);
   return newId;
 }
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:4001/api';
+// Enhanced canvas fingerprinting for better uniqueness
+function getCanvasFingerprint(): string {
+  try {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return 'no-canvas';
+
+    // Draw some text with different fonts and styles
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Arial';
+    ctx.fillText('Analytics fingerprint', 2, 2);
+    ctx.font = '12px Verdana';
+    ctx.fillText('Browser uniqueness', 4, 20);
+
+    return canvas.toDataURL().slice(-20); // Last 20 chars for uniqueness
+  } catch {
+    return 'canvas-error';
+  }
+}
+
+const DEFAULT_API_BASE =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:4001/api'
+    : 'https://backend-thrumming-cloud-5273.fly.dev/api';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API_BASE;
 
 export function useAnalytics() {
   const visitorData = useMemo(() => getVisitorData(), []);
   const visitorId = useMemo(() => generateVisitorId(visitorData), [visitorData]);
-  
+
   // Cache for request deduplication - only initialize on client side
   const requestCacheRef = useRef<Map<string, Promise<any>> | null>(null);
-  
+
   const getRequestCache = () => {
     if (typeof window === 'undefined') return null;
-    
+
     if (!requestCacheRef.current) {
       requestCacheRef.current = new Map<string, Promise<any>>();
     }
@@ -137,7 +182,7 @@ export function useAnalytics() {
     };
 
     try {
-      const response = await fetch(`${API_BASE}/pageviews/pageviews`, {
+      const response = await fetch(`${API_BASE}/pageviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,6 +237,7 @@ export function useAnalytics() {
         trackPageview({ title: blogTitle }),
         fetch(`${API_BASE}/blog/analytics/${blogSlug}/view`, {
           method: 'POST',
+          credentials: 'include',
         })
       ]);
 
@@ -220,7 +266,7 @@ export function useAnalytics() {
   // Get pageview statistics
   const getPageviewStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/pageviews/pageviews/stats`);
+      const response = await fetch(`${API_BASE}/pageviews/stats`);
       return await response.json();
     } catch (error) {
       console.error('Error getting pageview stats:', error);
@@ -243,12 +289,12 @@ export function useAnalytics() {
   const getAnalyticsStats = useCallback(async (): Promise<TAnalyticsStats | null> => {
     const cacheKey = 'analytics-stats';
     const requestCache = getRequestCache();
-    
+
     // Check if we already have a pending request (only on client side)
     if (requestCache && requestCache.has(cacheKey)) {
       return requestCache.get(cacheKey);
     }
-    
+
     const request = (async () => {
       try {
         const [pageviewsResult, visitorsResult] = await Promise.all([
@@ -275,7 +321,7 @@ export function useAnalytics() {
         }
       }
     })();
-    
+
     const cache = getRequestCache();
     if (cache) {
       cache.set(cacheKey, request);
@@ -286,10 +332,10 @@ export function useAnalytics() {
   // Auto-track page views with session deduplication
   const autoTrackPageview = useCallback(async () => {
     if (typeof window === 'undefined') return;
-    
+
     const sessionKey = `pageview-${window.location.pathname}`;
     const hasTracked = sessionStorage.getItem(sessionKey);
-    
+
     if (!hasTracked) {
       await Promise.all([
         trackPageview(),
@@ -305,13 +351,13 @@ export function useAnalytics() {
     trackVisitor,
     trackBlogView,
     autoTrackPageview,
-    
+
     // Data retrieval
     getBlogViewCount,
     getPageviewStats,
     getVisitorStats,
     getAnalyticsStats,
-    
+
     // User info
     visitorId,
     visitorData,

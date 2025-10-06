@@ -159,6 +159,28 @@ function setCachedReactions(slug: string, reactions: TFeedbackReaction[]) {
 }
 
 /**
+ * Generate a simple browser fingerprint for deduplication
+ */
+function generateFingerprint(): string {
+  if (typeof window === 'undefined') return 'server-fingerprint';
+  
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx?.fillText('fingerprint', 10, 10);
+  const canvasFingerprint = canvas.toDataURL();
+  
+  const fingerprint = btoa(
+    navigator.userAgent +
+    navigator.language +
+    screen.width + 'x' + screen.height +
+    new Date().getTimezoneOffset() +
+    canvasFingerprint.slice(-50)
+  ).slice(0, 32);
+  
+  return fingerprint;
+}
+
+/**
  * Submit feedback for a blog post
  */
 export async function submitFeedback(
@@ -179,6 +201,8 @@ export async function submitFeedback(
   }
 
   try {
+    const fingerprint = generateFingerprint();
+    
     const feedbackData: Omit<TFeedbackData, 'timestamp'> = {
       emoji,
       message: message?.trim(),
@@ -186,7 +210,10 @@ export async function submitFeedback(
       userAgent: navigator.userAgent,
     };
 
-    const response = await apiFetch<TFeedbackData>(API.blog.feedback.submit(slug), {
+    // Add fingerprint to URL for backend deduplication
+    const submitUrl = `${API.blog.feedback.submit(slug)}?fingerprint=${fingerprint}`;
+
+    const response = await apiFetch<TFeedbackData>(submitUrl, {
       method: 'POST',
       body: JSON.stringify(feedbackData),
     });
@@ -196,6 +223,7 @@ export async function submitFeedback(
       const submissionData = {
         id: response.data.timestamp, // Use timestamp as ID for simplicity
         timestamp: response.data.timestamp,
+        fingerprint,
       };
       localStorage.setItem(STORAGE_KEYS.USER_FEEDBACK(slug), JSON.stringify(submissionData));
 

@@ -6,11 +6,15 @@
   top: 5rem;
   max-height: calc(100vh - 5rem);
   overflow-y: auto;
+  /* Add more padding for better spacing */
+  padding: 1.5rem 0;
 }
 
 .toc-item {
   /* Smooth transitions for TOC items */
   transition: all 0.2s ease-in-out;
+  /* Add more breathing room */
+  margin-bottom: 1rem;
 }
 
 .toc-item:hover {

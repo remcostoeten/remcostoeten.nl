@@ -148,7 +148,7 @@ export default async function PostPage(props: TPostPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <div className="max-w-7xl mx-auto py-8 px-4">
+      <div className="max-w-7xl mx-auto py-8 px-5 sm:px-6">
         <BreadcrumbNavigation items={breadcrumbs} className="mb-8" />
 
         <noscript>
@@ -163,8 +163,8 @@ export default async function PostPage(props: TPostPageProps) {
 
         <TOCLayoutRedesign
           headings={headings}
-          className="w-full max-w-6xl mx-auto"
-          contentClassName="max-w-4xl"
+          className="w-full"
+          contentClassName=""
         >
           <article
             itemScope
@@ -192,7 +192,10 @@ export default async function PostPage(props: TPostPageProps) {
 
               <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
 
-              <p className="text-xl text-muted-foreground mb-8">{post.excerpt}</p>
+              {/* SEO excerpt - visually hidden but accessible to search engines */}
+              <div className="sr-only" itemProp="description">
+                {post.excerpt}
+              </div>
 
               <div className="flex flex-wrap">
                 <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
@@ -219,18 +222,39 @@ export default async function PostPage(props: TPostPageProps) {
         <FeedbackWidget slug={params.slug} />
 
         {relatedPosts.length > 0 && (
-          <div className="mt-12 border-t border-border pt-8">
-            <h2 className="text-2xl font-semibold mb-4">Related posts</h2>
-            <ul className="grid gap-4 sm:grid-cols-2">
+          <div className="mt-16 border-t border-border pt-12">
+            <h2 className="text-3xl font-bold mb-8 text-foreground">Related posts</h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {relatedPosts.map((rp) => (
-                <li key={rp.slug}>
-                  <Link href={`/posts/${rp.slug}`} className="text-accent hover:underline">
-                    {rp.title}
-                  </Link>
-                  <p className="text-sm text-muted-foreground">{rp.excerpt}</p>
-                </li>
+                <Link
+                  key={rp.slug}
+                  href={`/posts/${rp.slug}`}
+                  className="group block p-6 bg-secondary/30 hover:bg-secondary/50 rounded-lg border border-border hover:border-accent/50 transition-all duration-300"
+                >
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2.5 py-0.5 bg-accent/10 text-accent text-xs rounded border border-accent/20">
+                        {rp.category}
+                      </span>
+                      <span className="text-xs text-muted-foreground flex items-center">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {rp.readTime} min
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-2 line-clamp-2">
+                      {rp.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground line-clamp-3 flex-grow">
+                      {rp.excerpt}
+                    </p>
+                    <div className="mt-4 flex items-center text-sm text-accent group-hover:translate-x-1 transition-transform">
+                      Read more
+                      <ArrowLeft className="w-4 h-4 ml-1 rotate-180" />
+                    </div>
+                  </div>
+                </Link>
               ))}
-            </ul>
+            </div>
           </div>
         )}
       </div>

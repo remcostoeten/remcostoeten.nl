@@ -4,9 +4,9 @@ import { BlogSectionClient } from "./blog-section-client";
 export async function BlogSection() {
   // Get posts from filesystem
   const allPosts = getAllBlogPosts();
-  
-  // Get the 2 most recent posts
-  const recentPosts = allPosts.slice(0, 2);
 
-  return <BlogSectionClient posts={recentPosts} />;
+  // Get the 3 most recent posts
+  const recentPosts = allPosts.slice(0, 3);
+
+  return <BlogSectionClient posts={recentPosts} totalPosts={allPosts.length} />;
 };

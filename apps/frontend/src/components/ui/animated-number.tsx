@@ -41,27 +41,35 @@ export function AnimatedNumber({
     randomRange = 1000,
     delay = 0
 }: TProps) {
-    const [displayValue, setDisplayValue] = useState<number>(randomStart ? Math.floor(Math.random() * randomRange) + value - randomRange / 2 : value)
-    const [isAnimating, setIsAnimating] = useState(false)
+    const [displayValue, setDisplayValue] = useState<number>(value)
+    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true)
 
     const canAnimate = useCanAnimate({ respectMotionPreference })
     const prefersReducedMotion = usePrefersReducedMotion()
 
     useEffect(() => {
-        if (randomStart && !isAnimating) {
-            // Start with random value for dramatic effect
-            const randomValue = Math.floor(Math.random() * randomRange) + value - randomRange / 2
-            setDisplayValue(randomValue)
+        if (isInitialLoad) {
+            setIsInitialLoad(false)
+            if (randomStart) {
+                // Start with random value for dramatic effect
+                const randomValue = Math.max(0, Math.floor(Math.random() * randomRange))
+                setDisplayValue(randomValue)
 
-            // After delay, animate to actual value
-            const timer = setTimeout(() => {
-                setIsAnimating(true)
+                // After delay, animate to actual value
+                const timer = setTimeout(() => {
+                    setDisplayValue(value)
+                }, delay)
+
+                return () => clearTimeout(timer)
+            } else {
+                // If not random start, set to actual value immediately
                 setDisplayValue(value)
-            }, delay)
-
-            return () => clearTimeout(timer)
+            }
+        } else {
+            // For subsequent updates, directly set the new value to trigger animation
+            setDisplayValue(value)
         }
-    }, [value, randomStart, randomRange, delay, isAnimating])
+    }, [value, randomStart, randomRange, delay, isInitialLoad])
 
     // If motion is disabled or reduced motion is preferred, show static value
     if (!canAnimate || prefersReducedMotion) {
@@ -82,6 +90,7 @@ export function AnimatedNumber({
                 format={FORMAT_CONFIG[format](decimals)}
                 locales={locale}
                 suffix={suffix}
+                duration={1000}
             />
         </span>
     )

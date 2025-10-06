@@ -10,6 +10,18 @@ export const visitors = pgTable('visitors', {
   totalVisits: integer('total_visits').notNull().default(1),
   userAgent: text('user_agent'),
   ipAddress: text('ip_address'),
+  // Enhanced analytics fields
+  country: text('country'),
+  region: text('region'),
+  city: text('city'),
+  timezone: text('timezone'),
+  language: text('language'),
+  screenResolution: text('screen_resolution'),
+  platform: text('platform'),
+  browser: text('browser'),
+  os: text('os'),
+  deviceType: text('device_type'), // mobile, desktop, tablet
+  referrer: text('referrer'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().default(sql`NOW()`),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().default(sql`NOW()`),
 });

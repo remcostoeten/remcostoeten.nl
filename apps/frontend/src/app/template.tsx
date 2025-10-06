@@ -1,3 +1,5 @@
+import { ClientAnalyticsWrapper } from '@/shared/components/analytics/client-analytics-wrapper';
+
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <>
@@ -10,6 +12,7 @@ export default function Template({ children }: { children: React.ReactNode }) {
 
       <div className="min-h-screen bg-background text-foreground py-4 sm:py-8 lg:py-16 px-3 sm:px-6 lg:px-8">
         <div className="max-w-2xl w-full mx-auto space-y-6 sm:space-y-8">
+          <ClientAnalyticsWrapper />
           {children}
         </div>
       </div>

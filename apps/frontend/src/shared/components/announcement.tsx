@@ -77,7 +77,7 @@ export function AnnouncementTag({ className, ...props }: TAnnouncementTagProps) 
 type TAnnouncementTitleProps = React.HTMLAttributes<HTMLDivElement>
 
 export function AnnouncementTitle({ className, ...props }: TAnnouncementTitleProps) {
-    return <div className={cn("flex items-center gap-1 truncate py-1", className)} {...props} />
+    return <div className={cn("flex items-center gap-1 py-1 min-w-0", className)} {...props} />
 }
 
 export function AnnouncementBanner() {
@@ -101,9 +101,10 @@ export function AnnouncementBanner() {
         function onScroll() {
             const currentY = window.scrollY || 0
             const delta = currentY - (lastScrollYRef.current || 0)
-            if (currentY > 0 && delta > 2) {
+            // More sensitive scroll detection
+            if (currentY > 50 && delta > 1) {
                 setIsHiddenByScroll(true)
-            } else if (delta < -2 || currentY <= 0) {
+            } else if (delta < -1 || currentY <= 50) {
                 setIsHiddenByScroll(false)
             }
             lastScrollYRef.current = currentY
@@ -152,12 +153,12 @@ export function AnnouncementBanner() {
     if (!isVisible) return null
 
     return (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 pointer-events-none">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none" style={{ contain: 'paint' }}>
             <div
-                className="relative mx-auto w-fit animate-in slide-in-from-top-full duration-500 ease-out pointer-events-auto"
+                className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit animate-in slide-in-from-top-full duration-500 ease-out pointer-events-auto overflow-visible"
                 style={{
                     transform: `translateY(${(isHiddenByScroll ? -bannerHeight : 0) + dragY}px)`,
-                    transition: isDragging ? "none" : "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                    transition: isDragging ? "none" : "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
                 ref={wrapperRef}
                 onMouseDown={handleDragStart}
@@ -170,11 +171,11 @@ export function AnnouncementBanner() {
             >
                 <Announcement
                     themed
-                    className="group border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground cursor-grab active:cursor-grabbing pr-10 border-accent/25 shadow-sm shadow-accent/10"
+                    className="group border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground cursor-grab active:cursor-grabbing pr-10 shadow-sm shadow-accent/10 w-full overflow-hidden"
                 >
-                    <AnnouncementTag className="-ml-1 bg-accent/15 text-accent px-2 py-0.5 leading-none">Blog</AnnouncementTag>
-                    <AnnouncementTitle>
-                        Read about the over-engineering of my new site!
+                    <AnnouncementTag className="-ml-1 bg-accent/15 text-accent px-2 py-0.5 leading-none text-[10px] sm:text-xs">Blog</AnnouncementTag>
+                    <AnnouncementTitle className="flex items-center gap-1 truncate py-1 min-w-0">
+                        <span className="truncate">Read about the over-engineering of my new site!</span>
                         <ArrowUpRightIcon size={16} className="shrink-0 text-accent/70 group-hover:text-accent transition-colors" />
                     </AnnouncementTitle>
                 </Announcement>
