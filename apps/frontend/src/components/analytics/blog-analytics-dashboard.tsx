@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { RefreshCw, Eye, Users, TrendingUp, MessageCircle } from 'lucide-react';
 import { useMultipleViewCounts } from '@/hooks/use-multiple-view-counts';
 import { ViewsService } from '@/services/views-service';
+import { useMemo } from 'react';
 
 interface BlogPost {
     slug: string;
@@ -24,7 +25,7 @@ export function BlogAnalyticsDashboard({ posts }: BlogAnalyticsDashboardProps) {
     const [refreshing, setRefreshing] = useState(false);
     const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
-    const allSlugs = posts.map(post => post.slug);
+    const allSlugs = useMemo(() => posts.map(post => post.slug), [posts]);
     const {
         viewCounts,
         loading,
@@ -172,7 +173,11 @@ export function BlogAnalyticsDashboard({ posts }: BlogAnalyticsDashboardProps) {
                                         <div>
                                             <h4 className="font-medium text-foreground line-clamp-1">{post.title}</h4>
                                             <p className="text-sm text-muted-foreground">
-                                                {post.category} • {new Date(post.publishedAt).toLocaleDateString()}
+                                                {post.category} • {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    year: 'numeric'
+                                                })}
                                             </p>
                                         </div>
                                     </div>

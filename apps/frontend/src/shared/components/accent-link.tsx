@@ -24,11 +24,11 @@ type TProps = {
  */
 export function AccentLink({ children, href, external, onClick, className }: TProps) {
   const baseClasses = "text-accent hover:underline font-medium hover:no-underline cursor-pointer border-2 border-dotted border-accent/30 hover:border-accent/60 px-1 rounded transition-colors duration-200";
-  
+
   if (href) {
     return (
-      <Link 
-        href={href} 
+      <Link
+        href={href}
         external={external}
         className={`${baseClasses} ${className || ''}`}
         onClick={onClick}
@@ -37,9 +37,9 @@ export function AccentLink({ children, href, external, onClick, className }: TPr
       </Link>
     );
   }
-  
+
   return (
-    <span 
+    <span
       className={`${baseClasses} ${className || ''}`}
       onClick={onClick}
       role={onClick ? "button" : undefined}

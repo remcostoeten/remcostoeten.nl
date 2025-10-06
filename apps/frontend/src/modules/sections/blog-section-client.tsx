@@ -37,7 +37,8 @@ function MetaItem({ icon: Icon, children }: { icon: React.ElementType; children:
 }
 
 function ViewCount({ slug }: { slug: string }) {
-  const { getFormattedViewCount, loading } = useMultipleViewCounts([slug]);
+  const slugsArray = useMemo(() => [slug], [slug]);
+  const { getFormattedViewCount, loading } = useMultipleViewCounts(slugsArray);
   return <span>{loading ? '...' : getFormattedViewCount(slug)}</span>;
 }
 
