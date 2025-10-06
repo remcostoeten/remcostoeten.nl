@@ -13,7 +13,11 @@
     "blog:watch": "bun run tsx scripts/watch-blog-changes.ts",
     "blog:hooks": "bun run tsx scripts/setup-git-hooks.ts",
     "prebuild": "bun run node scripts/generate-git-info.js && echo 'Generated git info for footer'",
-    "postinstall": "bun run blog:sync"
+    "postinstall": "bun run blog:sync",
+    "favicon": "node scripts/generate-favicon.js",
+    "favicon:advanced": "node scripts/generate-favicon-advanced.js",
+    "favicon:update": "node scripts/update-favicon-theme.js",
+    "favicon:from-image": "node scripts/generate-favicon-from-image.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

@@ -15,26 +15,30 @@ export const BlogCard = ({ post, index }: BlogCardProps) => {
       {...ANIMATION_CONFIGS.staggered(index * 0.1)}
     >
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-        <time>{new Date(post.publishedAt).toLocaleDateString()}</time>
+        <time>{new Date(post.publishedAt).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })}</time>
         <span>•</span>
         <span>{post.readTime} min read</span>
         <span>•</span>
         <span>{post.views?.total?.toLocaleString() || 0} views</span>
       </div>
-      
+
       <h2 className="text-xl font-semibold text-foreground mb-3">
-        <Link 
+        <Link
           href={`/posts/${post.slug}`}
           className="hover:text-accent transition-colors"
         >
           {post.title}
         </Link>
       </h2>
-      
+
       <p className="text-muted-foreground mb-4 leading-relaxed">
         {post.excerpt}
       </p>
-      
+
       <div className="flex flex-wrap gap-2 mb-4">
         {post.tags.map((tag) => (
           <Link
@@ -46,12 +50,12 @@ export const BlogCard = ({ post, index }: BlogCardProps) => {
           </Link>
         ))}
       </div>
-      
+
       <Link
         href={`/posts/${post.slug}`}
         className="text-accent hover:underline font-medium text-sm inline-flex items-center gap-1.5 group"
       >
-        Read more 
+        Read more
         <span className="transition-transform group-hover:translate-x-1">→</span>
       </Link>
     </motion.article>

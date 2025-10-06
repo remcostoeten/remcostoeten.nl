@@ -102,27 +102,27 @@ export function AnnouncementBanner() {
         function onScroll() {
             const currentY = window.scrollY || 0
             const delta = currentY - (lastScrollYRef.current || 0)
-            
+
             // Clear any existing timeout
             if (scrollTimeoutRef.current) {
                 clearTimeout(scrollTimeoutRef.current)
             }
-            
+
             // Debounce the scroll state change to prevent flickering
             scrollTimeoutRef.current = setTimeout(() => {
                 // Hide when scrolling down more than 100px
                 if (currentY > 100 && delta > 5) {
                     setIsHiddenByScroll(true)
-                } 
+                }
                 // Show when scrolling up or at the top
                 else if (delta < -5 || currentY <= 100) {
                     setIsHiddenByScroll(false)
                 }
             }, 50)
-            
+
             lastScrollYRef.current = currentY
         }
-        
+
         window.addEventListener("scroll", onScroll, { passive: true })
         return () => {
             window.removeEventListener("scroll", onScroll)

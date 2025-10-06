@@ -1,1154 +1,1250 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analytics API Documentation - Port 4001</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        /* CSS Variables for Dark Theme */
-        :root {
-            --bg-primary: hsl(0 0% 7%);
-            --bg-secondary: hsl(0 0% 12%);
-            --bg-card: hsl(0 0% 10%);
-            --bg-hover: hsl(0 0% 15%);
-            
-            --text-primary: hsl(0 0% 85%);
-            --text-secondary: hsl(0 0% 65%);
-            --text-muted: hsl(0 0% 45%);
-            
-            --accent-green: hsl(85 100% 75%);
-            --accent-blue: hsl(200 100% 70%);
-            --accent-yellow: hsl(45 100% 65%);
-            --accent-red: hsl(0 85% 65%);
-            
-            --border-color: hsl(0 0% 20%);
-            --border-radius: 0.5rem;
-            
-            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.25);
-        }
+      /* CSS Variables for Dark Theme */
+      :root {
+        --bg-primary: hsl(0 0% 7%);
+        --bg-secondary: hsl(0 0% 12%);
+        --bg-card: hsl(0 0% 10%);
+        --bg-hover: hsl(0 0% 15%);
 
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        --text-primary: hsl(0 0% 85%);
+        --text-secondary: hsl(0 0% 65%);
+        --text-muted: hsl(0 0% 45%);
 
-        html {
-            font-size: 16px;
-            scroll-behavior: smooth;
-        }
+        --accent-green: hsl(85 100% 75%);
+        --accent-blue: hsl(200 100% 70%);
+        --accent-yellow: hsl(45 100% 65%);
+        --accent-red: hsl(0 85% 65%);
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+        --border-color: hsl(0 0% 20%);
+        --border-radius: 0.5rem;
 
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
+        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.25);
+      }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
+      /* Reset and Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
+      html {
+        font-size: 16px;
+        scroll-behavior: smooth;
+      }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
-        }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "Roboto", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
 
-        /* Container */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
+      /* Scrollbar Styling */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
 
-        /* Header Section */
-        .header {
-            padding: 4rem 0 3rem;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-        }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: radial-gradient(circle at 20% 50%, var(--accent-green) 0%, transparent 50%),
-                              radial-gradient(circle at 80% 50%, var(--accent-blue) 0%, transparent 50%);
-            opacity: 0.05;
-            pointer-events: none;
-        }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+      }
 
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-muted);
+      }
 
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
+      /* Container */
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
 
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-blue) 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--bg-primary);
-        }
+      /* Header Section */
+      .header {
+        padding: 4rem 0 3rem;
+        background: linear-gradient(
+          135deg,
+          var(--bg-primary) 0%,
+          var(--bg-secondary) 100%
+        );
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+        overflow: hidden;
+      }
 
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: radial-gradient(
+            circle at 20% 50%,
+            var(--accent-green) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 50%,
+            var(--accent-blue) 0%,
+            transparent 50%
+          );
+        opacity: 0.05;
+        pointer-events: none;
+      }
+
+      .header-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .logo-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-green) 0%,
+          var(--accent-blue) 100%
+        );
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: var(--bg-primary);
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--text-primary) 0%,
+          var(--accent-green) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+      }
+
+      /* Quick Nav Pills */
+      .quick-nav {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .nav-pill:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .nav-pill-count {
+        background: var(--bg-secondary);
+        padding: 0.125rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      /* Search Bar */
+      .search-container {
+        margin: 2rem 0;
+        position: relative;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.2s ease;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--accent-green);
+        box-shadow: 0 0 0 3px rgba(133, 255, 117, 0.1);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+      }
+
+      /* Main Content */
+      .main-content {
+        padding: 3rem 0 5rem;
+      }
+
+      /* Category Cards */
+      .category-section {
+        margin-bottom: 2rem;
+      }
+
+      .category-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-bottom: 0.5rem;
+      }
+
+      .category-header:hover {
+        background: var(--bg-hover);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .category-header.active {
+        border-color: var(--accent-green);
+        box-shadow: 0 0 0 1px var(--accent-green);
+      }
+
+      .category-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .category-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-green) 0%,
+          var(--accent-blue) 100%
+        );
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+      }
+
+      .category-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .category-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+      }
+
+      .category-toggle {
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        transition: transform 0.2s ease;
+      }
+
+      .category-header.active .category-toggle {
+        transform: rotate(180deg);
+      }
+
+      /* Endpoints List */
+      .endpoints-list {
+        display: none;
+        margin-top: 0.5rem;
+      }
+
+      .endpoints-list.active {
+        display: block;
+        animation: slideDown 0.3s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Endpoint Card */
+      .endpoint-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+      }
+
+      .endpoint-card:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+      }
+
+      .endpoint-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .method-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .method-badge.get {
+        background: rgba(133, 255, 117, 0.2);
+        color: var(--accent-green);
+      }
+
+      .method-badge.post {
+        background: rgba(77, 171, 247, 0.2);
+        color: var(--accent-blue);
+      }
+
+      .method-badge.put {
+        background: rgba(255, 204, 102, 0.2);
+        color: var(--accent-yellow);
+      }
+
+      .method-badge.delete {
+        background: rgba(255, 107, 107, 0.2);
+        color: var(--accent-red);
+      }
+
+      .endpoint-path {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        background: var(--bg-secondary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+        flex: 1;
+        word-break: break-all;
+      }
+
+      .copy-btn {
+        padding: 0.5rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.25rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .copy-btn:hover {
+        background: var(--bg-hover);
+        color: var(--accent-green);
+      }
+
+      .copy-btn.copied {
+        color: var(--accent-green);
+      }
+
+      .endpoint-description {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+      }
+
+      .endpoint-details {
+        display: none;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .endpoint-details.active {
+        display: block;
+      }
+
+      .toggle-details {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--accent-green);
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+
+      .toggle-details:hover {
+        opacity: 0.8;
+      }
+
+      /* Code Blocks */
+      .code-block {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 1rem;
+        margin: 1rem 0;
+        overflow-x: auto;
+      }
+
+      .code-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+      }
+
+      pre {
+        margin: 0;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: var(--text-primary);
+      }
+
+      /* Toast Notification */
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--bg-card);
+        border: 1px solid var(--accent-green);
+        border-radius: var(--border-radius);
+        padding: 1rem 1.5rem;
+        color: var(--text-primary);
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Footer */
+      .footer {
+        padding: 3rem 0;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border-color);
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+
+      .footer-section h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .footer-section p,
+      .footer-section a {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        line-height: 1.6;
+      }
+
+      .footer-section a:hover {
+        color: var(--accent-green);
+      }
+
+      .footer-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
         h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+          font-size: 2rem;
         }
 
-        .subtitle {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        /* Quick Nav Pills */
         .quick-nav {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
+          flex-direction: column;
         }
 
         .nav-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 2rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-pill:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .nav-pill-count {
-            background: var(--bg-secondary);
-            padding: 0.125rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        /* Search Bar */
-        .search-container {
-            margin: 2rem 0;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--accent-green);
-            box-shadow: 0 0 0 3px rgba(133, 255, 117, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-        }
-
-        /* Main Content */
-        .main-content {
-            padding: 3rem 0 5rem;
-        }
-
-        /* Category Cards */
-        .category-section {
-            margin-bottom: 2rem;
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.5rem;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-bottom: 0.5rem;
-        }
-
-        .category-header:hover {
-            background: var(--bg-hover);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .category-header.active {
-            border-color: var(--accent-green);
-            box-shadow: 0 0 0 1px var(--accent-green);
-        }
-
-        .category-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .category-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-blue) 100%);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .category-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        .category-description {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
-        }
-
-        .category-toggle {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            transition: transform 0.2s ease;
-        }
-
-        .category-header.active .category-toggle {
-            transform: rotate(180deg);
-        }
-
-        /* Endpoints List */
-        .endpoints-list {
-            display: none;
-            margin-top: 0.5rem;
-        }
-
-        .endpoints-list.active {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Endpoint Card */
-        .endpoint-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: all 0.2s ease;
-        }
-
-        .endpoint-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
+          width: 100%;
+          justify-content: space-between;
         }
 
         .endpoint-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .method-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .method-badge.get {
-            background: rgba(133, 255, 117, 0.2);
-            color: var(--accent-green);
-        }
-
-        .method-badge.post {
-            background: rgba(77, 171, 247, 0.2);
-            color: var(--accent-blue);
-        }
-
-        .method-badge.put {
-            background: rgba(255, 204, 102, 0.2);
-            color: var(--accent-yellow);
-        }
-
-        .method-badge.delete {
-            background: rgba(255, 107, 107, 0.2);
-            color: var(--accent-red);
+          flex-direction: column;
+          align-items: flex-start;
         }
 
         .endpoint-path {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-            background: var(--bg-secondary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.25rem;
-            flex: 1;
-            word-break: break-all;
+          width: 100%;
         }
 
-        .copy-btn {
-            padding: 0.5rem;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 0.25rem;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .copy-btn:hover {
-            background: var(--bg-hover);
-            color: var(--accent-green);
-        }
-
-        .copy-btn.copied {
-            color: var(--accent-green);
-        }
-
-        .endpoint-description {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-            line-height: 1.6;
-        }
-
-        .endpoint-details {
-            display: none;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .endpoint-details.active {
-            display: block;
-        }
-
-        .toggle-details {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--accent-green);
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .toggle-details:hover {
-            opacity: 0.8;
-        }
-
-        /* Code Blocks */
-        .code-block {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            margin: 1rem 0;
-            overflow-x: auto;
-        }
-
-        .code-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-        }
-
-        pre {
-            margin: 0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            line-height: 1.5;
-            color: var(--text-primary);
-        }
-
-        /* Toast Notification */
         .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--bg-card);
-            border: 1px solid var(--accent-green);
-            border-radius: var(--border-radius);
-            padding: 1rem 1.5rem;
-            color: var(--text-primary);
-            box-shadow: var(--shadow-lg);
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
+          right: 1rem;
+          left: 1rem;
         }
+      }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
+      /* Loading Animation */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        border-top-color: var(--accent-green);
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
+      }
 
-        /* Footer */
-        .footer {
-            padding: 3rem 0;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-        }
+      /* Syntax Highlighting for Code */
+      .json-key {
+        color: var(--accent-blue);
+      }
 
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
+      .json-string {
+        color: var(--accent-green);
+      }
 
-        .footer-section h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
+      .json-number {
+        color: var(--accent-yellow);
+      }
 
-        .footer-section p,
-        .footer-section a {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            line-height: 1.6;
-        }
-
-        .footer-section a:hover {
-            color: var(--accent-green);
-        }
-
-        .footer-links {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .quick-nav {
-                flex-direction: column;
-            }
-
-            .nav-pill {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .endpoint-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .endpoint-path {
-                width: 100%;
-            }
-
-            .toast {
-                right: 1rem;
-                left: 1rem;
-            }
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 50%;
-            border-top-color: var(--accent-green);
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Syntax Highlighting for Code */
-        .json-key {
-            color: var(--accent-blue);
-        }
-
-        .json-string {
-            color: var(--accent-green);
-        }
-
-        .json-number {
-            color: var(--accent-yellow);
-        }
-
-        .json-boolean {
-            color: var(--accent-red);
-        }
+      .json-boolean {
+        color: var(--accent-red);
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header Section -->
     <header class="header">
-        <div class="container header-content">
-            <div class="logo">
-                <div class="logo-icon">API</div>
-            </div>
-            <h1>Analytics API Documentation</h1>
-            <p class="subtitle">High-performance analytics and pageview tracking API powered by Hono.js</p>
-            
-            <!-- Quick Navigation -->
-            <nav class="quick-nav" id="quickNav">
-                <!-- Will be populated dynamically by JavaScript -->
-            </nav>
+      <div class="container header-content">
+        <div class="logo">
+          <div class="logo-icon">API</div>
         </div>
+        <h1>Analytics API Documentation</h1>
+        <p class="subtitle">
+          High-performance analytics and pageview tracking API powered by
+          Hono.js
+        </p>
+
+        <!-- Quick Navigation -->
+        <nav class="quick-nav" id="quickNav">
+          <!-- Will be populated dynamically by JavaScript -->
+        </nav>
+      </div>
     </header>
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="container">
-            <!-- Search Bar -->
-            <div class="search-container">
-                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" class="search-input" placeholder="Search endpoints..." id="searchInput">
-            </div>
-
-            <!-- API Endpoints Documentation -->
-            <div id="endpointsContainer"></div>
+      <div class="container">
+        <!-- Search Bar -->
+        <div class="search-container">
+          <svg
+            class="search-icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search endpoints..."
+            id="searchInput"
+          />
         </div>
+
+        <!-- API Endpoints Documentation -->
+        <div id="endpointsContainer"></div>
+      </div>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>API Information</h3>
-                    <p>Version: 1.0.0</p>
-                    <p>Base URL: http://localhost:4001</p>
-                    <p>Storage: Hybrid (Database + Memory)</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Rate Limiting</h3>
-                    <p>No rate limiting currently implemented</p>
-                    <p>Please use responsibly</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Authentication</h3>
-                    <p>No authentication required</p>
-                    <p>CORS enabled for localhost:3000</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Resources</h3>
-                    <div class="footer-links">
-                        <a href="https://github.com">GitHub Repository</a>
-                        <a href="/health">Health Check</a>
-                        <a href="#">Documentation</a>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>API Information</h3>
+            <p>Version: 1.0.0</p>
+            <p>Base URL: http://localhost:4001</p>
+            <p>Storage: Hybrid (Database + Memory)</p>
+          </div>
+          <div class="footer-section">
+            <h3>Rate Limiting</h3>
+            <p>No rate limiting currently implemented</p>
+            <p>Please use responsibly</p>
+          </div>
+          <div class="footer-section">
+            <h3>Authentication</h3>
+            <p>No authentication required</p>
+            <p>CORS enabled for localhost:3000</p>
+          </div>
+          <div class="footer-section">
+            <h3>Resources</h3>
+            <div class="footer-links">
+              <a href="https://github.com">GitHub Repository</a>
+              <a href="/health">Health Check</a>
+              <a href="#">Documentation</a>
             </div>
+          </div>
         </div>
+      </div>
     </footer>
 
     <!-- Toast Notification -->
     <div class="toast" id="toast">
-        <span id="toastMessage">Copied to clipboard!</span>
+      <span id="toastMessage">Copied to clipboard!</span>
     </div>
 
     <!-- JavaScript -->
     <script>
-        // API Endpoints Data
-        const apiEndpoints = {
-            visitors: {
-                title: 'Visitor Tracking',
-                icon: '👥',
-                description: 'Track and analyze visitor behavior across your application',
-                endpoints: [
-                    {
-                        method: 'POST',
-                        path: '/api/visitors/track-visitor',
-                        description: 'Track a new visitor or update existing visitor information',
-                        useCase: 'Use this endpoint to register a visitor when they first access your site. It generates a unique fingerprint based on browser characteristics.',
-                        request: {
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'User-Agent': 'Browser user agent string',
-                                'X-Forwarded-For': 'Client IP address'
-                            },
-                            body: {}
-                        },
-                        response: {
-                            success: true,
-                            visitorId: 'unique-visitor-id-hash',
-                            visitor: {
-                                id: 'visitor-123',
-                                firstVisit: '2024-01-01T00:00:00Z',
-                                lastVisit: '2024-01-01T00:00:00Z',
-                                visitCount: 1
-                            }
-                        }
-                    },
-                    {
-                        method: 'POST',
-                        path: '/api/visitors/track-blog-view',
-                        description: 'Track when a visitor views a specific blog post',
-                        useCase: 'Record blog post engagement metrics. Automatically tracks both the visitor and the blog view in a single request.',
-                        request: {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: {
-                                blogSlug: 'my-awesome-post',
-                                blogTitle: 'My Awesome Post'
-                            }
-                        },
-                        response: {
-                            success: true,
-                            visitorId: 'unique-visitor-id',
-                            visitor: {},
-                            blogView: {
-                                id: 'view-123',
-                                timestamp: '2024-01-01T00:00:00Z'
-                            }
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/visitors/stats',
-                        description: 'Get aggregated visitor statistics',
-                        useCase: 'Retrieve overall visitor metrics including total visitors, unique visitors, and visit patterns.',
-                        response: {
-                            success: true,
-                            stats: {
-                                totalVisitors: 1000,
-                                uniqueVisitors: 850,
-                                todayVisitors: 45,
-                                averageVisitsPerVisitor: 2.5
-                            }
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/visitors/blog/:slug/views',
-                        description: 'Get view count for a specific blog post',
-                        useCase: 'Display the total number of views for a blog post. Useful for showing popularity metrics on blog listings.',
-                        response: {
-                            success: true,
-                            blogSlug: 'my-post',
-                            viewCount: 342
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/visitors/visitor/:visitorId',
-                        description: 'Get detailed information about a specific visitor',
-                        useCase: 'Retrieve complete visitor profile including visit history and engagement metrics.',
-                        response: {
-                            success: true,
-                            visitorId: 'visitor-123',
-                            visitor: {
-                                userAgent: 'Mozilla/5.0...',
-                                ipAddress: '192.168.1.1',
-                                firstVisit: '2024-01-01T00:00:00Z',
-                                lastVisit: '2024-01-15T00:00:00Z',
-                                visitCount: 5
-                            }
-                        }
-                    }
-                ]
+      // API Endpoints Data
+      const apiEndpoints = {
+        visitors: {
+          title: "Visitor Tracking",
+          icon: "👥",
+          description:
+            "Track and analyze visitor behavior across your application",
+          endpoints: [
+            {
+              method: "POST",
+              path: "/api/visitors/track-visitor",
+              description:
+                "Track a new visitor or update existing visitor information",
+              useCase:
+                "Use this endpoint to register a visitor when they first access your site. It generates a unique fingerprint based on browser characteristics.",
+              request: {
+                headers: {
+                  "Content-Type": "application/json",
+                  "User-Agent": "Browser user agent string",
+                  "X-Forwarded-For": "Client IP address",
+                },
+                body: {},
+              },
+              response: {
+                success: true,
+                visitorId: "unique-visitor-id-hash",
+                visitor: {
+                  id: "visitor-123",
+                  firstVisit: "2024-01-01T00:00:00Z",
+                  lastVisit: "2024-01-01T00:00:00Z",
+                  visitCount: 1,
+                },
+              },
             },
-            pageviews: {
-                title: 'Pageview Analytics',
-                icon: '📊',
-                description: 'Track and analyze page views across your entire application',
-                endpoints: [
-                    {
-                        method: 'POST',
-                        path: '/api/pageviews',
-                        description: 'Track a pageview event',
-                        useCase: 'Record when a user visits any page on your site. Captures URL, title, referrer, and user agent for analytics.',
-                        request: {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: {
-                                url: 'https://example.com/page',
-                                title: 'Page Title',
-                                referrer: 'https://google.com',
-                                userAgent: 'Mozilla/5.0...',
-                                timestamp: '2024-01-01T00:00:00Z'
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {
-                                id: 'pageview-123',
-                                url: 'https://example.com/page',
-                                timestamp: '2024-01-01T00:00:00Z'
-                            },
-                            message: 'Pageview tracked successfully'
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/pageviews',
-                        description: 'Get pageviews with optional filtering',
-                        useCase: 'Retrieve pageview data with pagination and filtering. Useful for building analytics dashboards.',
-                        request: {
-                            query: {
-                                limit: 50,
-                                offset: 0,
-                                url: 'https://example.com/specific-page'
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {
-                                pageviews: [],
-                                pagination: {
-                                    total: 1000,
-                                    limit: 50,
-                                    offset: 0,
-                                    hasMore: true
-                                }
-                            }
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/pageviews/stats',
-                        description: 'Get pageview statistics',
-                        useCase: 'Get aggregated statistics like total pageviews, unique pages, and popular pages.',
-                        response: {
-                            success: true,
-                            data: {
-                                totalPageviews: 10000,
-                                uniquePages: 50,
-                                todayPageviews: 250,
-                                popularPages: [
-                                    { url: '/home', views: 3000 },
-                                    { url: '/blog', views: 2500 }
-                                ]
-                            }
-                        }
-                    }
-                ]
+            {
+              method: "POST",
+              path: "/api/visitors/track-blog-view",
+              description: "Track when a visitor views a specific blog post",
+              useCase:
+                "Record blog post engagement metrics. Automatically tracks both the visitor and the blog view in a single request.",
+              request: {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: {
+                  blogSlug: "my-awesome-post",
+                  blogTitle: "My Awesome Post",
+                },
+              },
+              response: {
+                success: true,
+                visitorId: "unique-visitor-id",
+                visitor: {},
+                blogView: {
+                  id: "view-123",
+                  timestamp: "2024-01-01T00:00:00Z",
+                },
+              },
             },
-            blog: {
-                title: 'Blog Management',
-                icon: '📝',
-                description: 'Manage blog metadata and analytics',
-                endpoints: [
-                    {
-                        method: 'POST',
-                        path: '/api/blog/metadata',
-                        description: 'Create blog post metadata',
-                        useCase: 'Register a new blog post in the system with its metadata for tracking and categorization.',
-                        request: {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: {
-                                slug: 'my-new-post',
-                                title: 'My New Post',
-                                excerpt: 'This is a brief description...',
-                                publishedAt: '2024-01-01T00:00:00Z',
-                                readTime: 5,
-                                tags: ['javascript', 'web'],
-                                category: 'development',
-                                status: 'published'
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {
-                                id: 'blog-123',
-                                slug: 'my-new-post',
-                                viewCount: 0
-                            },
-                            message: 'Blog metadata created successfully'
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/blog/metadata',
-                        description: 'Get all blog metadata with analytics',
-                        useCase: 'Retrieve a list of all blog posts with their metadata and view counts for blog listing pages.',
-                        request: {
-                            query: {
-                                category: 'development',
-                                status: 'published',
-                                tags: 'javascript,react',
-                                limit: 10,
-                                offset: 0
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: [
-                                {
-                                    slug: 'post-1',
-                                    title: 'Post Title',
-                                    viewCount: 150,
-                                    publishedAt: '2024-01-01T00:00:00Z'
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/blog/metadata/:slug',
-                        description: 'Get blog metadata by slug',
-                        useCase: 'Fetch complete metadata for a specific blog post including SEO information and analytics.',
-                        response: {
-                            success: true,
-                            data: {
-                                slug: 'my-post',
-                                title: 'My Post',
-                                excerpt: 'Description...',
-                                viewCount: 250,
-                                readTime: 5,
-                                tags: ['web'],
-                                category: 'development'
-                            }
-                        }
-                    },
-                    {
-                        method: 'PUT',
-                        path: '/api/blog/metadata/:slug',
-                        description: 'Update blog metadata',
-                        useCase: 'Update existing blog post metadata such as title, tags, or status.',
-                        request: {
-                            body: {
-                                title: 'Updated Title',
-                                status: 'draft'
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {},
-                            message: 'Blog metadata updated successfully'
-                        }
-                    },
-                    {
-                        method: 'DELETE',
-                        path: '/api/blog/metadata/:slug',
-                        description: 'Delete blog metadata',
-                        useCase: 'Remove a blog post from the system. This will also delete associated analytics data.',
-                        response: {
-                            success: true,
-                            message: 'Blog metadata deleted successfully'
-                        }
-                    },
-                    {
-                        method: 'POST',
-                        path: '/api/blog/analytics/:slug/view',
-                        description: 'Increment blog view count',
-                        useCase: 'Quick endpoint to increment view count without tracking visitor details.',
-                        response: {
-                            success: true,
-                            message: 'View count incremented'
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/blog/analytics/:slug',
-                        description: 'Get blog analytics',
-                        useCase: 'Retrieve detailed analytics for a specific blog post including views over time.',
-                        response: {
-                            success: true,
-                            data: {
-                                slug: 'my-post',
-                                totalViews: 500,
-                                uniqueViews: 350,
-                                averageReadTime: 3.5,
-                                bounceRate: 0.25
-                            }
-                        }
-                    }
-                ]
+            {
+              method: "GET",
+              path: "/api/visitors/stats",
+              description: "Get aggregated visitor statistics",
+              useCase:
+                "Retrieve overall visitor metrics including total visitors, unique visitors, and visit patterns.",
+              response: {
+                success: true,
+                stats: {
+                  totalVisitors: 1000,
+                  uniqueVisitors: 850,
+                  todayVisitors: 45,
+                  averageVisitsPerVisitor: 2.5,
+                },
+              },
             },
-            blogViews: {
-                title: 'Blog View Tracking',
-                icon: '👁️',
-                description: 'Advanced blog view tracking with session management',
-                endpoints: [
-                    {
-                        method: 'POST',
-                        path: '/api/blog/views',
-                        description: 'Record a blog view with session tracking',
-                        useCase: 'Track individual blog views with session management to prevent duplicate counts from the same session.',
-                        request: {
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'User-Agent': 'Browser user agent',
-                                'X-Forwarded-For': 'Client IP'
-                            },
-                            body: {
-                                slug: 'my-post',
-                                sessionId: 'session-abc-123',
-                                referrer: 'https://google.com',
-                                timestamp: '2024-01-01T00:00:00Z'
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {
-                                isNewView: true,
-                                view: {
-                                    id: 'view-123',
-                                    timestamp: '2024-01-01T00:00:00Z'
-                                }
-                            },
-                            message: 'New view recorded'
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/blog/views/:slug',
-                        description: 'Get view count for a specific post',
-                        useCase: 'Retrieve the total number of views for a blog post. Used for displaying view counts on blog pages.',
-                        response: {
-                            success: true,
-                            data: {
-                                slug: 'my-post',
-                                totalViews: 1250,
-                                uniqueViews: 950
-                            }
-                        }
-                    },
-                    {
-                        method: 'POST',
-                        path: '/api/blog/views/multiple',
-                        description: 'Get view counts for multiple posts',
-                        useCase: 'Efficiently fetch view counts for multiple blog posts in a single request. Perfect for blog listing pages.',
-                        request: {
-                            body: {
-                                slugs: ['post-1', 'post-2', 'post-3']
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {
-                                'post-1': { totalViews: 100, uniqueViews: 80 },
-                                'post-2': { totalViews: 200, uniqueViews: 150 },
-                                'post-3': { totalViews: 50, uniqueViews: 45 }
-                            }
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/blog/views',
-                        description: 'Get blog views with filtering',
-                        useCase: 'Retrieve detailed view logs with filtering options for analytics and debugging.',
-                        request: {
-                            query: {
-                                slug: 'my-post',
-                                sessionId: 'session-123',
-                                startDate: '2024-01-01T00:00:00Z',
-                                endDate: '2024-01-31T23:59:59Z',
-                                limit: 50,
-                                offset: 0
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {
-                                views: [],
-                                pagination: {
-                                    total: 100,
-                                    limit: 50,
-                                    offset: 0,
-                                    hasMore: true
-                                }
-                            }
-                        }
-                    },
-                    {
-                        method: 'GET',
-                        path: '/api/blog/views/stats',
-                        description: 'Get blog view statistics',
-                        useCase: 'Get aggregated blog view statistics across all posts.',
-                        response: {
-                            success: true,
-                            data: {
-                                totalViews: 10000,
-                                uniqueSessions: 7500,
-                                averageViewsPerPost: 125,
-                                topPosts: [
-                                    { slug: 'popular-post', views: 500 }
-                                ]
-                            }
-                        }
-                    },
-                    {
-                        method: 'DELETE',
-                        path: '/api/blog/views/cleanup',
-                        description: 'Clean up old view records',
-                        useCase: 'Remove old view records to manage database size. Admin endpoint for maintenance.',
-                        request: {
-                            query: {
-                                days: 365
-                            }
-                        },
-                        response: {
-                            success: true,
-                            data: {
-                                deletedCount: 1000,
-                                message: 'Deleted 1000 views older than 365 days'
-                            }
-                        }
-                    }
-                ]
-            }
-        };
+            {
+              method: "GET",
+              path: "/api/visitors/blog/:slug/views",
+              description: "Get view count for a specific blog post",
+              useCase:
+                "Display the total number of views for a blog post. Useful for showing popularity metrics on blog listings.",
+              response: {
+                success: true,
+                blogSlug: "my-post",
+                viewCount: 342,
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/visitors/visitor/:visitorId",
+              description: "Get detailed information about a specific visitor",
+              useCase:
+                "Retrieve complete visitor profile including visit history and engagement metrics.",
+              response: {
+                success: true,
+                visitorId: "visitor-123",
+                visitor: {
+                  userAgent: "Mozilla/5.0...",
+                  ipAddress: "192.168.1.1",
+                  firstVisit: "2024-01-01T00:00:00Z",
+                  lastVisit: "2024-01-15T00:00:00Z",
+                  visitCount: 5,
+                },
+              },
+            },
+          ],
+        },
+        pageviews: {
+          title: "Pageview Analytics",
+          icon: "📊",
+          description:
+            "Track and analyze page views across your entire application",
+          endpoints: [
+            {
+              method: "POST",
+              path: "/api/pageviews",
+              description: "Track a pageview event",
+              useCase:
+                "Record when a user visits any page on your site. Captures URL, title, referrer, and user agent for analytics.",
+              request: {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: {
+                  url: "https://example.com/page",
+                  title: "Page Title",
+                  referrer: "https://google.com",
+                  userAgent: "Mozilla/5.0...",
+                  timestamp: "2024-01-01T00:00:00Z",
+                },
+              },
+              response: {
+                success: true,
+                data: {
+                  id: "pageview-123",
+                  url: "https://example.com/page",
+                  timestamp: "2024-01-01T00:00:00Z",
+                },
+                message: "Pageview tracked successfully",
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/pageviews",
+              description: "Get pageviews with optional filtering",
+              useCase:
+                "Retrieve pageview data with pagination and filtering. Useful for building analytics dashboards.",
+              request: {
+                query: {
+                  limit: 50,
+                  offset: 0,
+                  url: "https://example.com/specific-page",
+                },
+              },
+              response: {
+                success: true,
+                data: {
+                  pageviews: [],
+                  pagination: {
+                    total: 1000,
+                    limit: 50,
+                    offset: 0,
+                    hasMore: true,
+                  },
+                },
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/pageviews/stats",
+              description: "Get pageview statistics",
+              useCase:
+                "Get aggregated statistics like total pageviews, unique pages, and popular pages.",
+              response: {
+                success: true,
+                data: {
+                  totalPageviews: 10000,
+                  uniquePages: 50,
+                  todayPageviews: 250,
+                  popularPages: [
+                    { url: "/home", views: 3000 },
+                    { url: "/blog", views: 2500 },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+        blog: {
+          title: "Blog Management",
+          icon: "📝",
+          description: "Manage blog metadata and analytics",
+          endpoints: [
+            {
+              method: "POST",
+              path: "/api/blog/metadata",
+              description: "Create blog post metadata",
+              useCase:
+                "Register a new blog post in the system with its metadata for tracking and categorization.",
+              request: {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: {
+                  slug: "my-new-post",
+                  title: "My New Post",
+                  excerpt: "This is a brief description...",
+                  publishedAt: "2024-01-01T00:00:00Z",
+                  readTime: 5,
+                  tags: ["javascript", "web"],
+                  category: "development",
+                  status: "published",
+                },
+              },
+              response: {
+                success: true,
+                data: {
+                  id: "blog-123",
+                  slug: "my-new-post",
+                  viewCount: 0,
+                },
+                message: "Blog metadata created successfully",
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/blog/metadata",
+              description: "Get all blog metadata with analytics",
+              useCase:
+                "Retrieve a list of all blog posts with their metadata and view counts for blog listing pages.",
+              request: {
+                query: {
+                  category: "development",
+                  status: "published",
+                  tags: "javascript,react",
+                  limit: 10,
+                  offset: 0,
+                },
+              },
+              response: {
+                success: true,
+                data: [
+                  {
+                    slug: "post-1",
+                    title: "Post Title",
+                    viewCount: 150,
+                    publishedAt: "2024-01-01T00:00:00Z",
+                  },
+                ],
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/blog/metadata/:slug",
+              description: "Get blog metadata by slug",
+              useCase:
+                "Fetch complete metadata for a specific blog post including SEO information and analytics.",
+              response: {
+                success: true,
+                data: {
+                  slug: "my-post",
+                  title: "My Post",
+                  excerpt: "Description...",
+                  viewCount: 250,
+                  readTime: 5,
+                  tags: ["web"],
+                  category: "development",
+                },
+              },
+            },
+            {
+              method: "PUT",
+              path: "/api/blog/metadata/:slug",
+              description: "Update blog metadata",
+              useCase:
+                "Update existing blog post metadata such as title, tags, or status.",
+              request: {
+                body: {
+                  title: "Updated Title",
+                  status: "draft",
+                },
+              },
+              response: {
+                success: true,
+                data: {},
+                message: "Blog metadata updated successfully",
+              },
+            },
+            {
+              method: "DELETE",
+              path: "/api/blog/metadata/:slug",
+              description: "Delete blog metadata",
+              useCase:
+                "Remove a blog post from the system. This will also delete associated analytics data.",
+              response: {
+                success: true,
+                message: "Blog metadata deleted successfully",
+              },
+            },
+            {
+              method: "POST",
+              path: "/api/blog/analytics/:slug/view",
+              description: "Increment blog view count",
+              useCase:
+                "Quick endpoint to increment view count without tracking visitor details.",
+              response: {
+                success: true,
+                message: "View count incremented",
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/blog/analytics/:slug",
+              description: "Get blog analytics",
+              useCase:
+                "Retrieve detailed analytics for a specific blog post including views over time.",
+              response: {
+                success: true,
+                data: {
+                  slug: "my-post",
+                  totalViews: 500,
+                  uniqueViews: 350,
+                  averageReadTime: 3.5,
+                  bounceRate: 0.25,
+                },
+              },
+            },
+          ],
+        },
+        blogViews: {
+          title: "Blog View Tracking",
+          icon: "👁️",
+          description: "Advanced blog view tracking with session management",
+          endpoints: [
+            {
+              method: "POST",
+              path: "/api/blog/views",
+              description: "Record a blog view with session tracking",
+              useCase:
+                "Track individual blog views with session management to prevent duplicate counts from the same session.",
+              request: {
+                headers: {
+                  "Content-Type": "application/json",
+                  "User-Agent": "Browser user agent",
+                  "X-Forwarded-For": "Client IP",
+                },
+                body: {
+                  slug: "my-post",
+                  sessionId: "session-abc-123",
+                  referrer: "https://google.com",
+                  timestamp: "2024-01-01T00:00:00Z",
+                },
+              },
+              response: {
+                success: true,
+                data: {
+                  isNewView: true,
+                  view: {
+                    id: "view-123",
+                    timestamp: "2024-01-01T00:00:00Z",
+                  },
+                },
+                message: "New view recorded",
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/blog/views/:slug",
+              description: "Get view count for a specific post",
+              useCase:
+                "Retrieve the total number of views for a blog post. Used for displaying view counts on blog pages.",
+              response: {
+                success: true,
+                data: {
+                  slug: "my-post",
+                  totalViews: 1250,
+                  uniqueViews: 950,
+                },
+              },
+            },
+            {
+              method: "POST",
+              path: "/api/blog/views/multiple",
+              description: "Get view counts for multiple posts",
+              useCase:
+                "Efficiently fetch view counts for multiple blog posts in a single request. Perfect for blog listing pages.",
+              request: {
+                body: {
+                  slugs: ["post-1", "post-2", "post-3"],
+                },
+              },
+              response: {
+                success: true,
+                data: {
+                  "post-1": { totalViews: 100, uniqueViews: 80 },
+                  "post-2": { totalViews: 200, uniqueViews: 150 },
+                  "post-3": { totalViews: 50, uniqueViews: 45 },
+                },
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/blog/views",
+              description: "Get blog views with filtering",
+              useCase:
+                "Retrieve detailed view logs with filtering options for analytics and debugging.",
+              request: {
+                query: {
+                  slug: "my-post",
+                  sessionId: "session-123",
+                  startDate: "2024-01-01T00:00:00Z",
+                  endDate: "2024-01-31T23:59:59Z",
+                  limit: 50,
+                  offset: 0,
+                },
+              },
+              response: {
+                success: true,
+                data: {
+                  views: [],
+                  pagination: {
+                    total: 100,
+                    limit: 50,
+                    offset: 0,
+                    hasMore: true,
+                  },
+                },
+              },
+            },
+            {
+              method: "GET",
+              path: "/api/blog/views/stats",
+              description: "Get blog view statistics",
+              useCase: "Get aggregated blog view statistics across all posts.",
+              response: {
+                success: true,
+                data: {
+                  totalViews: 10000,
+                  uniqueSessions: 7500,
+                  averageViewsPerPost: 125,
+                  topPosts: [{ slug: "popular-post", views: 500 }],
+                },
+              },
+            },
+            {
+              method: "DELETE",
+              path: "/api/blog/views/cleanup",
+              description: "Clean up old view records",
+              useCase:
+                "Remove old view records to manage database size. Admin endpoint for maintenance.",
+              request: {
+                query: {
+                  days: 365,
+                },
+              },
+              response: {
+                success: true,
+                data: {
+                  deletedCount: 1000,
+                  message: "Deleted 1000 views older than 365 days",
+                },
+              },
+            },
+          ],
+        },
+      };
 
-        // DOM Elements
-        const searchInput = document.getElementById('searchInput');
-        const endpointsContainer = document.getElementById('endpointsContainer');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        const quickNav = document.getElementById('quickNav');
+      // DOM Elements
+      const searchInput = document.getElementById("searchInput");
+      const endpointsContainer = document.getElementById("endpointsContainer");
+      const toast = document.getElementById("toast");
+      const toastMessage = document.getElementById("toastMessage");
+      const quickNav = document.getElementById("quickNav");
 
-        // Generate quick navigation with real endpoint counts
-        function generateQuickNav() {
-            const navItems = [
-                { id: 'visitors', icon: '👥', label: 'Visitors', count: apiEndpoints.visitors.endpoints.length },
-                { id: 'pageviews', icon: '📊', label: 'Pageviews', count: apiEndpoints.pageviews.endpoints.length },
-                { id: 'blog', icon: '📝', label: 'Blog', count: apiEndpoints.blog.endpoints.length },
-                { id: 'blogViews', icon: '👁️', label: 'Blog Views', count: apiEndpoints.blogViews.endpoints.length }
-            ];
+      // Generate quick navigation with real endpoint counts
+      function generateQuickNav() {
+        const navItems = [
+          {
+            id: "visitors",
+            icon: "👥",
+            label: "Visitors",
+            count: apiEndpoints.visitors.endpoints.length,
+          },
+          {
+            id: "pageviews",
+            icon: "📊",
+            label: "Pageviews",
+            count: apiEndpoints.pageviews.endpoints.length,
+          },
+          {
+            id: "blog",
+            icon: "📝",
+            label: "Blog",
+            count: apiEndpoints.blog.endpoints.length,
+          },
+          {
+            id: "blogViews",
+            icon: "👁️",
+            label: "Blog Views",
+            count: apiEndpoints.blogViews.endpoints.length,
+          },
+        ];
 
-            quickNav.innerHTML = navItems.map(item => `
+        quickNav.innerHTML = navItems
+          .map(
+            (item) => `
                 <a href="#${item.id}" class="nav-pill">
                     <span>${item.icon} ${item.label}</span>
                     <span class="nav-pill-count">${item.count}</span>
                 </a>
-            `).join('');
+            `
+          )
+          .join("");
 
-            // Re-attach smooth scroll event listeners
-            document.querySelectorAll('.nav-pill').forEach(pill => {
-                pill.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = pill.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        // Auto-expand the category
-                        const header = targetElement.querySelector('.category-header');
-                        const list = targetElement.querySelector('.endpoints-list');
-                        if (header && list) {
-                            header.classList.add('active');
-                            list.classList.add('active');
-                        }
-                    }
-                });
-            });
-        }
+        // Re-attach smooth scroll event listeners
+        document.querySelectorAll(".nav-pill").forEach((pill) => {
+          pill.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetId = pill.getAttribute("href").substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+              targetElement.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+              // Auto-expand the category
+              const header = targetElement.querySelector(".category-header");
+              const list = targetElement.querySelector(".endpoints-list");
+              if (header && list) {
+                header.classList.add("active");
+                list.classList.add("active");
+              }
+            }
+          });
+        });
+      }
 
-        // Render endpoints
-        function renderEndpoints(filter = '') {
-            endpointsContainer.innerHTML = '';
-            
-            Object.entries(apiEndpoints).forEach(([key, category]) => {
-                const filteredEndpoints = category.endpoints.filter(endpoint => {
-                    const searchTerm = filter.toLowerCase();
-                    return endpoint.path.toLowerCase().includes(searchTerm) ||
-                           endpoint.description.toLowerCase().includes(searchTerm) ||
-                           endpoint.method.toLowerCase().includes(searchTerm);
-                });
+      // Render endpoints
+      function renderEndpoints(filter = "") {
+        endpointsContainer.innerHTML = "";
 
-                if (filteredEndpoints.length === 0 && filter) return;
+        Object.entries(apiEndpoints).forEach(([key, category]) => {
+          const filteredEndpoints = category.endpoints.filter((endpoint) => {
+            const searchTerm = filter.toLowerCase();
+            return (
+              endpoint.path.toLowerCase().includes(searchTerm) ||
+              endpoint.description.toLowerCase().includes(searchTerm) ||
+              endpoint.method.toLowerCase().includes(searchTerm)
+            );
+          });
 
-                const categorySection = document.createElement('div');
-                categorySection.className = 'category-section';
-                categorySection.id = key;
+          if (filteredEndpoints.length === 0 && filter) return;
 
-                const categoryHeader = document.createElement('div');
-                categoryHeader.className = 'category-header';
-                categoryHeader.innerHTML = `
+          const categorySection = document.createElement("div");
+          categorySection.className = "category-section";
+          categorySection.id = key;
+
+          const categoryHeader = document.createElement("div");
+          categoryHeader.className = "category-header";
+          categoryHeader.innerHTML = `
                     <div class="category-info">
                         <div class="category-icon">${category.icon}</div>
                         <div>
@@ -1159,43 +1255,47 @@
                     <div class="category-toggle">▼</div>
                 `;
 
-                const endpointsList = document.createElement('div');
-                endpointsList.className = 'endpoints-list';
+          const endpointsList = document.createElement("div");
+          endpointsList.className = "endpoints-list";
 
-                const endpoints = filter ? filteredEndpoints : category.endpoints;
-                endpoints.forEach(endpoint => {
-                    const endpointCard = createEndpointCard(endpoint);
-                    endpointsList.appendChild(endpointCard);
-                });
+          const endpoints = filter ? filteredEndpoints : category.endpoints;
+          endpoints.forEach((endpoint) => {
+            const endpointCard = createEndpointCard(endpoint);
+            endpointsList.appendChild(endpointCard);
+          });
 
-                categoryHeader.addEventListener('click', () => {
-                    categoryHeader.classList.toggle('active');
-                    endpointsList.classList.toggle('active');
-                });
+          categoryHeader.addEventListener("click", () => {
+            categoryHeader.classList.toggle("active");
+            endpointsList.classList.toggle("active");
+          });
 
-                categorySection.appendChild(categoryHeader);
-                categorySection.appendChild(endpointsList);
-                endpointsContainer.appendChild(categorySection);
+          categorySection.appendChild(categoryHeader);
+          categorySection.appendChild(endpointsList);
+          endpointsContainer.appendChild(categorySection);
 
-                // Auto-expand if searching
-                if (filter) {
-                    categoryHeader.classList.add('active');
-                    endpointsList.classList.add('active');
-                }
-            });
-        }
+          // Auto-expand if searching
+          if (filter) {
+            categoryHeader.classList.add("active");
+            endpointsList.classList.add("active");
+          }
+        });
+      }
 
-        function createEndpointCard(endpoint) {
-            const card = document.createElement('div');
-            card.className = 'endpoint-card';
+      function createEndpointCard(endpoint) {
+        const card = document.createElement("div");
+        card.className = "endpoint-card";
 
-            const detailsId = `details-${Math.random().toString(36).substr(2, 9)}`;
+        const detailsId = `details-${Math.random().toString(36).substr(2, 9)}`;
 
-            card.innerHTML = `
+        card.innerHTML = `
                 <div class="endpoint-header">
-                    <span class="method-badge ${endpoint.method.toLowerCase()}">${endpoint.method}</span>
+                    <span class="method-badge ${endpoint.method.toLowerCase()}">${
+          endpoint.method
+        }</span>
                     <span class="endpoint-path">${endpoint.path}</span>
-                    <button class="copy-btn" onclick="copyToClipboard('${endpoint.path}', this)">
+                    <button class="copy-btn" onclick="copyToClipboard('${
+                      endpoint.path
+                    }', this)">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -1213,18 +1313,26 @@
                     </svg>
                 </span>
                 <div class="endpoint-details" id="${detailsId}">
-                    ${endpoint.request ? `
+                    ${
+                      endpoint.request
+                        ? `
                         <div class="code-block">
                             <div class="code-label">Request</div>
                             <pre>${formatJson(endpoint.request)}</pre>
                         </div>
-                    ` : ''}
-                    ${endpoint.response ? `
+                    `
+                        : ""
+                    }
+                    ${
+                      endpoint.response
+                        ? `
                         <div class="code-block">
                             <div class="code-label">Response</div>
                             <pre>${formatJson(endpoint.response)}</pre>
                         </div>
-                    ` : ''}
+                    `
+                        : ""
+                    }
                     <div class="code-block">
                         <div class="code-label">cURL Example</div>
                         <pre>${generateCurlExample(endpoint)}</pre>
@@ -1232,84 +1340,87 @@
                 </div>
             `;
 
-            return card;
+        return card;
+      }
+
+      function formatJson(obj) {
+        const json = JSON.stringify(obj, null, 2);
+        return json
+          .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
+          .replace(/: "([^"]*)"/g, ': <span class="json-string">"$1"</span>')
+          .replace(/: (\d+)/g, ': <span class="json-number">$1</span>')
+          .replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>');
+      }
+
+      function generateCurlExample(endpoint) {
+        let curl = `curl -X ${endpoint.method} \\\n  http://localhost:4001${endpoint.path}`;
+
+        if (endpoint.request?.headers) {
+          Object.entries(endpoint.request.headers).forEach(([key, value]) => {
+            curl += ` \\\n  -H "${key}: ${value}"`;
+          });
         }
 
-        function formatJson(obj) {
-            const json = JSON.stringify(obj, null, 2);
-            return json
-                .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
-                .replace(/: "([^"]*)"/g, ': <span class="json-string">"$1"</span>')
-                .replace(/: (\d+)/g, ': <span class="json-number">$1</span>')
-                .replace(/: (true|false)/g, ': <span class="json-boolean">$1</span>');
+        if (
+          endpoint.request?.body &&
+          Object.keys(endpoint.request.body).length > 0
+        ) {
+          curl += ` \\\n  -d '${JSON.stringify(endpoint.request.body)}'`;
         }
 
-        function generateCurlExample(endpoint) {
-            let curl = `curl -X ${endpoint.method} \\\n  http://localhost:4001${endpoint.path}`;
-            
-            if (endpoint.request?.headers) {
-                Object.entries(endpoint.request.headers).forEach(([key, value]) => {
-                    curl += ` \\\n  -H "${key}: ${value}"`;
-                });
-            }
-            
-            if (endpoint.request?.body && Object.keys(endpoint.request.body).length > 0) {
-                curl += ` \\\n  -d '${JSON.stringify(endpoint.request.body)}'`;
-            }
-            
-            return curl;
-        }
+        return curl;
+      }
 
-        function toggleDetails(id) {
-            const details = document.getElementById(id);
-            details.classList.toggle('active');
-        }
+      function toggleDetails(id) {
+        const details = document.getElementById(id);
+        details.classList.toggle("active");
+      }
 
-        function copyToClipboard(text, button) {
-            navigator.clipboard.writeText(text).then(() => {
-                button.classList.add('copied');
-                showToast('Copied to clipboard!');
-                setTimeout(() => {
-                    button.classList.remove('copied');
-                }, 2000);
-            });
-        }
-
-        function showToast(message) {
-            toastMessage.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Search functionality
-        let searchTimeout;
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                renderEndpoints(e.target.value);
-            }, 300);
+      function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(() => {
+          button.classList.add("copied");
+          showToast("Copied to clipboard!");
+          setTimeout(() => {
+            button.classList.remove("copied");
+          }, 2000);
         });
+      }
 
-        // Initial render
-        generateQuickNav();
-        renderEndpoints();
+      function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add("show");
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 3000);
+      }
 
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl/Cmd + K to focus search
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                searchInput.focus();
-            }
-            // Escape to clear search
-            if (e.key === 'Escape' && document.activeElement === searchInput) {
-                searchInput.value = '';
-                renderEndpoints();
-                searchInput.blur();
-            }
-        });
+      // Search functionality
+      let searchTimeout;
+      searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          renderEndpoints(e.target.value);
+        }, 300);
+      });
+
+      // Initial render
+      generateQuickNav();
+      renderEndpoints();
+
+      // Add keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        // Ctrl/Cmd + K to focus search
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+          e.preventDefault();
+          searchInput.focus();
+        }
+        // Escape to clear search
+        if (e.key === "Escape" && document.activeElement === searchInput) {
+          searchInput.value = "";
+          renderEndpoints();
+          searchInput.blur();
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

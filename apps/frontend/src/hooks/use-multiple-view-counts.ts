@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ViewsService, ViewCount } from '@/services/views-service';
 
 export interface UseMultipleViewCountsOptions {
@@ -11,25 +11,28 @@ export interface UseMultipleViewCountsOptions {
 }
 
 export function useMultipleViewCounts(
-  slugs: string[], 
+  slugs: string[],
   options: UseMultipleViewCountsOptions = {}
 ) {
   const { autoRefresh = false, refreshInterval = 30000 } = options;
-  
+
   const [viewCounts, setViewCounts] = useState<Record<string, ViewCount>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Create a stable reference for slugs to prevent unnecessary re-renders
+  const stableSlugs = useMemo(() => slugs, [slugs.join(',')]);
+
   // Load view counts for all slugs
   const loadViewCounts = useCallback(async () => {
-    if (slugs.length === 0) {
+    if (stableSlugs.length === 0) {
       setLoading(false);
       return;
     }
 
     try {
       setError(null);
-      const counts = await ViewsService.getMultipleViewCounts(slugs);
+      const counts = await ViewsService.getMultipleViewCounts(stableSlugs);
       setViewCounts(counts);
     } catch (err) {
       console.error('Error loading multiple view counts:', err);
@@ -37,7 +40,7 @@ export function useMultipleViewCounts(
     } finally {
       setLoading(false);
     }
-  }, [slugs]);
+  }, [stableSlugs]);
 
   // Get view count for a specific slug
   const getViewCount = useCallback((slug: string): ViewCount => {
