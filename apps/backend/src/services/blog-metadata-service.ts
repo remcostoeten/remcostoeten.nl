@@ -6,10 +6,10 @@ import { blogMetadata, blogAnalytics } from '../schema/blog-metadata';
 const isDatabaseAvailable = () => {
   return db !== null;
 };
-import type { 
-  TBlogMetadata, 
-  TBlogAnalytics, 
-  TCreateBlogMetadataData, 
+import type {
+  TBlogMetadata,
+  TBlogAnalytics,
+  TCreateBlogMetadataData,
   TUpdateBlogMetadataData,
   TBlogMetadataFilters,
   TBlogMetadataWithAnalytics
@@ -23,7 +23,10 @@ export interface TBlogMetadataService {
   deleteMetadata(slug: string): Promise<boolean>;
   getMetadataWithAnalytics(slug: string): Promise<TBlogMetadataWithAnalytics | null>;
   getAllMetadataWithAnalytics(filters?: TBlogMetadataFilters): Promise<TBlogMetadataWithAnalytics[]>;
-  incrementViewCount(slug: string): Promise<void>;
+  incrementViewCount(
+    slug: string,
+    sessionData?: { sessionId?: string; ipAddress?: string; userAgent?: string; referrer?: string }
+  ): Promise<boolean>;
   getAnalyticsBySlug(slug: string): Promise<TBlogAnalytics | null>;
 }
 
@@ -32,10 +35,10 @@ export function createBlogMetadataService(): TBlogMetadataService {
     async createMetadata(data: TCreateBlogMetadataData): Promise<TBlogMetadata> {
       const id = crypto.randomUUID();
       const now = new Date();
-      
+
       // Convert publishedAt string to Date object for database
       const publishedAtDate = new Date(data.publishedAt);
-      
+
       const [metadata] = await db.insert(blogMetadata).values({
         id,
         ...data,
@@ -64,7 +67,7 @@ export function createBlogMetadataService(): TBlogMetadataService {
         .from(blogMetadata)
         .where(eq(blogMetadata.slug, slug))
         .limit(1);
-      
+
       return result || null;
     },
 
@@ -108,7 +111,7 @@ export function createBlogMetadataService(): TBlogMetadataService {
       if (updateData.publishedAt) {
         updateData.publishedAt = new Date(updateData.publishedAt) as any;
       }
-      
+
       const [result] = await db
         .update(blogMetadata)
         .set({
@@ -193,7 +196,7 @@ export function createBlogMetadataService(): TBlogMetadataService {
 
       const results = await query;
 
-      return results.map(result => ({
+      return results.map((result: { metadata: TBlogMetadata; analytics: TBlogAnalytics | null }) => ({
         ...result.metadata,
         analytics: result.analytics || undefined,
       }));
@@ -201,62 +204,65 @@ export function createBlogMetadataService(): TBlogMetadataService {
 
     async incrementViewCount(slug: string, sessionData?: { sessionId?: string; ipAddress?: string; userAgent?: string; referrer?: string }): Promise<boolean> {
       const now = new Date();
-      
-      // If session data is provided, try to record a unique view first
-      if (sessionData?.sessionId) {
-        try {
-          // Import blog views schema
-          const { blogViews } = await import('../schema/blog-views');
-          
-          // Try to insert a new blog view record (will fail if already exists due to unique constraint)
-          await db.insert(blogViews).values({
+
+      try {
+        // First, ensure the analytics record exists
+        const existingRecord = await db
+          .select()
+          .from(blogAnalytics)
+          .where(eq(blogAnalytics.slug, slug))
+          .limit(1);
+
+        if (existingRecord.length === 0) {
+          // Create new analytics record
+          await db.insert(blogAnalytics).values({
             id: crypto.randomUUID(),
             slug,
-            sessionId: sessionData.sessionId,
-            ipAddress: sessionData.ipAddress,
-            userAgent: sessionData.userAgent,
-            referrer: sessionData.referrer,
-            timestamp: now,
+            totalViews: 1,
+            uniqueViews: 1,
+            recentViews: 1,
+            lastViewedAt: now,
             createdAt: now,
+            updatedAt: now,
           });
-          
-          // If insert succeeded, this is a new unique view
-        } catch (error: any) {
-          // If we get a unique constraint violation, this session already viewed this post
-          if (error.code === '23505' || error.constraint === 'blog_views_session_id_slug_unique') {
-            return false; // View already recorded for this session
-          }
-          // Re-throw other errors
-          throw error;
+        } else {
+          // Update existing record
+          await db
+            .update(blogAnalytics)
+            .set({
+              totalViews: sql`${blogAnalytics.totalViews} + 1`,
+              lastViewedAt: now,
+              updatedAt: now,
+            })
+            .where(eq(blogAnalytics.slug, slug));
         }
-      }
-      
-      // Increment the analytics counter
-      const result = await db
-        .update(blogAnalytics)
-        .set({
-          totalViews: sql`${blogAnalytics.totalViews} + 1`,
-          lastViewedAt: now,
-          updatedAt: now,
-        })
-        .where(eq(blogAnalytics.slug, slug))
-        .returning({ id: blogAnalytics.id });
 
-      // If no record was updated, create a new analytics record
-      if (result.length === 0) {
-        await db.insert(blogAnalytics).values({
-          id: crypto.randomUUID(),
-          slug,
-          totalViews: 1,
-          uniqueViews: 1,
-          recentViews: 1,
-          lastViewedAt: now,
-          createdAt: now,
-          updatedAt: now,
-        });
+        // If session data is provided, try to record a unique view
+        if (sessionData?.sessionId) {
+          // Import blog views schema
+          const { blogSessionViews } = await import('../schema');
+
+          // Insert unique view and ignore duplicates without throwing
+          await db
+            .insert(blogSessionViews)
+            .values({
+              id: crypto.randomUUID(),
+              slug,
+              sessionId: sessionData.sessionId,
+              ipAddress: sessionData.ipAddress,
+              userAgent: sessionData.userAgent,
+              referrer: sessionData.referrer,
+              timestamp: now,
+              createdAt: now,
+            })
+            .onConflictDoNothing({ target: [blogSessionViews.sessionId, blogSessionViews.slug] });
+        }
+
+        return true; // View was incremented
+      } catch (error) {
+        console.error('Error incrementing view count:', error);
+        throw error;
       }
-      
-      return true; // View was incremented
     },
 
     async getAnalyticsBySlug(slug: string): Promise<TBlogAnalytics | null> {
@@ -265,7 +271,7 @@ export function createBlogMetadataService(): TBlogMetadataService {
         .from(blogAnalytics)
         .where(eq(blogAnalytics.slug, slug))
         .limit(1);
-      
+
       return result || null;
     },
   };

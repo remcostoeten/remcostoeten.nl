@@ -77,7 +77,7 @@ export function AnnouncementTag({ className, ...props }: TAnnouncementTagProps) 
 type TAnnouncementTitleProps = React.HTMLAttributes<HTMLDivElement>
 
 export function AnnouncementTitle({ className, ...props }: TAnnouncementTitleProps) {
-    return <div className={cn("flex items-center gap-1 truncate py-1", className)} {...props} />
+    return <div className={cn("flex items-center gap-1 py-1 min-w-0", className)} {...props} />
 }
 
 export function AnnouncementBanner() {
@@ -89,6 +89,7 @@ export function AnnouncementBanner() {
     const lastScrollYRef = React.useRef(0)
     const wrapperRef = React.useRef<HTMLDivElement | null>(null)
     const [bannerHeight, setBannerHeight] = React.useState(80)
+    const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
 
     React.useEffect(function init() {
         const dismissed = typeof window !== "undefined" && window.localStorage.getItem("announcement-dismissed") === "true"
@@ -101,15 +102,34 @@ export function AnnouncementBanner() {
         function onScroll() {
             const currentY = window.scrollY || 0
             const delta = currentY - (lastScrollYRef.current || 0)
-            if (currentY > 0 && delta > 2) {
-                setIsHiddenByScroll(true)
-            } else if (delta < -2 || currentY <= 0) {
-                setIsHiddenByScroll(false)
+            
+            // Clear any existing timeout
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current)
             }
+            
+            // Debounce the scroll state change to prevent flickering
+            scrollTimeoutRef.current = setTimeout(() => {
+                // Hide when scrolling down more than 100px
+                if (currentY > 100 && delta > 5) {
+                    setIsHiddenByScroll(true)
+                } 
+                // Show when scrolling up or at the top
+                else if (delta < -5 || currentY <= 100) {
+                    setIsHiddenByScroll(false)
+                }
+            }, 50)
+            
             lastScrollYRef.current = currentY
         }
+        
         window.addEventListener("scroll", onScroll, { passive: true })
-        return () => window.removeEventListener("scroll", onScroll)
+        return () => {
+            window.removeEventListener("scroll", onScroll)
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current)
+            }
+        }
     }, [])
 
     React.useLayoutEffect(
@@ -152,12 +172,13 @@ export function AnnouncementBanner() {
     if (!isVisible) return null
 
     return (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 pointer-events-none">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none" style={{ contain: 'paint' }}>
             <div
-                className="relative mx-auto w-fit animate-in slide-in-from-top-full duration-500 ease-out pointer-events-auto"
+                className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit animate-in slide-in-from-top-full duration-500 ease-out pointer-events-auto overflow-visible"
                 style={{
-                    transform: `translateY(${(isHiddenByScroll ? -bannerHeight : 0) + dragY}px)`,
-                    transition: isDragging ? "none" : "transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                    transform: `translateY(${(isHiddenByScroll ? -bannerHeight - 20 : 0) + dragY}px)`,
+                    opacity: isHiddenByScroll ? 0 : 1,
+                    transition: isDragging ? "none" : "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out",
                 }}
                 ref={wrapperRef}
                 onMouseDown={handleDragStart}
@@ -170,11 +191,11 @@ export function AnnouncementBanner() {
             >
                 <Announcement
                     themed
-                    className="group border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground cursor-grab active:cursor-grabbing pr-10 border-accent/25 shadow-sm shadow-accent/10"
+                    className="group border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground cursor-grab active:cursor-grabbing pr-10 shadow-sm shadow-accent/10 w-full overflow-hidden"
                 >
-                    <AnnouncementTag className="-ml-1 bg-accent/15 text-accent px-2 py-0.5 leading-none">Blog</AnnouncementTag>
-                    <AnnouncementTitle>
-                        Read about the over-engineering of my new site!
+                    <AnnouncementTag className="-ml-1 bg-accent/15 text-accent px-2 py-0.5 leading-none text-[10px] sm:text-xs">Blog</AnnouncementTag>
+                    <AnnouncementTitle className="flex items-center gap-1 truncate py-1 min-w-0">
+                        <span className="truncate">Read about the over-engineering of my new site!</span>
                         <ArrowUpRightIcon size={16} className="shrink-0 text-accent/70 group-hover:text-accent transition-colors" />
                     </AnnouncementTitle>
                 </Announcement>

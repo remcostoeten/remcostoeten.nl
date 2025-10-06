@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
-    "build": "next build",
-    "start": "next start -p 3000",
-    "lint": "next lint",
-    "blog:sync": "tsx scripts/sync-blog-metadata.ts",
-    "blog:list": "tsx scripts/blog-management.ts list",
-    "blog:create": "tsx scripts/blog-management.ts create",
-    "blog:watch": "tsx scripts/watch-blog-changes.ts",
-    "blog:hooks": "tsx scripts/setup-git-hooks.ts",
-    "prebuild": "echo 'Skipping blog sync for now'",
+    "dev": "bun run next dev -p 3000",
+    "build": "bun run next build",
+    "start": "bun run next start -p 3000",
+    "lint": "bun run next lint",
+    "blog:sync": "bun run tsx scripts/sync-blog-metadata.ts",
+    "blog:list": "bun run tsx scripts/blog-management.ts list",
+    "blog:create": "bun run tsx scripts/blog-management.ts create",
+    "blog:watch": "bun run tsx scripts/watch-blog-changes.ts",
+    "blog:hooks": "bun run tsx scripts/setup-git-hooks.ts",
+    "prebuild": "bun run node scripts/generate-git-info.js && echo 'Generated git info for footer'",
     "postinstall": "bun run blog:sync"
   },
   "dependencies": {
@@ -62,12 +62,12 @@
     "highlight.js": "^11.11.1",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
-    "next": "15.5.3",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.4.0",
-    "react": "18.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "next": "15.5.4",
     "react-day-picker": "^8.10.1",
-    "react-dom": "18.3.1",
     "react-hook-form": "^7.53.0",
     "react-resizable-panels": "^2.1.3",
     "reading-time": "^1.5.0",
@@ -84,8 +84,8 @@
     "@netlify/plugin-nextjs": "^5.13.4",
     "@types/chokidar": "^2.1.7",
     "@types/node": "^20",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "^8",
     "eslint-config-next": "15.5.3",
@@ -94,7 +94,7 @@
     "typescript": "^5"
   },
   "overrides": {
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0"
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
   }
 }

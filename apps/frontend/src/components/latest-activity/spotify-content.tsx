@@ -108,13 +108,17 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                 transition={buildStaggerTransition(1)}
               >
                 <span title={currentTrack.artist}>
-                  {currentTrack.artist}
+                  {currentTrack.artist
+                    ? currentTrack.artist.length > 20
+                      ? currentTrack.artist.substring(0, 20) + '...'
+                      : currentTrack.artist
+                    : 'Unknown Artist'
+                  }
                 </span>
               </motion.span>
             </AnimatePresence>
           </div>
 
-          {/* Second line - album and timestamp */}
           <div className="text-sm text-muted-foreground leading-tight">
             {currentTrack.album && (
               <>
@@ -140,7 +144,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                     transition={buildStaggerTransition(2)} // Third element
                   >
                     <span title={currentTrack.album}>
-                      {currentTrack.album}
+                      {currentTrack.album}.
                     </span>
                   </motion.span>
                 </AnimatePresence>

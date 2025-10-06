@@ -6,23 +6,13 @@ import type {
   TBlogMetadataFilters,
   TBlogMetadataWithAnalytics
 } from '../types/blog-metadata';
-
-export interface TBlogMetadataService {
-  createMetadata(data: TCreateBlogMetadataData): Promise<TBlogMetadata>;
-  getMetadataBySlug(slug: string): Promise<TBlogMetadata | null>;
-  getAllMetadata(filters?: TBlogMetadataFilters): Promise<TBlogMetadata[]>;
-  updateMetadata(slug: string, data: TUpdateBlogMetadataData): Promise<TBlogMetadata | null>;
-  deleteMetadata(slug: string): Promise<boolean>;
-  getMetadataWithAnalytics(slug: string): Promise<TBlogMetadataWithAnalytics | null>;
-  getAllMetadataWithAnalytics(filters?: TBlogMetadataFilters): Promise<TBlogMetadataWithAnalytics[]>;
-  incrementViewCount(slug: string): Promise<void>;
-  getAnalyticsBySlug(slug: string): Promise<TBlogAnalytics | null>;
-}
+import type { TBlogMetadataService } from './blog-metadata-service';
 
 export function createMemoryBlogMetadataService(): TBlogMetadataService {
   // In-memory storage
   const metadataStore = new Map<string, TBlogMetadata>();
   const analyticsStore = new Map<string, TBlogAnalytics>();
+  const viewedSessionsBySlug = new Map<string, Set<string>>();
 
   return {
     async createMetadata(data: TCreateBlogMetadataData): Promise<TBlogMetadata> {
@@ -32,6 +22,7 @@ export function createMemoryBlogMetadataService(): TBlogMetadataService {
       const metadata: TBlogMetadata = {
         id,
         ...data,
+        status: (data.status ?? 'published'),
         createdAt: now,
         updatedAt: now,
       };
@@ -132,8 +123,7 @@ export function createMemoryBlogMetadataService(): TBlogMetadataService {
 
     async incrementViewCount(slug: string, sessionData?: { sessionId?: string; ipAddress?: string; userAgent?: string; referrer?: string }): Promise<boolean> {
       // Track viewed sessions for each slug
-      const viewedSessionsKey = `viewed_sessions_${slug}`;
-      let viewedSessions = new Set<string>(JSON.parse(globalThis[viewedSessionsKey] || '[]'));
+      const viewedSessions = viewedSessionsBySlug.get(slug) ?? new Set<string>();
       
       // Check if this session has already viewed this post
       if (sessionData?.sessionId && viewedSessions.has(sessionData.sessionId)) {
@@ -168,7 +158,7 @@ export function createMemoryBlogMetadataService(): TBlogMetadataService {
       // Mark this session as having viewed this post
       if (sessionData?.sessionId) {
         viewedSessions.add(sessionData.sessionId);
-        globalThis[viewedSessionsKey] = JSON.stringify(Array.from(viewedSessions));
+        viewedSessionsBySlug.set(slug, viewedSessions);
       }
       
       return true;

@@ -3,10 +3,11 @@ import type { Metadata } from 'next';
 import { Inter, Noto_Sans } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { ClientAnalyticsWrapper } from "@/components/analytics/client-analytics-wrapper";
+import { ClientAnalyticsWrapper } from "@/shared/components/analytics";
 import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_api-environment-switcher";
 import { Analytics } from "@vercel/analytics/next";
 import { ClientOnlyWrapper } from "@/components/client-only-wrapper";
+import { TimezoneSection } from "@/modules/sections";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -181,13 +182,31 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <link rel="alternate" type="application/rss+xml" title="Remco Stoeten Blog RSS" href="/rss" />
+
+        {/* Site Navigation structured data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              itemListElement: [
+                { '@type': 'SiteNavigationElement', name: 'Home', url: 'https://remcostoeten.nl' },
+                { '@type': 'SiteNavigationElement', name: 'Blog', url: 'https://remcostoeten.nl/posts' },
+                { '@type': 'SiteNavigationElement', name: 'Analytics', url: 'https://remcostoeten.nl/analytics' },
+                { '@type': 'SiteNavigationElement', name: 'Contact', url: 'https://remcostoeten.nl/contact' },
+              ]
+            })
+          }}
+        />
         {/* Additional SEO Meta Tags */}
         <meta name="author" content="Remco Stoeten" />
         <meta name="geo.region" content="NL" />
         <meta name="geo.placename" content="Netherlands" />
         <meta property="profile:first_name" content="Remco" />
         <meta property="profile:last_name" content="Stoeten" />
-        <link rel="canonical" href="https://remcostoeten.nl" />
+
 
         {/* Structured Data for Knowledge Graph */}
         <script
@@ -221,6 +240,7 @@ export default function RootLayout({
           <TooltipProvider delayDuration={0}>
             {children}
           </TooltipProvider>
+          <TimezoneSection />
         </ClientOnlyWrapper>
         <Analytics />
         <SpeedInsights />

@@ -3,20 +3,20 @@ title: "Rolling your own analytics system in Hono & Next.js"
 excerpt: "Building a custom analytics system from scratch using Hono.js backend and Next.js frontend with PostgreSQL for real-time tracking and insights."
 publishedAt: "2025-09-19"
 author: "Remco Stoeten"
-tags: ["analytics", "DIY", "hono","next.js","backend"]
+tags: ["analytics", "DIY", "hono", "next.js", "backend"]
 category: "development"
 status: "published"
 ---
 
-You could just use something like [Posthog](https://posthog.com)or [Matomo](https://matomo.org), they’ve got funding and probably better engineers behind them than you and me. But hitting `npm install` and dropping in a provider doesn’t solve skillissues. 
+You could just use something like [Posthog](https://posthog.com) or [Matomo](https://matomo.org), they've got funding and probably better engineers behind them than you and me. But hitting `npm install` and dropping in a provider doesn't solve skill issues. 
 
 Previously I [rolled my own auth](https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication) system from scratch, which was a fun project and turned out great. So I decided to roll my own analytics instead, and it’s been a fun project to dig into.
 
 ## Stack & setup
-Front-end we're using Next.JS. Why? Because. Since I want to learn fullstack development I went with Hono as a backend rather than server actions or api routes. 
+Front-end we're using Next.js. Why? Because. Since I want to learn full-stack development I went with Hono as a backend rather than server actions or API routes. 
 
 ### Setup
-I use a mono repo, you do whatever you want. Well follow a simple structure for this guide.
+I use a mono repo, you do whatever you want. We'll follow a simple structure for this guide.
 
 ```bash
 mkdir analytics-project;
@@ -27,7 +27,7 @@ pnpm create hono@latest backend
 ### Backend
 We'll leave the front-end for now. Starting off with the backend.
 
-Going to be needing an ORM because we lack SQL skills and also a database driver, we use neon postgres.
+Going to be needing an ORM because we lack SQL skills and also a database driver, we use Neon Postgres.
 ```bash
 pnpm add drizzle-orm; 
 pnpm add drizzle-kit -D; 
@@ -37,7 +37,7 @@ pnpm add @neondatabase/serverless;
 ### ORM
 Drizzle requires a config in the root. `touch backend/drizzle.config.ts` 
 
-It's a object that contains the path to the schema, dialect, where your migration files go and the database credentials.
+It's an object that contains the path to the schema, dialect, where your migration files go and the database credentials.
 
 ```typescript
 backend/drizzle.config.ts
@@ -103,7 +103,7 @@ export const visitors = pgTable('visitors', {
 });
 ```
 
-Let your imaginataion go loose, you can track whatever you want. Have a look at these rabbit holes for more ideas.
+Let your imagination go loose, you can track whatever you want. Have a look at these rabbit holes for more ideas.
 - [MDN: Navigator API](https://developer.mozilla.org/en-US/docs/Web/API/Navigator) – browser, OS, user agent, language, hardware concurrency  
 - [MDN: Window.screen](https://developer.mozilla.org/en-US/docs/Web/API/Screen) – screen width, height, color depth  
 - [MDN: Document.referrer](https://developer.mozilla.org/en-US/docs/Web/API/Document/referrer) – referring URL  
@@ -114,24 +114,24 @@ Let your imaginataion go loose, you can track whatever you want. Have a look at 
 
 ## Push it to the database
 
-Ok, schema done. Grab your (database url)[https://neon.tech/], either through docker locallly (switch the neon package out for `pg` or `postgres`). Paste it in your .env in the backend like so:
+Ok, schema done. Grab your [database URL](https://neon.tech/), either through Docker locally (switch the Neon package out for `pg` or `postgres`). Paste it in your .env in the backend like so:
 
 ```bash
 backend/.env
 DATABASE_URL="postgresql://neondb_owner.....aws.neon.tech/neondb?ssl..."
 ```
-Now we're going to generate and push it through the database through `drizzle-kit`. If you get an error it's most likely  because you're missing a database url, or your path to the schema is wrong in `.drizzle.config.ts`.
+Now we're going to generate and push it through the database through `drizzle-kit`. If you get an error it's most likely because you're missing a database URL, or your path to the schema is wrong in `.drizzle.config.ts`.
 `npx drizzle-kit generate` 
 `npx drizzle-kit push`
 Et voila, we've got a database with tables.
 
 ### Routes
-We'll be needing a few routes which the frontend can query against. Were going to create:
+We'll be needing a few routes which the frontend can query against. We're going to create:
 `/api/visitors`
 `/api/pageviews`
 `/api/health`
 
-Lets start of with health. Inside the `backend/src/index.ts`. Leave what's already in t here and just add this in the middle.
+Let's start off with health. Inside the `backend/src/index.ts`. Leave what's already in there and just add this in the middle.
 
 ```typescript
 backend/src/index.ts
@@ -143,7 +143,7 @@ backend/src/index.ts
     });
   });
 ```
-Run the backend server with `bun run dev` and check if u get a result with `curl http://localhost:4001/health`. It should return something like this:
+Run the backend server with `bun run dev` and check if you get a result with `curl http://localhost:4001/health`. It should return something like this:
 ```bash
 {
     "status": "ok",

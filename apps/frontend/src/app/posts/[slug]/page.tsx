@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from "next";
+import { buildSeo } from "@/lib/seo";
 import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils";
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
-import { ViewCounter } from '@/components/blog/ViewCounter';
+import { ViewCounter } from '@/components/blog/view-counter';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
@@ -39,7 +40,7 @@ export async function generateMetadata(props: TPostPageProps): Promise<Metadata>
   }
 
   const canonicalUrl = `https://remcostoeten.nl/posts/${params.slug}`;
-  
+
   return {
     title: post.seo?.title || `${post.title} | Remco Stoeten`,
     description: post.seo?.description || post.excerpt,
@@ -50,25 +51,12 @@ export async function generateMetadata(props: TPostPageProps): Promise<Metadata>
     alternates: {
       canonical: canonicalUrl,
     },
-      openGraph: {
-        title: post.seo?.title || post.title,
-        description: post.seo?.description || post.excerpt,
-        url: canonicalUrl,
-        siteName: 'Remco Stoeten',
-        locale: 'en_US',
-        type: 'article',
-        publishedTime: post.publishedAt,
-        modifiedTime: post.publishedAt,
-        authors: [post.author || 'Remco Stoeten'],
-        tags: post.tags,
-      },
-    twitter: {
-      card: 'summary_large_image',
+    ...buildSeo({
       title: post.seo?.title || post.title,
       description: post.seo?.description || post.excerpt,
-      creator: '@remcostoeten',
-      site: '@remcostoeten',
-    },
+      url: canonicalUrl,
+      image: post.seo?.image || post.ogImage || 'https://remcostoeten.nl/og-image.png',
+    }),
     robots: {
       index: true,
       follow: true,
@@ -108,6 +96,10 @@ export default async function PostPage(props: TPostPageProps) {
     post.category
   );
 
+  const relatedPosts = getAllBlogPosts()
+    .filter((p) => p.slug !== params.slug && (p.category === post.category || p.tags.some((t) => post.tags.includes(t))))
+    .slice(0, 3);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -136,82 +128,249 @@ export default async function PostPage(props: TPostPageProps) {
     timeRequired: `PT${post.readTime}M`,
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://remcostoeten.nl' },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://remcostoeten.nl/posts' },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `https://remcostoeten.nl/posts/${params.slug}` },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-7xl mx-auto py-8 px-4">
-        <BreadcrumbNavigation items={breadcrumbs} className="mb-8" />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
-      <noscript>
-        <Link
-          href="/posts"
-          className="inline-flex items-center text-accent hover:underline text-sm mb-8"
+      {/* Initialize Zen Mode */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              const savedZenMode = localStorage.getItem('zen-mode');
+              if (savedZenMode === 'true') {
+                document.body.classList.add('zen-mode');
+              }
+            })();
+          `
+        }}
+      />
+
+      {/* Zen Mode Toggle - Client-side only */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              if (typeof window !== 'undefined') {
+                const toggle = document.createElement('div');
+                toggle.className = 'fixed top-6 right-6 z-50';
+                toggle.innerHTML = \`
+                  <button
+                    onclick="document.body.classList.toggle('zen-mode'); localStorage.setItem('zen-mode', document.body.classList.contains('zen-mode').toString());"
+                    class="p-3 rounded-xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-accent/10 hover:border-accent/50 group"
+                    title="Toggle Zen Mode"
+                    aria-label="Toggle Zen Mode"
+                  >
+                    <svg class="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                  </button>
+                \`;
+                document.body.appendChild(toggle);
+              }
+            })();
+          `
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto py-8 px-5 sm:px-6">
+        <BreadcrumbNavigation items={breadcrumbs} className="mb-8 zen-mode:hidden" />
+
+        <noscript>
+          <Link
+            href="/posts"
+            className="inline-flex items-center text-accent hover:underline text-sm mb-8 zen-mode:hidden"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to blog
+          </Link>
+        </noscript>
+
+        <TOCLayoutRedesign
+          headings={headings}
+          className="w-full zen-mode:hidden"
+          contentClassName=""
         >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to blog
-        </Link>
-      </noscript>
-
-      <TOCLayoutRedesign
-        headings={headings}
-        className="w-full max-w-6xl mx-auto"
-        contentClassName="max-w-4xl"
-      >
-        <article
-          itemScope
-          itemType="https://schema.org/BlogPosting"
-          className="font-noto"
-        >
-          <header itemProp="headline">
-            <div className="flex items-center text-sm text-muted-foreground mb-4">
-              <div className="flex items-center mr-4">
-                <Calendar className="w-4 h-4 mr-1" />
-                <time dateTime={post.publishedAt}>
-                  {new Date(post.publishedAt).toLocaleDateString()}
-                </time>
+          <article
+            itemScope
+            itemType="https://schema.org/BlogPosting"
+            className="font-noto"
+          >
+            <header itemProp="headline">
+              <div className="flex items-center text-sm text-muted-foreground mb-4">
+                <div className="flex items-center mr-4">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  <time dateTime={post.publishedAt}>
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </time>
+                </div>
+                <div className="flex items-center mr-4">
+                  <Clock className="w-4 h-4 mr-1" />
+                  <span>{post.readTime} min read</span>
+                </div>
+                <ViewCounter
+                  slug={params.slug}
+                  autoIncrement={true}
+                  className="flex items-center text-sm text-muted-foreground"
+                />
               </div>
-              <div className="flex items-center mr-4">
-                <Clock className="w-4 h-4 mr-1" />
-                <span>{post.readTime} min read</span>
+
+              <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
+
+              {/* SEO excerpt - visually hidden but accessible to search engines */}
+              <div className="sr-only" itemProp="description">
+                {post.excerpt}
               </div>
-              <ViewCounter
-                slug={params.slug}
-                autoIncrement={true}
-                className="flex items-center text-sm text-muted-foreground"
-              />
-            </div>
 
-            <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
-
-            <p className="text-xl text-muted-foreground mb-8">{post.excerpt}</p>
-
-            <div className="flex flex-wrap">
-              <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
-                {post.category}
-              </span>
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded mr-2 mb-2"
-                >
-                  {tag}
+              <div className="flex flex-wrap">
+                <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
+                  {post.category}
                 </span>
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded mr-2 mb-2"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </header>
+
+            <div className="prose prose-invert max-w-none">
+              <MDXRemote source={content} components={mdxComponents} />
+            </div>
+          </article>
+        </TOCLayoutRedesign>
+
+        {/* Zen Mode Article Content */}
+        <div className="zen-mode:block hidden">
+          <article
+            itemScope
+            itemType="https://schema.org/BlogPosting"
+            className="font-noto max-w-4xl mx-auto"
+          >
+            <header itemProp="headline">
+              <div className="flex items-center text-sm text-muted-foreground mb-4">
+                <div className="flex items-center mr-4">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  <time dateTime={post.publishedAt}>
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </time>
+                </div>
+                <div className="flex items-center mr-4">
+                  <Clock className="w-4 h-4 mr-1" />
+                  <span>{post.readTime} min read</span>
+                </div>
+                <ViewCounter
+                  slug={params.slug}
+                  autoIncrement={true}
+                  className="flex items-center text-sm text-muted-foreground"
+                />
+              </div>
+
+              <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
+
+              {/* SEO excerpt - visually hidden but accessible to search engines */}
+              <div className="sr-only" itemProp="description">
+                {post.excerpt}
+              </div>
+
+              <div className="flex flex-wrap">
+                <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
+                  {post.category}
+                </span>
+                {post.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded mr-2 mb-2"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </header>
+
+            <div className="prose prose-invert max-w-none">
+              <MDXRemote source={content} components={mdxComponents} />
+            </div>
+          </article>
+        </div>
+
+        {/* Integrated Feedback Section */}
+        <div className="mt-16 border-t border-border/50 pt-12 zen-mode:hidden">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Was this post helpful?</h2>
+              <p className="text-muted-foreground">Your feedback helps us improve our content</p>
+            </div>
+            <FeedbackWidget slug={params.slug} />
+          </div>
+        </div>
+
+        {relatedPosts.length > 0 && (
+          <div className="mt-16 border-t border-border pt-12 zen-mode:hidden">
+            <h2 className="text-3xl font-bold mb-8 text-foreground">Related posts</h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedPosts.map((rp) => (
+                <Link
+                  key={rp.slug}
+                  href={`/posts/${rp.slug}`}
+                  className="group block p-6 bg-secondary/30 hover:bg-secondary/50 rounded-lg border border-border hover:border-accent/50 transition-all duration-300"
+                >
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2.5 py-0.5 bg-accent/10 text-accent text-xs rounded border border-accent/20">
+                        {rp.category}
+                      </span>
+                      <span className="text-xs text-muted-foreground flex items-center">
+                        <Clock className="w-3 h-3 mr-1" />
+                        {rp.readTime} min
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-2 line-clamp-2">
+                      {rp.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground line-clamp-3 flex-grow">
+                      {rp.excerpt}
+                    </p>
+                    <div className="mt-4 flex items-center text-sm text-accent group-hover:translate-x-1 transition-transform">
+                      Read more
+                      <ArrowLeft className="w-4 h-4 ml-1 rotate-180" />
+                    </div>
+                  </div>
+                </Link>
               ))}
             </div>
-          </header>
-
-          <div className="prose prose-invert max-w-none">
-            <MDXRemote source={content} components={mdxComponents} />
           </div>
-        </article>
-      </TOCLayoutRedesign>
-
-      {/* Feedback Widget */}
-      <FeedbackWidget slug={params.slug} />
-    </div>
+        )}
+      </div>
     </>
   );
 }

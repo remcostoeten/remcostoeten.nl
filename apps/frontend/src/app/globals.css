@@ -3,17 +3,71 @@
 @tailwind utilities;
 
 /* Import syntax highlighting styles */
-@import '../styles/syntax-highlighting.css';
+@import "../styles/syntax-highlighting.css";
 
 /* Import TOC styles */
-@import '../styles/toc.css';
+@import "../styles/toc.css";
 
 /* Import Miscellaneous styles */
-@import '../styles/misc.css';
+@import "../styles/misc.css";
 
+/* Enhanced text selection styling */
 ::selection {
-  background: calc(hsl(var(--accent)) * 0.9);
-  color: hsl(var(--primary));
+  background: hsl(var(--accent) / 0.15);
+  color: hsl(var(--foreground));
+  text-shadow: none;
+}
+
+/* Selection for code blocks */
+pre::selection,
+code::selection {
+  background: hsl(var(--accent) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* Selection for links */
+a::selection {
+  background: hsl(var(--accent) / 0.1);
+  color: hsl(var(--accent));
+}
+
+/* Selection for headings */
+h1::selection,
+h2::selection,
+h3::selection,
+h4::selection,
+h5::selection,
+h6::selection {
+  background: hsl(var(--accent) / 0.12);
+  color: hsl(var(--foreground));
+}
+
+/* Firefox selection styling */
+::-moz-selection {
+  background: hsl(var(--accent) / 0.15);
+  color: hsl(var(--foreground));
+  text-shadow: none;
+}
+
+pre::-moz-selection,
+code::-moz-selection {
+  background: hsl(var(--accent) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+a::-moz-selection {
+  background: hsl(var(--accent) / 0.1);
+  color: hsl(var(--accent));
+}
+
+h1::-moz-selection,
+h2::-moz-selection,
+h3::-moz-selection,
+h4::-moz-selection,
+h5::-moz-selection,
+h6::-moz-selection {
+  background: hsl(var(--accent) / 0.12);
+  color: hsl(var(--foreground));
 }
 
 /* Typography system */
@@ -180,7 +234,7 @@
   }
 
   .touch-target::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
@@ -212,17 +266,19 @@
   .prose code,
   .prose pre,
   .prose pre code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace !important;
   }
 
-  .prose :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  .prose
+    :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace !important;
   }
 }
 
 /* Custom animations and styles */
 @layer utilities {
-
   /* Custom bounce-in animation */
   @keyframes bounce-in {
     0% {
@@ -295,6 +351,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 a,
@@ -303,7 +360,7 @@ a:hover {
 }
 
 .home a:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 @keyframes blur-in {
@@ -330,4 +387,22 @@ a:hover {
 
 .opacity-in {
   animation: opacity-in 1.5s ease-in-out;
+}
+
+/* Zen Mode Styles */
+.zen-mode .zen-mode\:hidden {
+  display: none !important;
+}
+
+.zen-mode .zen-mode\:opacity-0 {
+  opacity: 0 !important;
+}
+
+.zen-mode .zen-mode\:scale-95 {
+  transform: scale(0.95) !important;
+}
+
+/* Smooth transitions for zen mode */
+.zen-mode * {
+  transition: opacity 0.3s ease, transform 0.3s ease, display 0.3s ease;
 }

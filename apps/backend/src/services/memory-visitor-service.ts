@@ -128,10 +128,18 @@ export function setupVisitorService() {
       const blogViewsForSlug = blogViews.filter(view => view.blogSlug === blogSlug);
       const totalViews = blogViewsForSlug.reduce((sum, view) => sum + view.viewCount, 0);
       const uniqueViewers = new Set(blogViewsForSlug.map(view => view.visitorId)).size;
+      const newVisitorIds = new Set(visitors.filter(v => v.isNewVisitor).map(v => v.visitorId));
+      let newVisitorViews = 0;
+      let returningVisitorViews = 0;
+      for (const view of blogViewsForSlug) {
+        if (newVisitorIds.has(view.visitorId)) newVisitorViews += view.viewCount; else returningVisitorViews += view.viewCount;
+      }
 
       return {
         totalViews,
         uniqueViewers,
+        newVisitorViews,
+        returningVisitorViews,
       };
     },
 

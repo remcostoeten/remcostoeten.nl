@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { createPageviewService, PageviewService } from '../services/pageviewService';
+import type { PageviewService } from '../services/pageviewService';
 
 export const createPageviewsRouter = (pageviewService: PageviewService) => {
   const pageviewsRouter = new Hono();

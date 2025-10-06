@@ -1,0 +1,221 @@
+---
+title: "Building an Animated Number Component"
+excerpt: "A reusable React component for smooth number animations with accessibility and performance in mind."
+publishedAt: "2024-10-04"
+author: "Remco Stoeten"
+tags: ["React", "Animation", "TypeScript", "Performance", "Accessibility"]
+category: "development"
+status: "published"
+seo:
+  title: "Building an Animated Number Component - React Animation Guide"
+  description: "Learn how to create smooth, accessible number animations in React using NumberFlow and modern web APIs."
+  keywords: ["React", "animation", "number animation", "TypeScript", "accessibility", "performance"]
+---
+
+# Building an Animated Number Component
+
+Smooth number animations can enhance user experience by providing visual feedback for changing values. This guide explores creating a reusable animated number component using modern web technologies.
+
+## The Challenge
+
+Animating numbers presents several challenges:
+- **Performance**: Text changes trigger browser reflows and repaints
+- **Accessibility**: Motion preferences must be respected
+- **Browser compatibility**: Animation behavior varies across browsers
+- **Customization**: Different formats (currency, percentage, locale) need support
+
+## Solution Overview
+
+The NumberFlow library provides an elegant solution with a simple API:
+
+```tsx
+import NumberFlow from '@number-flow/react'
+
+<NumberFlow value={123} />
+```
+
+This handles the complex animation logic while maintaining excellent performance through the Web Animations API.
+
+## Implementation
+
+Here's a complete animated number component that addresses the core challenges:
+
+```tsx
+"use client"
+
+import NumberFlow from '@number-flow/react'
+import { usePrefersReducedMotion } from '@number-flow/react'
+import { cn } from '@/lib/utils'
+
+type TAnimatedNumberProps = {
+  value: number
+  format?: 'number' | 'currency' | 'percentage' | 'decimal'
+  locale?: string
+  decimals?: number
+  className?: string
+}
+
+const FORMATTERS = {
+  number: (decimals: number) => ({ minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
+  currency: (decimals: number) => ({ style: 'currency', currency: 'USD', minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
+  percentage: (decimals: number) => ({ style: 'percent', minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
+  decimal: (decimals: number) => ({ minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+}
+
+export function AnimatedNumber({
+  value,
+  format = 'number',
+  locale = 'en-US',
+  decimals = 0,
+  className
+}: TAnimatedNumberProps) {
+  const prefersReducedMotion = usePrefersReducedMotion()
+
+  if (prefersReducedMotion) {
+    return (
+      <span className={className}>
+        {new Intl.NumberFormat(locale, FORMATTERS[format](decimals)).format(value)}
+      </span>
+    )
+  }
+
+  return (
+    <NumberFlow
+      value={value}
+      format={FORMATTERS[format](decimals)}
+      locales={locale}
+      className={cn(className)}
+    />
+  )
+}
+```
+
+## Key Features
+
+### Accessibility First
+
+The component automatically detects and respects the user's motion preferences using the `prefers-reduced-motion` CSS media query. When reduced motion is preferred, it renders a static number instead of animating.
+
+### Format Support
+
+Support for multiple number formats:
+
+```tsx
+// Basic number
+<AnimatedNumber value={1234} />
+
+// Currency
+<AnimatedNumber value={2999.99} format="currency" decimals={2} />
+
+// Percentage
+<AnimatedNumber value={0.85} format="percentage" decimals={1} />
+
+// Localized formatting
+<AnimatedNumber
+  value={1234567.89}
+  locale="de-DE"
+  format="currency"
+/>
+```
+
+### Performance Optimized
+
+The component leverages the Web Animations API for:
+- **60fps animations** on modern browsers
+- **Hardware acceleration** when available
+- **No layout thrashing** during animations
+- **Automatic cleanup** of animation instances
+
+## Usage Examples
+
+### Blog Statistics
+
+```tsx
+<AnimatedNumber
+  value={post.views}
+  format="number"
+  className="text-2xl font-bold text-accent"
+/>
+```
+
+### E-commerce Pricing
+
+```tsx
+<AnimatedNumber
+  value={product.price}
+  format="currency"
+  decimals={2}
+  locale="en-US"
+  className="text-lg font-semibold"
+/>
+```
+
+### Progress Indicators
+
+```tsx
+<AnimatedNumber
+  value={completionPercentage}
+  format="percentage"
+  decimals={1}
+  className="text-sm text-muted-foreground"
+/>
+```
+
+## Advanced Usage
+
+For more dramatic effects, you can extend the component with additional animation options:
+
+```tsx
+type TAdvancedAnimatedNumberProps = TAnimatedNumberProps & {
+  duration?: number
+  easing?: string
+}
+
+export function AdvancedAnimatedNumber({
+  duration = 1000,
+  easing = 'ease-out',
+  ...props
+}: TAdvancedAnimatedNumberProps) {
+  return (
+    <NumberFlow
+      value={props.value}
+      format={FORMATTERS[props.format || 'number'](props.decimals || 0)}
+      locales={props.locale || 'en-US'}
+      className={props.className}
+      style={{
+        '--number-flow-duration': `${duration}ms`,
+        '--number-flow-easing': easing
+      } as React.CSSProperties}
+    />
+  )
+}
+```
+
+## Installation
+
+```bash
+npm install @number-flow/react
+```
+
+## Browser Support
+
+The component works across all modern browsers that support the Web Animations API. For older browsers, the library gracefully falls back to static number rendering.
+
+## Best Practices
+
+### When to Use
+- **Dynamic counters** that update frequently
+- **Financial data** requiring smooth updates
+- **Progress indicators** showing completion status
+- **Dashboard metrics** needing visual engagement
+
+### When to Avoid
+- **Static content** where numbers don't change
+- **Text that needs to be copied** (animations interfere with selection)
+- **Situations requiring precise timing control**
+
+## Conclusion
+
+Animated numbers can significantly improve user experience when implemented thoughtfully. The NumberFlow library provides an excellent foundation for creating smooth, accessible animations that work across all devices and respect user preferences.
+
+The key is balancing visual appeal with performance and accessibility - always provide a static fallback and respect motion preferences.

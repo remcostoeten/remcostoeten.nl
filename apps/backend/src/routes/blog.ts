@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { TBlogMetadataService } from '../services/blog-metadata-service';
-import { TBlogFeedbackService } from '../services/blog-feedback-service';
+import type { TBlogMetadataService } from '../services/blog-metadata-service';
+import type { TBlogFeedbackService } from '../services/blog-feedback-service';
 
 export const createBlogRouter = (
   blogService: TBlogMetadataService,
@@ -273,7 +273,7 @@ export const createBlogRouter = (
             const analytics = await blogService.getAnalyticsBySlug(slug);
             return {
               slug,
-              totalViews: analytics?.viewCount || 0,
+              totalViews: analytics?.totalViews || 0,
               uniqueViews: analytics?.uniqueViews || 0
             };
           } catch (error) {
@@ -323,17 +323,27 @@ export const createBlogRouter = (
           const feedbackData = c.req.valid('json');
           const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip');
           
-          const feedback = await feedbackService.submitFeedback(
-            slug,
-            feedbackData,
-            ip
-          );
+          try {
+            const feedback = await feedbackService.submitFeedback(
+              slug,
+              feedbackData,
+              ip
+            );
           
-          return c.json({
-            success: true,
-            data: feedback,
-            message: 'Feedback submitted successfully'
-          }, 201);
+            return c.json({
+              success: true,
+              data: feedback,
+              message: 'Feedback submitted successfully'
+            }, 201);
+          } catch (error: any) {
+            if (error?.code === 'RATE_LIMIT') {
+              return c.json({
+                success: false,
+                message: 'Rate limit exceeded. Please try again later.'
+              }, 429);
+            }
+            throw error;
+          }
         } catch (error) {
           console.error('Error submitting feedback:', error);
           return c.json({

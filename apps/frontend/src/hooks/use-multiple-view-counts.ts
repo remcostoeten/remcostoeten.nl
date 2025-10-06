@@ -1,64 +1,83 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ViewsService, ViewCount } from '@/services/views-service';
 
-export function useMultipleViewCounts(slugs: string[]) {
+export interface UseMultipleViewCountsOptions {
+  // Whether to automatically refresh counts periodically
+  autoRefresh?: boolean;
+  // Refresh interval in milliseconds
+  refreshInterval?: number;
+}
+
+export function useMultipleViewCounts(
+  slugs: string[], 
+  options: UseMultipleViewCountsOptions = {}
+) {
+  const { autoRefresh = false, refreshInterval = 30000 } = options;
+  
   const [viewCounts, setViewCounts] = useState<Record<string, ViewCount>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Memoize slugs to prevent unnecessary re-renders
-  const memoizedSlugs = useMemo(() => slugs, [slugs.join(',')]);
-
+  // Load view counts for all slugs
   const loadViewCounts = useCallback(async () => {
-    if (memoizedSlugs.length === 0) {
+    if (slugs.length === 0) {
       setLoading(false);
       return;
     }
 
     try {
-      setLoading(true);
       setError(null);
-      const counts = await ViewsService.getMultipleViewCounts(memoizedSlugs);
+      const counts = await ViewsService.getMultipleViewCounts(slugs);
       setViewCounts(counts);
     } catch (err) {
-      console.error('Error loading view counts:', err);
+      console.error('Error loading multiple view counts:', err);
       setError(err instanceof Error ? err.message : 'Failed to load view counts');
     } finally {
       setLoading(false);
     }
-  }, [memoizedSlugs]);
+  }, [slugs]);
 
+  // Get view count for a specific slug
+  const getViewCount = useCallback((slug: string): ViewCount => {
+    return viewCounts[slug] || {
+      slug,
+      totalViews: 0,
+      uniqueViews: 0
+    };
+  }, [viewCounts]);
+
+  // Get formatted view count for display
+  const getFormattedViewCount = useCallback((slug: string): string => {
+    const viewCount = getViewCount(slug);
+    return ViewsService.formatViewCount(viewCount);
+  }, [getViewCount]);
+
+  // Load view counts on mount and when slugs change
   useEffect(() => {
     loadViewCounts();
   }, [loadViewCounts]);
 
-  const getViewCount = useCallback((slug: string) => {
-    return viewCounts[slug]?.totalViews || 0;
-  }, [viewCounts]);
+  // Auto-refresh if enabled
+  useEffect(() => {
+    if (!autoRefresh || loading) return;
 
-  const getUniqueViewCount = useCallback((slug: string) => {
-    return viewCounts[slug]?.uniqueViews || 0;
-  }, [viewCounts]);
+    const interval = setInterval(() => {
+      loadViewCounts();
+    }, refreshInterval);
 
-  const getFullViewCount = useCallback((slug: string) => {
-    return viewCounts[slug] || { slug, totalViews: 0, uniqueViews: 0 };
-  }, [viewCounts]);
-
-  const getFormattedViewCount = useCallback((slug: string) => {
-    const viewCount = viewCounts[slug];
-    return ViewsService.formatViewCount(viewCount || { slug, totalViews: 0, uniqueViews: 0 });
-  }, [viewCounts]);
+    return () => clearInterval(interval);
+  }, [autoRefresh, refreshInterval, loading, loadViewCounts]);
 
   return {
     viewCounts,
     loading,
     error,
     getViewCount,
-    getUniqueViewCount,
-    getFullViewCount,
     getFormattedViewCount,
-    refreshViewCounts: loadViewCounts
+    refreshViewCounts: loadViewCounts,
+    totalViews: Object.values(viewCounts).reduce((sum, count) => sum + count.totalViews, 0),
+    totalUniqueViews: Object.values(viewCounts).reduce((sum, count) => sum + count.uniqueViews, 0),
   };
 }

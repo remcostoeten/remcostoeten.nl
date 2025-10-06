@@ -1,5 +1,3 @@
-'use client';
-
 import { S } from "./serif";
 
 export function HeroSection() {

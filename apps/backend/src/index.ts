@@ -4,7 +4,8 @@ import { logger } from 'hono/logger';
 import { visitorRouter } from './routes/visitors';
 import { createPageviewsRouter } from './routes/pageviews';
 import { createBlogRouter } from './routes/blog';
-import { spotifyRouter } from './routes/spotify'; // Add this line
+import { spotifyRouter } from './routes/spotify';
+import { createAnalyticsRouter } from './routes/analytics';
 import { createPageviewService } from './services/pageviewService';
 import { createHybridPageviewService } from './services/hybrid-pageview-service';
 import { createBlogMetadataService } from './services/blog-metadata-service';
@@ -30,7 +31,7 @@ export const createApp = async () => {
 
   // Use database service if available, otherwise use memory service
   const blogMetadataService = db ? createBlogMetadataService() : createMemoryBlogMetadataService();
-  
+
   // Initialize feedback service (only with database)
   const blogFeedbackService = db ? createBlogFeedbackService(db) : undefined;
 
@@ -83,7 +84,8 @@ export const createApp = async () => {
   app.route('/api/visitors', visitorRouter);
   app.route('/api/pageviews', createPageviewsRouter(pageviewService));
   app.route('/api/blog', createBlogRouter(blogMetadataService, blogFeedbackService));
-  app.route('/api/spotify', spotifyRouter); // Add this line
+  app.route('/api/spotify', spotifyRouter);
+  app.route('/api/analytics', createAnalyticsRouter());
 
   // Serve the beautiful API documentation page
   app.get('/', async (c) => {
@@ -122,19 +124,11 @@ const port = process.env.PORT || 4001;
 // Initialize and start the server
 let appInstance: any = null;
 
-createApp().then((app) => {
-  appInstance = app;
-  console.log(`🚀 Server running on http://localhost:${port}`);
-}).catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
-
 export default {
   port,
-  fetch: (request: Request) => {
+  fetch: async (request: Request) => {
     if (!appInstance) {
-      throw new Error('Server not initialized yet');
+      appInstance = await createApp();
     }
     return appInstance.fetch(request);
   },

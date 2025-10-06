@@ -105,7 +105,7 @@ function createDatabasePageviewService() {
         yesterday: yesterdayResult[0]?.count || 0,
         thisWeek: thisWeekResult[0]?.count || 0,
         uniqueUrls: uniqueUrlsResult[0]?.count || 0,
-        topPages: topPagesResult.map(row => ({
+        topPages: topPagesResult.map((row: { url: string; count: number }) => ({
           url: row.url,
           count: row.count
         }))

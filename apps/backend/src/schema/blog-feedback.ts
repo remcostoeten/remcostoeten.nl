@@ -17,6 +17,7 @@ export const blogFeedback = pgTable('blog_feedback', {
   timestampIdx: index('blog_feedback_timestamp_idx').on(table.timestamp),
   emojiIdx: index('blog_feedback_emoji_idx').on(table.emoji),
   fingerprintIdx: index('blog_feedback_fingerprint_idx').on(table.fingerprint),
+  slugFingerprintUnique: uniqueIndex('blog_feedback_slug_fingerprint_unique').on(table.slug, table.fingerprint),
 }));
 
 export const blogFeedbackRelations = relations(blogFeedback, ({ one }) => ({

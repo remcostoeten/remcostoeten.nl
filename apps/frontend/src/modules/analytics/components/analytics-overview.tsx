@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Eye, Users, TrendingUp, Calendar } from "lucide-react";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 
-interface AnalyticsOverviewProps {
+type TProps = {
   totalViews: number;
   totalUniqueViews: number;
   recentViews: number;
@@ -22,17 +22,17 @@ export const AnalyticsOverview = ({
   previousUniqueViews,
   previousRecentViews,
   categoryStats
-}: AnalyticsOverviewProps) => {
-  // Helper function to calculate percentage change
-  const calculateChange = (current: number, previous?: number): string | undefined => {
+}: TProps) => {
+
+
+  function calculateChange(current: number, previous?: number): string | undefined {
     if (!previous || previous === 0) return undefined;
     const change = ((current - previous) / previous) * 100;
     const sign = change >= 0 ? '+' : '';
     return `${sign}${change.toFixed(1)}%`;
   };
 
-  // Get most popular category
-  const mostPopularCategory = categoryStats?.length ?
+  const POPULAR_CATEGORY = categoryStats?.length ?
     categoryStats.reduce((prev, current) =>
       prev.count > current.count ? prev : current
     ).category : 'General';
@@ -62,7 +62,7 @@ export const AnalyticsOverview = ({
     }
   ];
 
-  const additionalStats = [
+  const STATS = [
     {
       label: "Avg. Views per Post",
       value: Math.round(totalViews / totalPosts).toLocaleString()
@@ -73,7 +73,7 @@ export const AnalyticsOverview = ({
     },
     {
       label: "Most Popular Category",
-      value: mostPopularCategory
+      value: POPULAR_CATEGORY
     }
   ];
 
@@ -113,9 +113,8 @@ export const AnalyticsOverview = ({
         })}
       </div>
 
-      {/* Secondary metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {additionalStats.map((stat, index) => (
+        {STATS.map((stat, index) => (
           <motion.div
             key={stat.label}
             className="bg-card border border-border rounded-lg p-6"

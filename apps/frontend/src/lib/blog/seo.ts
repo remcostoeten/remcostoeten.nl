@@ -10,11 +10,11 @@ export type TSeoConfig = {
 };
 
 export const defaultSeoConfig: TSeoConfig = {
-  siteName: "Your Portfolio",
-  siteUrl: "https://yourportfolio.com",
+  siteName: "Remco Stoeten",
+  siteUrl: "https://remcostoeten.nl",
   siteDescription: "Thoughts on frontend development, design, and building better web experiences.",
-  author: "Your Name",
-  twitterHandle: "@yourhandle",
+  author: "Remco Stoeten",
+  twitterHandle: "@yowremco",
   defaultImage: "/og-image.jpg"
 };
 
@@ -25,7 +25,7 @@ export function generatePostSeo(post: TBlogPost, config: TSeoConfig = defaultSeo
   const url = `${config.siteUrl}/posts/${post.slug}`;
   const publishedTime = new Date(post.publishedAt).toISOString();
   const modifiedTime = publishedTime; // You could track this separately
-  
+
   return {
     title: `${title} | ${config.siteName}`,
     description,
@@ -104,12 +104,12 @@ export function generateCategorySeo(category: TBlogCategory, config: TSeoConfig 
     'design': 'Design',
     'best-practices': 'Best Practices'
   };
-  
+
   const categoryName = categoryNames[category];
   const title = `${categoryName} | ${config.siteName}`;
   const description = `Explore ${categoryName.toLowerCase()} articles and insights on ${config.siteName}.`;
   const url = category === 'all' ? `${config.siteUrl}/posts` : `${config.siteUrl}/posts?category=${category}`;
-  
+
   return {
     title,
     description,
@@ -155,7 +155,7 @@ export function generateBlogListSeo(config: TSeoConfig = defaultSeoConfig) {
   const title = `Blog | ${config.siteName}`;
   const description = config.siteDescription;
   const url = `${config.siteUrl}/posts`;
-  
+
   return {
     title,
     description,

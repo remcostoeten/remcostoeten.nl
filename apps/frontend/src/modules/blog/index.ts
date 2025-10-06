@@ -1,10 +1,10 @@
 export * from "./types";
 export * from "./data/posts";
-export * from "./components/BlogCard";
-export * from "./components/CategoryFilter";
-export * from "./components/TagFilter";
-export * from "./components/SearchFilter";
-export * from "./utils/blogUtils";
+export * from "./components/blog-card";
+export * from "./components/category-filter";
+export * from "./components/tag-filter";
+export * from "./components/search-filter";
+export * from "./utils/blog-utils";
 export * from "@/lib/blog";
 
 // Export feedback functionality

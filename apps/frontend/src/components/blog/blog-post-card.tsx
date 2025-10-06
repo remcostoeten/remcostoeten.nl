@@ -20,13 +20,20 @@ interface BlogPostCardProps {
   post: BlogPost;
   index?: number;
   variant?: 'default' | 'featured' | 'hero';
+  viewCount?: number;
+  showViewCount?: boolean;
+  showExcerpt?: boolean;
 }
 
-export function BlogPostCard({ post, index = 0, variant = 'default' }: BlogPostCardProps) {
+export function BlogPostCard({
+  post,
+  index = 0,
+  variant = 'default',
+  viewCount = 0,
+  showViewCount = true,
+  showExcerpt = true
+}: BlogPostCardProps) {
   const postUrl = `/posts/${post.slug}`;
-  const { viewCount, loading: viewCountLoading } = useViewCount(post.slug, {
-    autoIncrement: false // Don't auto-increment on card view
-  });
 
   const isFeatured = variant === 'featured';
   const isHero = variant === 'hero';
@@ -39,9 +46,9 @@ export function BlogPostCard({ post, index = 0, variant = 'default' }: BlogPostC
           ? 'p-8 lg:p-10'
           : 'p-6 sm:p-8'
         }`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+      initial={false}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2, delay: index * 0.02 }}
       role="listitem"
     >
       <Link
@@ -57,14 +64,16 @@ export function BlogPostCard({ post, index = 0, variant = 'default' }: BlogPostC
             }`}>
             {post.title}
           </h3>
-          <p className={`text-muted-foreground mb-6 leading-relaxed ${isHero
-            ? 'text-base line-clamp-4 mb-6'
-            : isFeatured
-              ? 'text-lg line-clamp-4 mb-8'
-              : 'text-base line-clamp-3'
-            }`}>
-            {post.excerpt}
-          </p>
+          {showExcerpt && (
+            <p className={`text-muted-foreground mb-6 leading-relaxed ${isHero
+              ? 'text-base line-clamp-4 mb-6'
+              : isFeatured
+                ? 'text-lg line-clamp-4 mb-8'
+                : 'text-base line-clamp-3'
+              }`}>
+              {post.excerpt}
+            </p>
+          )}
         </div>
 
         <div className={`mt-auto ${isHero ? 'space-y-5' : isFeatured ? 'space-y-6' : 'space-y-4'}`}>
@@ -81,7 +90,7 @@ export function BlogPostCard({ post, index = 0, variant = 'default' }: BlogPostC
                 <span className="font-medium">{formatBlogDateShort(post.publishedAt)}</span>
               </div>
             </div>
-            {!viewCountLoading && viewCount > 0 && (
+            {showViewCount && viewCount > 0 && (
               <div className="flex items-center gap-2">
                 <Eye className={`${isHero ? 'w-4 h-4' : isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
                 <span className="font-medium">{viewCount.toLocaleString()} views</span>

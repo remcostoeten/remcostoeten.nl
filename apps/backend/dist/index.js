@@ -1,4 +1,4 @@
-// @bun
+import { createRequire } from "node:module";
 var __create = Object.create;
 var __getProtoOf = Object.getPrototypeOf;
 var __defProp = Object.defineProperty;
@@ -25,9 +25,9 @@ var __export = (target, all) => {
     });
 };
 var __esm = (fn, res) => () => (fn && (res = fn(fn = 0)), res);
-var __require = import.meta.require;
+var __require = /* @__PURE__ */ createRequire(import.meta.url);
 
-// ../../node_modules/hono/dist/utils/url.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/utils/url.js
 var splitPath = (path) => {
   const paths = path.split("/");
   if (paths[0] === "") {
@@ -211,7 +211,7 @@ var init_url = __esm(() => {
   decodeURIComponent_ = decodeURIComponent;
 });
 
-// ../../node_modules/hono/dist/utils/cookie.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/utils/cookie.js
 var validCookieNameRegEx, validCookieValueRegEx, parse = (cookie, name) => {
   if (name && cookie.indexOf(name) === -1) {
     return {};
@@ -303,7 +303,7 @@ var init_cookie = __esm(() => {
   validCookieValueRegEx = /^[ !#-:<-[\]-~]*$/;
 });
 
-// ../../node_modules/hono/dist/helper/cookie/index.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/helper/cookie/index.js
 var getCookie = (c, key, prefix) => {
   const cookie = c.req.raw.headers.get("Cookie");
   if (typeof key === "string") {
@@ -347,7 +347,7 @@ var init_cookie2 = __esm(() => {
   init_cookie();
 });
 
-// ../../node_modules/drizzle-orm/entity.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/entity.js
 function is(value, type) {
   if (!value || typeof value !== "object") {
     return false;
@@ -375,7 +375,7 @@ var init_entity = __esm(() => {
   hasOwnEntityKind = Symbol.for("drizzle:hasOwnEntityKind");
 });
 
-// ../../node_modules/drizzle-orm/column.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/column.js
 var Column;
 var init_column = __esm(() => {
   init_entity();
@@ -429,7 +429,7 @@ var init_column = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/column-builder.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/column-builder.js
 var ColumnBuilder;
 var init_column_builder = __esm(() => {
   init_entity();
@@ -489,13 +489,13 @@ var init_column_builder = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/table.utils.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/table.utils.js
 var TableName;
 var init_table_utils = __esm(() => {
   TableName = Symbol.for("drizzle:Name");
 });
 
-// ../../node_modules/drizzle-orm/pg-core/foreign-keys.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/foreign-keys.js
 var ForeignKeyBuilder, ForeignKey;
 var init_foreign_keys = __esm(() => {
   init_entity();
@@ -553,13 +553,13 @@ var init_foreign_keys = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/tracing-utils.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/tracing-utils.js
 function iife(fn, ...args) {
   return fn(...args);
 }
 var init_tracing_utils = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/unique-constraint.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/unique-constraint.js
 function unique(name) {
   return new UniqueOnConstraintBuilder(name);
 }
@@ -613,7 +613,7 @@ var init_unique_constraint = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/utils/array.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/utils/array.js
 function parsePgArrayValue(arrayString, startFrom, inQuotes) {
   for (let i = startFrom;i < arrayString.length; i++) {
     const char = arrayString[i];
@@ -690,7 +690,7 @@ function makePgArray(array) {
 }
 var init_array = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/columns/common.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/common.js
 var PgColumnBuilder, PgColumn, ExtraConfigColumn, IndexedColumn, PgArrayBuilder, PgArray;
 var init_common = __esm(() => {
   init_column_builder();
@@ -843,7 +843,7 @@ var init_common = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/enum.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/enum.js
 function isPgEnum(obj) {
   return !!obj && typeof obj === "function" && isPgEnumSym in obj && obj[isPgEnumSym] === true;
 }
@@ -878,7 +878,7 @@ var init_enum = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/subquery.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/subquery.js
 var Subquery, WithSubquery;
 var init_subquery = __esm(() => {
   init_entity();
@@ -900,11 +900,11 @@ var init_subquery = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/version.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/version.js
 var version = "0.44.6";
 var init_version = () => {};
 
-// ../../node_modules/drizzle-orm/tracing.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/tracing.js
 var otel, rawTracer, tracer;
 var init_tracing = __esm(() => {
   init_tracing_utils();
@@ -934,13 +934,13 @@ var init_tracing = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/view-common.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/view-common.js
 var ViewBaseConfig;
 var init_view_common = __esm(() => {
   ViewBaseConfig = Symbol.for("drizzle:ViewBaseConfig");
 });
 
-// ../../node_modules/drizzle-orm/table.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/table.js
 function getTableName(table) {
   return table[TableName];
 }
@@ -988,7 +988,7 @@ var init_table = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/sql/sql.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/sql.js
 function isSQLWrapper(value) {
   return value !== null && value !== undefined && typeof value.getSQL === "function";
 }
@@ -1372,7 +1372,7 @@ var init_sql = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/alias.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/alias.js
 function aliasedTable(table, tableAlias) {
   return new Proxy(table, new TableAliasProxyHandler(tableAlias, false));
 }
@@ -1458,7 +1458,7 @@ var init_alias = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/errors.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/errors.js
 var DrizzleError, DrizzleQueryError;
 var init_errors = __esm(() => {
   init_entity();
@@ -1484,7 +1484,7 @@ params: ${params}`);
   };
 });
 
-// ../../node_modules/drizzle-orm/logger.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/logger.js
 var ConsoleLogWriter, DefaultLogger, NoopLogger;
 var init_logger = __esm(() => {
   init_entity();
@@ -1518,7 +1518,7 @@ var init_logger = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/query-promise.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/query-promise.js
 var QueryPromise;
 var init_query_promise = __esm(() => {
   init_entity();
@@ -1543,7 +1543,7 @@ var init_query_promise = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/utils.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/utils.js
 function mapResultRow(columns, row, joinsNotNullableMap) {
   const nullifyMap = {};
   const result = columns.reduce((result2, { path, field }, columnIndex) => {
@@ -1704,7 +1704,7 @@ var init_utils = __esm(() => {
   textDecoder = typeof TextDecoder === "undefined" ? null : new TextDecoder;
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/int.common.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/int.common.js
 var PgIntColumnBaseBuilder;
 var init_int_common = __esm(() => {
   init_entity();
@@ -1748,7 +1748,7 @@ var init_int_common = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/bigint.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/bigint.js
 function bigint(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   if (config.mode === "number") {
@@ -1803,7 +1803,7 @@ var init_bigint = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/bigserial.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/bigserial.js
 function bigserial(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   if (config.mode === "number") {
@@ -1860,7 +1860,7 @@ var init_bigserial = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/boolean.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/boolean.js
 function boolean(name) {
   return new PgBooleanBuilder(name ?? "");
 }
@@ -1885,7 +1885,7 @@ var init_boolean = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/char.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/char.js
 function char(a, b = {}) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgCharBuilder(name, config);
@@ -1916,7 +1916,7 @@ var init_char = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/cidr.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/cidr.js
 function cidr(name) {
   return new PgCidrBuilder(name ?? "");
 }
@@ -1941,7 +1941,7 @@ var init_cidr = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/custom.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/custom.js
 function customType(customTypeParams) {
   return (a, b) => {
     const { name, config } = getColumnNameAndConfig(a, b);
@@ -1987,7 +1987,7 @@ var init_custom = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/date.common.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/date.common.js
 var PgDateColumnBaseBuilder;
 var init_date_common = __esm(() => {
   init_entity();
@@ -2001,7 +2001,7 @@ var init_date_common = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/date.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/date.js
 function date(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   if (config?.mode === "date") {
@@ -2053,7 +2053,7 @@ var init_date = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/double-precision.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/double-precision.js
 function doublePrecision(name) {
   return new PgDoublePrecisionBuilder(name ?? "");
 }
@@ -2084,7 +2084,7 @@ var init_double_precision = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/inet.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/inet.js
 function inet(name) {
   return new PgInetBuilder(name ?? "");
 }
@@ -2109,7 +2109,7 @@ var init_inet = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/integer.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/integer.js
 function integer(name) {
   return new PgIntegerBuilder(name ?? "");
 }
@@ -2141,7 +2141,7 @@ var init_integer = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/interval.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/interval.js
 function interval(a, b = {}) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgIntervalBuilder(name, config);
@@ -2173,7 +2173,7 @@ var init_interval = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/json.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/json.js
 function json(name) {
   return new PgJsonBuilder(name ?? "");
 }
@@ -2214,7 +2214,7 @@ var init_json = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/jsonb.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/jsonb.js
 function jsonb(name) {
   return new PgJsonbBuilder(name ?? "");
 }
@@ -2255,7 +2255,7 @@ var init_jsonb = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/line.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/line.js
 function line(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   if (!config?.mode || config.mode === "tuple") {
@@ -2314,7 +2314,7 @@ var init_line = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/macaddr.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/macaddr.js
 function macaddr(name) {
   return new PgMacaddrBuilder(name ?? "");
 }
@@ -2339,7 +2339,7 @@ var init_macaddr = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/macaddr8.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/macaddr8.js
 function macaddr8(name) {
   return new PgMacaddr8Builder(name ?? "");
 }
@@ -2364,7 +2364,7 @@ var init_macaddr8 = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/numeric.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/numeric.js
 function numeric(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   const mode = config?.mode;
@@ -2480,7 +2480,7 @@ var init_numeric = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/point.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/point.js
 function point(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   if (!config?.mode || config.mode === "tuple") {
@@ -2545,7 +2545,7 @@ var init_point = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/postgis_extension/utils.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/postgis_extension/utils.js
 function hexToBytes(hex) {
   const bytes = [];
   for (let c = 0;c < hex.length; c += 2) {
@@ -2585,7 +2585,7 @@ function parseEWKB(hex) {
 }
 var init_utils2 = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/columns/postgis_extension/geometry.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/postgis_extension/geometry.js
 function geometry(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   if (!config?.mode || config.mode === "tuple") {
@@ -2644,7 +2644,7 @@ var init_geometry = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/real.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/real.js
 function real(name) {
   return new PgRealBuilder(name ?? "");
 }
@@ -2679,7 +2679,7 @@ var init_real = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/serial.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/serial.js
 function serial(name) {
   return new PgSerialBuilder(name ?? "");
 }
@@ -2706,7 +2706,7 @@ var init_serial = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/smallint.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/smallint.js
 function smallint(name) {
   return new PgSmallIntBuilder(name ?? "");
 }
@@ -2738,7 +2738,7 @@ var init_smallint = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/smallserial.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/smallserial.js
 function smallserial(name) {
   return new PgSmallSerialBuilder(name ?? "");
 }
@@ -2765,7 +2765,7 @@ var init_smallserial = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/text.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/text.js
 function text(a, b = {}) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgTextBuilder(name, config);
@@ -2794,7 +2794,7 @@ var init_text = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/time.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/time.js
 function time2(a, b = {}) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgTimeBuilder(name, config.withTimezone ?? false, config.precision);
@@ -2834,7 +2834,7 @@ var init_time = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/timestamp.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/timestamp.js
 function timestamp(a, b = {}) {
   const { name, config } = getColumnNameAndConfig(a, b);
   if (config?.mode === "string") {
@@ -2906,7 +2906,7 @@ var init_timestamp = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/uuid.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/uuid.js
 function uuid(name) {
   return new PgUUIDBuilder(name ?? "");
 }
@@ -2935,7 +2935,7 @@ var init_uuid = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/varchar.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/varchar.js
 function varchar(a, b = {}) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgVarcharBuilder(name, config);
@@ -2966,7 +2966,7 @@ var init_varchar = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/vector_extension/bit.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/vector_extension/bit.js
 function bit(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgBinaryVectorBuilder(name, config);
@@ -2995,7 +2995,7 @@ var init_bit = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/vector_extension/halfvec.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/vector_extension/halfvec.js
 function halfvec(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgHalfVectorBuilder(name, config);
@@ -3030,7 +3030,7 @@ var init_halfvec = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/vector_extension/sparsevec.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/vector_extension/sparsevec.js
 function sparsevec(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgSparseVectorBuilder(name, config);
@@ -3059,7 +3059,7 @@ var init_sparsevec = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/vector_extension/vector.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/vector_extension/vector.js
 function vector(a, b) {
   const { name, config } = getColumnNameAndConfig(a, b);
   return new PgVectorBuilder(name, config);
@@ -3094,7 +3094,7 @@ var init_vector = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/columns/all.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/all.js
 function getPgColumnBuilders() {
   return {
     bigint,
@@ -3166,7 +3166,7 @@ var init_all = __esm(() => {
   init_vector();
 });
 
-// ../../node_modules/drizzle-orm/pg-core/table.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/table.js
 function pgTableWithSchema(name, columns, extraConfig, schema, baseName = name) {
   const rawTable = new PgTable(name, schema, baseName);
   const parsedColumns = typeof columns === "function" ? columns(getPgColumnBuilders()) : columns;
@@ -3218,7 +3218,7 @@ var init_table2 = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/primary-keys.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/primary-keys.js
 var PrimaryKeyBuilder, PrimaryKey;
 var init_primary_keys = __esm(() => {
   init_entity();
@@ -3250,7 +3250,7 @@ var init_primary_keys = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/sql/expressions/conditions.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/expressions/conditions.js
 function bindIfParam(value, column) {
   if (isDriverValueEncoder(column) && !isSQLWrapper(value) && !is(value, Param) && !is(value, Placeholder) && !is(value, Column) && !is(value, Table) && !is(value, View)) {
     return new Param(value, column);
@@ -3356,7 +3356,7 @@ var init_conditions = __esm(() => {
   init_sql();
 });
 
-// ../../node_modules/drizzle-orm/sql/expressions/select.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/expressions/select.js
 function asc(column) {
   return sql`${column} asc`;
 }
@@ -3367,13 +3367,13 @@ var init_select = __esm(() => {
   init_sql();
 });
 
-// ../../node_modules/drizzle-orm/sql/expressions/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/expressions/index.js
 var init_expressions = __esm(() => {
   init_conditions();
   init_select();
 });
 
-// ../../node_modules/drizzle-orm/relations.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/relations.js
 function getOperators() {
   return {
     and,
@@ -3605,26 +3605,26 @@ var init_relations = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/sql/functions/aggregate.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/functions/aggregate.js
 var init_aggregate = () => {};
 
-// ../../node_modules/drizzle-orm/sql/functions/vector.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/functions/vector.js
 var init_vector2 = () => {};
 
-// ../../node_modules/drizzle-orm/sql/functions/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/functions/index.js
 var init_functions = __esm(() => {
   init_aggregate();
   init_vector2();
 });
 
-// ../../node_modules/drizzle-orm/sql/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/sql/index.js
 var init_sql2 = __esm(() => {
   init_expressions();
   init_functions();
   init_sql();
 });
 
-// ../../node_modules/drizzle-orm/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/index.js
 var init_drizzle_orm = __esm(() => {
   init_alias();
   init_column_builder();
@@ -3641,7 +3641,7 @@ var init_drizzle_orm = __esm(() => {
   init_view_common();
 });
 
-// ../../node_modules/drizzle-orm/selection-proxy.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/selection-proxy.js
 var SelectionProxyHandler;
 var init_selection_proxy = __esm(() => {
   init_alias();
@@ -3702,10 +3702,10 @@ var init_selection_proxy = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/checks.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/checks.js
 var init_checks = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/columns/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/columns/index.js
 var init_columns = __esm(() => {
   init_bigint();
   init_bigserial();
@@ -3744,9 +3744,12 @@ var init_columns = __esm(() => {
   init_vector();
 });
 
-// ../../node_modules/drizzle-orm/pg-core/indexes.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/indexes.js
 function index(name) {
   return new IndexBuilderOn(false, name);
+}
+function uniqueIndex(name) {
+  return new IndexBuilderOn(true, name);
 }
 var IndexBuilderOn, IndexBuilder, Index;
 var init_indexes = __esm(() => {
@@ -3830,16 +3833,16 @@ var init_indexes = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/policies.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/policies.js
 var init_policies = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/view-common.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/view-common.js
 var PgViewConfig;
 var init_view_common2 = __esm(() => {
   PgViewConfig = Symbol.for("drizzle:PgViewConfig");
 });
 
-// ../../node_modules/drizzle-orm/casing.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/casing.js
 function toSnakeCase(input) {
   const words = input.replace(/['\u2019]/g, "").match(/[\da-z]+|[A-Z]+(?![a-z])|[A-Z][\da-z]+/g) ?? [];
   return words.map((word) => word.toLowerCase()).join("_");
@@ -3896,7 +3899,7 @@ var init_casing = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/view-base.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/view-base.js
 var PgViewBase;
 var init_view_base = __esm(() => {
   init_entity();
@@ -3906,7 +3909,7 @@ var init_view_base = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/dialect.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/dialect.js
 var PgDialect;
 var init_dialect = __esm(() => {
   init_alias();
@@ -4482,7 +4485,7 @@ var init_dialect = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/query-builders/query-builder.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/query-builders/query-builder.js
 var TypedQueryBuilder;
 var init_query_builder = __esm(() => {
   init_entity();
@@ -4494,7 +4497,7 @@ var init_query_builder = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/select.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/select.js
 function createSetOperator(type, isAll) {
   return (leftSelect, rightSelect, ...restSelects) => {
     const setOperators = [rightSelect, ...restSelects].map((select2) => ({
@@ -4825,7 +4828,7 @@ var init_select2 = __esm(() => {
   exceptAll = createSetOperator("except", true);
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/query-builder.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/query-builder.js
 var QueryBuilder;
 var init_query_builder2 = __esm(() => {
   init_entity();
@@ -4911,13 +4914,13 @@ var init_query_builder2 = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/view.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/view.js
 var PgMaterializedViewConfig;
 var init_view = __esm(() => {
   PgMaterializedViewConfig = Symbol.for("drizzle:PgMaterializedViewConfig");
 });
 
-// ../../node_modules/drizzle-orm/pg-core/utils.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/utils.js
 function extractUsedTable(table2) {
   if (is(table2, PgTable)) {
     return [table2[Schema] ? `${table2[Schema]}.${table2[Table.Symbol.BaseName]}` : table2[Table.Symbol.BaseName]];
@@ -4938,7 +4941,7 @@ var init_utils3 = __esm(() => {
   init_table();
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/delete.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/delete.js
 var PgDeleteBase;
 var init_delete = __esm(() => {
   init_entity();
@@ -5008,7 +5011,7 @@ var init_delete = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/insert.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/insert.js
 var PgInsertBuilder, PgInsertBase;
 var init_insert = __esm(() => {
   init_entity();
@@ -5142,7 +5145,7 @@ var init_insert = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/refresh-materialized-view.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/refresh-materialized-view.js
 var PgRefreshMaterializedView;
 var init_refresh_materialized_view = __esm(() => {
   init_entity();
@@ -5199,7 +5202,7 @@ var init_refresh_materialized_view = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/update.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/update.js
 var PgUpdateBuilder, PgUpdateBase;
 var init_update = __esm(() => {
   init_entity();
@@ -5365,7 +5368,7 @@ var init_update = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/index.js
 var init_query_builders = __esm(() => {
   init_delete();
   init_insert();
@@ -5375,7 +5378,7 @@ var init_query_builders = __esm(() => {
   init_update();
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/count.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/count.js
 var PgCountBuilder;
 var init_count = __esm(() => {
   init_entity();
@@ -5421,7 +5424,7 @@ var init_count = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/query.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/query.js
 var RelationalQueryBuilder, PgRelationalQuery;
 var init_query = __esm(() => {
   init_entity();
@@ -5510,7 +5513,7 @@ var init_query = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/query-builders/raw.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/query-builders/raw.js
 var PgRaw;
 var init_raw = __esm(() => {
   init_entity();
@@ -5542,7 +5545,7 @@ var init_raw = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/db.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/db.js
 var PgDatabase;
 var init_db = __esm(() => {
   init_entity();
@@ -5680,7 +5683,7 @@ var init_db = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/cache/core/cache.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/cache/core/cache.js
 async function hashQuery(sql4, params) {
   const dataToHash = `${sql4}-${JSON.stringify(params)}`;
   const encoder = new TextEncoder;
@@ -5709,19 +5712,19 @@ var init_cache = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/alias.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/alias.js
 var init_alias2 = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/roles.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/roles.js
 var init_roles = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/sequence.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/sequence.js
 var init_sequence = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/schema.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/schema.js
 var init_schema = () => {};
 
-// ../../node_modules/drizzle-orm/pg-core/session.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/session.js
 var PgPreparedQuery, PgSession;
 var init_session = __esm(() => {
   init_cache();
@@ -5831,12 +5834,12 @@ var init_session = __esm(() => {
   };
 });
 
-// ../../node_modules/drizzle-orm/pg-core/utils/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/utils/index.js
 var init_utils4 = __esm(() => {
   init_array();
 });
 
-// ../../node_modules/drizzle-orm/pg-core/index.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/pg-core/index.js
 var init_pg_core = __esm(() => {
   init_alias2();
   init_checks();
@@ -5860,13 +5863,125 @@ var init_pg_core = __esm(() => {
   init_view();
 });
 
-// src/schema/blog-views.ts
-var exports_blog_views = {};
-__export(exports_blog_views, {
-  blogViewsIndexes: () => blogViewsIndexes,
-  blogViews: () => blogViews2
+// src/schema/visitors.ts
+var visitors, blogViews, visitorsIndexes, blogViewsIndexes;
+var init_visitors = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  visitors = pgTable("visitors", {
+    id: text("id").primaryKey(),
+    visitorId: text("visitor_id").notNull().unique(),
+    isNewVisitor: boolean("is_new_visitor").notNull().default(true),
+    firstVisitAt: timestamp("first_visit_at", { withTimezone: true }).notNull(),
+    lastVisitAt: timestamp("last_visit_at", { withTimezone: true }).notNull(),
+    totalVisits: integer("total_visits").notNull().default(1),
+    userAgent: text("user_agent"),
+    ipAddress: text("ip_address"),
+    country: text("country"),
+    region: text("region"),
+    city: text("city"),
+    timezone: text("timezone"),
+    language: text("language"),
+    screenResolution: text("screen_resolution"),
+    platform: text("platform"),
+    browser: text("browser"),
+    os: text("os"),
+    deviceType: text("device_type"),
+    referrer: text("referrer"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  blogViews = pgTable("blog_views", {
+    id: text("id").primaryKey(),
+    visitorId: text("visitor_id").notNull(),
+    blogSlug: text("blog_slug").notNull(),
+    blogTitle: text("blog_title").notNull(),
+    viewCount: integer("view_count").notNull().default(1),
+    firstViewedAt: timestamp("first_viewed_at", { withTimezone: true }).notNull(),
+    lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  visitorsIndexes = {
+    visitorId: "idx_visitors_visitor_id",
+    lastVisitAt: "idx_visitors_last_visit_at",
+    isNewVisitor: "idx_visitors_is_new_visitor"
+  };
+  blogViewsIndexes = {
+    visitorId: "idx_blog_views_visitor_id",
+    blogSlug: "idx_blog_views_blog_slug",
+    lastViewedAt: "idx_blog_views_last_viewed_at",
+    visitorBlog: "idx_blog_views_visitor_blog"
+  };
 });
-var blogViews2, blogViewsIndexes;
+
+// src/schema/pageviews.ts
+var pageviews, pageviewsIndexes;
+var init_pageviews = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  pageviews = pgTable("pageviews", {
+    id: text("id").primaryKey(),
+    url: text("url").notNull(),
+    title: text("title"),
+    referrer: text("referrer"),
+    userAgent: text("user_agent"),
+    timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  pageviewsIndexes = {
+    url: "idx_pageviews_url",
+    timestamp: "idx_pageviews_timestamp",
+    createdAt: "idx_pageviews_created_at"
+  };
+});
+
+// src/schema/blog-metadata.ts
+var blogMetadata, blogAnalytics, blogMetadataIndexes, blogAnalyticsIndexes;
+var init_blog_metadata = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  blogMetadata = pgTable("blog_metadata", {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt").notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }).notNull(),
+    readTime: integer("read_time").notNull(),
+    tags: json("tags").$type().notNull().default([]),
+    category: text("category").notNull(),
+    status: text("status").notNull().default("published"),
+    author: text("author"),
+    seo: json("seo").$type(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  blogAnalytics = pgTable("blog_analytics", {
+    id: text("id").primaryKey(),
+    slug: text("slug").notNull().unique(),
+    totalViews: integer("total_views").notNull().default(0),
+    uniqueViews: integer("unique_views").notNull().default(0),
+    recentViews: integer("recent_views").notNull().default(0),
+    lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
+  });
+  blogMetadataIndexes = {
+    slug: "idx_blog_metadata_slug",
+    publishedAt: "idx_blog_metadata_published_at",
+    category: "idx_blog_metadata_category",
+    status: "idx_blog_metadata_status",
+    tags: "idx_blog_metadata_tags"
+  };
+  blogAnalyticsIndexes = {
+    slug: "idx_blog_analytics_slug",
+    totalViews: "idx_blog_analytics_total_views",
+    lastViewedAt: "idx_blog_analytics_last_viewed_at"
+  };
+});
+
+// src/schema/blog-views.ts
+var blogViews2, blogViewsIndexes2;
 var init_blog_views = __esm(() => {
   init_pg_core();
   init_drizzle_orm();
@@ -5882,12 +5997,64 @@ var init_blog_views = __esm(() => {
   }, (table3) => ({
     uniqueSessionSlug: unique().on(table3.sessionId, table3.slug)
   }));
-  blogViewsIndexes = {
+  blogViewsIndexes2 = {
     slug: "idx_blog_views_slug",
     sessionId: "idx_blog_views_session_id",
     timestamp: "idx_blog_views_timestamp",
     createdAt: "idx_blog_views_created_at"
   };
+});
+
+// src/schema/blog-feedback.ts
+var blogFeedback, blogFeedbackRelations;
+var init_blog_feedback = __esm(() => {
+  init_pg_core();
+  init_drizzle_orm();
+  blogFeedback = pgTable("blog_feedback", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    slug: text("slug").notNull(),
+    emoji: varchar("emoji", { length: 10 }).notNull(),
+    message: text("message"),
+    url: text("url"),
+    userAgent: text("user_agent"),
+    ipHash: varchar("ip_hash", { length: 64 }),
+    fingerprint: varchar("fingerprint", { length: 64 }),
+    timestamp: timestamp("timestamp", { mode: "string" }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow()
+  }, (table3) => ({
+    slugIdx: index("blog_feedback_slug_idx").on(table3.slug),
+    timestampIdx: index("blog_feedback_timestamp_idx").on(table3.timestamp),
+    emojiIdx: index("blog_feedback_emoji_idx").on(table3.emoji),
+    fingerprintIdx: index("blog_feedback_fingerprint_idx").on(table3.fingerprint),
+    slugFingerprintUnique: uniqueIndex("blog_feedback_slug_fingerprint_unique").on(table3.slug, table3.fingerprint)
+  }));
+  blogFeedbackRelations = relations(blogFeedback, ({ one }) => ({}));
+});
+
+// src/schema/index.ts
+var exports_schema = {};
+__export(exports_schema, {
+  visitorsIndexes: () => visitorsIndexes,
+  visitors: () => visitors,
+  pageviewsIndexes: () => pageviewsIndexes,
+  pageviews: () => pageviews,
+  blogViewsIndexes: () => blogViewsIndexes,
+  blogViews: () => blogViews,
+  blogSessionViewsIndexes: () => blogViewsIndexes2,
+  blogSessionViews: () => blogViews2,
+  blogMetadataIndexes: () => blogMetadataIndexes,
+  blogMetadata: () => blogMetadata,
+  blogFeedbackRelations: () => blogFeedbackRelations,
+  blogFeedback: () => blogFeedback,
+  blogAnalyticsIndexes: () => blogAnalyticsIndexes,
+  blogAnalytics: () => blogAnalytics
+});
+var init_schema2 = __esm(() => {
+  init_visitors();
+  init_pageviews();
+  init_blog_metadata();
+  init_blog_views();
+  init_blog_feedback();
 });
 
 // src/utils/session.ts
@@ -5922,7 +6089,7 @@ var init_session2 = __esm(() => {
   init_cookie2();
 });
 
-// ../../node_modules/hono/dist/compose.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/compose.js
 var compose = (middleware, onError, onNotFound) => {
   return (context, next) => {
     let index = -1;
@@ -5966,10 +6133,10 @@ var compose = (middleware, onError, onNotFound) => {
   };
 };
 
-// ../../node_modules/hono/dist/request/constants.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/request/constants.js
 var GET_MATCH_RESULT = Symbol();
 
-// ../../node_modules/hono/dist/utils/body.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/utils/body.js
 var parseBody = async (request, options = /* @__PURE__ */ Object.create(null)) => {
   const { all = false, dot = false } = options;
   const headers = request instanceof HonoRequest ? request.raw.headers : request.headers;
@@ -6037,7 +6204,7 @@ var handleParsingNestedValues = (form, key, value) => {
   });
 };
 
-// ../../node_modules/hono/dist/request.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/request.js
 init_url();
 var tryDecodeURIComponent = (str) => tryDecode(str, decodeURIComponent_);
 var HonoRequest = class {
@@ -6149,7 +6316,7 @@ var HonoRequest = class {
   }
 };
 
-// ../../node_modules/hono/dist/utils/html.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/utils/html.js
 var HtmlEscapedCallbackPhase = {
   Stringify: 1,
   BeforeStream: 2,
@@ -6187,7 +6354,7 @@ var resolveCallback = async (str, phase, preserveCallbacks, context, buffer) => 
   }
 };
 
-// ../../node_modules/hono/dist/context.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/context.js
 var TEXT_PLAIN = "text/plain; charset=UTF-8";
 var setDefaultContentType = (contentType, headers) => {
   return {
@@ -6353,7 +6520,7 @@ var Context = class {
   };
 };
 
-// ../../node_modules/hono/dist/router.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router.js
 var METHOD_NAME_ALL = "ALL";
 var METHOD_NAME_ALL_LOWERCASE = "all";
 var METHODS = ["get", "post", "put", "delete", "options", "patch"];
@@ -6361,10 +6528,10 @@ var MESSAGE_MATCHER_IS_ALREADY_BUILT = "Can not add a route since the matcher is
 var UnsupportedPathError = class extends Error {
 };
 
-// ../../node_modules/hono/dist/utils/constants.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/utils/constants.js
 var COMPOSED_HANDLER = "__COMPOSED_HANDLER";
 
-// ../../node_modules/hono/dist/hono-base.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/hono-base.js
 init_url();
 var notFoundHandler = (c) => {
   return c.text("404 Not Found", 404);
@@ -6584,10 +6751,10 @@ var Hono = class {
   };
 };
 
-// ../../node_modules/hono/dist/router/reg-exp-router/router.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/reg-exp-router/router.js
 init_url();
 
-// ../../node_modules/hono/dist/router/reg-exp-router/node.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/reg-exp-router/node.js
 var LABEL_REG_EXP_STR = "[^/]+";
 var ONLY_WILDCARD_REG_EXP_STR = ".*";
 var TAIL_WILDCARD_REG_EXP_STR = "(?:|/.*)";
@@ -6691,7 +6858,7 @@ var Node = class {
   }
 };
 
-// ../../node_modules/hono/dist/router/reg-exp-router/trie.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/reg-exp-router/trie.js
 var Trie = class {
   #context = { varIndex: 0 };
   #root = new Node;
@@ -6747,7 +6914,7 @@ var Trie = class {
   }
 };
 
-// ../../node_modules/hono/dist/router/reg-exp-router/router.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/reg-exp-router/router.js
 var emptyParam = [];
 var nullMatcher = [/^$/, [], /* @__PURE__ */ Object.create(null)];
 var wildcardRegExpCache = /* @__PURE__ */ Object.create(null);
@@ -6929,7 +7096,7 @@ var RegExpRouter = class {
   }
 };
 
-// ../../node_modules/hono/dist/router/smart-router/router.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/smart-router/router.js
 var SmartRouter = class {
   name = "SmartRouter";
   #routers = [];
@@ -6984,10 +7151,10 @@ var SmartRouter = class {
   }
 };
 
-// ../../node_modules/hono/dist/router/trie-router/router.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/trie-router/router.js
 init_url();
 
-// ../../node_modules/hono/dist/router/trie-router/node.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/trie-router/node.js
 init_url();
 var emptyParams = /* @__PURE__ */ Object.create(null);
 var Node2 = class {
@@ -7142,7 +7309,7 @@ var Node2 = class {
   }
 };
 
-// ../../node_modules/hono/dist/router/trie-router/router.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/router/trie-router/router.js
 var TrieRouter = class {
   name = "TrieRouter";
   #node;
@@ -7164,7 +7331,7 @@ var TrieRouter = class {
   }
 };
 
-// ../../node_modules/hono/dist/hono.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/hono.js
 var Hono2 = class extends Hono {
   constructor(options = {}) {
     super(options);
@@ -7174,7 +7341,7 @@ var Hono2 = class extends Hono {
   }
 };
 
-// ../../node_modules/hono/dist/middleware/cors/index.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/middleware/cors/index.js
 var cors = (options) => {
   const defaults = {
     origin: "*",
@@ -7261,7 +7428,7 @@ var cors = (options) => {
   };
 };
 
-// ../../node_modules/hono/dist/utils/color.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/utils/color.js
 function getColorEnabled() {
   const { process: process2, Deno } = globalThis;
   const isNoColor = typeof Deno?.noColor === "boolean" ? Deno.noColor : process2 !== undefined ? "NO_COLOR" in process2?.env : false;
@@ -7280,7 +7447,7 @@ async function getColorEnabledAsync() {
   return !isNoColor;
 }
 
-// ../../node_modules/hono/dist/middleware/logger/index.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/middleware/logger/index.js
 var humanize = (times) => {
   const [delimiter, separator] = [",", "."];
   const orderTimes = times.map((v) => v.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1" + delimiter));
@@ -7321,10 +7488,10 @@ var logger = (fn = console.log) => {
   };
 };
 
-// ../../node_modules/hono/dist/validator/validator.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/validator/validator.js
 init_cookie2();
 
-// ../../node_modules/hono/dist/http-exception.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/http-exception.js
 var HTTPException = class extends Error {
   res;
   status;
@@ -7347,7 +7514,7 @@ var HTTPException = class extends Error {
   }
 };
 
-// ../../node_modules/hono/dist/utils/buffer.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/utils/buffer.js
 var bufferToFormData = (arrayBuffer, contentType) => {
   const response = new Response(arrayBuffer, {
     headers: {
@@ -7357,7 +7524,7 @@ var bufferToFormData = (arrayBuffer, contentType) => {
   return response.formData();
 };
 
-// ../../node_modules/hono/dist/validator/validator.js
+// node_modules/.pnpm/hono@4.9.10/node_modules/hono/dist/validator/validator.js
 var jsonRegex = /^application\/([a-z-\.]+\+)?json(;\s*[a-zA-Z0-9\-]+\=([^;]+))*$/;
 var multipartRegex = /^multipart\/form-data(;\s?boundary=[a-zA-Z0-9'"()+_,\-./:=?]+)?$/;
 var urlencodedRegex = /^application\/x-www-form-urlencoded(;\s*[a-zA-Z0-9\-]+\=([^;]+))*$/;
@@ -7434,7 +7601,7 @@ var validator = (target, validationFunc) => {
   };
 };
 
-// ../../node_modules/@hono/zod-validator/dist/esm/index.js
+// node_modules/.pnpm/@hono+zod-validator@0.2.2_hono@4.9.10_zod@3.25.76/node_modules/@hono/zod-validator/dist/esm/index.js
 var zValidator = (target, schema, hook) => validator(target, async (value, c) => {
   const result = await schema.safeParseAsync(value);
   if (hook) {
@@ -7454,7 +7621,7 @@ var zValidator = (target, schema, hook) => validator(target, async (value, c) =>
   return result.data;
 });
 
-// ../../node_modules/zod/v3/external.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/external.js
 var exports_external = {};
 __export(exports_external, {
   void: () => voidType,
@@ -7566,7 +7733,7 @@ __export(exports_external, {
   BRAND: () => BRAND
 });
 
-// ../../node_modules/zod/v3/helpers/util.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/util.js
 var util;
 (function(util2) {
   util2.assertEqual = (_) => {};
@@ -7697,7 +7864,7 @@ var getParsedType = (data) => {
   }
 };
 
-// ../../node_modules/zod/v3/ZodError.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/ZodError.js
 var ZodIssueCode = util.arrayToEnum([
   "invalid_type",
   "invalid_literal",
@@ -7816,7 +7983,7 @@ ZodError.create = (issues) => {
   return error;
 };
 
-// ../../node_modules/zod/v3/locales/en.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/locales/en.js
 var errorMap = (issue, _ctx) => {
   let message;
   switch (issue.code) {
@@ -7919,7 +8086,7 @@ var errorMap = (issue, _ctx) => {
 };
 var en_default = errorMap;
 
-// ../../node_modules/zod/v3/errors.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/errors.js
 var overrideErrorMap = en_default;
 function setErrorMap(map) {
   overrideErrorMap = map;
@@ -7927,7 +8094,7 @@ function setErrorMap(map) {
 function getErrorMap() {
   return overrideErrorMap;
 }
-// ../../node_modules/zod/v3/helpers/parseUtil.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/parseUtil.js
 var makeIssue = (params) => {
   const { data, path, errorMaps, issueData } = params;
   const fullPath = [...path, ...issueData.path || []];
@@ -8033,14 +8200,14 @@ var isAborted = (x) => x.status === "aborted";
 var isDirty = (x) => x.status === "dirty";
 var isValid = (x) => x.status === "valid";
 var isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
-// ../../node_modules/zod/v3/helpers/errorUtil.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/helpers/errorUtil.js
 var errorUtil;
 (function(errorUtil2) {
   errorUtil2.errToObj = (message) => typeof message === "string" ? { message } : message || {};
   errorUtil2.toString = (message) => typeof message === "string" ? message : message?.message;
 })(errorUtil || (errorUtil = {}));
 
-// ../../node_modules/zod/v3/types.js
+// node_modules/.pnpm/zod@3.25.76/node_modules/zod/v3/types.js
 class ParseInputLazyPath {
   constructor(parent, value, path, key) {
     this._cachedPath = [];
@@ -11430,7 +11597,7 @@ var NEVER = INVALID;
 // src/services/visitor-service.ts
 init_drizzle_orm();
 
-// ../../node_modules/@neondatabase/serverless/index.mjs
+// node_modules/.pnpm/@neondatabase+serverless@1.0.2/node_modules/@neondatabase/serverless/index.mjs
 var So = Object.create;
 var Ie = Object.defineProperty;
 var Eo = Object.getOwnPropertyDescriptor;
@@ -16334,7 +16501,7 @@ buffer/index.js:
    *)
 */
 
-// ../../node_modules/drizzle-orm/neon-http/driver.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/neon-http/driver.js
 init_entity();
 init_logger();
 init_db();
@@ -16342,7 +16509,7 @@ init_dialect();
 init_relations();
 init_utils();
 
-// ../../node_modules/drizzle-orm/neon-http/session.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/neon-http/session.js
 init_entity();
 init_logger();
 init_session();
@@ -16466,7 +16633,7 @@ class NeonHttpSession extends PgSession {
   }
 }
 
-// ../../node_modules/drizzle-orm/neon-http/driver.js
+// node_modules/.pnpm/drizzle-orm@0.44.6_@neondatabase+serverless@1.0.2_@types+pg@8.15.5_bun-types@1.2.23_@types+react@19.2.0_/node_modules/drizzle-orm/neon-http/driver.js
 class NeonHttpDriver {
   constructor(client, dialect2, options = {}) {
     this.client = client;
@@ -16584,161 +16751,133 @@ function drizzle(...params) {
   drizzle2.mock = mock;
 })(drizzle || (drizzle = {}));
 
-// src/schema/index.ts
-var exports_schema = {};
-__export(exports_schema, {
-  visitorsIndexes: () => visitorsIndexes,
-  visitors: () => visitors,
-  pageviewsIndexes: () => pageviewsIndexes,
-  pageviews: () => pageviews,
-  blogMetadataIndexes: () => blogMetadataIndexes,
-  blogMetadata: () => blogMetadata,
-  blogFeedbackRelations: () => blogFeedbackRelations,
-  blogFeedback: () => blogFeedback,
-  blogAnalyticsIndexes: () => blogAnalyticsIndexes,
-  blogAnalytics: () => blogAnalytics
-});
-
-// src/schema/visitors.ts
-init_pg_core();
-init_drizzle_orm();
-var visitors = pgTable("visitors", {
-  id: text("id").primaryKey(),
-  visitorId: text("visitor_id").notNull().unique(),
-  isNewVisitor: boolean("is_new_visitor").notNull().default(true),
-  firstVisitAt: timestamp("first_visit_at", { withTimezone: true }).notNull(),
-  lastVisitAt: timestamp("last_visit_at", { withTimezone: true }).notNull(),
-  totalVisits: integer("total_visits").notNull().default(1),
-  userAgent: text("user_agent"),
-  ipAddress: text("ip_address"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var blogViews = pgTable("blog_views", {
-  id: text("id").primaryKey(),
-  visitorId: text("visitor_id").notNull(),
-  blogSlug: text("blog_slug").notNull(),
-  blogTitle: text("blog_title").notNull(),
-  viewCount: integer("view_count").notNull().default(1),
-  firstViewedAt: timestamp("first_viewed_at", { withTimezone: true }).notNull(),
-  lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var visitorsIndexes = {
-  visitorId: "idx_visitors_visitor_id",
-  lastVisitAt: "idx_visitors_last_visit_at",
-  isNewVisitor: "idx_visitors_is_new_visitor"
-};
-// src/schema/pageviews.ts
-init_pg_core();
-init_drizzle_orm();
-var pageviews = pgTable("pageviews", {
-  id: text("id").primaryKey(),
-  url: text("url").notNull(),
-  title: text("title"),
-  referrer: text("referrer"),
-  userAgent: text("user_agent"),
-  timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var pageviewsIndexes = {
-  url: "idx_pageviews_url",
-  timestamp: "idx_pageviews_timestamp",
-  createdAt: "idx_pageviews_created_at"
-};
-// src/schema/blog-metadata.ts
-init_pg_core();
-init_drizzle_orm();
-var blogMetadata = pgTable("blog_metadata", {
-  id: text("id").primaryKey(),
-  slug: text("slug").notNull().unique(),
-  title: text("title").notNull(),
-  excerpt: text("excerpt").notNull(),
-  publishedAt: timestamp("published_at", { withTimezone: true }).notNull(),
-  readTime: integer("read_time").notNull(),
-  tags: json("tags").$type().notNull().default([]),
-  category: text("category").notNull(),
-  status: text("status").notNull().default("published"),
-  author: text("author"),
-  seo: json("seo").$type(),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var blogAnalytics = pgTable("blog_analytics", {
-  id: text("id").primaryKey(),
-  slug: text("slug").notNull().unique(),
-  totalViews: integer("total_views").notNull().default(0),
-  uniqueViews: integer("unique_views").notNull().default(0),
-  recentViews: integer("recent_views").notNull().default(0),
-  lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().default(sql`NOW()`),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().default(sql`NOW()`)
-});
-var blogMetadataIndexes = {
-  slug: "idx_blog_metadata_slug",
-  publishedAt: "idx_blog_metadata_published_at",
-  category: "idx_blog_metadata_category",
-  status: "idx_blog_metadata_status",
-  tags: "idx_blog_metadata_tags"
-};
-var blogAnalyticsIndexes = {
-  slug: "idx_blog_analytics_slug",
-  totalViews: "idx_blog_analytics_total_views",
-  lastViewedAt: "idx_blog_analytics_last_viewed_at"
-};
-
-// src/schema/index.ts
-init_blog_views();
-
-// src/schema/blog-feedback.ts
-init_pg_core();
-init_drizzle_orm();
-var blogFeedback = pgTable("blog_feedback", {
-  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  slug: text("slug").notNull(),
-  emoji: varchar("emoji", { length: 10 }).notNull(),
-  message: text("message"),
-  url: text("url"),
-  userAgent: text("user_agent"),
-  ipHash: varchar("ip_hash", { length: 64 }),
-  fingerprint: varchar("fingerprint", { length: 64 }),
-  timestamp: timestamp("timestamp", { mode: "string" }).notNull().defaultNow(),
-  createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow()
-}, (table3) => ({
-  slugIdx: index("blog_feedback_slug_idx").on(table3.slug),
-  timestampIdx: index("blog_feedback_timestamp_idx").on(table3.timestamp),
-  emojiIdx: index("blog_feedback_emoji_idx").on(table3.emoji),
-  fingerprintIdx: index("blog_feedback_fingerprint_idx").on(table3.fingerprint)
-}));
-var blogFeedbackRelations = relations(blogFeedback, ({ one }) => ({}));
 // src/db/index.ts
+init_schema2();
+var storageType = process.env.STORAGE_TYPE || "memory";
 var databaseUrl = process.env.DATABASE_URL;
 var db2 = null;
 var sql4 = null;
-if (databaseUrl) {
+if (storageType === "postgres" && databaseUrl) {
   try {
     sql4 = cs(databaseUrl);
     db2 = drizzle(sql4, { schema: exports_schema, logger: true });
-    console.log("\u2705 Database configured successfully");
+    console.log("✅ Database configured successfully");
   } catch (error) {
-    console.warn("\u26A0\uFE0F Database configuration failed, using memory storage:", error);
+    console.warn("⚠️ Database configuration failed, using memory storage:", error);
   }
 } else {
-  console.log("\u2139\uFE0F No DATABASE_URL provided, using memory storage");
+  console.log("ℹ️ Using memory storage (STORAGE_TYPE != postgres or no DATABASE_URL)");
 }
 async function initializeDatabase() {
-  if (!databaseUrl || !sql4) {
-    console.log("\u2139\uFE0F Skipping database initialization - using memory storage");
+  if (storageType !== "postgres" || !databaseUrl || !sql4) {
+    console.log("ℹ️ Skipping database initialization - using memory storage");
     return;
   }
   try {
     await sql4`SELECT 1`;
-    console.log("\u2705 Database connected successfully");
+    console.log("✅ Database connected successfully");
   } catch (error) {
-    console.error("\u274C Database connection failed:", error);
+    console.error("❌ Database connection failed:", error);
     throw error;
   }
+}
+
+// src/services/visitor-service.ts
+init_visitors();
+
+// src/utils/geolocation.ts
+async function getGeolocationFromIP(ipAddress) {
+  if (!ipAddress || ipAddress === "127.0.0.1" || ipAddress === "::1" || ipAddress.startsWith("192.168.") || ipAddress.startsWith("10.")) {
+    return {
+      country: "Local",
+      region: "Local",
+      city: "Local",
+      timezone: "UTC"
+    };
+  }
+  try {
+    const response = await fetch(`https://ipapi.co/${ipAddress}/json/`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    return {
+      country: data.country_name || data.country,
+      region: data.region,
+      city: data.city,
+      timezone: data.timezone
+    };
+  } catch (error) {
+    console.warn("Failed to get geolocation data:", error);
+    return {
+      country: "Unknown",
+      region: "Unknown",
+      city: "Unknown",
+      timezone: "UTC"
+    };
+  }
+}
+function parseUserAgent(userAgent) {
+  if (!userAgent) {
+    return {};
+  }
+  const ua = userAgent.toLowerCase();
+  let browser = "Unknown";
+  if (ua.includes("chrome") && !ua.includes("edg"))
+    browser = "Chrome";
+  else if (ua.includes("firefox"))
+    browser = "Firefox";
+  else if (ua.includes("safari") && !ua.includes("chrome"))
+    browser = "Safari";
+  else if (ua.includes("edg"))
+    browser = "Edge";
+  else if (ua.includes("opera"))
+    browser = "Opera";
+  let os2 = "Unknown";
+  if (ua.includes("windows"))
+    os2 = "Windows";
+  else if (ua.includes("mac"))
+    os2 = "macOS";
+  else if (ua.includes("linux"))
+    os2 = "Linux";
+  else if (ua.includes("android"))
+    os2 = "Android";
+  else if (ua.includes("ios"))
+    os2 = "iOS";
+  let deviceType = "desktop";
+  if (ua.includes("mobile") || ua.includes("android") || ua.includes("iphone")) {
+    deviceType = "mobile";
+  } else if (ua.includes("tablet") || ua.includes("ipad")) {
+    deviceType = "tablet";
+  }
+  let platform = "Unknown";
+  if (ua.includes("windows"))
+    platform = "Windows";
+  else if (ua.includes("mac"))
+    platform = "macOS";
+  else if (ua.includes("linux"))
+    platform = "Linux";
+  else if (ua.includes("android"))
+    platform = "Android";
+  else if (ua.includes("ios"))
+    platform = "iOS";
+  return {
+    browser,
+    os: os2,
+    deviceType,
+    platform
+  };
+}
+async function enhanceVisitorData(data) {
+  const geoData = await getGeolocationFromIP(data.ipAddress);
+  const deviceData = parseUserAgent(data.userAgent);
+  return {
+    ...data,
+    ...geoData,
+    ...deviceData,
+    language: data.language || "en-US",
+    screenResolution: data.screenResolution || "Unknown"
+  };
 }
 
 // src/services/visitor-service.ts
@@ -16746,27 +16885,50 @@ function setupVisitorService() {
   return {
     async trackVisitor(data) {
       const now = new Date;
+      const enhancedData = await enhanceVisitorData(data);
       const existingVisitor = await db2.select().from(visitors).where(eq(visitors.visitorId, data.visitorId)).limit(1);
       if (existingVisitor.length > 0) {
         const updatedVisitor = await db2.update(visitors).set({
           isNewVisitor: false,
           lastVisitAt: now,
           totalVisits: existingVisitor[0].totalVisits + 1,
-          userAgent: data.userAgent,
-          ipAddress: data.ipAddress,
+          userAgent: enhancedData.userAgent,
+          ipAddress: enhancedData.ipAddress,
+          country: enhancedData.country,
+          region: enhancedData.region,
+          city: enhancedData.city,
+          timezone: enhancedData.timezone,
+          language: enhancedData.language,
+          screenResolution: enhancedData.screenResolution,
+          platform: enhancedData.platform,
+          browser: enhancedData.browser,
+          os: enhancedData.os,
+          deviceType: enhancedData.deviceType,
+          referrer: enhancedData.referrer,
           updatedAt: now
         }).where(eq(visitors.id, existingVisitor[0].id)).returning();
         return updatedVisitor[0];
       } else {
         const newVisitor = await db2.insert(visitors).values({
           id: crypto.randomUUID(),
-          visitorId: data.visitorId,
+          visitorId: enhancedData.visitorId,
           isNewVisitor: true,
           firstVisitAt: now,
           lastVisitAt: now,
           totalVisits: 1,
-          userAgent: data.userAgent,
-          ipAddress: data.ipAddress,
+          userAgent: enhancedData.userAgent,
+          ipAddress: enhancedData.ipAddress,
+          country: enhancedData.country,
+          region: enhancedData.region,
+          city: enhancedData.city,
+          timezone: enhancedData.timezone,
+          language: enhancedData.language,
+          screenResolution: enhancedData.screenResolution,
+          platform: enhancedData.platform,
+          browser: enhancedData.browser,
+          os: enhancedData.os,
+          deviceType: enhancedData.deviceType,
+          referrer: enhancedData.referrer,
           createdAt: now,
           updatedAt: now
         }).returning();
@@ -16975,9 +17137,20 @@ function setupVisitorService2() {
       const blogViewsForSlug = blogViews3.filter((view2) => view2.blogSlug === blogSlug);
       const totalViews = blogViewsForSlug.reduce((sum, view2) => sum + view2.viewCount, 0);
       const uniqueViewers = new Set(blogViewsForSlug.map((view2) => view2.visitorId)).size;
+      const newVisitorIds = new Set(visitors3.filter((v2) => v2.isNewVisitor).map((v2) => v2.visitorId));
+      let newVisitorViews = 0;
+      let returningVisitorViews = 0;
+      for (const view2 of blogViewsForSlug) {
+        if (newVisitorIds.has(view2.visitorId))
+          newVisitorViews += view2.viewCount;
+        else
+          returningVisitorViews += view2.viewCount;
+      }
       return {
         totalViews,
-        uniqueViewers
+        uniqueViewers,
+        newVisitorViews,
+        returningVisitorViews
       };
     },
     async getVisitor(visitorId) {
@@ -16994,9 +17167,9 @@ function createHybridVisitorService() {
   try {
     databaseService = setupVisitorService();
     useDatabase = true;
-    console.log("\u2705 Using database storage for visitors");
+    console.log("✅ Using database storage for visitors");
   } catch (error) {
-    console.warn("\u26A0\uFE0F Database not available, falling back to memory storage for visitors");
+    console.warn("⚠️ Database not available, falling back to memory storage for visitors");
     memoryService = setupVisitorService2();
     useDatabase = false;
   }
@@ -17505,7 +17678,7 @@ var createBlogRouter = (blogService, feedbackService) => {
           const analytics = await blogService.getAnalyticsBySlug(slug);
           return {
             slug,
-            totalViews: analytics?.viewCount || 0,
+            totalViews: analytics?.totalViews || 0,
             uniqueViews: analytics?.uniqueViews || 0
           };
         } catch (error) {
@@ -17542,12 +17715,22 @@ var createBlogRouter = (blogService, feedbackService) => {
         const { slug } = c.req.valid("param");
         const feedbackData = c.req.valid("json");
         const ip = c.req.header("x-forwarded-for") || c.req.header("x-real-ip");
-        const feedback = await feedbackService.submitFeedback(slug, feedbackData, ip);
-        return c.json({
-          success: true,
-          data: feedback,
-          message: "Feedback submitted successfully"
-        }, 201);
+        try {
+          const feedback = await feedbackService.submitFeedback(slug, feedbackData, ip);
+          return c.json({
+            success: true,
+            data: feedback,
+            message: "Feedback submitted successfully"
+          }, 201);
+        } catch (error) {
+          if (error?.code === "RATE_LIMIT") {
+            return c.json({
+              success: false,
+              message: "Rate limit exceeded. Please try again later."
+            }, 429);
+          }
+          throw error;
+        }
       } catch (error) {
         console.error("Error submitting feedback:", error);
         return c.json({
@@ -17746,6 +17929,113 @@ spotifyRouter.get("/recent", async (c) => {
   }
 });
 
+// src/routes/analytics.ts
+init_drizzle_orm();
+init_schema2();
+var createAnalyticsRouter = () => {
+  const analyticsRouter = new Hono2;
+  analyticsRouter.get("/visitors", async (c) => {
+    try {
+      const [visitorStats] = await db2.select({
+        total: sql`count(*)`,
+        new: sql`count(case when is_new_visitor = true then 1 end)`,
+        returning: sql`count(case when is_new_visitor = false then 1 end)`
+      }).from(visitors);
+      const topCountries = await db2.select({
+        country: visitors.country,
+        count: sql`count(*)`
+      }).from(visitors).where(sql`${visitors.country} IS NOT NULL`).groupBy(visitors.country).orderBy(sql`count(*) DESC`).limit(10);
+      const deviceTypes = await db2.select({
+        device: visitors.deviceType,
+        count: sql`count(*)`
+      }).from(visitors).where(sql`${visitors.deviceType} IS NOT NULL`).groupBy(visitors.deviceType).orderBy(sql`count(*) DESC`);
+      const topBrowsers = await db2.select({
+        browser: visitors.browser,
+        count: sql`count(*)`
+      }).from(visitors).where(sql`${visitors.browser} IS NOT NULL`).groupBy(visitors.browser).orderBy(sql`count(*) DESC`).limit(10);
+      const topReferrers = await db2.select({
+        referrer: visitors.referrer,
+        count: sql`count(*)`
+      }).from(visitors).groupBy(visitors.referrer).orderBy(sql`count(*) DESC`).limit(10);
+      return c.json({
+        success: true,
+        data: {
+          total: visitorStats.total,
+          new: visitorStats.new,
+          returning: visitorStats.returning,
+          countries: topCountries,
+          devices: deviceTypes,
+          browsers: topBrowsers,
+          referrers: topReferrers
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching visitor analytics:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch visitor analytics"
+      }, 500);
+    }
+  });
+  analyticsRouter.get("/pageviews", async (c) => {
+    try {
+      const [pageviewStats] = await db2.select({
+        total: sql`count(*)`,
+        today: sql`count(case when date(created_at) = current_date then 1 end)`,
+        thisWeek: sql`count(case when created_at >= date_trunc('week', current_date) then 1 end)`
+      }).from(pageviews);
+      const topPages = await db2.select({
+        url: pageviews.url,
+        count: sql`count(*)`
+      }).from(pageviews).groupBy(pageviews.url).orderBy(sql`count(*) DESC`).limit(10);
+      return c.json({
+        success: true,
+        data: {
+          total: pageviewStats.total,
+          today: pageviewStats.today,
+          thisWeek: pageviewStats.thisWeek,
+          topPages
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching pageview analytics:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch pageview analytics"
+      }, 500);
+    }
+  });
+  analyticsRouter.get("/blog", async (c) => {
+    try {
+      const [blogStats] = await db2.select({
+        total: sql`sum(total_views)`
+      }).from(blogAnalytics);
+      const topPosts = await db2.select({
+        slug: blogAnalytics.slug,
+        totalViews: blogAnalytics.totalViews
+      }).from(blogAnalytics).orderBy(sql`${blogAnalytics.totalViews} DESC`).limit(10);
+      return c.json({
+        success: true,
+        data: {
+          total: blogStats.total || 0,
+          topPosts: topPosts.map((post) => ({
+            slug: post.slug,
+            title: post.slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
+            views: post.totalViews
+          }))
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching blog analytics:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch blog analytics"
+      }, 500);
+    }
+  });
+  return analyticsRouter;
+};
+
 // src/services/pageviewService.ts
 var createPageviewService = (hybridService) => ({
   async createPageview(data) {
@@ -17764,6 +18054,7 @@ var createPageviewService = (hybridService) => ({
 
 // src/services/database-pageview-service.ts
 init_drizzle_orm();
+init_pageviews();
 function serializePageview(pageview) {
   return {
     ...pageview,
@@ -17912,9 +18203,9 @@ function createHybridPageviewService() {
   try {
     databaseService = createDatabasePageviewService();
     useDatabase = true;
-    console.log("\u2705 Using database storage for pageviews");
+    console.log("✅ Using database storage for pageviews");
   } catch (error) {
-    console.warn("\u26A0\uFE0F Database not available, falling back to memory storage for pageviews");
+    console.warn("⚠️ Database not available, falling back to memory storage for pageviews");
     useDatabase = false;
   }
   return {
@@ -17967,6 +18258,7 @@ function createHybridPageviewService() {
 
 // src/services/blog-metadata-service.ts
 init_drizzle_orm();
+init_blog_metadata();
 function createBlogMetadataService() {
   return {
     async createMetadata(data) {
@@ -18080,10 +18372,29 @@ function createBlogMetadataService() {
     },
     async incrementViewCount(slug, sessionData) {
       const now = new Date;
-      if (sessionData?.sessionId) {
-        try {
-          const { blogViews: blogViews4 } = await Promise.resolve().then(() => (init_blog_views(), exports_blog_views));
-          await db2.insert(blogViews4).values({
+      try {
+        const existingRecord = await db2.select().from(blogAnalytics).where(eq(blogAnalytics.slug, slug)).limit(1);
+        if (existingRecord.length === 0) {
+          await db2.insert(blogAnalytics).values({
+            id: crypto.randomUUID(),
+            slug,
+            totalViews: 1,
+            uniqueViews: 1,
+            recentViews: 1,
+            lastViewedAt: now,
+            createdAt: now,
+            updatedAt: now
+          });
+        } else {
+          await db2.update(blogAnalytics).set({
+            totalViews: sql`${blogAnalytics.totalViews} + 1`,
+            lastViewedAt: now,
+            updatedAt: now
+          }).where(eq(blogAnalytics.slug, slug));
+        }
+        if (sessionData?.sessionId) {
+          const { blogSessionViews } = await Promise.resolve().then(() => (init_schema2(), exports_schema));
+          await db2.insert(blogSessionViews).values({
             id: crypto.randomUUID(),
             slug,
             sessionId: sessionData.sessionId,
@@ -18092,32 +18403,13 @@ function createBlogMetadataService() {
             referrer: sessionData.referrer,
             timestamp: now,
             createdAt: now
-          });
-        } catch (error) {
-          if (error.code === "23505" || error.constraint === "blog_views_session_id_slug_unique") {
-            return false;
-          }
-          throw error;
+          }).onConflictDoNothing({ target: [blogSessionViews.sessionId, blogSessionViews.slug] });
         }
+        return true;
+      } catch (error) {
+        console.error("Error incrementing view count:", error);
+        throw error;
       }
-      const result = await db2.update(blogAnalytics).set({
-        totalViews: sql`${blogAnalytics.totalViews} + 1`,
-        lastViewedAt: now,
-        updatedAt: now
-      }).where(eq(blogAnalytics.slug, slug)).returning({ id: blogAnalytics.id });
-      if (result.length === 0) {
-        await db2.insert(blogAnalytics).values({
-          id: crypto.randomUUID(),
-          slug,
-          totalViews: 1,
-          uniqueViews: 1,
-          recentViews: 1,
-          lastViewedAt: now,
-          createdAt: now,
-          updatedAt: now
-        });
-      }
-      return true;
     },
     async getAnalyticsBySlug(slug) {
       const [result] = await db2.select().from(blogAnalytics).where(eq(blogAnalytics.slug, slug)).limit(1);
@@ -18130,6 +18422,7 @@ function createBlogMetadataService() {
 function createMemoryBlogMetadataService() {
   const metadataStore = new Map;
   const analyticsStore = new Map;
+  const viewedSessionsBySlug = new Map;
   return {
     async createMetadata(data) {
       const id = crypto.randomUUID();
@@ -18137,6 +18430,7 @@ function createMemoryBlogMetadataService() {
       const metadata = {
         id,
         ...data,
+        status: data.status ?? "published",
         createdAt: now,
         updatedAt: now
       };
@@ -18211,8 +18505,7 @@ function createMemoryBlogMetadataService() {
       }));
     },
     async incrementViewCount(slug, sessionData) {
-      const viewedSessionsKey = `viewed_sessions_${slug}`;
-      let viewedSessions = new Set(JSON.parse(globalThis[viewedSessionsKey] || "[]"));
+      const viewedSessions = viewedSessionsBySlug.get(slug) ?? new Set;
       if (sessionData?.sessionId && viewedSessions.has(sessionData.sessionId)) {
         return false;
       }
@@ -18238,7 +18531,7 @@ function createMemoryBlogMetadataService() {
       analyticsStore.set(slug, updated);
       if (sessionData?.sessionId) {
         viewedSessions.add(sessionData.sessionId);
-        globalThis[viewedSessionsKey] = JSON.stringify(Array.from(viewedSessions));
+        viewedSessionsBySlug.set(slug, viewedSessions);
       }
       return true;
     },
@@ -18250,6 +18543,7 @@ function createMemoryBlogMetadataService() {
 
 // src/services/blog-feedback-service.ts
 init_drizzle_orm();
+init_blog_feedback();
 import crypto2 from "crypto";
 function createBlogFeedbackService(db3) {
   function hashIP(ip) {
@@ -18262,20 +18556,46 @@ function createBlogFeedbackService(db3) {
   async function submitFeedback(slug, data, ip) {
     const ipHash = ip ? hashIP(ip) : undefined;
     const fingerprint = data.userAgent && ip ? generateFingerprint(data.userAgent, ip) : undefined;
-    const [feedback] = await db3.insert(blogFeedback).values({
-      slug,
-      emoji: data.emoji,
-      message: data.message,
-      url: data.url,
-      userAgent: data.userAgent,
-      ipHash,
-      fingerprint
-    }).returning();
-    return {
-      emoji: feedback.emoji,
-      message: feedback.message || undefined,
-      timestamp: feedback.timestamp
-    };
+    if (ipHash) {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const recent = await db3.select({ count: sql`count(*)`.mapWith(Number) }).from(blogFeedback).where(and(eq(blogFeedback.slug, slug), eq(blogFeedback.ipHash, ipHash), gte(blogFeedback.timestamp, since)));
+      const recentCount = Array.isArray(recent) ? recent[0]?.count || 0 : 0;
+      if (recentCount >= 3) {
+        throw Object.assign(new Error("Rate limit exceeded"), { code: "RATE_LIMIT" });
+      }
+    }
+    try {
+      const [inserted] = await db3.insert(blogFeedback).values({
+        slug,
+        emoji: data.emoji,
+        message: data.message,
+        url: data.url,
+        userAgent: data.userAgent,
+        ipHash,
+        fingerprint
+      }).returning();
+      return {
+        emoji: inserted.emoji,
+        message: inserted.message || undefined,
+        timestamp: inserted.timestamp
+      };
+    } catch (err) {
+      const isUnique = err?.code === "23505" || String(err?.message || "").includes("slug_fingerprint");
+      if (!isUnique || !fingerprint)
+        throw err;
+      const [updated] = await db3.update(blogFeedback).set({
+        emoji: data.emoji,
+        message: data.message,
+        url: data.url,
+        userAgent: data.userAgent,
+        timestamp: sql`NOW()`
+      }).where(and(eq(blogFeedback.slug, slug), eq(blogFeedback.fingerprint, fingerprint))).returning();
+      return {
+        emoji: updated.emoji,
+        message: updated.message || undefined,
+        timestamp: updated.timestamp
+      };
+    }
   }
   async function getFeedbackBySlug(slug) {
     const allFeedback = await db3.select().from(blogFeedback).where(eq(blogFeedback.slug, slug)).orderBy(desc(blogFeedback.timestamp));
@@ -18283,7 +18603,8 @@ function createBlogFeedbackService(db3) {
       acc[feedback.emoji] = (acc[feedback.emoji] || 0) + 1;
       return acc;
     }, {});
-    const reactions = Object.entries(reactionCounts).map(([emoji, count]) => ({ emoji, count })).sort((a2, b2) => b2.count - a2.count);
+    const reactionsEntries = Object.entries(reactionCounts).map(([emoji, count]) => ({ emoji, count }));
+    const reactions = reactionsEntries.sort((a2, b2) => b2.count - a2.count);
     const recentFeedback = allFeedback.slice(0, 10).map((feedback) => ({
       emoji: feedback.emoji,
       message: feedback.message || undefined,
@@ -18371,6 +18692,7 @@ var createApp = async () => {
   app.route("/api/pageviews", createPageviewsRouter(pageviewService));
   app.route("/api/blog", createBlogRouter(blogMetadataService, blogFeedbackService));
   app.route("/api/spotify", spotifyRouter);
+  app.route("/api/analytics", createAnalyticsRouter());
   app.get("/", async (c) => {
     try {
       const fs = await import("fs/promises");
@@ -18400,18 +18722,11 @@ var createApp = async () => {
 };
 var port = process.env.PORT || 4001;
 var appInstance = null;
-createApp().then((app) => {
-  appInstance = app;
-  console.log(`\uD83D\uDE80 Server running on http://localhost:${port}`);
-}).catch((error) => {
-  console.error("Failed to start server:", error);
-  process.exit(1);
-});
 var src_default = {
   port,
-  fetch: (request) => {
+  fetch: async (request) => {
     if (!appInstance) {
-      throw new Error("Server not initialized yet");
+      appInstance = await createApp();
     }
     return appInstance.fetch(request);
   }

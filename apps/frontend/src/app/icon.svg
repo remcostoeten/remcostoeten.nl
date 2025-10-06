@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b0f19"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect x="32" y="32" width="448" height="448" rx="88" fill="url(#bg)"/>
+
+  <g filter="url(#shadow)">
+    <!-- Stylized R monogram -->
+    <g fill="url(#accent)">
+      <!-- Stem -->
+      <rect x="176" y="128" width="88" height="264" rx="44"/>
+      <!-- Bowl -->
+      <circle cx="264" cy="200" r="84"/>
+      <!-- Leg -->
+      <path d="M212 304 L332 440 C344 454 340 472 322 472 L276 472 C268 472 260 468 256 462 L188 356 Z"/>
+    </g>
+    <!-- Counter (hole) of the bowl, punched with background color -->
+    <circle cx="264" cy="200" r="40" fill="#0b0f19"/>
+  </g>
+
+  <!-- Subtle highlight ring for depth -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#ffffff" stroke-opacity="0.06" stroke-width="6"/>
+</svg>
+
+

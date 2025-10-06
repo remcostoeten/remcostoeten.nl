@@ -57,3 +57,6 @@ apps/frontend/out/_next/static/chunks/main-d9c5a1497a39e345.js
 
 # Local Netlify folder
 .netlify
+
+
+tmp/
