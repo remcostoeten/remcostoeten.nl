@@ -11,7 +11,7 @@ import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
-import { FeedbackWidget } from '@/components/blog/feedback';
+import { BlogFeedback } from "@/components/blog/blog-feedback";
 
 // Force dynamic rendering to avoid React version conflicts during static generation
 export const dynamic = 'force-dynamic'
@@ -330,7 +330,7 @@ export default async function PostPage(props: TPostPageProps) {
               <h2 className="text-2xl font-bold text-foreground mb-2">Was this post helpful?</h2>
               <p className="text-muted-foreground">Your feedback helps us improve our content</p>
             </div>
-            <FeedbackWidget slug={params.slug} />
+            <BlogFeedback slug={params.slug} />
           </div>
         </div>
 
