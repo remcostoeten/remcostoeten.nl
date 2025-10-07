@@ -6,11 +6,13 @@ import { createPageviewsRouter } from './routes/pageviews';
 import { createBlogRouter } from './routes/blog';
 import { spotifyRouter } from './routes/spotify';
 import { createAnalyticsRouter } from './routes/analytics';
+import { createContactRouter } from './routes/contact';
 import { createPageviewService } from './services/pageviewService';
 import { createHybridPageviewService } from './services/hybrid-pageview-service';
 import { createBlogMetadataService } from './services/blog-metadata-service';
 import { createMemoryBlogMetadataService } from './services/memory-blog-metadata-service';
 import { createBlogFeedbackService } from './services/blog-feedback-service';
+import { createContactMessagesService } from './services/contact-messages-service';
 
 import { db } from './db';
 import { initializeDatabase } from './db';
@@ -34,6 +36,9 @@ export const createApp = async () => {
 
   // Initialize feedback service (only with database)
   const blogFeedbackService = db ? createBlogFeedbackService(db) : undefined;
+
+  // Initialize contact messages service (only with database)
+  const contactMessagesService = db ? createContactMessagesService(db) : undefined;
 
   // Middleware
   app.use('*', logger());
@@ -86,6 +91,10 @@ export const createApp = async () => {
   app.route('/api/blog', createBlogRouter(blogMetadataService, blogFeedbackService));
   app.route('/api/spotify', spotifyRouter);
   app.route('/api/analytics', createAnalyticsRouter());
+  
+  if (contactMessagesService) {
+    app.route('/api/contact', createContactRouter(contactMessagesService));
+  }
 
   // Serve the beautiful API documentation page
   app.get('/', async (c) => {
