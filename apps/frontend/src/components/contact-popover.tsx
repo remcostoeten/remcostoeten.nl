@@ -20,7 +20,8 @@ export function ContactPopover({ children }: TProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/contact', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001';
+      const response = await fetch(`${apiUrl}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
