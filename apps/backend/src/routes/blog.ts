@@ -435,6 +435,39 @@ export const createBlogRouter = (
         }
       }
     );
+
+    // DELETE /api/blog/feedback/:slug - Remove vote
+    blogRouter.delete(
+      '/feedback/:slug',
+      zValidator('param', slugParamSchema),
+      async (c) => {
+        try {
+          const { slug } = c.req.valid('param');
+          const fingerprint = c.req.query('fingerprint');
+          
+          if (!fingerprint) {
+            return c.json({
+              success: false,
+              message: 'Fingerprint is required'
+            }, 400);
+          }
+          
+          const removed = await feedbackService.removeVote(slug, fingerprint);
+          
+          return c.json({
+            success: true,
+            removed,
+            message: removed ? 'Vote removed successfully' : 'No vote found to remove'
+          });
+        } catch (error) {
+          console.error('Error removing vote:', error);
+          return c.json({
+            success: false,
+            message: 'Failed to remove vote'
+          }, 500);
+        }
+      }
+    );
   }
 
   return blogRouter;
