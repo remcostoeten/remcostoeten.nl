@@ -6031,6 +6031,23 @@ var init_blog_feedback = __esm(() => {
   blogFeedbackRelations = relations(blogFeedback, ({ one }) => ({}));
 });
 
+// src/schema/contact-messages.ts
+var contactMessages;
+var init_contact_messages = __esm(() => {
+  init_pg_core();
+  contactMessages = pgTable("contact_messages", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    name: varchar("name", { length: 100 }).notNull(),
+    contact: varchar("contact", { length: 200 }).notNull(),
+    message: text("message").notNull(),
+    read: timestamp("read", { mode: "string" }),
+    createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow()
+  }, (table3) => ({
+    createdAtIdx: index("contact_messages_created_at_idx").on(table3.createdAt),
+    readIdx: index("contact_messages_read_idx").on(table3.read)
+  }));
+});
+
 // src/schema/index.ts
 var exports_schema = {};
 __export(exports_schema, {
@@ -6038,6 +6055,7 @@ __export(exports_schema, {
   visitors: () => visitors,
   pageviewsIndexes: () => pageviewsIndexes,
   pageviews: () => pageviews,
+  contactMessages: () => contactMessages,
   blogViewsIndexes: () => blogViewsIndexes,
   blogViews: () => blogViews,
   blogSessionViewsIndexes: () => blogViewsIndexes2,
@@ -6055,6 +6073,7 @@ var init_schema2 = __esm(() => {
   init_blog_metadata();
   init_blog_views();
   init_blog_feedback();
+  init_contact_messages();
 });
 
 // src/utils/session.ts
@@ -18060,6 +18079,168 @@ var createAnalyticsRouter = () => {
   return analyticsRouter;
 };
 
+// src/routes/contact.ts
+var contactMessageSchema = exports_external.object({
+  name: exports_external.string().min(1, "Name is required").max(100),
+  contact: exports_external.string().min(1, "Contact information is required").max(200),
+  message: exports_external.string().min(10, "Message must be at least 10 characters").max(1000)
+});
+var idParamSchema = exports_external.object({
+  id: exports_external.string().transform(Number)
+});
+var querySchema = exports_external.object({
+  limit: exports_external.string().transform(Number).optional(),
+  offset: exports_external.string().transform(Number).optional(),
+  unreadOnly: exports_external.string().transform((val) => val === "true").optional()
+});
+function createContactRouter(contactService) {
+  const contactRouter = new Hono2;
+  contactRouter.post("/", zValidator("json", contactMessageSchema), async (c) => {
+    try {
+      const messageData = c.req.valid("json");
+      const message = await contactService.createMessage(messageData);
+      return c.json({
+        success: true,
+        data: message,
+        message: "Message received successfully"
+      }, 201);
+    } catch (error) {
+      console.error("Error creating contact message:", error);
+      return c.json({
+        success: false,
+        message: "Failed to submit message"
+      }, 500);
+    }
+  });
+  contactRouter.get("/", zValidator("query", querySchema), async (c) => {
+    try {
+      const query = c.req.valid("query");
+      const messages = await contactService.getAllMessages(query);
+      const unreadCount = await contactService.getUnreadCount();
+      return c.json({
+        success: true,
+        data: {
+          messages,
+          unreadCount,
+          total: messages.length
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching contact messages:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch messages"
+      }, 500);
+    }
+  });
+  contactRouter.get("/:id", zValidator("param", idParamSchema), async (c) => {
+    try {
+      const { id } = c.req.valid("param");
+      const message = await contactService.getMessageById(id);
+      if (!message) {
+        return c.json({
+          success: false,
+          message: "Message not found"
+        }, 404);
+      }
+      return c.json({
+        success: true,
+        data: message
+      });
+    } catch (error) {
+      console.error("Error fetching contact message:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch message"
+      }, 500);
+    }
+  });
+  contactRouter.patch("/:id/read", zValidator("param", idParamSchema), async (c) => {
+    try {
+      const { id } = c.req.valid("param");
+      const message = await contactService.markAsRead(id);
+      if (!message) {
+        return c.json({
+          success: false,
+          message: "Message not found"
+        }, 404);
+      }
+      return c.json({
+        success: true,
+        data: message,
+        message: "Message marked as read"
+      });
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      return c.json({
+        success: false,
+        message: "Failed to update message"
+      }, 500);
+    }
+  });
+  contactRouter.patch("/:id/unread", zValidator("param", idParamSchema), async (c) => {
+    try {
+      const { id } = c.req.valid("param");
+      const message = await contactService.markAsUnread(id);
+      if (!message) {
+        return c.json({
+          success: false,
+          message: "Message not found"
+        }, 404);
+      }
+      return c.json({
+        success: true,
+        data: message,
+        message: "Message marked as unread"
+      });
+    } catch (error) {
+      console.error("Error marking message as unread:", error);
+      return c.json({
+        success: false,
+        message: "Failed to update message"
+      }, 500);
+    }
+  });
+  contactRouter.delete("/:id", zValidator("param", idParamSchema), async (c) => {
+    try {
+      const { id } = c.req.valid("param");
+      const deleted = await contactService.deleteMessage(id);
+      if (!deleted) {
+        return c.json({
+          success: false,
+          message: "Message not found"
+        }, 404);
+      }
+      return c.json({
+        success: true,
+        message: "Message deleted successfully"
+      });
+    } catch (error) {
+      console.error("Error deleting contact message:", error);
+      return c.json({
+        success: false,
+        message: "Failed to delete message"
+      }, 500);
+    }
+  });
+  contactRouter.get("/stats/unread", async (c) => {
+    try {
+      const count = await contactService.getUnreadCount();
+      return c.json({
+        success: true,
+        data: { unreadCount: count }
+      });
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+      return c.json({
+        success: false,
+        message: "Failed to fetch unread count"
+      }, 500);
+    }
+  });
+  return contactRouter;
+}
+
 // src/services/pageviewService.ts
 var createPageviewService = (hybridService) => ({
   async createPageview(data) {
@@ -18678,6 +18859,53 @@ function createBlogFeedbackService(db3) {
   };
 }
 
+// src/services/contact-messages-service.ts
+init_drizzle_orm();
+init_contact_messages();
+function createContactMessagesService(db3) {
+  async function createMessage(data) {
+    const [message] = await db3.insert(contactMessages).values(data).returning();
+    return message;
+  }
+  async function getAllMessages(options) {
+    const { limit = 50, offset = 0, unreadOnly = false } = options || {};
+    let query = db3.select().from(contactMessages).orderBy(desc(contactMessages.createdAt));
+    if (unreadOnly) {
+      query = query.where(isNull(contactMessages.read));
+    }
+    return await query.limit(limit).offset(offset);
+  }
+  async function getMessageById(id) {
+    const [message] = await db3.select().from(contactMessages).where(eq(contactMessages.id, id)).limit(1);
+    return message || null;
+  }
+  async function markAsRead(id) {
+    const [message] = await db3.update(contactMessages).set({ read: new Date().toISOString() }).where(eq(contactMessages.id, id)).returning();
+    return message || null;
+  }
+  async function markAsUnread(id) {
+    const [message] = await db3.update(contactMessages).set({ read: null }).where(eq(contactMessages.id, id)).returning();
+    return message || null;
+  }
+  async function deleteMessage(id) {
+    const result = await db3.delete(contactMessages).where(eq(contactMessages.id, id)).returning();
+    return result.length > 0;
+  }
+  async function getUnreadCount() {
+    const result = await db3.select({ count: db3.count() }).from(contactMessages).where(isNull(contactMessages.read));
+    return result[0]?.count || 0;
+  }
+  return {
+    createMessage,
+    getAllMessages,
+    getMessageById,
+    markAsRead,
+    markAsUnread,
+    deleteMessage,
+    getUnreadCount
+  };
+}
+
 // src/index.ts
 var createApp = async () => {
   const app = new Hono2;
@@ -18690,6 +18918,7 @@ var createApp = async () => {
   const pageviewService = createPageviewService(hybridPageviewService);
   const blogMetadataService = db2 ? createBlogMetadataService() : createMemoryBlogMetadataService();
   const blogFeedbackService = db2 ? createBlogFeedbackService(db2) : undefined;
+  const contactMessagesService = db2 ? createContactMessagesService(db2) : undefined;
   app.use("*", logger());
   const corsOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim()) : ["http://localhost:3000", "http://localhost:4001"];
   app.use("*", cors({
@@ -18722,6 +18951,9 @@ var createApp = async () => {
   app.route("/api/blog", createBlogRouter(blogMetadataService, blogFeedbackService));
   app.route("/api/spotify", spotifyRouter);
   app.route("/api/analytics", createAnalyticsRouter());
+  if (contactMessagesService) {
+    app.route("/api/contact", createContactRouter(contactMessagesService));
+  }
   app.get("/", async (c) => {
     try {
       const fs = await import("fs/promises");

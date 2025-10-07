@@ -12,6 +12,8 @@ import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
 import { FixedFeedbackWidget } from "@/components/blog/fixed-feedback-widget";
+import { ScrollProgressIndicator } from '@/components/blog/scroll-progress-indicator';
+import { ZenModeToggle } from '@/components/blog/zen-mode-toggle';
 
 // Force dynamic rendering to avoid React version conflicts during static generation
 export const dynamic = 'force-dynamic'
@@ -149,47 +151,8 @@ export default async function PostPage(props: TPostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      {/* Initialize Zen Mode */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              const savedZenMode = localStorage.getItem('zen-mode');
-              if (savedZenMode === 'true') {
-                document.body.classList.add('zen-mode');
-              }
-            })();
-          `
-        }}
-      />
-
-      {/* Zen Mode Toggle - Client-side only */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              if (typeof window !== 'undefined') {
-                const toggle = document.createElement('div');
-                toggle.className = 'fixed top-6 right-6 z-50';
-                toggle.innerHTML = \`
-                  <button
-                    onclick="document.body.classList.toggle('zen-mode'); localStorage.setItem('zen-mode', document.body.classList.contains('zen-mode').toString());"
-                    class="p-3 rounded-xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-accent/10 hover:border-accent/50 group"
-                    title="Toggle Zen Mode"
-                    aria-label="Toggle Zen Mode"
-                  >
-                    <svg class="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                  </button>
-                \`;
-                document.body.appendChild(toggle);
-              }
-            })();
-          `
-        }}
-      />
+      <ScrollProgressIndicator />
+      <ZenModeToggle />
 
       <div className="max-w-7xl mx-auto py-8 px-5 sm:px-6">
         <BreadcrumbNavigation items={breadcrumbs} className="mb-8 zen-mode:hidden" />

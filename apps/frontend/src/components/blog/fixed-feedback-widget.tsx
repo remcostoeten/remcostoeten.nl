@@ -107,8 +107,9 @@ export function FixedFeedbackWidget({ slug }: TProps) {
       );
 
       if (response.success && response.data) {
+        const reactionsData = Array.isArray(response.data) ? response.data : [];
         const mergedReactions = EMOJIS.map(defaultEmoji => {
-          const found = response.data?.find(r => r.emoji === defaultEmoji.emoji);
+          const found = reactionsData.find(r => r.emoji === defaultEmoji.emoji);
           return {
             ...defaultEmoji,
             count: found?.count || 0,

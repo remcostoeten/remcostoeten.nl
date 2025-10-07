@@ -54,22 +54,22 @@ export function useScrollAwareVisibility(options: TScrollAwareOptions = {}): TSc
       
       setScrollPercentage(percentage);
 
+      let newDirection: TScrollDirection = 'none';
       if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
-        setScrollDirection('down');
+        newDirection = 'down';
       } else if (currentScrollY < lastScrollY.current) {
-        setScrollDirection('up');
-      } else {
-        setScrollDirection('none');
+        newDirection = 'up';
       }
+      setScrollDirection(newDirection);
 
       const shouldShow = percentage >= threshold;
       
       if (shouldShow) {
-        if (hideOnScrollDown && scrollDirection === 'down') {
+        if (hideOnScrollDown && newDirection === 'down') {
           setIsVisible(false);
-        } else if (showOnScrollUp && currentScrollY < lastScrollY.current) {
+        } else if (showOnScrollUp && newDirection === 'up') {
           setIsVisible(true);
-        } else if (scrollDirection === 'none') {
+        } else if (newDirection === 'none' && percentage >= threshold) {
           setIsVisible(true);
         }
       } else {
@@ -109,7 +109,7 @@ export function useScrollAwareVisibility(options: TScrollAwareOptions = {}): TSc
         clearTimeout(scrollTimeout.current);
       }
     };
-  }, [threshold, hideOnScrollDown, showOnScrollUp, debounceMs, scrollDirection]);
+  }, [threshold, hideOnScrollDown, showOnScrollUp, debounceMs]);
 
   return {
     isVisible,
