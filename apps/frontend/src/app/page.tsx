@@ -1,7 +1,6 @@
 import {
   AboutSection,
   ProjectsSection,
-  ContactSection,
   Footer,
 } from "@/modules/sections";
 
@@ -38,7 +37,6 @@ export default async function HomePage() {
         <LatestActivitySection />
         <ProjectsSection />
         <BlogSection />
-        <ContactSection />
         <Footer />
       </div>
     </main>
