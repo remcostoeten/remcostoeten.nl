@@ -8,6 +8,7 @@ import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_a
 import { Analytics } from "@vercel/analytics/next";
 import { ClientOnlyWrapper } from "@/components/client-only-wrapper";
 import { TimezoneSection } from "@/modules/sections";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -249,6 +250,7 @@ export default function RootLayout({
           </TooltipProvider>
           <TimezoneSection />
         </ClientOnlyWrapper>
+        <Toaster richColors position="bottom-right" />
         <Analytics />
         <SpeedInsights />
       </body>
