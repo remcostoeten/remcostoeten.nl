@@ -17795,6 +17795,30 @@ var createBlogRouter = (blogService, feedbackService) => {
         }, 500);
       }
     });
+    blogRouter.delete("/feedback/:slug", zValidator("param", slugParamSchema2), async (c) => {
+      try {
+        const { slug } = c.req.valid("param");
+        const fingerprint = c.req.query("fingerprint");
+        if (!fingerprint) {
+          return c.json({
+            success: false,
+            message: "Fingerprint is required"
+          }, 400);
+        }
+        const removed = await feedbackService.removeVote(slug, fingerprint);
+        return c.json({
+          success: true,
+          removed,
+          message: removed ? "Vote removed successfully" : "No vote found to remove"
+        });
+      } catch (error) {
+        console.error("Error removing vote:", error);
+        return c.json({
+          success: false,
+          message: "Failed to remove vote"
+        }, 500);
+      }
+    });
   }
   return blogRouter;
 };
@@ -18549,18 +18573,18 @@ function createBlogFeedbackService(db3) {
   function hashIP(ip) {
     return crypto2.createHash("sha256").update(ip).digest("hex");
   }
-  function generateFingerprint(userAgent, ip) {
-    const data = `${userAgent}-${ip}`;
+  function generateFingerprint(userAgent, ip, clientFingerprint) {
+    const data = `${userAgent}-${ip}-${clientFingerprint || ""}`;
     return crypto2.createHash("sha256").update(data).digest("hex");
   }
   async function submitFeedback(slug, data, ip) {
     const ipHash = ip ? hashIP(ip) : undefined;
-    const fingerprint = data.userAgent && ip ? generateFingerprint(data.userAgent, ip) : undefined;
+    const fingerprint = generateFingerprint(data.userAgent || "", ip || "", data.fingerprint);
     if (ipHash) {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       const recent = await db3.select({ count: sql`count(*)`.mapWith(Number) }).from(blogFeedback).where(and(eq(blogFeedback.slug, slug), eq(blogFeedback.ipHash, ipHash), gte(blogFeedback.timestamp, since)));
       const recentCount = Array.isArray(recent) ? recent[0]?.count || 0 : 0;
-      if (recentCount >= 3) {
+      if (recentCount >= 5) {
         throw Object.assign(new Error("Rate limit exceeded"), { code: "RATE_LIMIT" });
       }
     }
@@ -18596,6 +18620,10 @@ function createBlogFeedbackService(db3) {
         timestamp: updated.timestamp
       };
     }
+  }
+  async function removeVote(slug, fingerprint) {
+    const result = await db3.delete(blogFeedback).where(and(eq(blogFeedback.slug, slug), eq(blogFeedback.fingerprint, fingerprint))).returning();
+    return result.length > 0;
   }
   async function getFeedbackBySlug(slug) {
     const allFeedback = await db3.select().from(blogFeedback).where(eq(blogFeedback.slug, slug)).orderBy(desc(blogFeedback.timestamp));
@@ -18640,6 +18668,7 @@ function createBlogFeedbackService(db3) {
   }
   return {
     submitFeedback,
+    removeVote,
     getFeedbackBySlug,
     getFeedbackReactions,
     getUserFeedback,
