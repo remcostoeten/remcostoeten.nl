@@ -142,6 +142,7 @@ export const API = {
     },
     // Feedback endpoints
     feedback: {
+      all: () => apiUrl('/blog/feedback'),
       submit: (slug: string) => apiUrl(`/blog/feedback/${slug}`),
       get: (slug: string) => apiUrl(`/blog/feedback/${slug}`),
       reactions: (slug: string) => apiUrl(`/blog/feedback/${slug}/reactions`),

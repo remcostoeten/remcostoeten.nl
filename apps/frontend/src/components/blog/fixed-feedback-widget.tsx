@@ -84,6 +84,7 @@ export function FixedFeedbackWidget({ slug }: TProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [totalFeedbackCount, setTotalFeedbackCount] = useState<number>(0);
 
   const {
     isVisible,
@@ -116,6 +117,9 @@ export function FixedFeedbackWidget({ slug }: TProps) {
           };
         });
         setReactions(mergedReactions);
+        
+        const totalCount = mergedReactions.reduce((sum, r) => sum + r.count, 0);
+        setTotalFeedbackCount(totalCount);
       }
     } catch (err) {
       console.error('Failed to load reactions:', err);
@@ -286,9 +290,16 @@ export function FixedFeedbackWidget({ slug }: TProps) {
               )}
             >
               <div className="flex items-center justify-between p-3 border-b border-border/30">
-                <h3 className="text-sm font-semibold text-foreground">
-                  {isExpanded ? 'Add your thoughts' : 'Was this helpful?'}
-                </h3>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    {isExpanded ? 'Add your thoughts' : 'Was this helpful?'}
+                  </h3>
+                  {totalFeedbackCount > 0 && !isExpanded && (
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {totalFeedbackCount} {totalFeedbackCount === 1 ? 'reaction' : 'reactions'} so far
+                    </p>
+                  )}
+                </div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setIsMinimized(true)}

@@ -312,6 +312,38 @@ export const createBlogRouter = (
       userAgent: z.string().optional(),
     });
 
+    const feedbackQuerySchema = z.object({
+      limit: z.string().transform(Number).optional(),
+      offset: z.string().transform(Number).optional(),
+    });
+
+    // GET /api/blog/feedback - Get all feedback
+    blogRouter.get(
+      '/feedback',
+      zValidator('query', feedbackQuerySchema),
+      async (c) => {
+        try {
+          const query = c.req.valid('query');
+          const limit = query.limit || 100;
+          const offset = query.offset || 0;
+          
+          const allFeedback = await feedbackService.getAllFeedback(limit, offset);
+          
+          return c.json({
+            success: true,
+            data: allFeedback,
+            count: allFeedback.length
+          });
+        } catch (error) {
+          console.error('Error fetching all feedback:', error);
+          return c.json({
+            success: false,
+            message: 'Failed to fetch feedback'
+          }, 500);
+        }
+      }
+    );
+
     // POST /api/blog/feedback/:slug - Submit feedback
     blogRouter.post(
       '/feedback/:slug',
