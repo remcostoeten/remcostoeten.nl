@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { toast } from 'sonner';
 
 type TProps = {
   children: React.ReactNode;
@@ -11,14 +12,43 @@ export function ContactPopover({ children }: TProps) {
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    console.log('Contact form submission:', { name, contact, message });
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, contact, message }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(data.message || 'Message sent successfully!');
+        setName('');
+        setContact('');
+        setMessage('');
+        setIsOpen(false);
+      } else {
+        toast.error(data.message || 'Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast.error('An unexpected error occurred. Please try again later.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         {children}
       </PopoverTrigger>
@@ -43,6 +73,7 @@ export function ContactPopover({ children }: TProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                disabled={isLoading}
                 required
               />
             </div>
@@ -58,6 +89,7 @@ export function ContactPopover({ children }: TProps) {
                 value={contact}
                 onChange={(e) => setContact(e.target.value)}
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                disabled={isLoading}
                 required
               />
             </div>
@@ -73,6 +105,7 @@ export function ContactPopover({ children }: TProps) {
                 onChange={(e) => setMessage(e.target.value)}
                 rows={4}
                 className="w-full px-3 py-2 text-sm rounded-md border border-input bg-background ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 resize-none"
+                disabled={isLoading}
                 required
               />
             </div>
@@ -80,9 +113,10 @@ export function ContactPopover({ children }: TProps) {
 
           <button
             type="submit"
-            className="w-full px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            disabled={isLoading}
+            className="w-full px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Send message
+            {isLoading ? 'Sending...' : 'Send message'}
           </button>
         </form>
       </PopoverContent>
