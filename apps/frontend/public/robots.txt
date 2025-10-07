@@ -12,6 +12,7 @@ Crawl-delay: 0
 Disallow: /api/
 Disallow: /_next/
 Disallow: /admin/
+Disallow: /contact/messages/
 
 # Allow all important pages
 Allow: /posts/

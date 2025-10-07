@@ -50,15 +50,24 @@ export function BreadcrumbNavigation({
       )}
 
       <Breadcrumb className={className}>
-        <BreadcrumbList>
+        <BreadcrumbList className="overflow-x-auto scrollbar-hide">
           {items.map((item, index) => (
             <React.Fragment key={`${item.href}-${index}`}>
-              <BreadcrumbItem>
+              <BreadcrumbItem className="shrink-0">
                 {item.current ? (
-                  <BreadcrumbPage className="text-foreground font-medium">{item.label}</BreadcrumbPage>
+                  <BreadcrumbPage 
+                    className="text-foreground font-medium max-w-[200px] sm:max-w-[300px] md:max-w-none truncate block" 
+                    title={item.label}
+                  >
+                    {item.label}
+                  </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
-                    <Link href={item.href} className="hover:text-accent transition-colors">
+                    <Link 
+                      href={item.href} 
+                      className="hover:text-accent transition-colors max-w-[120px] sm:max-w-[200px] md:max-w-none truncate block"
+                      title={item.label}
+                    >
                       {item.label}
                     </Link>
                   </BreadcrumbLink>
@@ -66,7 +75,7 @@ export function BreadcrumbNavigation({
               </BreadcrumbItem>
 
               {/* Add separator between items (except after the last item) */}
-              {index < items.length - 1 && <BreadcrumbSeparator>{separator}</BreadcrumbSeparator>}
+              {index < items.length - 1 && <BreadcrumbSeparator className="shrink-0">{separator}</BreadcrumbSeparator>}
             </React.Fragment>
           ))}
         </BreadcrumbList>

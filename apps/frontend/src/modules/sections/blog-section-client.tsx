@@ -10,6 +10,7 @@ import { AnimatedNumberIntersection } from "@/components/ui/animated-number-inte
 type TBlogPost = {
   slug: string;
   title: string;
+  excerpt: string;
   publishedAt: string;
   readTime: number;
 };
@@ -72,11 +73,17 @@ export function BlogSectionClient({ posts, totalPosts }: TBlogSectionClientProps
                     </span>
 
                     <div className="flex-1">
-                      <h3 className="font-medium text-lg text-foreground group-hover:text-accent transition-colors duration-200 line-clamp-2 leading-snug min-h-[3.5rem] flex items-center">
+                      <h3 className="font-medium text-lg text-foreground group-hover:text-accent transition-colors duration-200 leading-snug">
                         {post.title}
                       </h3>
 
-                      <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-muted-foreground">
+                      {post.excerpt && (
+                        <p className="text-xs text-muted-foreground/60 line-clamp-2 mt-1.5 leading-relaxed text-balance">
+                          {post.excerpt}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-muted-foreground">
                         <MetaItem icon={Calendar}>
                           <AnimatedDate
                             date={post.publishedAt}

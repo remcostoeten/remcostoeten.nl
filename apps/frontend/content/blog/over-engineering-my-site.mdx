@@ -1,7 +1,7 @@
 ---
 title: "Over-engineering my site and neuronal deficincy strikes again"
 excerpt: "A candid look at how I turned a simple personal website into an over-engineered masterpiece of unnecessary complexity, complete with custom analytics, real-time features, and way too many moving parts. And how neuronal deficincy strikes again."
-publishedAt: "06-10-2025"
+publishedAt: "2025-10-06"
 author: "Remco Stoeten"
 tags:
   [
@@ -20,11 +20,11 @@ You know that feeling when you start a simple project and somehow end up with a 
 
 Started off with getting design inspiration which took me days. Or well.. This is, without joking, near the 20th iteration of my personal site. Some well over 100 commits. Never, ever am I happy with my designs. Although [this one](https://minimal-graphql-portfolio-git-master-remcostoeten.vercel.app/), was quite cool. [This one](https://nextjs-lucia-neon-postgresql-git-294536-remcostoetens-projects.vercel.app/), although I ended up using it for a dashboard, is probably the sickest design I've built.
 
-### The initial plan
+### Initial plan
 
 Haven't had a personal site for a year. Lately loving the minimalist design, to the point and anti Awwwards. Built a personal site with a minimalist look, dark, and a system to render markdown files as a blog.
 
-### Going off track
+### Off track
 
 Suddenly I get the urge to build something complex. I always hop around 3 projects because of self-induced neuron deficiency. How cool would it be to build a CMS that allows to write blogs via a TipTap editor that writes to filesystem as `.mdx`. Yeah cool. But not doable in a serverless environment. And also F rich text editors man. Working with editors is such a pain.
 
@@ -54,7 +54,7 @@ But I never want to do that again. So I built [Fync](https://github.com/remcosto
 
 > In the meanwhile I started building a Tauri desktop notes application. And a local-first, near instantaneous web Linear clone. Both are scrapped.
 
-### Need to query data, right?
+### Query data
 
 Hmm I query often, I always use drizzle-orm. I can't remember the syntax, ever. Why don't I build a simple abstraction for it that allows me to do this:
 

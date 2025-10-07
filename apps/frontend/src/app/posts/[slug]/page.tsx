@@ -11,7 +11,7 @@ import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
 import { TOCLayoutRedesign } from '@/components/blog/toc-layout-redesign';
-import { BlogFeedback } from "@/components/blog/blog-feedback";
+import { FixedFeedbackWidget } from "@/components/blog/fixed-feedback-widget";
 
 // Force dynamic rendering to avoid React version conflicts during static generation
 export const dynamic = 'force-dynamic'
@@ -323,30 +323,20 @@ export default async function PostPage(props: TPostPageProps) {
           </article>
         </div>
 
-        {/* Integrated Feedback Section */}
-        <div className="mt-16 border-t border-border/50 pt-12 zen-mode:hidden">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Was this post helpful?</h2>
-              <p className="text-muted-foreground">Your feedback helps us improve our content</p>
-            </div>
-            <BlogFeedback slug={params.slug} />
-          </div>
-        </div>
 
         {relatedPosts.length > 0 && (
-          <div className="mt-16 border-t border-border pt-12 zen-mode:hidden">
-            <h2 className="text-3xl font-bold mb-8 text-foreground">Related posts</h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-20 border-t border-border pt-16 zen-mode:hidden">
+            <h2 className="text-3xl font-bold mb-12 text-foreground">Related posts</h2>
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {relatedPosts.map((rp) => (
                 <Link
                   key={rp.slug}
                   href={`/posts/${rp.slug}`}
-                  className="group block p-6 bg-secondary/30 hover:bg-secondary/50 rounded-lg border border-border hover:border-accent/50 transition-all duration-300"
+                  className="group block p-8 bg-secondary/30 hover:bg-secondary/50 rounded-lg border border-border hover:border-accent/50 transition-all duration-300"
                 >
                   <div className="flex flex-col h-full">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2.5 py-0.5 bg-accent/10 text-accent text-xs rounded border border-accent/20">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="px-3 py-1 bg-accent/10 text-accent text-xs rounded border border-accent/20">
                         {rp.category}
                       </span>
                       <span className="text-xs text-muted-foreground flex items-center">
@@ -354,13 +344,13 @@ export default async function PostPage(props: TPostPageProps) {
                         {rp.readTime} min
                       </span>
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-2 line-clamp-2">
+                    <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-3 line-clamp-2">
                       {rp.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-3 flex-grow">
+                    <p className="text-sm text-muted-foreground line-clamp-3 flex-grow mb-5">
                       {rp.excerpt}
                     </p>
-                    <div className="mt-4 flex items-center text-sm text-accent group-hover:translate-x-1 transition-transform">
+                    <div className="mt-auto flex items-center text-sm text-accent group-hover:translate-x-1 transition-transform">
                       Read more
                       <ArrowLeft className="w-4 h-4 ml-1 rotate-180" />
                     </div>
@@ -371,6 +361,8 @@ export default async function PostPage(props: TPostPageProps) {
           </div>
         )}
       </div>
+
+      <FixedFeedbackWidget slug={params.slug} />
     </>
   );
 }

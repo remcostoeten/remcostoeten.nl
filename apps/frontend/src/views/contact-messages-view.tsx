@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { AdminAuth } from '@/components/admin-auth';
 
 type TContactMessage = {
   id: number;
@@ -111,7 +112,8 @@ export function ContactMessagesView() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
+    <AdminAuth>
+      <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold">Contact Messages</h1>
@@ -202,6 +204,7 @@ export function ContactMessagesView() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </AdminAuth>
   );
 }

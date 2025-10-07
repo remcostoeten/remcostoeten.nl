@@ -187,11 +187,13 @@ export async function apiFetch<T = any>(
 export function debugApiConfig() {
   const config = getApiConfig();
   console.group('🔧 API Configuration');
+if (process.env.NODE_ENV === 'development') {
   console.log('Environment:', config.environment);
   console.log('Base URL:', config.base);
   console.log('Analytics URL:', config.analytics);
   console.log('Is Local:', config.isLocal);
   console.log('Is Production:', config.isProduction);
+}
   console.groupEnd();
 }
 

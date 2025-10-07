@@ -48,13 +48,14 @@ function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: Props) {
 
           <span
             className={cn(
-              "text-sm leading-relaxed transition-all duration-300",
+              "text-sm leading-relaxed transition-all duration-300 truncate block max-w-[200px]",
               "group-hover:translate-x-0.5",
               level === 0 && "font-semibold text-[15px] tracking-tight",
               level === 1 && "text-muted-foreground font-medium",
               level >= 2 && "text-muted-foreground/80 text-[13px]",
               isActive && "text-foreground",
             )}
+            title={item.text}
           >
             {item.text}
           </span>
