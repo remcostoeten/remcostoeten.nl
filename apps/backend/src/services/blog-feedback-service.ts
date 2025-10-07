@@ -35,22 +35,23 @@ export function createBlogFeedbackService(db: TDrizzleDb) {
     return crypto.createHash('sha256').update(ip).digest('hex');
   }
 
-  function generateFingerprint(userAgent: string, ip: string): string {
-    const data = `${userAgent}-${ip}`;
+  function generateFingerprint(userAgent: string, ip: string, clientFingerprint?: string): string {
+    const data = `${userAgent}-${ip}-${clientFingerprint || ''}`;
     return crypto.createHash('sha256').update(data).digest('hex');
   }
 
   async function submitFeedback(
     slug: string,
-    data: Omit<TFeedbackData, 'timestamp'>,
+    data: Omit<TFeedbackData, 'timestamp'> & { fingerprint?: string },
     ip?: string
   ): Promise<TFeedbackData> {
     const ipHash = ip ? hashIP(ip) : undefined;
-    const fingerprint = data.userAgent && ip
-      ? generateFingerprint(data.userAgent, ip)
-      : undefined;
+    const fingerprint = generateFingerprint(
+      data.userAgent || '',
+      ip || '',
+      data.fingerprint
+    );
 
-    // Simple server-side rate limiting: max 3 per 24h per ipHash per slug
     if (ipHash) {
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       const recent = await db
@@ -62,12 +63,11 @@ export function createBlogFeedbackService(db: TDrizzleDb) {
           gte(blogFeedback.timestamp, since as unknown as any)
         ));
       const recentCount = Array.isArray(recent) ? (recent[0]?.count || 0) : 0;
-      if (recentCount >= 3) {
+      if (recentCount >= 5) {
         throw Object.assign(new Error('Rate limit exceeded'), { code: 'RATE_LIMIT' });
       }
     }
 
-    // Upsert by (slug, fingerprint): if duplicate, update emoji/message/url and updated timestamp
     try {
       const [inserted] = await db.insert(blogFeedback)
         .values({
@@ -87,7 +87,6 @@ export function createBlogFeedbackService(db: TDrizzleDb) {
         timestamp: inserted.timestamp,
       };
     } catch (err: any) {
-      // Unique violation -> update existing row for this (slug,fingerprint)
       const isUnique = err?.code === '23505' || String(err?.message || '').includes('slug_fingerprint');
       if (!isUnique || !fingerprint) throw err;
 
@@ -112,6 +111,20 @@ export function createBlogFeedbackService(db: TDrizzleDb) {
         timestamp: updated.timestamp,
       };
     }
+  }
+
+  async function removeVote(
+    slug: string,
+    fingerprint: string
+  ): Promise<boolean> {
+    const result = await db.delete(blogFeedback)
+      .where(and(
+        eq(blogFeedback.slug, slug),
+        eq(blogFeedback.fingerprint, fingerprint)
+      ))
+      .returning();
+
+    return result.length > 0;
   }
 
   async function getFeedbackBySlug(slug: string): Promise<TFeedbackStats> {
@@ -203,6 +216,7 @@ export function createBlogFeedbackService(db: TDrizzleDb) {
 
   return {
     submitFeedback,
+    removeVote,
     getFeedbackBySlug,
     getFeedbackReactions,
     getUserFeedback,
