@@ -21,6 +21,7 @@ export function ZenModeToggle() {
   }, []);
 
   function toggleZenMode() {
+    const scrollPosition = window.scrollY || window.pageYOffset;
     const newZenMode = !isZenMode;
     setIsZenMode(newZenMode);
     
@@ -29,6 +30,10 @@ export function ZenModeToggle() {
     } else {
       document.body.classList.remove('zen-mode');
     }
+    
+    requestAnimationFrame(function restoreScroll() {
+      window.scrollTo(0, scrollPosition);
+    });
     
     localStorage.setItem('zen-mode', newZenMode.toString());
   }

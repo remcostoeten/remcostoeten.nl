@@ -17729,6 +17729,29 @@ var createBlogRouter = (blogService, feedbackService) => {
       url: exports_external.string().optional(),
       userAgent: exports_external.string().optional()
     });
+    const feedbackQuerySchema = exports_external.object({
+      limit: exports_external.string().transform(Number).optional(),
+      offset: exports_external.string().transform(Number).optional()
+    });
+    blogRouter.get("/feedback", zValidator("query", feedbackQuerySchema), async (c) => {
+      try {
+        const query = c.req.valid("query");
+        const limit = query.limit || 100;
+        const offset = query.offset || 0;
+        const allFeedback = await feedbackService.getAllFeedback(limit, offset);
+        return c.json({
+          success: true,
+          data: allFeedback,
+          count: allFeedback.length
+        });
+      } catch (error) {
+        console.error("Error fetching all feedback:", error);
+        return c.json({
+          success: false,
+          message: "Failed to fetch feedback"
+        }, 500);
+      }
+    });
     blogRouter.post("/feedback/:slug", zValidator("param", slugParamSchema2), zValidator("json", feedbackSchema), async (c) => {
       try {
         const { slug } = c.req.valid("param");

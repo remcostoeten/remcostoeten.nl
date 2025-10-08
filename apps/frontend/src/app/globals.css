@@ -446,14 +446,19 @@ a:hover {
 
 /* Zen Mode Styles */
 .zen-mode .zen-mode\:hidden {
+  position: absolute !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
-  transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
 }
 
 .zen-mode .zen-mode\:block {
   display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .zen-mode .zen-mode\:opacity-0 {
@@ -465,9 +470,13 @@ a:hover {
 }
 
 /* Smooth transitions for elements entering/exiting zen mode */
-.zen-mode\:hidden,
+.zen-mode\:hidden {
+  transition: opacity 0.3s ease-out, visibility 0.3s ease-out, max-height 0.3s ease-out;
+}
+
 .zen-mode\:block {
-  transition: opacity 0.4s ease-out, visibility 0.4s ease-out, max-width 0.5s ease-out;
+  display: none;
+  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
 }
 
 /* Article width transition for zen mode */
