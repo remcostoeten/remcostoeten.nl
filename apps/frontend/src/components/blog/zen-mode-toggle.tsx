@@ -3,9 +3,14 @@
 import { useEffect, useState } from 'react';
 import { Eye } from 'lucide-react';
 
-export function ZenModeToggle() {
+type TProps = {
+  enableAdvancedTransitions?: boolean;
+};
+
+export function ZenModeToggle({ enableAdvancedTransitions = false }: TProps) {
   const [isZenMode, setIsZenMode] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(function initializeZenMode() {
     setIsMounted(true);
@@ -23,19 +28,48 @@ export function ZenModeToggle() {
   function toggleZenMode() {
     const scrollPosition = window.scrollY || window.pageYOffset;
     const newZenMode = !isZenMode;
-    setIsZenMode(newZenMode);
     
-    if (newZenMode) {
-      document.body.classList.add('zen-mode');
+    if (enableAdvancedTransitions) {
+      setIsTransitioning(true);
+      document.body.classList.add('zen-mode-epic-transitioning');
+      document.documentElement.classList.add('zen-epic-transition');
+      
+      setTimeout(function applyZenModeAfterTransition() {
+        setIsZenMode(newZenMode);
+        
+        if (newZenMode) {
+          document.body.classList.add('zen-mode');
+        } else {
+          document.body.classList.remove('zen-mode');
+        }
+        
+        requestAnimationFrame(function restoreScroll() {
+          window.scrollTo(0, scrollPosition);
+        });
+        
+        localStorage.setItem('zen-mode', newZenMode.toString());
+        
+        setTimeout(function cleanupTransitionClasses() {
+          document.body.classList.remove('zen-mode-epic-transitioning');
+          document.documentElement.classList.remove('zen-epic-transition');
+          setIsTransitioning(false);
+        }, 1600);
+      }, 50);
     } else {
-      document.body.classList.remove('zen-mode');
+      setIsZenMode(newZenMode);
+      
+      if (newZenMode) {
+        document.body.classList.add('zen-mode');
+      } else {
+        document.body.classList.remove('zen-mode');
+      }
+      
+      requestAnimationFrame(function restoreScroll() {
+        window.scrollTo(0, scrollPosition);
+      });
+      
+      localStorage.setItem('zen-mode', newZenMode.toString());
     }
-    
-    requestAnimationFrame(function restoreScroll() {
-      window.scrollTo(0, scrollPosition);
-    });
-    
-    localStorage.setItem('zen-mode', newZenMode.toString());
   }
 
   function handleKeyDown(event: React.KeyboardEvent) {
@@ -54,7 +88,8 @@ export function ZenModeToggle() {
       <button
         onClick={toggleZenMode}
         onKeyDown={handleKeyDown}
-        className="p-3 rounded-xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-accent/10 hover:border-accent/50 group"
+        disabled={isTransitioning}
+        className="p-3 rounded-xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-accent/10 hover:border-accent/50 group disabled:opacity-50 disabled:cursor-not-allowed"
         title={isZenMode ? 'Exit Zen Mode' : 'Enter Zen Mode'}
         aria-label={isZenMode ? 'Exit Zen Mode' : 'Enter Zen Mode'}
         aria-pressed={isZenMode}
