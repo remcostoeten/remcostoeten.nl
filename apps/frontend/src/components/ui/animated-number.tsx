@@ -19,13 +19,16 @@ interface TProps {
     randomStart?: boolean
     randomRange?: number
     delay?: number
+    useGrouping?: boolean
+    shouldAnimate?: boolean
+    duration?: number
 }
 
 const FORMAT_CONFIG = {
-    currency: (decimals: number) => ({ style: "currency", currency: "USD", minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
-    percentage: (decimals: number) => ({ style: "percent", minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
-    decimal: (decimals: number) => ({ minimumFractionDigits: decimals, maximumFractionDigits: decimals }),
-    number: (decimals: number) => ({ minimumFractionDigits: decimals, maximumFractionDigits: decimals })
+    currency: (decimals: number, useGrouping: boolean = true) => ({ style: "currency", currency: "USD", minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping }),
+    percentage: (decimals: number, useGrouping: boolean = true) => ({ style: "percent", minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping }),
+    decimal: (decimals: number, useGrouping: boolean = true) => ({ minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping }),
+    number: (decimals: number, useGrouping: boolean = true) => ({ minimumFractionDigits: decimals, maximumFractionDigits: decimals, useGrouping })
 } as const
 
 export function AnimatedNumber({
@@ -39,7 +42,10 @@ export function AnimatedNumber({
     respectMotionPreference = true,
     randomStart = false,
     randomRange = 1000,
-    delay = 0
+    delay = 0,
+    useGrouping = true,
+    shouldAnimate = true,
+    duration = 1500
 }: TProps) {
     const [displayValue, setDisplayValue] = useState<number>(value)
     const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true)
@@ -51,32 +57,37 @@ export function AnimatedNumber({
         if (isInitialLoad) {
             setIsInitialLoad(false)
             if (randomStart) {
-                // Start with random value for dramatic effect
+                // Always start with random value for dramatic effect when randomStart is true
                 const randomValue = Math.max(0, Math.floor(Math.random() * randomRange))
                 setDisplayValue(randomValue)
-
-                // After delay, animate to actual value
-                const timer = setTimeout(() => {
-                    setDisplayValue(value)
-                }, delay)
-
-                return () => clearTimeout(timer)
             } else {
                 // If not random start, set to actual value immediately
                 setDisplayValue(value)
             }
-        } else {
-            // For subsequent updates, directly set the new value to trigger animation
+        }
+    }, [value, randomStart, randomRange, isInitialLoad])
+
+    // Separate effect to handle animation trigger
+    useEffect(() => {
+        if (shouldAnimate && randomStart && !isInitialLoad) {
+            // Animate to actual value after delay when shouldAnimate becomes true
+            const timer = setTimeout(() => {
+                setDisplayValue(value)
+            }, delay)
+
+            return () => clearTimeout(timer)
+        } else if (shouldAnimate && !randomStart) {
+            // Direct animation without random start
             setDisplayValue(value)
         }
-    }, [value, randomStart, randomRange, delay, isInitialLoad])
+    }, [shouldAnimate, value, delay, randomStart, isInitialLoad])
 
     // If motion is disabled or reduced motion is preferred, show static value
     if (!canAnimate || prefersReducedMotion) {
         return (
             <span className={className}>
                 {prefix}
-                {value.toLocaleString(locale, FORMAT_CONFIG[format](decimals))}
+                {value.toLocaleString(locale, FORMAT_CONFIG[format](decimals, useGrouping))}
                 {suffix}
             </span>
         )
@@ -87,10 +98,10 @@ export function AnimatedNumber({
             {prefix}
             <NumberFlow
                 value={displayValue}
-                format={FORMAT_CONFIG[format](decimals)}
+                format={FORMAT_CONFIG[format](decimals, useGrouping)}
                 locales={locale}
                 suffix={suffix}
-                duration={1000}
+                duration={duration}
             />
         </span>
     )

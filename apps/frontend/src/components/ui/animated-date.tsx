@@ -16,14 +16,26 @@ export function AnimatedDate({
     date,
     className,
     threshold = 0.1,
-    rootMargin = "0px",
+    rootMargin = "100px",
     delay = 0
 }: TProps) {
-    const [isVisible, setIsVisible] = useState(false)
+    const [shouldAnimate, setShouldAnimate] = useState(false)
     const [hasAnimated, setHasAnimated] = useState(false)
     const elementRef = useRef<HTMLTimeElement>(null)
 
     const parsedDate = new Date(date)
+    
+    // Validate the date
+    if (isNaN(parsedDate.getTime())) {
+        console.warn(`Invalid date in AnimatedDate component: ${date}`)
+        // Fallback to showing the original date string
+        return (
+            <time ref={elementRef} dateTime={date} className={cn("inline-block", className)}>
+                {date}
+            </time>
+        )
+    }
+    
     const month = parsedDate.toLocaleDateString('en-US', { month: 'short' })
     const day = parsedDate.getDate()
     const year = parsedDate.getFullYear()
@@ -36,11 +48,9 @@ export function AnimatedDate({
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting && !hasAnimated) {
-                        // Add a small delay to ensure the element is fully visible
-                        setTimeout(() => {
-                            setIsVisible(true)
-                            setHasAnimated(true)
-                        }, 200)
+                        // Trigger animation immediately when in view
+                        setShouldAnimate(true)
+                        setHasAnimated(true)
                     }
                 })
             },
@@ -63,13 +73,22 @@ export function AnimatedDate({
             dateTime={date}
             className={cn("inline-block", className)}
         >
-            {isVisible ? (
-                <>
-                    {month} <AnimatedNumber value={day} delay={delay} randomStart={true} randomRange={9} />, <AnimatedNumber value={year} delay={delay + 200} randomStart={true} randomRange={9} />
-                </>
-            ) : (
-                <span>{month} 0, 0</span>
-            )}
+            {month} <AnimatedNumber 
+                value={day} 
+                delay={delay} 
+                randomStart={true} 
+                randomRange={9} 
+                shouldAnimate={shouldAnimate}
+                duration={1500}
+            />, <AnimatedNumber 
+                value={year} 
+                delay={delay + 300} 
+                randomStart={true} 
+                randomRange={9} 
+                useGrouping={false}
+                shouldAnimate={shouldAnimate}
+                duration={1500}
+            />
         </time>
     )
 }
