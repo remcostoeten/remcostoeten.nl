@@ -17,7 +17,7 @@ This directory contains a set of components designed to eliminate layout shift w
 ├── 🏗️  activity-shell.tsx          # Server-renderable layout shell
 ├── 📊 github-content.tsx          # GitHub activity content components
 ├── 🎵 spotify-content.tsx         # Spotify activity content components
-├── ⚡ optimized-spotify-integration.tsx  # Optimized Spotify logic
+├── ⚡ spotify-integration.tsx      # Spotify logic
 ├── 🎭 server-skeleton.tsx         # Server-side skeleton components
 ├── 📦 latest-activity-wrapper.tsx # Suspense wrapper
 └── 📚 types.ts                    # TypeScript definitions

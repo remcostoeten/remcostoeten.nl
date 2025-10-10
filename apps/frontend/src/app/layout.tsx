@@ -53,6 +53,26 @@ export const metadata: Metadata = {
     telephone: false,
   },
   metadataBase: new URL('https://remcostoeten.nl'),
+  alternates: {
+    types: {
+      'application/rss+xml': '/rss',
+    },
+  },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-16x16.svg', sizes: '16x16', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.svg', sizes: '32x32', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-icon.svg',
+  },
+  manifest: '/manifest.json',
+  other: {
+    'geo.region': 'NL',
+    'geo.placename': 'Netherlands',
+    'profile:first_name': 'Remco',
+    'profile:last_name': 'Stoeten',
+  },
   openGraph: {
     title: 'Remco Stoeten - Software Engineer | React & Next.js Developer',
     description: 'Remco Stoeten is a software engineer specializing in React, Next.js, and TypeScript. Building modern web applications and sharing development insights.',
@@ -180,36 +200,24 @@ export default function RootLayout({
     },
   };
 
+  const siteNavigationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: [
+      { '@type': 'SiteNavigationElement', name: 'Home', url: 'https://remcostoeten.nl' },
+      { '@type': 'SiteNavigationElement', name: 'Blog', url: 'https://remcostoeten.nl/posts' },
+      { '@type': 'SiteNavigationElement', name: 'Analytics', url: 'https://remcostoeten.nl/analytics' },
+      { '@type': 'SiteNavigationElement', name: 'Contact', url: 'https://remcostoeten.nl/contact' },
+    ]
+  };
+
   return (
     <html lang="en" className="dark">
-      <head>
-        <link rel="alternate" type="application/rss+xml" title="Remco Stoeten Blog RSS" href="/rss" />
-
-        {/* Site Navigation structured data */}
+      <body className={`${inter.className} ${inter.variable} ${notoSans.variable} overflow-x-hidden`} suppressHydrationWarning>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'ItemList',
-              itemListElement: [
-                { '@type': 'SiteNavigationElement', name: 'Home', url: 'https://remcostoeten.nl' },
-                { '@type': 'SiteNavigationElement', name: 'Blog', url: 'https://remcostoeten.nl/posts' },
-                { '@type': 'SiteNavigationElement', name: 'Analytics', url: 'https://remcostoeten.nl/analytics' },
-                { '@type': 'SiteNavigationElement', name: 'Contact', url: 'https://remcostoeten.nl/contact' },
-              ]
-            })
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationSchema) }}
         />
-        {/* Additional SEO Meta Tags */}
-        <meta name="author" content="Remco Stoeten" />
-        <meta name="geo.region" content="NL" />
-        <meta name="geo.placename" content="Netherlands" />
-        <meta property="profile:first_name" content="Remco" />
-        <meta property="profile:last_name" content="Stoeten" />
-
-
-        {/* Structured Data for Knowledge Graph */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
@@ -222,28 +230,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(profilePageSchema) }}
         />
-
-        {/* Preconnect to external domains for faster loading */}
-        <link rel="preconnect" href="https://framerusercontent.com" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Favicon and app icons */}
-        <link rel="icon" type="image/svg+xml" href="/icon.svg" />
-        <link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16x16.svg" />
-        <link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon-32x32.svg" />
-        <link rel="apple-touch-icon" href="/apple-icon.svg" />
-        <link rel="manifest" href="/manifest.json" />
-
-        {/* DNS prefetch for external links */}
-        <link rel="dns-prefetch" href="https://medium.com" />
-        <link rel="dns-prefetch" href="https://substack.com" />
-        <link rel="dns-prefetch" href="https://twitter.com" />
-        <link rel="dns-prefetch" href="https://framer.com" />
-        <link rel="dns-prefetch" href="https://producthunt.com" />
-        <link rel="dns-prefetch" href="https://linkedin.com" />
-      </head>
-      <body className={`${inter.className} ${inter.variable} ${notoSans.variable} overflow-x-hidden`} suppressHydrationWarning>
         <ClientOnlyWrapper>
           <TooltipProvider delayDuration={0}>
             {children}

@@ -11,6 +11,9 @@
 /* Import Miscellaneous styles */
 @import "../styles/misc.css";
 
+/* Import Zen Mode styles */
+@import "../styles/zen-mode.css";
+
 /* Enhanced text selection styling */
 ::selection {
   background: hsl(var(--accent) / 0.15);
@@ -442,63 +445,4 @@ a:hover {
 
 .opacity-in {
   animation: opacity-in 1.5s ease-in-out;
-}
-
-/* Zen Mode Styles */
-.zen-mode .zen-mode\:hidden {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
-}
-
-.zen-mode .zen-mode\:block {
-  display: block !important;
-}
-
-.zen-mode .zen-mode\:opacity-0 {
-  opacity: 0 !important;
-}
-
-.zen-mode .zen-mode\:scale-95 {
-  transform: scale(0.95) !important;
-}
-
-/* Smooth transitions for elements entering/exiting zen mode */
-.zen-mode\:hidden,
-.zen-mode\:block {
-  transition: opacity 0.4s ease-out, visibility 0.4s ease-out, max-width 0.5s ease-out;
-}
-
-/* Article width transition for zen mode */
-.max-w-7xl,
-.max-w-4xl {
-  transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Zen mode content fade-in animation */
-@keyframes zen-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.zen-mode .zen-mode\:block {
-  animation: zen-fade-in 0.5s ease-out;
-}
-
-/* Respect reduced motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  .zen-mode .zen-mode\:hidden,
-  .zen-mode .zen-mode\:block,
-  .max-w-7xl,
-  .max-w-4xl {
-    transition: none;
-    animation: none;
-  }
 }

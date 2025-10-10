@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchLatestActivities, type LatestActivity as TLatestActivity } from "@/services/github-service";
 import { ActivityShell } from "./activity-shell";
 import { GitHubActivityContent, GitHubActivitySkeletonContent, GitHubActivityErrorContent } from "./github-content";
-import { OptimizedSpotifyIntegration } from "./optimized-spotify-integration";
+import { SpotifyIntegration } from "./spotify-integration";
 
 /**
  * LatestActivity - Main component with zero layout shift architecture
@@ -102,7 +102,7 @@ export function LatestActivity() {
     >
       <ActivityShell
         githubContent={githubContent}
-        spotifyContent={<OptimizedSpotifyIntegration />}
+        spotifyContent={<SpotifyIntegration />}
       />
     </div>
   );

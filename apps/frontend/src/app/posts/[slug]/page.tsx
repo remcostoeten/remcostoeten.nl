@@ -152,7 +152,7 @@ export default async function PostPage(props: TPostPageProps) {
       />
 
       <ScrollProgressIndicator />
-      <ZenModeToggle />
+      <ZenModeToggle enableAdvancedTransitions={true} />
 
       <div className="max-w-7xl mx-auto py-8 px-5 sm:px-6">
         <BreadcrumbNavigation items={breadcrumbs} className="mb-8 zen-mode:hidden" />
