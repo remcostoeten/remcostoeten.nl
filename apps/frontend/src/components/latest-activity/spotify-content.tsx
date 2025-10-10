@@ -62,7 +62,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
         onMouseMove={onMouseMove}
       >
         <div className="flex-1 min-w-0">
-          <div className="text-body text-muted-foreground leading-tight mb-2">
+          <div className="text-body text-muted-foreground leading-tight">
             <span className="flex-shrink-0">
               {isCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
             </span>
@@ -73,7 +73,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                 initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-                transition={buildStaggerTransition(0)} // First element
+                transition={buildStaggerTransition(0)}
               >
                 <a
                   href={currentTrack.external_url}
@@ -117,54 +117,55 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                 </span>
               </motion.span>
             </AnimatePresence>
-          </div>
-
-          <div className="text-sm text-muted-foreground leading-tight">
             {currentTrack.album && (
               <>
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={`from-${currentTrackIndex}`}
-                    className="inline-block"
+                    className="inline-block px-[3px]"
                     initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-                    transition={buildStaggerTransition(1.5)} // Between artist (1) and album (2)
+                    transition={buildStaggerTransition(1.5)}
                   >
-                    from
+                    -
                   </motion.span>
                 </AnimatePresence>
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={`album-${currentTrackIndex}`}
-                    className="inline-block ml-1 italic"
+                    className="inline-block italic text-sm"
                     initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-                    transition={buildStaggerTransition(2)} // Third element
+                    transition={buildStaggerTransition(2)}
                   >
                     <span title={currentTrack.album}>
-                      {currentTrack.album}.
+                      {currentTrack.album.length > 25
+                        ? currentTrack.album.substring(0, 25) + '...'
+                        : currentTrack.album}
                     </span>
                   </motion.span>
                 </AnimatePresence>
               </>
             )}
-            {isRecentTrack && (
+          </div>
+          {isRecentTrack && (
+            <div className="text-sm text-muted-foreground leading-tight mt-1">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={`timestamp-${currentTrackIndex}`}
-                  className="inline-block ml-2 text-muted-foreground"
+                  className="inline-block text-muted-foreground whitespace-nowrap"
                   initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-                  transition={buildStaggerTransition(3)} // Fourth element
+                  transition={buildStaggerTransition(3)}
                 >
                   (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={BASE_DELAY + (3 * STAGGER_DELAY) * 1000 + 100} />)
                 </motion.span>
               </AnimatePresence>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         {/* Right side - album cover only */}
@@ -227,7 +228,7 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
     <div className="flex items-start gap-3">
       <div className="flex-1 min-w-0">
         {/* First line - Static text + skeleton content */}
-        <div className="text-body text-muted-foreground leading-tight mb-2">
+        <div className="text-body text-muted-foreground leading-tight">
           <span className="flex-shrink-0">
             {showCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
           </span>
@@ -255,18 +256,15 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
               transition={buildStaggerTransition(1)}
             />
           </span>
-        </div>
-
-        {/* Second line - Static text + skeleton content */}
-        <div className="text-sm text-muted-foreground leading-tight">
+          {/* Skeleton for separator */}
           <motion.span
-            className="inline-block h-4 bg-muted/40 rounded-md animate-pulse w-[30px] align-middle"
+            className="inline-block h-5 bg-muted/40 rounded-md animate-pulse w-[12px] mx-1 align-middle"
             initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
             transition={buildStaggerTransition(1.5)}
           />
           {/* Skeleton for album name */}
-          <span className="inline-block ml-1 italic">
+          <span className="inline-block italic text-sm">
             <motion.span
               className="h-4 bg-muted/40 rounded-md animate-pulse w-[140px] max-w-[200px] inline-block align-middle"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
@@ -274,8 +272,11 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
               transition={buildStaggerTransition(2)}
             />
           </span>
-          {/* Skeleton for timestamp */}
-          <span className="inline-block ml-2 text-muted-foreground">
+        </div>
+
+        {/* Second line - timestamp */}
+        <div className="text-sm text-muted-foreground leading-tight mt-1">
+          <span className="inline-block text-muted-foreground">
             (<motion.span
               className="h-4 bg-muted/40 rounded-md animate-pulse w-[50px] inline-block align-middle"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}

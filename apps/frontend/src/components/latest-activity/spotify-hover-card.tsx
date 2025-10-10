@@ -6,6 +6,11 @@ import { Music, ExternalLink, Clock, Calendar } from "lucide-react";
 import type { SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
 import { formatTimestamp } from "./utils";
 
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
+}
+
 interface SpotifyHoverCardProps {
   track: SpotifyTrack | SpotifyRecentTrack;
   isVisible: boolean;
@@ -59,15 +64,15 @@ export const SpotifyHoverCard = memo(function SpotifyHoverCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-3">
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-lg text-foreground truncate">
-                  {track.name}
+                <h3 className="font-semibold text-lg text-foreground">
+                  {truncateText(track.name, 40)}
                 </h3>
-                <p className="text-muted-foreground text-sm truncate">
-                  by {track.artist}
+                <p className="text-muted-foreground text-sm">
+                  by {truncateText(track.artist, 40)}
                 </p>
                 {track.album && (
-                  <p className="text-muted-foreground text-xs truncate mt-1">
-                    from {track.album}
+                  <p className="text-muted-foreground text-xs mt-1">
+                    from {truncateText(track.album, 40)}
                   </p>
                 )}
               </div>

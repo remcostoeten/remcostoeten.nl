@@ -5,13 +5,6 @@ import { getCurrentOrRecentMusic, getRecentMusicTracks, type SpotifyTrack, type 
 import { SpotifyActivityContent, SpotifyActivitySkeletonContent, SpotifyActivityErrorContent } from "./spotify-content";
 import type { TSpotifyData } from "./types";
 
-/**
- * SpotifyIntegration - Spotify integration optimized for zero layout shift
- * 
- * This component provides only the content for the Spotify section.
- * The shell/layout structure is provided by the parent ActivityShell component.
- */
-
 export const SpotifyIntegration = memo(function SpotifyIntegration() {
   const [spotifyData, setSpotifyData] = useState<TSpotifyData>({
     tracks: [],

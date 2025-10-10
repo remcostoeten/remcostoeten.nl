@@ -6,6 +6,11 @@ import { Music, ExternalLink, Clock, Calendar, Play, Pause } from "lucide-react"
 import { getCurrentOrRecentMusic, getRecentMusicTracks, SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength) + '...';
+}
+
 const FALLBACK_SONGS = [
   { title: "Midnight City", artist: "M83", album: "Hurry Up, We're Dreaming", played_at: new Date().toISOString() },
   { title: "Strobe", artist: "Deadmau5", album: "For Lack of a Better Name", played_at: new Date(Date.now() - 1000 * 60 * 30).toISOString() },
@@ -193,7 +198,7 @@ export const SpotifyAnimation = () => {
                 return (
                   <div
                     key={`${trackName}-${index}`}
-                    className={`flex items-center gap-3 p-2 rounded-md transition-colors ${isCurrentTrack ? 'bg-accent/10 border border-accent/20' : 'hover:bg-muted/50'
+                    className={`flex items-start gap-3 p-2 rounded-md transition-colors ${isCurrentTrack ? 'bg-accent/10 border border-accent/20' : 'hover:bg-muted/50'
                       }`}
                   >
                     {imageUrl ? (
@@ -213,46 +218,47 @@ export const SpotifyAnimation = () => {
                       </div>
                     )}
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium text-sm truncate">
-                          {externalUrl ? (
-                            <a
-                              href={externalUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:text-accent transition-colors inline-flex items-center gap-1"
-                            >
-                              {trackName}
-                              <ExternalLink className="w-3 h-3 flex-shrink-0" />
-                            </a>
-                          ) : (
-                            trackName
-                          )}
-                        </p>
-                        {isCurrentTrack && currentlyPlaying && (
-                          <div className="flex items-center gap-1">
-                            {currentlyPlaying.is_playing ? (
-                              <Play className="w-3 h-3 text-green-500" />
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {externalUrl ? (
+                              <a
+                                href={externalUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-accent transition-colors inline-flex items-center gap-1"
+                              >
+                                {truncateText(trackName, 25)}
+                                <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                              </a>
                             ) : (
-                              <Pause className="w-3 h-3 text-muted-foreground" />
+                              truncateText(trackName, 25)
                             )}
-                          </div>
-                        )}
+                          </p>
+                          {isCurrentTrack && currentlyPlaying && (
+                            <div className="flex items-center gap-1 mt-0.5">
+                              {currentlyPlaying.is_playing ? (
+                                <Play className="w-3 h-3 text-green-500" />
+                              ) : (
+                                <Pause className="w-3 h-3 text-muted-foreground" />
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-shrink-0 text-right whitespace-nowrap">
+                          {currentlyPlaying && index === 0 ? (
+                            <span className="text-xs text-green-500 font-medium">Now</span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {formatTimeAgo(playedAt)}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">{trackArtist}</p>
-                      <p className="text-xs text-muted-foreground/70 truncate">{trackAlbum}</p>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      {currentlyPlaying && index === 0 ? (
-                        <span className="text-xs text-green-500 font-medium">Now</span>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">
-                          <Clock className="w-3 h-3 inline mr-1" />
-                          {formatTimeAgo(playedAt)}
-                        </span>
-                      )}
+                      <p className="text-xs text-muted-foreground truncate">{truncateText(trackArtist, 30)}</p>
+                      <p className="text-xs text-muted-foreground/70 truncate">{truncateText(trackAlbum, 30)}</p>
                     </div>
                   </div>
                 );
