@@ -49,6 +49,7 @@ export function AnimatedNumber({
 }: TProps) {
     const [displayValue, setDisplayValue] = useState<number>(value)
     const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true)
+    const [isRolling, setIsRolling] = useState<boolean>(false)
 
     const canAnimate = useCanAnimate({ respectMotionPreference })
     const prefersReducedMotion = usePrefersReducedMotion()
@@ -57,44 +58,54 @@ export function AnimatedNumber({
         if (isInitialLoad) {
             setIsInitialLoad(false)
             if (randomStart) {
-                // Always start with random value for dramatic effect when randomStart is true
-                const randomValue = Math.max(0, Math.floor(Math.random() * randomRange))
+                const randomValue = Math.max(1, Math.floor(Math.random() * randomRange) + 1)
                 setDisplayValue(randomValue)
             } else {
-                // If not random start, set to actual value immediately
                 setDisplayValue(value)
             }
         }
     }, [value, randomStart, randomRange, isInitialLoad])
 
-    // Separate effect to handle animation trigger
     useEffect(() => {
         if (shouldAnimate && randomStart && !isInitialLoad) {
-            // Animate to actual value after delay when shouldAnimate becomes true
-            const timer = setTimeout(() => {
+            setIsRolling(true)
+            
+            const rollingInterval = setInterval(() => {
+                const randomValue = Math.max(1, Math.floor(Math.random() * randomRange) + 1)
+                setDisplayValue(randomValue)
+            }, 100)
+            
+            const stopRollingTimer = setTimeout(() => {
+                clearInterval(rollingInterval)
+                setIsRolling(false)
                 setDisplayValue(value)
-            }, delay)
+            }, delay + 1000)
 
-            return () => clearTimeout(timer)
+            return () => {
+                clearInterval(rollingInterval)
+                clearTimeout(stopRollingTimer)
+            }
         } else if (shouldAnimate && !randomStart) {
-            // Direct animation without random start
             setDisplayValue(value)
         }
-    }, [shouldAnimate, value, delay, randomStart, isInitialLoad])
+    }, [shouldAnimate, value, delay, randomStart, isInitialLoad, randomRange])
 
     // If motion is disabled or reduced motion is preferred, show static value
     if (!canAnimate || prefersReducedMotion) {
+        const formattedValue = value.toLocaleString(locale, FORMAT_CONFIG[format](decimals, useGrouping))
         return (
-            <span className={className}>
+            <span className={cn("inline-block", className)} style={{ minWidth: `${formattedValue.length}ch` }}>
                 {prefix}
-                {value.toLocaleString(locale, FORMAT_CONFIG[format](decimals, useGrouping))}
+                {formattedValue}
                 {suffix}
             </span>
         )
     }
 
+    const finalFormattedValue = value.toLocaleString(locale, FORMAT_CONFIG[format](decimals, useGrouping))
+    
     return (
-        <span className={className}>
+        <span className={cn("inline-block", className)} style={{ minWidth: `${finalFormattedValue.length}ch` }}>
             {prefix}
             <NumberFlow
                 value={displayValue}
