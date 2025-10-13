@@ -24,7 +24,7 @@ export function AnimatedDate({
     const elementRef = useRef<HTMLTimeElement>(null)
 
     const parsedDate = new Date(date)
-    
+
     // Validate the date
     if (isNaN(parsedDate.getTime())) {
         console.warn(`Invalid date in AnimatedDate component: ${date}`)
@@ -35,8 +35,8 @@ export function AnimatedDate({
             </time>
         )
     }
-    
-    const month = parsedDate.toLocaleDateString('en-US', { month: 'short' })
+
+    const month = parsedDate.toLocaleDateString('nl-NL', { month: 'short' })
     const day = parsedDate.getDate()
     const year = parsedDate.getFullYear()
 
@@ -71,23 +71,23 @@ export function AnimatedDate({
         <time
             ref={elementRef}
             dateTime={date}
-            className={cn("inline-block", className)}
+            className={cn("inline-block tabular-nums", className)}
+            style={{ minWidth: `${String(day).length + 1 + String(month).length + 1 + 4}ch` }}
         >
-            {month} <AnimatedNumber 
-                value={day} 
-                delay={delay} 
-                randomStart={true} 
-                randomRange={9} 
-                shouldAnimate={shouldAnimate}
-                duration={1500}
-            />, <AnimatedNumber 
-                value={year} 
-                delay={delay + 300} 
-                randomStart={true} 
-                randomRange={9} 
+            <AnimatedNumber
+                value={day}
+                delay={delay}
+                randomStart={true}
                 useGrouping={false}
                 shouldAnimate={shouldAnimate}
-                duration={1500}
+                duration={600}
+            /> {month} <AnimatedNumber
+                value={year}
+                delay={delay + 150}
+                randomStart={true}
+                useGrouping={false}
+                shouldAnimate={shouldAnimate}
+                duration={800}
             />
         </time>
     )

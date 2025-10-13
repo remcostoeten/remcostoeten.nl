@@ -3,7 +3,6 @@
 import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Center } from '@/shared/components/center'
 import { AlertTriangle } from 'lucide-react'
 
 type TProps = {
@@ -17,9 +16,9 @@ export default function GlobalError({ error, reset }: TProps) {
   }, [error])
 
   return (
-    <html>
-      <body className="bg-background">
-        <Center fullHeight>
+    <html lang="en">
+      <body>
+        <div className="flex min-h-screen items-center justify-center bg-background">
           <div className="relative mx-auto max-w-xl text-center px-6">
             <div className="pointer-events-none absolute inset-0 -z-10 mx-auto h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
@@ -35,7 +34,7 @@ export default function GlobalError({ error, reset }: TProps) {
               </Button>
             </div>
           </div>
-        </Center>
+        </div>
       </body>
     </html>
   )

@@ -1,11 +1,25 @@
+type TProjectCategory = 'APIs' | 'DX tooling' | 'projects';
+
 export type TSimpleProject = {
   name: string;
   url: string;
-  category: 'APIs' | 'DX tooling' | 'projects';
+  category: TProjectCategory | TProjectCategory[];
   gitInfo?: TGitInfo;
   packageInfo?: TPackageInfo;
   originLabel?: TOriginLabel;
   anchor?: string;
+  detailedInfo?: TProjectDetails;
+};
+
+export type TProjectDetails = {
+  longDescription?: string;
+  features?: string[];
+  techStack?: string[];
+  screenshots?: string[];
+  usageExample?: string;
+  highlights?: string[];
+  problemSolved?: string;
+  targetAudience?: string;
 };
 
 export type TPackageInfo = {
@@ -49,7 +63,7 @@ export type TProjectData = {
   contributors: number;
   totalCommits: number;
   startDate?: string;
-  category: 'APIs' | 'DX tooling' | 'projects';
+  category: TProjectCategory | TProjectCategory[];
   packageInfo?: TPackageInfo;
   originLabel?: TOriginLabel;
   anchor?: string;

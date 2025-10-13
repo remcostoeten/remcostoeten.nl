@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "bun run next dev -p 3000",
-    "build": "bun run next build",
+    "build": "NODE_ENV=production bun run next build",
     "start": "bun run next start -p 3000",
     "lint": "bun run next lint",
     "blog:sync": "bun run tsx scripts/sync-blog-metadata.ts",

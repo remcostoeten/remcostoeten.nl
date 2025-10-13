@@ -35,11 +35,8 @@ export function AnimatedNumberIntersection({
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting && !hasAnimated) {
-                        // Add a longer delay to ensure skeleton is gone and element is fully visible
-                        setTimeout(() => {
-                            setIsVisible(true)
-                            setHasAnimated(true)
-                        }, 500)
+                        setIsVisible(true)
+                        setHasAnimated(true)
                     }
                 })
             },
@@ -57,7 +54,7 @@ export function AnimatedNumberIntersection({
     }, [threshold, rootMargin, hasAnimated])
 
     return (
-        <span ref={elementRef} className={cn("inline-block", className)}>
+        <span ref={elementRef} className={cn("inline-block tabular-nums", className)} style={{ minWidth: `${String(prefix + value + suffix).length}ch` }}>
             {isVisible ? (
                 <AnimatedNumber
                     value={value}
@@ -65,7 +62,7 @@ export function AnimatedNumberIntersection({
                     suffix={suffix}
                     delay={delay}
                     randomStart={true}
-                    randomRange={9}
+                    duration={600}
                 />
             ) : (
                 <span>{prefix}0{suffix}</span>

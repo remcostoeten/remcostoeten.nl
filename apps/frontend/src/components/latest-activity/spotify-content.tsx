@@ -7,15 +7,7 @@ import { formatTimestamp } from "./utils";
 import { SpotifyHoverCard } from "./spotify-hover-card";
 import { AnimatedTimestamp } from "../../shared/components/animated-numbers";
 
-/**
- * SpotifyActivityContent - Pure content component for Spotify activity
- * 
- * This component only handles the dynamic content (track, artist, album, timestamp, image)
- * The layout structure and icons are provided by the parent shell component.
- * This separation ensures zero layout shift.
- */
-
-interface SpotifyActivityContentProps {
+type TProps = {
   currentTrack: SpotifyTrack | SpotifyRecentTrack;
   currentTrackIndex: number;
   hoveredTrack: number | null;
@@ -23,6 +15,58 @@ interface SpotifyActivityContentProps {
   onMouseLeave: () => void;
   onMouseMove: (e: React.MouseEvent) => void;
   mousePosition: { x: number; y: number };
+};
+
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return text.substring(0, maxLength) + '...';
+}
+
+function calculateLine1Length(prefix: string, trackName: string, artistName: string): number {
+  return prefix.length + trackName.length + 4 + artistName.length;
+}
+
+function smartTruncateLine1(
+  prefix: string,
+  trackName: string,
+  artistName: string,
+  maxLength: number
+): { track: string; artist: string } {
+  const staticLength = prefix.length + 4;
+  const availableLength = maxLength - staticLength;
+  const totalLength = trackName.length + artistName.length;
+
+  if (totalLength <= availableLength) {
+    return { track: trackName, artist: artistName };
+  }
+
+  const trackRatio = 0.6;
+  const artistRatio = 0.4;
+  const trackMax = Math.floor(availableLength * trackRatio);
+  const artistMax = Math.floor(availableLength * artistRatio);
+
+  return {
+    track: truncateText(trackName, trackMax),
+    artist: truncateText(artistName, artistMax)
+  };
+}
+
+function smartTruncateLine2(
+  albumName: string,
+  timestamp: string,
+  maxLength: number
+): string {
+  const timestampLength = timestamp.length + 3;
+  const separator = " - ";
+  const availableForAlbum = maxLength - timestampLength - separator.length;
+
+  if (availableForAlbum < 10) {
+    return truncateText(albumName, maxLength - timestampLength - separator.length) + separator.slice(0, -1);
+  }
+
+  return truncateText(albumName, availableForAlbum);
 }
 
 export const SpotifyActivityContent = memo(function SpotifyActivityContent({
@@ -33,13 +77,14 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
   onMouseLeave,
   onMouseMove,
   mousePosition
-}: SpotifyActivityContentProps) {
+}: TProps) {
 
-  // Enhanced staggered animation constants
   const STAGGER_DURATION = 0.8;
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-  const BASE_DELAY = 0.2; // Base delay before first element starts (slightly later than GitHub)
-  const STAGGER_DELAY = 0.12; // Delay between each element
+  const BASE_DELAY = 0.2;
+  const STAGGER_DELAY = 0.12;
+  const MAX_LINE1_LENGTH = 70;
+  const MAX_LINE2_LENGTH = 55;
 
   function buildStaggerTransition(order: number) {
     return {
@@ -52,6 +97,19 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
 
   const isCurrentlyPlaying = 'is_playing' in currentTrack && currentTrack.is_playing;
   const isRecentTrack = 'played_at' in currentTrack;
+  const prefix = isCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to';
+  
+  const truncated = smartTruncateLine1(
+    prefix,
+    currentTrack.name,
+    currentTrack.artist || 'Unknown Artist',
+    MAX_LINE1_LENGTH
+  );
+
+  const timestampText = isRecentTrack ? formatTimestamp((currentTrack as SpotifyRecentTrack).played_at) : '';
+  const truncatedAlbum = currentTrack.album 
+    ? smartTruncateLine2(currentTrack.album, timestampText, MAX_LINE2_LENGTH)
+    : '';
 
   return (
     <div className="flex items-start gap-3 relative group">
@@ -63,8 +121,8 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
       >
         <div className="flex-1 min-w-0">
           <div className="text-body text-muted-foreground leading-tight">
-            <span className="flex-shrink-0">
-              {isCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
+            <span className="inline">
+              {prefix}{" "}
             </span>
             <AnimatePresence mode="wait">
               <motion.span
@@ -82,7 +140,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                   className="hover:text-accent transition-colors"
                   title={`Listen to ${currentTrack.name} on Spotify`}
                 >
-                  {currentTrack.name}
+                  {truncated.track}
                 </a>
               </motion.span>
             </AnimatePresence>
@@ -108,64 +166,61 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                 transition={buildStaggerTransition(1)}
               >
                 <span title={currentTrack.artist}>
-                  {currentTrack.artist
-                    ? currentTrack.artist.length > 20
-                      ? currentTrack.artist.substring(0, 20) + '...'
-                      : currentTrack.artist
-                    : 'Unknown Artist'
-                  }
+                  {truncated.artist}
                 </span>
               </motion.span>
             </AnimatePresence>
+          </div>
+          <div className="text-sm text-muted-foreground leading-tight mt-1">
             {currentTrack.album && (
               <>
                 <AnimatePresence mode="wait">
                   <motion.span
-                    key={`from-${currentTrackIndex}`}
-                    className="inline-block px-[3px]"
-                    initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-                    transition={buildStaggerTransition(1.5)}
-                  >
-                    -
-                  </motion.span>
-                </AnimatePresence>
-                <AnimatePresence mode="wait">
-                  <motion.span
                     key={`album-${currentTrackIndex}`}
-                    className="inline-block italic text-sm"
+                    className="inline-block italic"
                     initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                     transition={buildStaggerTransition(2)}
                   >
                     <span title={currentTrack.album}>
-                      {currentTrack.album.length > 25
-                        ? currentTrack.album.substring(0, 25) + '...'
-                        : currentTrack.album}
+                      - {truncatedAlbum}
                     </span>
                   </motion.span>
                 </AnimatePresence>
               </>
             )}
+            {isRecentTrack && (
+              <>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={`space-${currentTrackIndex}`}
+                    className="inline-block px-[3px]"
+                    initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
+                    transition={buildStaggerTransition(2.5)}
+                  >
+                    {" "}
+                  </motion.span>
+                </AnimatePresence>
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={`timestamp-${currentTrackIndex}`}
+                    className="inline-block text-muted-foreground whitespace-nowrap"
+                    initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
+                    transition={buildStaggerTransition(3)}
+                  >
+                    <span>(</span>
+                    <AnimatedTimestamp timestamp={timestampText} delay={BASE_DELAY + (3 * STAGGER_DELAY) * 1000 + 100} />
+                    <span>)</span>
+                  </motion.span>
+                </AnimatePresence>
+              </>
+            )}
           </div>
-          {isRecentTrack && (
-            <div className="text-sm text-muted-foreground leading-tight mt-1">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={`timestamp-${currentTrackIndex}`}
-                  className="inline-block text-muted-foreground whitespace-nowrap"
-                  initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
-                  transition={buildStaggerTransition(3)}
-                >
-                  (<AnimatedTimestamp timestamp={formatTimestamp(currentTrack.played_at)} delay={BASE_DELAY + (3 * STAGGER_DELAY) * 1000 + 100} />)
-                </motion.span>
-              </AnimatePresence>
-            </div>
-          )}
         </div>
 
         {/* Right side - album cover only */}
@@ -209,10 +264,9 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
  * Now with staggered fade-out animations
  */
 export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }: { showCurrentlyPlaying?: boolean }) {
-  // Match the same stagger timing as real content
   const STAGGER_DURATION = 0.8;
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-  const BASE_DELAY = 0.2; // Slightly later than GitHub
+  const BASE_DELAY = 0.2;
   const STAGGER_DELAY = 0.12;
 
   function buildStaggerTransition(order: number) {
@@ -227,15 +281,13 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
   return (
     <div className="flex items-start gap-3">
       <div className="flex-1 min-w-0">
-        {/* First line - Static text + skeleton content */}
         <div className="text-body text-muted-foreground leading-tight">
           <span className="flex-shrink-0">
             {showCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
           </span>
-          {/* Skeleton for track name */}
           <span className="inline-block font-semibold text-foreground">
             <motion.span
-              className="h-5 bg-muted/60 rounded-md animate-pulse w-[160px] max-w-[250px] inline-block align-middle"
+              className="h-5 bg-muted/60 rounded-md animate-pulse w-[160px] inline-block align-middle"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
               transition={buildStaggerTransition(0)}
@@ -247,35 +299,30 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
             transition={buildStaggerTransition(0.5)}
           />
-          {/* Skeleton for artist name */}
           <span className="inline-block font-medium text-foreground">
             <motion.span
-              className="h-5 bg-muted/60 rounded-md animate-pulse w-[120px] max-w-[180px] inline-block align-middle"
+              className="h-5 bg-muted/60 rounded-md animate-pulse w-[120px] inline-block align-middle"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
               transition={buildStaggerTransition(1)}
             />
           </span>
-          {/* Skeleton for separator */}
-          <motion.span
-            className="inline-block h-5 bg-muted/40 rounded-md animate-pulse w-[12px] mx-1 align-middle"
-            initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-            animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
-            transition={buildStaggerTransition(1.5)}
-          />
-          {/* Skeleton for album name */}
-          <span className="inline-block italic text-sm">
+        </div>
+        <div className="text-sm text-muted-foreground leading-tight mt-1">
+          <span className="inline-block italic">
             <motion.span
-              className="h-4 bg-muted/40 rounded-md animate-pulse w-[140px] max-w-[200px] inline-block align-middle"
+              className="h-4 bg-muted/40 rounded-md animate-pulse w-[140px] inline-block align-middle"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
               transition={buildStaggerTransition(2)}
             />
           </span>
-        </div>
-
-        {/* Second line - timestamp */}
-        <div className="text-sm text-muted-foreground leading-tight mt-1">
+          <motion.span
+            className="inline-block h-4 bg-muted/40 rounded-md animate-pulse w-[12px] mx-1 align-middle"
+            initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+            animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
+            transition={buildStaggerTransition(2.5)}
+          />
           <span className="inline-block text-muted-foreground">
             (<motion.span
               className="h-4 bg-muted/40 rounded-md animate-pulse w-[50px] inline-block align-middle"
@@ -287,7 +334,6 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
         </div>
       </div>
 
-      {/* Right side - album cover skeleton */}
       <motion.div
         className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"
         initial={{ opacity: 1, filter: "blur(0px)", scale: 1 }}

@@ -210,39 +210,6 @@ const getCachedProjectData = unstable_cache(
 
       return { featuredProjects, simpleProjects };
     } catch (error) {
-      console.error('Error fetching real project data:', error);
-
-      return {
-        featuredProjects: [{
-          title: "Loading Projects...",
-          description: "Fetching real project data from GitHub...",
-          url: "https://github.com/remcostoeten",
-          stars: 0,
-          forks: 0,
-          branches: 0,
-          technologies: ["GitHub API"],
-          lastUpdated: "recently",
-          highlights: ["Real-time data from GitHub"],
-          language: "Various",
-          contributors: 1,
-          totalCommits: 0,
-          category: 'projects' as const
-        }],
-        simpleProjects: [{
-          name: "GitHub Profile",
-          url: "https://github.com/remcostoeten",
-          category: 'projects' as const,
-          gitInfo: {
-            stars: 0,
-            forks: 0,
-            lastCommit: "recently",
-            language: "Various",
-            contributors: 1,
-            description: "Visit GitHub profile for all projects"
-          }
-        }]
-      };
-    } catch (error) {
       console.error('Error fetching project data:', error);
       return {
         featuredProjects: [],

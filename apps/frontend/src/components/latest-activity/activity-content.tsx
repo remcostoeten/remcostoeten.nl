@@ -100,7 +100,9 @@ export const ActivityContent = memo(function ActivityContent({
               filter: { duration: 0.3 }
             }}
           >
-            (<AnimatedTimestamp timestamp={currentActivity.timestamp} delay={50} />)
+            <span>(</span>
+            <AnimatedTimestamp timestamp={currentActivity.timestamp} delay={50} />
+            <span>)</span>
           </motion.span>
         </AnimatePresence>
       </div>

@@ -178,94 +178,152 @@ export function TOCProvider({ children, items }: { children: ReactNode; items: T
     const headingIds = getAllIds(items);
     if (headingIds.length === 0) return;
 
-    const headingElements = headingIds
-      .map(id => document.getElementById(id))
-      .filter(Boolean) as HTMLElement[];
+    // Function to get heading elements
+    const getHeadingElements = (): HTMLElement[] => {
+      return headingIds
+        .map(id => document.getElementById(id))
+        .filter(Boolean) as HTMLElement[];
+    };
 
-    if (headingElements.length === 0) return;
+    let observer: IntersectionObserver | null = null;
+    let scrollTimeout: NodeJS.Timeout;
+    let retryTimeout: NodeJS.Timeout;
 
-    // Enhanced intersection observer for better active section detection
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntries = entries.filter(entry => entry.isIntersecting);
+    const initializeObserver = (headingElements: HTMLElement[]) => {
+      // Enhanced intersection observer for better active section detection
+      observer = new IntersectionObserver(
+        (entries) => {
+          const visibleEntries = entries.filter(entry => entry.isIntersecting);
 
-        if (visibleEntries.length > 0) {
-          // Find the most prominent heading
-          const mostVisible = visibleEntries.reduce((prev, current) => {
-            const prevRect = prev.boundingClientRect;
-            const currentRect = current.boundingClientRect;
-            const viewportCenter = window.innerHeight / 2;
+          if (visibleEntries.length > 0) {
+            // Find the most prominent heading
+            const mostVisible = visibleEntries.reduce((prev, current) => {
+              const prevRect = prev.boundingClientRect;
+              const currentRect = current.boundingClientRect;
+              const viewportCenter = window.innerHeight / 2;
 
-            // Prefer headings closer to the top of the viewport
-            const prevDistance = Math.abs(prevRect.top - viewportCenter);
-            const currentDistance = Math.abs(currentRect.top - viewportCenter);
+              // Prefer headings closer to the top of the viewport
+              const prevDistance = Math.abs(prevRect.top - viewportCenter);
+              const currentDistance = Math.abs(currentRect.top - viewportCenter);
 
-            // If distances are similar, prefer the one with higher intersection ratio
-            if (Math.abs(prevDistance - currentDistance) < 50) {
-              return prev.intersectionRatio > current.intersectionRatio ? prev : current;
+              // If distances are similar, prefer the one with higher intersection ratio
+              if (Math.abs(prevDistance - currentDistance) < 50) {
+                return prev.intersectionRatio > current.intersectionRatio ? prev : current;
+              }
+
+              return prevDistance < currentDistance ? prev : current;
+            });
+
+            setActiveId(mostVisible.target.id);
+          } else {
+            // If no headings are visible, find the closest one above the viewport
+            const elementsAbove = headingElements.filter(el => {
+              const rect = el.getBoundingClientRect();
+              return rect.top < window.innerHeight * 0.3; // Top 30% of viewport
+            });
+
+            if (elementsAbove.length > 0) {
+              // Get the last (lowest) heading that's above the threshold
+              const closestAbove = elementsAbove[elementsAbove.length - 1];
+              setActiveId(closestAbove.id);
             }
+          }
+        },
+        {
+          rootMargin: '-20% 0px -60% 0px', // More precise viewport detection
+          threshold: [0, 0.1, 0.5, 1.0] // Multiple thresholds for better detection
+        }
+      );
 
-            return prevDistance < currentDistance ? prev : current;
-          });
+      // Observe all heading elements
+      headingElements.forEach(element => {
+        observer!.observe(element);
+      });
+    };
 
-          setActiveId(mostVisible.target.id);
-        } else {
-          // If no headings are visible, find the closest one above the viewport
-          const elementsAbove = headingElements.filter(el => {
-            const rect = el.getBoundingClientRect();
-            return rect.top < window.innerHeight * 0.3; // Top 30% of viewport
-          });
+    const initializeScrollHandler = (headingElements: HTMLElement[]) => {
+      // Fallback scroll handler for edge cases
+      const handleScroll = () => {
+        const scrollPosition = window.scrollY + window.innerHeight * 0.3;
 
-          if (elementsAbove.length > 0) {
-            // Get the last (lowest) heading that's above the threshold
-            const closestAbove = elementsAbove[elementsAbove.length - 1];
-            setActiveId(closestAbove.id);
+        for (let i = headingElements.length - 1; i >= 0; i--) {
+          const element = headingElements[i];
+          const rect = element.getBoundingClientRect();
+          const absoluteTop = rect.top + window.scrollY;
+
+          if (absoluteTop <= scrollPosition) {
+            setActiveId(element.id);
+            break;
           }
         }
-      },
-      {
-        rootMargin: '-20% 0px -60% 0px', // More precise viewport detection
-        threshold: [0, 0.1, 0.5, 1.0] // Multiple thresholds for better detection
-      }
-    );
+      };
 
-    // Observe all heading elements
-    headingElements.forEach(element => {
-      observer.observe(element);
-    });
+      // Throttled scroll handler as fallback
+      const throttledScroll = () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(handleScroll, 100);
+      };
 
-    // Fallback scroll handler for edge cases
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight * 0.3;
+      window.addEventListener('scroll', throttledScroll, { passive: true });
+      handleScroll(); // Initial check
+    };
 
-      for (let i = headingElements.length - 1; i >= 0; i--) {
-        const element = headingElements[i];
-        const rect = element.getBoundingClientRect();
-        const absoluteTop = rect.top + window.scrollY;
+    // Try to initialize immediately
+    let headingElements = getHeadingElements();
 
-        if (absoluteTop <= scrollPosition) {
-          setActiveId(element.id);
-          break;
+    if (headingElements.length > 0) {
+      initializeObserver(headingElements);
+      initializeScrollHandler(headingElements);
+    } else {
+      // If no elements found initially, wait a bit and retry
+      retryTimeout = setTimeout(() => {
+        headingElements = getHeadingElements();
+        if (headingElements.length > 0) {
+          initializeObserver(headingElements);
+          initializeScrollHandler(headingElements);
         }
-      }
-    };
-
-    // Throttled scroll handler as fallback
-    let scrollTimeout: NodeJS.Timeout;
-    const throttledScroll = () => {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScroll, 100);
-    };
-
-    window.addEventListener('scroll', throttledScroll, { passive: true });
-    handleScroll(); // Initial check
+      }, 100);
+    }
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener('scroll', throttledScroll);
+      if (observer) {
+        observer.disconnect();
+      }
+      window.removeEventListener('scroll', () => clearTimeout(scrollTimeout));
       clearTimeout(scrollTimeout);
+      clearTimeout(retryTimeout);
     };
   }, [items])
+
+  // Handle initial hash navigation on page load
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const hash = window.location.hash.slice(1); // Remove # from hash
+    if (hash) {
+      // Wait a bit for content to load, then scroll to the hash
+      const scrollToHash = () => {
+        const element = document.getElementById(hash)
+        if (element) {
+          const offset = 80
+          const elementPosition = element.getBoundingClientRect().top + window.scrollY
+          const offsetPosition = elementPosition - offset
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          })
+
+          setActiveId(hash)
+        }
+      };
+
+      // Try multiple times with increasing delays for content that takes longer to load
+      setTimeout(scrollToHash, 100);
+      setTimeout(scrollToHash, 300);
+      setTimeout(scrollToHash, 600);
+    }
+  }, []) // Only run once on mount
 
   const scrollToHeading = (id: string) => {
     const element = document.getElementById(id)
@@ -280,6 +338,35 @@ export function TOCProvider({ children, items }: { children: ReactNode; items: T
       })
 
       setActiveId(id)
+
+      // Update URL hash without triggering page jump
+      if (typeof window !== 'undefined') {
+        window.history.pushState(null, '', `#${id}`)
+      }
+    } else {
+      // If element not found, try to wait for DOM to be ready and retry
+      const retryScroll = () => {
+        const retryElement = document.getElementById(id)
+        if (retryElement) {
+          const offset = 80
+          const elementPosition = retryElement.getBoundingClientRect().top + window.scrollY
+          const offsetPosition = elementPosition - offset
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth",
+          })
+
+          setActiveId(id)
+
+          if (typeof window !== 'undefined') {
+            window.history.pushState(null, '', `#${id}`)
+          }
+        }
+      }
+
+      // Wait for next tick and retry
+      setTimeout(retryScroll, 100)
     }
   }
 

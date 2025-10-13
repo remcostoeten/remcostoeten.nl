@@ -2,17 +2,16 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Eye, Clock, Calendar } from 'lucide-react';
-import { formatBlogDateShort } from '@/lib/blog/date-utils';
-import { useViewCount } from '@/hooks/use-view-count';
-
+import { Clock, Calendar, Eye } from "lucide-react";
+import { formatBlogDateShort } from "@/lib/blog/date-utils";
+import { getPrimaryCategory, getSecondaryCategoriesForDisplay } from "@/lib/utils/category-display";
 interface BlogPost {
   slug: string;
   title: string;
   excerpt: string;
   publishedAt: string;
   tags: string[];
-  category: string;
+  category: string | string[];
   readTime: number;
 }
 
@@ -104,8 +103,20 @@ export function BlogPostCard({
               ? 'px-4 py-3 text-base'
               : 'px-3 py-2 text-sm'
               }`}>
-              {post.category}
+              {getPrimaryCategory(post.category)}
             </span>
+            {/* Secondary categories */}
+            {getSecondaryCategoriesForDisplay(post.category).map((category) => (
+              <span
+                key={category}
+                className={`bg-accent/5 text-accent/80 rounded-lg border border-accent/10 font-medium ${isFeatured
+                  ? 'px-4 py-3 text-base'
+                  : 'px-3 py-2 text-sm'
+                  }`}
+              >
+                {category}
+              </span>
+            ))}
             {/* Show more tags for featured posts */}
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {post.tags.slice(0, isFeatured ? 2 : 1).map((tag) => (

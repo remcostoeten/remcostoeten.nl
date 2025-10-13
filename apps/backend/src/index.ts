@@ -91,7 +91,7 @@ export const createApp = async () => {
   app.route('/api/blog', createBlogRouter(blogMetadataService, blogFeedbackService));
   app.route('/api/spotify', spotifyRouter);
   app.route('/api/analytics', createAnalyticsRouter());
-  
+
   if (contactMessagesService) {
     app.route('/api/contact', createContactRouter(contactMessagesService));
   }

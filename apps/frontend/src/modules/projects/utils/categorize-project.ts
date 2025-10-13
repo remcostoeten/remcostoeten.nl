@@ -1,6 +1,7 @@
 import type { TSimpleProject, TProjectData } from '../types';
 
 type ProjectCategory = 'APIs' | 'DX tooling' | 'projects';
+type ProjectCategoryInput = ProjectCategory | ProjectCategory[];
 
 /**
  * Predefined project categorization mapping
@@ -87,9 +88,31 @@ export function categorizeProject(
 }
 
 /**
- * Groups projects by category
+ * Normalizes category input to always return an array
  */
-export function groupProjectsByCategory<T extends { category: ProjectCategory }>(
+function normalizeCategoryToArray(category: ProjectCategoryInput): ProjectCategory[] {
+  return Array.isArray(category) ? category : [category];
+}
+
+/**
+ * Gets all categories from a project as an array
+ */
+export function getProjectCategories(project: { category: ProjectCategoryInput }): ProjectCategory[] {
+  return normalizeCategoryToArray(project.category);
+}
+
+/**
+ * Checks if a project belongs to a specific category
+ */
+export function projectHasCategory(project: { category: ProjectCategoryInput }, targetCategory: ProjectCategory): boolean {
+  const categories = normalizeCategoryToArray(project.category);
+  return categories.includes(targetCategory);
+}
+
+/**
+ * Groups projects by category, handling both single and array categories
+ */
+export function groupProjectsByCategory<T extends { category: ProjectCategoryInput }>(
   projects: T[]
 ): Record<ProjectCategory, T[]> {
   const grouped: Record<ProjectCategory, T[]> = {
@@ -99,7 +122,10 @@ export function groupProjectsByCategory<T extends { category: ProjectCategory }>
   };
 
   projects.forEach(project => {
-    grouped[project.category].push(project);
+    const categories = normalizeCategoryToArray(project.category);
+    categories.forEach(cat => {
+      grouped[cat].push(project);
+    });
   });
 
   return grouped;

@@ -69,21 +69,37 @@ export function buildHierarchicalTOC(flatHeadings: TOCItem[]): TOCItem[] {
   const stack: TOCItem[] = [];
 
   for (const heading of flatHeadings) {
+    // Skip empty or invalid headings
+    if (!heading.text || heading.text.trim() === '') {
+      continue;
+    }
+
     // Remove items from stack that are at same or deeper level
     while (stack.length > 0 && stack[stack.length - 1].level >= heading.level) {
       stack.pop();
     }
 
     if (stack.length === 0) {
-      // Top level heading
-      result.push(heading);
+      // Top level heading - check for duplicates
+      const exists = result.some(item =>
+        item.id === heading.id || item.text.toLowerCase() === heading.text.toLowerCase()
+      );
+      if (!exists) {
+        result.push(heading);
+      }
     } else {
-      // Child heading
+      // Child heading - check for duplicates in parent
       const parent = stack[stack.length - 1];
       if (!parent.children) {
         parent.children = [];
       }
-      parent.children.push(heading);
+
+      const exists = parent.children.some(item =>
+        item.id === heading.id || item.text.toLowerCase() === heading.text.toLowerCase()
+      );
+      if (!exists) {
+        parent.children.push(heading);
+      }
     }
 
     stack.push(heading);

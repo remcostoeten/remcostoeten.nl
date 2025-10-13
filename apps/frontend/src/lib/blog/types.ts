@@ -1,7 +1,8 @@
 import { TOCItem } from './toc-utils';
 import { BreadcrumbItem } from './breadcrumb-utils';
 
-export type TBlogCategory = 'all' | 'development' | 'design' | 'best-practices';
+type TBlogCategorySingle = 'all' | 'development' | 'design' | 'best-practices';
+export type TBlogCategory = TBlogCategorySingle | TBlogCategorySingle[];
 
 export type TBlogMetadata = {
   title: string;

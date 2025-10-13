@@ -1,14 +1,17 @@
-/* Zen Mode Styles */
+/* Zen Mode Styles - Clean & Aesthetic */
+
+/* Zen mode body styling for immersive reading */
+body.zen-mode {
+  background: hsl(var(--background));
+}
 
 /* Base zen mode utility classes */
 .zen-mode .zen-mode\:hidden {
-  position: absolute !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
-  max-height: 0 !important;
-  overflow: hidden !important;
-  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+  position: absolute !important;
+  left: -9999px !important;
 }
 
 .zen-mode .zen-mode\:block {
@@ -17,152 +20,149 @@
   visibility: visible !important;
 }
 
-.zen-mode .zen-mode\:opacity-0 {
-  opacity: 0 !important;
-}
-
-.zen-mode .zen-mode\:scale-95 {
-  transform: scale(0.95) !important;
-}
-
-/* Smooth transitions for elements entering/exiting zen mode */
+/* Smooth fade out for elements leaving zen mode */
 .zen-mode\:hidden {
-  transition: opacity 0.3s ease-out, visibility 0.3s ease-out, max-height 0.3s ease-out;
+  transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
 }
 
 .zen-mode\:block {
   display: none;
-  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+  transition: opacity 0.5s ease-in;
 }
 
-/* Article width transition for zen mode */
-.max-w-7xl,
-.max-w-4xl {
-  transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Zen mode content fade-in animation */
-@keyframes zen-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
+/* Clean fade out animation for UI elements */
+@keyframes zen-ui-fade-out {
+  0% {
     opacity: 1;
     transform: translateY(0);
   }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 }
 
-.zen-mode .zen-mode\:block {
-  animation: zen-fade-in 0.5s ease-out;
-}
-
-/* Epic Cinematic Zen Mode Transitions */
-
-/* Cinematic swoosh effect when entering zen mode */
-@keyframes zen-epic-enter {
+/* Elegant scale-up fade-in for article */
+@keyframes zen-article-enter {
   0% {
     opacity: 0;
-    transform: scale(0.92) translateZ(0) translateY(30px);
-    filter: blur(8px);
-  }
-  40% {
-    opacity: 0.3;
-    transform: scale(0.96) translateZ(0) translateY(15px);
-    filter: blur(4px);
+    transform: scale(0.96) translateY(10px);
   }
   100% {
     opacity: 1;
-    transform: scale(1) translateZ(0) translateY(0);
-    filter: blur(0);
+    transform: scale(1) translateY(0);
   }
 }
 
-/* Cinematic swoosh effect when exiting zen mode */
-@keyframes zen-epic-exit {
+/* Smooth fade-out for article when exiting zen mode */
+@keyframes zen-article-exit {
   0% {
     opacity: 1;
-    transform: scale(1) translateZ(0) translateY(0);
-    filter: blur(0);
-  }
-  60% {
-    opacity: 0.3;
-    transform: scale(0.96) translateZ(0) translateY(-15px);
-    filter: blur(4px);
+    transform: scale(1) translateY(0);
   }
   100% {
     opacity: 0;
-    transform: scale(0.92) translateZ(0) translateY(-30px);
-    filter: blur(8px);
+    transform: scale(0.98) translateY(-10px);
   }
 }
 
-/* Immersive zoom effect for article content */
-@keyframes zen-article-zoom-in {
-  0% {
-    opacity: 0;
-    transform: scale(0.88) translateZ(0);
-    filter: blur(12px) brightness(0.7);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(0.94) translateZ(0);
-    filter: blur(6px) brightness(0.85);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateZ(0);
-    filter: blur(0) brightness(1);
-  }
-}
-
-@keyframes zen-article-zoom-out {
-  0% {
-    opacity: 1;
-    transform: scale(1) translateZ(0);
-    filter: blur(0) brightness(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.06) translateZ(0);
-    filter: blur(6px) brightness(0.85);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.12) translateZ(0);
-    filter: blur(12px) brightness(0.7);
-  }
-}
-
-/* Epic transition classes */
-body.zen-mode-epic-transitioning {
-  overflow: hidden;
-}
-
+/* Apply animations during transition */
 .zen-epic-transition .zen-mode\:hidden {
-  animation: zen-epic-exit 1.4s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: zen-ui-fade-out 0.4s ease-out forwards;
 }
 
 .zen-epic-transition .zen-mode\:block {
-  animation: zen-epic-enter 1.4s cubic-bezier(0.77, 0, 0.175, 1) forwards;
-}
-
-.zen-epic-transition article {
-  animation: zen-article-zoom-in 1.6s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: zen-article-enter 0.5s ease-out forwards;
 }
 
 .zen-mode.zen-epic-transition .zen-mode\:block {
   display: block !important;
-  animation: zen-epic-enter 1.4s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+  animation: zen-article-enter 0.5s ease-out forwards;
 }
 
-/* Enhanced content wrapper transitions */
-.zen-content-wrapper {
-  transition: all 1.2s cubic-bezier(0.77, 0, 0.175, 1);
+/* Exit transition animations */
+.zen-mode-exit-transitioning .zen-mode\:hidden {
+  animation: zen-ui-fade-out 0.3s ease-out forwards reverse;
 }
 
-.zen-mode .zen-content-wrapper {
-  transform: scale(1);
+.zen-mode-exit-transitioning .zen-mode\:block {
+  animation: zen-article-exit 0.4s ease-out forwards;
+}
+
+/* Smooth fade back for regular content when exiting zen mode */
+.zen-mode-exit-transitioning :not(.zen-mode\:block):not(.zen-mode\:hidden) {
+  transition: opacity 0.3s ease-out;
+}
+
+.zen-mode-exit-transitioning :not(.zen-mode\:block):not(.zen-mode\:hidden) {
+  opacity: 1;
+}
+
+/* Zen mode centered content layout */
+.zen-mode .zen-content-centered {
+  max-width: 45rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 3rem;
+}
+
+/* Improved typography for zen mode readability */
+.zen-mode article {
+  line-height: 1.8;
+  font-size: 1.0625rem;
+  letter-spacing: 0.01em;
+}
+
+.zen-mode article h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.zen-mode article h2 {
+  font-size: 1.75rem;
+  line-height: 1.3;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.zen-mode article h3 {
+  font-size: 1.375rem;
+  line-height: 1.4;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.zen-mode article p {
+  margin-bottom: 1.5rem;
+}
+
+.zen-mode article ul,
+.zen-mode article ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.zen-mode article li {
+  margin-bottom: 0.5rem;
+}
+
+.zen-mode article code {
+  font-size: 0.9375rem;
+}
+
+.zen-mode article pre {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.zen-mode .prose {
+  max-width: none;
 }
 
 /* Respect reduced motion preferences */

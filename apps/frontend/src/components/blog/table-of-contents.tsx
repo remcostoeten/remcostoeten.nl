@@ -30,8 +30,8 @@ function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: Props) {
           level === 1 && "pl-10",
           level >= 2 && "pl-14",
           isActive && [
-            "text-foreground font-medium",
-            "before:h-[70%] before:shadow-[0_0_12px_rgba(var(--primary),0.4)]",
+            "text-accent font-medium",
+            "before:h-[70%] before:shadow-[0_0_12px_rgba(var(--accent),0.4)]",
           ],
         )}
       >
@@ -41,7 +41,7 @@ function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: Props) {
               "w-1 h-1 rounded-full transition-all duration-500 ease-out",
               level === 0 && "w-1.5 h-1.5",
               isActive
-                ? "bg-primary scale-100 shadow-[0_0_8px_rgba(var(--primary),0.5)]"
+                ? "bg-accent scale-100 shadow-[0_0_8px_rgba(var(--accent),0.5)]"
                 : "bg-muted-foreground/30 scale-75 group-hover:scale-100 group-hover:bg-muted-foreground/60",
             )}
           />
@@ -53,7 +53,7 @@ function TOCItemComponent({ item, activeId, onItemClick, level = 0 }: Props) {
               level === 0 && "font-semibold text-[15px] tracking-tight",
               level === 1 && "text-muted-foreground font-medium",
               level >= 2 && "text-muted-foreground/80 text-[13px]",
-              isActive && "text-foreground",
+              isActive && "text-accent",
             )}
             title={item.text}
           >
@@ -89,8 +89,8 @@ export function TableOfContentsRedesign({ className, ...props }: TableOfContents
   return (
     <nav className={cn("sticky top-24 p-6", className)} aria-label="Table of contents" {...props}>
       <div className="flex items-center gap-2.5 pb-3 mb-4 border-b border-border/30">
-        <div className="p-1.5 rounded-md bg-primary/10">
-          <BookOpen className="w-3.5 h-3.5 text-primary" />
+        <div className="p-1.5 rounded-md bg-accent/10">
+          <BookOpen className="w-3.5 h-3.5 text-accent" />
         </div>
         <h3 className="text-sm font-semibold text-foreground tracking-tight">Table of Contents</h3>
       </div>
@@ -103,13 +103,7 @@ export function TableOfContentsRedesign({ className, ...props }: TableOfContents
         </ul>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-border/30">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span className="font-medium">Quick Navigation</span>
-          <ChevronRight className="w-3 h-3 opacity-50" />
-        </div>
-      </div>
-    </nav>
+      </nav>
   )
 }
 
@@ -146,8 +140,8 @@ export function MobileTOCRedesign({ isOpen, onToggle, className, ...props }: Mob
         aria-controls="mobile-toc"
       >
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-md bg-primary/10">
-            <BookOpen className="w-3.5 h-3.5 text-primary" />
+          <div className="p-1.5 rounded-md bg-accent/10">
+            <BookOpen className="w-3.5 h-3.5 text-accent" />
           </div>
           <span>Table of Contents</span>
         </div>

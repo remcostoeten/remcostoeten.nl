@@ -82,10 +82,12 @@ export function AnnouncementTitle({ className, ...props }: TAnnouncementTitlePro
 
 export function AnnouncementBanner() {
     const [isVisible, setIsVisible] = React.useState(false)
+    const [shouldAnimateIn, setShouldAnimateIn] = React.useState(false)
     const [isDragging, setIsDragging] = React.useState(false)
     const [dragY, setDragY] = React.useState(0)
     const [startY, setStartY] = React.useState(0)
     const [isHiddenByScroll, setIsHiddenByScroll] = React.useState(false)
+    const [shouldHideByScroll, setShouldHideByScroll] = React.useState(false)
     const lastScrollYRef = React.useRef(0)
     const wrapperRef = React.useRef<HTMLDivElement | null>(null)
     const [bannerHeight, setBannerHeight] = React.useState(80)
@@ -95,6 +97,8 @@ export function AnnouncementBanner() {
         const dismissed = typeof window !== "undefined" && window.localStorage.getItem("announcement-dismissed") === "true"
         if (!dismissed) {
             setIsVisible(true)
+            // Delay the animation to create a smooth entrance
+            setTimeout(() => setShouldAnimateIn(true), 100)
         }
     }, [])
 
@@ -110,15 +114,18 @@ export function AnnouncementBanner() {
 
             // Debounce the scroll state change to prevent flickering
             scrollTimeoutRef.current = setTimeout(() => {
-                // Hide when scrolling down more than 100px
-                if (currentY > 100 && delta > 5) {
+                // Hide when scrolling down more than 50px
+                if (currentY > 50 && delta > 3) {
                     setIsHiddenByScroll(true)
+                    setShouldHideByScroll(true)
                 }
-                // Show when scrolling up or at the top
-                else if (delta < -5 || currentY <= 100) {
+                // Show when scrolling up or near the top
+                else if (delta < -3 || currentY <= 50) {
                     setIsHiddenByScroll(false)
+                    // Delay showing for smooth animation
+                    setTimeout(() => setShouldHideByScroll(false), 50)
                 }
-            }, 50)
+            }, 30)
 
             lastScrollYRef.current = currentY
         }
@@ -174,11 +181,11 @@ export function AnnouncementBanner() {
     return (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none" style={{ contain: 'paint' }}>
             <div
-                className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit animate-in slide-in-from-top-full duration-500 ease-out pointer-events-auto overflow-visible"
+                className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit pointer-events-auto overflow-visible"
                 style={{
-                    transform: `translateY(${(isHiddenByScroll ? -bannerHeight - 20 : 0) + dragY}px)`,
-                    opacity: isHiddenByScroll ? 0 : 1,
-                    transition: isDragging ? "none" : "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out",
+                    transform: `translateY(${(shouldAnimateIn ? 0 : -bannerHeight - 20) + (shouldHideByScroll ? -bannerHeight - 20 : 0) + dragY}px)`,
+                    opacity: shouldAnimateIn && !shouldHideByScroll ? 1 : 0,
+                    transition: isDragging ? "none" : `transform ${shouldAnimateIn && !isHiddenByScroll ? "0.8s" : "0.5s"} cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${shouldAnimateIn && !isHiddenByScroll ? "0.6s" : "0.3s"} ease-out`,
                 }}
                 ref={wrapperRef}
                 onMouseDown={handleDragStart}

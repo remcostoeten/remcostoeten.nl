@@ -207,45 +207,51 @@ export function CodeBlock({
                     onClick={handleCopy}
                     onKeyDown={handleKeyDown}
                     className={cn(
-                        "flex items-center gap-1 px-2 py-1 text-xs transition-colors rounded opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2",
+                        "flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium transition-all duration-200 rounded-md opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 backdrop-blur-sm",
                         copied === 'error'
-                            ? "text-destructive hover:text-destructive/80"
+                            ? "text-destructive bg-destructive/10 border border-destructive/20"
                             : copied
-                                ? "text-green-600 hover:text-green-700"
-                                : "text-muted-foreground hover:text-foreground"
+                                ? "text-green-600 bg-green-500/10 border border-green-500/20 shadow-sm shadow-green-500/10 scale-105"
+                                : "text-muted-foreground hover:text-foreground hover:bg-background/80 border border-transparent hover:border-border/50"
                     )}
                     title={
                         copied === 'error'
                             ? 'Failed to copy code'
                             : !clipboardSupported
                                 ? 'Copy not supported in this browser'
-                                : 'Copy code'
+                                : copied
+                                    ? 'Copied!'
+                                    : 'Copy code'
                     }
                     aria-label={
                         copied === 'error'
                             ? 'Failed to copy code to clipboard'
                             : !clipboardSupported
                                 ? 'Copy not supported in this browser'
-                                : 'Copy code to clipboard'
+                                : copied
+                                    ? 'Code copied to clipboard'
+                                    : 'Copy code to clipboard'
                     }
                     disabled={copied === 'error' || !clipboardSupported}
                 >
-                    {copied === 'error' ? (
-                        <>
-                            <AlertCircle className="w-3 h-3" />
-                            Failed
-                        </>
-                    ) : copied ? (
-                        <>
-                            <Check className="w-3 h-3" />
-                            Copied
-                        </>
-                    ) : (
-                        <>
-                            <Copy className="w-3 h-3" />
-                            Copy
-                        </>
-                    )}
+                    <span className={cn(
+                        "transition-all duration-200",
+                        copied === 'error' ? "animate-pulse" : copied ? "animate-in fade-in zoom-in duration-300" : ""
+                    )}>
+                        {copied === 'error' ? (
+                            <AlertCircle className="w-3.5 h-3.5" />
+                        ) : copied ? (
+                            <Check className="w-3.5 h-3.5" />
+                        ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                        )}
+                    </span>
+                    <span className={cn(
+                        "transition-all duration-200",
+                        copied ? "animate-in fade-in slide-in-from-left-2 duration-300" : ""
+                    )}>
+                        {copied === 'error' ? 'Failed' : copied ? 'Copied!' : 'Copy'}
+                    </span>
                 </button>
             </div>
 

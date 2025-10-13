@@ -88,7 +88,7 @@ export const CommitHoverCard = memo(function CommitHoverCard({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 8, scale: 0.96 }}
       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute left-0 top-full w-96 max-w-[90vw] isolate"
+      className="absolute left-0 top-full w-[28rem] max-w-[95vw] isolate"
       style={{ zIndex: 999999 }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -97,9 +97,9 @@ export const CommitHoverCard = memo(function CommitHoverCard({
     >
       <div className="h-2 w-full" aria-hidden="true" />
 
-      <div className="bg-card border border-border rounded-xl shadow-2xl p-5 relative backdrop-blur-xl"
+      <div className="bg-card border border-border rounded-xl shadow-2xl p-6 relative backdrop-blur-xl"
         style={{ zIndex: 999999 }}>
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-5">
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-lg text-foreground truncate">
               {activity.project}
@@ -140,13 +140,13 @@ export const CommitHoverCard = memo(function CommitHoverCard({
         )}
 
         {!loading && !error && repoData && (
-          <div className="space-y-4">
+          <div className="space-y-5">
             <p className="text-sm text-muted-foreground leading-tight">
               {repoData.description}
             </p>
 
-            <div className="grid grid-cols-2 gap-4 py-3 px-4 bg-muted/40 rounded-lg">
-              <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-5 py-4 px-5 bg-muted/40 rounded-lg">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 text-accent">
                     <Star className="w-3.5 h-3.5" aria-hidden="true" />
@@ -162,7 +162,7 @@ export const CommitHoverCard = memo(function CommitHoverCard({
                   <p className="text-xs text-muted-foreground">Forks</p>
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 text-accent">
                     <Users className="w-3.5 h-3.5" aria-hidden="true" />
@@ -190,7 +190,7 @@ export const CommitHoverCard = memo(function CommitHoverCard({
               </div>
             </div>
 
-            <div className="pt-3 border-t border-border/60 space-y-2">
+            <div className="pt-4 border-t border-border/60 space-y-3">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">Latest commit:</span>
                 <time className="text-accent font-medium">

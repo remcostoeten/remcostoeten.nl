@@ -1,7 +1,9 @@
+type TProjectCategory = 'APIs' | 'DX tooling' | 'projects';
+
 interface SimpleProject {
   name: string
   url: string
-  category: 'APIs' | 'DX tooling' | 'projects'
+  category: TProjectCategory | TProjectCategory[]
   gitInfo?: {
     stars?: number
     forks?: number
@@ -29,8 +31,8 @@ type TProjectFilterAction =
   | { type: 'RESET' }
 
 function getProjectCategories(project: SimpleProject): string[] {
-  // Use the existing category from the project data
-  return [project.category]
+  // Handle both single categories and arrays
+  return Array.isArray(project.category) ? project.category : [project.category]
 }
 
 function filterProjects(projects: SimpleProject[], category: string, searchText: string): SimpleProject[] {
@@ -44,11 +46,12 @@ function filterProjects(projects: SimpleProject[], category: string, searchText:
 
   if (searchText.trim()) {
     const search = searchText.toLowerCase().trim()
-    filtered = filtered.filter(project => 
-      project.name.toLowerCase().includes(search) ||
-      project.gitInfo?.description?.toLowerCase().includes(search) ||
-      project.category.toLowerCase().includes(search)
-    )
+    filtered = filtered.filter(project => {
+      const categories = getProjectCategories(project)
+      return project.name.toLowerCase().includes(search) ||
+        project.gitInfo?.description?.toLowerCase().includes(search) ||
+        categories.some(cat => cat.toLowerCase().includes(search))
+    })
   }
 
   return filtered

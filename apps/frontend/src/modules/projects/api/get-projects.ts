@@ -73,7 +73,8 @@ export async function getProjects(): Promise<{ featuredProjects: TProjectData[],
                             },
                             packageInfo: projectData.packageInfo,
                             originLabel: projectData.originLabel,
-                            anchor: projectData.anchor
+                            anchor: projectData.anchor,
+                            detailedInfo: override?.detailedInfo
                         });
                     }
                 }
@@ -144,11 +145,48 @@ function getHighlights(description: string, topics: string[], stars: number, lan
 
 // Project overrides (moved from projects.ts)
 const PROJECT_OVERRIDES: Record<string, any> = {
+    "fync": {
+        packageInfo: {
+            npmUrl: "https://www.npmjs.com/package/@remcostoeten/fync",
+            githubUrl: "https://github.com/remcostoeten/fync",
+            isPackage: true
+        },
+        detailedInfo: {
+            longDescription: "A unified TypeScript library that provides easy, type-safe access to popular APIs including GitHub, GitLab, Spotify, NPM Registry, and Google Calendar. Built with developer experience in mind, Fync simplifies API integrations with consistent interfaces and zero configuration hassle.",
+            problemSolved: "Eliminates the complexity of working with multiple API clients. Instead of learning different SDKs for GitHub, Spotify, NPM, etc., developers get one consistent, chainable interface for all services. No more wrestling with authentication flows, rate limits, or response parsing.",
+            features: [
+                "Unified API for GitHub, GitLab, Spotify, NPM Registry, and Google Calendar",
+                "Type-safe TypeScript interfaces with full IntelliSense support",
+                "Chainable, fluent API design for intuitive usage",
+                "Built-in caching and rate limit handling",
+                "Zero-config OAuth flows for supported services",
+                "Comprehensive test coverage and documentation",
+                "Monorepo structure with usage examples"
+            ],
+            techStack: ["TypeScript", "Bun", "Monorepo", "OAuth 2.0", "REST APIs"],
+            targetAudience: "Developers building applications that integrate with popular APIs, especially useful for portfolio sites, dashboards, and automation tools.",
+            usageExample: `import { GitHub, Spotify } from '@remcostoeten/fync'\n\nconst github = GitHub({ token: process.env.GITHUB_TOKEN })\nconst repos = await github.user('octocat').repos.get()\n\nconst spotify = Spotify({ token: process.env.SPOTIFY_TOKEN })\nconst nowPlaying = await spotify.player.currentlyPlaying()`
+        }
+    },
     "hono-analytics": {
         packageInfo: {
             npmUrl: "https://www.npmjs.com/package/hono-analytics",
             githubUrl: "https://github.com/remcostoeten/hono-analytics",
             isPackage: true
+        },
+        detailedInfo: {
+            longDescription: "A lightweight, privacy-focused analytics middleware for Hono framework. Track page views, user behavior, and performance metrics without compromising user privacy or adding bloat to your application.",
+            problemSolved: "Most analytics solutions are bloated, slow, or violate user privacy. Hono Analytics provides minimal overhead tracking that respects GDPR while giving you the insights you need.",
+            features: [
+                "Zero-dependency analytics middleware",
+                "Privacy-first design with no PII collection",
+                "Minimal performance impact",
+                "Works seamlessly with Hono's middleware system",
+                "Customizable tracking events",
+                "Built-in rate limiting and abuse prevention"
+            ],
+            techStack: ["TypeScript", "Hono", "Edge Runtime"],
+            targetAudience: "Developers using Hono framework who need lightweight, privacy-conscious analytics."
         }
     },
     "beautiful-interactive-file-tree": {
@@ -172,11 +210,38 @@ const PROJECT_OVERRIDES: Record<string, any> = {
     "remcostoeten.nl": {
         originLabel: {
             blogUrl: "/posts/building-remcostoeten-nl"
+        },
+        detailedInfo: {
+            longDescription: "My personal portfolio and playground built with Next.js 15, showcasing projects, blog posts, and experiments. Features custom animations, dark mode, and integrations with various APIs.",
+            features: [
+                "Server-side rendering with Next.js 15",
+                "Custom design system with Tailwind CSS",
+                "Dynamic project showcase with GitHub integration",
+                "MDX-powered blog with syntax highlighting",
+                "Smooth animations and transitions",
+                "Responsive design for all devices"
+            ],
+            techStack: ["Next.js 15", "TypeScript", "Tailwind CSS", "MDX", "Vercel"],
+            targetAudience: "Developers, recruiters, and anyone interested in my work and technical writing."
         }
     },
     "expense-calendar": {
         title: "Work commute tracking",
-        description: "A full‑stack app to track my daily commuting kilometers and submit accurate reimbursement claims to HR."
+        description: "A full‑stack app to track my daily commuting kilometers and submit accurate reimbursement claims to HR.",
+        detailedInfo: {
+            longDescription: "A practical full-stack application built to solve a real-world problem: tracking daily commute distances for accurate expense reimbursement. Features calendar integration, automatic distance calculation, and PDF export for HR submissions.",
+            problemSolved: "Manual tracking of daily commutes is tedious and error-prone. This app automates distance calculation, provides visual calendar view, and generates professional reports for HR.",
+            features: [
+                "Interactive calendar with daily commute tracking",
+                "Automatic distance calculation between locations",
+                "Monthly summary and statistics",
+                "PDF export for expense claims",
+                "Historical data and trends visualization",
+                "Offline support with data sync"
+            ],
+            techStack: ["Next.js", "TypeScript", "Prisma", "PostgreSQL", "TailwindCSS"],
+            targetAudience: "Anyone who needs to track commute expenses for work reimbursement."
+        }
     },
     "nextjs-15-roll-your-own-authentication": {},
     "emoji-feedback-widget": {

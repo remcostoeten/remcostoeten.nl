@@ -28,46 +28,66 @@ export function ZenModeToggle({ enableAdvancedTransitions = false }: TProps) {
   function toggleZenMode() {
     const scrollPosition = window.scrollY || window.pageYOffset;
     const newZenMode = !isZenMode;
-    
+
     if (enableAdvancedTransitions) {
       setIsTransitioning(true);
-      document.body.classList.add('zen-mode-epic-transitioning');
-      document.documentElement.classList.add('zen-epic-transition');
-      
-      setTimeout(function applyZenModeAfterTransition() {
-        setIsZenMode(newZenMode);
-        
-        if (newZenMode) {
+
+      if (newZenMode) {
+        // Entering zen mode - smooth fade to centered view
+        document.body.classList.add('zen-mode-epic-transitioning');
+        document.documentElement.classList.add('zen-epic-transition');
+
+        setTimeout(function applyZenModeAfterTransition() {
+          setIsZenMode(newZenMode);
           document.body.classList.add('zen-mode');
-        } else {
+
+          requestAnimationFrame(function restoreScroll() {
+            window.scrollTo(0, scrollPosition);
+          });
+
+          localStorage.setItem('zen-mode', newZenMode.toString());
+
+          setTimeout(function cleanupTransitionClasses() {
+            document.body.classList.remove('zen-mode-epic-transitioning');
+            document.documentElement.classList.remove('zen-epic-transition');
+            setIsTransitioning(false);
+          }, 300);
+        }, 50);
+      } else {
+        // Exiting zen mode - smooth transition back to normal layout
+        document.body.classList.add('zen-mode-exit-transitioning');
+        document.documentElement.classList.add('zen-epic-transition');
+
+        setTimeout(function applyNormalModeAfterTransition() {
+          setIsZenMode(newZenMode);
           document.body.classList.remove('zen-mode');
-        }
-        
-        requestAnimationFrame(function restoreScroll() {
-          window.scrollTo(0, scrollPosition);
-        });
-        
-        localStorage.setItem('zen-mode', newZenMode.toString());
-        
-        setTimeout(function cleanupTransitionClasses() {
-          document.body.classList.remove('zen-mode-epic-transitioning');
-          document.documentElement.classList.remove('zen-epic-transition');
-          setIsTransitioning(false);
-        }, 1600);
-      }, 50);
+
+          requestAnimationFrame(function restoreScroll() {
+            window.scrollTo(0, scrollPosition);
+          });
+
+          localStorage.setItem('zen-mode', newZenMode.toString());
+
+          setTimeout(function cleanupExitTransitionClasses() {
+            document.body.classList.remove('zen-mode-exit-transitioning');
+            document.documentElement.classList.remove('zen-epic-transition');
+            setIsTransitioning(false);
+          }, 400);
+        }, 50);
+      }
     } else {
       setIsZenMode(newZenMode);
-      
+
       if (newZenMode) {
         document.body.classList.add('zen-mode');
       } else {
         document.body.classList.remove('zen-mode');
       }
-      
+
       requestAnimationFrame(function restoreScroll() {
         window.scrollTo(0, scrollPosition);
       });
-      
+
       localStorage.setItem('zen-mode', newZenMode.toString());
     }
   }

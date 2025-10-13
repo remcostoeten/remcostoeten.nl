@@ -59,11 +59,7 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-      { url: '/favicon-16x16.svg', sizes: '16x16', type: 'image/svg+xml' },
-      { url: '/favicon-32x32.svg', sizes: '32x32', type: 'image/svg+xml' },
-    ],
+    icon: '/icon.svg',
     apple: '/apple-icon.svg',
   },
   manifest: '/manifest.json',
@@ -235,6 +231,7 @@ export default function RootLayout({
             {children}
           </TooltipProvider>
           <TimezoneSection />
+          <ApiEnvironmentSwitcher />
         </ClientOnlyWrapper>
         <Toaster richColors position="bottom-right" />
         <Analytics />

@@ -87,8 +87,9 @@ export function BlogSectionClient({ posts, totalPosts }: TBlogSectionClientProps
                         <MetaItem icon={Calendar}>
                           <AnimatedDate
                             date={post.publishedAt}
-                            delay={index * 150}
+                            delay={index +5 }
                             threshold={0.3}
+                            rootMargin="25px"
                             className="whitespace-nowrap"
                           />
                         </MetaItem>
@@ -101,6 +102,7 @@ export function BlogSectionClient({ posts, totalPosts }: TBlogSectionClientProps
                             suffix=" min"
                             delay={index * 150 + 100}
                             threshold={0.3}
+                            rootMargin="25px"
                           />
                         </MetaItem>
 

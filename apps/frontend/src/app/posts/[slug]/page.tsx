@@ -7,6 +7,7 @@ import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { ViewCounter } from '@/components/blog/view-counter';
+import { AnimatedNumber } from '@/components/ui/animated-number';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
@@ -181,28 +182,57 @@ export default async function PostPage(props: TPostPageProps) {
               <div className="flex items-center text-sm text-muted-foreground mb-4">
                 <div className="flex items-center mr-4">
                   <Calendar className="w-4 h-4 mr-1" />
-                  <time dateTime={post.publishedAt}>
-                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
+                  <time dateTime={post.publishedAt} className="flex items-center gap-0.5">
+                    <span>{new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      month: 'short'
+                    })}</span>
+                    <AnimatedNumber
+                      value={new Date(post.publishedAt).getDate()}
+                      format="number"
+                      decimals={0}
+                      randomStart={true}
+                      randomRange={Math.max(1, new Date(post.publishedAt).getDate() - 1)}
+                      duration={800}
+                      delay={200}
+                      className="inline-block"
+                    />
+                    <AnimatedNumber
+                      value={new Date(post.publishedAt).getFullYear()}
+                      format="number"
+                      decimals={0}
+                      randomStart={true}
+                      randomRange={Math.max(1, new Date(post.publishedAt).getFullYear() - 2000)}
+                      duration={1000}
+                      delay={400}
+                      className="inline-block"
+                    />
                   </time>
                 </div>
                 <div className="flex items-center mr-4">
                   <Clock className="w-4 h-4 mr-1" />
-                  <span>{post.readTime} min read</span>
+                  <span className="flex items-center gap-0.5">
+                    <AnimatedNumber
+                      value={post.readTime}
+                      format="number"
+                      decimals={0}
+                      randomStart={true}
+                      randomRange={Math.max(1, post.readTime - 2)}
+                      duration={800}
+                      delay={300}
+                      className="inline-block"
+                    />
+                    <span> min read</span>
+                  </span>
                 </div>
                 <ViewCounter
                   slug={params.slug}
                   autoIncrement={true}
-                  className="flex items-center text-sm text-muted-foreground"
+                  className="flex items-center text-sm gap-1 text-muted-foreground"
                 />
               </div>
 
               <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
 
-              {/* SEO excerpt - visually hidden but accessible to search engines */}
               <div className="sr-only" itemProp="description">
                 {post.excerpt}
               </div>
@@ -228,59 +258,40 @@ export default async function PostPage(props: TPostPageProps) {
           </article>
         </TOCLayoutRedesign>
 
-        {/* Zen Mode Article Content */}
-        <div className="zen-mode:block hidden">
+        {/* Zen Mode Article Content - Centered & Readable */}
+        <div className="zen-mode:block hidden zen-content-centered">
           <article
             itemScope
             itemType="https://schema.org/BlogPosting"
-            className="font-noto max-w-4xl mx-auto"
+            className="font-noto"
           >
-            <header itemProp="headline">
-              <div className="flex items-center text-sm text-muted-foreground mb-4">
-                <div className="flex items-center mr-4">
-                  <Calendar className="w-4 h-4 mr-1" />
+            <header itemProp="headline" className="mb-12">
+              <h1 className="text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
+
+              <div className="flex items-center gap-4 text-sm text-muted-foreground/80 mb-8 pb-8 border-b border-border/30">
+                <div className="flex items-center">
+                  <Calendar className="w-4 h-4 mr-1.5" />
                   <time dateTime={post.publishedAt}>
                     {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                      month: 'short',
+                      month: 'long',
                       day: 'numeric',
                       year: 'numeric'
                     })}
                   </time>
                 </div>
-                <div className="flex items-center mr-4">
-                  <Clock className="w-4 h-4 mr-1" />
+                <div className="flex items-center">
+                  <Clock className="w-4 h-4 mr-1.5" />
                   <span>{post.readTime} min read</span>
                 </div>
-                <ViewCounter
-                  slug={params.slug}
-                  autoIncrement={true}
-                  className="flex items-center text-sm text-muted-foreground"
-                />
               </div>
-
-              <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
 
               {/* SEO excerpt - visually hidden but accessible to search engines */}
               <div className="sr-only" itemProp="description">
                 {post.excerpt}
               </div>
-
-              <div className="flex flex-wrap">
-                <span className="px-3 py-1 bg-accent/10 text-accent text-sm rounded border border-accent/20 mr-2 mb-2">
-                  {post.category}
-                </span>
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 bg-secondary text-secondary-foreground text-sm rounded mr-2 mb-2"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
             </header>
 
-            <div className="prose prose-invert max-w-none">
+            <div className="prose prose-invert prose-lg max-w-none">
               <MDXRemote source={content} components={mdxComponents} />
             </div>
           </article>

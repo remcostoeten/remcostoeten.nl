@@ -22,6 +22,7 @@ interface TProps {
     useGrouping?: boolean
     shouldAnimate?: boolean
     duration?: number
+    animateDigitsSeparately?: boolean
 }
 
 const FORMAT_CONFIG = {
@@ -45,41 +46,67 @@ export function AnimatedNumber({
     delay = 0,
     useGrouping = true,
     shouldAnimate = true,
-    duration = 1500
+    duration = 1500,
+    animateDigitsSeparately = false
 }: TProps) {
     const [displayValue, setDisplayValue] = useState<number>(value)
     const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true)
     const [isRolling, setIsRolling] = useState<boolean>(false)
+    const [digitValues, setDigitValues] = useState<number[]>([])
 
     const canAnimate = useCanAnimate({ respectMotionPreference })
     const prefersReducedMotion = usePrefersReducedMotion()
 
+    const valueDigits = String(value).split('').map(Number)
+
     useEffect(() => {
-        if (isInitialLoad) {
+        if (animateDigitsSeparately && isInitialLoad) {
+            setIsInitialLoad(false)
+            const initialDigits = valueDigits.map(() => Math.floor(Math.random() * 10))
+            setDigitValues(initialDigits)
+        } else if (isInitialLoad) {
             setIsInitialLoad(false)
             if (randomStart) {
-                const randomValue = Math.max(1, Math.floor(Math.random() * randomRange) + 1)
+                const randomValue = Math.floor(Math.random() * 10)
                 setDisplayValue(randomValue)
             } else {
                 setDisplayValue(value)
             }
         }
-    }, [value, randomStart, randomRange, isInitialLoad])
+    }, [value, randomStart, randomRange, isInitialLoad, animateDigitsSeparately, valueDigits])
 
     useEffect(() => {
-        if (shouldAnimate && randomStart && !isInitialLoad) {
+        if (animateDigitsSeparately && shouldAnimate && !isInitialLoad) {
             setIsRolling(true)
-            
+
             const rollingInterval = setInterval(() => {
-                const randomValue = Math.max(1, Math.floor(Math.random() * randomRange) + 1)
+                const newDigits = valueDigits.map(() => Math.floor(Math.random() * 10))
+                setDigitValues(newDigits)
+            }, 80)
+
+            const stopRollingTimer = setTimeout(() => {
+                clearInterval(rollingInterval)
+                setIsRolling(false)
+                setDigitValues(valueDigits)
+            }, delay + 800)
+
+            return () => {
+                clearInterval(rollingInterval)
+                clearTimeout(stopRollingTimer)
+            }
+        } else if (shouldAnimate && randomStart && !isInitialLoad) {
+            setIsRolling(true)
+
+            const rollingInterval = setInterval(() => {
+                const randomValue = Math.floor(Math.random() * 10)
                 setDisplayValue(randomValue)
-            }, 100)
-            
+            }, 80)
+
             const stopRollingTimer = setTimeout(() => {
                 clearInterval(rollingInterval)
                 setIsRolling(false)
                 setDisplayValue(value)
-            }, delay + 1000)
+            }, delay + 600)
 
             return () => {
                 clearInterval(rollingInterval)
@@ -88,13 +115,13 @@ export function AnimatedNumber({
         } else if (shouldAnimate && !randomStart) {
             setDisplayValue(value)
         }
-    }, [shouldAnimate, value, delay, randomStart, isInitialLoad, randomRange])
-
+    }, [shouldAnimate, value, delay, randomStart, isInitialLoad, randomRange, animateDigitsSeparately, valueDigits])
     // If motion is disabled or reduced motion is preferred, show static value
     if (!canAnimate || prefersReducedMotion) {
         const formattedValue = value.toLocaleString(locale, FORMAT_CONFIG[format](decimals, useGrouping))
+        const fullContent = prefix + formattedValue + suffix
         return (
-            <span className={cn("inline-block", className)} style={{ minWidth: `${formattedValue.length}ch` }}>
+            <span className={cn("inline-block tabular-nums", className)} style={{ minWidth: `${fullContent.length}ch` }}>
                 {prefix}
                 {formattedValue}
                 {suffix}
@@ -102,10 +129,33 @@ export function AnimatedNumber({
         )
     }
 
+    if (animateDigitsSeparately) {
+        const displayDigits = digitValues.length > 0 ? digitValues : valueDigits
+        const fullContent = prefix + String(value) + suffix
+
+        return (
+            <span className={cn("inline-flex tabular-nums", className)} style={{ minWidth: `${fullContent.length}ch` }}>
+                {prefix}
+                {displayDigits.map((digit, index) => (
+                    <NumberFlow
+                        key={index}
+                        value={digit}
+                        format={{ useGrouping: false }}
+                        locales={locale}
+                        duration={duration}
+                    />
+                ))}
+                {suffix}
+            </span>
+        )
+    }
+
     const finalFormattedValue = value.toLocaleString(locale, FORMAT_CONFIG[format](decimals, useGrouping))
-    
+    const formattedPrefix = prefix + finalFormattedValue + suffix
+    const minWidth = formattedPrefix.length
+
     return (
-        <span className={cn("inline-block", className)} style={{ minWidth: `${finalFormattedValue.length}ch` }}>
+        <span className={cn("inline-block tabular-nums", className)} style={{ minWidth: `${minWidth}ch` }}>
             {prefix}
             <NumberFlow
                 value={displayValue}
