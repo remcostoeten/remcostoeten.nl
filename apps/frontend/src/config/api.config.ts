@@ -44,10 +44,11 @@ export function getApiEnvironment(): ApiEnvironment {
 }
 
 // API Endpoints configuration
+// TODO: Re-enable when new backend is ready
 const API_ENDPOINTS = {
   local: {
-    base: 'http://localhost:4001',
-    analytics: 'http://localhost:4001/api',
+    base: 'http://localhost:9999', // Disabled port
+    analytics: 'http://localhost:9999/api', // Disabled port
   },
   production: {
     base: 'https://backend-thrumming-cloud-5273.fly.dev',
