@@ -88,6 +88,7 @@ export function AnnouncementBanner() {
     const [startY, setStartY] = React.useState(0)
     const [isHiddenByScroll, setIsHiddenByScroll] = React.useState(false)
     const [shouldHideByScroll, setShouldHideByScroll] = React.useState(false)
+    const [isClosing, setIsClosing] = React.useState(false)
     const lastScrollYRef = React.useRef(0)
     const wrapperRef = React.useRef<HTMLDivElement | null>(null)
     const [bannerHeight, setBannerHeight] = React.useState(80)
@@ -149,6 +150,7 @@ export function AnnouncementBanner() {
     )
 
     function handleClose() {
+        setIsClosing(true)
         setDragY(-200)
         window.setTimeout(function hide() {
             setIsVisible(false)
@@ -184,8 +186,8 @@ export function AnnouncementBanner() {
                 className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit pointer-events-auto overflow-visible"
                 style={{
                     transform: `translateY(${(shouldAnimateIn ? 0 : -bannerHeight - 20) + (shouldHideByScroll ? -bannerHeight - 20 : 0) + dragY}px)`,
-                    opacity: shouldAnimateIn && !shouldHideByScroll ? 1 : 0,
-                    transition: isDragging ? "none" : `transform ${shouldAnimateIn && !isHiddenByScroll ? "0.8s" : "0.5s"} cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${shouldAnimateIn && !isHiddenByScroll ? "0.6s" : "0.3s"} ease-out`,
+                    opacity: shouldAnimateIn && !shouldHideByScroll && !isClosing ? 1 : 0,
+                    transition: isDragging ? "none" : `transform ${shouldAnimateIn && !isHiddenByScroll && !isClosing ? "0.8s" : "0.5s"} cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${shouldAnimateIn && !isHiddenByScroll && !isClosing ? "0.6s" : "0.3s"} ease-out`,
                 }}
                 ref={wrapperRef}
                 onMouseDown={handleDragStart}

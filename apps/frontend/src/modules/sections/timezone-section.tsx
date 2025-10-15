@@ -19,6 +19,7 @@ export const TimezoneSection = () => {
               decimals={0}
               className="w-6 text-center tabular-nums transition-all duration-200 hover:scale-105"
               randomStart={false}
+              shouldAnimate={false}
             />
             <span className="text-muted-foreground animate-pulse">:</span>
             <AnimatedNumber
@@ -27,6 +28,7 @@ export const TimezoneSection = () => {
               decimals={0}
               className="w-6 text-center tabular-nums transition-all duration-200 hover:scale-105"
               randomStart={false}
+              shouldAnimate={false}
             />
             <span className="text-muted-foreground animate-pulse">:</span>
             <AnimatedNumber
@@ -35,6 +37,7 @@ export const TimezoneSection = () => {
               decimals={0}
               className="w-6 text-center tabular-nums transition-all duration-200 hover:scale-105"
               randomStart={false}
+              shouldAnimate={false}
             />
           </div>
         </div>
@@ -51,6 +54,7 @@ export const TimezoneSection = () => {
               decimals={0}
               className="w-4 text-center tabular-nums"
               randomStart={false}
+              shouldAnimate={false}
             />
             <span className="text-muted-foreground/50 animate-pulse">:</span>
             <AnimatedNumber
@@ -59,6 +63,7 @@ export const TimezoneSection = () => {
               decimals={0}
               className="w-4 text-center tabular-nums"
               randomStart={false}
+              shouldAnimate={false}
             />
             <span className="text-muted-foreground/50 animate-pulse">:</span>
             <AnimatedNumber
@@ -67,6 +72,7 @@ export const TimezoneSection = () => {
               decimals={0}
               className="w-4 text-center tabular-nums"
               randomStart={false}
+              shouldAnimate={false}
             />
           </div>
         </div>

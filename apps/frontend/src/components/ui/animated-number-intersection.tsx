@@ -61,7 +61,7 @@ export function AnimatedNumberIntersection({
                     prefix={prefix}
                     suffix={suffix}
                     delay={delay}
-                    randomStart={true}
+                    randomStart={false}
                     duration={600}
                 />
             ) : (
