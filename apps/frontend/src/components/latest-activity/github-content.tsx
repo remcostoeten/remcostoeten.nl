@@ -31,7 +31,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
   onCommitMouseLeave
 }: GitHubActivityContentProps) {
 
-  const MAX_LENGTH = 50;
+  const MAX_LENGTH = 35;
 
   const STAGGER_DURATION = 0.8;
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -48,13 +48,13 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
   }
 
   return (
-    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
-      <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
-        <span className="inline">Been busy with  </span>
+    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group h-[3.5rem] xs:h-[4rem]">
+      <div className="text-body text-muted-foreground leading-tight mb-2 whitespace-nowrap overflow-hidden items-baseline flex">
+        <span className="inline-flex items-baseline">Been busy with  </span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`commit-${currentActivityIndex}`}
-            className="inline"
+            className="inline truncate max-w-[calc(100vw-140px)] xs:max-w-[280px] sm:max-w-[400px] lg:max-w-[598px] align-baseline"
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -64,7 +64,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
               href={currentActivity.commitUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 break-words"
+              className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 truncate"
               title={currentActivity.latestCommit}
               onMouseEnter={onCommitMouseEnter}
               onMouseLeave={onCommitMouseLeave}
@@ -81,7 +81,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
         <AnimatePresence mode="wait">
           <motion.span
             key={`project-${currentActivityIndex}`}
-            className="inline-block"
+            className="inline-block align-baseline"
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -147,14 +147,14 @@ export function GitHubActivitySkeletonContent() {
   }
 
   return (
-    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
+    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group h-[3.5rem] xs:h-[4rem]">
       {/* First Line - Matches the static text + dynamic content structure */}
-      <div className="text-body text-muted-foreground leading-tight mb-2 line-clamp-2">
-        <span className="inline">Been busy with  </span>
+      <div className="text-body text-muted-foreground leading-tight mb-2 whitespace-nowrap overflow-hidden items-baseline flex">
+        <span className="inline-flex items-baseline">Been busy with  </span>
         {/* Skeleton for commit message - matches exact dimensions */}
-        <span className="inline-block">
+        <span className="inline-block truncate max-w-[calc(100vw-140px)] xs:max-w-[280px] sm:max-w-[400px] lg:max-w-[598px] h-5 align-baseline">
           <motion.span
-            className="h-5 bg-muted/60 rounded-md w-[280px] max-w-[calc(100vw-120px)] inline-block align-middle animate-pulse"
+            className="h-5 bg-muted/60 rounded-md w-full inline-block align-middle"
             initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
             transition={buildStaggerTransition(0)}
@@ -166,21 +166,21 @@ export function GitHubActivitySkeletonContent() {
       <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1">
         <span className="whitespace-nowrap">on my</span>
         {/* Skeleton for project name */}
-        <span className="inline-block">
+        <span className="inline-block h-4 align-baseline">
           <motion.span
-            className="h-4 bg-muted/40 rounded-md w-[120px] max-w-[200px] inline-block align-middle animate-pulse"
+            className="h-4 bg-muted/40 rounded-md w-[120px] max-w-[200px] inline-block align-middle"
             initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
             transition={buildStaggerTransition(1)}
           />
         </span>
-        <span className="inline-flex items-center text-muted-foreground whitespace-nowrap">
-          (<motion.span
-            className="h-4 bg-muted/40 rounded-md w-[60px] inline-block align-middle animate-pulse"
+        <span className="h-4 align-baseline">
+          <motion.span
+            className="h-4 bg-muted/40 rounded-md w-[80px] inline-block align-middle"
             initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
             animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
             transition={buildStaggerTransition(2)}
-          />)
+          />
         </span>
       </div>
     </div>
@@ -198,7 +198,7 @@ interface GitHubActivityErrorProps {
 
 export function GitHubActivityErrorContent({ error, onRetry, loading }: GitHubActivityErrorProps) {
   return (
-    <div className="flex-1 min-w-0">
+    <div className="flex-1 min-w-0 h-[3.5rem] xs:h-[4rem] flex items-center">
       <div className="flex items-center">
         <span className="truncate text-muted-foreground">
           {error}{" "}

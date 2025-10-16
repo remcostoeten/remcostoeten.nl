@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
  * since the complete structure is available immediately.
  */
 
-type TActivityShellProps = {
+type TProps = {
   className?: string;
   githubContent?: ReactNode;
   spotifyContent?: ReactNode;
@@ -22,7 +22,7 @@ export function ActivityShell({
   githubContent,
   spotifyContent,
   isSpotifyCurrentlyPlaying = false
-}: TActivityShellProps) {
+}: TProps) {
   return (
     <section
       className={cn(
@@ -34,14 +34,11 @@ export function ActivityShell({
     >
       <h2 id="latest-activity-heading" className="sr-only">Latest Development Activity</h2>
 
-      {/* GitHub Activity Section - Server Rendered Structure */}
-      <div className="flex items-start gap-3 mb-4">
-        {/* Icon - Always rendered on server */}
+      <div className="flex items-start gap-3 pb-4">
         <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0" aria-hidden="true">
           <GitCommit className="w-4 h-4 text-accent" />
         </div>
 
-        {/* Content slot - dimensions preserved by wrapper */}
         <div className="leading-tight min-w-0 flex-1 text-body" role="status" aria-live="polite" aria-atomic="true">
           <div className="text-muted-foreground">
             {githubContent}
@@ -49,11 +46,9 @@ export function ActivityShell({
         </div>
       </div>
 
-      {/* Spotify Activity Section - Server Rendered Structure */}
-      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border/30">
+      <div className="flex items-center flex-start gap-3 pt-4 border-t border-border/30">
         <h3 className="sr-only">Music Activity</h3>
         
-        {/* Icon - Always rendered on server, can change based on playing state */}
         <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0">
           {isSpotifyCurrentlyPlaying ? (
             <Play className="w-4 h-4 text-green-500" aria-hidden="true" />
@@ -118,7 +113,6 @@ export function SpotifyActivityShell({
           <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
         )}
       </div>
-
       <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
         {children}
       </div>
