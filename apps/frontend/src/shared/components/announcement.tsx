@@ -108,6 +108,14 @@ export function AnnouncementBanner() {
             const currentY = window.scrollY || 0
             const delta = currentY - (lastScrollYRef.current || 0)
 
+            // Log scroll position
+            console.log('Announcement scroll position:', {
+                scrollY: currentY,
+                delta: delta,
+                direction: delta > 0 ? 'down' : delta < 0 ? 'up' : 'none',
+                timestamp: new Date().toISOString()
+            })
+
             // Clear any existing timeout
             if (scrollTimeoutRef.current) {
                 clearTimeout(scrollTimeoutRef.current)

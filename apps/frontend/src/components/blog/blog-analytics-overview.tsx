@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Eye, TrendingUp, Calendar, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { API } from '@/config/api.config';
 
 interface BlogMetadataWithAnalytics {
   slug: string;
@@ -35,18 +36,17 @@ export function BlogAnalyticsOverview({ className = '' }: BlogAnalyticsOverviewP
   useEffect(() => {
     const fetchBlogAnalytics = async () => {
       try {
-        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:4001/api';
-        const response = await fetch(`${API_BASE}/blog/metadata`);
-        
+        const response = await fetch(API.blog.metadata() + '?includeAnalytics=true');
+
         if (!response.ok) {
           throw new Error('Failed to fetch blog analytics');
         }
-        
+
         const data = await response.json();
         if (data.success) {
           setBlogs(data.data);
         } else {
-          setError(data.message || 'Failed to load blog analytics');
+          setError(data.error || 'Failed to load blog analytics');
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load blog analytics');

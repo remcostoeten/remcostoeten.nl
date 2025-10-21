@@ -1,7 +1,5 @@
 import { TBlogPost, TBlogCategory } from './types';
-import { BLOG_CONFIG } from './config';
-
-const API_BASE = BLOG_CONFIG.API_BASE;
+import { API } from '@/config/api.config';
 
 export type TBlogMetadataWithAnalytics = {
   id: string;
@@ -35,16 +33,20 @@ export type TBlogMetadataWithAnalytics = {
 
 export async function fetchBlogMetadata(): Promise<TBlogMetadataWithAnalytics[]> {
   try {
-    const response = await fetch(`${API_BASE}/blog/metadata`);
+    const response = await fetch(API.blog.metadata(), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     const result = await response.json();
-    
+
     if (result.success) {
       return result.data;
     }
-    
+
     throw new Error('Failed to fetch blog metadata');
   } catch (error) {
-    console.warn('Backend not available, using fallback mode:', error);
+    console.warn('Blog metadata API not available, using fallback mode:', error);
     // Return empty array if backend is not available
     return [];
   }
@@ -52,27 +54,37 @@ export async function fetchBlogMetadata(): Promise<TBlogMetadataWithAnalytics[]>
 
 export async function fetchBlogMetadataBySlug(slug: string): Promise<TBlogMetadataWithAnalytics | null> {
   try {
-    const response = await fetch(`${API_BASE}/blog/metadata/${slug}`);
+    const response = await fetch(API.blog.metadataBySlug(slug) + '?includeAnalytics=true', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     const result = await response.json();
-    
+
     if (result.success) {
       return result.data;
     }
-    
+
     return null;
   } catch (error) {
-    console.warn('Backend not available for slug fetch:', error);
+    console.warn('Blog metadata API not available for slug fetch:', error);
     return null;
   }
 }
 
 export async function incrementBlogView(slug: string): Promise<void> {
   try {
-    await fetch(`${API_BASE}/blog/analytics/${slug}/view`, {
+    await fetch(API.blog.recordView(slug), {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Fingerprint': typeof window !== 'undefined' ?
+          (window.crypto?.randomUUID?.() || `visitor-${Date.now()}`) :
+          `server-${Date.now()}`,
+      },
     });
   } catch (error) {
-    console.warn('Backend not available for view tracking:', error);
+    console.warn('Blog analytics API not available for view tracking:', error);
     // Silently fail if backend is not available
   }
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Eye, Calendar, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API } from '@/config/api.config';
 
 interface BlogAnalytics {
   id: string;
@@ -27,18 +28,17 @@ export function BlogAnalytics({ slug, className = '' }: BlogAnalyticsProps) {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:4001/api';
-        const response = await fetch(`${API_BASE}/blog/analytics/${slug}`);
-        
+        const response = await fetch(API.blog.analytics(slug));
+
         if (!response.ok) {
           throw new Error('Failed to fetch analytics');
         }
-        
+
         const data = await response.json();
         if (data.success) {
           setAnalytics(data.data);
         } else {
-          setError(data.message || 'Failed to load analytics');
+          setError(data.error || 'Failed to load analytics');
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load analytics');

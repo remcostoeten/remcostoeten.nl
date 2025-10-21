@@ -4,7 +4,7 @@ import { Inter, Noto_Sans } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ClientAnalyticsWrapper } from "@/shared/components/analytics";
-import { ApiEnvironmentSwitcher, ApiEnvironmentIndicator } from "@/components/_api-environment-switcher";
+
 import { Analytics } from "@vercel/analytics/next";
 import { ClientOnlyWrapper } from "@/components/client-only-wrapper";
 import { TimezoneSection } from "@/modules/sections";
@@ -208,7 +208,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" data-scroll-behavior="smooth">
       <body className={`${inter.className} ${inter.variable} ${notoSans.variable} overflow-x-hidden`} suppressHydrationWarning>
         <script
           type="application/ld+json"
@@ -231,7 +231,7 @@ export default function RootLayout({
             {children}
           </TooltipProvider>
           <TimezoneSection />
-          <ApiEnvironmentSwitcher />
+          
         </ClientOnlyWrapper>
         <Toaster richColors position="bottom-right" />
         <Analytics />

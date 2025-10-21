@@ -4,7 +4,6 @@ import { memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LatestActivity as TLatestActivity } from "@/services/github-service";
 import { CommitHoverCard } from "./commit-hover-card";
-import { AnimatedTimestamp } from "../../shared/components/animated-numbers";
 import Link from "next/link";
 
 /**
@@ -31,7 +30,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
   onCommitMouseLeave
 }: GitHubActivityContentProps) {
 
-  const MAX_LENGTH = 35;
+  const MAX_LENGTH = 65;
 
   const STAGGER_DURATION = 0.8;
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -48,7 +47,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
   }
 
   return (
-    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group h-[3.5rem] xs:h-[4rem]">
+    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
       <div className="text-body text-muted-foreground leading-tight mb-2 whitespace-nowrap overflow-hidden items-baseline flex">
         <span className="inline-flex items-baseline">Been busy with  </span>
         <AnimatePresence mode="wait">
@@ -100,6 +99,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
             </Link>
           </motion.span>
         </AnimatePresence>
+        <span className="whitespace-nowrap"> repository</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`timestamp-${currentActivityIndex}`}
@@ -109,7 +109,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
             transition={buildStaggerTransition(2)} // Third element (deepest)
           >
-            (<AnimatedTimestamp timestamp={currentActivity.timestamp} delay={BASE_DELAY + (2 * STAGGER_DELAY) * 1000 + 100} />)
+            ({currentActivity.timestamp})
           </motion.span>
         </AnimatePresence>
       </div>
@@ -147,7 +147,7 @@ export function GitHubActivitySkeletonContent() {
   }
 
   return (
-    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group h-[3.5rem] xs:h-[4rem]">
+    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
       {/* First Line - Matches the static text + dynamic content structure */}
       <div className="text-body text-muted-foreground leading-tight mb-2 whitespace-nowrap overflow-hidden items-baseline flex">
         <span className="inline-flex items-baseline">Been busy with  </span>

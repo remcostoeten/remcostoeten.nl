@@ -1,16 +1,16 @@
 import { Metadata } from 'next';
-import { MessageSquare, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
-import { FeedbackAdminDashboard } from '@/components/admin/feedback-admin-dashboard';
+import { AnalyticsDashboard } from '@/components/analytics/analytics-dashboard';
 import { AdminAuth } from '@/components/admin-auth';
+import { ChartBar as BarChart3, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Feedback Admin | Remco Stoeten',
-  description: 'View and manage all blog post feedback and reactions.',
+  title: 'Analytics Dashboard | Remco Stoeten',
+  description: 'Comprehensive analytics dashboard showing visitor insights, page views, and blog performance.',
   robots: 'noindex, nofollow',
 };
 
-export default function FeedbackAdminPage() {
+export default function AnalyticsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
       <div className="container mx-auto px-4 py-12 max-w-7xl">
@@ -26,21 +26,21 @@ export default function FeedbackAdminPage() {
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 rounded-xl bg-accent/10 border border-border/50">
-              <MessageSquare className="h-8 w-8 text-accent" />
+              <BarChart3 className="h-8 w-8 text-accent" />
             </div>
             <div>
               <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Feedback Dashboard
+                Analytics Dashboard
               </h1>
             </div>
           </div>
           <p className="text-muted-foreground text-lg max-w-2xl">
-            View all feedback and reactions from your blog posts.
+            Comprehensive insights into your website's performance and visitor behavior.
           </p>
         </div>
 
         <AdminAuth>
-          <FeedbackAdminDashboard />
+          <AnalyticsDashboard />
         </AdminAuth>
       </div>
     </div>

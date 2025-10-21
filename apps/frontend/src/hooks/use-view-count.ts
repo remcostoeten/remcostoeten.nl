@@ -27,11 +27,23 @@ export function useViewCount(slug: string, options: UseViewCountOptions = {}) {
     try {
       setLoading(true);
       setError(null);
-      const count = await ViewsService.getViewCount(slug);
+
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('View count loading timeout')), 5000)
+      );
+
+      const count = await Promise.race([
+        ViewsService.getViewCount(slug),
+        timeoutPromise
+      ]) as ViewCount;
+
       setViewCount(count);
     } catch (err) {
       console.error('Error loading view count:', err);
       setError(err instanceof Error ? err.message : 'Failed to load view count');
+      // Set default values on error
+      setViewCount({ slug, totalViews: 0, uniqueViews: 0 });
     } finally {
       setLoading(false);
     }

@@ -4,8 +4,7 @@ import Link from "next/link";
 import { BookOpen, Eye, Clock, Calendar, ArrowUpRight, Sparkles } from "lucide-react";
 import { useMultipleViewCounts } from "@/hooks/use-multiple-view-counts";
 import { Suspense, useMemo } from "react";
-import { AnimatedDate } from "@/components/ui/animated-date";
-import { AnimatedNumberIntersection } from "@/components/ui/animated-number-intersection";
+import { AnimatedReadTime } from "@/components/ui/animated-read-time";
 
 type TBlogPost = {
   slug: string;
@@ -85,21 +84,14 @@ export function BlogSectionClient({ posts, totalPosts }: TBlogSectionClientProps
 
                       <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-muted-foreground">
                         <MetaItem icon={Calendar}>
-                          <AnimatedDate
-                            date={post.publishedAt}
-                            delay={index +5 }
-                            threshold={0.3}
-                            rootMargin="25px"
-                            className="whitespace-nowrap"
-                          />
+                          {formatDate(post.publishedAt)}
                         </MetaItem>
 
                         <span className="text-muted-foreground/30">·</span>
 
                         <MetaItem icon={Clock}>
-                          <AnimatedNumberIntersection
-                            value={post.readTime}
-                            suffix=" min"
+                          <AnimatedReadTime
+                            minutes={post.readTime}
                             delay={index * 150 + 100}
                             threshold={0.3}
                             rootMargin="25px"

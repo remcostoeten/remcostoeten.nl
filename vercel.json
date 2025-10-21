@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd apps/frontend && bun run build",
+  "outputDirectory": "apps/frontend/.next",
+  "installCommand": "bun install",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_ENV": "production"
+  }
+}

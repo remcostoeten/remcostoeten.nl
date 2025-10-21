@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
 import { formatTimestamp } from "./utils";
 import { SpotifyHoverCard } from "./spotify-hover-card";
-import { AnimatedTimestamp } from "../../shared/components/animated-numbers";
 
 type TProps = {
   currentTrack: SpotifyTrack | SpotifyRecentTrack;
@@ -97,8 +96,8 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
 
   const isCurrentlyPlaying = 'is_playing' in currentTrack && currentTrack.is_playing;
   const isRecentTrack = 'played_at' in currentTrack;
-  const prefix = isCurrentlyPlaying ? 'Currently listening to ' : 'Whilst probably listening to ';
-  
+  const prefix = isCurrentlyPlaying ? 'Currently listening to ' : 'Whilst probably listening to\u00A0';
+
   const truncated = smartTruncateLine1(
     prefix,
     currentTrack.name,
@@ -107,12 +106,12 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
   );
 
   const timestampText = isRecentTrack ? formatTimestamp((currentTrack as SpotifyRecentTrack).played_at) : '';
-  const truncatedAlbum = currentTrack.album 
+  const truncatedAlbum = currentTrack.album
     ? smartTruncateLine2(currentTrack.album, timestampText, MAX_LINE2_LENGTH)
     : '';
 
   return (
-    <div className="flex items-start gap-3 relative group h-[3.5rem] xs:h-[4rem]">
+    <div className="flex items-start gap-3 relative group">
       <div
         className="flex items-start gap-3 flex-1"
         onMouseEnter={onMouseEnter}
@@ -132,7 +131,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                 transition={buildStaggerTransition(0)}
-              >
+              >P
                 <a
                   href={currentTrack.external_url}
                   target="_blank"
@@ -213,9 +212,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                     exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                     transition={buildStaggerTransition(3)}
                   >
-                    <span>(</span>
-                    <AnimatedTimestamp timestamp={timestampText} delay={BASE_DELAY + (3 * STAGGER_DELAY) * 1000 + 100} />
-                    <span>)</span>
+                    <span>({timestampText})</span>
                   </motion.span>
                 </AnimatePresence>
               </>
@@ -278,14 +275,14 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
   }
 
   return (
-    <div className="flex items-start gap-3 relative group h-[3.5rem] xs:h-[4rem]">
+    <div className="flex items-start gap-3 relative group">
       <div className="flex items-start gap-3 flex-1">
         <div className="flex-1 min-w-0">
           <div className="text-body text-muted-foreground leading-tight whitespace-nowrap overflow-hidden items-baseline flex">
             <span className="inline-flex items-baseline">
-              {showCurrentlyPlaying ? 'Currently listening to ' : 'Whilst probably listening to '}
+              {showCurrentlyPlaying ? 'Currently listening to ' : 'Whilst probably listening to\u00A0'}
             </span>
-            <span className="inline-block font-semibold text-foreground align-baseline">
+            <span className="ml-4 inline-block font-semibold text-foreground align-baseline">
               <motion.span
                 className="h-5 bg-muted/60 rounded-md animate-pulse w-[160px] inline-block align-middle"
                 initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
@@ -348,7 +345,7 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
  */
 export function SpotifyActivityErrorContent() {
   return (
-    <div className="flex items-start gap-3 relative group h-[3.5rem] xs:h-[4rem]">
+    <div className="flex items-start gap-3 relative group">
       <div className="flex-1 min-w-0">
         <div className="text-body text-muted-foreground leading-tight h-5 flex items-center">
           No music playing right now

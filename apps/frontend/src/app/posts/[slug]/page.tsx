@@ -3,11 +3,11 @@ import { Metadata } from "next";
 import { buildSeo } from "@/lib/seo";
 import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils";
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { serialize } from 'next-mdx-remote/serialize';
 import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
 import { ViewCounter } from '@/components/blog/view-counter';
-import { AnimatedNumber } from '@/components/ui/animated-number';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
@@ -90,6 +90,14 @@ export default async function PostPage(props: TPostPageProps) {
   const filePath = path.join(process.cwd(), 'content/blog', `${params.slug}.mdx`);
   const fileContent = fs.readFileSync(filePath, 'utf8');
   const { content } = matter(fileContent);
+
+  // Serialize MDX content to avoid React version conflicts
+  const mdxSource = await serialize(content, {
+    mdxOptions: {
+      remarkPlugins: [require('remark-gfm')],
+      rehypePlugins: [require('rehype-highlight')],
+    },
+  });
 
   const headings = parseHeadingsFromMDX(content, 3);
 
@@ -183,45 +191,17 @@ export default async function PostPage(props: TPostPageProps) {
                 <div className="flex items-center mr-4">
                   <Calendar className="w-4 h-4 mr-1" />
                   <time dateTime={post.publishedAt} className="flex items-center gap-0.5">
-                    <span>{new Date(post.publishedAt).toLocaleDateString('en-US', {
-                      month: 'short'
-                    })}</span>
-                    <AnimatedNumber
-                      value={new Date(post.publishedAt).getDate()}
-                      format="number"
-                      decimals={0}
-                      randomStart={true}
-                      randomRange={Math.max(1, new Date(post.publishedAt).getDate() - 1)}
-                      duration={800}
-                      delay={200}
-                      className="inline-block"
-                    />
-                    <AnimatedNumber
-                      value={new Date(post.publishedAt).getFullYear()}
-                      format="number"
-                      decimals={0}
-                      randomStart={true}
-                      randomRange={Math.max(1, new Date(post.publishedAt).getFullYear() - 2000)}
-                      duration={1000}
-                      delay={400}
-                      className="inline-block"
-                    />
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
                   </time>
                 </div>
                 <div className="flex items-center mr-4">
                   <Clock className="w-4 h-4 mr-1" />
                   <span className="flex items-center gap-0.5">
-                    <AnimatedNumber
-                      value={post.readTime}
-                      format="number"
-                      decimals={0}
-                      randomStart={true}
-                      randomRange={Math.max(1, post.readTime - 2)}
-                      duration={800}
-                      delay={300}
-                      className="inline-block"
-                    />
-                    <span> min read</span>
+                    {post.readTime} min read
                   </span>
                 </div>
                 <ViewCounter
@@ -253,7 +233,7 @@ export default async function PostPage(props: TPostPageProps) {
             </header>
 
             <div className="prose prose-invert max-w-none">
-              <MDXRemote source={content} components={mdxComponents} />
+              <MDXRemote source={mdxSource} components={mdxComponents} />
             </div>
           </article>
         </TOCLayoutRedesign>
@@ -292,7 +272,7 @@ export default async function PostPage(props: TPostPageProps) {
             </header>
 
             <div className="prose prose-invert prose-lg max-w-none">
-              <MDXRemote source={content} components={mdxComponents} />
+              <MDXRemote source={mdxSource} components={mdxComponents} />
             </div>
           </article>
         </div>

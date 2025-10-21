@@ -5,7 +5,8 @@ import path from 'path';
 import matter from 'gray-matter';
 import { execSync } from 'child_process';
 
-const API_BASE = 'http://localhost:4001/api';
+const API_BASE = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const API_ENDPOINT = `${API_BASE}/api/blog/metadata`;
 const contentDirectory = path.join(process.cwd(), 'content/blog');
 
 type TBlogMetadata = {
@@ -75,11 +76,11 @@ async function syncBlogMetadata() {
 
     try {
       // Check if metadata already exists
-      const existingResponse = await fetch(`${API_BASE}/blog/metadata/${slug}`);
-      
+      const existingResponse = await fetch(`${API_ENDPOINT}/${slug}`);
+
       if (existingResponse.ok) {
         // Update existing metadata
-        const updateResponse = await fetch(`${API_BASE}/blog/metadata/${slug}`, {
+        const updateResponse = await fetch(`${API_ENDPOINT}/${slug}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -95,7 +96,7 @@ async function syncBlogMetadata() {
         }
       } else {
         // Create new metadata
-        const createResponse = await fetch(`${API_BASE}/blog/metadata`, {
+        const createResponse = await fetch(API_ENDPOINT, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -120,9 +121,9 @@ async function syncBlogMetadata() {
 
 async function listBlogPosts() {
   console.log('📋 Listing blog posts...');
-  
+
   try {
-    const response = await fetch(`${API_BASE}/blog/metadata`);
+    const response = await fetch(API_ENDPOINT);
     const result = await response.json();
     
     if (result.success) {
@@ -200,7 +201,7 @@ ${excerpt}
     fs.writeFileSync(filePath, mdxContent);
     console.log(`✅ Created ${filename}`);
     
-    // Sync with backend
+    // Sync with internal API
     await syncBlogMetadata();
     
   } catch (error) {
@@ -231,7 +232,7 @@ async function main() {
 Usage: npx tsx scripts/blog-management.ts <command>
 
 Commands:
-  sync    - Sync MDX files with backend metadata
+  sync    - Sync MDX files with internal API metadata
   list    - List all blog posts
   create  - Create a new blog post
 

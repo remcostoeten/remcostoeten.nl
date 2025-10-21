@@ -2,7 +2,6 @@
 
 import { Eye } from "lucide-react";
 import { useViewCount } from "@/hooks/use-view-count";
-import { AnimatedNumber } from "@/components/ui/animated-number";
 
 interface ViewCounterProps {
   slug: string;
@@ -32,26 +31,13 @@ export function ViewCounter({
     return null; // Silently fail for view counts
   }
 
-  // Use the numeric view count directly
-  const numericViewCount = viewCount || 0;
+  // Use the numeric view count directly, fallback to 0 if loading fails
+  const numericViewCount = loading ? 0 : (viewCount || 0);
 
   return (
     <div className={className}>
       {showIcon && <Eye className="w-3 h-3" />}
-      {loading ? (
-        <span>...</span>
-      ) : (
-        <AnimatedNumber
-          value={numericViewCount}
-          format="number"
-          decimals={0}
-          randomStart={true}
-          randomRange={Math.max(1, numericViewCount - 5)}
-          duration={1200}
-          delay={500}
-          className="inline-block"
-        />
-      )}
+      <span className="tabular-nums">{numericViewCount}</span>
     </div>
   );
 }

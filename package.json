@@ -1,25 +1,23 @@
 {
   "name": "monorepo",
   "version": "1.0.0",
-  "description": "Monorepo with Next.js frontend and Hono.js backend",
+  "description": "Monorepo with Next.js frontend",
   "private": true,
   "packageManager": "bun@1.2.22",
   "workspaces": [
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently \"bun run dev:frontend\" \"bun run dev:backend\"",
+    "dev": "bun run dev:frontend",
     "dev:frontend": "cd apps/frontend && bun run dev",
-    "dev:backend": "cd apps/backend && bun run dev",
-    "build": "bun run build:frontend && bun run build:backend",
+    "build": "bun run build:frontend",
     "build:frontend": "cd apps/frontend && NODE_ENV=production bun run build",
-    "build:backend": "cd apps/backend && bun run build",
     "install:all": "bun install",
     "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist apps/*/.next",
-    "gen": "cd apps/backend && bun run gen",
-    "push": "cd apps/backend && bun run push",
     "deploy": "./scripts/deploy.sh",
     "deploy:prod": "./scripts/deploy.sh --production",
+    "deploy:all": "./scripts/deploy-all.sh",
+    "deploy:all:prod": "./scripts/deploy-all.sh --production",
     "release:crud": "bun scripts/release.js"
   },
   "devDependencies": {

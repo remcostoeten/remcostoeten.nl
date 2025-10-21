@@ -148,11 +148,7 @@ function getCanvasFingerprint(): string {
   }
 }
 
-const DEFAULT_API_BASE =
-  process.env.NODE_ENV === 'development'
-    ? 'http://localhost:4001/api'
-    : 'https://backend-thrumming-cloud-5273.fly.dev/api';
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || DEFAULT_API_BASE;
+// Analytics now uses internal Next.js API routes
 
 export function useAnalytics() {
   const visitorData = useMemo(() => getVisitorData(), []);
@@ -182,7 +178,7 @@ export function useAnalytics() {
     };
 
     try {
-      const response = await fetch(`${API_BASE}/pageviews`, {
+      const response = await fetch(`/api/analytics/pageviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -202,7 +198,7 @@ export function useAnalytics() {
   // Visitor tracking (for user identification)
   const trackVisitor = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/visitors/track-visitor`, {
+      const response = await fetch(`/api/analytics/visitors`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -224,7 +220,7 @@ export function useAnalytics() {
     try {
       // Track visitor, pageview, and increment blog view count
       const [visitorResult, pageviewResult, blogViewResult] = await Promise.all([
-        fetch(`${API_BASE}/visitors/track-blog-view`, {
+        fetch(`/api/analytics/blog-views`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -235,7 +231,7 @@ export function useAnalytics() {
           body: JSON.stringify({ visitorId, blogSlug, blogTitle }),
         }),
         trackPageview({ title: blogTitle }),
-        fetch(`${API_BASE}/blog/analytics/${blogSlug}/view`, {
+        fetch(`/api/views/${encodeURIComponent(blogSlug)}`, {
           method: 'POST',
           credentials: 'include',
         })
@@ -255,7 +251,7 @@ export function useAnalytics() {
   // Get blog view count
   const getBlogViewCount = useCallback(async (blogSlug: string) => {
     try {
-      const response = await fetch(`${API_BASE}/visitors/blog/${blogSlug}/views`);
+      const response = await fetch(`/api/views/${encodeURIComponent(blogSlug)}`);
       return await response.json();
     } catch (error) {
       console.error('Error getting blog view count:', error);
@@ -266,7 +262,7 @@ export function useAnalytics() {
   // Get pageview statistics
   const getPageviewStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/pageviews/stats`);
+      const response = await fetch(`/api/analytics/pageviews/stats`);
       return await response.json();
     } catch (error) {
       console.error('Error getting pageview stats:', error);
@@ -277,7 +273,7 @@ export function useAnalytics() {
   // Get visitor statistics
   const getVisitorStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API_BASE}/visitors/stats`);
+      const response = await fetch(`/api/analytics/visitors/stats`);
       return await response.json();
     } catch (error) {
       console.error('Error getting visitor stats:', error);
