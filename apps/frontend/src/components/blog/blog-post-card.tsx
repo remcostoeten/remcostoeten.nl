@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Clock, Calendar, Eye } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 import { formatBlogDateShort } from "@/lib/blog/date-utils";
 import { getPrimaryCategory, getSecondaryCategoriesForDisplay } from "@/lib/utils/category-display";
 interface BlogPost {
@@ -19,8 +19,6 @@ interface BlogPostCardProps {
   post: BlogPost;
   index?: number;
   variant?: 'default' | 'featured' | 'hero';
-  viewCount?: number;
-  showViewCount?: boolean;
   showExcerpt?: boolean;
 }
 
@@ -28,8 +26,6 @@ export function BlogPostCard({
   post,
   index = 0,
   variant = 'default',
-  viewCount = 0,
-  showViewCount = true,
   showExcerpt = true
 }: BlogPostCardProps) {
   const postUrl = `/posts/${post.slug}`;
@@ -89,12 +85,6 @@ export function BlogPostCard({
                 <span className="font-medium">{formatBlogDateShort(post.publishedAt)}</span>
               </div>
             </div>
-            {showViewCount && viewCount > 0 && (
-              <div className="flex items-center gap-2">
-                <Eye className={`${isHero ? 'w-4 h-4' : isFeatured ? 'w-5 h-5' : 'w-4 h-4'}`} />
-                <span className="font-medium">{viewCount.toLocaleString()} views</span>
-              </div>
-            )}
           </div>
 
           {/* Tags and Category */}

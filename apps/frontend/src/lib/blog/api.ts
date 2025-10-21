@@ -1,7 +1,7 @@
 import { TBlogPost, TBlogCategory } from './types';
 import { API } from '@/config/api.config';
 
-export type TBlogMetadataWithAnalytics = {
+export type TBlogMetadata = {
   id: string;
   slug: string;
   title: string;
@@ -19,19 +19,9 @@ export type TBlogMetadataWithAnalytics = {
   };
   createdAt: string;
   updatedAt: string;
-  analytics?: {
-    id: string;
-    slug: string;
-    totalViews: number;
-    uniqueViews: number;
-    recentViews: number;
-    lastViewedAt?: string;
-    createdAt: string;
-    updatedAt: string;
-  };
 };
 
-export async function fetchBlogMetadata(): Promise<TBlogMetadataWithAnalytics[]> {
+export async function fetchBlogMetadata(): Promise<TBlogMetadata[]> {
   try {
     const response = await fetch(API.blog.metadata(), {
       headers: {
@@ -52,9 +42,9 @@ export async function fetchBlogMetadata(): Promise<TBlogMetadataWithAnalytics[]>
   }
 }
 
-export async function fetchBlogMetadataBySlug(slug: string): Promise<TBlogMetadataWithAnalytics | null> {
+export async function fetchBlogMetadataBySlug(slug: string): Promise<TBlogMetadata | null> {
   try {
-    const response = await fetch(API.blog.metadataBySlug(slug) + '?includeAnalytics=true', {
+    const response = await fetch(API.blog.metadataBySlug(slug), {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -72,25 +62,8 @@ export async function fetchBlogMetadataBySlug(slug: string): Promise<TBlogMetada
   }
 }
 
-export async function incrementBlogView(slug: string): Promise<void> {
-  try {
-    await fetch(API.blog.recordView(slug), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Fingerprint': typeof window !== 'undefined' ?
-          (window.crypto?.randomUUID?.() || `visitor-${Date.now()}`) :
-          `server-${Date.now()}`,
-      },
-    });
-  } catch (error) {
-    console.warn('Blog analytics API not available for view tracking:', error);
-    // Silently fail if backend is not available
-  }
-}
-
 // Convert API data to frontend format
-export function convertToBlogPost(metadata: TBlogMetadataWithAnalytics, content: string): TBlogPost {
+export function convertToBlogPost(metadata: TBlogMetadata, content: string): TBlogPost {
   return {
     title: metadata.title,
     excerpt: metadata.excerpt,
@@ -103,10 +76,5 @@ export function convertToBlogPost(metadata: TBlogMetadataWithAnalytics, content:
     author: metadata.author,
     seo: metadata.seo,
     content,
-    views: metadata.analytics ? {
-      total: metadata.analytics.totalViews,
-      unique: metadata.analytics.uniqueViews,
-      recent: metadata.analytics.recentViews,
-    } : undefined,
   };
 }

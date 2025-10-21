@@ -1,9 +1,8 @@
 'use client';
 
 import Link from "next/link";
-import { BookOpen, Eye, Clock, Calendar, ArrowUpRight, Sparkles } from "lucide-react";
-import { useMultipleViewCounts } from "@/hooks/use-multiple-view-counts";
-import { Suspense, useMemo } from "react";
+import { BookOpen, Clock, Calendar, ArrowUpRight, Sparkles } from "lucide-react";
+import { useMemo } from "react";
 import { AnimatedReadTime } from "@/components/ui/animated-read-time";
 
 type TBlogPost = {
@@ -36,11 +35,6 @@ function MetaItem({ icon: Icon, children }: { icon: React.ElementType; children:
   );
 }
 
-function ViewCount({ slug }: { slug: string }) {
-  const slugsArray = useMemo(() => [slug], [slug]);
-  const { getFormattedViewCount, loading } = useMultipleViewCounts(slugsArray);
-  return <span>{loading ? '...' : getFormattedViewCount(slug)}</span>;
-}
 
 export function BlogSectionClient({ posts, totalPosts }: TBlogSectionClientProps) {
   return (
@@ -98,14 +92,7 @@ export function BlogSectionClient({ posts, totalPosts }: TBlogSectionClientProps
                           />
                         </MetaItem>
 
-                        <span className="text-muted-foreground/30">·</span>
-
-                        <MetaItem icon={Eye}>
-                          <Suspense fallback={<span>...</span>}>
-                            <ViewCount slug={post.slug} />
-                          </Suspense>
-                        </MetaItem>
-                      </div>
+                        </div>
                     </div>
                   </div>
                 </div>

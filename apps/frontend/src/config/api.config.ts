@@ -14,25 +14,11 @@ export function apiUrl(path: string): string {
 
 // Export specific endpoint builders for internal API routes
 export const API = {
-  // View tracking endpoints
-  views: {
-    get: (slug: string) => apiUrl(`/api/views/${encodeURIComponent(slug)}`),
-    record: (slug: string) => apiUrl(`/api/views/${encodeURIComponent(slug)}`),
-    multiple: (slugs: string[]) => {
-      const params = slugs.map(encodeURIComponent).join(',');
-      return apiUrl(`/api/views?slugs=${params}`);
-    }
-  },
-
   // Blog posts endpoints
   blog: {
     posts: () => apiUrl('/api/blog/posts'),
     metadata: () => apiUrl('/api/blog/metadata'),
     metadataBySlug: (slug: string) => apiUrl(`/api/blog/metadata/${encodeURIComponent(slug)}`),
-    analytics: (slug: string) => apiUrl(`/api/blog/analytics/${encodeURIComponent(slug)}`),
-    recordView: (slug: string) => apiUrl(`/api/blog/analytics/${encodeURIComponent(slug)}`),
-    analyticsMultiple: () => apiUrl('/api/blog/analytics/multiple'),
-    analyticsStats: () => apiUrl('/api/blog/analytics/stats'),
   },
 
   // Projects endpoints

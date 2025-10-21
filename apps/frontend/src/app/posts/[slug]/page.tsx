@@ -7,7 +7,6 @@ import { serialize } from 'next-mdx-remote/serialize';
 import { mdxComponents } from '@/components/mdx/mdx-components-server';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
-import { ViewCounter } from '@/components/blog/view-counter';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
@@ -204,12 +203,7 @@ export default async function PostPage(props: TPostPageProps) {
                     {post.readTime} min read
                   </span>
                 </div>
-                <ViewCounter
-                  slug={params.slug}
-                  autoIncrement={true}
-                  className="flex items-center text-sm gap-1 text-muted-foreground"
-                />
-              </div>
+                </div>
 
               <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
 
