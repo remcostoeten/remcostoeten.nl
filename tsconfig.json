@@ -13,11 +13,25 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@/server/db": [
+        "./src/server/db/index.ts"
+      ],
+      "@/server/env": [
+        "./src/server/env.ts"
+      ],
+      "@/server/schema": [
+        "./src/server/db/schema.ts"
+      ]
+    },
     "incremental": true,
     "plugins": [
       {

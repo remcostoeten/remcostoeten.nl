@@ -1,13 +1,12 @@
+import { env } from '@/server/env';
 import type { Config } from 'drizzle-kit';
-import { env } from './src/server/env';
 
 export default {
   schema: './src/server/db/schema.ts',
-  out: './drizzle',
-  driver: 'pg',
+  out: './src/server/db/migrations',
+  dialect: 'postgresql',
   dbCredentials: {
-    url: env.DATABASE_URL,
+    url: env.DATABASE_URL!,
   },
-  tablesFilter: ['remcostoeten_db_*'],
   strict: true,
 } satisfies Config;
