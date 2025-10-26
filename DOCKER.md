@@ -19,18 +19,41 @@ This project includes a Docker Compose setup for PostgreSQL with automated crede
    ./scripts/manage/docker-psql.sh status
    ```
 
+4. **Import sample data (optional):**
+   ```bash
+   ./scripts/manage/docker-psql.sh import scripts/sample-data.sql
+   ```
+
+5. **View database tables:**
+   ```bash
+   ./scripts/manage/docker-psql.sh tables
+   ```
+
 ## 📋 Available Commands
 
+### Container Management
 | Command | Description |
 |---------|-------------|
 | `setup` | First-time setup with random credentials |
 | `url` | Copy connection URL to clipboard |
 | `start` | Start the PostgreSQL container |
 | `stop` | Stop the PostgreSQL container |
+| `status` | Show container status |
 | `clear` | Clear all database contents (remove all tables) |
 | `remove` | Remove entire container and all data |
-| `status` | Show container status |
 | `help` | Show help message |
+
+### Database Operations
+| Command | Description |
+|---------|-------------|
+| `tables` | List all tables in the database with row counts |
+| `show <table>` | Show contents of a table (default 20 rows) |
+| `show <table> <n>` | Show contents with custom row limit |
+| `structure <table>` | Show table structure/schema |
+| `sql "query"` | Execute custom SQL query |
+| `import <file>` | Import SQL file into database |
+| `export <table>` | Export table to CSV (table_name_export.csv) |
+| `export <table> <file>` | Export table to custom CSV file |
 
 ## 🔧 Features
 
@@ -74,7 +97,7 @@ This project includes a Docker Compose setup for PostgreSQL with automated crede
 
 After setup, your connection URL will be:
 ```
-postgresql://postgres:RANDOM_PASSWORD@localhost:5432/remcostoeten_db
+postgresql://postgres:RANDOM_PASSWORD@localhost:5434/remcostoeten_db
 ```
 
 Use the `url` command to copy this to your clipboard.
@@ -125,10 +148,35 @@ POSTGRES_DB=my_custom_db
 ### Access database directly
 ```bash
 # Connect using psql (if installed)
-docker exec -it remcostoeten-postgres psql -U postgres -d remcostoeten_db
+/usr/bin/docker exec -it remcostoeten-postgres psql -U postgres -d remcostoeten_db
 
 # Or using connection URL
 psql $(./scripts/manage/docker-psql.sh url 2>/dev/null || echo "get-url-first")
+```
+
+### Database operation examples
+```bash
+# List all tables
+./scripts/manage/docker-psql.sh tables
+
+# View table contents (default 20 rows)
+./scripts/manage/docker-psql.sh show users
+
+# View table contents with custom limit
+./scripts/manage/docker-psql.sh show posts 10
+
+# Show table structure
+./scripts/manage/docker-psql.sh structure users
+
+# Execute custom SQL query
+./scripts/manage/docker-psql.sh sql "SELECT COUNT(*) FROM users;"
+
+# Import SQL file
+./scripts/manage/docker-psql.sh import backup.sql
+
+# Export table to CSV
+./scripts/manage/docker-psql.sh export users
+./scripts/manage/docker-psql.sh export users users_backup.csv
 ```
 
 ## 🚨 Important Notes

@@ -255,7 +255,7 @@ execute_sql() {
     local db_name="${POSTGRES_DB:-remcostoeten_db}"
     local user="${POSTGRES_USER:-postgres}"
 
-    docker exec "$CONTAINER_NAME" psql -U "$user" -d "$db_name" -c "$sql" 2>/dev/null
+    /usr/bin/docker exec "$CONTAINER_NAME" psql -U "$user" -d "$db_name" -c "$sql" 2>/dev/null
 }
 
 # List all tables in the database
@@ -273,7 +273,7 @@ list_tables() {
     set +a
 
     # Check if database is ready
-    if ! docker exec "$CONTAINER_NAME" pg_isready -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-remcostoeten_db}" &>/dev/null; then
+    if ! /usr/bin/docker exec "$CONTAINER_NAME" pg_isready -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-remcostoeten_db}" &>/dev/null; then
         log_error "Database is not ready yet. Please wait a moment and try again."
         exit 1
     fi
@@ -475,22 +475,22 @@ import_sql_file() {
 
     # Copy file to container and execute
     local container_file="/tmp/import_$(basename "$file_path")"
-    docker cp "$file_path" "$CONTAINER_NAME:$container_file"
+    /usr/bin/docker cp "$file_path" "$CONTAINER_NAME:$container_file"
 
     local db_name="${POSTGRES_DB:-remcostoeten_db}"
     local user="${POSTGRES_USER:-postgres}"
 
     # Execute SQL file
-    docker exec "$CONTAINER_NAME" psql -U "$user" -d "$db_name" -f "$container_file" 2>/dev/null
+    /usr/bin/docker exec "$CONTAINER_NAME" psql -U "$user" -d "$db_name" -f "$container_file" 2>/dev/null
 
     if [ $? -eq 0 ]; then
         log_success "SQL file imported successfully"
         # Clean up
-        docker exec "$CONTAINER_NAME" rm "$container_file" 2>/dev/null || true
+        /usr/bin/docker exec "$CONTAINER_NAME" rm "$container_file" 2>/dev/null || true
     else
         log_error "Failed to import SQL file"
         # Clean up
-        docker exec "$CONTAINER_NAME" rm "$container_file" 2>/dev/null || true
+        /usr/bin/docker exec "$CONTAINER_NAME" rm "$container_file" 2>/dev/null || true
         exit 1
     fi
 }
@@ -521,11 +521,11 @@ export_table_to_csv() {
     local user="${POSTGRES_USER:-postgres}"
 
     # Export to CSV
-    docker exec "$CONTAINER_NAME" psql -U "$user" -d "$db_name" -c "\copy \"$table_name\" TO '$output_file' WITH CSV HEADER" 2>/dev/null
+    /usr/bin/docker exec "$CONTAINER_NAME" psql -U "$user" -d "$db_name" -c "\copy \"$table_name\" TO '$output_file' WITH CSV HEADER" 2>/dev/null
 
     if [ $? -eq 0 ]; then
         # Copy file from container
-        docker cp "$CONTAINER_NAME:$output_file" "./$output_file"
+        /usr/bin/docker cp "$CONTAINER_NAME:$output_file" "./$output_file"
         log_success "Table exported to: $output_file"
 
         # Show file info
@@ -586,11 +586,11 @@ show_status() {
         echo -e "Status: ${GREEN}Running${NC}"
 
         # Get container info
-        local port=$(docker port "$CONTAINER_NAME" 5432/tcp | cut -d: -f2)
+        local port=$(/usr/bin/docker port "$CONTAINER_NAME" 5432/tcp | cut -d: -f2)
         echo "Port: $port"
 
         # Show if database is ready
-        if docker exec "$CONTAINER_NAME" pg_isready -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-remcostoeten_db}" &>/dev/null; then
+        if /usr/bin/docker exec "$CONTAINER_NAME" pg_isready -U "${POSTGRES_USER:-postgres}" -d "${POSTGRES_DB:-remcostoeten_db}" &>/dev/null; then
             echo -e "Database: ${GREEN}Ready${NC}"
         else
             echo -e "Database: ${YELLOW}Starting...${NC}"
