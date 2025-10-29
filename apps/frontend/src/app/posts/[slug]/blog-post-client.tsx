@@ -15,13 +15,11 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
 
-  // Extract unique categories
   const categories = useMemo(() => {
     const cats = new Set(allPosts.map((post) => post.category))
     return ["all", ...Array.from(cats)]
   }, [allPosts])
 
-  // Filter posts based on search and category
   const filteredPosts = useMemo(() => {
     return allPosts.filter((post) => {
       const matchesSearch =
@@ -35,7 +33,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
     })
   }, [allPosts, searchQuery, selectedCategory])
 
-  // Extract all unique tags
   const allTags = useMemo(() => {
     const tags = new Set<string>()
     allPosts.forEach((post) => post.tags.forEach((tag) => tags.add(tag)))
@@ -44,9 +41,7 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
 
   return (
     <div className="space-y-8">
-      {/* Search and Filter Section */}
       <div className="space-y-4">
-        {/* Search Input */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -59,7 +54,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
           />
         </div>
 
-        {/* Category Filter - Mobile optimized horizontal scroll */}
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
           {categories.map((category) => (
             <button
@@ -80,28 +74,23 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </div>
       </div>
 
-      {/* Results Count */}
       <div className="text-sm text-muted-foreground">
         {filteredPosts.length} {filteredPosts.length === 1 ? "article" : "articles"}
         {searchQuery && ` matching "${searchQuery}"`}
       </div>
 
-      {/* Blog Posts List - Mobile-first card layout */}
       <div className="space-y-6">
         {filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
             <article
               key={post.slug}
-              className="group relative rounded-lg border border-border bg-card p-6 transition-all hover:border-accent/50 hover:shadow-lg"
+              className="group relative rounded-lg border border-border bg-card p-6 transition-all hover:border-accent/50 hover:shadow-lg overflow-hidden"
             >
               <Link href={`/posts/${post.slug}`} className="block space-y-3">
-                {/* Post Header */}
                 <div className="space-y-2">
-                  <h2 className="text-xl sm:text-2xl font-semibold text-foreground group-hover:text-accent transition-colors text-balance">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-foreground group-hover:text-accent transition-colors text-balance break-words hyphens-auto line-clamp-3 leading-tight">
                     {post.title}
                   </h2>
-
-                  {/* Meta Information */}
                   <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                     <time dateTime={post.publishedAt} className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5" />
@@ -121,14 +110,12 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                   </div>
                 </div>
 
-                {/* Excerpt */}
                 <p className="text-muted-foreground leading-relaxed text-pretty">{post.excerpt}</p>
 
-                {/* Tags */}
                 {post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-2">
+                  <div className="flex flex-wrap gap-2 pt-2 items-start">
                     {post.tags.map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground">
+                      <span key={tag} className="text-xs px-2 py-1 rounded-md bg-muted text-muted-foreground whitespace-nowrap shrink-0">
                         #{tag}
                       </span>
                     ))}
@@ -153,7 +140,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         )}
       </div>
 
-      {/* Popular Tags Section - Hidden on mobile, shown on larger screens */}
       {allTags.length > 0 && (
         <aside className="hidden lg:block mt-12 pt-8 border-t border-border">
           <h3 className="text-lg font-semibold mb-4 text-foreground">Popular Topics</h3>

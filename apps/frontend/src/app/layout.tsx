@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { Inter, Noto_Sans } from 'next/font/google';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { ClientAnalyticsWrapper } from "@/shared/components/analytics";
 
 import { Analytics } from "@vercel/analytics/next";
 import { ClientOnlyWrapper } from "@/components/client-only-wrapper";
@@ -26,7 +25,7 @@ const notoSans = Noto_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Remco Stoeten - Software Engineer | React & Next.js Developer',
+  title: 'Remco Stoeten | Software Engineer | React & Next.js Developer',
   description: 'Remco Stoeten is a software engineer specializing in React, Next.js, and TypeScript. Building modern web applications and sharing development insights. Portfolio, blog, and projects.',
   keywords: [
     'Remco Stoeten',
@@ -70,7 +69,7 @@ export const metadata: Metadata = {
     'profile:last_name': 'Stoeten',
   },
   openGraph: {
-    title: 'Remco Stoeten - Software Engineer | React & Next.js Developer',
+    title: 'Remco Stoeten | Software Engineer | React & Next.js Developer',
     description: 'Remco Stoeten is a software engineer specializing in React, Next.js, and TypeScript. Building modern web applications and sharing development insights.',
     url: 'https://remcostoeten.nl',
     siteName: 'Remco Stoeten',
@@ -115,6 +114,7 @@ export default function RootLayout({
     '@context': 'https://schema.org',
     '@type': 'Person',
     name: 'Remco Stoeten',
+    alternateName: 'Stoeten',
     url: 'https://remcostoeten.nl',
     image: 'https://remcostoeten.nl/remco-stoeten.jpg',
     jobTitle: 'Software Engineer',
@@ -141,6 +141,14 @@ export default function RootLayout({
     alumniOf: {
       '@type': 'EducationalOrganization',
       name: 'Self-taught Developer',
+    },
+    birthPlace: {
+      '@type': 'Place',
+      name: 'Netherlands',
+    },
+    nationality: {
+      '@type': 'Country',
+      name: 'Netherlands',
     },
   };
 
@@ -208,7 +216,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className="dark" data-scroll-behavior="smooth">
+    <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${inter.className} ${inter.variable} ${notoSans.variable} overflow-x-hidden`} suppressHydrationWarning>
         <script
           type="application/ld+json"

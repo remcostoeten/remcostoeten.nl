@@ -32,10 +32,10 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
 
   const MAX_LENGTH = 65;
 
-  const STAGGER_DURATION = 0.8;
+  const STAGGER_DURATION = 0.6;
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-  const BASE_DELAY = 0.1;
-  const STAGGER_DELAY = 0.15; // Delay between each element
+  const BASE_DELAY = 0.05;
+  const STAGGER_DELAY = 0.08; // Delay between each element
 
   function buildStaggerTransition(order: number) {
     return {
@@ -47,13 +47,13 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
   }
 
   return (
-    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group">
-      <div className="text-body text-muted-foreground leading-tight mb-2 whitespace-nowrap overflow-hidden items-baseline flex">
-        <span className="inline-flex items-baseline">Been busy with  </span>
+    <div className="flex-1 min-w-0 transition-all duration-300 ease-out relative group w-full overflow-hidden">
+      <div className="text-body text-muted-foreground leading-tight mb-2 overflow-hidden items-baseline flex flex-nowrap">
+        <span className="inline-flex items-baseline flex-shrink-0">Been busy with  </span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`commit-${currentActivityIndex}`}
-            className="inline truncate max-w-[calc(100vw-140px)] xs:max-w-[280px] sm:max-w-[400px] lg:max-w-[598px] align-baseline"
+            className="inline-block truncate flex-1 min-w-0 align-baseline"
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -63,7 +63,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
               href={currentActivity.commitUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 truncate"
+              className="font-semibold text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 truncate block"
               title={currentActivity.latestCommit}
               onMouseEnter={onCommitMouseEnter}
               onMouseLeave={onCommitMouseLeave}
@@ -75,12 +75,12 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
       </div>
 
       {/* Second Line - Static text + dynamic content */}
-      <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1">
-        <span className="whitespace-nowrap">on my</span>
+      <div className="text-sm text-muted-foreground leading-tight flex flex-wrap items-baseline gap-1 overflow-hidden">
+        <span className="whitespace-nowrap flex-shrink-0">on my</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`project-${currentActivityIndex}`}
-            className="inline-block align-baseline"
+            className="inline-block align-baseline flex-shrink min-w-0"
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -90,7 +90,7 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
               href={currentActivity.repositoryUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 whitespace-nowrap"
+              className="font-medium text-foreground hover:text-accent transition-colors px-1 py-0.5 rounded hover:bg-accent/5 whitespace-nowrap truncate block max-w-full"
               title={currentActivity.project}
               onMouseEnter={onCommitMouseEnter}
               onMouseLeave={onCommitMouseLeave}
@@ -99,11 +99,11 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
             </Link>
           </motion.span>
         </AnimatePresence>
-        <span className="whitespace-nowrap"> repository</span>
+        <span className="whitespace-nowrap flex-shrink-0"> repository</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`timestamp-${currentActivityIndex}`}
-            className="inline-flex items-center text-muted-foreground whitespace-nowrap"
+            className="inline-flex items-center text-muted-foreground whitespace-nowrap flex-shrink-0"
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -132,10 +132,10 @@ export const GitHubActivityContent = memo(function GitHubActivityContent({
  */
 export function GitHubActivitySkeletonContent() {
   // Match the same stagger timing as real content
-  const STAGGER_DURATION = 0.8;
+  const STAGGER_DURATION = 0.6;
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-  const BASE_DELAY = 0.1;
-  const STAGGER_DELAY = 0.15;
+  const BASE_DELAY = 0.05;
+  const STAGGER_DELAY = 0.08;
 
   function buildStaggerTransition(order: number) {
     return {

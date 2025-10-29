@@ -111,32 +111,32 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
     : '';
 
   return (
-    <div className="flex items-start gap-3 relative group">
+    <div className="flex items-start gap-3 relative group w-full overflow-hidden">
       <div
-        className="flex items-start gap-3 flex-1"
+        className="flex items-start gap-3 flex-1 min-w-0"
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onMouseMove={onMouseMove}
       >
-        <div className="flex-1 min-w-0">
-          <div className="text-body text-muted-foreground leading-tight whitespace-nowrap overflow-hidden items-baseline flex">
-            <span className="inline-flex items-baseline">
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="text-body text-muted-foreground leading-tight overflow-hidden items-baseline flex flex-nowrap">
+            <span className="flex-shrink-0 inline-flex items-baseline">
               {prefix}
             </span>
             <AnimatePresence mode="wait">
               <motion.span
                 key={`track-${currentTrackIndex}`}
-                className="inline-block font-semibold text-foreground align-baseline"
+                className="inline-block font-semibold text-foreground align-baseline flex-shrink min-w-0 max-w-full"
                 initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                 transition={buildStaggerTransition(0)}
-              >P
+              >
                 <a
                   href={currentTrack.external_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-accent transition-colors truncate block"
                   title={`Listen to ${currentTrack.name} on Spotify`}
                 >
                   {truncated.track}
@@ -146,7 +146,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
             <AnimatePresence mode="wait">
               <motion.span
                 key={`by-${currentTrackIndex}`}
-                className="inline-block px-[3px] align-baseline"
+                className="inline-block px-[3px] align-baseline flex-shrink-0"
                 initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -158,13 +158,13 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
             <AnimatePresence mode="wait">
               <motion.span
                 key={`artist-${currentTrackIndex}`}
-                className="inline-block font-medium text-foreground align-baseline"
+                className="inline-block font-medium text-foreground align-baseline flex-shrink min-w-0 max-w-full"
                 initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                 transition={buildStaggerTransition(1)}
               >
-                <span title={currentTrack.artist}>
+                <span title={currentTrack.artist} className="truncate block">
                   {truncated.artist}
                 </span>
               </motion.span>

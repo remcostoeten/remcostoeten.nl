@@ -106,15 +106,6 @@ export function AnnouncementBanner() {
     React.useEffect(function attachScrollListener() {
         function onScroll() {
             const currentY = window.scrollY || 0
-            const delta = currentY - (lastScrollYRef.current || 0)
-
-            // Log scroll position
-            console.log('Announcement scroll position:', {
-                scrollY: currentY,
-                delta: delta,
-                direction: delta > 0 ? 'down' : delta < 0 ? 'up' : 'none',
-                timestamp: new Date().toISOString()
-            })
 
             // Clear any existing timeout
             if (scrollTimeoutRef.current) {
@@ -123,18 +114,19 @@ export function AnnouncementBanner() {
 
             // Debounce the scroll state change to prevent flickering
             scrollTimeoutRef.current = setTimeout(() => {
-                // Hide when scrolling down more than 50px
-                if (currentY > 50 && delta > 3) {
+                // Hide when scrolled more than 50px from top
+                if (currentY > 50) {
+                    console.log('Hiding announcement - scroll position:', currentY)
                     setIsHiddenByScroll(true)
                     setShouldHideByScroll(true)
                 }
-                // Show when scrolling up or near the top
-                else if (delta < -3 || currentY <= 50) {
+                // Show when near the top
+                else if (currentY <= 50) {
+                    console.log('Showing announcement - scroll position:', currentY)
                     setIsHiddenByScroll(false)
-                    // Delay showing for smooth animation
-                    setTimeout(() => setShouldHideByScroll(false), 50)
+                    setShouldHideByScroll(false)
                 }
-            }, 30)
+            }, 16) // ~60fps debounce
 
             lastScrollYRef.current = currentY
         }
@@ -193,9 +185,9 @@ export function AnnouncementBanner() {
             <div
                 className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit pointer-events-auto overflow-visible"
                 style={{
-                    transform: `translateY(${(shouldAnimateIn ? 0 : -bannerHeight - 20) + (shouldHideByScroll ? -bannerHeight - 20 : 0) + dragY}px)`,
+                    transform: `translateY(${(shouldAnimateIn && !shouldHideByScroll ? 0 : -bannerHeight - 20) + dragY}px)`,
                     opacity: shouldAnimateIn && !shouldHideByScroll && !isClosing ? 1 : 0,
-                    transition: isDragging ? "none" : `transform ${shouldAnimateIn && !isHiddenByScroll && !isClosing ? "0.8s" : "0.5s"} cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity ${shouldAnimateIn && !isHiddenByScroll && !isClosing ? "0.6s" : "0.3s"} ease-out`,
+                    transition: isDragging ? "none" : `transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out`,
                 }}
                 ref={wrapperRef}
                 onMouseDown={handleDragStart}

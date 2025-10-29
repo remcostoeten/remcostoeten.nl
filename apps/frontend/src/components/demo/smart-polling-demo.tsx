@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Settings } from 'lucide-react';
 
-type TPollingType = 'realtime' | 'analytics' | 'background' | 'passive';
+type TPollingType = 'realtime' | 'background' | 'passive';
 
 export function SmartPollingDemo() {
   const [pollingType, setPollingType] = useState<TPollingType>('realtime');
@@ -35,7 +35,6 @@ export function SmartPollingDemo() {
 
   const pollingTypes: { type: TPollingType; label: string; description: string }[] = [
     { type: 'realtime', label: 'Real-time', description: 'High-frequency updates (30s/2m)' },
-    { type: 'analytics', label: 'Analytics', description: 'Medium-frequency updates (1m/5m)' },
     { type: 'background', label: 'Background', description: 'Low-frequency updates (5m/off)' },
     { type: 'passive', label: 'Passive', description: 'Very low-frequency (15m/off)' },
   ];

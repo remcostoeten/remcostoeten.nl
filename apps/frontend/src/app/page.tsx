@@ -16,12 +16,12 @@ const BlogSection = nextDynamic(() => import("@/modules/sections/blog-section").
 
 
 export const metadata: Metadata = {
-  title: "Remco Stoeten | Software Engineer (React, Next.js, TypeScript)",
-  description: "Portfolio, projects, and blog by Remco Stoeten. Frontend-focused software engineer building modern web applications with React, Next.js, and TypeScript.",
+  title: "Remco Stoeten | Front-end Engineer (React, Next.js, TypeScript)",
+  description: "Remco Stoeten his personal site containing a handfull of projects, his writings curriculum vitae and other information.",
   alternates: { canonical: "https://remcostoeten.nl/" },
   ...buildSeo({
     title: "Remco Stoeten | Software Engineer (React, Next.js, TypeScript)",
-    description: "Portfolio, projects, and blog by Remco Stoeten. Frontend-focused software engineer building modern web applications with React, Next.js, and TypeScript.",
+    description: "Remco Stoeten his personal site containing a handfull of projects, his writings curriculum vitae and other information.",
     url: "https://remcostoeten.nl/",
   }),
 };
@@ -29,10 +29,9 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   return (
     <main id="main-content" role="main" className='home'>
-      <h1 className="sr-only">Remco Stoeten — Software Engineer</h1>
+      <h1 className="sr-only">Remco Stoeten — Front-end Engineer</h1>
       <div className="space-y-8">
         <AnnouncementBanner />
-        {/* <HeroSection /> */}
         <AboutSection />
         <LatestActivitySection />
         <ProjectsSection />

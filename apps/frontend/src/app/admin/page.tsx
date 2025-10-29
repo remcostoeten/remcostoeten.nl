@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { Shield, BarChart3, MessageSquare, MessageSquareText, ArrowLeft } from 'lucide-react';
+import { Shield, MessageSquare, MessageSquareText, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -10,13 +10,6 @@ export const metadata: Metadata = {
 
 export default function AdminPage() {
   const adminSections = [
-    {
-      title: 'Analytics',
-      description: 'View comprehensive analytics and performance metrics',
-      href: '/admin/analytics',
-      icon: BarChart3,
-      color: 'text-blue-500',
-    },
     {
       title: 'Contact Messages',
       description: 'Manage contact form submissions',
