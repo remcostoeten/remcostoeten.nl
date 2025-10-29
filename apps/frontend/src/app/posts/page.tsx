@@ -152,10 +152,10 @@ export default async function PostsPage() {
                 {featuredPosts.map((post) => (
                   <article
                     key={post.slug}
-                    className="group relative rounded-lg border border-border bg-card p-5 transition-all hover:border-accent/50 hover:shadow-lg"
+                    className="group relative rounded-lg border border-border bg-card p-5 transition-all hover:border-accent/50 hover:shadow-lg overflow-hidden"
                   >
                     <Link href={`/posts/${post.slug}`} className="block">
-                      <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-2 text-balance">
+                      <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-2 text-balance break-words hyphens-auto line-clamp-2 leading-tight">
                         {post.title}
                       </h3>
                       <p className="text-sm text-muted-foreground mb-3 line-clamp-2 text-pretty">{post.excerpt}</p>

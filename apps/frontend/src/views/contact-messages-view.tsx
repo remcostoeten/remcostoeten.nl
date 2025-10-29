@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { AdminAuth } from '@/components/admin-auth';
+import { API } from '@/config/api.config';
 
 type TContactMessage = {
   id: number;
@@ -27,13 +28,25 @@ export function ContactMessagesView() {
   async function fetchMessages() {
     setIsLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001';
-      const queryParams = filter === 'unread' ? '?unreadOnly=true' : '';
-      const response = await fetch(`${apiUrl}/api/contact${queryParams}`);
-      
+      const queryParams = filter === 'unread' ? '?status=pending' : '';
+      const response = await fetch(API.contact.messages() + queryParams);
+
       if (response.ok) {
         const result = await response.json();
-        setData(result.data);
+        if (result.success) {
+          const messages = result.data.messages.map((msg: any) => ({
+            ...msg,
+            contact: msg.email, // Map email to contact for compatibility
+            read: msg.readAt,
+          }));
+          setData({
+            messages,
+            unreadCount: messages.filter((msg: any) => !msg.readAt).length,
+            total: result.data.total
+          });
+        } else {
+          toast.error(result.error || 'Failed to fetch messages');
+        }
       } else {
         toast.error('Failed to fetch messages');
       }
@@ -47,14 +60,18 @@ export function ContactMessagesView() {
 
   async function handleMarkAsRead(id: number) {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001';
-      const response = await fetch(`${apiUrl}/api/contact/${id}/read`, {
-        method: 'PATCH',
+      const response = await fetch(API.contact.markAsRead(id.toString()), {
+        method: 'PUT',
       });
 
       if (response.ok) {
-        toast.success('Marked as read');
-        fetchMessages();
+        const result = await response.json();
+        if (result.success) {
+          toast.success('Marked as read');
+          fetchMessages();
+        } else {
+          toast.error(result.error || 'Failed to mark as read');
+        }
       } else {
         toast.error('Failed to mark as read');
       }
@@ -70,14 +87,18 @@ export function ContactMessagesView() {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001';
-      const response = await fetch(`${apiUrl}/api/contact/${id}`, {
+      const response = await fetch(API.contact.delete(id.toString()), {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        toast.success('Message deleted');
-        fetchMessages();
+        const result = await response.json();
+        if (result.success) {
+          toast.success('Message deleted');
+          fetchMessages();
+        } else {
+          toast.error(result.error || 'Failed to delete message');
+        }
       } else {
         toast.error('Failed to delete message');
       }

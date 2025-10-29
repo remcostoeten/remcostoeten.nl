@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { MessageSquare, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { FeedbackAdminDashboard } from '@/components/admin/feedback-admin-dashboard';
+import { AdminAuth } from '@/components/admin-auth';
 
 export const metadata: Metadata = {
   title: 'Feedback Admin | Remco Stoeten',
@@ -38,7 +39,9 @@ export default function FeedbackAdminPage() {
           </p>
         </div>
 
-        <FeedbackAdminDashboard />
+        <AdminAuth>
+          <FeedbackAdminDashboard />
+        </AdminAuth>
       </div>
     </div>
   );

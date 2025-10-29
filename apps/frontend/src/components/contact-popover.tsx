@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
+import { API } from '@/config/api.config';
 
 type TProps = {
   children: React.ReactNode;
@@ -20,25 +21,29 @@ export function ContactPopover({ children }: TProps) {
     setIsLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4001';
-      const response = await fetch(`${apiUrl}/api/contact`, {
+      const response = await fetch(API.contact.submit(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, contact, message }),
+        body: JSON.stringify({
+          name,
+          email: contact, // Map contact field to email
+          message,
+          subject: 'Contact form submission'
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok && data.success) {
-        toast.success(data.message || 'Message sent successfully!');
+        toast.success('Message sent successfully!');
         setName('');
         setContact('');
         setMessage('');
         setIsOpen(false);
       } else {
-        toast.error(data.message || 'Failed to send message. Please try again.');
+        toast.error(data.error || 'Failed to send message. Please try again.');
       }
     } catch (error) {
       console.error('Contact form error:', error);

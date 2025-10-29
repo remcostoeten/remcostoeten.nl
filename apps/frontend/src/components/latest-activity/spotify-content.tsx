@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { SpotifyTrack, SpotifyRecentTrack } from "@/services/spotify-service";
 import { formatTimestamp } from "./utils";
 import { SpotifyHoverCard } from "./spotify-hover-card";
-import { AnimatedTimestamp } from "../../shared/components/animated-numbers";
 
 type TProps = {
   currentTrack: SpotifyTrack | SpotifyRecentTrack;
@@ -25,7 +24,7 @@ function truncateText(text: string, maxLength: number): string {
 }
 
 function calculateLine1Length(prefix: string, trackName: string, artistName: string): number {
-  return prefix.length + trackName.length + 4 + artistName.length;
+  return prefix.length + trackName.length + 3 + artistName.length; // prefix includes trailing space, +3 for " by "
 }
 
 function smartTruncateLine1(
@@ -34,7 +33,7 @@ function smartTruncateLine1(
   artistName: string,
   maxLength: number
 ): { track: string; artist: string } {
-  const staticLength = prefix.length + 4;
+  const staticLength = prefix.length + 3; // prefix includes trailing space, +3 for " by "
   const availableLength = maxLength - staticLength;
   const totalLength = trackName.length + artistName.length;
 
@@ -83,8 +82,8 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
   const STAGGER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
   const BASE_DELAY = 0.2;
   const STAGGER_DELAY = 0.12;
-  const MAX_LINE1_LENGTH = 70;
-  const MAX_LINE2_LENGTH = 55;
+  const MAX_LINE1_LENGTH = 100;
+  const MAX_LINE2_LENGTH = 80;
 
   function buildStaggerTransition(order: number) {
     return {
@@ -97,8 +96,8 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
 
   const isCurrentlyPlaying = 'is_playing' in currentTrack && currentTrack.is_playing;
   const isRecentTrack = 'played_at' in currentTrack;
-  const prefix = isCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to';
-  
+  const prefix = isCurrentlyPlaying ? 'Currently listening to ' : 'Whilst probably listening to\u00A0';
+
   const truncated = smartTruncateLine1(
     prefix,
     currentTrack.name,
@@ -107,27 +106,27 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
   );
 
   const timestampText = isRecentTrack ? formatTimestamp((currentTrack as SpotifyRecentTrack).played_at) : '';
-  const truncatedAlbum = currentTrack.album 
+  const truncatedAlbum = currentTrack.album
     ? smartTruncateLine2(currentTrack.album, timestampText, MAX_LINE2_LENGTH)
     : '';
 
   return (
-    <div className="flex items-start gap-3 relative group">
+    <div className="flex items-start gap-3 relative group w-full overflow-hidden">
       <div
-        className="flex items-start gap-3 flex-1"
+        className="flex items-start gap-3 flex-1 min-w-0"
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         onMouseMove={onMouseMove}
       >
-        <div className="flex-1 min-w-0">
-          <div className="text-body text-muted-foreground leading-tight">
-            <span className="inline">
-              {prefix}{" "}
+        <div className="flex-1 min-w-0 overflow-hidden">
+          <div className="text-body text-muted-foreground leading-tight overflow-hidden items-baseline flex flex-nowrap">
+            <span className="flex-shrink-0 inline-flex items-baseline">
+              {prefix}
             </span>
             <AnimatePresence mode="wait">
               <motion.span
                 key={`track-${currentTrackIndex}`}
-                className="inline-block font-semibold text-foreground"
+                className="inline-block font-semibold text-foreground align-baseline flex-shrink min-w-0 max-w-full"
                 initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -137,7 +136,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                   href={currentTrack.external_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-accent transition-colors truncate block"
                   title={`Listen to ${currentTrack.name} on Spotify`}
                 >
                   {truncated.track}
@@ -147,7 +146,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
             <AnimatePresence mode="wait">
               <motion.span
                 key={`by-${currentTrackIndex}`}
-                className="inline-block px-[3px]"
+                className="inline-block px-[3px] align-baseline flex-shrink-0"
                 initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -159,25 +158,25 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
             <AnimatePresence mode="wait">
               <motion.span
                 key={`artist-${currentTrackIndex}`}
-                className="inline-block font-medium text-foreground"
+                className="inline-block font-medium text-foreground align-baseline flex-shrink min-w-0 max-w-full"
                 initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                 transition={buildStaggerTransition(1)}
               >
-                <span title={currentTrack.artist}>
+                <span title={currentTrack.artist} className="truncate block">
                   {truncated.artist}
                 </span>
               </motion.span>
             </AnimatePresence>
           </div>
-          <div className="text-sm text-muted-foreground leading-tight mt-1">
+          <div className="text-sm text-muted-foreground leading-tight mt-1 flex flex-wrap items-baseline gap-1">
             {currentTrack.album && (
               <>
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={`album-${currentTrackIndex}`}
-                    className="inline-block italic"
+                    className="inline-block italic align-baseline"
                     initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -195,7 +194,7 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={`space-${currentTrackIndex}`}
-                    className="inline-block px-[3px]"
+                    className="inline-block px-[3px] align-baseline"
                     initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
@@ -207,15 +206,13 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={`timestamp-${currentTrackIndex}`}
-                    className="inline-block text-muted-foreground whitespace-nowrap"
+                    className="inline-block text-muted-foreground whitespace-nowrap align-baseline"
                     initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
                     transition={buildStaggerTransition(3)}
                   >
-                    <span>(</span>
-                    <AnimatedTimestamp timestamp={timestampText} delay={BASE_DELAY + (3 * STAGGER_DELAY) * 1000 + 100} />
-                    <span>)</span>
+                    <span>({timestampText})</span>
                   </motion.span>
                 </AnimatePresence>
               </>
@@ -245,7 +242,6 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
         )}
       </div>
 
-      {/* Hover Card - positioned relative to container */}
       <div className="absolute left-0 top-full mt-2 z-[999999] w-80 max-w-[90vw]">
         <SpotifyHoverCard
           track={currentTrack}
@@ -279,67 +275,67 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
   }
 
   return (
-    <div className="flex items-start gap-3">
-      <div className="flex-1 min-w-0">
-        <div className="text-body text-muted-foreground leading-tight">
-          <span className="flex-shrink-0">
-            {showCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
-          </span>
-          <span className="inline-block font-semibold text-foreground">
+    <div className="flex items-start gap-3 relative group">
+      <div className="flex items-start gap-3 flex-1">
+        <div className="flex-1 min-w-0">
+          <div className="text-body text-muted-foreground leading-tight whitespace-nowrap overflow-hidden items-baseline flex">
+            <span className="inline-flex items-baseline">
+              {showCurrentlyPlaying ? 'Currently listening to ' : 'Whilst probably listening to\u00A0'}
+            </span>
+            <span className="ml-4 inline-block font-semibold text-foreground align-baseline">
+              <motion.span
+                className="h-5 bg-muted/60 rounded-md animate-pulse w-[160px] inline-block align-middle"
+                initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
+                transition={buildStaggerTransition(0)}
+              />
+            </span>
             <motion.span
-              className="h-5 bg-muted/60 rounded-md animate-pulse w-[160px] inline-block align-middle"
+              className="inline-block h-5 bg-muted/60 rounded-md animate-pulse w-[20px] mx-1 align-middle align-baseline"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
-              transition={buildStaggerTransition(0)}
+              transition={buildStaggerTransition(0.5)}
             />
-          </span>
-          <motion.span
-            className="inline-block h-5 bg-muted/60 rounded-md animate-pulse w-[20px] mx-1 align-middle"
-            initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-            animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
-            transition={buildStaggerTransition(0.5)}
-          />
-          <span className="inline-block font-medium text-foreground">
+            <span className="inline-block font-medium text-foreground align-baseline">
+              <motion.span
+                className="h-5 bg-muted/60 rounded-md animate-pulse w-[120px] inline-block align-middle"
+                initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
+                transition={buildStaggerTransition(1)}
+              />
+            </span>
+          </div>
+          <div className="text-sm text-muted-foreground leading-tight mt-1 flex flex-wrap items-baseline gap-1">
+            <span className="inline-block italic align-baseline">
+              <motion.span
+                className="h-4 bg-muted/40 rounded-md animate-pulse w-[140px] inline-block align-middle"
+                initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
+                transition={buildStaggerTransition(2)}
+              />
+            </span>
             <motion.span
-              className="h-5 bg-muted/60 rounded-md animate-pulse w-[120px] inline-block align-middle"
+              className="inline-block h-4 bg-muted/40 rounded-md animate-pulse w-[12px] mx-1 align-middle align-baseline"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
-              transition={buildStaggerTransition(1)}
+              transition={buildStaggerTransition(2.5)}
             />
-          </span>
-        </div>
-        <div className="text-sm text-muted-foreground leading-tight mt-1">
-          <span className="inline-block italic">
             <motion.span
-              className="h-4 bg-muted/40 rounded-md animate-pulse w-[140px] inline-block align-middle"
-              initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-              animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
-              transition={buildStaggerTransition(2)}
-            />
-          </span>
-          <motion.span
-            className="inline-block h-4 bg-muted/40 rounded-md animate-pulse w-[12px] mx-1 align-middle"
-            initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-            animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
-            transition={buildStaggerTransition(2.5)}
-          />
-          <span className="inline-block text-muted-foreground">
-            (<motion.span
-              className="h-4 bg-muted/40 rounded-md animate-pulse w-[50px] inline-block align-middle"
+              className="h-4 bg-muted/40 rounded-md animate-pulse w-[70px] inline-block align-middle align-baseline"
               initial={{ opacity: 1, filter: "blur(0px)", y: 0 }}
               animate={{ opacity: 0, filter: "blur(2px)", y: -4 }}
               transition={buildStaggerTransition(3)}
-            />)
-          </span>
+            />
+          </div>
         </div>
-      </div>
 
-      <motion.div
-        className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"
-        initial={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
-        animate={{ opacity: 0, filter: "blur(3px)", scale: 0.95 }}
-        transition={buildStaggerTransition(4)}
-      />
+        <motion.div
+          className="w-10 h-10 rounded-lg bg-muted/50 animate-pulse flex-shrink-0"
+          initial={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
+          animate={{ opacity: 0, filter: "blur(3px)", scale: 0.95 }}
+          transition={buildStaggerTransition(4)}
+        />
+      </div>
     </div>
   );
 }
@@ -349,7 +345,7 @@ export function SpotifyActivitySkeletonContent({ showCurrentlyPlaying = false }:
  */
 export function SpotifyActivityErrorContent() {
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-3 relative group">
       <div className="flex-1 min-w-0">
         <div className="text-body text-muted-foreground leading-tight h-5 flex items-center">
           No music playing right now

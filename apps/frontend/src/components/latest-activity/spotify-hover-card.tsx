@@ -91,7 +91,7 @@ export const SpotifyHoverCard = memo(function SpotifyHoverCard({
               <div className="flex items-center gap-2 text-sm">
                 <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
                 <span className="text-muted-foreground">
-                  {isCurrentlyPlaying ? 'Currently playing' : 'Whilst probably listening to'}
+                  {isCurrentlyPlaying ? 'Currently playing' : 'Whilst probably listening to\u00A0\u00A0'}
                 </span>
               </div>
 

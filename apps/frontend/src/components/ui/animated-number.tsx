@@ -53,6 +53,7 @@ export function AnimatedNumber({
     const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true)
     const [isRolling, setIsRolling] = useState<boolean>(false)
     const [digitValues, setDigitValues] = useState<number[]>([])
+    const [hasAnimated, setHasAnimated] = useState<boolean>(false)
 
     const canAnimate = useCanAnimate({ respectMotionPreference })
     const prefersReducedMotion = usePrefersReducedMotion()
@@ -76,6 +77,8 @@ export function AnimatedNumber({
     }, [value, randomStart, randomRange, isInitialLoad, animateDigitsSeparately, valueDigits])
 
     useEffect(() => {
+        if (hasAnimated) return
+
         if (animateDigitsSeparately && shouldAnimate && !isInitialLoad) {
             setIsRolling(true)
 
@@ -88,6 +91,7 @@ export function AnimatedNumber({
                 clearInterval(rollingInterval)
                 setIsRolling(false)
                 setDigitValues(valueDigits)
+                setHasAnimated(true)
             }, delay + 800)
 
             return () => {
@@ -106,6 +110,7 @@ export function AnimatedNumber({
                 clearInterval(rollingInterval)
                 setIsRolling(false)
                 setDisplayValue(value)
+                setHasAnimated(true)
             }, delay + 600)
 
             return () => {
@@ -114,8 +119,9 @@ export function AnimatedNumber({
             }
         } else if (shouldAnimate && !randomStart) {
             setDisplayValue(value)
+            setHasAnimated(true)
         }
-    }, [shouldAnimate, value, delay, randomStart, isInitialLoad, randomRange, animateDigitsSeparately, valueDigits])
+    }, [shouldAnimate, value, delay, randomStart, isInitialLoad, randomRange, animateDigitsSeparately, valueDigits, hasAnimated])
     // If motion is disabled or reduced motion is preferred, show static value
     if (!canAnimate || prefersReducedMotion) {
         const formattedValue = value.toLocaleString(locale, FORMAT_CONFIG[format](decimals, useGrouping))

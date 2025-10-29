@@ -4,10 +4,10 @@ import { buildSeo } from "@/lib/seo";
 import { getAllBlogPosts, getBlogPostBySlug } from "@/lib/blog/filesystem-utils";
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { mdxComponents } from '@/components/mdx/mdx-components-server';
+import remarkGfm from 'remark-gfm';
+import rehypeHighlight from 'rehype-highlight';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowLeft } from 'lucide-react';
-import { ViewCounter } from '@/components/blog/view-counter';
-import { AnimatedNumber } from '@/components/ui/animated-number';
 import { parseHeadingsFromMDX } from '@/lib/blog/toc-utils';
 import { BreadcrumbNavigation } from '@/components/blog/breadcrumb-navigation';
 import { generateBlogPostBreadcrumbs } from '@/lib/blog/breadcrumb-utils';
@@ -90,6 +90,14 @@ export default async function PostPage(props: TPostPageProps) {
   const filePath = path.join(process.cwd(), 'content/blog', `${params.slug}.mdx`);
   const fileContent = fs.readFileSync(filePath, 'utf8');
   const { content } = matter(fileContent);
+
+  // MDX options for RSC
+  const mdxOptions = {
+    mdxOptions: {
+      remarkPlugins: [remarkGfm],
+      rehypePlugins: [rehypeHighlight],
+    },
+  };
 
   const headings = parseHeadingsFromMDX(content, 3);
 
@@ -183,52 +191,19 @@ export default async function PostPage(props: TPostPageProps) {
                 <div className="flex items-center mr-4">
                   <Calendar className="w-4 h-4 mr-1" />
                   <time dateTime={post.publishedAt} className="flex items-center gap-0.5">
-                    <span>{new Date(post.publishedAt).toLocaleDateString('en-US', {
-                      month: 'short'
-                    })}</span>
-                    <AnimatedNumber
-                      value={new Date(post.publishedAt).getDate()}
-                      format="number"
-                      decimals={0}
-                      randomStart={true}
-                      randomRange={Math.max(1, new Date(post.publishedAt).getDate() - 1)}
-                      duration={800}
-                      delay={200}
-                      className="inline-block"
-                    />
-                    <AnimatedNumber
-                      value={new Date(post.publishedAt).getFullYear()}
-                      format="number"
-                      decimals={0}
-                      randomStart={true}
-                      randomRange={Math.max(1, new Date(post.publishedAt).getFullYear() - 2000)}
-                      duration={1000}
-                      delay={400}
-                      className="inline-block"
-                    />
+                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
                   </time>
                 </div>
                 <div className="flex items-center mr-4">
                   <Clock className="w-4 h-4 mr-1" />
                   <span className="flex items-center gap-0.5">
-                    <AnimatedNumber
-                      value={post.readTime}
-                      format="number"
-                      decimals={0}
-                      randomStart={true}
-                      randomRange={Math.max(1, post.readTime - 2)}
-                      duration={800}
-                      delay={300}
-                      className="inline-block"
-                    />
-                    <span> min read</span>
+                    {post.readTime} min read
                   </span>
                 </div>
-                <ViewCounter
-                  slug={params.slug}
-                  autoIncrement={true}
-                  className="flex items-center text-sm gap-1 text-muted-foreground"
-                />
               </div>
 
               <h1 className="text-4xl font-bold text-foreground mb-4">{post.title}</h1>
@@ -253,88 +228,88 @@ export default async function PostPage(props: TPostPageProps) {
             </header>
 
             <div className="prose prose-invert max-w-none">
-              <MDXRemote source={content} components={mdxComponents} />
+              <MDXRemote source={content} options={mdxOptions} components={mdxComponents} />
             </div>
           </article>
         </TOCLayoutRedesign>
 
-        {/* Zen Mode Article Content - Centered & Readable */}
-        <div className="zen-mode:block hidden zen-content-centered">
-          <article
-            itemScope
-            itemType="https://schema.org/BlogPosting"
-            className="font-noto"
-          >
-            <header itemProp="headline" className="mb-12">
-              <h1 className="text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
+      {/* Zen Mode Article Content - Centered & Readable */}
+      <div className="zen-mode:block hidden zen-content-centered">
+        <article
+          itemScope
+          itemType="https://schema.org/BlogPosting"
+          className="font-noto"
+        >
+          <header itemProp="headline" className="mb-12">
+            <h1 className="text-5xl font-bold text-foreground mb-6 leading-tight">{post.title}</h1>
 
-              <div className="flex items-center gap-4 text-sm text-muted-foreground/80 mb-8 pb-8 border-b border-border/30">
-                <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-1.5" />
-                  <time dateTime={post.publishedAt}>
-                    {new Date(post.publishedAt).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
-                  </time>
-                </div>
-                <div className="flex items-center">
-                  <Clock className="w-4 h-4 mr-1.5" />
-                  <span>{post.readTime} min read</span>
-                </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground/80 mb-8 pb-8 border-b border-border/30">
+              <div className="flex items-center">
+                <Calendar className="w-4 h-4 mr-1.5" />
+                <time dateTime={post.publishedAt}>
+                  {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </time>
               </div>
-
-              {/* SEO excerpt - visually hidden but accessible to search engines */}
-              <div className="sr-only" itemProp="description">
-                {post.excerpt}
+              <div className="flex items-center">
+                <Clock className="w-4 h-4 mr-1.5" />
+                <span>{post.readTime} min read</span>
               </div>
-            </header>
-
-            <div className="prose prose-invert prose-lg max-w-none">
-              <MDXRemote source={content} components={mdxComponents} />
             </div>
-          </article>
-        </div>
 
-
-        {relatedPosts.length > 0 && (
-          <div className="mt-20 border-t border-border pt-16 zen-mode:hidden">
-            <h2 className="text-3xl font-bold mb-12 text-foreground">Related posts</h2>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {relatedPosts.map((rp) => (
-                <Link
-                  key={rp.slug}
-                  href={`/posts/${rp.slug}`}
-                  className="group block p-8 bg-secondary/30 hover:bg-secondary/50 rounded-lg border border-border hover:border-accent/50 transition-all duration-300"
-                >
-                  <div className="flex flex-col h-full">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="px-3 py-1 bg-accent/10 text-accent text-xs rounded border border-accent/20">
-                        {rp.category}
-                      </span>
-                      <span className="text-xs text-muted-foreground flex items-center">
-                        <Clock className="w-3 h-3 mr-1" />
-                        {rp.readTime} min
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-3 line-clamp-2">
-                      {rp.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground line-clamp-3 flex-grow mb-5">
-                      {rp.excerpt}
-                    </p>
-                    <div className="mt-auto flex items-center text-sm text-accent group-hover:translate-x-1 transition-transform">
-                      Read more
-                      <ArrowLeft className="w-4 h-4 ml-1 rotate-180" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
+            {/* SEO excerpt - visually hidden but accessible to search engines */}
+            <div className="sr-only" itemProp="description">
+              {post.excerpt}
             </div>
+          </header>
+
+          <div className="prose prose-invert prose-lg max-w-none">
+            <MDXRemote source={content} options={mdxOptions} components={mdxComponents} />
           </div>
-        )}
+        </article>
       </div>
+
+
+      {relatedPosts.length > 0 && (
+        <div className="mt-20 border-t border-border pt-16 zen-mode:hidden">
+          <h2 className="text-3xl font-bold mb-12 text-foreground">Related posts</h2>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedPosts.map((rp) => (
+              <Link
+                key={rp.slug}
+                href={`/posts/${rp.slug}`}
+                className="group block p-8 bg-secondary/30 hover:bg-secondary/50 rounded-lg border border-border hover:border-accent/50 transition-all duration-300"
+              >
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="px-3 py-1 bg-accent/10 text-accent text-xs rounded border border-accent/20">
+                      {rp.category}
+                    </span>
+                    <span className="text-xs text-muted-foreground flex items-center">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {rp.readTime} min
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors mb-3 line-clamp-2">
+                    {rp.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-3 flex-grow mb-5">
+                    {rp.excerpt}
+                  </p>
+                  <div className="mt-auto flex items-center text-sm text-accent group-hover:translate-x-1 transition-transform">
+                    Read more
+                    <ArrowLeft className="w-4 h-4 ml-1 rotate-180" />
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div >
 
       <FixedFeedbackWidget slug={params.slug} />
     </>

@@ -7,7 +7,6 @@ import { FilterDrawer } from "@/components/ui/filter-drawer";
 import { ANIMATION_CONFIGS } from "@/modules/shared";
 import { BlogPostCard } from "@/components/blog/blog-post-card";
 import { formatBlogDateShort } from "@/lib/blog/date-utils";
-import { useMultipleViewCounts } from "@/hooks/use-multiple-view-counts";
 
 interface BlogPost {
   slug: string;
@@ -32,24 +31,14 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Get view counts for all posts
-  const allSlugs = useMemo(() => allPosts.map(post => post.slug), [allPosts]);
-  const { viewCounts, loading: viewCountsLoading, totalViews, totalUniqueViews } = useMultipleViewCounts(allSlugs, {
-    autoRefresh: true,
-    refreshInterval: 60000 // Refresh every minute
-  });
-
-  // Get all unique categories and tags
   const { categories, tags } = useMemo(() => {
     const categories = Array.from(new Set(allPosts.map(post => post.category))).sort();
     const tags = Array.from(new Set(allPosts.flatMap(post => post.tags))).sort();
     return { categories, tags };
   }, [allPosts]);
 
-  // Filter and sort posts
   const filteredPosts = useMemo(() => {
     let filtered = allPosts.filter(post => {
-      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesSearch =
@@ -60,12 +49,10 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         if (!matchesSearch) return false;
       }
 
-      // Category filter
       if (selectedCategory && post.category !== selectedCategory) {
         return false;
       }
 
-      // Tags filter
       if (selectedTags.length > 0) {
         const hasSelectedTag = selectedTags.some(tag => post.tags.includes(tag));
         if (!hasSelectedTag) return false;
@@ -74,7 +61,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
       return true;
     });
 
-    // Sort posts
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'newest':
@@ -112,7 +98,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
 
   return (
     <div className="space-y-8 sm:space-y-10 lg:space-y-12">
-      {/* Mobile Hero Section - Featured Post First */}
       {filteredPosts.length > 0 && (
         <motion.div
           className="block sm:hidden"
@@ -144,7 +129,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             </div>
           </div>
 
-          {/* Hero Featured Post */}
           <div className="relative">
             <div className="text-sm font-medium text-accent mb-4 flex items-center gap-2">
               <div className="w-1 h-4 bg-accent rounded-full"></div>
@@ -155,7 +139,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
                 post={filteredPosts[0]}
                 index={0}
                 variant="hero"
-                viewCount={viewCounts[filteredPosts[0].slug]?.totalViews || 0}
                 showExcerpt={false}
               />
             </div>
@@ -163,14 +146,11 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </motion.div>
       )}
 
-      {/* Desktop Search and Filter Controls */}
       <motion.div
         className="hidden sm:block space-y-6"
         {...ANIMATION_CONFIGS.fadeInUp}
       >
-        {/* Search and Controls Row */}
         <div className="flex items-center gap-3">
-          {/* Search Bar */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -184,7 +164,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             />
           </div>
 
-          {/* Filter Toggle - Mobile */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-background/50 hover:bg-muted transition-colors relative touch-manipulation"
@@ -197,7 +176,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             )}
           </button>
 
-          {/* Sort Dropdown */}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
@@ -211,7 +189,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
           </select>
         </div>
 
-        {/* Desktop Filters */}
         <div className="hidden md:block">
           <div className="flex flex-wrap gap-2">
             <button
@@ -302,7 +279,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
           )}
         </AnimatePresence>
 
-        {/* Active Filters Display */}
         {hasActiveFilters && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -341,7 +317,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         )}
       </motion.div>
 
-      {/* Stats Section - Hidden on mobile, shown on desktop */}
       <motion.div
         className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-6 py-8"
         {...ANIMATION_CONFIGS.fadeInUp}
@@ -368,7 +343,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </div>
       </motion.div>
 
-      {/* Results Count - Mobile optimized */}
       <motion.div
         className="flex items-center justify-between text-sm text-muted-foreground py-4"
         {...ANIMATION_CONFIGS.fadeInUp}
@@ -387,13 +361,11 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         )}
       </motion.div>
 
-      {/* Mobile Filter Drawer */}
       <FilterDrawer
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
       >
         <div className="space-y-6 py-2">
-          {/* Categories */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <Folder className="w-4 h-4 text-muted-foreground" />
@@ -492,7 +464,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
         </div>
       </FilterDrawer>
 
-      {/* Posts Grid - Desktop Magazine Style Layout */}
       <AnimatePresence mode="wait">
         {filteredPosts.length > 0 ? (
           <motion.div
@@ -505,7 +476,6 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {/* Desktop Featured Post - First post gets special treatment */}
             {filteredPosts.length > 0 && (
               <motion.div
                 className="hidden sm:block relative"
@@ -546,13 +516,12 @@ export function BlogPostsClient({ allPosts }: BlogPostsClientProps) {
               </motion.div>
             )}
 
-            {/* Regular Posts Grid - Mobile shows all posts, Desktop shows remaining */}
             <div className="space-y-10">
               <div className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                 <div className="w-1 h-4 bg-muted-foreground/30 rounded-full"></div>
                 {filteredPosts.length === 1 ? 'All Posts' : 'More Posts'}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10 xl:gap-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 lg:gap-10 xl:gap-12 items-start">
                 {filteredPosts.map((post, index) => (
                   <BlogPostCard
                     key={post.slug}

@@ -9,7 +9,6 @@ function fallbackCategorizeProject(title: string): 'APIs' | 'DX tooling' | 'proj
   const PROJECT_CATEGORY_MAPPING: Record<string, 'APIs' | 'DX tooling' | 'projects'> = {
     'fync': 'APIs',
     'drizzleasy': 'APIs',
-    'hono-analytics': 'APIs',
     'honolytics': 'APIs',
     'Hygienic': 'DX tooling',
     'Docki': 'DX tooling',
@@ -292,8 +291,7 @@ export async function fetchTargetRepositories() {
     // APIs category
     { owner: 'remcostoeten', repo: 'fync' },
     { owner: 'remcostoeten', repo: 'drizzleasy' },
-    { owner: 'remcostoeten', repo: 'hono-analytics' },
-    
+        
     // DX tooling category  
     { owner: 'remcostoeten', repo: 'Hygienic' },
     { owner: 'remcostoeten', repo: 'Docki' },
@@ -370,8 +368,7 @@ export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { cat
     // APIs category
     { owner: 'remcostoeten', repo: 'fync' },
     { owner: 'remcostoeten', repo: 'drizzleasy' },
-    { owner: 'remcostoeten', repo: 'hono-analytics' },
-    
+        
     // DX tooling category  
     { owner: 'remcostoeten', repo: 'Hygienic' },
     { owner: 'remcostoeten', repo: 'Docki' },
@@ -483,22 +480,17 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
     if (githubToken) {
       headers['Authorization'] = `Bearer ${githubToken}`;
       console.log('🔑 Using GitHub token for authentication');
+      console.log('🔑 Token length:', githubToken.length);
     } else {
       console.warn('⚠️ No GitHub token found, using unauthenticated requests');
+      console.warn('⚠️ NEXT_PUBLIC_GITHUB_TOKEN available:', !!process.env.NEXT_PUBLIC_GITHUB_TOKEN);
+      console.warn('⚠️ GITHUB_TOKEN available:', !!process.env.GITHUB_TOKEN);
     }
 
-    // Try authenticated endpoint first, fallback to public events if it fails
-    let response = await fetch(`${GITHUB_API_BASE}/user/events?per_page=100`, {
+    // Use public events endpoint directly for better reliability
+    let response = await fetch(`${GITHUB_API_BASE}/users/remcostoeten/events/public?per_page=100`, {
       headers
     });
-
-    // If user/events fails (404), fallback to public events
-    if (response.status === 404) {
-      console.warn('⚠️ /user/events not accessible, falling back to public events');
-      response = await fetch(`${GITHUB_API_BASE}/users/remcostoeten/events/public?per_page=100`, {
-        headers
-      });
-    }
 
     console.log('📡 GitHub API Response Status:', response.status, response.statusText);
 
@@ -540,58 +532,76 @@ export const fetchLatestActivities = async (): Promise<LatestActivities> => {
       return { activities: [], totalFound: 0 };
     }
 
-    // Group commits by project and collect all valid commits
+    // Group commits by project and fetch commit details
     const commitsByProject = new Map<string, LatestActivity[]>();
 
-    for (const pushEvent of recentPushEvents) {
-      const commits = pushEvent.payload?.commits || [];
+    // Process up to 20 most recent push events to avoid too many API calls
+    const limitedPushEvents = recentPushEvents.slice(0, 20);
+
+    console.log(`🔍 Processing ${limitedPushEvents.length} push events to fetch commit details`);
+
+    for (const pushEvent of limitedPushEvents) {
       const repoName = pushEvent.repo?.name?.split('/')[1] || 'unknown-repo';
+      const headCommitSha = pushEvent.payload?.head;
+
+      if (!headCommitSha || !pushEvent.repo?.name) continue;
 
       if (!commitsByProject.has(repoName)) {
         commitsByProject.set(repoName, []);
       }
 
-      // Process all commits in this push event
-      for (const commit of commits) {
-        if (!commit || !commit.message) continue;
+      // Calculate time ago
+      const eventDate = new Date(pushEvent.created_at);
+      const now = new Date();
+      const diffInMinutes = Math.floor((now.getTime() - eventDate.getTime()) / (1000 * 60));
 
-        const commitMessage = commit.message.split('\n')[0].trim();
-        if (!commitMessage) continue;
-
-        // Calculate time ago
-        const eventDate = new Date(pushEvent.created_at);
-        const now = new Date();
-        const diffInMinutes = Math.floor((now.getTime() - eventDate.getTime()) / (1000 * 60));
-
-        let timestamp: string;
-        if (diffInMinutes < 1) {
-          timestamp = 'just now';
-        } else if (diffInMinutes < 60) {
-          timestamp = `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
-        } else if (diffInMinutes < 1440) { // Less than 24 hours
-          const hours = Math.floor(diffInMinutes / 60);
-          timestamp = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      let timestamp: string;
+      if (diffInMinutes < 1) {
+        timestamp = 'just now';
+      } else if (diffInMinutes < 60) {
+        timestamp = `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+      } else if (diffInMinutes < 1440) { // Less than 24 hours
+        const hours = Math.floor(diffInMinutes / 60);
+        timestamp = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      } else {
+        const days = Math.floor(diffInMinutes / 1440);
+        if (days === 1) {
+          timestamp = 'yesterday';
+        } else if (days < 60) {
+          timestamp = `${days} days ago`;
         } else {
-          const days = Math.floor(diffInMinutes / 1440);
-          if (days === 1) {
-            timestamp = 'yesterday';
-          } else if (days < 60) {
-            timestamp = `${days} days ago`;
-          } else {
-            timestamp = '2 months ago';
-          }
+          timestamp = '2 months ago';
         }
-
-        const activity: LatestActivity = {
-          latestCommit: commitMessage,
-          project: repoName,
-          timestamp,
-          commitUrl: `https://github.com/${pushEvent.repo.name}/commit/${commit.sha}`,
-          repositoryUrl: `https://github.com/${pushEvent.repo.name}`
-        };
-
-        commitsByProject.get(repoName)!.push(activity);
       }
+
+      // Fetch commit details to get the actual commit message
+      let commitMessage = `Latest commit to ${repoName}`;
+
+      try {
+        const commitResponse = await fetch(`${GITHUB_API_BASE}/repos/${pushEvent.repo.name}/commits/${headCommitSha}`, {
+          headers
+        });
+
+        if (commitResponse.ok) {
+          const commitData = await commitResponse.json();
+          commitMessage = commitData.commit?.message?.split('\n')[0]?.trim() || commitMessage;
+          console.log(`📝 Fetched commit message for ${repoName}: ${commitMessage}`);
+        } else {
+          console.warn(`⚠️ Could not fetch commit details for ${pushEvent.repo.name}/${headCommitSha}: ${commitResponse.status}`);
+        }
+      } catch (commitError) {
+        console.warn(`⚠️ Error fetching commit details for ${pushEvent.repo.name}:`, commitError);
+      }
+
+      const activity: LatestActivity = {
+        latestCommit: commitMessage,
+        project: repoName,
+        timestamp,
+        commitUrl: `https://github.com/${pushEvent.repo.name}/commit/${headCommitSha}`,
+        repositoryUrl: `https://github.com/${pushEvent.repo.name}`
+      };
+
+      commitsByProject.get(repoName)!.push(activity);
     }
 
     // Select up to 2 commits per project, prioritizing recent ones

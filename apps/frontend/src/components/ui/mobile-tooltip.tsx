@@ -26,15 +26,14 @@ export function MobileTooltip({
 
     const handleTouch = React.useCallback(() => {
         if (isMobile) {
-            setIsVisible(true);
-            setHasBeenSeen(true);
-
-            // Hide tooltip after 3 seconds
-            setTimeout(() => {
+            if (isVisible) {
                 setIsVisible(false);
-            }, 3000);
+            } else {
+                setIsVisible(true);
+                setHasBeenSeen(true);
+            }
         }
-    }, [isMobile]);
+    }, [isMobile, isVisible]);
 
     React.useEffect(() => {
         if (!triggerRef.current || !isMobile) return;
@@ -45,11 +44,6 @@ export function MobileTooltip({
                     if (entry.isIntersecting && !hasBeenSeen) {
                         setHasBeenSeen(true);
                         setIsVisible(true);
-
-                        // Hide tooltip after 3 seconds
-                        setTimeout(() => {
-                            setIsVisible(false);
-                        }, 3000);
                     }
                 });
             },
@@ -65,6 +59,23 @@ export function MobileTooltip({
             observer.disconnect();
         };
     }, [isMobile, hasBeenSeen]);
+
+    // Handle clicks outside to dismiss tooltip
+    React.useEffect(() => {
+        if (!isMobile || !isVisible) return;
+
+        const handleClickOutside = (event: TouchEvent) => {
+            if (triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+                setIsVisible(false);
+            }
+        };
+
+        document.addEventListener('touchstart', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, [isMobile, isVisible]);
 
     const getPositionClasses = () => {
         switch (side) {

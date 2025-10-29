@@ -5,7 +5,8 @@ import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 
-const API_BASE = process.env.API_BASE || 'http://localhost:4001/api';
+const API_BASE = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const API_ENDPOINT = `${API_BASE}/api/blog/metadata`;
 
 type TBlogMetadata = {
   slug: string;
@@ -71,12 +72,12 @@ async function syncBlogMetadata() {
     };
 
     try {
-      const existingResponse = await fetch(`${API_BASE}/blog/metadata/${slug}`, {
+      const existingResponse = await fetch(`${API_ENDPOINT}/${slug}`, {
         signal: AbortSignal.timeout(5000) // 5 second timeout
       });
-      
+
       if (existingResponse.ok) {
-        const updateResponse = await fetch(`${API_BASE}/blog/metadata/${slug}`, {
+        const updateResponse = await fetch(`${API_ENDPOINT}/${slug}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -93,7 +94,7 @@ async function syncBlogMetadata() {
         }
       } else {
         // Create new metadata
-        const createResponse = await fetch(`${API_BASE}/blog/metadata`, {
+        const createResponse = await fetch(API_ENDPOINT, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

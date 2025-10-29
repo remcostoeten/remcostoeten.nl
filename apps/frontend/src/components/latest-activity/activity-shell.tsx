@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
  * since the complete structure is available immediately.
  */
 
-type TActivityShellProps = {
+type TProps = {
   className?: string;
   githubContent?: ReactNode;
   spotifyContent?: ReactNode;
@@ -22,11 +22,11 @@ export function ActivityShell({
   githubContent,
   spotifyContent,
   isSpotifyCurrentlyPlaying = false
-}: TActivityShellProps) {
+}: TProps) {
   return (
     <section
       className={cn(
-        'p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative min-h-[140px] xs:min-h-[120px]',
+        'p-4 bg-gradient-to-br from-muted/30 to-muted/20 border border-border/50 rounded-xl backdrop-blur-sm relative',
         className
       )}
       aria-labelledby="latest-activity-heading"
@@ -34,37 +34,37 @@ export function ActivityShell({
     >
       <h2 id="latest-activity-heading" className="sr-only">Latest Development Activity</h2>
 
-      {/* GitHub Activity Section - Server Rendered Structure */}
-      <div className="flex items-start gap-3 mb-4">
-        {/* Icon - Always rendered on server */}
-        <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0" aria-hidden="true">
-          <GitCommit className="w-4 h-4 text-accent" />
-        </div>
+      {/* Use CSS Grid for perfect 1:1 height alignment */}
+      <div className="grid grid-rows-2 gap-4">
+        {/* GitHub Activity Row - Fixed height */}
+        <div className="flex items-center gap-3 min-h-[4rem]">
+          <div className="p-1.5 bg-accent/10 rounded-lg flex-shrink-0" aria-hidden="true">
+            <GitCommit className="w-4 h-4 text-accent" />
+          </div>
 
-        {/* Content slot - dimensions preserved by wrapper */}
-        <div className="leading-tight min-w-0 flex-1 text-body" role="status" aria-live="polite" aria-atomic="true">
-          <div className="text-muted-foreground">
-            {githubContent}
+          <div className="leading-tight min-w-0 flex-1 text-body" role="status" aria-live="polite" aria-atomic="true">
+            <div className="text-muted-foreground">
+              {githubContent}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Spotify Activity Section - Server Rendered Structure */}
-      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-border/30">
-        <h3 className="sr-only">Music Activity</h3>
-        
-        {/* Icon - Always rendered on server, can change based on playing state */}
-        <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0">
-          {isSpotifyCurrentlyPlaying ? (
-            <Play className="w-4 h-4 text-green-500" aria-hidden="true" />
-          ) : (
-            <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
-          )}
-        </div>
+        {/* Spotify Activity Row - Fixed height with divider */}
+        <div className="flex items-center gap-3 min-h-[4rem] pt-4 border-t border-border/30">
+          <h3 className="sr-only">Music Activity</h3>
 
-        {/* Content slot - dimensions preserved by wrapper */}
-        <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
-          {spotifyContent}
+          <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0">
+            {isSpotifyCurrentlyPlaying ? (
+              <Play className="w-4 h-4 text-green-500" aria-hidden="true" />
+            ) : (
+              <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
+            )}
+          </div>
+
+          {/* Content slot - container with consistent height */}
+          <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
+            {spotifyContent}
+          </div>
         </div>
       </div>
     </section>
@@ -118,7 +118,6 @@ export function SpotifyActivityShell({
           <Music className="w-4 h-4 text-green-500" aria-hidden="true" />
         )}
       </div>
-
       <div className="flex-1 min-w-0 transition-all duration-300 ease-out">
         {children}
       </div>

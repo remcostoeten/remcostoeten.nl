@@ -23,11 +23,6 @@ export type TBlogMetadata = {
 
 export type TBlogPost = TBlogMetadata & {
   content: string;
-  views?: {
-    total: number;
-    unique: number;
-    recent: number;
-  };
 };
 
 export type TBlogPostWithContent = TBlogPost & {

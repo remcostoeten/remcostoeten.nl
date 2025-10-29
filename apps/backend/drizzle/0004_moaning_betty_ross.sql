@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX "blog_feedback_slug_fingerprint_unique" ON "blog_feedback" USING btree ("slug","fingerprint");

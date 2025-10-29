@@ -9,19 +9,19 @@ type ProjectCategoryInput = ProjectCategory | ProjectCategory[];
 const PROJECT_CATEGORY_MAPPING: Record<string, ProjectCategory> = {
   // APIs category
   'fync': 'APIs',
-  'drizzleasy': 'APIs', 
-  'hono-analytics': 'APIs',
-  
+  'drizzleasy': 'APIs',
+  'honolytics': 'APIs',
+
   // DX tooling category
   'Hygienic': 'DX tooling',
   'hygienic': 'DX tooling',
   'Docki': 'DX tooling',
-  'docki': 'DX tooling', 
+  'docki': 'DX tooling',
   'Turso-db-creator-auto-retrieve-env-credentials': 'DX tooling',
   'turso-db-creator-auto-retrieve-env-credentials': 'DX tooling',
   'gh-select': 'DX tooling',
   'dotfiles': 'DX tooling',
-  
+
   // Projects category
   'remcostoeten.nl': 'projects',
   'expense-calendar': 'projects',

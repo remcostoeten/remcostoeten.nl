@@ -15,6 +15,7 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   generateEtags: false,
+  output: 'standalone',
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
@@ -24,15 +25,21 @@ const nextConfig = {
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
 };
 
-const withMDX = require('@next/mdx')({
-  extension: /\.mdx?$/,
-  options: {
-    remarkPlugins: [require('remark-gfm')],
-    rehypePlugins: [
-      require('rehype-highlight'),
-      require('./src/lib/mdx/rehype-code-height.js'),
-    ],
-  },
-});
+const createMDXPlugin = async () => {
+  const { default: remarkGfm } = await import('remark-gfm');
+  const { default: rehypeHighlight } = await import('rehype-highlight');
+  const { rehypeCodeHeight } = await import('./src/lib/mdx/rehype-code-height.mjs');
 
-module.exports = withMDX(nextConfig);
+  return require('@next/mdx')({
+    extension: /\.mdx?$/,
+    options: {
+      remarkPlugins: [[remarkGfm, { table: true }]],
+      rehypePlugins: [rehypeHighlight, rehypeCodeHeight],
+    },
+  });
+};
+
+module.exports = async () => {
+  const withMDX = await createMDXPlugin();
+  return withMDX(nextConfig);
+};

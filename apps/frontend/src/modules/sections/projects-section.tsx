@@ -33,7 +33,7 @@ export async function ProjectsSection() {
       itemType="https://schema.org/CollectionPage"
     >
       <header>
-        <div className="flex items-center gap-2 px-3 py-1 bg-accent/10 text-accent rounded-full w-fit" data-author="@remcostoeten">
+        <div className="flex items-center gap-2 px-3 py-1 mb-4 bg-accent/10 text-accent rounded-full w-fit" data-author="@remcostoeten">
           <Sparkles className="w-3.5 h-3.5" />
           <span id="projects-heading" className="text-xs font-medium uppercase tracking-wider">
             Projects

@@ -4,22 +4,18 @@ import { useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 
 interface TProps {
-    value: number
-    prefix?: string
-    suffix?: string
+    minutes: number
     className?: string
     threshold?: number
     rootMargin?: string
     delay?: number
 }
 
-export function AnimatedNumberIntersection({
-    value,
-    prefix = "",
-    suffix = "",
+export function AnimatedReadTime({
+    minutes,
     className,
-    threshold = 0.5,
-    rootMargin = "0px",
+    threshold = 0.3,
+    rootMargin = "25px",
     delay = 0
 }: TProps) {
     const [currentValue, setCurrentValue] = useState(0)
@@ -56,8 +52,8 @@ export function AnimatedNumberIntersection({
         if (!isVisible) return
 
         // Animate from random start value to actual value
-        const startValue = Math.max(0, value - Math.floor(Math.random() * 10))
-        const duration = 600
+        const startValue = Math.max(0, minutes - Math.floor(Math.random() * 3) - 1)
+        const duration = 1000
         const startTime = Date.now()
 
         const animate = () => {
@@ -68,13 +64,13 @@ export function AnimatedNumberIntersection({
             // Easing function for smooth animation
             const easeOutQuart = 1 - Math.pow(1 - progress, 4)
 
-            const newValue = Math.floor(startValue + (value - startValue) * easeOutQuart)
+            const newValue = Math.floor(startValue + (minutes - startValue) * easeOutQuart)
             setCurrentValue(newValue)
 
             if (progress < 1) {
                 requestAnimationFrame(animate)
             } else {
-                setCurrentValue(value)
+                setCurrentValue(minutes)
                 setHasAnimated(true)
             }
         }
@@ -85,14 +81,18 @@ export function AnimatedNumberIntersection({
         }, delay)
 
         return () => clearTimeout(timeoutId)
-    }, [isVisible, hasAnimated, value, delay])
+    }, [isVisible, hasAnimated, minutes, delay])
 
     return (
-        <span ref={elementRef} className={cn("inline-block tabular-nums", className)} style={{ minWidth: `${String(prefix + value + suffix).length}ch` }}>
+        <span
+            ref={elementRef}
+            className={cn("inline-block tabular-nums font-medium", className)}
+            style={{ minWidth: "3ch" }}
+        >
             {isVisible ? (
-                <span>{prefix}{currentValue}{suffix}</span>
+                <span>{currentValue} min</span>
             ) : (
-                <span className="opacity-40">{prefix}--{suffix}</span>
+                <span className="opacity-40">-- min</span>
             )}
         </span>
     )

@@ -26,12 +26,19 @@ export function LatestActivity() {
     try {
       setLoading(true);
       setError(null);
+      console.log('🔍 Loading GitHub activities...');
       const result = await fetchLatestActivities();
+      console.log('✅ GitHub activities loaded successfully:', result);
 
       setActivities(result.activities);
     } catch (err) {
-      console.error('Failed to load latest activities:', err);
-      setError('Unable to load GitHub activities. Please check your GitHub token configuration.');
+      console.error('❌ Failed to load latest activities:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      setError(`Unable to load GitHub activities: ${err.message}`);
       setActivities([]);
     } finally {
       setLoading(false);

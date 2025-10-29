@@ -235,9 +235,25 @@
 }
 
 /* Make sure code blocks have proper spacing and styling */
-pre code.hljs {
+pre {
+  overflow-x: auto !important;
+  max-width: 100%;
+  margin: 0;
   padding: 0;
+  border-radius: 0.5rem;
+  background: hsl(var(--muted) / 0.3);
+  white-space: pre;
+  word-wrap: normal;
+}
+
+pre code.hljs {
+  padding: 1rem;
   background: transparent;
+  display: block;
+  overflow-x: auto !important;
+  white-space: pre;
+  word-wrap: normal;
+  min-width: max-content;
 }
 
 /* Custom scrollbar for code blocks */

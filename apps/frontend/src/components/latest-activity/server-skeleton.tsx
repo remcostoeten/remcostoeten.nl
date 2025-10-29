@@ -81,7 +81,7 @@ export function ServerActivitySkeleton({ className }: TProps) {
             <div className="flex-1 min-w-0">
               {/* First line - Static text + dynamic track and artist */}
               <div className="text-body text-muted-foreground leading-tight mb-2">
-                <span className="flex-shrink-0">Whilst probably listening to </span>
+                <span className="flex-shrink-0">Whilst probably listening to\u00A0</span>
                 {/* Skeleton for track name */}
                 <span className="inline-block font-semibold text-foreground">
                   <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[140px] max-w-[220px] inline-block align-middle"></span>
@@ -174,7 +174,7 @@ export function SpotifyActivitySkeleton({ showCurrentlyPlaying = false }: { show
           <div className="flex-1 min-w-0">
             <div className="text-body text-muted-foreground leading-tight mb-2">
               <span className="flex-shrink-0">
-                {showCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{" "}
+                {showCurrentlyPlaying ? 'Currently listening to' : 'Whilst probably listening to'}{"\u00A0\u00A0"}
               </span>
               <span className="inline-block font-semibold text-foreground">
                 <span className="h-5 bg-muted/60 rounded-md animate-pulse w-[140px] max-w-[220px] inline-block align-middle"></span>
