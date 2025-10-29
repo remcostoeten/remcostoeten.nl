@@ -145,6 +145,14 @@ function getHighlights(description: string, topics: string[], stars: number, lan
 
 // Project overrides (moved from projects.ts)
 const PROJECT_OVERRIDES: Record<string, any> = {
+    "honolytics": {
+        packageInfo: {
+            npmUrl: "https://www.npmjs.com/package/honolytics",
+            githubUrl: "https://github.com/remcostoeten/honolytics",
+            isPackage: true
+        },
+        category: 'APIs',
+    },
     "fync": {
         packageInfo: {
             npmUrl: "https://www.npmjs.com/package/@remcostoeten/fync",
@@ -166,27 +174,6 @@ const PROJECT_OVERRIDES: Record<string, any> = {
             techStack: ["TypeScript", "Bun", "Monorepo", "OAuth 2.0", "REST APIs"],
             targetAudience: "Developers building applications that integrate with popular APIs, especially useful for portfolio sites, dashboards, and automation tools.",
             usageExample: `import { GitHub, Spotify } from '@remcostoeten/fync'\n\nconst github = GitHub({ token: process.env.GITHUB_TOKEN })\nconst repos = await github.user('octocat').repos.get()\n\nconst spotify = Spotify({ token: process.env.SPOTIFY_TOKEN })\nconst nowPlaying = await spotify.player.currentlyPlaying()`
-        }
-    },
-    "hono-analytics": {
-        packageInfo: {
-            npmUrl: "https://www.npmjs.com/package/hono-analytics",
-            githubUrl: "https://github.com/remcostoeten/hono-analytics",
-            isPackage: true
-        },
-        detailedInfo: {
-            longDescription: "A lightweight, privacy-focused analytics middleware for Hono framework. Track page views, user behavior, and performance metrics without compromising user privacy or adding bloat to your application.",
-            problemSolved: "Most analytics solutions are bloated, slow, or violate user privacy. Hono Analytics provides minimal overhead tracking that respects GDPR while giving you the insights you need.",
-            features: [
-                "Zero-dependency analytics middleware",
-                "Privacy-first design with no PII collection",
-                "Minimal performance impact",
-                "Works seamlessly with Hono's middleware system",
-                "Customizable tracking events",
-                "Built-in rate limiting and abuse prevention"
-            ],
-            techStack: ["TypeScript", "Hono", "Edge Runtime"],
-            targetAudience: "Developers using Hono framework who need lightweight, privacy-conscious analytics."
         }
     },
     "beautiful-interactive-file-tree": {

@@ -9,7 +9,6 @@ function fallbackCategorizeProject(title: string): 'APIs' | 'DX tooling' | 'proj
   const PROJECT_CATEGORY_MAPPING: Record<string, 'APIs' | 'DX tooling' | 'projects'> = {
     'fync': 'APIs',
     'drizzleasy': 'APIs',
-    'hono-analytics': 'APIs',
     'honolytics': 'APIs',
     'Hygienic': 'DX tooling',
     'Docki': 'DX tooling',
@@ -292,8 +291,7 @@ export async function fetchTargetRepositories() {
     // APIs category
     { owner: 'remcostoeten', repo: 'fync' },
     { owner: 'remcostoeten', repo: 'drizzleasy' },
-    { owner: 'remcostoeten', repo: 'hono-analytics' },
-    
+        
     // DX tooling category  
     { owner: 'remcostoeten', repo: 'Hygienic' },
     { owner: 'remcostoeten', repo: 'Docki' },
@@ -370,8 +368,7 @@ export const fetchSpecificFeaturedProjects = async (): Promise<(RepoData & { cat
     // APIs category
     { owner: 'remcostoeten', repo: 'fync' },
     { owner: 'remcostoeten', repo: 'drizzleasy' },
-    { owner: 'remcostoeten', repo: 'hono-analytics' },
-    
+        
     // DX tooling category  
     { owner: 'remcostoeten', repo: 'Hygienic' },
     { owner: 'remcostoeten', repo: 'Docki' },

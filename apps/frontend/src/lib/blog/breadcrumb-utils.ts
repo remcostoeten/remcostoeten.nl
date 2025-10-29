@@ -132,7 +132,6 @@ export function formatSegmentName(segment: string): string {
     posts: "Blog",
     tags: "Tags",
     admin: "Admin",
-    analytics: "Analytics",
   }
 
   if (specialCases[segment]) {

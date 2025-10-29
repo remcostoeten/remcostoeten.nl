@@ -12,7 +12,6 @@ export const BLOG_CONFIG = {
 
   // Features
   FEATURES: {
-    analytics: true,
     admin: true,
     cli: true,
     fallback: true,

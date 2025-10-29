@@ -42,14 +42,15 @@ const PROJECT_OVERRIDES: TProjectOverrides = {
       npmUrl: "https://www.npmjs.com/package/drizzleasy",
       githubUrl: "https://github.com/remcostoeten/drizzleasy",
       isPackage: true
-    }
+    },
   },
-  "hono-analytics": {
+  "honolytics": {
+    category: "APIs",
     packageInfo: {
-      npmUrl: "https://www.npmjs.com/package/hono-analytics",
-      githubUrl: "https://github.com/remcostoeten/hono-analytics",
+      npmUrl: "https://www.npmjs.com/package/honolytics",
+      githubUrl: "https://github.com/remcostoeten/honolytics",
       isPackage: true
-    }
+    },
   },
   "beautiful-interactive-file-tree": {
     demoUrl: "https://beautiful-file-tree-v2.vercel.app/"
@@ -102,16 +103,13 @@ function getTechnologies(language: string, topics: string[]): string[] {
   return technologies;
 }
 
-// Helper function to generate highlights based on repo data (dynamic)
 function getHighlights(description: string, topics: string[], stars: number, language: string): string[] {
   const highlights: string[] = [];
 
-  // Add description as first highlight if available
   if (description) {
     highlights.push(description);
   }
 
-  // Add dynamic highlights based on actual repo data
   if (stars > 0) {
     highlights.push(`${stars} GitHub stars`);
   }
@@ -120,7 +118,6 @@ function getHighlights(description: string, topics: string[], stars: number, lan
     highlights.push(`Built with ${language}`);
   }
 
-  // Add topic-based highlights (dynamic)
   if (topics.length > 0) {
     highlights.push(`Topics: ${topics.slice(0, 3).join(', ')}`);
   }
@@ -128,7 +125,6 @@ function getHighlights(description: string, topics: string[], stars: number, lan
   return highlights.length > 0 ? highlights : ["Active development project"];
 }
 
-// Create a cached function to get real project data from GitHub
 const getCachedProjectData = unstable_cache(
   async (): Promise<{ featuredProjects: TProjectData[], simpleProjects: TSimpleProject[] }> => {
     try {
@@ -137,7 +133,6 @@ const getCachedProjectData = unstable_cache(
       const featuredProjects: TProjectData[] = [];
       const simpleProjects: TSimpleProject[] = [];
 
-      // Process each repository
       for (const repoResult of repoData) {
         if (!repoResult.data) continue;
 
@@ -147,10 +142,10 @@ const getCachedProjectData = unstable_cache(
         const override = PROJECT_OVERRIDES[repo.title];
         const category = override?.category || categorizeProject(repo.title, repo.description, technologies, repo.topics);
 
-        const isFeatured = repo.stars > 3 || // Projects with more stars are featured
-          repo.forks > 1 || // Projects with forks are featured
-          (repo.totalCommits && repo.totalCommits > 10) || // Active projects are featured
-          repo.topics.length > 2; // Well-tagged projects are featured
+        const isFeatured = repo.stars > 3 ||
+          repo.forks > 1 ||
+          (repo.totalCommits && repo.totalCommits > 10) ||
+          repo.topics.length > 2;
 
         if (isFeatured) {
           const override = PROJECT_OVERRIDES[repo.title];
@@ -219,12 +214,11 @@ const getCachedProjectData = unstable_cache(
   },
   ['projects-data'], // Cache key
   {
-    revalidate: 3600, // Cache for 1 hour
+    revalidate: 3600,
     tags: ['projects']
   }
 );
 
-// Export the cached function
 export async function getRealProjectData(): Promise<{ featuredProjects: TProjectData[], simpleProjects: TSimpleProject[] }> {
   return getCachedProjectData();
 }

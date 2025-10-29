@@ -122,51 +122,44 @@ export function CategorizedProjects({ projects }: TProps) {
   return (
     <div className="space-y-6">
 
-      <div className="mb-0">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="sr-only">Filter by category</span>
-        </div>
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {availableCategories.map((category, index) => {
-            const isActive = currentCategory === category;
-            const projectCount = getCategoryProjectCount(category);
-
-            if (projectCount === 0) return null;
-
-            return (
-              <button
-                key={category}
-                onClick={() => {
-                  handleCategoryChange(category);
-                  const next = new URL(window.location.href);
-                  next.searchParams.set('category', category.toLowerCase().replace(/\s+/g, '-'));
-                  window.history.pushState({}, '', next.toString());
-                }}
-                className={`inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-colors duration-200 min-h-[36px] ${isActive
-                  ? 'bg-transparent text-foreground border border-border/60'
-                  : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
-                  }`}
-              >
-                <span className="hidden sm:inline">{getCategoryDisplayName(category)}</span>
-                <span className="sm:hidden">{category === 'APIs' ? 'APIs' : category === 'DX tooling' ? 'Tools' : 'Projects'}</span>
-                <span className="text-xs opacity-75">
-                  (<AnimatedNumberIntersection
-                    value={projectCount}
-                    delay={index * 300 + 200}
-                    threshold={0.8}
-                    rootMargin="100px"
-                  />)
-                </span>
-              </button>
-
-
-
-            );
-          })}
-
-        </div>
+      <div className="flex items-center gap-2 mb-4">
+        <span className="sr-only">Filter by category</span>
       </div>
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        {availableCategories.map((category, index) => {
+          const isActive = currentCategory === category;
+          const projectCount = getCategoryProjectCount(category);
 
+          if (projectCount === 0) return null;
+
+          return (
+            <button
+              key={category}
+              onClick={() => {
+                handleCategoryChange(category);
+                const next = new URL(window.location.href);
+                next.searchParams.set('category', category.toLowerCase().replace(/\s+/g, '-'));
+                window.history.pushState({}, '', next.toString());
+              }}
+              className={`inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-colors duration-200 min-h-[36px] ${isActive
+                ? 'bg-transparent text-foreground border border-border/60'
+                : 'bg-muted/50 text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+                }`}
+            >
+              <span className="hidden sm:inline">{getCategoryDisplayName(category)}</span>
+              <span className="sm:hidden">{category === 'APIs' ? 'APIs' : category === 'DX tooling' ? 'Tools' : 'Projects'}</span>
+              <span className="text-xs opacity-75">
+                (<AnimatedNumberIntersection
+                  value={projectCount}
+                  delay={index * 300 + 200}
+                  threshold={0.8}
+                  rootMargin="100px"
+                />)
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       <div
         ref={containerRef}

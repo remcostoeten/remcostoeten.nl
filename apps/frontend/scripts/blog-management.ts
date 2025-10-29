@@ -137,7 +137,6 @@ async function listBlogPosts() {
         console.log(`   Category: ${post.category}`);
         console.log(`   Status: ${post.status}`);
         console.log(`   Published: ${new Date(post.publishedAt).toLocaleDateString()}`);
-        console.log(`   Views: ${post.analytics?.totalViews || 0}`);
         console.log(`   Tags: ${post.tags.join(', ')}`);
         console.log('');
       });
