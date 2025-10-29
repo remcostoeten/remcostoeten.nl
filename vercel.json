@@ -5,5 +5,17 @@
   "framework": "nextjs",
   "env": {
     "NEXT_PUBLIC_API_ENV": "production"
-  }
+  },
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://remcostoeten.nl/$1",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.remcostoeten.nl"
+        }
+      ]
+    }
+  ]
 }
