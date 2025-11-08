@@ -1,8 +1,25 @@
 {
   "private": true,
+  "packageManager": "bun@1.2.22",
+  "author": "Remco Stoeten",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remcostoeten/remcostoeten.nl"
+  },
+  "homepage": "https://remcostoeten.nl",
+  "bugs": "https://github.com/remcostoeten/remcostoeten.nl/issues",
+  "keywords": [
+    "remcostoeten",
+    "blog",
+    "portfolio",
+    "nextjs",
+    "tailwindcss",
+    "typescript"
+  ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "./scripts/build-notice",
     "start": "next start",
     "ruler:apply": "ruler apply",
     "ruler:check": "ruler apply && git status"

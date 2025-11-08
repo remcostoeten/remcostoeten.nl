@@ -22,8 +22,12 @@
       "@/*": [
         "./src/*"
       ],
-      "ui": "./src/shared/ui/index.ts",
-      "utilities": "./src/shared/utilities/index.ts"
+      "ui": [
+        "./src/shared/ui/index.ts"
+      ],
+      "utilities": [
+        "./src/shared/utils/index.ts"
+      ]
     },
     "incremental": true,
     "plugins": [

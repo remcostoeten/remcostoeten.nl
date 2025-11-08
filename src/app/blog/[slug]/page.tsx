@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { CustomMDX } from '@/components/mdx'
+import { Breadcrumbs } from '@/components/breadcrumbs'
 import { formatDate, getBlogPosts } from '@/modules/blog/repositories/utils'
 import { baseUrl, siteConfig } from '@/lib/config'
 
@@ -120,6 +121,13 @@ export default function Blog({ params }) {
             keywords: keywords?.join(', '),
           }),
         }}
+      />
+      <Breadcrumbs
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Blog', url: '/blog' },
+          { name: post.metadata.title, url: `/blog/${post.slug}` },
+        ]}
       />
       <h1 className="title font-semibold text-2xl tracking-tighter">
         {post.metadata.title}

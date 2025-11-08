@@ -1,8 +1,64 @@
 import { BlogPosts } from '@/components/posts'
+import { baseUrl, siteConfig } from '@/lib/config'
 
 export default function Page() {
+  const personSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: siteConfig.author.name,
+    jobTitle: siteConfig.author.jobTitle,
+    description: siteConfig.author.bio,
+    url: baseUrl,
+    email: siteConfig.author.email,
+    image: `${baseUrl}/og?title=${encodeURIComponent(siteConfig.name)}`,
+    sameAs: [
+      siteConfig.social.githubUrl,
+      siteConfig.social.twitterUrl,
+      siteConfig.social.linkedin,
+    ],
+    knowsAbout: siteConfig.author.expertise,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': baseUrl,
+    },
+  }
+
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: siteConfig.name,
+    url: baseUrl,
+    description: siteConfig.description,
+    author: {
+      '@type': 'Person',
+      name: siteConfig.author.name,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${baseUrl}/blog?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  }
+
   return (
     <section>
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(personSchema),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(websiteSchema),
+        }}
+      />
       <h1 className="mb-8 text-2xl font-semibold tracking-tighter">
         My Portfolio
       </h1>
