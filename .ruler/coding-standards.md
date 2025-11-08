@@ -121,5 +121,4 @@ src/shared/
 - No `.md` documentation files
 - Code should be self-documenting through clear naming and structure
 
-If explanation is needed, the code structure is wrong - fix the code instead of documenting it.## Test Change
-- Added new test rule to verify hook functionality
+If explanation is needed, the code structure is wrong - fix the code instead of documenting it.

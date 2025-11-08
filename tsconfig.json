@@ -18,6 +18,13 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "ui": "./src/shared/ui/index.ts",
+      "utilities": "./src/shared/utilities/index.ts"
+    },
     "incremental": true,
     "plugins": [
       {

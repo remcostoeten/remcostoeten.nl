@@ -35,3 +35,19 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# START Ruler Generated Files
+/.aider.conf.yml
+/.aider.conf.yml.bak
+/.claude.md
+/.claude.md.bak
+/.clinerules
+/.clinerules.bak
+/.cursorrules
+/.cursorrules.bak
+/.github/copilot-instructions.md
+/.github/copilot-instructions.md.bak
+/AGENTS.md
+/AGENTS.md.bak
+# END Ruler Generated Files

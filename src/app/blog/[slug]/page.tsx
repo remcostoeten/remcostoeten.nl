@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
-import { CustomMDX } from 'app/components/mdx'
-import { formatDate, getBlogPosts } from 'app/blog/utils'
-import { baseUrl } from 'app/sitemap'
+import type { Metadata } from 'next'
+import { CustomMDX } from '@/components/mdx'
+import { formatDate, getBlogPosts } from '@/modules/blog/repositories/utils'
+import { baseUrl, siteConfig } from '@/lib/config'
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()
@@ -11,7 +12,11 @@ export async function generateStaticParams() {
   }))
 }
 
-export function generateMetadata({ params }) {
+export function generateMetadata({
+  params,
+}: {
+  params: { slug: string }
+}): Metadata | undefined {
   let post = getBlogPosts().find((post) => post.slug === params.slug)
   if (!post) {
     return
@@ -23,22 +28,35 @@ export function generateMetadata({ params }) {
     summary: description,
     image,
   } = post.metadata
+  let canonicalUrl = `${baseUrl}/blog/${post.slug}`
   let ogImage = image
-    ? image
+    ? image.startsWith('http')
+      ? image
+      : `${baseUrl}${image}`
     : `${baseUrl}/og?title=${encodeURIComponent(title)}`
+  let keywords = post.metadata.keywords
+    ? post.metadata.keywords.split(',').map((keyword) => keyword.trim())
+    : undefined
 
   return {
     title,
     description,
+    keywords,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title,
       description,
       type: 'article',
       publishedTime,
-      url: `${baseUrl}/blog/${post.slug}`,
+      url: canonicalUrl,
+      siteName: siteConfig.name,
+      authors: [siteConfig.author.name],
       images: [
         {
           url: ogImage,
+          alt: title,
         },
       ],
     },
@@ -46,6 +64,7 @@ export function generateMetadata({ params }) {
       card: 'summary_large_image',
       title,
       description,
+      creator: siteConfig.social.twitter,
       images: [ogImage],
     },
   }
@@ -57,6 +76,18 @@ export default function Blog({ params }) {
   if (!post) {
     notFound()
   }
+  let canonicalUrl = `${baseUrl}/blog/${post.slug}`
+  let ogImage = post.metadata.image
+    ? post.metadata.image.startsWith('http')
+      ? post.metadata.image
+      : `${baseUrl}${post.metadata.image}`
+    : `${baseUrl}/og?title=${encodeURIComponent(post.metadata.title)}`
+  let keywords = post.metadata.keywords
+    ? post.metadata.keywords
+        .split(',')
+        .map((keyword) => keyword.trim())
+        .filter(Boolean)
+    : undefined
 
   return (
     <section>
@@ -71,14 +102,22 @@ export default function Blog({ params }) {
             datePublished: post.metadata.publishedAt,
             dateModified: post.metadata.publishedAt,
             description: post.metadata.summary,
-            image: post.metadata.image
-              ? `${baseUrl}${post.metadata.image}`
-              : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-            url: `${baseUrl}/blog/${post.slug}`,
+            image: ogImage,
+            url: canonicalUrl,
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': canonicalUrl,
+            },
             author: {
               '@type': 'Person',
-              name: 'My Portfolio',
+              name: siteConfig.author.name,
             },
+            publisher: {
+              '@type': 'Organization',
+              name: siteConfig.name,
+              url: baseUrl,
+            },
+            keywords: keywords?.join(', '),
           }),
         }}
       />

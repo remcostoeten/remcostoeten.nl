@@ -2,26 +2,33 @@ import './global.css'
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import { Navbar } from './components/nav'
+import { Navbar } from '@/components/nav'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import Footer from './components/footer'
-import { baseUrl } from './sitemap'
+import Footer from '@/components/footer'
+import { baseUrl, siteConfig } from '@/lib/config'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    default: 'Next.js Portfolio Starter',
-    template: '%s | Next.js Portfolio Starter',
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
   },
-  description: 'This is my portfolio.',
+  description: siteConfig.description,
   openGraph: {
-    title: 'My Portfolio',
-    description: 'This is my portfolio.',
+    title: siteConfig.name,
+    description: siteConfig.description,
     url: baseUrl,
-    siteName: 'My Portfolio',
+    siteName: siteConfig.name,
     locale: 'en_US',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: siteConfig.social.twitter,
+    creator: siteConfig.social.twitter,
+    title: siteConfig.name,
+    description: siteConfig.description,
   },
   robots: {
     index: true,
@@ -33,6 +40,9 @@ export const metadata: Metadata = {
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
+  },
+  alternates: {
+    canonical: baseUrl,
   },
 }
 

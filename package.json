@@ -3,7 +3,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "ruler:apply": "ruler apply",
+    "ruler:check": "ruler apply && git status"
   },
   "dependencies": {
     "@tailwindcss/postcss": "4.0.0-alpha.13",
