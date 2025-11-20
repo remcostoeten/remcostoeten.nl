@@ -4,6 +4,7 @@ import { CustomMDX, Breadcrumbs } from '@/modules/blog/components'
 import { getBlogPost, getBlogPosts } from '@/modules/blog/queries'
 import { formatDate } from '@/modules/blog/utils'
 import { baseUrl, siteConfig } from '@/lib/config'
+import { DevTodos } from '@/components/_dev-todos'
 
 export async function generateStaticParams() {
     let posts = getBlogPosts()
@@ -13,8 +14,9 @@ export async function generateStaticParams() {
     }))
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata | undefined {
-    let post = getBlogPost(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata | undefined> {
+    const { slug } = await params
+    let post = getBlogPost(slug)
     if (!post) {
         return
     }
@@ -62,8 +64,9 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     }
 }
 
-export default function Blog({ params }) {
-    let post = getBlogPost(params.slug)
+export default async function Blog({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params
+    let post = getBlogPost(slug)
 
     if (!post) {
         notFound()
@@ -83,6 +86,7 @@ export default function Blog({ params }) {
 
     return (
         <section>
+            <DevTodos category='blog-detail' />
             <script
                 type="application/ld+json"
                 suppressHydrationWarning
