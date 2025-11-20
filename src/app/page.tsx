@@ -1,5 +1,5 @@
 import { BlogPosts } from '@/modules/blog/components'
-import { DevTodos } from '@/components/_dev-todos'
+import { Yomeic } from '@/_dev/_yomeic'
 import { baseUrl, siteConfig } from '@/lib/config'
 
 export default function Page() {
@@ -46,8 +46,8 @@ export default function Page() {
 
     return (
         <section>
-            <DevTodos category="blog-feature" />
-            <DevTodos category="blog-post" />
+            <Yomeic category="blog-feature" />
+            <Yomeic category="blog-post" />
             <script
                 type="application/ld+json"
                 suppressHydrationWarning

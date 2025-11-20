@@ -34,8 +34,11 @@ const theme = {
     bgOverlay: 'rgba(0, 0, 0, 0.3)',
   },
   layout: {
+    // Removed generic 'fixed' reuse to prevent layout breakage
     panel:
-      'fixed flex flex-col gap-2 rounded-lg border p-4 max-w-md shadow-2xl transition-all backdrop-blur-sm',
+      'fixed flex flex-col gap-2 rounded-lg border p-4 w-96 shadow-2xl transition-all backdrop-blur-md z-50',
+    // New specific style for items so they stay inside the box
+    item: 'relative flex items-center gap-3 p-1.5 px-2 rounded transition-colors w-full',
     header: 'flex items-center justify-between gap-3 min-w-0 border-b pb-2',
     badge: 'shrink-0 rounded px-1.5 py-0.5 text-xs font-medium',
   },
@@ -48,6 +51,7 @@ const theme = {
 
 const styles = {
   panel: `${theme.layout.panel} ${theme.colors.textMain} ${theme.colors.bgPanel} ${theme.colors.borderPanel}`,
+  item: `${theme.layout.item} hover:bg-white/5`,
   header: `${theme.layout.header} ${theme.colors.borderPanel}`,
   badge: `${theme.layout.badge} bg-blue-900/50 text-blue-200`,
   connectorDot: {
@@ -217,7 +221,7 @@ function YomeicCore({ category }: Props) {
   const [pos, setPos] = useState<Pos>({ x: 20, y: 20 })
   const [connections, setConnections] = useState<Connection[]>([])
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isExpanded, setIsExpanded] = useState(false) // "View More" state
+  const [isExpanded, setIsExpanded] = useState(false)
 
   // Interaction
   const [isDragging, setIsDragging] = useState(false)
@@ -427,8 +431,8 @@ function YomeicCore({ category }: Props) {
       >
         {connections.map((conn) => {
           const el = todoRefs.current.get(conn.todoIndex)
-          // If element is hidden due to accordion, don't render line
-          if (!el) return null
+          // Ensure we only render lines for currently visible items
+          if (!el || !document.body.contains(el)) return null
           
           const rect = el.getBoundingClientRect()
           const start = {
@@ -461,7 +465,7 @@ function YomeicCore({ category }: Props) {
                 strokeWidth="2"
                 fill="none"
                 strokeDasharray="6 4"
-                style={{ animation: 'yomeic-dash 20s linear infinite' }}
+                style={{ animation: 'yomeic-dash 30s linear infinite' }}
                 opacity="0.6"
               />
               <circle
@@ -562,46 +566,46 @@ function YomeicCore({ category }: Props) {
         {!isCollapsed && (
           <div className="flex flex-col gap-1">
             {itemsToRender.map((item, idx) => {
-              // Note: idx here is correct for refs/connections because map index 0 
-              // always corresponds to array index 0. If we hid previous items, we'd need offset logic.
-              const hasConn = connections.find((c) => c.todoIndex === idx)
-              const isSelecting = selectingIndex === idx
+              // IMPORTANT: Maintain original index for connections even when sliced
+              const originalIndex = idx; 
+              
+              const hasConn = connections.find((c) => c.todoIndex === originalIndex)
+              const isSelecting = selectingIndex === originalIndex
 
               return (
                 <div
-                  key={idx}
+                  key={originalIndex}
                   ref={(el) => {
-                    if (el) todoRefs.current.set(idx, el)
+                    if (el) todoRefs.current.set(originalIndex, el)
                   }}
                   onContextMenu={(e) => {
                     e.preventDefault()
-                    setSelectingIndex(idx)
+                    setSelectingIndex(originalIndex)
                   }}
-                  className={`${styles.panel} border-none shadow-none p-1.5 px-2
+                  className={`${styles.item} 
                     ${isSelecting ? 'ring-1 ring-blue-500 bg-blue-500/10' : ''}
-                    ${item.info ? 'cursor-help' : ''} group hover:bg-white/5`}
+                    ${item.info ? 'cursor-help' : ''} group`}
                 >
-                  <div className="flex items-center gap-3 text-sm font-mono">
-                    {item.action && (
-                      <span className={styles.badge}>{item.action}</span>
-                    )}
-                    <span className="flex-1 truncate opacity-90">
-                      {item.text}
-                    </span>
-                    {hasConn && (
-                      <button
-                        onClick={() => removeConnection(idx)}
-                        className="text-xs opacity-50 hover:text-red-400 hover:opacity-100 px-1"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
+                  {item.action && (
+                    <span className={styles.badge}>{item.action}</span>
+                  )}
+                  <span className="flex-1 truncate opacity-90 min-w-0 text-sm font-mono">
+                    {item.text}
+                  </span>
+                  {hasConn && (
+                    <button
+                      onClick={() => removeConnection(originalIndex)}
+                      className="shrink-0 text-xs opacity-50 hover:text-red-400 hover:opacity-100 px-1"
+                    >
+                      ✕
+                    </button>
+                  )}
+                  
                   {item.info && (
                     <div
                       className="absolute left-0 top-full mt-2 hidden w-64 p-3
                       z-50 rounded border border-zinc-700 bg-zinc-900
-                      text-xs text-zinc-300 shadow-xl group-hover:block"
+                      text-xs text-zinc-300 shadow-xl group-hover:block whitespace-normal break-words"
                     >
                       {item.info}
                     </div>

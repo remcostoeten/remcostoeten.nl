@@ -8,6 +8,7 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { baseUrl, siteConfig } from '@/lib/config'
 import { ViewTransitionsProvider } from '@/modules/view-transitions/provider'
+import { TimezoneSection } from '@/modules/landing/timer'
 
 export const metadata: Metadata = {
     metadataBase: new URL(baseUrl),
@@ -108,6 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 >
                     Skip to main content
                 </a>
+                <TimezoneSection />
                 <ViewTransitionsProvider>
                     <main id="main-content" className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
                         <Navbar />

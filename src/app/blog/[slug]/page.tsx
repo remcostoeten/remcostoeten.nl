@@ -4,7 +4,7 @@ import { CustomMDX, Breadcrumbs } from '@/modules/blog/components'
 import { getBlogPost, getBlogPosts } from '@/modules/blog/queries'
 import { formatDate } from '@/modules/blog/utils'
 import { baseUrl, siteConfig } from '@/lib/config'
-import { DevTodos } from '@/components/_dev-todos'
+import { Yomeic } from '@/_dev/_yomeic'
 
 export async function generateStaticParams() {
     let posts = getBlogPosts()
@@ -86,7 +86,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
 
     return (
         <section>
-            <DevTodos category='blog-detail' />
+            <Yomeic category='blog-detail' />
             <script
                 type="application/ld+json"
                 suppressHydrationWarning
