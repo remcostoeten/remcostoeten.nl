@@ -18,8 +18,8 @@ export function Breadcrumbs(props: props) {
             '@type': 'ListItem',
             position: index + 1,
             name: item.name,
-            item: `${baseUrl}${item.url}`,
-        })),
+            item: `${baseUrl}${item.url}`
+        }))
     }
 
     return (
@@ -28,7 +28,7 @@ export function Breadcrumbs(props: props) {
                 type="application/ld+json"
                 suppressHydrationWarning
                 dangerouslySetInnerHTML={{
-                    __html: JSON.stringify(breadcrumbSchema),
+                    __html: JSON.stringify(breadcrumbSchema)
                 }}
             />
             <nav aria-label="Breadcrumb" className="mb-4">
@@ -59,4 +59,3 @@ export function Breadcrumbs(props: props) {
         </>
     )
 }
-

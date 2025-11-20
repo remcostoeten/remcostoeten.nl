@@ -16,9 +16,9 @@ Important is post completion of a prompt to NEVER create a documentation summary
 - Props types: max 2 words, self-explanatory
 - **ONLY** kebab-case filenames
 - Files used > ONCE go in `src/shared/`
-- *AGGRESSIVE* implement `Suspense()`, `useCallback`, `useMemo`, `memo`, `lazyload` and codesplit to squeeze all performance out we can. Use ui skeleton pre loaders which match the UI 1:1 for fallback loaders.
-- *PRIORITIZE* mobile responsiveness.
-s
+- _AGGRESSIVE_ implement `Suspense()`, `useCallback`, `useMemo`, `memo`, `lazyload` and codesplit to squeeze all performance out we can. Use ui skeleton pre loaders which match the UI 1:1 for fallback loaders.
+- _PRIORITIZE_ mobile responsiveness.
+  s
 
 ### Import Aliases
 
@@ -203,4 +203,4 @@ npm run ruler:check
 
 ---
 
-*These guidelines ensure consistency, performance, and maintainability. When in doubt, prioritize simplicity and developer experience.*
+_These guidelines ensure consistency, performance, and maintainability. When in doubt, prioritize simplicity and developer experience._
