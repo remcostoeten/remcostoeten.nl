@@ -6,6 +6,7 @@ function ArrowIcon() {
             viewBox="0 0 12 12"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
         >
             <path
                 d="M2.07102 11.3494L0.963068 10.2415L9.2017 1.98864H2.83807L2.85227 0.454545H11.8438V9.46023H10.2955L10.3097 3.09659L2.07102 11.3494Z"
@@ -25,6 +26,7 @@ export default function Footer() {
                         rel="noopener noreferrer"
                         target="_blank"
                         href="/rss"
+                        aria-label="RSS feed (opens in new tab)"
                     >
                         <ArrowIcon />
                         <p className="ml-2 h-7">rss</p>
@@ -36,6 +38,7 @@ export default function Footer() {
                         rel="noopener noreferrer"
                         target="_blank"
                         href="https://github.com/vercel/next.js"
+                        aria-label="GitHub (opens in new tab)"
                     >
                         <ArrowIcon />
                         <p className="ml-2 h-7">github</p>
@@ -47,6 +50,7 @@ export default function Footer() {
                         rel="noopener noreferrer"
                         target="_blank"
                         href="https://vercel.com/templates/next.js/portfolio-starter-kit"
+                        aria-label="View source code (opens in new tab)"
                     >
                         <ArrowIcon />
                         <p className="ml-2 h-7">view source</p>

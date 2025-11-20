@@ -148,3 +148,59 @@ table {
 .title {
     text-wrap: balance;
 }
+
+/* Skip link - hidden by default, visible on focus */
+.skip-link {
+    @apply absolute left-4 top-4 z-50 -translate-y-full rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white opacity-0 transition-transform focus:translate-y-0 focus:opacity-100 dark:bg-neutral-100 dark:text-neutral-900;
+}
+
+.skip-link:focus {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+}
+
+/* Subtle focus visible states for keyboard navigation */
+*:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.2);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+    *:focus-visible {
+        outline-color: rgba(255, 255, 255, 0.3);
+    }
+}
+
+/* Links - subtle focus state */
+a:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.15);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+    a:focus-visible {
+        outline-color: rgba(255, 255, 255, 0.25);
+    }
+}
+
+/* Buttons and interactive elements */
+button:focus-visible,
+[role="button"]:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.15);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+    button:focus-visible,
+    [role="button"]:focus-visible {
+        outline-color: rgba(255, 255, 255, 0.25);
+    }
+}
+
+/* Remove default focus outline for mouse users */
+*:focus:not(:focus-visible) {
+    outline: none;
+}

@@ -1,4 +1,5 @@
 import { BlogPosts } from '@/modules/blog/components'
+import { DevTodos } from '@/components/_dev-todos'
 import { baseUrl, siteConfig } from '@/lib/config'
 
 export default function Page() {
@@ -45,6 +46,8 @@ export default function Page() {
 
     return (
         <section>
+            <DevTodos category="blog-feature" />
+            <DevTodos category="blog-post" />
             <script
                 type="application/ld+json"
                 suppressHydrationWarning
@@ -67,6 +70,8 @@ export default function Page() {
         early error detection ensures cleaner code, and my preference for dark
         mode, which eases long coding sessions by reducing eye strain.`}
             </p>
+
+
             <div className="my-8">
                 <BlogPosts />
             </div>

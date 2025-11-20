@@ -1,4 +1,5 @@
 import './global.css'
+import '@/modules/view-transitions/styles.css'
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
@@ -6,6 +7,7 @@ import { Navbar, Footer } from '@/components/layout'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { baseUrl, siteConfig } from '@/lib/config'
+import { ViewTransitionsProvider } from '@/modules/view-transitions/provider'
 
 export const metadata: Metadata = {
     metadataBase: new URL(baseUrl),
@@ -100,13 +102,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <link rel="preconnect" href="https://vercel.live" crossOrigin="anonymous" />
             </head>
             <body className="antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
-                <main className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
-                    <Navbar />
-                    {children}
-                    <Footer />
-                    <Analytics />
-                    <SpeedInsights />
-                </main>
+                <a
+                    href="#main-content"
+                    className="skip-link"
+                >
+                    Skip to main content
+                </a>
+                <ViewTransitionsProvider>
+                    <main id="main-content" className="flex-auto min-w-0 mt-6 flex flex-col px-2 md:px-0">
+                        <Navbar />
+                        {children}
+                        <Footer />
+                        <Analytics />
+                        <SpeedInsights />
+                    </main>
+                </ViewTransitionsProvider>
             </body>
         </html>
     )
