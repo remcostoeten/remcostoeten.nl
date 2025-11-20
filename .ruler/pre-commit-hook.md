@@ -9,13 +9,14 @@ A custom pre-commit hook has been installed to automatically detect changes in `
 1. **Detection**: When you commit changes, the hook checks if any files in `.ruler/` directory have been modified
 2. **Prompting**: If changes are detected, it prompts you to run `ruler apply`
 3. **Automation**: If you confirm, it automatically:
-   - Runs `ruler apply` to update all AI configurations
-   - Stages the generated files for commit
-   - Completes the commit process
+    - Runs `ruler apply` to update all AI configurations
+    - Stages the generated files for commit
+    - Completes the commit process
 
 ## Usage Examples
 
 ### Automatic Prompt (Recommended)
+
 ```bash
 # Make changes to Ruler files
 echo "New rule" >> .ruler/AGENTS.md
@@ -32,12 +33,14 @@ git commit -m "Update AI coding rules"
 ```
 
 ### Manual Application
+
 ```bash
 # Apply ruler manually after making changes
 npm run ruler:apply
 ```
 
 ### Check Current Status
+
 ```bash
 # Check if AI configs are up to date
 npm run ruler:check
@@ -53,14 +56,13 @@ npm run ruler:check
 
 ## Pre-commit Hook Behavior
 
-| Scenario | Hook Action |
-|----------|-------------|
-| No Ruler changes | ✅ Allows commit without interruption |
-| Ruler changes detected | ⚠️ Prompts to run `ruler apply` |
-| User confirms | 🔄 Runs `ruler apply` and stages generated files |
-| User declines | ⚠️ Allows commit with warning to run manually |
-| Ruler CLI missing | ❌ Blocks commit with installation instructions |
-
+| Scenario               | Hook Action                                      |
+| ---------------------- | ------------------------------------------------ |
+| No Ruler changes       | ✅ Allows commit without interruption            |
+| Ruler changes detected | ⚠️ Prompts to run `ruler apply`                  |
+| User confirms          | 🔄 Runs `ruler apply` and stages generated files |
+| User declines          | ⚠️ Allows commit with warning to run manually    |
+| Ruler CLI missing      | ❌ Blocks commit with installation instructions  |
 
 ## NPM Scripts Added
 
@@ -72,18 +74,21 @@ npm run ruler:check    # Run ruler apply and show git status
 ## Troubleshooting
 
 ### Hook Not Running
+
 ```bash
 # Make sure hook is executable
 chmod +x .git/hooks/pre-commit
 ```
 
 ### Ruler CLI Not Found
+
 ```bash
 # Install Ruler globally
 npm install -g @intellectronica/ruler
 ```
 
 ### Hook Bypass Needed
+
 ```bash
 # Skip pre-commit hooks (not recommended)
 git commit --no-verify -m "Commit message"

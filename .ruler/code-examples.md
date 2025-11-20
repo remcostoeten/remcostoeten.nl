@@ -3,6 +3,7 @@
 ## ✅ Correct Examples
 
 ### Function Definitions
+
 ```typescript
 // ✅ Regular function - ALWAYS use this syntax
 async function getUserById(id: string) {
@@ -21,6 +22,7 @@ const handleSubmit = useCallback(async (data: FormData) => {
 ```
 
 ### Type Definitions
+
 ```typescript
 // ✅ Type only - NEVER interface
 type UserProfile = {
@@ -41,6 +43,7 @@ function BlogPostComponent(props: ComponentProps) {
 ```
 
 ### File Structure
+
 ```
 src/
 ├── shared/
@@ -59,29 +62,32 @@ src/
 ```
 
 ### Import Patterns
+
 ```typescript
 // ✅ Correct imports
-import { Button } from 'ui'                    // Shadcn from barrel
-import { cn } from 'utilities'                 // Utility from barrel
+import { Button } from 'ui' // Shadcn from barrel
+import { cn } from 'utilities' // Utility from barrel
 import { BlogPostComponent } from '@/components/blog-post'
 import { getAllBlogPosts } from '@/modules/blog/repositories/blog-repository'
 ```
 
 ### Comments (Only When Absolutely Necessary)
+
 ```typescript
 /**
  * @name User Authentication Check
  * @description Verifies user session and permissions
  */
 async function checkUserAuth(session: Session): Promise<boolean> {
-  // Complex logic that genuinely needs explanation
-  return session.isValid && session.hasPermissions
+    // Complex logic that genuinely needs explanation
+    return session.isValid && session.hasPermissions
 }
 ```
 
 ## ❌ NEVER DO These Examples
 
 ### Function Definitions
+
 ```typescript
 // ❌ NEVER arrow functions for regular operations
 const getUserById = async (id: string) => { ... }
@@ -94,6 +100,7 @@ interface UserProfile { ... }
 ```
 
 ### Props Naming
+
 ```typescript
 // ❌ NEVER name props anything other than 'props' for single type
 function UserProfileComponent(userProps: UserProfile) { ... }
@@ -101,17 +108,19 @@ function BlogPostComponent(postData: ComponentProps) { ... }
 ```
 
 ### File Naming
+
 ```typescript
 // ❌ NEVER camelCase files
 getUserData.ts
 UserProfileComponent.tsx
 
 // ❌ NEVER use lib/ helpers/ utilities/
-lib/utils.ts
-helpers/format.ts
+lib / utils.ts
+helpers / format.ts
 ```
 
 ### Comments
+
 ```typescript
 // ❌ NEVER regular comments
 // This function gets user data

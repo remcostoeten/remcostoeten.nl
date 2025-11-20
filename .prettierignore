@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+dist
+build
+*.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+.git
+.vscode
+*.min.js
+*.min.css
+
