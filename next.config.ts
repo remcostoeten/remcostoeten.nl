@@ -69,7 +69,8 @@ const nextConfig: NextConfig = {
     },
 
     experimental: {
-        optimizePackageImports: ['@vercel/analytics', '@vercel/speed-insights']
+        optimizePackageImports: ['@vercel/analytics', '@vercel/speed-insights'],
+        viewTransition: true
     },
 
     turbopack: {
