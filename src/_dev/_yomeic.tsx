@@ -31,13 +31,12 @@ const theme = {
     textDim: 'text-zinc-500',
     bgPanel: 'bg-zinc-950',
     borderPanel: 'border-zinc-800',
-    bgOverlay: 'rgba(0, 0, 0, 0.3)',
+    // Removed strict overlay background to allow click-through logic
+    bgOverlay: 'rgba(0, 0, 0, 0.0)', 
   },
   layout: {
-    // Removed generic 'fixed' reuse to prevent layout breakage
     panel:
       'fixed flex flex-col gap-2 rounded-lg border p-4 w-96 shadow-2xl transition-all backdrop-blur-md z-50',
-    // New specific style for items so they stay inside the box
     item: 'relative flex items-center gap-3 p-1.5 px-2 rounded transition-colors w-full',
     header: 'flex items-center justify-between gap-3 min-w-0 border-b pb-2',
     badge: 'shrink-0 rounded px-1.5 py-0.5 text-xs font-medium',
@@ -59,11 +58,11 @@ const styles = {
     r: 4,
   },
   freeroamDot: {
-    fill: theme.colors.primary,
-    stroke: theme.colors.primary,
-    strokeWidth: 2,
-    r: 6,
-    opacity: 0.8,
+    fill: theme.colors.freeroam,
+    stroke: theme.colors.freeroam,
+    strokeWidth: 1.5,
+    r: 3.5,
+    opacity: 0.9,
   },
 }
 
@@ -229,11 +228,15 @@ function YomeicCore({ category }: Props) {
   const [selectingIndex, setSelectingIndex] = useState<number | null>(null)
   const [hoveredTarget, setHoveredTarget] = useState<Element | null>(null)
   const [isFreeroam, setIsFreeroam] = useState(false)
+  const [previewPosition, setPreviewPosition] = useState<Pos | null>(null)
+  const [editingConnection, setEditingConnection] = useState<number | null>(null)
+  const [hoveredConnection, setHoveredConnection] = useState<number | null>(null)
   const [, setTick] = useState(0)
 
   const panelRef = useRef<HTMLDivElement>(null)
   const todoRefs = useRef<Map<number, HTMLDivElement>>(new Map())
-  const rafRef = useRef<number>()
+  const connectionPointRefs = useRef<Map<number, SVGCircleElement>>(new Map())
+  const rafRef = useRef<number | null>(null)
 
   // Initialization
   useEffect(() => {
@@ -302,6 +305,7 @@ function YomeicCore({ category }: Props) {
     if (selectingIndex === null) {
       setHoveredTarget(null)
       setIsFreeroam(false)
+      setPreviewPosition(null)
       return
     }
 
@@ -328,18 +332,18 @@ function YomeicCore({ category }: Props) {
 
       if (isFreeroam || !target || target === document.body) {
         newConn = {
-          todoIndex: selectingIndex,
+          todoIndex: selectingIndex!,
           targetPosition: { x: e.clientX, y: e.clientY },
         }
       } else {
         newConn = {
-          todoIndex: selectingIndex,
+          todoIndex: selectingIndex!,
           targetSelector: generateSelector(target),
           targetLabel: getElementLabel(target),
         }
       }
 
-      const next = connections.filter((c) => c.todoIndex !== selectingIndex)
+      const next = connections.filter((c) => c.todoIndex !== selectingIndex!)
       next.push(newConn)
       setConnections(next)
       localStorage.setItem(keys.con, JSON.stringify(next))
@@ -349,8 +353,10 @@ function YomeicCore({ category }: Props) {
     function onMove(e: MouseEvent) {
       if (isFreeroam) {
         setHoveredTarget(null)
+        setPreviewPosition({ x: e.clientX, y: e.clientY })
         return
       }
+      setPreviewPosition(null)
       const t = e.target as Element
       if (t && !panelRef.current?.contains(t)) setHoveredTarget(t)
     }
@@ -383,6 +389,106 @@ function YomeicCore({ category }: Props) {
     hoveredTarget.classList.add('yomeic-target-hover')
     return () => hoveredTarget.classList.remove('yomeic-target-hover')
   }, [hoveredTarget])
+
+  // Connection Point Editing Logic
+  useEffect(() => {
+    if (editingConnection === null) return
+
+    function onMove(e: MouseEvent) {
+      setConnections((prev) => {
+        const conn = prev.find((c) => c.todoIndex === editingConnection)
+        if (!conn) return prev
+
+        const updated = { ...conn, targetPosition: { x: e.clientX, y: e.clientY } }
+        // Convert DOM selector connections to freeroam when editing
+        if (conn.targetSelector) {
+          delete updated.targetSelector
+          delete updated.targetLabel
+        }
+
+        const next = prev.filter((c) => c.todoIndex !== editingConnection)
+        next.push(updated)
+        localStorage.setItem(keys.con, JSON.stringify(next))
+        return next
+      })
+    }
+
+    function onUp() {
+      setEditingConnection(null)
+    }
+
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    return () => {
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+  }, [editingConnection, keys.con])
+
+  // Connection Point Interaction Handlers
+  useEffect(() => {
+    const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as SVGCircleElement
+      if (!target) return
+
+      // Find which connection this circle belongs to
+      for (const [todoIndex, circle] of Array.from(connectionPointRefs.current.entries())) {
+        if (circle === target) {
+          e.preventDefault()
+          e.stopPropagation()
+          setEditingConnection(todoIndex)
+          break
+        }
+      }
+    }
+
+    const handleDoubleClick = (e: MouseEvent) => {
+      const target = e.target as SVGCircleElement
+      if (!target) return
+
+      // Find which connection this circle belongs to
+      for (const [todoIndex, circle] of Array.from(connectionPointRefs.current.entries())) {
+        if (circle === target) {
+          e.preventDefault()
+          e.stopPropagation()
+          removeConnection(todoIndex)
+          break
+        }
+      }
+    }
+
+    const handleMouseEnter = (e: MouseEvent) => {
+      const target = e.target as SVGCircleElement
+      if (!target) return
+
+      for (const [todoIndex, circle] of Array.from(connectionPointRefs.current.entries())) {
+        if (circle === target) {
+          setHoveredConnection(todoIndex)
+          break
+        }
+      }
+    }
+
+    const handleMouseLeave = () => {
+      setHoveredConnection(null)
+    }
+
+    for (const circle of Array.from(connectionPointRefs.current.values())) {
+      circle.addEventListener('mousedown', handleMouseDown)
+      circle.addEventListener('dblclick', handleDoubleClick)
+      circle.addEventListener('mouseenter', handleMouseEnter)
+      circle.addEventListener('mouseleave', handleMouseLeave)
+    }
+
+    return () => {
+      for (const circle of Array.from(connectionPointRefs.current.values())) {
+        circle.removeEventListener('mousedown', handleMouseDown)
+        circle.removeEventListener('dblclick', handleDoubleClick)
+        circle.removeEventListener('mouseenter', handleMouseEnter)
+        circle.removeEventListener('mouseleave', handleMouseLeave)
+      }
+    }
+  }, [connections])
 
   /* -------------------------------------------------------------------------- */
   /*                                   ACTIONS                                  */
@@ -418,6 +524,39 @@ function YomeicCore({ category }: Props) {
 
   function renderLines() {
     if (!isMounted) return null
+    
+    // Render preview line when in freeroam mode
+    const previewLine = selectingIndex !== null && isFreeroam && previewPosition ? (() => {
+      const el = todoRefs.current.get(selectingIndex)
+      if (!el || !document.body.contains(el)) return null
+      
+      const rect = el.getBoundingClientRect()
+      const start = {
+        x: rect.right,
+        y: rect.top + rect.height / 2,
+      }
+      const d = calculateBezier(start, previewPosition)
+      
+      return (
+        <g key="preview-freeroam">
+          <path 
+            d={d} 
+            stroke={theme.colors.freeroam}
+            strokeWidth="2"
+            fill="none"
+            strokeDasharray="6 4"
+            opacity="0.3"
+          />
+          <circle
+            cx={previewPosition.x}
+            cy={previewPosition.y}
+            {...styles.freeroamDot}
+            opacity="0.5"
+          />
+        </g>
+      )
+    })() : null
+    
     return createPortal(
       <svg
         style={{
@@ -428,10 +567,16 @@ function YomeicCore({ category }: Props) {
           width: '100vw',
           height: '100vh',
         }}
+        onMouseDown={(e) => {
+          // Prevent clicks on SVG from interfering with page interactions
+          if ((e.target as SVGElement).tagName !== 'circle') {
+            e.preventDefault()
+          }
+        }}
       >
+        {previewLine}
         {connections.map((conn) => {
           const el = todoRefs.current.get(conn.todoIndex)
-          // Ensure we only render lines for currently visible items
           if (!el || !document.body.contains(el)) return null
           
           const rect = el.getBoundingClientRect()
@@ -455,13 +600,14 @@ function YomeicCore({ category }: Props) {
 
           const d = calculateBezier(start, end)
           const isFree = !!conn.targetPosition
+          const isEditing = editingConnection === conn.todoIndex
           const key = `${conn.todoIndex}-${isFree ? 'free' : 'dom'}`
 
           return (
             <g key={key}>
               <path 
                 d={d} 
-                stroke={theme.colors.primary}
+                stroke={isFree ? theme.colors.freeroam : theme.colors.primary}
                 strokeWidth="2"
                 fill="none"
                 strokeDasharray="6 4"
@@ -473,10 +619,34 @@ function YomeicCore({ category }: Props) {
                 cy={start.y}
                 {...styles.connectorDot}
               />
+              {/* Invisible larger hit area for easier interaction */}
+              <circle
+                ref={(el) => {
+                  if (el) connectionPointRefs.current.set(conn.todoIndex, el)
+                  else connectionPointRefs.current.delete(conn.todoIndex)
+                }}
+                cx={end.x}
+                cy={end.y}
+                r={12}
+                fill="transparent"
+                style={{
+                  pointerEvents: 'auto',
+                  cursor: isEditing ? 'grabbing' : 'grab',
+                }}
+              />
+              {/* Visible connection point */}
               <circle
                 cx={end.x}
                 cy={end.y}
-                {...(isFree ? styles.freeroamDot : styles.connectorDot)}
+                fill={isFree ? styles.freeroamDot.fill : styles.connectorDot.fill}
+                stroke={isFree ? styles.freeroamDot.stroke : undefined}
+                strokeWidth={isFree ? styles.freeroamDot.strokeWidth : undefined}
+                r={hoveredConnection === conn.todoIndex ? (isFree ? 4.5 : 5) : (isFree ? styles.freeroamDot.r : styles.connectorDot.r)}
+                opacity={hoveredConnection === conn.todoIndex ? 1 : (isFree ? styles.freeroamDot.opacity : 1)}
+                style={{
+                  pointerEvents: 'none',
+                  transition: 'r 0.2s, opacity 0.2s',
+                }}
               />
             </g>
           )
@@ -509,7 +679,10 @@ function YomeicCore({ category }: Props) {
 
       {renderLines()}
 
-      {/* Overlay */}
+      {/* 
+         Overlay: The container must be pointer-events-none so mouse clicks
+         pass through to the website elements. 
+      */}
       {selectingIndex !== null &&
         createPortal(
           <div
@@ -517,8 +690,9 @@ function YomeicCore({ category }: Props) {
               position: 'fixed',
               inset: 0,
               zIndex: theme.z.overlay,
-              backgroundColor: theme.colors.bgOverlay,
-              cursor: 'crosshair',
+              // Must be none to let clicks hit the DOM
+              pointerEvents: 'none', 
+              cursor: 'crosshair', // This won't show if pointerEvents is none, but that's acceptable tradeoff
             }}
           >
             <div
@@ -528,6 +702,7 @@ function YomeicCore({ category }: Props) {
                   ? theme.colors.freeroam
                   : theme.colors.primary,
                 color: isFreeroam ? '#c4b5fd' : '#93c5fd',
+                pointerEvents: 'auto' // Keep instruction banner interactive if needed (or just visible)
               }}
             >
               {isFreeroam
@@ -546,12 +721,16 @@ function YomeicCore({ category }: Props) {
           left: pos.x,
           top: pos.y,
           zIndex: theme.z.panel,
-          cursor: isDragging ? 'grabbing' : 'grab',
         }}
       >
-        <div className={styles.header} onMouseDown={startDrag}>
+        <div 
+          className={styles.header} 
+          onMouseDown={startDrag}
+          style={{
+            cursor: isDragging ? 'grabbing' : 'grab',
+          }}
+        >
           <span className="text-sm font-mono truncate opacity-80">
-            <span className={theme.colors.textDim}>yo::</span>
             {categoryData.displayName || category}
           </span>
           <button
@@ -566,7 +745,6 @@ function YomeicCore({ category }: Props) {
         {!isCollapsed && (
           <div className="flex flex-col gap-1">
             {itemsToRender.map((item, idx) => {
-              // IMPORTANT: Maintain original index for connections even when sliced
               const originalIndex = idx; 
               
               const hasConn = connections.find((c) => c.todoIndex === originalIndex)
@@ -624,8 +802,9 @@ function YomeicCore({ category }: Props) {
               </button>
             )}
 
-            <div className={`mt-2 text-[10px] ${theme.colors.textDim} font-mono text-center opacity-50`}>
-              Right-click item to connect
+            <div className={`mt-2 text-[10px] ${theme.colors.textDim} font-mono text-center opacity-50 space-y-0.5`}>
+              <div>Right-click item to connect</div>
+              <div className="opacity-40">Drag connection point to edit • Double-click to remove</div>
             </div>
           </div>
         )}
