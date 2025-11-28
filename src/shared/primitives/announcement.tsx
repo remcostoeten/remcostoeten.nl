@@ -49,7 +49,7 @@ function useBadgeContext() {
   return context
 }
 
-export interface TAnnouncementProps extends TBadgeProps {
+export interface Iops extends TBadgeProps {
   themed?: boolean
   size?: "sm" | "md" | "lg"
   showBadge?: boolean
@@ -86,7 +86,7 @@ export function Announcement({
   ariaLabel,
   ariaDescribedBy,
   ...props
-}: TAnnouncementProps) {
+}: Iops) {
   const contextValue = React.useMemo(() => ({ themed, size }), [themed, size])
 
   return (
@@ -272,9 +272,11 @@ export function AnnouncementBanner({
   const [isHiddenByScroll, setIsHiddenByScroll] = React.useState(false)
   const [shouldHideByScroll, setShouldHideByScroll] = React.useState(false)
   const [isClosing, setIsClosing] = React.useState(false)
+  const [isScrolled, setIsScrolled] = React.useState(false)
   const lastScrollYRef = React.useRef(0)
   const maxScrollYRef = React.useRef(0)
   const hasHiddenByPixelsRef = React.useRef(false)
+  const scrollUpStartRef = React.useRef<number | null>(null)
   const wrapperRef = React.useRef<HTMLDivElement | null>(null)
   const [bannerHeight, setBannerHeight] = React.useState(80)
   const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
@@ -286,10 +288,23 @@ export function AnnouncementBanner({
   }, [isVisible])
 
   React.useEffect(() => {
-    if (!hideOnScroll && !hideAfterPixels) return
+    if (!hideOnScroll && !hideAfterPixels) {
+      // Still track scroll state for spacing even if hideOnScroll is false
+      function onScroll() {
+        const currentY = window.scrollY || 0
+        setIsScrolled(currentY > 50)
+      }
+      window.addEventListener("scroll", onScroll, { passive: true })
+      onScroll() // Check initial scroll state
+      return () => window.removeEventListener("scroll", onScroll)
+    }
 
     function onScroll() {
       const currentY = window.scrollY || 0
+      const lastY = lastScrollYRef.current
+
+      // Track scroll state for spacing
+      setIsScrolled(currentY > 50)
 
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
@@ -306,25 +321,37 @@ export function AnnouncementBanner({
           shouldShow = true
         }
 
-        // New hideAfterPixels logic
+        // Hide after scrolling past hideAfterPixels
         if (hideAfterPixels && currentY > hideAfterPixels && !hasHiddenByPixelsRef.current) {
           shouldHide = true
           hasHiddenByPixelsRef.current = true
-          maxScrollYRef.current = currentY
+          scrollUpStartRef.current = null // Reset scroll up tracking
         }
 
-        // ShowAgain logic
+        // Show again logic: if hidden and scrolling up by showAgain pixels from anywhere
         if (hideAfterPixels && hasHiddenByPixelsRef.current) {
           if (showAgain === 'top' && currentY <= 0) {
             shouldShow = true
             hasHiddenByPixelsRef.current = false
-            maxScrollYRef.current = 0
+            scrollUpStartRef.current = null
           } else if (typeof showAgain === 'number') {
-            const scrollAmountBack = maxScrollYRef.current - currentY
-            if (scrollAmountBack >= showAgain) {
-              shouldShow = true
-              hasHiddenByPixelsRef.current = false
-              maxScrollYRef.current = 0
+            // Check if scrolling up (current position is less than last position)
+            if (currentY < lastY) {
+              // Start tracking scroll up position if not already tracking
+              if (scrollUpStartRef.current === null) {
+                scrollUpStartRef.current = lastY
+              }
+              
+              // Check if we've scrolled up by showAgain pixels from the start position
+              const scrollAmountBack = scrollUpStartRef.current - currentY
+              if (scrollAmountBack >= showAgain) {
+                shouldShow = true
+                hasHiddenByPixelsRef.current = false
+                scrollUpStartRef.current = null
+              }
+            } else if (currentY > lastY) {
+              // Scrolling down again, reset scroll up tracking
+              scrollUpStartRef.current = null
             }
           }
         }
@@ -332,7 +359,7 @@ export function AnnouncementBanner({
         if (shouldHide) {
           setIsHiddenByScroll(true)
           setShouldHideByScroll(true)
-        } else if (shouldShow && !hideOnScroll) {
+        } else if (shouldShow) {
           setIsHiddenByScroll(false)
           setShouldHideByScroll(false)
         }
@@ -342,6 +369,7 @@ export function AnnouncementBanner({
     }
 
     window.addEventListener("scroll", onScroll, { passive: true })
+    onScroll() // Check initial scroll state
     return () => {
       window.removeEventListener("scroll", onScroll)
       if (scrollTimeoutRef.current) {
@@ -390,10 +418,12 @@ export function AnnouncementBanner({
   if (!isVisible) return null
 
   const getPositionClasses = () => {
+    // Add more top spacing when scrolled
+    const topSpacing = isScrolled ? "top-12" : "top-6"
     const positions = {
-      "top-left": "top-6 left-6 -translate-x-0 -translate-y-0",
-      "top-center": "top-6 left-1/2 -translate-x-1/2 -translate-y-0",
-      "top-right": "top-6 right-6 -translate-x-0 -translate-y-0",
+      "top-left": `${topSpacing} left-6 -translate-x-0 -translate-y-0`,
+      "top-center": `${topSpacing} left-1/2 -translate-x-1/2 -translate-y-0`,
+      "top-right": `${topSpacing} right-6 -translate-x-0 -translate-y-0`,
       "bottom-left": "bottom-6 left-6 -translate-x-0 -translate-y-0",
       "bottom-center": "bottom-6 left-1/2 -translate-x-1/2 translate-y-0",
       "bottom-right": "bottom-6 right-6 -translate-x-0 -translate-y-0"
@@ -412,7 +442,7 @@ export function AnnouncementBanner({
       <div
         id={id}
         className={cn(
-          "fixed z-50 w-full px-4 sm:px-6 pointer-events-none",
+          "fixed z-50 w-full px-4 sm:px-6 pointer-events-none transition-[top] duration-300 ease-out",
           getPositionClasses(),
           className
         )}

@@ -1,8 +1,8 @@
-import { getBlogPosts } from '@/modules/blog/queries'
+import { getAllBlogPosts } from '@/modules/blog/queries'
 import { baseUrl, siteConfig } from '@/core/config'
 
 export async function GET() {
-    const allBlogs = await getBlogPosts()
+    const allBlogs = getAllBlogPosts()
 
     const sortedBlogs = allBlogs.sort((a, b) => {
         if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {

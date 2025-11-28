@@ -1,5 +1,5 @@
 import { BlogPosts } from '@/modules/blog/components'
-import { getBlogPosts } from '@/modules/blog/queries'
+import { getAllBlogPosts } from '@/modules/blog/queries'
 import { baseUrl, siteConfig } from '@/core/config'
 import { Yomeic } from '@/_dev/_yomeic'
 import type { Metadata } from 'next'
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 }
 
 export default function Page() {
-    const posts = getBlogPosts()
+    const posts = getAllBlogPosts()
 
     const blogSchema = {
         '@context': 'https://schema.org',
