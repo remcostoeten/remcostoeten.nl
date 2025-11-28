@@ -1,0 +1,418 @@
+#!/usr/bin/env bash
+
+# Get terminal dimensions
+TERM_HEIGHT=$(tput lines 2>/dev/null || echo 24)
+TERM_WIDTH=$(tput cols 2>/dev/null || echo 80)
+
+# ANSI color codes - Professional monochromatic palette
+FG_DEFAULT='\033[38;5;251m'     # Light gray
+FG_MUTED='\033[38;5;245m'       # Muted gray
+FG_DIM='\033[38;5;240m'         # Dim gray
+FG_ACCENT='\033[38;5;147m'      # Light blue
+FG_SUCCESS='\033[38;5;120m'     # Green
+FG_WARNING='\033[38;5;179m'     # Light orange
+FG_ERROR='\033[38;5;203m'       # Light red
+BG_SUBTLE='\033[48;5;236m'      # Subtle background
+BOLD='\033[1m'
+DIM='\033[2m'
+NC='\033[0m' # No Color
+
+# Terminal control sequences
+HIDE_CURSOR='\033[?25l'
+SHOW_CURSOR='\033[?25h'
+
+# Banner height (number of lines)
+BANNER_HEIGHT=8
+
+# --- Utility Functions ---
+
+function generate_box_line() {
+  local width=$1
+  local style=$2
+  case $style in
+    "double") printf "╠═%*s╣" "$((${width}-4))" | tr ' ' '═' ;;
+    "single") printf "├─%*s┤" "$((${width}-4))" | tr ' ' '─' ;;
+    "top") printf "╔═%*s╗" "$((${width}-4))" | tr ' ' '═' ;;
+    "bottom") printf "╚═%*s╝" "$((${width}-4))" | tr ' ' '═' ;;
+    "header") printf "┌─%*s┐" "$((${width}-4))" | tr ' ' '─' ;;
+    "footer") printf "└─%*s┘" "$((${width}-4))" | tr ' ' '─' ;;
+    *) printf "─%*s─" "$((${width}-2))" | tr ' ' '─' ;;
+  esac
+}
+
+function print_header() {
+  local title=$1
+  local color=$2
+  local padding=4
+
+  printf "${FG_MUTED}${BOLD}$(generate_box_line $TERM_WIDTH "header")${NC}\n"
+  printf "${FG_MUTED}│${NC} %*s${NC} ${FG_MUTED}│${NC}\n" "$((${TERM_WIDTH}-padding))"
+  printf "${FG_MUTED}│${NC} ${color}${BOLD}%s${NC} %*s ${FG_MUTED}│${NC}\n" "$title" "$((${TERM_WIDTH}-${#title}-padding))"
+  printf "${FG_MUTED}│${NC} %*s${NC} ${FG_MUTED}│${NC}\n" "$((${TERM_WIDTH}-padding))"
+  printf "${FG_MUTED}$(generate_box_line $TERM_WIDTH "footer")${NC}\n"
+}
+
+function print_section_header() {
+  local title=$1
+  local color=$2
+  printf "\n${BG_SUBTLE}  %-*s  ${NC}\n" "$((${TERM_WIDTH}-4))" "${color}${BOLD}$title${NC}"
+}
+
+# --- AI Analysis Functions ---
+
+function run_bundle_analysis() {
+  print_header "Bundle Analysis" "$FG_ACCENT"
+
+  if [ -d ".next" ]; then
+    BUNDLE_SIZE=$(du -sh .next 2>/dev/null | cut -f1)
+    JS_SIZE=$(find .next -name "*.js" -exec du -ch {} + 2>/dev/null | grep total$ | cut -f1)
+    CSS_SIZE=$(find .next -name "*.css" -exec du -ch {} + 2>/dev/null | grep total$ | cut -f1)
+
+    print_section_header "Bundle Metrics" "$FG_ACCENT"
+    printf "${FG_MUTED}┌─ Total Build Size ──────────────┐${NC} ${FG_DEFAULT}${BOLD}%-12s${NC}\n" "$BUNDLE_SIZE"
+    printf "${FG_MUTED}├─ JavaScript Size ──────────────┤${NC} ${FG_DEFAULT}${BOLD}%-12s${NC}\n" "$JS_SIZE"
+    printf "${FG_MUTED}└─ CSS Size ─────────────────────┘${NC} ${FG_DEFAULT}${BOLD}%-12s${NC}\n" "$CSS_SIZE"
+    echo ""
+
+    if command -v claude &> /dev/null; then
+      echo -e "${FG_MUTED}Analyzing bundle with AI...${NC}"
+      DEPS=$(cat package.json | jq -r '.dependencies | keys[]' 2>/dev/null || echo "Could not parse dependencies")
+      BUNDLE_PROMPT="Please analyze this Next.js bundle data and provide optimization suggestions:
+
+Bundle Size: $BUNDLE_SIZE
+JS Size: $JS_SIZE
+CSS Size: $CSS_SIZE
+Main Dependencies:
+$DEPS
+
+Provide specific recommendations for:
+1. Code splitting opportunities
+2. Dynamic imports for large dependencies
+3. Tree shaking improvements
+4. Unused CSS/JS removal
+5. Bundle optimization strategies
+
+Focus on actionable steps for a Next.js portfolio site with MDX blog functionality."
+
+      claude --dangerously-skip-permissions "$BUNDLE_PROMPT" 2>/dev/null || {
+        echo -e "${FG_ERROR}Failed to run AI analysis.${NC}"
+      }
+    else
+      echo -e "${FG_WARNING}AI CLI not found. Skipping analysis.${NC}"
+    fi
+
+    local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    echo "{\"timestamp\":\"$timestamp\",\"bundle_size\":\"$BUNDLE_SIZE\",\"js_size\":\"$JS_SIZE\",\"css_size\":\"$CSS_SIZE\"}" >> "$BUILD_STATS_FILE"
+  else
+    printf "${BG_SUBTLE}  ${FG_ERROR}No .next directory found. Run build first.${NC}  ${NC}\n"
+  fi
+  echo ""
+}
+
+function run_performance_benchmarking() {
+  print_header "Performance Benchmarking" "$FG_ACCENT"
+
+  if [ -f "$BUILD_STATS_FILE" ]; then
+    print_section_header "Performance Trends" "$FG_ACCENT"
+    RECENT_BUILDS=$(tail -5 "$BUILD_STATS_FILE" 2>/dev/null)
+    BUILD_COUNT=$(echo "$RECENT_BUILDS" | wc -l)
+
+    if [ "$BUILD_COUNT" -gt 1 ]; then
+      printf "${FG_MUTED}┌─ Builds Analyzed ─────────────────┐${NC} ${FG_DEFAULT}${BOLD}%-12d${NC}\n" "$BUILD_COUNT"
+      printf "${FG_MUTED}└─ Data Location ────────────────────┘${NC} ${FG_MUTED}~/.remcostoeten/build-stats.json${NC}\n"
+      echo ""
+
+      if command -v claude &> /dev/null; then
+        echo -e "${FG_MUTED}Analyzing performance trends with AI...${NC}"
+        PERF_PROMPT="Please analyze this build performance data and provide insights:
+
+Recent Build Data:
+$RECENT_BUILDS
+
+Analyze trends and provide recommendations for:
+1. Build performance optimizations
+2. Caching strategies
+3. Bundle size trends
+4. Performance regression detection
+5. Build time improvements
+
+Focus on maintaining fast builds for a development workflow."
+
+        claude --dangerously-skip-permissions "$PERF_PROMPT" 2>/dev/null || {
+          echo -e "${FG_ERROR}Failed to run AI analysis.${NC}"
+        }
+      fi
+    else
+      echo -e "${FG_WARNING}Not enough historical data to analyze.${NC}"
+    fi
+  else
+    echo -e "${FG_WARNING}No performance history found.${NC}"
+  fi
+  echo ""
+}
+
+function run_accessibility_audit() {
+  print_header "Accessibility Audit" "$FG_ACCENT"
+  echo -e "${FG_MUTED}Analyzing site accessibility...${NC}"
+
+  MISSING_ALTS=$(find src -name "*.tsx" -o -name "*.jsx" | xargs grep -l "<img" 2>/dev/null | wc -l)
+  COMPONENT_COUNT=$(find src -name "*.tsx" -o -name "*.jsx" | wc -l)
+  ARIA_USAGE=$(find src -name "*.tsx" -o -name "*.jsx" | xargs grep -c "aria-" 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
+  SEMANTIC_TAGS=$(find src -name "*.tsx" -o -name "*.jsx" | xargs grep -c -E "(header|main|nav|section|article|aside|footer)" 2>/dev/null | awk -F: '{sum += $2} END {print sum+0}')
+
+  print_section_header "Scan Results" "$FG_ACCENT"
+  printf "${FG_MUTED}┌─ Components with Images ───────────┐${NC} ${FG_DEFAULT}${BOLD}%-12d${NC}\n" "$MISSING_ALTS"
+  printf "${FG_MUTED}├─ Total Components ──────────────────┤${NC} ${FG_DEFAULT}${BOLD}%-12d${NC}\n" "$COMPONENT_COUNT"
+  printf "${FG_MUTED}├─ ARIA Attributes Found ─────────────┤${NC} ${FG_DEFAULT}${BOLD}%-12d${NC}\n" "$ARIA_USAGE"
+  printf "${FG_MUTED}└─ Semantic HTML Elements ──────────┘${NC} ${FG_DEFAULT}${BOLD}%-12d${NC}\n" "$SEMANTIC_TAGS"
+  echo ""
+
+  if command -v claude &> /dev/null; then
+    echo -e "${FG_MUTED}Running accessibility audit with AI...${NC}"
+    SAMPLE_COMPONENTS=$(find src -name "*.tsx" -o -name "*.jsx" | head -3 | xargs cat 2>/dev/null)
+    ACCESSIBILITY_PROMPT="Please perform an accessibility audit on this Next.js portfolio site:
+
+Component Analysis:
+Components with images: $MISSING_ALTS/$COMPONENT_COUNT
+ARIA attributes found: $ARIA_USAGE
+Semantic HTML elements: $SEMANTIC_TAGS
+
+Sample component code:
+$SAMPLE_COMPONENTS
+
+Provide specific recommendations for:
+1. Image alt text improvements
+2. ARIA usage enhancements
+3. Keyboard navigation
+4. Screen reader optimization
+5. Color contrast and visual accessibility
+6. Focus management
+
+Categorize suggestions by: CRITICAL, IMPORTANT, and NICE-TO-HAVE"
+
+    claude --dangerously-skip-permissions "$ACCESSIBILITY_PROMPT" 2>/dev/null || {
+      echo -e "${FG_ERROR}Failed to run AI analysis.${NC}"
+    }
+  else
+    echo -e "${FG_WARNING}AI CLI not found for detailed analysis.${NC}"
+  fi
+  echo ""
+}
+
+function run_seo_analysis() {
+  print_header "SEO Analysis" "$FG_ACCENT"
+  echo -e "${FG_MUTED}Analyzing SEO optimization...${NC}"
+
+  HAS_SITEMAP=$([ -f "src/app/sitemap.ts" ] && echo "Yes" || echo "No")
+  HAS_ROBOTS=$([ -f "src/app/robots.ts" ] && echo "Yes" || echo "No")
+  HAS_OG_ROUTE=$([ -d "src/app/og" ] && echo "Yes" || echo "No")
+  BLOG_POSTS=$(find src/app/blog/posts -name "*.mdx" 2>/dev/null | wc -l)
+  LAYOUT_META=$(grep -c "metadata\|title\|description" src/app/layout.tsx 2>/dev/null || echo "0")
+
+  print_section_header "SEO Configuration" "$FG_ACCENT"
+  printf "${FG_MUTED}┌─ Sitemap Configured ──────────────┐${NC} ${FG_DEFAULT}${BOLD}%-12s${NC}\n" "$HAS_SITEMAP"
+  printf "${FG_MUTED}├─ Robots.txt Configured ───────────┤${NC} ${FG_DEFAULT}${BOLD}%-12s${NC}\n" "$HAS_ROBOTS"
+  printf "${FG_MUTED}├─ OG Image Generation ─────────────┤${NC} ${FG_DEFAULT}${BOLD}%-12s${NC}\n" "$HAS_OG_ROUTE"
+  printf "${FG_MUTED}├─ Blog Posts Count ─────────────────┤${NC} ${FG_DEFAULT}${BOLD}%-12d${NC}\n" "$BLOG_POSTS"
+  printf "${FG_MUTED}└─ Layout Metadata Elements ────────┘${NC} ${FG_DEFAULT}${BOLD}%-12d${NC}\n" "$LAYOUT_META"
+  echo ""
+
+  if command -v claude &> /dev/null; then
+    echo -e "${FG_MUTED}Running SEO analysis with AI...${NC}"
+    LAYOUT_CONTENT=$(cat src/app/layout.tsx 2>/dev/null)
+    SEO_PROMPT="Please perform an SEO audit on this Next.js portfolio blog site:
+
+SEO Configuration:
+- Sitemap: $HAS_SITEMAP
+- Robots.txt: $HAS_ROBOTS
+- OG images: $HAS_OG_ROUTE
+- Blog posts: $BLOG_POSTS
+- Layout metadata elements: $LAYOUT_META
+
+Layout file content:
+$LAYOUT_CONTENT
+
+Provide specific SEO recommendations for:
+1. Meta tags optimization
+2. Open Graph and Twitter cards
+3. Structured data (JSON-LD)
+4. Blog post SEO best practices
+5. Internal linking strategy
+6. Core Web Vitals optimization
+
+Categorize suggestions by: CRITICAL, IMPORTANT, and ENHANCEMENT"
+
+    claude --dangerously-skip-permissions "$SEO_PROMPT" 2>/dev/null || {
+      echo -e "${FG_ERROR}Failed to run AI analysis.${NC}"
+    }
+  else
+    echo -e "${FG_WARNING}AI CLI not found for detailed analysis.${NC}"
+  fi
+  echo ""
+}
+
+function print_production_reminder() {
+    local width=$1
+
+    # Clear screen and move to top
+    clear
+
+    printf "${BG_SUBTLE}${FG_WARNING}${BOLD}  $(generate_box_line $(($width-4)) "top")${NC}\n"
+    printf "${BG_SUBTLE}│${NC} ${FG_WARNING}${BOLD}PRODUCTION BUILD REMINDER${NC} ${BG_SUBTLE}│${NC}\n"
+    printf "${BG_SUBTLE}  $(generate_box_line $(($width-4)) "bottom")${NC}\n"
+    printf "\n"
+    printf "${FG_DEFAULT}Before deploying, ensure your .env file contains:${NC}\n"
+    printf "\n"
+    printf "  ${BG_SUBTLE} GOOGLE_SITE_VERIFICATION ${NC} ${FG_MUTED}= your_code${NC}\n"
+    printf "  ${BG_SUBTLE} YANDEX_VERIFICATION      ${NC} ${FG_MUTED}= your_code${NC}\n"
+    printf "\n"
+}
+
+function cleanup_on_exit() {
+  echo -ne "${SHOW_CURSOR}"
+}
+
+# --- Main Script ---
+
+trap cleanup_on_exit EXIT
+
+# Skip interactive parts in CI/CD
+SKIP_AI_ANALYSIS=${SKIP_AI_ANALYSIS:-false}
+if [ "$SKIP_AI_ANALYSIS" = "true" ] || [ ! -t 1 ] || [ "$CI" = "true" ] || [ "$NODE_ENV" = "production" ]; then
+  echo -e "${FG_ACCENT}${BOLD}Starting production build...${NC}"
+  if bun next build; then
+    print_header "Build Completed Successfully" "$FG_SUCCESS"
+    exit 0
+  else
+    print_header "Build Failed" "$FG_ERROR"
+    exit 1
+  fi
+fi
+
+echo -ne "${HIDE_CURSOR}"
+print_production_reminder "$TERM_WIDTH"
+sleep 0.5
+
+echo -e "${FG_ACCENT}${BOLD}Starting build process...${NC}\n"
+
+BUILD_OUTPUT=$(mktemp)
+BUILD_ERROR_LOG=$(mktemp)
+
+# Run build, tee output, and get status
+if ! bun next build 2>&1 | tee "$BUILD_OUTPUT"; then
+  BUILD_STATUS=1
+else
+  BUILD_STATUS=0
+fi
+
+echo ""
+
+if [ $BUILD_STATUS -ne 0 ]; then
+  print_header "Build Failed" "$FG_ERROR"
+  
+  grep -Ei "(Error|Failed|TypeError|SyntaxError|ReferenceError|Module not found|Cannot resolve)" "$BUILD_OUTPUT" > "$BUILD_ERROR_LOG" 2>/dev/null || true
+  
+  if [ -s "$BUILD_ERROR_LOG" ]; then
+    echo -e "${FG_WARNING}Error Summary:${NC}"
+    echo -e "${FG_ERROR}$(head -20 "$BUILD_ERROR_LOG")${NC}"
+    if [ $(wc -l < "$BUILD_ERROR_LOG") -gt 20 ]; then
+      echo -e "${FG_MUTED}... (truncated)${NC}"
+    fi
+    echo ""
+  fi
+
+  print_section_header "Error Analysis Options" "$FG_ACCENT"
+  printf "${BG_SUBTLE}  (1) %-8s ${NC} ${FG_MUTED}─ Recommended${NC}\n" "${FG_SUCCESS}Claude"
+  printf "${BG_SUBTLE}  (2) %-8s ${NC}\n" "${FG_ACCENT}Gemini"
+  printf "${BG_SUBTLE}  (3) %-8s ${NC}\n" "${FG_DEFAULT}GitHub Copilot"
+  printf "${BG_SUBTLE}  (4) %-8s ${NC}\n" "${FG_MUTED}Skip analysis"
+  echo ""
+
+  echo -ne "${SHOW_CURSOR}"
+  read -p "Select option [1-4]: " -n 1 -r
+  echo -e "\n"
+
+  case $REPLY in
+    1)
+      print_header "Claude Error Analysis" "$FG_SUCCESS"
+      if command -v claude &> /dev/null; then
+        echo -e "${FG_MUTED}Sending error to Claude...${NC}"
+        ERROR_CONTENT=$(cat "$BUILD_OUTPUT")
+        claude --dangerously-skip-permissions "Please help me fix this Next.js build error. Here's the error output:\n\n$ERROR_CONTENT" 2>/dev/null || {
+          echo -e "${FG_ERROR}Failed to run Claude CLI.${NC}"
+        }
+      else
+        echo -e "${FG_ERROR}Claude CLI not found.${NC}"
+      fi
+      ;;
+    2)
+      print_header "Gemini Error Analysis" "$FG_ACCENT"
+      if command -v gemini &> /dev/null; then
+        echo -e "${FG_MUTED}Sending error to Gemini...${NC}"
+        ERROR_CONTENT=$(cat "$BUILD_OUTPUT")
+        gemini "Please help me fix this Next.js build error. Here's the error output:\n\n$ERROR_CONTENT" --yolo 2>/dev/null || {
+          echo -e "${FG_ERROR}Failed to run Gemini CLI.${NC}"
+        }
+      else
+        echo -e "${FG_ERROR}Gemini CLI not found.${NC}"
+      fi
+      ;;
+    3)
+      print_header "GitHub Copilot Error Analysis" "$FG_DEFAULT"
+      if command -v gh &> /dev/null && gh copilot &> /dev/null; then
+        echo -e "${FG_MUTED}Sending error to GitHub Copilot...${NC}"
+        ERROR_CONTENT=$(cat "$BUILD_OUTPUT")
+        gh copilot suggest "Please help me fix this Next.js build error. Here's the error output:\n\n$ERROR_CONTENT" 2>/dev/null || {
+          echo -e "${FG_ERROR}Failed to run GitHub Copilot.${NC}"
+        }
+      else
+        echo -e "${FG_ERROR}GitHub Copilot CLI not found.${NC}"
+      fi
+      ;;
+    *)
+      echo -e "${FG_MUTED}Skipping AI analysis.${NC}"
+      ;;
+  esac
+
+  rm -f "$BUILD_OUTPUT" "$BUILD_ERROR_LOG"
+  exit 1
+else
+  print_header "Build Completed Successfully" "$FG_SUCCESS"
+  
+  REMCO_DIR="$HOME/.remcostoeten"
+  BUILD_STATS_FILE="$REMCO_DIR/build-stats.json"
+  mkdir -p "$REMCO_DIR"
+
+  print_section_header "Post-build Analysis" "$FG_ACCENT"
+  echo -e "${FG_MUTED}Choose an analysis option:${NC}"
+  echo ""
+  printf "${BG_SUBTLE}  (1) %-25s ${NC}\n" "Bundle Analysis"
+  printf "${BG_SUBTLE}  (2) %-25s ${NC}\n" "Performance Benchmarking"
+  printf "${BG_SUBTLE}  (3) %-25s ${NC}\n" "Accessibility Audit"
+  printf "${BG_SUBTLE}  (4) %-25s ${NC}\n" "SEO Analysis"
+  printf "${BG_SUBTLE}  (5) %-25s ${NC}\n" "${FG_ACCENT}Run all analyses${NC}"
+  printf "${BG_SUBTLE}  (6) %-25s ${NC}\n" "${FG_MUTED}Skip analysis${NC}"
+  echo ""
+
+  echo -ne "${SHOW_CURSOR}"
+  read -p "Select option [1-6]: " -n 1 -r
+  echo -e "\n"
+
+  case $REPLY in
+    1) run_bundle_analysis ;;
+    2) run_performance_benchmarking ;;
+    3) run_accessibility_audit ;;
+    4) run_seo_analysis ;;
+    5)
+      run_bundle_analysis
+      run_performance_benchmarking
+      run_accessibility_audit
+      run_seo_analysis
+      ;;
+    *) echo -e "${FG_MUTED}Skipping post-build analysis.${NC}" ;;
+  esac
+
+  printf "\n${BG_SUBTLE}  ${FG_SUCCESS}${BOLD}Next Step:${NC} Run ${BOLD}bun start${NC} to view the production build  ${NC}\n\n"
+  rm -f "$BUILD_OUTPUT" "$BUILD_ERROR_LOG"
+  exit 0
+fi

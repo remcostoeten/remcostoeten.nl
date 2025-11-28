@@ -25,15 +25,15 @@ const UNDO_WINDOW_MS = 8000
 
 const theme = {
   colors: {
-    primary: 'rgb(59, 130, 246)',
-    primaryDim: 'rgba(59, 130, 246, 0.1)',
-    freeroam: 'rgb(139, 92, 246)',
-    textMain: 'text-gray-200',
-    textDim: 'text-zinc-500',
-    bgPanel: 'bg-zinc-950',
-    borderPanel: 'border-zinc-800',
+    primary: 'hsl(var(--primary))',
+    primaryDim: 'hsl(var(--primary) / 0.1)',
+    freeroam: 'hsl(var(--accent))',
+    textMain: 'text-foreground',
+    textDim: 'text-muted-foreground',
+    bgPanel: 'bg-background',
+    borderPanel: 'border-border',
     // Removed strict overlay background to allow click-through logic
-    bgOverlay: 'rgba(0, 0, 0, 0.0)', 
+    bgOverlay: 'rgba(0, 0, 0, 0.0)',
   },
   layout: {
     panel:
@@ -51,9 +51,9 @@ const theme = {
 
 const styles = {
   panel: `${theme.layout.panel} ${theme.colors.textMain} ${theme.colors.bgPanel} ${theme.colors.borderPanel}`,
-  item: `${theme.layout.item} hover:bg-white/5`,
+  item: `${theme.layout.item} hover:bg-accent/10`,
   header: `${theme.layout.header} ${theme.colors.borderPanel}`,
-  badge: `${theme.layout.badge} bg-blue-900/50 text-blue-200`,
+  badge: `${theme.layout.badge} bg-primary/20 text-primary`,
   connectorDot: {
     fill: theme.colors.primary,
     r: 4,
@@ -76,10 +76,18 @@ type Pos = {
   y: number
 }
 
+type TodoStatus = 'todo' | 'working' | 'done'
+
 type TodoItem = {
   text: string
   action?: string
   info?: string
+  description?: string
+  notes?: string
+  priority?: 'low' | 'medium' | 'high'
+  tags?: string[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 type CategoryConfig = {
@@ -186,9 +194,8 @@ function generateSelector(element: Element): string {
     const parentSel = parent.id
       ? `#${parent.id}`
       : parent.tagName.toLowerCase()
-    const s = `${parentSel} > ${element.tagName.toLowerCase()}:nth-child(${
-      index + 1
-    })`
+    const s = `${parentSel} > ${element.tagName.toLowerCase()}:nth-child(${index + 1
+      })`
     if (isValidSelector(s)) return s
   }
   return element.tagName.toLowerCase()
@@ -204,9 +211,8 @@ function getElementLabel(element: Element): string {
 function calculateBezier(start: Pos, end: Pos): string {
   const distance = Math.abs(end.x - start.x)
   const offset = Math.min(distance / 2, 150)
-  return `M ${start.x} ${start.y} C ${start.x + offset} ${start.y}, ${
-    end.x - offset
-  } ${end.y}, ${end.x} ${end.y}`
+  return `M ${start.x} ${start.y} C ${start.x + offset} ${start.y}, ${end.x - offset
+    } ${end.y}, ${end.x} ${end.y}`
 }
 
 /* -------------------------------------------------------------------------- */
@@ -236,6 +242,7 @@ function YomeicCore({ category, instanceId }: Props) {
       lineColor: `${STORAGE_PREFIX}lineColor-${instanceKey}`,
       lineOpacity: `${STORAGE_PREFIX}lineOpacity-${instanceKey}`,
       componentOpacity: `${STORAGE_PREFIX}componentOpacity-${instanceKey}`,
+      statuses: `${STORAGE_PREFIX}statuses-${instanceKey}`,
     }),
     [instanceKey]
   )
@@ -254,6 +261,12 @@ function YomeicCore({ category, instanceId }: Props) {
   const [lineOpacity, setLineOpacity] = useState(0.6)
   const [componentOpacity, setComponentOpacity] = useState(1)
   const [canUndo, setCanUndo] = useState(false)
+  const [statuses, setStatuses] = useState<Map<number, TodoStatus>>(new Map())
+  const [openIssueIndex, setOpenIssueIndex] = useState<number | null>(null)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
 
   // Interaction
   const [isDragging, setIsDragging] = useState(false)
@@ -365,6 +378,25 @@ function YomeicCore({ category, instanceId }: Props) {
             }
           } catch {
             // ignore malformed component opacity
+          }
+        }
+
+        if (keys.statuses) {
+          const savedStatuses = localStorage.getItem(keys.statuses)
+          if (savedStatuses) {
+            try {
+              const parsed = JSON.parse(savedStatuses) as Record<string, TodoStatus>
+              const statusMap = new Map<number, TodoStatus>()
+              for (const [key, value] of Object.entries(parsed)) {
+                const index = parseInt(key, 10)
+                if (!isNaN(index) && (value === 'todo' || value === 'working' || value === 'done')) {
+                  statusMap.set(index, value)
+                }
+              }
+              setStatuses(statusMap)
+            } catch {
+              // ignore malformed statuses
+            }
           }
         }
       } catch (e) {
@@ -703,7 +735,7 @@ function YomeicCore({ category, instanceId }: Props) {
     }
   }
 
-  
+
   function handleSetMode(mode: DisplayMode) {
     setAndPersistMode(mode)
     setIsSettingsOpen(false)
@@ -760,30 +792,111 @@ function YomeicCore({ category, instanceId }: Props) {
     }
   }
 
-  // Global keyboard shortcut to open settings
+  // Global keyboard shortcuts - instance-aware
   useEffect(() => {
-    if (isHidden || !isMounted) return
+    if (isHidden || !isMounted || openIssueIndex !== null) return
 
     function onKeyDown(e: KeyboardEvent) {
-      // Only trigger if not typing in an input/textarea and settings not already open
+      // Only trigger if not typing in an input/textarea
       const target = e.target as HTMLElement
       if (
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
-        target.isContentEditable ||
-        isSettingsOpen
+        target.isContentEditable
       ) {
         return
       }
 
-      // Open settings with 's' or '?' key
-      if (e.key === 's' || e.key === 'S' || e.key === '?') {
-        // Don't trigger if modifier keys are pressed (to avoid conflicts)
-        if (e.metaKey || e.ctrlKey || e.altKey) return
-        
+      // Don't trigger if modifier keys are pressed (except for specific shortcuts)
+      const hasModifier = e.metaKey || e.ctrlKey || e.altKey
+
+      // Check if this is the target instance for 's' key
+      // Only open settings if:
+      // 1. Panel is focused (mouse is over it) OR
+      // 2. This is the only visible instance
+      const panelElement = panelRef.current
+      const isPanelHovered = panelElement?.matches(':hover')
+      const isPanelFocused = panelElement?.contains(document.activeElement)
+
+      // Simple heuristic: only handle 's' if this instance is being interacted with
+      const shouldHandleShortcut = isPanelHovered || isPanelFocused
+
+      // Open settings with 's' key (only if this instance should handle it)
+      if ((e.key === 's' || e.key === 'S') && !hasModifier && shouldHandleShortcut) {
         e.preventDefault()
         e.stopPropagation()
         setIsSettingsOpen(true)
+        return
+      }
+
+      // Show keyboard help with '?' key (global, not instance-specific)
+      if (e.key === '?' && !hasModifier) {
+        e.preventDefault()
+        e.stopPropagation()
+        setShowKeyboardHelp(true)
+        return
+      }
+
+      // Search with '/' key - only if there are more than MAX_VISIBLE_ITEMS and this instance is active
+      if (e.key === '/' && !hasModifier && categoryData && categoryData.items.length > MAX_VISIBLE_ITEMS && shouldHandleShortcut) {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsSearchOpen(true)
+        // Focus search input after it appears
+        setTimeout(() => {
+          const searchInput = document.querySelector('[data-yomeic-search]') as HTMLInputElement
+          if (searchInput) searchInput.focus()
+        }, 0)
+        return
+      }
+
+      // Escape to close this instance's modals
+      if (e.key === 'Escape' && !hasModifier) {
+        if (isSettingsOpen) {
+          setIsSettingsOpen(false)
+          return
+        }
+        if (showKeyboardHelp) {
+          setShowKeyboardHelp(false)
+          return
+        }
+        if (isSearchOpen) {
+          setIsSearchOpen(false)
+          setSearchQuery('')
+          return
+        }
+      }
+
+      // Export with Ctrl+E / Cmd+E - instance specific
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e' && shouldHandleShortcut) {
+        e.preventDefault()
+        e.stopPropagation()
+        exportConfig()
+        return
+      }
+
+      // Import with Ctrl+I / Cmd+I - instance specific
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i' && shouldHandleShortcut) {
+        e.preventDefault()
+        e.stopPropagation()
+        importConfig()
+        return
+      }
+
+      // Toggle lines with 'l' - instance specific
+      if (e.key === 'l' && !hasModifier && shouldHandleShortcut) {
+        e.preventDefault()
+        e.stopPropagation()
+        handleToggleLines()
+        return
+      }
+
+      // Toggle badges with 'b' - instance specific
+      if (e.key === 'b' && !hasModifier && shouldHandleShortcut) {
+        e.preventDefault()
+        e.stopPropagation()
+        handleToggleBadges()
+        return
       }
     }
 
@@ -791,7 +904,25 @@ function YomeicCore({ category, instanceId }: Props) {
     return () => {
       document.removeEventListener('keydown', onKeyDown)
     }
-  }, [isHidden, isMounted, isSettingsOpen])
+  }, [isHidden, isMounted, isSettingsOpen, showKeyboardHelp, searchQuery, openIssueIndex, displayMode, handleToggleLines, handleToggleBadges, isSearchOpen, categoryData])
+
+  // Close issue view on Escape
+  useEffect(() => {
+    if (openIssueIndex === null) return
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        e.stopPropagation()
+        setOpenIssueIndex(null)
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [openIssueIndex])
 
   // Settings menu keyboard accessibility
   useEffect(() => {
@@ -873,6 +1004,128 @@ function YomeicCore({ category, instanceId }: Props) {
     const next = connections.filter((c) => c.todoIndex !== idx)
     setConnections(next)
     localStorage.setItem(keys.con, JSON.stringify(next))
+    showToast('Connection removed', 'info')
+  }
+
+  function exportConfig() {
+    try {
+      const config = {
+        position: pos,
+        displayMode,
+        connections,
+        statuses: Object.fromEntries(statuses),
+        showLines,
+        showBadges,
+        lineColor,
+        lineOpacity,
+        componentOpacity,
+        exportedAt: new Date().toISOString(),
+      }
+      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `yomeic-${instanceKey}-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      showToast('Configuration exported', 'success')
+    } catch (e) {
+      console.error('Export error', e)
+      showToast('Failed to export', 'error')
+    }
+  }
+
+  function importConfig() {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'application/json'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        try {
+          const config = JSON.parse(e.target?.result as string)
+          if (config.position) setPos(config.position)
+          if (config.displayMode) setAndPersistMode(config.displayMode)
+          if (config.connections) {
+            setConnections(config.connections)
+            localStorage.setItem(keys.con, JSON.stringify(config.connections))
+          }
+          if (config.statuses) {
+            const statusMap = new Map<number, TodoStatus>()
+            for (const [key, value] of Object.entries(config.statuses)) {
+              const index = parseInt(key, 10)
+              if (!isNaN(index) && (value === 'todo' || value === 'working' || value === 'done')) {
+                statusMap.set(index, value as TodoStatus)
+              }
+            }
+            setStatuses(statusMap)
+            localStorage.setItem(keys.statuses, JSON.stringify(config.statuses))
+          }
+          if (config.showLines !== undefined) {
+            setShowLines(config.showLines)
+            localStorage.setItem(keys.lines, JSON.stringify(config.showLines))
+          }
+          if (config.showBadges !== undefined) {
+            setShowBadges(config.showBadges)
+            localStorage.setItem(keys.badges, JSON.stringify(config.showBadges))
+          }
+          if (config.lineColor) {
+            setLineColor(config.lineColor)
+            localStorage.setItem(keys.lineColor, JSON.stringify(config.lineColor))
+          }
+          if (config.lineOpacity !== undefined) {
+            setLineOpacity(config.lineOpacity)
+            localStorage.setItem(keys.lineOpacity, JSON.stringify(config.lineOpacity))
+          }
+          if (config.componentOpacity !== undefined) {
+            setComponentOpacity(config.componentOpacity)
+            localStorage.setItem(keys.componentOpacity, JSON.stringify(config.componentOpacity))
+          }
+          showToast('Configuration imported', 'success')
+        } catch (e) {
+          console.error('Import error', e)
+          showToast('Failed to import configuration', 'error')
+        }
+      }
+      reader.readAsText(file)
+    }
+    input.click()
+  }
+
+  function showToast(message: string, type: 'success' | 'info' | 'error' = 'info') {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
+  function setItemStatus(index: number, status: TodoStatus) {
+    setStatuses((prev) => {
+      const next = new Map(prev)
+      next.set(index, status)
+
+      // Persist to localStorage
+      try {
+        const statusObj: Record<string, TodoStatus> = {}
+        for (const [idx, stat] of Array.from(next.entries())) {
+          statusObj[idx.toString()] = stat
+        }
+        localStorage.setItem(keys.statuses, JSON.stringify(statusObj))
+        showToast(`Status set to ${status}`, 'success')
+      } catch (e) {
+        console.error('Yomeic status write error', e)
+        showToast('Failed to save status', 'error')
+      }
+
+      return next
+    })
+  }
+
+  function getItemStatus(index: number): TodoStatus {
+    return statuses.get(index) || 'todo'
   }
 
   /* -------------------------------------------------------------------------- */
@@ -881,23 +1134,23 @@ function YomeicCore({ category, instanceId }: Props) {
 
   function renderLines() {
     if (!isMounted) return null
-    
+
     // Render preview line when in freeroam mode
     const previewLine = selectingIndex !== null && isFreeroam && previewPosition ? (() => {
       const el = todoRefs.current.get(selectingIndex)
       if (!el || !document.body.contains(el)) return null
-      
+
       const rect = el.getBoundingClientRect()
       const start = {
         x: rect.right,
         y: rect.top + rect.height / 2,
       }
       const d = calculateBezier(start, previewPosition)
-      
+
       return (
         <g key="preview-freeroam">
-          <path 
-            d={d} 
+          <path
+            d={d}
             stroke={theme.colors.freeroam}
             strokeWidth="2"
             fill="none"
@@ -913,7 +1166,7 @@ function YomeicCore({ category, instanceId }: Props) {
         </g>
       )
     })() : null
-    
+
     return createPortal(
       <svg
         style={{
@@ -935,7 +1188,7 @@ function YomeicCore({ category, instanceId }: Props) {
         {connections.map((conn) => {
           const el = todoRefs.current.get(conn.todoIndex)
           if (!el || !document.body.contains(el)) return null
-          
+
           const rect = el.getBoundingClientRect()
           const start = {
             x: rect.right,
@@ -965,8 +1218,8 @@ function YomeicCore({ category, instanceId }: Props) {
 
           return (
             <g key={key}>
-              <path 
-                d={d} 
+              <path
+                d={d}
                 stroke={strokeColor}
                 strokeWidth="2"
                 fill="none"
@@ -1018,16 +1271,31 @@ function YomeicCore({ category, instanceId }: Props) {
     )
   }
 
+  const maxItemsForMode = displayMode === 'compact' ? 1 : MAX_VISIBLE_ITEMS
+
+  // Filter items by search query - must be called before any early returns
+  const filteredItems = useMemo(() => {
+    if (!categoryData) return []
+    if (!searchQuery.trim()) return categoryData.items
+    const query = searchQuery.toLowerCase()
+    return categoryData.items.filter((item) =>
+      item.text.toLowerCase().includes(query) ||
+      item.action?.toLowerCase().includes(query) ||
+      item.info?.toLowerCase().includes(query) ||
+      item.description?.toLowerCase().includes(query) ||
+      item.tags?.some(tag => tag.toLowerCase().includes(query))
+    )
+  }, [categoryData, searchQuery])
+
+  // Early returns after all hooks
   if (!categoryData || !isMounted) return null
 
   if (isHidden) return null
 
-  const maxItemsForMode = displayMode === 'compact' ? 1 : MAX_VISIBLE_ITEMS
-
-  const itemsToRender = isExpanded 
-    ? categoryData.items 
-    : categoryData.items.slice(0, maxItemsForMode)
-  const hasMore = categoryData.items.length > maxItemsForMode
+  const itemsToRender = isExpanded
+    ? filteredItems
+    : filteredItems.slice(0, maxItemsForMode)
+  const hasMore = filteredItems.length > maxItemsForMode
   const primaryItem = categoryData.items[0]
   const shouldRenderLines = showLines && !isHidden
 
@@ -1037,11 +1305,50 @@ function YomeicCore({ category, instanceId }: Props) {
         @keyframes yomeic-dash {
           to { stroke-dashoffset: -100; }
         }
+        @keyframes yomeic-toast-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes yomeic-toast-out {
+          from {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+        }
+        @keyframes yomeic-slide-in {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
         .yomeic-target-hover {
-          outline: 2px solid ${theme.colors.primary} !important;
+          outline: 2px solid hsl(var(--primary)) !important;
           outline-offset: 2px;
-          background-color: ${theme.colors.primaryDim} !important;
+          background-color: hsl(var(--primary) / 0.1) !important;
           cursor: crosshair !important;
+        }
+        .yomeic-toast {
+          animation: yomeic-toast-in 0.2s ease-out;
+        }
+        .yomeic-toast-exit {
+          animation: yomeic-toast-out 0.2s ease-in;
+        }
+        .yomeic-issue-panel {
+          animation: yomeic-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
       `}</style>
 
@@ -1060,7 +1367,7 @@ function YomeicCore({ category, instanceId }: Props) {
               inset: 0,
               zIndex: theme.z.overlay,
               // Must be none to let clicks hit the DOM
-              pointerEvents: 'none', 
+              pointerEvents: 'none',
               cursor: 'crosshair', // This won't show if pointerEvents is none, but that's acceptable tradeoff
             }}
           />,
@@ -1070,15 +1377,12 @@ function YomeicCore({ category, instanceId }: Props) {
       {/* Panel */}
       <div
         ref={panelRef}
-        className={`${styles.panel} ${
-          displayMode === 'compact' ? 'w-72 px-3 pb-3 pt-0 gap-1 text-xs' : ''
-        } ${
-          displayMode === 'minimal'
+        className={`${styles.panel} ${displayMode === 'compact' ? 'w-72 px-3 pb-3 pt-0 gap-1 text-xs' : ''
+          } ${displayMode === 'minimal'
             ? 'w-auto h-auto p-0 border-none bg-transparent shadow-none'
             : ''
-        } ${
-          displayMode === 'full' ? 'px-3 pb-3 pt-0' : ''
-        }`}
+          } ${displayMode === 'full' ? 'px-3 pb-3 pt-0' : ''
+          }`}
         style={{
           left: pos.x,
           top: pos.y,
@@ -1101,7 +1405,7 @@ function YomeicCore({ category, instanceId }: Props) {
               }}
               className="relative flex h-9 w-9 items-center justify-center rounded-md border border-zinc-800 bg-zinc-950/90 text-[9px] font-mono text-zinc-200 shadow-lg"
             >
-              <span className="truncate max-w-[1.75rem]">
+              <span className="truncate max-w-7">
                 {(categoryData.displayName || category).slice(0, 2)}
               </span>
               <span className="absolute -top-1 -right-1 h-4 min-w-[1.1rem] rounded-full bg-blue-600 text-[9px] leading-4 text-center text-white px-1">
@@ -1111,7 +1415,7 @@ function YomeicCore({ category, instanceId }: Props) {
 
             {primaryItem && (
               <div
-                className="absolute left-full top-1/2 ml-2 -translate-y-1/2 hidden group-hover:block rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-200 shadow-xl min-w-[10rem] max-w-xs"
+                className="absolute left-full top-1/2 ml-2 -translate-y-1/2 hidden group-hover:block rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-zinc-200 shadow-xl min-w-40 max-w-xs"
               >
                 <div className="mb-1 text-[10px] font-mono uppercase tracking-wide text-zinc-500">
                   Next task
@@ -1122,20 +1426,48 @@ function YomeicCore({ category, instanceId }: Props) {
           </div>
         ) : (
           <>
-            <div 
-              className={`${styles.header} relative`} 
+            <div
+              className={`${styles.header} relative w-full`}
               onMouseDown={startDrag}
               style={{
                 cursor: isDragging ? 'grabbing' : 'grab',
               }}
             >
-              <span className="text-[11px] font-mono truncate opacity-80">
-                {categoryData.displayName || category}
-              </span>
-              <div
-                className="flex items-center gap-1"
-                onMouseDown={(e) => e.stopPropagation()}
-              >
+              <div className="flex items-center justify-between w-full min-w-0">
+                <span className="text-[11px] font-mono truncate opacity-80 flex-1">
+                  {categoryData.displayName || category}
+                </span>
+                <div
+                  className="flex items-center gap-1 shrink-0"
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                {/* Search Icon - only show if more than MAX_VISIBLE_ITEMS */}
+                {categoryData.items.length > MAX_VISIBLE_ITEMS && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsSearchOpen((open) => !open)
+                      if (!isSearchOpen) {
+                        // Focus search input after it appears
+                        setTimeout(() => {
+                          const searchInput = document.querySelector('[data-yomeic-search]') as HTMLInputElement
+                          if (searchInput) searchInput.focus()
+                        }, 0)
+                      } else {
+                        setSearchQuery('')
+                      }
+                    }}
+                    className={`relative p-1 text-xs transition-colors ${isSearchOpen
+                      ? 'opacity-100 text-blue-400'
+                      : 'opacity-60 hover:opacity-100 hover:text-white'
+                      }`}
+                    aria-label="Toggle search"
+                    title="Search items (/)"
+                  >
+                    🔍
+                    <span className="absolute -top-0.5 -right-0.5 text-[8px] font-mono opacity-40">/</span>
+                  </button>
+                )}
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
@@ -1150,22 +1482,20 @@ function YomeicCore({ category, instanceId }: Props) {
                 </button>
                 {isSettingsOpen && (
                   <div
-                    className="absolute right-0 top-full mt-2 w-56 rounded-md border border-zinc-800 bg-zinc-950 py-1 text-xs text-zinc-200 shadow-xl z-[60]"
+                    className="absolute right-0 top-full mt-2 w-56 rounded-md border border-zinc-800 bg-zinc-950 py-1 text-xs text-zinc-200 shadow-xl z-60"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
-                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left hover:bg-white/5 ${
-                        displayMode === 'full' ? 'text-white' : ''
-                      }`}
+                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left hover:bg-white/5 ${displayMode === 'full' ? 'text-white' : ''
+                        }`}
                       onClick={() => handleSetMode('full')}
                     >
                       <span>Full panel</span>
                       <span className="text-[10px] opacity-50 font-mono">1</span>
                     </button>
                     <button
-                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left hover:bg-white/5 ${
-                        displayMode === 'compact' ? 'text-white' : ''
-                      }`}
+                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left hover:bg-white/5 ${displayMode === 'compact' ? 'text-white' : ''
+                        }`}
                       onClick={() => handleSetMode('compact')}
                     >
                       <span>Compact panel</span>
@@ -1201,18 +1531,17 @@ function YomeicCore({ category, instanceId }: Props) {
                       <div className="mb-1.5 text-[10px] opacity-60">Line color</div>
                       <div className="flex gap-1.5">
                         {[
-                          { color: theme.colors.primary, label: 'Blue' },
-                          { color: theme.colors.freeroam, label: 'Purple' },
-                          { color: 'rgb(34, 197, 94)', label: 'Green' },
-                          { color: 'rgb(239, 68, 68)', label: 'Red' },
-                          { color: 'rgb(234, 179, 8)', label: 'Yellow' },
+                          { color: 'hsl(var(--primary))', label: 'Primary' },
+                          { color: 'hsl(var(--accent))', label: 'Accent' },
+                          { color: 'hsl(var(--muted-foreground))', label: 'Muted' },
+                          { color: 'hsl(var(--destructive))', label: 'Destructive' },
+                          { color: 'hsl(var(--border))', label: 'Border' },
                         ].map(({ color, label }) => (
                           <button
                             key={color}
                             onClick={() => handleSetLineColor(color)}
-                            className={`h-5 w-5 rounded border-2 transition-all ${
-                              lineColor === color ? 'border-white scale-110' : 'border-zinc-700 hover:border-zinc-600'
-                            }`}
+                            className={`h-5 w-5 rounded border-2 transition-all ${lineColor === color ? 'border-foreground scale-110' : 'border-border hover:border-muted-foreground'
+                              }`}
                             style={{ backgroundColor: color }}
                             title={label}
                             aria-label={`Set line color to ${label}`}
@@ -1255,6 +1584,21 @@ function YomeicCore({ category, instanceId }: Props) {
                     </div>
                     <div className="my-1 border-t border-zinc-800" />
                     <button
+                      className="flex w-full items-center justify-between px-3 py-1.5 text-left hover:bg-white/5"
+                      onClick={exportConfig}
+                    >
+                      <span>Export configuration</span>
+                      <span className="text-[10px] opacity-50 font-mono">Ctrl+E</span>
+                    </button>
+                    <button
+                      className="flex w-full items-center justify-between px-3 py-1.5 text-left hover:bg-white/5"
+                      onClick={importConfig}
+                    >
+                      <span>Import configuration</span>
+                      <span className="text-[10px] opacity-50 font-mono">Ctrl+I</span>
+                    </button>
+                    <div className="my-1 border-t border-zinc-800" />
+                    <button
                       className="flex w-full items-center justify-between px-3 py-1.5 text-left text-red-400 hover:bg-red-500/10"
                       onClick={handleHide}
                     >
@@ -1267,15 +1611,55 @@ function YomeicCore({ category, instanceId }: Props) {
             </div>
 
             <div
-              className={`flex flex-col ${
-                displayMode === 'compact' ? 'gap-0.5' : 'gap-1'
-              }`}
+              className={`flex flex-col ${displayMode === 'compact' ? 'gap-0.5' : 'gap-1'
+                }`}
             >
+              {/* Search Input - only show when toggled and if more than MAX_VISIBLE_ITEMS */}
+              {isSearchOpen && categoryData.items.length > MAX_VISIBLE_ITEMS && (displayMode === 'full' || displayMode === 'compact') && (
+                <div className="relative px-3 pb-2 border-b border-zinc-800">
+                  <input
+                    data-yomeic-search
+                    type="text"
+                    placeholder="Search items..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setIsSearchOpen(false)
+                        setSearchQuery('')
+                      }
+                    }}
+                    className="w-full px-2 py-1.5 text-xs font-mono bg-zinc-900 border border-zinc-800 rounded text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-blue-500 transition-colors"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('')
+                        setIsSearchOpen(false)
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 text-xs"
+                    >
+                      ✕
+                    </button>
+                  )}
+                  {searchQuery && (
+                    <div className="absolute left-3 top-full mt-1 text-[10px] text-zinc-500 font-mono">
+                      {filteredItems.length} result{filteredItems.length !== 1 ? 's' : ''}
+                    </div>
+                  )}
+                </div>
+              )}
               {itemsToRender.map((item, idx) => {
-                const originalIndex = idx; 
-                
+                const originalIndex = idx;
+
                 const hasConn = connections.find((c) => c.todoIndex === originalIndex)
                 const isSelecting = selectingIndex === originalIndex
+                const currentStatus = getItemStatus(originalIndex)
+                const statusColors = {
+                  todo: 'text-foreground/50',
+                  working: 'text-foreground',
+                  done: 'text-foreground/80',
+                }
 
                 return (
                   <div
@@ -1287,30 +1671,67 @@ function YomeicCore({ category, instanceId }: Props) {
                       e.preventDefault()
                       setSelectingIndex(originalIndex)
                     }}
+                    onDoubleClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setOpenIssueIndex(originalIndex)
+                    }}
                     className={`${styles.item} 
                       ${isSelecting ? 'ring-1 ring-blue-500 bg-blue-500/10' : ''}
-                      ${item.info ? 'cursor-help' : ''} group`}
+                      ${item.info ? 'cursor-help' : 'cursor-pointer'}
+                      ${currentStatus === 'done' ? 'opacity-60' : ''}
+                      group`}
                   >
+                    {/* Status Toggle */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          const nextStatus: TodoStatus =
+                            currentStatus === 'todo' ? 'working' :
+                              currentStatus === 'working' ? 'done' : 'todo'
+                          setItemStatus(originalIndex, nextStatus)
+                        }}
+                        className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${currentStatus === 'done'
+                          ? 'border-border bg-background'
+                          : currentStatus === 'working'
+                            ? 'border-primary bg-primary/20'
+                            : 'border-border hover:border-foreground/50'
+                          }`}
+                        title={`Status: ${currentStatus} (click to cycle)`}
+                      >
+                        {currentStatus === 'done' && (
+                          <span className="text-[10px] text-foreground">✓</span>
+                        )}
+                        {currentStatus === 'working' && (
+                          <span className="text-[8px] text-primary">⟳</span>
+                        )}
+                      </button>
+                    </div>
+
                     {item.action && showBadges && (
                       <span className={styles.badge}>{item.action}</span>
                     )}
-                    <span className="flex-1 truncate opacity-90 min-w-0 text-sm font-mono">
+                    <span className={`flex-1 truncate min-w-0 text-sm font-mono ${statusColors[currentStatus]}`}>
                       {item.text}
                     </span>
                     {hasConn && (
                       <button
-                        onClick={() => removeConnection(originalIndex)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          removeConnection(originalIndex)
+                        }}
                         className="shrink-0 text-xs opacity-50 hover:text-red-400 hover:opacity-100 px-1"
                       >
                         ✕
                       </button>
                     )}
-                    
+
                     {item.info && (
                       <div
                         className="absolute left-0 top-full mt-2 hidden w-64 p-3
                         z-50 rounded border border-zinc-700 bg-zinc-900
-                        text-xs text-zinc-300 shadow-xl group-hover:block whitespace-normal break-words"
+                        text-xs text-zinc-300 shadow-xl group-hover:block whitespace-normal wrap-break-word"
                       >
                         {item.info}
                       </div>
@@ -1318,20 +1739,329 @@ function YomeicCore({ category, instanceId }: Props) {
                   </div>
                 )
               })}
-              
+
               {hasMore && (
-                 <button
+                <button
                   onClick={toggleViewMore}
                   className={`w-full text-center text-[10px] uppercase tracking-widest py-1
-                    ${theme.colors.textDim} hover:text-zinc-300 transition-colors border-t border-zinc-800/50 mt-1`}
+                    text-muted-foreground hover:text-foreground/80 transition-colors border-t border-border mt-1`}
                 >
                   {isExpanded ? 'Show Less' : `View ${categoryData.items.length - maxItemsForMode} More`}
                 </button>
               )}
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
+    </div>
+
+      {/* Detailed Issue View - Slide-in Panel */}
+      {openIssueIndex !== null && categoryData && (
+        createPortal(
+          <>
+            {/* Subtle backdrop - no blur to feel less isolated */}
+            <div
+              className="fixed inset-0 z-9998"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              }}
+              onClick={() => setOpenIssueIndex(null)}
+            />
+            {/* Slide-in panel from right */}
+            <div
+              className="yomeic-issue-panel fixed right-0 top-0 bottom-0 w-full max-w-lg z-10000 bg-zinc-950 border-l border-zinc-800 shadow-2xl overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-zinc-950/95 backdrop-blur-sm border-b border-zinc-800/50 px-6 py-4 flex items-center justify-between z-10">
+                <div className="flex items-center gap-2.5">
+                  <button
+                    onClick={() => {
+                      const currentStatus = getItemStatus(openIssueIndex)
+                      const nextStatus: TodoStatus =
+                        currentStatus === 'todo' ? 'working' :
+                          currentStatus === 'working' ? 'done' : 'todo'
+                      setItemStatus(openIssueIndex, nextStatus)
+                    }}
+                    className={`px-2.5 py-1 rounded text-[10px] font-mono transition-all ${getItemStatus(openIssueIndex) === 'done'
+                      ? 'bg-muted text-foreground'
+                      : getItemStatus(openIssueIndex) === 'working'
+                        ? 'bg-primary/20 text-primary'
+                        : 'bg-muted text-foreground/70 hover:bg-muted/80'
+                      }`}
+                  >
+                    {getItemStatus(openIssueIndex).toUpperCase()}
+                  </button>
+                  {categoryData.items[openIssueIndex]?.action && (
+                    <span className={styles.badge}>
+                      {categoryData.items[openIssueIndex].action}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => setOpenIssueIndex(null)}
+                  className="p-1.5 hover:bg-white/5 rounded transition-colors text-zinc-400 hover:text-white"
+                  aria-label="Close"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="px-6 py-6 space-y-6">
+                {/* Title - prominent */}
+                <div>
+                  <h2 className="text-2xl font-mono font-semibold text-gray-100 mb-3 leading-tight">
+                    {categoryData.items[openIssueIndex].text}
+                  </h2>
+                  {categoryData.items[openIssueIndex].description && (
+                    <p className="text-sm text-zinc-300 leading-relaxed whitespace-pre-wrap">
+                      {categoryData.items[openIssueIndex].description}
+                    </p>
+                  )}
+                </div>
+
+                {/* Info - inline style, no borders */}
+                {categoryData.items[openIssueIndex].info && (
+                  <div className="bg-zinc-900/40 rounded-lg p-4">
+                    <p className="text-sm text-zinc-200 leading-relaxed">
+                      {categoryData.items[openIssueIndex].info}
+                    </p>
+                  </div>
+                )}
+
+                {/* Notes - inline style */}
+                {categoryData.items[openIssueIndex].notes && (
+                  <div className="bg-zinc-900/40 rounded-lg p-4">
+                    <p className="text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                      {categoryData.items[openIssueIndex].notes}
+                    </p>
+                  </div>
+                )}
+
+                {/* Priority & Tags - compact inline */}
+                {(categoryData.items[openIssueIndex].priority || categoryData.items[openIssueIndex].tags) && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    {categoryData.items[openIssueIndex].priority && (
+                      <span className={`px-2.5 py-1 rounded text-xs font-mono ${categoryData.items[openIssueIndex].priority === 'high'
+                        ? 'bg-destructive/20 text-destructive'
+                        : categoryData.items[openIssueIndex].priority === 'medium'
+                          ? 'bg-primary/20 text-primary'
+                          : 'bg-muted text-foreground'
+                        }`}>
+                        {categoryData.items[openIssueIndex].priority?.toUpperCase() || ''}
+                      </span>
+                    )}
+                    {categoryData.items[openIssueIndex].tags && categoryData.items[openIssueIndex].tags!.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-2.5 py-1 rounded text-xs font-mono bg-zinc-800/60 text-zinc-300"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Connections - inline badge style */}
+                {connections.find((c) => c.todoIndex === openIssueIndex) && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-zinc-500 font-mono">Connected:</span>
+                    {(() => {
+                      const conn = connections.find((c) => c.todoIndex === openIssueIndex)!
+                      if (conn.targetLabel) {
+                        return <span className="px-2.5 py-1 rounded text-xs font-mono bg-blue-500/20 text-blue-400">{conn.targetLabel}</span>
+                      } else if (conn.targetPosition) {
+                        return <span className="px-2.5 py-1 rounded text-xs font-mono bg-purple-500/20 text-purple-400">Freeroam</span>
+                      }
+                      return null
+                    })()}
+                  </div>
+                )}
+
+                {/* Dynamic Metadata - more interesting format */}
+                {(categoryData.items[openIssueIndex].createdAt || categoryData.items[openIssueIndex].updatedAt) && (
+                  <div className="flex items-center gap-4 text-[10px] text-zinc-500 font-mono">
+                    {categoryData.items[openIssueIndex].createdAt && (
+                      <div>
+                        <span className="opacity-60">Created</span>{' '}
+                        <span className="text-zinc-400">
+                          {new Date(categoryData.items[openIssueIndex].createdAt!).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    {categoryData.items[openIssueIndex].updatedAt && (
+                      <div>
+                        <span className="opacity-60">Updated</span>{' '}
+                        <span className="text-zinc-400">
+                          {new Date(categoryData.items[openIssueIndex].updatedAt!).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Actions - floating at bottom */}
+                <div className="sticky bottom-0 pt-4 pb-2 flex gap-2 bg-zinc-950/95 backdrop-blur-sm">
+                  <button
+                    onClick={() => {
+                      setSelectingIndex(openIssueIndex)
+                      setOpenIssueIndex(null)
+                    }}
+                    className="flex-1 px-4 py-2 rounded border border-zinc-700 bg-zinc-900 text-xs font-mono text-zinc-300 hover:bg-zinc-800 transition-colors"
+                  >
+                    Connect
+                  </button>
+                  {connections.find((c) => c.todoIndex === openIssueIndex) && (
+                    <button
+                      onClick={() => {
+                        removeConnection(openIssueIndex)
+                      }}
+                      className="px-4 py-2 rounded border border-red-500/30 bg-red-500/10 text-xs font-mono text-red-400 hover:bg-red-500/20 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>,
+          document.body
+        )
+      )}
+
+      {/* Toast Notifications */}
+      {toast && createPortal(
+        <div
+          className={`fixed top-4 right-4 z-10001 px-4 py-3 rounded-lg border shadow-xl font-mono text-sm transition-all ${toast.type === 'success'
+            ? 'bg-muted border-border text-foreground'
+            : toast.type === 'error'
+              ? 'bg-destructive/10 border-destructive/30 text-destructive'
+              : 'bg-primary/10 border-primary/30 text-primary'
+            } yomeic-toast`}
+        >
+          {toast.message}
+        </div>,
+        document.body
+      )}
+
+      {/* Keyboard Help Overlay */}
+      {showKeyboardHelp && createPortal(
+        <div
+          className="fixed inset-0 z-10002 flex items-center justify-center p-4"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backdropFilter: 'blur(4px)',
+          }}
+          onClick={() => setShowKeyboardHelp(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-lg border border-zinc-800 bg-zinc-950 shadow-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 flex items-center justify-between border-b border-zinc-800 px-6 py-4 bg-zinc-950">
+              <h2 className="text-lg font-mono font-semibold text-gray-200">Keyboard Shortcuts</h2>
+              <button
+                onClick={() => setShowKeyboardHelp(false)}
+                className="p-2 hover:bg-white/5 rounded transition-colors text-zinc-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <h3 className="text-sm font-mono font-semibold text-zinc-300 mb-2">Navigation</h3>
+                <div className="space-y-1.5 text-xs font-mono">
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Open settings</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">s</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Show keyboard help</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">?</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Search items</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">/</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Close modals</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">Esc</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-mono font-semibold text-zinc-300 mb-2">Display Modes</h3>
+                <div className="space-y-1.5 text-xs font-mono">
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Full panel</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">1</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Compact panel</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">2</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Minimal dot</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">3</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-mono font-semibold text-zinc-300 mb-2">Actions</h3>
+                <div className="space-y-1.5 text-xs font-mono">
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Toggle connection lines</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">l</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Toggle badges</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">b</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Hide component</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">d</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-mono font-semibold text-zinc-300 mb-2">Data Management</h3>
+                <div className="space-y-1.5 text-xs font-mono">
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Export configuration</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">Ctrl+E</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Import configuration</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">Ctrl+I</kbd>
+                  </div>
+                  <div className="flex justify-between items-center py-1 border-b border-zinc-800/50">
+                    <span className="text-zinc-400">Undo last action</span>
+                    <kbd className="px-2 py-1 bg-zinc-900 border border-zinc-700 rounded text-zinc-300">Ctrl+Z</kbd>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-mono font-semibold text-zinc-300 mb-2">Interactions</h3>
+                <div className="space-y-1.5 text-xs font-mono text-zinc-400">
+                  <div className="py-1 border-b border-zinc-800/50">Right-click item to connect</div>
+                  <div className="py-1 border-b border-zinc-800/50">Double-click item to view details</div>
+                  <div className="py-1 border-b border-zinc-800/50">Click status to cycle (todo → working → done)</div>
+                  <div className="py-1 border-b border-zinc-800/50">Drag connection point to edit</div>
+                  <div className="py-1">Double-click connection point to remove</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   )
 }
