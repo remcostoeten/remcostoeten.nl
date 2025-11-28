@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Pause, Play } from 'lucide-react';
+import X from 'lucide-react/dist/esm/icons/x';
+import Pause from 'lucide-react/dist/esm/icons/pause';
+import Play from 'lucide-react/dist/esm/icons/play';
 
 interface TimerControlsProps {
   onHideTimer: () => void;
