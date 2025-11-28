@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { siteConfig } from '@/lib/config'
+import { siteConfig } from '@/core/config'
 
 export function GET(request: Request) {
     let url = new URL(request.url)

@@ -1,5 +1,5 @@
 import { getBlogPosts } from '@/modules/blog/queries'
-import { baseUrl, siteConfig } from '@/lib/config'
+import { baseUrl, siteConfig } from '@/core/config'
 
 export async function GET() {
     const allBlogs = await getBlogPosts()
