@@ -1,6 +1,6 @@
 import { BlogPosts } from '@/modules/blog/components'
 import { getBlogPosts } from '@/modules/blog/queries'
-import { baseUrl, siteConfig } from '@/lib/config'
+import { baseUrl, siteConfig } from '@/core/config'
 import { Yomeic } from '@/_dev/_yomeic'
 import type { Metadata } from 'next'
 

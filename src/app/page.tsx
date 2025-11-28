@@ -1,6 +1,6 @@
 import { BlogPosts } from '@/modules/blog/components'
-import { Yomeic } from '@/_dev/_yomeic'
-import { baseUrl, siteConfig } from '@/lib/config'
+import { LatestActivity } from '@/modules/activity/components/activity'
+import { baseUrl, siteConfig } from '@/core/config'
 
 export default function Page() {
     const personSchema = {
@@ -45,9 +45,7 @@ export default function Page() {
     }
 
     return (
-        <section>
-            <Yomeic category="blog-feature" />
-            <Yomeic category="blog-post" />
+        <section suppressHydrationWarning>
             <script
                 type="application/ld+json"
                 suppressHydrationWarning
@@ -75,6 +73,11 @@ export default function Page() {
             <div className="my-8">
                 <BlogPosts />
             </div>
+
+            {/* Activity Section */}
+            <section className="py-8">
+                <LatestActivity />
+            </section>
         </section>
     )
 }

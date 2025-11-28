@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { baseUrl } from '@/lib/config'
+import { baseUrl } from '@/core/config'
 
 type item = {
     name: string

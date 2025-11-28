@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { getBlogPosts } from '@/modules/blog/queries'
-import { baseUrl } from '@/lib/config'
+import { baseUrl } from '@/core/config'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     let blogs = getBlogPosts().map(post => ({
