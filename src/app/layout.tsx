@@ -1,14 +1,16 @@
 import './global.css'
 import '@/modules/view-transitions/styles.css'
 import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
+import { Space_Grotesk } from 'next/font/google'
 import { Navbar, Footer } from '@/components/layout'
+import { SiteAnnouncementBanner } from '@/components/announcement-banner'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import { baseUrl, siteConfig } from '@/lib/config'
+import { baseUrl, siteConfig } from '@/core/config'
 import { ViewTransitionsProvider } from '@/modules/view-transitions/provider'
 import { TimezoneSection } from '@/modules/landing/timer'
+import {Providers} from '@/components/providers'
+import { ViewportIndicator } from '@/components/viewport-indicator'
 
 export const metadata: Metadata = {
     metadataBase: new URL(baseUrl),
@@ -81,17 +83,22 @@ export const metadata: Metadata = {
     }
 }
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space-grotesk',
+  display: 'swap',
+})
+
 const cx = (...classes) => classes.filter(Boolean).join(' ')
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
+        <Providers>
         <html
+
             lang="en"
-            className={cx(
-                'text-black bg-white dark:text-white dark:bg-black',
-                GeistSans.variable,
-                GeistMono.variable
-            )}
+            className={spaceGrotesk.variable}
+            suppressHydrationWarning
         >
             <head>
                 <meta
@@ -102,7 +109,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
                 <link rel="preconnect" href="https://vercel.live" crossOrigin="anonymous" />
             </head>
-            <body className="antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
+            <body className="bg-background text-foreground antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
+                <SiteAnnouncementBanner />
                 <a
                     href="#main-content"
                     className="skip-link"
@@ -118,8 +126,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         <Analytics />
                         <SpeedInsights />
                     </main>
+                    <ViewportIndicator />
                 </ViewTransitionsProvider>
             </body>
         </html>
+        </Providers>
     )
 }
