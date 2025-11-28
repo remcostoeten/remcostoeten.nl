@@ -1,7 +1,7 @@
 import { BlogPosts } from '@/modules/blog/components'
 import { getBlogPosts } from '@/modules/blog/queries'
-import { baseUrl, siteConfig } from '@/lib/config'
-import { DevTodos } from '@/components/_dev-todos'
+import { baseUrl, siteConfig } from '@/core/config'
+import { Yomeic } from '@/_dev/_yomeic'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -65,7 +65,7 @@ export default function Page() {
             />
             <h1 className="font-semibold text-2xl mb-8 tracking-tighter">Brain dumps, rants and whatever I feel like writing about..</h1>
 
-            <DevTodos category="blog-feature" />
+            <Yomeic category="blog-feature" />
 
             <BlogPosts />
         </section>
