@@ -19,6 +19,10 @@ export const metadata: Metadata = {
         template: `%s | ${siteConfig.name}`
     },
     description: siteConfig.description,
+    viewport: {
+        width: 'device-width',
+        initialScale: 1
+    },
     keywords: siteConfig.keywords,
     authors: [{ name: siteConfig.author.name, url: baseUrl }],
     creator: siteConfig.author.name,

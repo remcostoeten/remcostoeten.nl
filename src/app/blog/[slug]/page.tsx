@@ -98,6 +98,11 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
                         datePublished: post.metadata.publishedAt,
                         dateModified: post.metadata.publishedAt,
                         description: post.metadata.summary,
+                        articleBody: post.content
+                            .replace(/[#*`\[\]]/g, '')
+                            .replace(/\n+/g, ' ')
+                            .trim()
+                            .substring(0, 300) + '...',
                         image: ogImage,
                         url: canonicalUrl,
                         mainEntityOfPage: {
@@ -106,14 +111,24 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
                         },
                         author: {
                             '@type': 'Person',
-                            name: siteConfig.author.name
+                            name: siteConfig.author.name,
+                            email: siteConfig.author.email,
+                            jobTitle: siteConfig.author.jobTitle,
+                            url: baseUrl
                         },
                         publisher: {
                             '@type': 'Organization',
                             name: siteConfig.name,
                             url: baseUrl
                         },
-                        keywords: keywords?.join(', ')
+                        keywords: keywords?.join(', '),
+                        wordCount: post.content.split(' ').length,
+                        inLanguage: 'en-US',
+                        isPartOf: {
+                            '@type': 'Blog',
+                            name: `${siteConfig.name} Blog`,
+                            url: `${baseUrl}/blog`
+                        }
                     })
                 }}
             />
