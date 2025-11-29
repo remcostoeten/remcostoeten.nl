@@ -1,62 +1,36 @@
-const DEFAULT_SITE_URL = 'https://remcostoeten.nl'
-
-function normalizeUrl(url: string) {
-    if (!url) {
-        return DEFAULT_SITE_URL
-    }
-
-    const withProtocol =
-        url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`
-
-    return withProtocol.replace(/\/+$/, '')
-}
-
-const siteUrl = normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL)
+export const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://remcostoeten.nl'
 
 export const siteConfig = {
     name: 'Remco Stoeten',
-    title: 'Remco Stoeten - Frontend Engineer with a graphic design degree.',
-    description:
-        'Remco Stoeten is a software engineer focused on frontend with a degree in graphic design. Experience across multiple industries including e-commerce, government open source, SaaS and e-learning with a passion for tech and ambition to grow into a fullstack and architecture role.',
-    url: siteUrl,
+    description: 'Frontend engineer passionate about building performant web applications with modern technologies.',
+    locale: 'en-US',
+    keywords: [
+        'frontend development',
+        'React',
+        'Next.js',
+        'TypeScript',
+        'web development',
+        'performance optimization',
+        'developer tools',
+        'vim',
+        'static typing'
+    ],
     author: {
         name: 'Remco Stoeten',
+        email: 'remco@remcostoeten.nl',
         jobTitle: 'Frontend Engineer',
-        bio: 'Remco Stoeten is a software engineer focused on frontend with a degree in graphic design. Experience across multiple industries including e-commerce, government open source, SaaS and e-learning with a passion for tech and ambition to grow into a fullstack and architecture role.',
+        bio: 'Frontend engineer passionate about building performant web applications.',
         expertise: [
-            'Frontend Engineering',
-            'Graphic Design',
-            'Open Source',
-            'SaaS',
-            'Government',
-            'E-commerce',
-            'E-learning'
-        ],
-        email: 'stoeten.remco.rs@gmail.com'
+            'Frontend Development',
+            'React',
+            'Next.js',
+            'TypeScript',
+            'Web Performance'
+        ]
     },
     social: {
-        twitter: '@yowremco',
-        twitterUrl: 'https://x.com/yowremco',
-        github: 'remcostoeten',
-        githubUrl: 'https://github.com/yowremco',
-        linkedin: 'https://linkedin.com/in/yowremco'
-    },
-    keywords: [
-        'web development',
-        'software engineer',
-        'react',
-        'nextjs',
-        'typescript',
-        'web performance',
-        'frontend',
-        'engineering blog',
-        'thoughts',
-        'code snippets',
-        'technical writing'
-    ],
-    defaultOgImage: '/og?title=Remco%20Stoeten',
-    locale: 'en_US',
-    type: 'website'
+        githubUrl: 'https://github.com/remcostoeten',
+        twitterUrl: 'https://twitter.com/remcostoeten',
+        linkedin: 'https://linkedin.com/in/remcostoeten'
+    }
 }
-
-export const baseUrl = siteConfig.url

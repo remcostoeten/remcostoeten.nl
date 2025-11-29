@@ -46,7 +46,7 @@ interface SpotifyCurrentlyPlayingResponse {
     };
     preview_url?: string;
     duration_ms: number;
-  };
+  } | null;
   is_playing: boolean;
   progress_ms?: number;
 }
@@ -187,6 +187,11 @@ export async function getCurrentOrRecentMusic(): Promise<SpotifyTrack | SpotifyR
 
     const currentlyPlayingData: SpotifyCurrentlyPlayingResponse = await currentlyPlayingResponse.json();
     const track = currentlyPlayingData.item;
+
+    // If no track is currently playing (item is null), fall back to recent tracks
+    if (!track) {
+      return await getRecentMusicTracks(1).then(tracks => tracks[0] || null);
+    }
 
     const spotifyTrack: SpotifyTrack = {
       name: track.name,

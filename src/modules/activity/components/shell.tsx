@@ -45,7 +45,7 @@ export function ActivityShell({ className, githubContent, spotifyContent, isSpot
         </div>
 
         {/* Spotify Activity Row - Fixed minimum height with overflow control */}
-        <div className="flex items-start gap-3 min-h-[4rem] pt-4 border-t border-border/30 overflow-hidden">
+        <div className="flex items-start gap-3 min-h-[4rem] sm:min-h-[4rem] pt-4 border-t border-border/30 overflow-hidden">
           <h3 className="sr-only">Music Activity</h3>
 
           <div className="p-1.5 bg-green-500/10 rounded-lg flex-shrink-0">

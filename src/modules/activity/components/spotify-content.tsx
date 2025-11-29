@@ -112,13 +112,13 @@ export const SpotifyActivityContent = memo(function SpotifyActivityContent({
   const truncatedAlbum = truncateText(albumTitle, albumMaxLength)
 
   return (
-    <div className="flex-1 min-w-0 relative group w-full overflow-hidden h-full" onMouseMove={onMouseMove}>
-      <div className="text-sm text-muted-foreground leading-tight overflow-hidden flex flex-nowrap items-center gap-1">
+    <div className="flex-1 min-w-0 relative group w-full overflow-hidden h-full flex flex-col min-h-[3.5rem] sm:min-h-0" onMouseMove={onMouseMove}>
+      <div className="text-sm text-muted-foreground leading-tight overflow-hidden flex flex-wrap items-baseline gap-1 sm:flex-nowrap">
         <span className="flex-shrink-0">{statusPrefix}</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={`track-${currentTrackIndex}`}
-            className="inline-flex min-w-0 flex-nowrap gap-1 overflow-hidden"
+            className="inline-flex min-w-0 flex-wrap sm:flex-nowrap gap-1 overflow-hidden"
             initial={{ opacity: 0, y: 8, filter: "blur(2px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: -8, filter: "blur(2px)" }}
