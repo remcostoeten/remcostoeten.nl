@@ -103,7 +103,7 @@ export function Announcement({
           "max-w-full gap-2 rounded-full px-3 py-0.5 font-medium transition-all hover:shadow-md",
 
           // Appearance
-          "border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground",
+          "border-border/60 bg-background/80 supports-backdrop-filter:backdrop-blur-sm text-foreground",
           "shadow-sm shadow-emerald-500/10 w-full overflow-hidden",
 
           // Interactive states
@@ -273,7 +273,9 @@ export function AnnouncementBanner({
   const [shouldHideByScroll, setShouldHideByScroll] = React.useState(false)
   const [isClosing, setIsClosing] = React.useState(false)
   const [isScrolled, setIsScrolled] = React.useState(false)
+  const [isTransitioning, setIsTransitioning] = React.useState(false)
   const lastScrollYRef = React.useRef(0)
+  const isScrolledRef = React.useRef(false)
   const maxScrollYRef = React.useRef(0)
   const hasHiddenByPixelsRef = React.useRef(false)
   const scrollUpStartRef = React.useRef<number | null>(null)
@@ -288,23 +290,22 @@ export function AnnouncementBanner({
   }, [isVisible])
 
   React.useEffect(() => {
-    if (!hideOnScroll && !hideAfterPixels) {
-      // Still track scroll state for spacing even if hideOnScroll is false
-      function onScroll() {
-        const currentY = window.scrollY || 0
-        setIsScrolled(currentY > 50)
-      }
-      window.addEventListener("scroll", onScroll, { passive: true })
-      onScroll() // Check initial scroll state
-      return () => window.removeEventListener("scroll", onScroll)
-    }
-
-    function onScroll() {
+    const handleScroll = () => {
       const currentY = window.scrollY || 0
       const lastY = lastScrollYRef.current
 
-      // Track scroll state for spacing
-      setIsScrolled(currentY > 50)
+      // Track scroll state for spacing with transition effect
+      const newScrolled = currentY > 50
+      if (newScrolled !== isScrolledRef.current) {
+        setIsTransitioning(true)
+        setIsScrolled(newScrolled)
+        isScrolledRef.current = newScrolled
+        setTimeout(() => setIsTransitioning(false), 600)
+      }
+
+      if (!hideOnScroll && !hideAfterPixels) {
+        return // Only track scroll state for spacing
+      }
 
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
@@ -368,10 +369,10 @@ export function AnnouncementBanner({
       lastScrollYRef.current = currentY
     }
 
-    window.addEventListener("scroll", onScroll, { passive: true })
-    onScroll() // Check initial scroll state
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll() // Check initial scroll state
     return () => {
-      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("scroll", handleScroll)
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
       }
@@ -418,8 +419,7 @@ export function AnnouncementBanner({
   if (!isVisible) return null
 
   const getPositionClasses = () => {
-    // Add more top spacing when scrolled
-    const topSpacing = isScrolled ? "top-12" : "top-6"
+    const topSpacing = isScrolled ? "top-2" : "top-6"
     const positions = {
       "top-left": `${topSpacing} left-6 -translate-x-0 -translate-y-0`,
       "top-center": `${topSpacing} left-1/2 -translate-x-1/2 -translate-y-0`,
@@ -442,11 +442,14 @@ export function AnnouncementBanner({
       <div
         id={id}
         className={cn(
-          "fixed z-50 w-full px-4 sm:px-6 pointer-events-none transition-[top] duration-300 ease-out",
+          "fixed z-50 w-full px-4 sm:px-6 pointer-events-none",
           getPositionClasses(),
           className
         )}
-        style={{ contain: 'paint' }}
+        style={{
+          contain: 'paint',
+          transition: "top 600ms cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
       >
         <div
           className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit pointer-events-auto overflow-visible"

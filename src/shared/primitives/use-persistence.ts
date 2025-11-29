@@ -20,8 +20,6 @@ export interface TUsePersistenceOptions {
   showDelay?: number
   hideDelay?: number
   resetOnVisit?: boolean
-  maxDismissals?: number
-  dismissCountKey?: string
   defaultValue?: boolean
 }
 
@@ -34,8 +32,6 @@ export interface TUsePersistenceReturn {
   dismiss: () => void
   toggle: () => void
   reset: () => void
-  getDismissCount: () => number
-  canShow: () => boolean
   shouldShow: boolean
   setValue: (value: boolean) => void
   getValue: () => boolean
@@ -49,8 +45,6 @@ export function usePersistence({
   showDelay = 0,
   hideDelay = 0,
   resetOnVisit = false,
-  maxDismissals = Infinity,
-  dismissCountKey = `${id}-dismiss-count`,
   defaultValue = false
 }: TUsePersistenceOptions): TUsePersistenceReturn {
   const [isVisible, setIsVisible] = React.useState(false)
@@ -117,32 +111,10 @@ export function usePersistence({
     }
   }, [storageType, cookieOptions])
 
-  // Get dismiss count
-  const getDismissCount = React.useCallback((): number => {
-    if (!storage) return 0
-    const count = storage.getItem(dismissCountKey)
-    return count ? parseInt(count, 10) : 0
-  }, [storage, dismissCountKey])
-
-  // Increment dismiss count
-  const incrementDismissCount = React.useCallback(() => {
-    if (!storage) return
-    const currentCount = getDismissCount()
-    const newCount = currentCount + 1
-    storage.setItem(dismissCountKey, newCount.toString())
-  }, [storage, dismissCountKey, getDismissCount])
-
-  // Check if announcement can be shown
-  const canShow = React.useCallback((): boolean => {
-    const dismissCount = getDismissCount()
-    return dismissCount < maxDismissals
-  }, [getDismissCount, maxDismissals])
-
-  // Check if should show based on dismissed state and dismiss count
+  // Check if should show based on dismissed state
   const shouldShow = React.useMemo(() => {
-    if (!canShow()) return false
     return !isDismissed
-  }, [isDismissed, canShow])
+  }, [isDismissed])
 
   // Initialize dismissed state from storage
   React.useEffect(() => {
@@ -161,13 +133,12 @@ export function usePersistence({
       // Reset if it's a new day
       if (lastVisit && new Date(lastVisit).toDateString() !== new Date(now).toDateString()) {
         storage.setItem(dismissedKey, "false")
-        storage.setItem(dismissCountKey, "0")
         setIsDismissed(false)
       }
 
       storage.setItem(lastVisitKey, now)
     }
-  }, [id, storage, resetOnVisit, dismissCountKey])
+  }, [id, storage, resetOnVisit])
 
   // Auto-show logic
   React.useEffect(() => {
@@ -212,7 +183,6 @@ export function usePersistence({
     }, hideDelay)
   }, [isAnimating, hideDelay])
 
-  // Dismiss announcement (permanent hide)
   const dismiss = React.useCallback(() => {
     if (!storage) return
 
@@ -222,14 +192,14 @@ export function usePersistence({
       dismissTimeoutRef.current = setTimeout(() => {
         setIsVisible(false)
         storage.setItem(dismissedKey, "true")
-        incrementDismissCount()
+        setIsDismissed(true)
       }, hideDelay)
     } else {
       setIsVisible(false)
       storage.setItem(dismissedKey, "true")
-      incrementDismissCount()
+      setIsDismissed(true)
     }
-  }, [storage, id, hideDelay, incrementDismissCount])
+  }, [storage, id, hideDelay])
 
   // Toggle visibility
   const toggle = React.useCallback(() => {
@@ -246,7 +216,6 @@ export function usePersistence({
 
     const dismissedKey = `${id}-dismissed`
     storage.setItem(dismissedKey, "false")
-    storage.setItem(dismissCountKey, "0")
     setIsDismissed(false)
     setIsVisible(false)
     setIsAnimating(false)
@@ -258,7 +227,7 @@ export function usePersistence({
     if (showTimeoutRef.current) {
       clearTimeout(showTimeoutRef.current)
     }
-  }, [storage, id, dismissCountKey])
+  }, [storage, id])
 
   // Cleanup timeouts on unmount
   React.useEffect(() => {
@@ -294,8 +263,6 @@ export function usePersistence({
     dismiss,
     toggle,
     reset,
-    getDismissCount,
-    canShow,
     shouldShow,
     setValue,
     getValue

@@ -10,7 +10,7 @@ import { baseUrl, siteConfig } from '@/core/config'
 import { ViewTransitionsProvider } from '@/modules/view-transitions/provider'
 import { TimezoneSection } from '@/modules/landing/timer'
 import {Providers} from '@/components/providers'
-import { ViewportIndicator } from '@/components/viewport-indicator'
+import { ViewportIndicator } from '@/modules/viewport-indicator'
 
 export const metadata: Metadata = {
     metadataBase: new URL(baseUrl),
@@ -113,7 +113,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
                 <link rel="preconnect" href="https://vercel.live" crossOrigin="anonymous" />
             </head>
-            <body className="bg-background text-foreground antialiased max-w-xl mx-4 mt-8 lg:mx-auto">
+            <body className="bg-background text-foreground antialiased max-w-xl mx-4 mt-8 lg:mx-auto" suppressContentEditableWarning>
                 <SiteAnnouncementBanner />
                 <a
                     href="#main-content"

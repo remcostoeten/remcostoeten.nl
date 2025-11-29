@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { ArrowUpRightIcon } from "lucide-react"
 import {
   AnnouncementBanner,
@@ -16,8 +15,7 @@ export function SiteAnnouncementBanner() {
     id: "site-blog-announcement",
     storageType: "localStorage",
     autoShow: true,
-    showDelay: 1000, // Show after 2 seconds
-    maxDismissals: 5,
+    showDelay: 1000, 
   })
 
   function handleClose() {

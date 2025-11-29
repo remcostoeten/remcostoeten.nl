@@ -1,0 +1,706 @@
+---
+title: 'Extending Blog Frontmatter: Adding Tags and Categories'
+publishedAt: '2024-12-19'
+summary: 'Learn how to extend your blog post metadata with custom fields like tags and categories, and display them throughout your blog application.'
+image: '/og?title=Extending%20Blog%20Frontmatter'
+keywords: 'blog development, frontmatter, metadata, tags, categories, Next.js, MDX'
+---
+
+Blog frontmatter is the metadata that lives at the top of your MDX files, providing essential information about each post. While basic fields like title, date, and summary are essential, extending your frontmatter with custom fields like tags and categories opens up powerful possibilities for organizing and filtering content.
+
+In this guide, we'll walk through extending your blog's frontmatter system to support tags and categories, and show you how to display and filter content based on these new fields.
+
+## Understanding the Current Frontmatter System
+
+Your current frontmatter parser is straightforward—it reads key-value pairs from YAML frontmatter. Here's how it works:
+
+```ts
+// Current implementation
+export function parseFrontmatter(fileContent: string) {
+  let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
+  let match = frontmatterRegex.exec(fileContent)
+  let frontMatterBlock = match![1]
+  let content = fileContent.replace(frontmatterRegex, '').trim()
+  let frontMatterLines = frontMatterBlock.trim().split('\n')
+  let metadata: Partial<BlogPostMetadata> = {}
+
+  frontMatterLines.forEach(line => {
+    let [key, ...valueArr] = line.split(': ')
+    let value = valueArr.join(': ').trim()
+    value = value.replace(/^['"](.*)['"]$/, '$1')
+    metadata[key.trim() as keyof BlogPostMetadata] = value
+  })
+
+  return { metadata: metadata as BlogPostMetadata, content }
+}
+```
+
+This parser handles simple string values well, but we need to enhance it to support arrays (for tags) and handle more complex data structures.
+
+## Step 1: Extend the Type Definitions
+
+First, update your `BlogPostMetadata` type to include the new fields:
+
+```ts
+// src/modules/blog/types/index.ts
+
+export type BlogPostMetadata = {
+  title: string
+  publishedAt: string
+  summary: string
+  image?: string
+  keywords?: string
+  tags?: string[]        // New: Array of tags
+  category?: string      // New: Single category
+  author?: string        // New: Author name
+  updatedAt?: string     // New: Last update date
+  draft?: boolean        // New: Draft status
+}
+```
+
+The `?` makes these fields optional, so existing posts without these fields will still work.
+
+## Step 2: Enhance the Frontmatter Parser
+
+The current parser needs to handle arrays. Here's an enhanced version that supports both strings and arrays:
+
+```ts
+// src/modules/blog/utils/mdx-helpers.ts
+
+export function parseFrontmatter(fileContent: string) {
+  let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
+  let match = frontmatterRegex.exec(fileContent)
+  let frontMatterBlock = match![1]
+  let content = fileContent.replace(frontmatterRegex, '').trim()
+  let frontMatterLines = frontMatterBlock.trim().split('\n')
+  let metadata: Partial<BlogPostMetadata> = {}
+
+  frontMatterLines.forEach(line => {
+    let trimmedLine = line.trim()
+    if (!trimmedLine) return // Skip empty lines
+
+    let [key, ...valueArr] = trimmedLine.split(': ')
+    let keyName = key.trim()
+    let value = valueArr.join(': ').trim()
+
+    // Handle array values (e.g., tags: [react, nextjs, typescript])
+    if (value.startsWith('[') && value.endsWith(']')) {
+      // Extract array content and split by comma
+      let arrayContent = value.slice(1, -1).trim()
+      if (arrayContent) {
+        metadata[keyName as keyof BlogPostMetadata] = arrayContent
+          .split(',')
+          .map(item => item.trim().replace(/^['"](.*)['"]$/, '$1'))
+          .filter(Boolean) as any
+      } else {
+        metadata[keyName as keyof BlogPostMetadata] = [] as any
+      }
+    }
+    // Handle boolean values
+    else if (value === 'true' || value === 'false') {
+      metadata[keyName as keyof BlogPostMetadata] = (value === 'true') as any
+    }
+    // Handle string values
+    else {
+      value = value.replace(/^['"](.*)['"]$/, '$1')
+      metadata[keyName as keyof BlogPostMetadata] = value as any
+    }
+  })
+
+  return { metadata: metadata as BlogPostMetadata, content }
+}
+```
+
+This enhanced parser now handles:
+- **Arrays**: `tags: [react, nextjs, typescript]`
+- **Booleans**: `draft: true` or `draft: false`
+- **Strings**: All existing string fields continue to work
+
+## Step 3: Update Your MDX Files
+
+Now you can add tags and categories to your blog posts:
+
+```mdx
+---
+title: 'My Awesome Post'
+publishedAt: '2024-12-19'
+summary: 'A great article about something interesting'
+tags: [react, nextjs, typescript]
+category: 'Web Development'
+author: 'Your Name'
+draft: false
+---
+
+Your content here...
+```
+
+## Step 4: Display Tags and Categories
+
+### In the Blog Post Detail Page
+
+Add tags and category display to your individual post page:
+
+```tsx
+// src/app/blog/[slug]/page.tsx
+
+import Link from 'next/link'
+import { getCategorySlug } from '@/modules/blog/utils/category-slug'
+// ... other imports
+
+export default async function Blog({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  let post = getBlogPost(slug)
+
+  if (!post) {
+    notFound()
+  }
+
+  return (
+    <section>
+      {/* ... existing breadcrumbs and title ... */}
+      
+      <div className="flex flex-wrap items-center gap-4 mt-2 mb-8 text-sm">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          {formatDate(post.metadata.publishedAt)}
+        </p>
+        
+        {post.metadata.category && (
+          <Link
+            href={`/blog/category/${getCategorySlug(post.metadata.category)}`}
+            className="px-2 py-1 text-xs font-medium rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+          >
+            {post.metadata.category}
+          </Link>
+        )}
+        
+        {post.metadata.tags && post.metadata.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {post.metadata.tags.map(tag => (
+              <Link
+                key={tag}
+                href={`/blog/tag/${tag}`}
+                className="px-2 py-1 text-xs rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+              >
+                #{tag}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <article className="prose">
+        <CustomMDX source={post.content} />
+      </article>
+    </section>
+  )
+}
+```
+
+### In the Blog Post Listing
+
+Show tags and categories in your blog listing:
+
+```tsx
+// src/modules/blog/components/posts.tsx
+
+export function BlogPosts() {
+  let allBlogs = getAllBlogPosts()
+
+  return (
+    <div>
+      {allBlogs
+        .sort((a, b) => {
+          if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
+            return -1
+          }
+          return 1
+        })
+        .map(post => (
+          <Link
+            key={post.slug}
+            className="flex flex-col space-y-1 mb-4"
+            href={`/blog/${post.slug}`}
+          >
+            <div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
+              <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums">
+                {formatDate(post.metadata.publishedAt, false)}
+              </p>
+              <div className="flex-1">
+                <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
+                  {post.metadata.title}
+                </p>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  {post.metadata.category && (
+                    <span className="text-xs text-neutral-500 dark:text-neutral-500">
+                      {post.metadata.category}
+                    </span>
+                  )}
+                  {post.metadata.tags && post.metadata.tags.slice(0, 3).map(tag => (
+                    <span
+                      key={tag}
+                      className="text-xs text-neutral-500 dark:text-neutral-500"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+    </div>
+  )
+}
+```
+
+## Step 5: Create Query Functions for Filtering
+
+Add query functions to filter posts by tags and categories:
+
+```ts
+// src/modules/blog/queries/get-blog-posts-by-tag.ts
+
+import { getAllBlogPosts } from './get-all-blog-posts'
+import type { BlogPost } from '../types'
+
+export function getBlogPostsByTag(tag: string): BlogPost[] {
+  return getAllBlogPosts().filter(post => 
+    post.metadata.tags?.some(t => t.toLowerCase() === tag.toLowerCase())
+  )
+}
+```
+
+```ts
+// src/modules/blog/queries/get-blog-posts-by-category.ts
+
+import { getAllBlogPosts } from './get-all-blog-posts'
+import type { BlogPost } from '../types'
+
+export function getBlogPostsByCategory(category: string): BlogPost[] {
+  return getAllBlogPosts().filter(post => 
+    post.metadata.category?.toLowerCase() === category.toLowerCase()
+  )
+}
+```
+
+```ts
+// src/modules/blog/queries/get-all-tags.ts
+
+import { getAllBlogPosts } from './get-all-blog-posts'
+
+export function getAllTags(): string[] {
+  const posts = getAllBlogPosts()
+  const tagSet = new Set<string>()
+  
+  posts.forEach(post => {
+    post.metadata.tags?.forEach(tag => {
+      tagSet.add(tag.toLowerCase())
+    })
+  })
+  
+  return Array.from(tagSet).sort()
+}
+```
+
+```ts
+// src/modules/blog/queries/get-all-categories.ts
+
+import { getAllBlogPosts } from './get-all-blog-posts'
+
+export function getAllCategories(): string[] {
+  const posts = getAllBlogPosts()
+  const categorySet = new Set<string>()
+  
+  posts.forEach(post => {
+    if (post.metadata.category) {
+      categorySet.add(post.metadata.category)
+    }
+  })
+  
+  return Array.from(categorySet).sort()
+}
+```
+
+Don't forget to export these from your queries index:
+
+```ts
+// src/modules/blog/queries/index.ts
+
+export { getBlogPost } from './get-blog-post'
+export { getAllBlogPosts } from './get-all-blog-posts'
+export { getBlogPostsByTag } from './get-blog-posts-by-tag'
+export { getBlogPostsByCategory } from './get-blog-posts-by-category'
+export { getAllTags } from './get-all-tags'
+export { getAllCategories } from './get-all-categories'
+```
+
+### Helper: Category Slug Utility
+
+Since category slugification is used in multiple places, create a utility function for consistency:
+
+```ts
+// src/modules/blog/utils/category-slug.ts
+
+/**
+ * @name getCategorySlug
+ * @description Converts a category name to a URL-friendly slug
+ */
+export function getCategorySlug(category: string): string {
+  return category.toLowerCase().replace(/\s+/g, '-')
+}
+
+/**
+ * @name getCategoryFromSlug
+ * @description Converts a category slug back to a display name
+ */
+export function getCategoryFromSlug(slug: string): string {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+}
+```
+
+Then use it consistently:
+
+```tsx
+// In your components
+import { getCategorySlug } from '@/modules/blog/utils/category-slug'
+
+<Link href={`/blog/category/${getCategorySlug(post.metadata.category)}`}>
+  {post.metadata.category}
+</Link>
+```
+
+## Step 6: Create Tag and Category Pages
+
+Create dynamic pages to display filtered content:
+
+```tsx
+// src/app/blog/tag/[tag]/page.tsx
+
+import { notFound } from 'next/navigation'
+import { BlogPosts } from '@/modules/blog/components'
+import { getBlogPostsByTag, getAllTags } from '@/modules/blog/queries'
+import type { Metadata } from 'next'
+
+export async function generateStaticParams() {
+  const tags = getAllTags()
+  return tags.map(tag => ({ tag }))
+}
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ tag: string }> 
+}): Promise<Metadata> {
+  const { tag } = await params
+  return {
+    title: `Posts tagged "${tag}"`,
+    description: `All blog posts tagged with ${tag}`
+  }
+}
+
+export default async function TagPage({ 
+  params 
+}: { 
+  params: Promise<{ tag: string }> 
+}) {
+  const { tag } = await params
+  const posts = getBlogPostsByTag(tag)
+
+  if (posts.length === 0) {
+    notFound()
+  }
+
+  return (
+    <section>
+      <h1 className="font-semibold text-2xl mb-4 tracking-tighter">
+        Posts tagged "{tag}"
+      </h1>
+      <p className="text-muted-foreground mb-8 text-lg">
+        {posts.length} {posts.length === 1 ? 'post' : 'posts'} found
+      </p>
+      <BlogPosts posts={posts} />
+    </section>
+  )
+}
+```
+
+You'll need to update your `BlogPosts` component to accept an optional `posts` prop:
+
+```tsx
+// src/modules/blog/components/posts.tsx
+
+interface BlogPostsProps {
+  posts?: BlogPost[]
+}
+
+export function BlogPosts({ posts }: BlogPostsProps = {}) {
+  let allBlogs = posts || getAllBlogPosts()
+  
+  // ... rest of component
+}
+```
+
+### Create Category Pages
+
+Similarly, create a category page to display all posts in a specific category:
+
+```tsx
+// src/app/blog/category/[category]/page.tsx
+
+import { notFound } from 'next/navigation'
+import { BlogPosts } from '@/modules/blog/components'
+import { getBlogPostsByCategory, getAllCategories } from '@/modules/blog/queries'
+import { getCategoryFromSlug, getCategorySlug } from '@/modules/blog/utils/category-slug'
+import type { Metadata } from 'next'
+
+export async function generateStaticParams() {
+  const categories = getAllCategories()
+  return categories.map(category => ({ 
+    category: getCategorySlug(category)
+  }))
+}
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ category: string }> 
+}): Promise<Metadata> {
+  const { category } = await params
+  const categoryName = getCategoryFromSlug(category)
+  return {
+    title: `${categoryName} Posts`,
+    description: `All blog posts in the ${categoryName} category`
+  }
+}
+
+export default async function CategoryPage({ 
+  params 
+}: { 
+  params: Promise<{ category: string }> 
+}) {
+  const { category } = await params
+  const categoryName = getCategoryFromSlug(category)
+  const posts = getBlogPostsByCategory(categoryName)
+
+  if (posts.length === 0) {
+    notFound()
+  }
+
+  return (
+    <section>
+      <h1 className="font-semibold text-2xl mb-4 tracking-tighter">
+        {categoryName} Posts
+      </h1>
+      <p className="text-muted-foreground mb-8 text-lg">
+        {posts.length} {posts.length === 1 ? 'post' : 'posts'} found
+      </p>
+      <BlogPosts posts={posts} />
+    </section>
+  )
+}
+```
+
+Note: The category page uses slugified category names (e.g., `web-development` instead of `Web Development`) for cleaner URLs. You'll need to update the `getBlogPostsByCategory` function to handle this, or create a slugify utility.
+
+## Step 7: Adding Category to Post Slugs (Optional)
+
+If you want to include the category in the post URL structure (e.g., `/blog/web-development/my-post` instead of `/blog/my-post`), you'll need to restructure your routes and update several components.
+
+### Option A: Category-Based URL Structure
+
+This approach changes your URL structure to include the category in the path.
+
+#### 1. Create a Slugify Utility
+
+First, create a utility to convert category names to URL-friendly slugs:
+
+```ts
+// src/modules/blog/utils/slugify.ts (you may already have this)
+
+export function slugify(str: string): string {
+  return str
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/&/g, '-and-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+}
+```
+
+#### 2. Update the BlogPost Type
+
+Add a computed slug that includes the category:
+
+```ts
+// src/modules/blog/types/index.ts
+
+export type BlogPost = {
+  metadata: BlogPostMetadata
+  slug: string
+  categorySlug?: string  // New: URL-friendly category slug
+  content: string
+}
+```
+
+#### 3. Update Query Functions
+
+Modify your query functions to include category slugs:
+
+```ts
+// src/modules/blog/queries/get-all-blog-posts.ts
+
+import { getMDXData } from '../utils/mdx-helpers'
+import { slugify } from '../utils/slugify'
+
+const BLOG_POSTS_DIR = path.join(process.cwd(), 'src', 'app', 'blog', 'posts')
+
+export function getAllBlogPosts() {
+  const posts = getMDXData(BLOG_POSTS_DIR)
+  return posts.map(post => ({
+    ...post,
+    categorySlug: post.metadata.category 
+      ? slugify(post.metadata.category) 
+      : undefined
+  }))
+}
+```
+
+#### 4. Update the Route Structure
+
+Move your blog post page to include category in the path:
+
+```tsx
+// src/app/blog/[category]/[slug]/page.tsx
+
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+import { CustomMDX, Breadcrumbs } from '@/modules/blog/components'
+import { getBlogPost, getAllBlogPosts } from '@/modules/blog/queries'
+import { formatDate } from '@/modules/blog/utils'
+import { baseUrl, siteConfig } from '@/core/config'
+import { slugify } from '@/modules/blog/utils/slugify'
+
+export async function generateStaticParams() {
+  const posts = getAllBlogPosts()
+  
+  return posts
+    .filter(post => post.metadata.category) // Only posts with categories
+    .map(post => ({
+      category: slugify(post.metadata.category!),
+      slug: post.slug
+    }))
+}
+
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ category: string; slug: string }> 
+}): Promise<Metadata | undefined> {
+  const { category, slug } = await params
+  const post = getBlogPost(slug)
+  
+  if (!post || post.categorySlug !== category) {
+    return
+  }
+
+  // ... rest of metadata generation
+}
+
+export default async function Blog({ 
+  params 
+}: { 
+  params: Promise<{ category: string; slug: string }> 
+}) {
+  const { category, slug } = await params
+  const post = getBlogPost(slug)
+
+  // Verify the category matches
+  if (!post || post.categorySlug !== category) {
+    notFound()
+  }
+
+  const postUrl = `/blog/${category}/${slug}`
+  
+  return (
+    <section>
+      <Breadcrumbs
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Blog', url: '/blog' },
+          { name: post.metadata.category!, url: `/blog/category/${category}` },
+          { name: post.metadata.title, url: postUrl }
+        ]}
+      />
+      {/* ... rest of component */}
+    </section>
+  )
+}
+```
+
+#### 5. Update Links Throughout Your App
+
+Update all links to blog posts to include the category:
+
+```tsx
+// In components that link to posts
+<Link href={`/blog/${post.categorySlug}/${post.slug}`}>
+  {post.metadata.title}
+</Link>
+```
+
+### Option B: Keep Simple Slugs, Add Category Links
+
+If you prefer to keep your URLs simple (`/blog/my-post`) but still want category navigation, you can:
+
+1. Keep your existing route structure (`/blog/[slug]`)
+2. Add category links in the post detail page that navigate to the category listing
+3. Use breadcrumbs to show the category hierarchy
+
+This is simpler and doesn't require restructuring your routes, but doesn't include the category in the URL.
+
+## Advanced: Using a YAML Parser
+
+For more complex frontmatter (nested objects, arrays of objects, etc.), consider using a proper YAML parser:
+
+```ts
+// Install: npm install js-yaml
+import yaml from 'js-yaml'
+
+export function parseFrontmatter(fileContent: string) {
+  let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
+  let match = frontmatterRegex.exec(fileContent)
+  let frontMatterBlock = match![1]
+  let content = fileContent.replace(frontmatterRegex, '').trim()
+  
+  try {
+    const metadata = yaml.load(frontMatterBlock) as BlogPostMetadata
+    return { metadata, content }
+  } catch (error) {
+    console.error('Error parsing frontmatter:', error)
+    return { metadata: {} as BlogPostMetadata, content }
+  }
+}
+```
+
+This approach handles all YAML features including:
+- Arrays: `tags: [react, nextjs]`
+- Nested objects: `author: { name: 'John', email: 'john@example.com' }`
+- Multi-line strings
+- Complex data structures
+
+## Best Practices
+
+1. **Keep it simple**: Only add fields you'll actually use
+2. **Use consistent naming**: Stick to camelCase or kebab-case consistently
+3. **Make fields optional**: Use `?` in TypeScript to allow gradual migration
+4. **Validate data**: Consider adding runtime validation for critical fields
+5. **Document your schema**: Keep a reference of all available frontmatter fields
+
+## Conclusion
+
+Extending your blog's frontmatter system with tags and categories provides powerful organization capabilities. By enhancing the parser, updating types, and creating query functions, you can build a flexible content management system that scales with your needs.
+
+The key is starting simple and gradually adding complexity as needed. Whether you use a basic parser or a full YAML library depends on your requirements, but both approaches give you the flexibility to organize and filter your content effectively.
+
