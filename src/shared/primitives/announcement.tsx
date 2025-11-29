@@ -49,7 +49,7 @@ function useBadgeContext() {
   return context
 }
 
-export interface TAnnouncementProps extends TBadgeProps {
+export interface Iops extends TBadgeProps {
   themed?: boolean
   size?: "sm" | "md" | "lg"
   showBadge?: boolean
@@ -86,7 +86,7 @@ export function Announcement({
   ariaLabel,
   ariaDescribedBy,
   ...props
-}: TAnnouncementProps) {
+}: Iops) {
   const contextValue = React.useMemo(() => ({ themed, size }), [themed, size])
 
   return (
@@ -103,7 +103,7 @@ export function Announcement({
           "max-w-full gap-2 rounded-full px-3 py-0.5 font-medium transition-all hover:shadow-md",
 
           // Appearance
-          "border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground",
+          "border-border/60 bg-background/80 supports-backdrop-filter:backdrop-blur-sm text-foreground",
           "shadow-sm shadow-emerald-500/10 w-full overflow-hidden",
 
           // Interactive states
@@ -272,9 +272,13 @@ export function AnnouncementBanner({
   const [isHiddenByScroll, setIsHiddenByScroll] = React.useState(false)
   const [shouldHideByScroll, setShouldHideByScroll] = React.useState(false)
   const [isClosing, setIsClosing] = React.useState(false)
+  const [isScrolled, setIsScrolled] = React.useState(false)
+  const [isTransitioning, setIsTransitioning] = React.useState(false)
   const lastScrollYRef = React.useRef(0)
+  const isScrolledRef = React.useRef(false)
   const maxScrollYRef = React.useRef(0)
   const hasHiddenByPixelsRef = React.useRef(false)
+  const scrollUpStartRef = React.useRef<number | null>(null)
   const wrapperRef = React.useRef<HTMLDivElement | null>(null)
   const [bannerHeight, setBannerHeight] = React.useState(80)
   const scrollTimeoutRef = React.useRef<NodeJS.Timeout | null>(null)
@@ -286,10 +290,22 @@ export function AnnouncementBanner({
   }, [isVisible])
 
   React.useEffect(() => {
-    if (!hideOnScroll && !hideAfterPixels) return
-
-    function onScroll() {
+    const handleScroll = () => {
       const currentY = window.scrollY || 0
+      const lastY = lastScrollYRef.current
+
+      // Track scroll state for spacing with transition effect
+      const newScrolled = currentY > 50
+      if (newScrolled !== isScrolledRef.current) {
+        setIsTransitioning(true)
+        setIsScrolled(newScrolled)
+        isScrolledRef.current = newScrolled
+        setTimeout(() => setIsTransitioning(false), 600)
+      }
+
+      if (!hideOnScroll && !hideAfterPixels) {
+        return // Only track scroll state for spacing
+      }
 
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
@@ -306,25 +322,37 @@ export function AnnouncementBanner({
           shouldShow = true
         }
 
-        // New hideAfterPixels logic
+        // Hide after scrolling past hideAfterPixels
         if (hideAfterPixels && currentY > hideAfterPixels && !hasHiddenByPixelsRef.current) {
           shouldHide = true
           hasHiddenByPixelsRef.current = true
-          maxScrollYRef.current = currentY
+          scrollUpStartRef.current = null // Reset scroll up tracking
         }
 
-        // ShowAgain logic
+        // Show again logic: if hidden and scrolling up by showAgain pixels from anywhere
         if (hideAfterPixels && hasHiddenByPixelsRef.current) {
           if (showAgain === 'top' && currentY <= 0) {
             shouldShow = true
             hasHiddenByPixelsRef.current = false
-            maxScrollYRef.current = 0
+            scrollUpStartRef.current = null
           } else if (typeof showAgain === 'number') {
-            const scrollAmountBack = maxScrollYRef.current - currentY
-            if (scrollAmountBack >= showAgain) {
-              shouldShow = true
-              hasHiddenByPixelsRef.current = false
-              maxScrollYRef.current = 0
+            // Check if scrolling up (current position is less than last position)
+            if (currentY < lastY) {
+              // Start tracking scroll up position if not already tracking
+              if (scrollUpStartRef.current === null) {
+                scrollUpStartRef.current = lastY
+              }
+              
+              // Check if we've scrolled up by showAgain pixels from the start position
+              const scrollAmountBack = scrollUpStartRef.current - currentY
+              if (scrollAmountBack >= showAgain) {
+                shouldShow = true
+                hasHiddenByPixelsRef.current = false
+                scrollUpStartRef.current = null
+              }
+            } else if (currentY > lastY) {
+              // Scrolling down again, reset scroll up tracking
+              scrollUpStartRef.current = null
             }
           }
         }
@@ -332,7 +360,7 @@ export function AnnouncementBanner({
         if (shouldHide) {
           setIsHiddenByScroll(true)
           setShouldHideByScroll(true)
-        } else if (shouldShow && !hideOnScroll) {
+        } else if (shouldShow) {
           setIsHiddenByScroll(false)
           setShouldHideByScroll(false)
         }
@@ -341,9 +369,10 @@ export function AnnouncementBanner({
       lastScrollYRef.current = currentY
     }
 
-    window.addEventListener("scroll", onScroll, { passive: true })
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll() // Check initial scroll state
     return () => {
-      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("scroll", handleScroll)
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current)
       }
@@ -390,10 +419,11 @@ export function AnnouncementBanner({
   if (!isVisible) return null
 
   const getPositionClasses = () => {
+    const topSpacing = isScrolled ? "top-2" : "top-6"
     const positions = {
-      "top-left": "top-6 left-6 -translate-x-0 -translate-y-0",
-      "top-center": "top-6 left-1/2 -translate-x-1/2 -translate-y-0",
-      "top-right": "top-6 right-6 -translate-x-0 -translate-y-0",
+      "top-left": `${topSpacing} left-6 -translate-x-0 -translate-y-0`,
+      "top-center": `${topSpacing} left-1/2 -translate-x-1/2 -translate-y-0`,
+      "top-right": `${topSpacing} right-6 -translate-x-0 -translate-y-0`,
       "bottom-left": "bottom-6 left-6 -translate-x-0 -translate-y-0",
       "bottom-center": "bottom-6 left-1/2 -translate-x-1/2 translate-y-0",
       "bottom-right": "bottom-6 right-6 -translate-x-0 -translate-y-0"
@@ -416,7 +446,10 @@ export function AnnouncementBanner({
           getPositionClasses(),
           className
         )}
-        style={{ contain: 'paint' }}
+        style={{
+          contain: 'paint',
+          transition: "top 600ms cubic-bezier(0.4, 0, 0.2, 1)",
+        }}
       >
         <div
           className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit pointer-events-auto overflow-visible"

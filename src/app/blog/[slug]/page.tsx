@@ -1,13 +1,13 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { CustomMDX, Breadcrumbs } from '@/modules/blog/components'
-import { getBlogPost, getBlogPosts } from '@/modules/blog/queries'
+import { getBlogPost, getAllBlogPosts } from '@/modules/blog/queries'
 import { formatDate } from '@/modules/blog/utils'
 import { baseUrl, siteConfig } from '@/core/config'
 import { Yomeic } from '@/_dev/_yomeic'
 
 export async function generateStaticParams() {
-    let posts = getBlogPosts()
+    let posts = getAllBlogPosts()
 
     return posts.map(post => ({
         slug: post.slug

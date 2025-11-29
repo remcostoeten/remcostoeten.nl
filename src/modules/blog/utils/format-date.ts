@@ -1,3 +1,7 @@
+/**
+ * @name formatDate
+ * @description Formats a date string into a human-readable format with optional relative time. Converts ISO date strings to readable format and optionally includes relative time information.
+ */
 export function formatDate(date: string, includeRelative = false) {
     let currentDate = new Date()
     if (!date.includes('T')) {

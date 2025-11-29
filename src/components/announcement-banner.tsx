@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { ArrowUpRightIcon } from "lucide-react"
 import {
   AnnouncementBanner,
@@ -16,12 +15,11 @@ export function SiteAnnouncementBanner() {
     id: "site-blog-announcement",
     storageType: "localStorage",
     autoShow: true,
-    showDelay: 2000, // Show after 2 seconds
-    maxDismissals: 5,
+    showDelay: 1000, 
   })
 
-  const handleClose = () => {
-    announcement.dismiss()
+  function handleClose() {
+  announcement.dismiss()
   }
 
   return (
@@ -30,9 +28,9 @@ export function SiteAnnouncementBanner() {
       position="top-center"
       draggable={true}
       hideOnScroll={true}
-      scrollThreshold={100}
-      hideAfterPixels={300}
-      showAgain="top"
+      scrollThreshold={500}
+      hideAfterPixels={500}
+      showAgain={100}
       onClose={handleClose}
     >
       <Announcement>

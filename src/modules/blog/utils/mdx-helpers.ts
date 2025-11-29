@@ -2,7 +2,11 @@ import fs from 'fs'
 import path from 'path'
 import type { BlogPost, BlogPostMetadata } from '../types'
 
-function parseFrontmatter(fileContent: string) {
+/**
+ * @name parseFrontmatter
+ * @description Parses YAML frontmatter from MDX file content. Extracts metadata and content from markdown files with frontmatter delimiters.
+ */
+export function parseFrontmatter(fileContent: string) {
     let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
     let match = frontmatterRegex.exec(fileContent)
     let frontMatterBlock = match![1]
@@ -20,16 +24,28 @@ function parseFrontmatter(fileContent: string) {
     return { metadata: metadata as BlogPostMetadata, content }
 }
 
-function getMDXFiles(dir: string) {
+/**
+ * @name getMDXFiles
+ * @description Retrieves all .mdx files from a directory. Filters the directory contents for files with the .mdx extension.
+ */
+export function getMDXFiles(dir: string) {
     return fs.readdirSync(dir).filter(file => path.extname(file) === '.mdx')
 }
 
-function readMDXFile(filePath: string) {
+/**
+ * @name readMDXFile
+ * @description Reads and parses a single MDX file from the filesystem. Synchronously reads the file and extracts frontmatter and content.
+ */
+export function readMDXFile(filePath: string) {
     let rawContent = fs.readFileSync(filePath, 'utf-8')
     return parseFrontmatter(rawContent)
 }
 
-function getMDXData(dir: string): BlogPost[] {
+/**
+ * @name getMDXData
+ * @description Processes all MDX files in a directory and returns structured blog post data. Reads all .mdx files, parses frontmatter, and creates BlogPost objects.
+ */
+export function getMDXData(dir: string): BlogPost[] {
     let mdxFiles = getMDXFiles(dir)
     return mdxFiles.map(file => {
         let { metadata, content } = readMDXFile(path.join(dir, file))
@@ -43,8 +59,3 @@ function getMDXData(dir: string): BlogPost[] {
     })
 }
 
-const BLOG_POSTS_DIR = path.join(process.cwd(), 'src', 'app', 'blog', 'posts')
-
-export function getAllBlogPosts(): BlogPost[] {
-    return getMDXData(BLOG_POSTS_DIR)
-}

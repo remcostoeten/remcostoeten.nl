@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { getBlogPosts } from '@/modules/blog/queries'
+import { getAllBlogPosts } from '@/modules/blog/queries'
 import { formatDate } from '@/modules/blog/utils'
 
 export function BlogPosts() {
-    let allBlogs = getBlogPosts()
+    let allBlogs = getAllBlogPosts()
 
     return (
         <div>

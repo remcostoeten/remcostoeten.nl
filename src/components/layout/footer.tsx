@@ -1,6 +1,6 @@
 'use client'
 
-import { siteConfig } from "@/config/site"
+import { siteConfig } from "@/core/config"
 import { ContactButton } from "@/components/contact-button"
 import { Github, Twitter, Mail, Heart, Sparkles } from "lucide-react"
 
@@ -34,8 +34,8 @@ function formatTimestamp(timestamp: string) {
 }
 
 export default function Footer() {
-    const githubUrl = siteConfig.me.social.github
-    const twitterUrl = siteConfig.me.social.x
+    const githubUrl = siteConfig.social.githubUrl
+    const twitterUrl = siteConfig.social.twitterUrl
     const timestamp = formatTimestamp(COMMIT_INFO.timestamp)
     const message = COMMIT_INFO.message
 
