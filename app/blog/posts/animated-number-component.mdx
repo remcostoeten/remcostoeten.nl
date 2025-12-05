@@ -1,0 +1,84 @@
+---
+title: 'Building an Animated Number Component'
+publishedAt: '2024-10-04'
+summary: 'A reusable React component for smooth number animations with accessibility and performance in mind.'
+categories: [React, Animation, A11y]
+---
+
+Animating numbers is tricky. You want it to feel mechanical, like a slot machine or an old odometer, but also digital and fluid. In this post, we'll break down the `AnimatedNumber` component used on this very site.
+
+## The Challenge
+
+Creating number animations that feel natural requires careful consideration of:
+
+- **Easing functions** - Linear animations feel robotic
+- **Duration** - Too fast feels jarring, too slow feels sluggish
+- **Accessibility** - Motion should respect user preferences
+- **Performance** - Smooth 60fps animations
+
+## The Solution
+
+Here's a simplified version of the component:
+
+```jsx
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+
+const AnimatedNumber = ({ value, duration = 1000 }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+  const startTime = useRef(null);
+  
+  useEffect(() => {
+    const animate = (currentTime) => {
+      if (!startTime.current) startTime.current = currentTime;
+      
+      const progress = Math.min((currentTime - startTime.current) / duration, 1);
+      
+      // Easing function (ease-out-cubic)
+      const eased = 1 - Math.pow(1 - progress, 3);
+      
+      setDisplayValue(Math.floor(eased * value));
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }, [value, duration]);
+  
+  return <span>{displayValue.toLocaleString()}</span>;
+};
+```
+
+## Key Features
+
+### 1. Custom Easing
+The ease-out-cubic function creates a natural feel that starts fast and slows down as it approaches the target value.
+
+### 2. Accessibility
+Always respect `prefers-reduced-motion`:
+
+```jsx
+const shouldReduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
+
+if (shouldReduceMotion) {
+  return <span>{value.toLocaleString()}</span>;
+}
+```
+
+### 3. Performance Tips
+- Use `requestAnimationFrame` for smooth 60fps animations
+- Avoid layout thrashing by batching DOM reads/writes
+- Consider using `transform` instead of changing layout properties
+
+## Advanced Usage
+
+For more complex scenarios, consider:
+
+- **Decimal support** for financial applications
+- **Spring animations** for more organic feel
+- **Staggered animations** for lists of numbers
+- **GSAP integration** for timeline-based animations
+
+The key is finding the right balance between visual appeal and performance. Sometimes, a simple CSS transition is all you need!

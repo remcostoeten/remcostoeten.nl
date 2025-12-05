@@ -1,0 +1,255 @@
+---
+title: 'Advanced React Hooks Patterns'
+publishedAt: '2024-08-15'
+summary: 'Explore powerful React Hooks patterns that will level up your component architecture and state management.'
+---
+
+React Hooks revolutionized how we write components, but there's more to them than just `useState` and `useEffect`. Let's explore some advanced patterns that will make your React code more maintainable and powerful.
+
+## 1. Custom Hook Composition
+
+The real power of hooks comes from composing them:
+
+```jsx
+// Instead of this:
+function UserProfile() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  useEffect(() => {
+    fetchUser().then(setUser).catch(setError).finally(() => setLoading(false));
+  }, []);
+  
+  // ... component logic
+}
+
+// Do this:
+function UserProfile() {
+  const { user, loading, error } = useUser();
+  
+  // ... component logic
+}
+
+function useUser() {
+  const [state, setState] = useState({
+    user: null,
+    loading: true,
+    error: null
+  });
+  
+  useEffect(() => {
+    fetchUser()
+      .then(user => setState({ user, loading: false, error: null }))
+      .catch(error => setState({ user: null, loading: false, error }));
+  }, []);
+  
+  return state;
+}
+```
+
+## 2. The State Reducer Pattern
+
+For complex state logic, use reducers:
+
+```jsx
+function useCounter(initialValue = 0) {
+  const [state, dispatch] = useReducer(counterReducer, {
+    count: initialValue,
+    history: [initialValue]
+  });
+  
+  const actions = useMemo(() => ({
+    increment: () => dispatch({ type: 'INCREMENT' }),
+    decrement: () => dispatch({ type: 'DECREMENT' }),
+    reset: () => dispatch({ type: 'RESET', payload: initialValue }),
+    set: (value) => dispatch({ type: 'SET', payload: value })
+  }), []);
+  
+  return { ...state, ...actions };
+}
+
+function counterReducer(state, action) {
+  switch (action.type) {
+    case 'INCREMENT':
+      return {
+        ...state,
+        count: state.count + 1,
+        history: [...state.history, state.count + 1]
+      };
+    case 'DECREMENT':
+      return {
+        ...state,
+        count: state.count - 1,
+        history: [...state.history, state.count - 1]
+      };
+    case 'RESET':
+      return {
+        ...state,
+        count: action.payload,
+        history: [action.payload]
+      };
+    case 'SET':
+      return {
+        ...state,
+        count: action.payload,
+        history: [...state.history, action.payload]
+      };
+    default:
+      return state;
+  }
+}
+```
+
+## 3. The Context + Hook Pattern
+
+Create type-safe contexts with custom hooks:
+
+```jsx
+// ThemeContext.jsx
+const ThemeContext = createContext();
+
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState('light');
+  
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+  
+  const value = {
+    theme,
+    toggleTheme,
+    isDark: theme === 'dark'
+  };
+  
+  return (
+    <ThemeContext.Provider value={value}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme must be used within ThemeProvider');
+  }
+  return context;
+}
+
+// Usage
+function Header() {
+  const { theme, toggleTheme, isDark } = useTheme();
+  
+  return (
+    <header className={isDark ? 'dark' : 'light'}>
+      <button onClick={toggleTheme}>
+        Current theme: {theme}
+      </button>
+    </header>
+  );
+}
+```
+
+## 4. The Higher-Order Hook Pattern
+
+Wrap existing hooks with additional functionality:
+
+```jsx
+function useLocalStorage(key, initialValue) {
+  // Get stored value or use initial
+  const [storedValue, setStoredValue] = useState(() => {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      return initialValue;
+    }
+  });
+  
+  // Return a wrapped version of useState's setter
+  const setValue = useCallback((value) => {
+    try {
+      // Allow value to be a function like useState
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+    } catch (error) {
+      console.error(error);
+    }
+  }, [key, storedValue]);
+  
+  return [storedValue, setValue];
+}
+
+// Usage
+function App() {
+  const [name, setName] = useLocalStorage('name', 'Anonymous');
+  
+  return (
+    <input 
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+      placeholder="Enter your name"
+    />
+  );
+}
+```
+
+## 5. The Async Hook Pattern
+
+Handle async operations cleanly:
+
+```jsx
+function useAsync(asyncFunction, dependencies = []) {
+  const [state, setState] = useState({
+    data: null,
+    loading: true,
+    error: null
+  });
+  
+  useEffect(() => {
+    let isCancelled = false;
+    
+    asyncFunction()
+      .then(data => {
+        if (!isCancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      })
+      .catch(error => {
+        if (!isCancelled) {
+          setState({ data: null, loading: false, error });
+        }
+      });
+    
+    return () => {
+      isCancelled = true;
+    };
+  }, dependencies);
+  
+  return state;
+}
+
+// Usage
+function UserProfile({ userId }) {
+  const { data: user, loading, error } = useAsync(
+    () => fetchUser(userId),
+    [userId]
+  );
+  
+  if (loading) return <Loading />;
+  if (error) return <Error error={error} />;
+  return <Profile user={user} />;
+}
+```
+
+## Best Practices
+
+1. **Start with the component, extract to hook** - Don't over-engineer upfront
+2. **Use TypeScript** - Better autocompletion and error catching
+3. **Handle cleanup** - Return cleanup functions from effects
+4. **Memoize expensive operations** - Use `useMemo` and `useCallback`
+5. **Keep hooks focused** - Single responsibility principle applies
+
+These patterns will help you write more maintainable, testable, and reusable React code. The key is to think in terms of composition and separation of concerns.
