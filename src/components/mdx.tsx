@@ -1,0 +1,136 @@
+import Link from 'next/link'
+import Image from 'next/image'
+import { MDXRemote } from 'next-mdx-remote/rsc'
+import React from 'react'
+import { CodeBlock } from './code-block'
+
+function Table({ data }) {
+  let headers = data.headers.map((header, index) => (
+    <th key={index}>{header}</th>
+  ))
+  let rows = data.rows.map((row, index) => (
+    <tr key={index}>
+      {row.map((cell, cellIndex) => (
+        <td key={cellIndex}>{cell}</td>
+      ))}
+    </tr>
+  ))
+
+  return (
+    <table>
+      <thead>
+        <tr>{headers}</tr>
+      </thead>
+      <tbody>{rows}</tbody>
+    </table>
+  )
+}
+
+function CustomLink(props) {
+  let href = props.href
+
+  if (href.startsWith('/')) {
+    return (
+      <Link href={href} {...props}>
+        {props.children}
+      </Link>
+    )
+  }
+
+  if (href.startsWith('#')) {
+    return <a {...props} />
+  }
+
+  return <a target="_blank" rel="noopener noreferrer" {...props} />
+}
+
+function RoundedImage(props) {
+  return <Image alt={props.alt} className="rounded-lg" {...props} />
+}
+
+function Code({ children, ...props }) {
+  // The pre element receives a code element as children
+  // Extract the actual code string and language from the code element
+  const codeElement = React.Children.toArray(children)[0] as React.ReactElement
+  const codeProps = codeElement?.props || {}
+  
+  // Handle nested children structure - MDX can nest content deeply
+  const extractText = (node: any): string => {
+    if (typeof node === 'string') return node
+    if (Array.isArray(node)) return node.map(extractText).join('')
+    if (node?.props?.children) return extractText(node.props.children)
+    return ''
+  }
+  
+  const codeString = extractText(codeProps.children).replace(/\n$/, '') // Remove trailing newline
+  const language = codeProps.className?.replace(/language-/, '') || 'text'
+  
+  return (
+    <CodeBlock
+      code={codeString}
+      language={language}
+      showLineNumbers={true}
+      enableLineHighlight={true}
+      enableLineHover={true}
+      showIcon={true}
+      showMetaInfo={true}
+      maxHeight="500px"
+      className="my-6"
+    />
+  )
+}
+
+function slugify(str) {
+  return str
+    .toString()
+    .toLowerCase()
+    .trim() // Remove whitespace from both ends of a string
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/&/g, '-and-') // Replace & with 'and'
+    .replace(/[^\w\-]+/g, '') // Remove all non-word characters except for -
+    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+}
+
+function createHeading(level) {
+  const Heading = ({ children }) => {
+    let slug = slugify(children)
+    return React.createElement(
+      `h${level}`,
+      { id: slug },
+      [
+        React.createElement('a', {
+          href: `#${slug}`,
+          key: `link-${slug}`,
+          className: 'anchor',
+        }),
+      ],
+      children
+    )
+  }
+
+  Heading.displayName = `Heading${level}`
+
+  return Heading
+}
+
+let components = {
+  h1: createHeading(1),
+  h2: createHeading(2),
+  h3: createHeading(3),
+  h4: createHeading(4),
+  h5: createHeading(5),
+  h6: createHeading(6),
+  Image: RoundedImage,
+  a: CustomLink,
+  pre: Code,
+  Table,
+}
+
+export function CustomMDX(props) {
+  return (
+    <MDXRemote
+      {...props}
+      components={{ ...components, ...(props.components || {}) }}
+    />
+  )
+}
