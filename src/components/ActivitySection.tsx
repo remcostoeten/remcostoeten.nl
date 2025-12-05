@@ -44,9 +44,9 @@ const itemVariants = {
 
 const Equalizer = () => (
   <div className="flex items-end gap-[1px] h-3 ml-2" aria-hidden="true">
-    <div className="w-[2px] bg-green-500/70 group-hover:bg-green-500/90 transition-colors duration-300 animate-[music-bar_0.8s_ease-in-out_infinite] rounded-sm" />
-    <div className="w-[2px] bg-green-500/70 group-hover:bg-green-500/90 transition-colors duration-300 animate-[music-bar_1.2s_ease-in-out_infinite_0.1s] rounded-sm" />
-    <div className="w-[2px] bg-green-500/70 group-hover:bg-green-500/90 transition-colors duration-300 animate-[music-bar_0.5s_ease-in-out_infinite_0.2s] rounded-sm" />
+    <div className="w-[2px] bg-muted-foreground/50 group-hover:bg-muted-foreground/70 transition-colors duration-300 animate-[music-bar_0.8s_ease-in-out_infinite] rounded-sm" />
+    <div className="w-[2px] bg-muted-foreground/50 group-hover:bg-muted-foreground/70 transition-colors duration-300 animate-[music-bar_1.2s_ease-in-out_infinite_0.1s] rounded-sm" />
+    <div className="w-[2px] bg-muted-foreground/50 group-hover:bg-muted-foreground/70 transition-colors duration-300 animate-[music-bar_0.5s_ease-in-out_infinite_0.2s] rounded-sm" />
   </div>
 );
 
@@ -71,11 +71,11 @@ const formatRelativeTime = (dateString: string): string => {
 
 // Your 5 latest projects
 const LATEST_PROJECTS = [
-  { owner: 'remcostoeten', repo: 'remcostoeten.nl', name: 'remcostoeten.nl', color: 'text-blue-400' },
-  { owner: 'remcostoeten', repo: 'drizzleasy', name: 'drizzleasy', color: 'text-yellow-400' },
-  { owner: 'remcostoeten', repo: 'fync', name: 'fync', color: 'text-orange-400' },
-  { owner: 'remcostoeten', repo: 'next-forge', name: 'next-forge', color: 'text-purple-400' },
-  { owner: 'remcostoeten', repo: 'planorama', name: 'planorama', color: 'text-green-400' }
+  { owner: 'remcostoeten', repo: 'remcostoeten.nl', name: 'remcostoeten.nl', color: 'text-foreground' },
+  { owner: 'remcostoeten', repo: 'drizzleasy', name: 'drizzleasy', color: 'text-foreground' },
+  { owner: 'remcostoeten', repo: 'fync', name: 'fync', color: 'text-foreground' },
+  { owner: 'remcostoeten', repo: 'next-forge', name: 'next-forge', color: 'text-foreground' },
+  { owner: 'remcostoeten', repo: 'planorama', name: 'planorama', color: 'text-foreground' }
 ];
 
 export const ActivitySection = () => {
@@ -178,7 +178,7 @@ export const ActivitySection = () => {
             </div>
           </div>
           <div className="flex-1 flex items-center gap-4 p-4 min-h-[80px]">
-            <div className="shrink-0 w-10 h-10 rounded-lg bg-green-500/5 border border-green-500/10 animate-pulse" />
+            <div className="shrink-0 w-10 h-10 rounded-lg bg-muted/20 border border-border/40 animate-pulse" />
             <div className="flex-1 min-w-0">
               <div className="h-4 bg-muted rounded animate-pulse mb-2 min-h-[1rem]" />
               <div className="h-3 bg-muted rounded w-3/4 animate-pulse min-h-[0.75rem]" />
@@ -269,7 +269,7 @@ export const ActivitySection = () => {
           className="flex-1 flex items-center gap-4 p-4 min-w-0 cursor-pointer"
           onMouseEnter={handleSpotifyHover}
         >
-          <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-green-500/5 border border-green-500/10 text-green-500 transition-all duration-300 group-hover:bg-green-500/10 group-hover:border-green-500/20 group-hover:scale-105">
+          <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-muted/20 border border-border/40 text-muted-foreground transition-all duration-300 group-hover:bg-muted/30 group-hover:border-border/60 group-hover:scale-105">
             <Music className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
           </div>
           

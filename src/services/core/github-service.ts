@@ -17,7 +17,7 @@ const getFallbackCommit = (owner: string, repo: string): CommitData => ({
 });
 
 export const getLatestCommit = async (owner: string, repo: string): Promise<CommitData | null> => {
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
   
   if (!token || token === 'your_github_token_here') {
     console.log('No GitHub token configured, using fallback data');

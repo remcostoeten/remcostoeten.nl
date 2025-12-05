@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
-import { CodeBlock } from './code-block'
+import { ShikiCodeBlock } from './shiki-viewer/shiki-viewer'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -53,7 +53,7 @@ function Code({ children, ...props }) {
   // Extract the actual code string and language from the code element
   const codeElement = React.Children.toArray(children)[0] as React.ReactElement
   const codeProps = codeElement?.props || {}
-  
+
   // Handle nested children structure - MDX can nest content deeply
   const extractText = (node: any): string => {
     if (typeof node === 'string') return node
@@ -61,20 +61,15 @@ function Code({ children, ...props }) {
     if (node?.props?.children) return extractText(node.props.children)
     return ''
   }
-  
+
   const codeString = extractText(codeProps.children).replace(/\n$/, '') // Remove trailing newline
   const language = codeProps.className?.replace(/language-/, '') || 'text'
-  
+
   return (
-    <CodeBlock
+    <ShikiCodeBlock
       code={codeString}
       language={language}
       showLineNumbers={true}
-      enableLineHighlight={true}
-      enableLineHover={true}
-      showIcon={true}
-      showMetaInfo={true}
-      maxHeight="500px"
       className="my-6"
     />
   )

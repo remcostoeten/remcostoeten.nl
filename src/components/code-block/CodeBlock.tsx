@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDown,
   ArrowUp,
@@ -54,7 +53,7 @@ type TCustomTheme = { [key: string]: CSSProperties };
 
 const customTheme: TCustomTheme = {
   'code[class*="language-"]': {
-    color: "#f1f5f9",
+    color: "#d4d4d8",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -68,7 +67,7 @@ const customTheme: TCustomTheme = {
     hyphens: "none",
   },
   'pre[class*="language-"]': {
-    color: "#f1f5f9",
+    color: "#d4d4d8",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -84,79 +83,45 @@ const customTheme: TCustomTheme = {
     margin: "0.5em 0",
     overflow: "auto",
   },
-  comment: { color: "#636e7b", fontStyle: "italic" },
-  "block-comment": { color: "#636e7b", fontStyle: "italic" },
-  prolog: { color: "#636e7b" },
-  doctype: { color: "#636e7b" },
-  cdata: { color: "#636e7b" },
-  punctuation: { color: "#94a3b8" },
-  operator: { color: "#94a3b8" },
-  url: { color: "#94a3b8" },
-  tag: { color: "#f472b6" },
-  "attr-name": { color: "#f472b6" },
-  namespace: { color: "#f472b6" },
-  property: { color: "#f472b6" },
-  symbol: { color: "#f472b6" },
-  important: { color: "#f472b6", fontWeight: "bold" },
-  atrule: { color: "#f472b6" },
-  keyword: { color: "#f472b6" },
-  regex: { color: "#f472b6" },
-  entity: { color: "#f472b6", cursor: "help" },
-  "function-name": { color: "#60a5fa" },
-  function: { color: "#60a5fa" },
-  "class-name": { color: "#93c5fd" },
-  builtin: { color: "#93c5fd" },
-  boolean: { color: "#c084fc" },
-  number: { color: "#c084fc" },
-  constant: { color: "#c084fc" },
-  string: { color: "#a5b4fc" },
-  char: { color: "#a5b4fc" },
-  "attr-value": { color: "#a5b4fc" },
-  selector: { color: "#a5b4fc" },
+  comment: { color: "#71717a", fontStyle: "italic" },
+  "block-comment": { color: "#71717a", fontStyle: "italic" },
+  prolog: { color: "#71717a" },
+  doctype: { color: "#71717a" },
+  cdata: { color: "#71717a" },
+  punctuation: { color: "#a1a1aa" },
+  operator: { color: "#a1a1aa" },
+  url: { color: "#a1a1aa" },
+  tag: { color: "#d4d4d8" },
+  "attr-name": { color: "#d4d4d8" },
+  namespace: { color: "#d4d4d8" },
+  property: { color: "#d4d4d8" },
+  symbol: { color: "#d4d4d8" },
+  important: { color: "#d4d4d8", fontWeight: "bold" },
+  atrule: { color: "#d4d4d8" },
+  keyword: { color: "#d4d4d8" },
+  regex: { color: "#d4d4d8" },
+  entity: { color: "#d4d4d8", cursor: "help" },
+  "function-name": { color: "#d4d4d8" },
+  function: { color: "#d4d4d8" },
+  "class-name": { color: "#d4d4d8" },
+  builtin: { color: "#d4d4d8" },
+  boolean: { color: "#d4d4d8" },
+  number: { color: "#d4d4d8" },
+  constant: { color: "#d4d4d8" },
+  string: { color: "#a8a29e" },
+  char: { color: "#a8a29e" },
+  "attr-value": { color: "#a8a29e" },
+  selector: { color: "#a8a29e" },
   deleted: { color: "#ef4444" },
   inserted: { color: "#34d399" },
-  variable: { color: "#f1f5f9" },
+  variable: { color: "#d4d4d8" },
   bold: { fontWeight: "bold" },
   italic: { fontStyle: "italic" },
 };
 
 // ============================================================================
-// ANIMATIONS
+// CSS ANIMATIONS (moved to global.css)
 // ============================================================================
-
-const ANIMATIONS = {
-  collapse: {
-    collapsed: {
-      height: 0,
-      opacity: 0,
-      transition: {
-        height: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-        opacity: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-      },
-    },
-    expanded: {
-      height: "auto",
-      opacity: 1,
-      transition: {
-        height: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-        opacity: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-      },
-    },
-  },
-  copy: {
-    initial: { opacity: 0, scale: 0.96 },
-    animate: { opacity: 1, scale: 1, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } },
-    exit: { opacity: 0, scale: 0.96, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } },
-  },
-  toast: {
-    hidden: { opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } },
-    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
-  },
-  searchToggle: {
-    hidden: { maxWidth: 0, transition: { duration: 0.1, ease: [0.2, 0.9, 0.3, 1] } },
-    visible: { maxWidth: 320, transition: { duration: 0.1, ease: [0.2, 0.9, 0.3, 1] } },
-  },
-} as const;
 
 // ============================================================================
 // BUTTON COMPONENT
@@ -269,6 +234,9 @@ export function CodeBlock({
   const [searchResults, setSearchResults] = useState<number[]>([]);
   const [currentResultIndex, setCurrentResultIndex] = useState(-1);
   const [highlightedLines, setHighlightedLines] = useState<number[]>([]);
+  const [showSearchAnimation, setShowSearchAnimation] = useState(false);
+  const [showContentAnimation, setShowContentAnimation] = useState(true);
+  const [showToastAnimation, setShowToastAnimation] = useState(false);
 
   const codeRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -385,20 +353,45 @@ export function CodeBlock({
     disableTopBar,
   ]);
 
+  // Manage search animation state
+  useEffect(() => {
+    if (isSearching !== showSearchAnimation) {
+      const timer = setTimeout(() => setShowSearchAnimation(isSearching), 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isSearching, showSearchAnimation]);
+
+  // Manage content animation state
+  useEffect(() => {
+    if (!isCollapsed !== showContentAnimation) {
+      const timer = setTimeout(() => setShowContentAnimation(!isCollapsed), 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isCollapsed, showContentAnimation]);
+
+  // Manage toast animation state
+  useEffect(() => {
+    if (isCopied !== showToastAnimation) {
+      setShowToastAnimation(isCopied);
+      if (isCopied) {
+        const timer = setTimeout(() => setShowToastAnimation(false), 2000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isCopied, showToastAnimation]);
+
   function renderSearchUI() {
     return (
-      <AnimatePresence initial={false} mode="popLayout">
-        {!disableSearch && isSearching && (
-          <motion.div
-            key="code-search-ui"
-            variants={ANIMATIONS.searchToggle}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
+      <>
+        {!disableSearch && showSearchAnimation && (
+          <div
+            className={cn(
+              "flex-none flex items-center gap-2 bg-[#111111] rounded-lg border border-[#333333] p-1 h-8",
+              showSearchAnimation && "codeblock-search-toggle"
+            )}
             role="search"
             aria-label="Code search"
             style={{ overflow: 'hidden', willChange: 'max-width' }}
-            className="flex-none flex items-center gap-2 bg-[#111111] rounded-lg border border-[#333333] p-1 h-8"
           >
             <div className="relative">
               <input
@@ -458,9 +451,9 @@ export function CodeBlock({
             >
               <X size={14} />
             </Button>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     );
   }
 
@@ -495,7 +488,7 @@ export function CodeBlock({
               )}
             </div>
 
-            <motion.div className="flex items-center space-x-1.5 h-8">
+            <div className="flex items-center space-x-1.5 h-8">
               <div className="w-8 h-8 flex items-center justify-center">
                 {!disableSearch && (
                   <Button
@@ -521,13 +514,9 @@ export function CodeBlock({
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 className="relative h-8 w-8 text-zinc-500 hover:text-zinc-200 rounded-md transition-all duration-200 hover:bg-white/10"
               >
-                <motion.div
-                  initial={false}
-                  animate={{ rotate: isCollapsed ? 0 : 180 }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                >
+                <div className={cn(isCollapsed && "codeblock-chevron-rotate")}>
                   <ChevronDown size={16} />
-                </motion.div>
+                </div>
               </Button>
 
               {!disableCopy && (
@@ -538,36 +527,26 @@ export function CodeBlock({
                   className="relative h-8 w-8 text-zinc-500 hover:text-zinc-200 rounded-md transition-all duration-200 hover:bg-white/10"
                   title="Copy code (⌘/Ctrl + C)"
                 >
-                  <AnimatePresence mode="wait">
-                    {isCopied ? (
-                      <motion.div
-                        key="check"
-                        variants={ANIMATIONS.copy}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        className="text-emerald-400"
-                      >
-                        <Check size={16} />
-                      </motion.div>
-                    ) : (
-                      <Copy size={16} />
-                    )}
-                  </AnimatePresence>
+                  {isCopied ? (
+                    <div className={cn("text-emerald-400", "codeblock-copy-success")}>
+                      <Check size={16} />
+                    </div>
+                  ) : (
+                    <Copy size={16} />
+                  )}
                 </Button>
               )}
-            </motion.div>
+            </div>
           </header>
         )}
 
-        <AnimatePresence initial={false}>
-          {!isCollapsed && (
-            <motion.div
-              initial="collapsed"
-              animate="expanded"
-              exit="collapsed"
-              variants={ANIMATIONS.collapse}
-              className="overflow-hidden"
+        <>
+          {showContentAnimation && (
+            <div
+              className={cn(
+                "overflow-hidden",
+                showContentAnimation && "codeblock-expand"
+              )}
             >
               <div className="relative" ref={codeRef}>
                 {showLineNumbers && (
@@ -604,9 +583,9 @@ export function CodeBlock({
                         style: {
                           display: "block",
                           backgroundColor: highlightedLines.includes(lineNumber)
-                            ? "rgba(59, 130, 246, 0.15)"
+                            ? "rgba(212, 212, 216, 0.15)"
                             : searchResults.includes(lineNumber)
-                            ? "rgba(59, 130, 246, 0.1)"
+                            ? "rgba(212, 212, 216, 0.1)"
                             : "transparent",
                         },
                         "data-line-number": lineNumber,
@@ -619,25 +598,24 @@ export function CodeBlock({
                   )}
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
       </div>
 
-      <AnimatePresence>
-        {isCopied && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={ANIMATIONS.toast}
-            className="absolute top-3 right-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#333333] shadow-lg"
+      <>
+        {showToastAnimation && (
+          <div
+            className={cn(
+              "absolute top-3 right-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#333333] shadow-lg",
+              showToastAnimation && "codeblock-toast"
+            )}
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             <span className="text-sm font-medium text-zinc-200">Copied to clipboard</span>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
     </div>
   );
 }

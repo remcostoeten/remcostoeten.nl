@@ -244,45 +244,159 @@
 	display: none;  /* Safari and Chrome */
 }
 
+/* Code Block Animations */
+@keyframes codeblock-enter {
+	0% { opacity: 0; transform: translateY(8px); }
+	100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes codeblock-exit {
+	0% { opacity: 1; transform: translateY(0); }
+	100% { opacity: 0; transform: translateY(-4px); }
+}
+
+@keyframes codeblock-collapse {
+	0% { opacity: 1; max-height: 1000px; }
+	100% { opacity: 0; max-height: 0; }
+}
+
+@keyframes codeblock-expand {
+	0% { opacity: 0; max-height: 0; }
+	100% { opacity: 1; max-height: 1000px; }
+}
+
+@keyframes codeblock-copy-success {
+	0% { opacity: 0; transform: scale(0.8); }
+	50% { opacity: 1; transform: scale(1.1); }
+	100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes codeblock-search-toggle {
+	0% { max-width: 0; opacity: 0; }
+	100% { max-width: 320px; opacity: 1; }
+}
+
+@keyframes codeblock-toast {
+	0% { opacity: 0; transform: translateY(-8px) scale(0.95); }
+	100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes codeblock-chevron-rotate {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(180deg); }
+}
+
+/* Code Block Animation Classes */
+.codeblock-enter {
+	animation: codeblock-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+	will-change: opacity, transform;
+}
+
+.codeblock-exit {
+	animation: codeblock-exit 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
+	will-change: opacity, transform;
+}
+
+.codeblock-collapse {
+	animation: codeblock-collapse 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	will-change: opacity, max-height;
+}
+
+.codeblock-expand {
+	animation: codeblock-expand 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	will-change: opacity, max-height;
+}
+
+.codeblock-copy-success {
+	animation: codeblock-copy-success 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: opacity, transform;
+}
+
+.codeblock-search-toggle {
+	animation: codeblock-search-toggle 0.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+	will-change: max-width, opacity;
+}
+
+.codeblock-toast {
+	animation: codeblock-toast 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: opacity, transform;
+}
+
+.codeblock-chevron-rotate {
+	animation: codeblock-chevron-rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	will-change: transform;
+}
+
 /* Code block line highlighting */
 .bcv2-code-line {
-	transition: background-color 0.2s ease;
+	transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: background-color;
 }
 
 .bcv2-code-line:hover {
-	background-color: var(--bcv2-hover-color, rgba(255, 255, 255, 0.06));
+	background-color: var(--bcv2-hover-color, rgba(212, 212, 216, 0.1));
 }
 
 .bcv2-code-line.bcv2-clicked {
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(212, 212, 216, 0.15);
 }
 
 .bcv2-code-line.bcv2-search {
-	background-color: rgba(59, 130, 246, 0.15);
+	background-color: rgba(212, 212, 216, 0.12);
 }
 
 /* Dark mode adjustments for code block */
 .dark .bcv2-code-line:hover {
-	background-color: var(--bcv2-hover-color, rgba(255, 255, 255, 0.06));
+	background-color: var(--bcv2-hover-color, rgba(212, 212, 216, 0.1));
 }
 
 .dark .bcv2-code-line.bcv2-clicked {
-	background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(212, 212, 216, 0.15);
 }
 
 .dark .bcv2-code-line.bcv2-search {
-	background-color: rgba(59, 130, 246, 0.15);
+	background-color: rgba(212, 212, 216, 0.12);
 }
 
 /* Light mode adjustments */
 .bcv2-code-line:hover {
-	background-color: var(--bcv2-hover-color, rgba(0, 0, 0, 0.03));
+	background-color: var(--bcv2-hover-color, rgba(72, 72, 74, 0.08));
 }
 
 .bcv2-code-line.bcv2-clicked {
-	background-color: rgba(0, 0, 0, 0.05);
+	background-color: rgba(72, 72, 74, 0.12);
 }
 
 .bcv2-code-line.bcv2-search {
-	background-color: rgba(59, 130, 246, 0.1);
+	background-color: rgba(72, 72, 74, 0.1);
+}
+
+/* Code block container transitions */
+.codeblock-container {
+	transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: border-color;
+}
+
+.codeblock-header {
+	transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: background-color;
+}
+
+.codeblock-button {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: opacity, transform, background-color, color;
+}
+
+.codeblock-search-input {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: background-color, color, border-color;
+}
+
+/* Performance optimizations */
+.codeblock-content {
+	contain: layout style paint;
+}
+
+.codeblock-syntax {
+	contain: layout style;
 }

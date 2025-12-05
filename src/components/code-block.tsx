@@ -29,7 +29,6 @@
 
 'use client';
 
-import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDown,
   ArrowUp,
@@ -112,10 +111,10 @@ function useIsDarkMode() {
 
 type TCustomTheme = { [key: string]: CSSProperties };
 
-// Dark theme (existing)
+// Dark theme - One Dark Pro inspired with colorful syntax highlighting
 const customTheme: TCustomTheme = {
   'code[class*="language-"]': {
-    color: "#f1f5f9",
+    color: "#abb2bf",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -129,7 +128,7 @@ const customTheme: TCustomTheme = {
     hyphens: "none",
   },
   'pre[class*="language-"]': {
-    color: "#f1f5f9",
+    color: "#abb2bf",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -145,52 +144,46 @@ const customTheme: TCustomTheme = {
     margin: "0.5em 0",
     overflow: "auto",
   },
-  // Simplified color scheme - merged similar elements
-  comment: { color: "#636e7b", fontStyle: "italic" },
-  "block-comment": { color: "#636e7b", fontStyle: "italic" },
-  prolog: { color: "#636e7b" },
-  doctype: { color: "#636e7b" },
-  cdata: { color: "#636e7b" },
-  punctuation: { color: "#94a3b8" },
-  operator: { color: "#94a3b8" },
-  url: { color: "#94a3b8" },
-  // Pink/magenta elements
-  tag: { color: "#f472b6" },
-  "attr-name": { color: "#f472b6" },
-  namespace: { color: "#f472b6" },
-  property: { color: "#f472b6" },
-  symbol: { color: "#f472b6" },
-  important: { color: "#f472b6", fontWeight: "bold" },
-  atrule: { color: "#f472b6" },
-  keyword: { color: "#f472b6" },
-  regex: { color: "#f472b6" },
-  entity: { color: "#f472b6", cursor: "help" },
-  // Blue elements
-  "function-name": { color: "#60a5fa" },
-  function: { color: "#60a5fa" },
-  "class-name": { color: "#93c5fd" },
-  builtin: { color: "#93c5fd" },
-  // Purple elements
-  boolean: { color: "#c084fc" },
-  number: { color: "#c084fc" },
-  constant: { color: "#c084fc" },
-  // String elements
-  string: { color: "#a5b4fc" },
-  char: { color: "#a5b4fc" },
-  "attr-value": { color: "#a5b4fc" },
-  selector: { color: "#a5b4fc" },
-  // Other
-  deleted: { color: "#ef4444" },
-  inserted: { color: "#34d399" },
-  variable: { color: "#f1f5f9" },
+  comment: { color: "#5c6370", fontStyle: "italic" },
+  "block-comment": { color: "#5c6370", fontStyle: "italic" },
+  prolog: { color: "#5c6370" },
+  doctype: { color: "#5c6370" },
+  cdata: { color: "#5c6370" },
+  punctuation: { color: "#abb2bf" },
+  operator: { color: "#56b6c2" },
+  url: { color: "#56b6c2" },
+  tag: { color: "#e06c75" },
+  "attr-name": { color: "#d19a66" },
+  namespace: { color: "#e5c07b" },
+  property: { color: "#e06c75" },
+  symbol: { color: "#61afef" },
+  important: { color: "#c678dd", fontWeight: "bold" },
+  atrule: { color: "#c678dd" },
+  keyword: { color: "#c678dd" },
+  regex: { color: "#98c379" },
+  entity: { color: "#61afef", cursor: "help" },
+  "function-name": { color: "#61afef" },
+  function: { color: "#61afef" },
+  "class-name": { color: "#e5c07b" },
+  builtin: { color: "#e5c07b" },
+  boolean: { color: "#d19a66" },
+  number: { color: "#d19a66" },
+  constant: { color: "#d19a66" },
+  string: { color: "#98c379" },
+  char: { color: "#98c379" },
+  "attr-value": { color: "#98c379" },
+  selector: { color: "#e06c75" },
+  deleted: { color: "#e06c75" },
+  inserted: { color: "#98c379" },
+  variable: { color: "#e06c75" },
   bold: { fontWeight: "bold" },
   italic: { fontStyle: "italic" },
 };
 
-// Light theme
+// Light theme - GitHub Light inspired with colorful syntax highlighting
 const customThemeLight: TCustomTheme = {
   'code[class*="language-"]': {
-    color: "#0f172a",
+    color: "#24292f",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -204,7 +197,7 @@ const customThemeLight: TCustomTheme = {
     hyphens: "none",
   },
   'pre[class*="language-"]': {
-    color: "#0f172a",
+    color: "#24292f",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -220,38 +213,38 @@ const customThemeLight: TCustomTheme = {
     margin: "0.5em 0",
     overflow: "auto",
   },
-  comment: { color: "#64748b", fontStyle: "italic" },
-  "block-comment": { color: "#64748b", fontStyle: "italic" },
-  prolog: { color: "#64748b" },
-  doctype: { color: "#64748b" },
-  cdata: { color: "#64748b" },
-  punctuation: { color: "#475569" },
-  operator: { color: "#475569" },
-  url: { color: "#475569" },
-  tag: { color: "#c026d3" },
-  "attr-name": { color: "#c026d3" },
-  namespace: { color: "#c026d3" },
-  property: { color: "#c026d3" },
-  symbol: { color: "#c026d3" },
-  important: { color: "#7c3aed", fontWeight: "bold" },
-  atrule: { color: "#7c3aed" },
-  keyword: { color: "#7c3aed" },
-  regex: { color: "#7c3aed" },
-  entity: { color: "#7c3aed", cursor: "help" },
-  "function-name": { color: "#2563eb" },
-  function: { color: "#2563eb" },
-  "class-name": { color: "#1d4ed8" },
-  builtin: { color: "#1d4ed8" },
-  boolean: { color: "#9333ea" },
-  number: { color: "#9333ea" },
-  constant: { color: "#9333ea" },
-  string: { color: "#16a34a" },
-  char: { color: "#16a34a" },
-  "attr-value": { color: "#16a34a" },
-  selector: { color: "#16a34a" },
-  deleted: { color: "#dc2626" },
-  inserted: { color: "#059669" },
-  variable: { color: "#0f172a" },
+  comment: { color: "#6e7781", fontStyle: "italic" },
+  "block-comment": { color: "#6e7781", fontStyle: "italic" },
+  prolog: { color: "#6e7781" },
+  doctype: { color: "#6e7781" },
+  cdata: { color: "#6e7781" },
+  punctuation: { color: "#24292f" },
+  operator: { color: "#0550ae" },
+  url: { color: "#0550ae" },
+  tag: { color: "#116329" },
+  "attr-name": { color: "#0550ae" },
+  namespace: { color: "#953800" },
+  property: { color: "#0550ae" },
+  symbol: { color: "#0550ae" },
+  important: { color: "#8250df", fontWeight: "bold" },
+  atrule: { color: "#8250df" },
+  keyword: { color: "#cf222e" },
+  regex: { color: "#0a3069" },
+  entity: { color: "#0550ae", cursor: "help" },
+  "function-name": { color: "#8250df" },
+  function: { color: "#8250df" },
+  "class-name": { color: "#953800" },
+  builtin: { color: "#953800" },
+  boolean: { color: "#0550ae" },
+  number: { color: "#0550ae" },
+  constant: { color: "#0550ae" },
+  string: { color: "#0a3069" },
+  char: { color: "#0a3069" },
+  "attr-value": { color: "#0a3069" },
+  selector: { color: "#116329" },
+  deleted: { color: "#82071e" },
+  inserted: { color: "#116329" },
+  variable: { color: "#953800" },
   bold: { fontWeight: "bold" },
   italic: { fontStyle: "italic" },
 };
@@ -284,42 +277,8 @@ function SimpleIcon({
 }
 
 // ============================================================================
-// OPTIMIZED ANIMATIONS
+// CSS ANIMATIONS (moved to global.css)
 // ============================================================================
-
-const ANIMATIONS = {
-  collapse: {
-    collapsed: {
-      height: 0,
-      opacity: 0,
-      transition: {
-        height: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-        opacity: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-      },
-    },
-    expanded: {
-      height: "auto",
-      opacity: 1,
-      transition: {
-        height: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
-        opacity: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-      },
-    },
-  },
-  copy: {
-    initial: { opacity: 0, scale: 0.96 },
-    animate: { opacity: 1, scale: 1, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } },
-    exit: { opacity: 0, scale: 0.96, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } },
-  },
-  toast: {
-    hidden: { opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.2, ease: [0.16, 1, 0.3, 1] } },
-    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
-  },
-  searchToggle: {
-    hidden: { maxWidth: 0, transition: { duration: 0.1, ease: [0.2, 0.9, 0.3, 1] } },
-    visible: { maxWidth: 320, transition: { duration: 0.1, ease: [0.2, 0.9, 0.3, 1] } },
-  },
-} as const;
 
 // ============================================================================
 // SIMPLIFIED BUTTON COMPONENT
@@ -533,7 +492,7 @@ export function CodeBlock({
   disableCopy = false,
   disableTopBar = false,
 }: TCodeBlockProps) {
-// State management
+  // State management
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -549,6 +508,9 @@ export function CodeBlock({
   const [hasResultsBelow, setHasResultsBelow] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDimensions, setResizeDimensions] = useState({ width: width || 'auto', height: height || '400px' });
+  const [showSearchAnimation, setShowSearchAnimation] = useState(isSearching);
+  const [showContentAnimation, setShowContentAnimation] = useState(!isCollapsed);
+  const [showToastAnimation, setShowToastAnimation] = useState(false);
 
   // Theme detection
   const isDark = useIsDarkMode();
@@ -575,17 +537,17 @@ export function CodeBlock({
     if (highlightedLines.includes(lineNumber)) {
       return isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)";
     }
-    
+
     // Priority 2: Search results (medium priority)
     if (searchResults.includes(lineNumber)) {
-      return isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.1)";
+      return isDark ? "rgba(212, 212, 216, 0.15)" : "rgba(72, 72, 74, 0.1)";
     }
-    
+
     // Priority 3: Hover state (lowest priority)
     if (enableLineHover && hoveredLine === lineNumber) {
       return hoverHighlightColor || (isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.03)");
     }
-    
+
     return "transparent";
   }, [highlightedLines, searchResults, hoveredLine, enableLineHover, hoverHighlightColor, isDark]);
 
@@ -683,7 +645,7 @@ export function CodeBlock({
     const lineElement = codeRef.current?.querySelector(`[data-line-number="${lineNumber}"]`);
     if (lineElement) {
       lineElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      
+
       // Update indicators after scrolling
       setTimeout(() => {
         updateSearchIndicators();
@@ -724,34 +686,34 @@ export function CodeBlock({
     e.preventDefault();
     const container = containerRef.current;
     const rect = container.getBoundingClientRect();
-    
+
     // Get parent container bounds
     const parentContainer = container.parentElement;
     const parentRect = parentContainer?.getBoundingClientRect();
-    
+
     // Calculate new dimensions
     // Width: distance from left edge to mouse X
     const newWidth = Math.max(200, e.clientX - rect.left);
     // Height: distance from top edge to mouse Y (for bottom-right corner resize)
     const newHeight = Math.max(150, e.clientY - rect.top);
-    
+
     // Constrain to parent container if it exists
     let constrainedWidth = newWidth;
     let constrainedHeight = newHeight;
-    
+
     if (parentRect) {
       const maxWidth = parentRect.width - (rect.left - parentRect.left);
       const maxHeight = parentRect.height - (rect.top - parentRect.top);
-      
+
       constrainedWidth = Math.min(newWidth, maxWidth);
       constrainedHeight = Math.min(newHeight, maxHeight);
     }
-    
+
     const dimensions = {
       width: `${constrainedWidth}px`,
       height: `${constrainedHeight}px`
     };
-    
+
     setResizeDimensions(dimensions);
     saveDimensions(dimensions);
   }, [isResizing, saveDimensions]);
@@ -772,7 +734,7 @@ export function CodeBlock({
       document.addEventListener('mouseup', handleResizeEnd);
       document.body.style.cursor = 'nw-resize';
       document.body.style.userSelect = 'none';
-      
+
       return () => {
         document.removeEventListener('mousemove', handleResize);
         document.removeEventListener('mouseup', handleResizeEnd);
@@ -837,6 +799,33 @@ export function CodeBlock({
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, [updateSearchIndicators]);
+
+  // Manage search animation state
+  useEffect(() => {
+    if (isSearching !== showSearchAnimation) {
+      const timer = setTimeout(() => setShowSearchAnimation(isSearching), 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isSearching, showSearchAnimation]);
+
+  // Manage content animation state
+  useEffect(() => {
+    if (isCollapsed !== showContentAnimation) {
+      const timer = setTimeout(() => setShowContentAnimation(!isCollapsed), 10);
+      return () => clearTimeout(timer);
+    }
+  }, [isCollapsed, showContentAnimation]);
+
+  // Manage toast animation state
+  useEffect(() => {
+    if (isCopied !== showToastAnimation) {
+      setShowToastAnimation(isCopied);
+      if (isCopied) {
+        const timer = setTimeout(() => setShowToastAnimation(false), 2000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isCopied, showToastAnimation]);
 
   // Copy to clipboard
   const copyToClipboard = useCallback(async () => {
@@ -1047,9 +1036,9 @@ export function CodeBlock({
         className
       )}
       style={{
-        '--bcv2-bg-color': isDark ? "#0f172a" : "#ffffff",
-        '--bcv2-border-color': isDark ? "#1e293b" : "#e2e8f0",
-        '--bcv2-border-color-hover': isDark ? "#334155" : "#cbd5e1",
+        '--bcv2-bg-color': isDark ? "#09090b" : "#ffffff",
+        '--bcv2-border-color': isDark ? "#27272a" : "#e4e4e7",
+        '--bcv2-border-color-hover': isDark ? "#3f3f46" : "#d4d4d8",
         '--bcv2-hover-color': hoverHighlightColor || (isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.03)"),
         width: resizeDimensions.width,
         height: resizeDimensions.height,
@@ -1063,7 +1052,7 @@ export function CodeBlock({
         <div
           className="flex items-center justify-between px-4 py-2 border-b border-[var(--bcv2-border-color)]"
           style={{
-            background: isDark ? "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)" : "linear-gradient(135deg, #f8fafc 0%, #ffffff 100%)",
+            background: isDark ? "linear-gradient(135deg, #18181b 0%, #09090b 100%)" : "linear-gradient(135deg, #fafafa 0%, #ffffff 100%)",
           }}
         >
           <div className="flex items-center gap-3 flex-1">
@@ -1127,14 +1116,13 @@ export function CodeBlock({
           <div className="flex items-center gap-2">
             {/* Search */}
             {!disableSearch && (
-              <AnimatePresence>
-                {isSearching && (
-                  <motion.div
-                    className="flex items-center gap-2"
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    variants={ANIMATIONS.searchToggle}
+              <>
+                {showSearchAnimation && (
+                  <div
+                    className={cn(
+                      "flex items-center gap-2",
+                      showSearchAnimation && "codeblock-search-toggle"
+                    )}
                   >
                     <div className="relative">
                       <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[var(--bcv2-search-icon-color)]" size={14} />
@@ -1145,11 +1133,11 @@ export function CodeBlock({
                         placeholder="Search..."
                         className="w-32 h-7 pl-7 pr-2 text-xs rounded border border-[var(--bcv2-border-color)] bg-[var(--bcv2-search-bg)] text-[var(--bcv2-search-text)] placeholder-[var(--bcv2-search-placeholder)] focus:outline-none focus:ring-1 focus:ring-[var(--bcv2-search-ring)]"
                         style={{
-                          '--bcv2-search-bg': isDark ? "#1e293b" : "#f8fafc",
-                          '--bcv2-search-text': isDark ? "#f1f5f9" : "#0f172a",
+                          '--bcv2-search-bg': isDark ? "#18181b" : "#fafafa",
+                          '--bcv2-search-text': isDark ? "#fafafa" : "#09090b",
                           '--bcv2-search-placeholder': isDark ? "#64748b" : "#94a3b8",
                           '--bcv2-search-icon-color': isDark ? "#64748b" : "#94a3b8",
-                          '--bcv2-search-ring': isDark ? "#3b82f6" : "#2563eb",
+                          '--bcv2-search-ring': isDark ? "#71717a" : "#a1a1aa",
                         } as CSSProperties}
                         autoFocus
                       />
@@ -1192,9 +1180,9 @@ export function CodeBlock({
                     >
                       <X size={12} />
                     </Button>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              </>
             )}
 
             {/* Search Toggle */}
@@ -1203,7 +1191,7 @@ export function CodeBlock({
                 size="icon"
                 variant="ghost"
                 onClick={() => setIsSearching(true)}
-                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-7 w-7"
               >
                 <Search size={14} />
               </Button>
@@ -1215,31 +1203,17 @@ export function CodeBlock({
                 size="icon"
                 variant="ghost"
                 onClick={copyToClipboard}
-                className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-7 w-7"
               >
-                <AnimatePresence mode="wait">
-                  {isCopied ? (
-                    <motion.div
-                      key="copied"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Check size={14} />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="copy"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Copy size={14} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {isCopied ? (
+                  <div className={cn("codeblock-copy-success")}>
+                    <Check size={14} />
+                  </div>
+                ) : (
+                  <div>
+                    <Copy size={14} />
+                  </div>
+                )}
               </Button>
             )}
 
@@ -1248,29 +1222,25 @@ export function CodeBlock({
               size="icon"
               variant="ghost"
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="h-7 w-7"
             >
-              <motion.div
-                animate={{ rotate: isCollapsed ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
+              <div className={cn(isCollapsed && "codeblock-chevron-rotate")}>
                 <ChevronDown size={14} />
-              </motion.div>
+              </div>
             </Button>
           </div>
         </div>
       )}
 
       {/* Code Content */}
-      <AnimatePresence>
-        {!isCollapsed && (
-          <motion.div
-            initial="collapsed"
-            animate="expanded"
-            exit="collapsed"
-            variants={ANIMATIONS.collapse}
+      <>
+        {showContentAnimation && (
+          <div
+            className={cn(
+              "relative overflow-auto",
+              showContentAnimation && "codeblock-expand"
+            )}
             style={{ maxHeight: height || maxHeight }}
-            className="relative overflow-auto"
           >
             {/* Search Indicators */}
             {searchResults.length > 0 && (hasResultsAbove || hasResultsBelow) && (
@@ -1304,9 +1274,9 @@ export function CodeBlock({
                 children: code
               })}
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </>
 
       {/* Resize Handle */}
       {resizable && (
