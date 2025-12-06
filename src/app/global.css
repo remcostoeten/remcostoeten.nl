@@ -135,27 +135,61 @@
 	.font-brand {
 		font-family: Georgia, 'Playfair Display', 'Times New Roman', serif;
 	}
+
+	.font-reading {
+		font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+	}
 }
+
+@plugin '@tailwindcss/typography';
 
 /* Page Transition Animations - matching SPA behavior */
 @keyframes enter {
-	0% { opacity: 0; transform: translateY(8px); }
-	100% { opacity: 1; transform: translateY(0); }
+	0% {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes exit {
-	0% { opacity: 1; transform: translateY(0); }
-	100% { opacity: 0; transform: translateY(-4px); }
+	0% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
 }
 
 @keyframes stagger-in {
-	0% { opacity: 0; transform: translateY(12px); }
-	100% { opacity: 1; transform: translateY(0); }
+	0% {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes wiggle {
-	0%, 100% { transform: rotate(-12deg); }
-	50% { transform: rotate(12deg); }
+
+	0%,
+	100% {
+		transform: rotate(-12deg);
+	}
+
+	50% {
+		transform: rotate(12deg);
+	}
 }
 
 .animate-enter {
@@ -180,8 +214,15 @@
 
 /* Prevent layout shifts during animations */
 @keyframes music-bar {
-	0%, 100% { height: 25%; }
-	50% { height: 100%; }
+
+	0%,
+	100% {
+		height: 25%;
+	}
+
+	50% {
+		height: 100%;
+	}
 }
 
 /* Improve animation performance */
@@ -191,8 +232,15 @@
 
 /* Contain animations to prevent layout shifts */
 @keyframes music-bar {
-	0%, 100% { height: 25%; }
-	50% { height: 100%; }
+
+	0%,
+	100% {
+		height: 25%;
+	}
+
+	50% {
+		height: 100%;
+	}
 }
 
 /* Improve animation performance */
@@ -226,64 +274,149 @@
 }
 
 /* Stagger delays for list items */
-.stagger-1 { animation-delay: 50ms; }
-.stagger-2 { animation-delay: 100ms; }
-.stagger-3 { animation-delay: 150ms; }
-.stagger-4 { animation-delay: 200ms; }
-.stagger-5 { animation-delay: 250ms; }
-.stagger-6 { animation-delay: 300ms; }
-.stagger-7 { animation-delay: 350ms; }
-.stagger-8 { animation-delay: 400ms; }
+.stagger-1 {
+	animation-delay: 50ms;
+}
+
+.stagger-2 {
+	animation-delay: 100ms;
+}
+
+.stagger-3 {
+	animation-delay: 150ms;
+}
+
+.stagger-4 {
+	animation-delay: 200ms;
+}
+
+.stagger-5 {
+	animation-delay: 250ms;
+}
+
+.stagger-6 {
+	animation-delay: 300ms;
+}
+
+.stagger-7 {
+	animation-delay: 350ms;
+}
+
+.stagger-8 {
+	animation-delay: 400ms;
+}
 
 /* Beautiful CodeBlock Utilities */
 .scrollbar-hide {
-	-ms-overflow-style: none;  /* Internet Explorer 10+ */
-	scrollbar-width: none;  /* Firefox */
+	-ms-overflow-style: none;
+	/* Internet Explorer 10+ */
+	scrollbar-width: none;
+	/* Firefox */
 }
-.scrollbar-hide::-webkit-scrollbar { 
-	display: none;  /* Safari and Chrome */
+
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;
+	/* Safari and Chrome */
 }
 
 /* Code Block Animations */
 @keyframes codeblock-enter {
-	0% { opacity: 0; transform: translateY(8px); }
-	100% { opacity: 1; transform: translateY(0); }
+	0% {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 @keyframes codeblock-exit {
-	0% { opacity: 1; transform: translateY(0); }
-	100% { opacity: 0; transform: translateY(-4px); }
+	0% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translateY(-4px);
+	}
 }
 
 @keyframes codeblock-collapse {
-	0% { opacity: 1; max-height: 1000px; }
-	100% { opacity: 0; max-height: 0; }
+	0% {
+		opacity: 1;
+		max-height: 1000px;
+	}
+
+	100% {
+		opacity: 0;
+		max-height: 0;
+	}
 }
 
 @keyframes codeblock-expand {
-	0% { opacity: 0; max-height: 0; }
-	100% { opacity: 1; max-height: 1000px; }
+	0% {
+		opacity: 0;
+		max-height: 0;
+	}
+
+	100% {
+		opacity: 1;
+		max-height: 1000px;
+	}
 }
 
 @keyframes codeblock-copy-success {
-	0% { opacity: 0; transform: scale(0.8); }
-	50% { opacity: 1; transform: scale(1.1); }
-	100% { opacity: 1; transform: scale(1); }
+	0% {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+
+	50% {
+		opacity: 1;
+		transform: scale(1.1);
+	}
+
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
 
 @keyframes codeblock-search-toggle {
-	0% { max-width: 0; opacity: 0; }
-	100% { max-width: 320px; opacity: 1; }
+	0% {
+		max-width: 0;
+		opacity: 0;
+	}
+
+	100% {
+		max-width: 320px;
+		opacity: 1;
+	}
 }
 
 @keyframes codeblock-toast {
-	0% { opacity: 0; transform: translateY(-8px) scale(0.95); }
-	100% { opacity: 1; transform: translateY(0) scale(1); }
+	0% {
+		opacity: 0;
+		transform: translateY(-8px) scale(0.95);
+	}
+
+	100% {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }
 
 @keyframes codeblock-chevron-rotate {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(180deg); }
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(180deg);
+	}
 }
 
 /* Code Block Animation Classes */

@@ -56,9 +56,9 @@ export default function RootLayout({
         GeistMono.variable
       )}
     >
-      <body className="antialiased bg-background text-foreground"> 
+      <body className="antialiased bg-background text-foreground">
         <div className="min-h-screen w-full flex flex-col">
-          <main className="px-6 py-8 md:px-12 md:py-12 max-w-3xl mx-auto w-full grow">
+          <main className="px-6 py-8 md:px-12 md:py-12 max-w-5xl mx-auto w-full grow">
             <PageTransition>
               {children}
             </PageTransition>

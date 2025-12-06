@@ -97,11 +97,11 @@ export function ShikiCodeBlock({
 
     return (
         <div className={cn(
-            "shiki-code-block rounded-lg border border-[#2d2d2d] bg-[#1e1e1e] overflow-hidden my-4",
+            "shiki-code-block rounded-lg border border-[#222] bg-[#09090b] overflow-hidden my-6",
             className
         )}>
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-[#2d2d2d]">
+            <div className="flex items-center justify-between px-4 py-2 bg-[#09090b] border-b border-[#222]">
                 <div className="flex items-center gap-3">
                     {filename && (
                         <>
