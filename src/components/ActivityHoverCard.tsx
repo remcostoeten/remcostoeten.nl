@@ -43,7 +43,6 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
   const commit = data as CommitData & { projectName?: string; color?: string };
   const track = data as SpotifyTrack;
 
-  // Calculate dynamic positioning to keep card in viewport and follow mouse
   const getCardPosition = () => {
     const cardWidth = 340; // Approximate card width
     const cardHeight = 200; // Approximate card height
@@ -52,22 +51,18 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
     let x = position.x + offset;
     let y = position.y + offset;
 
-    // Check if card would go off right edge
     if (x + cardWidth > window.innerWidth - 20) {
       x = position.x - cardWidth - offset;
     }
 
-    // Check if card would go off left edge
     if (x < 20) {
       x = 20;
     }
 
-    // Check if card would go off bottom edge
     if (y + cardHeight > window.innerHeight - 20) {
       y = position.y - cardHeight - offset;
     }
 
-    // Check if card would go off top edge
     if (y < 20) {
       y = 20;
     }
@@ -91,9 +86,7 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
         exit="exit"
       >
         <div className="relative">
-          {/* Main card */}
           <div className="relative bg-background border border-border rounded-xl shadow-lg overflow-hidden min-w-[300px] max-w-[380px]">
-            {/* Header */}
             <div className="px-4 py-3 border-b border-border/50 bg-muted/30">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-muted/50 text-muted-foreground">
@@ -110,9 +103,7 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
               </div>
             </div>
 
-            {/* Content */}
             <div className="px-4 py-3 space-y-3">
-              {/* Main info */}
               <div>
                 <div className="text-sm font-medium text-foreground leading-relaxed">
                   {isGitHub ? commit.message.split('\n')[0] : track.name}
@@ -125,15 +116,12 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
                 )}
               </div>
 
-              {/* Metadata grid */}
               <div className="grid grid-cols-2 gap-3">
-                {/* Time */}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock className="w-3 h-3" />
                   <span>{getRelativeTime(isGitHub ? commit.date : track.played_at)}</span>
                 </div>
 
-                {/* Date */}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Calendar className="w-3 h-3" />
                   <span>
@@ -144,7 +132,6 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
                   </span>
                 </div>
 
-                {/* Author (GitHub only) */}
                 {isGitHub && commit.author && (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <User className="w-3 h-3" />
@@ -152,7 +139,6 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
                   </div>
                 )}
 
-                {/* Hash/URL */}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   {isGitHub ? <Code className="w-3 h-3" /> : <ExternalLink className="w-3 h-3" />}
                   <span className="font-mono">
@@ -161,7 +147,6 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
                 </div>
               </div>
 
-              {/* URL link indicator */}
               <div className="flex items-center justify-between pt-2 border-t border-border/50">
                 <div className="text-xs text-muted-foreground/70">
                   {isGitHub ? 'View commit details' : 'Listen on Spotify'}

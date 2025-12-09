@@ -18,7 +18,6 @@ interface GitHubCommit {
     };
 }
 
-// Get latest commit for a repository
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -43,12 +42,10 @@ export async function GET(request: NextRequest) {
             headers['Authorization'] = `token ${token}`;
         }
 
-        // Fetch latest commit for the repository
         const response = await fetch(
             `${GITHUB_API_BASE}/repos/${owner}/${repo}/commits?per_page=1`,
             {
                 headers,
-                // Cache for 5 minutes to avoid rate limiting
                 next: { revalidate: 300 }
             }
         );
@@ -56,7 +53,6 @@ export async function GET(request: NextRequest) {
         if (!response.ok) {
             const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
 
-            // For 404 (repository not found), return gracefully
             if (response.status === 404) {
                 console.log(`Repository ${owner}/${repo} not found (404)`);
                 return NextResponse.json({

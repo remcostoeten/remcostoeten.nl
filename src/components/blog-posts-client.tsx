@@ -33,16 +33,13 @@ function BlogCard({ post, index }: BlogCardProps) {
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
   const [shouldAnimateNumbers, setShouldAnimateNumbers] = useState(false)
 
-  // Calculate animation duration for index (staggered)
   const indexDuration = 800 + (index * 100)
 
-  // Format date for AnimatedNumber (extract day number)
   const dateObj = new Date(post.metadata.publishedAt)
   const dayNumber = dateObj.getDate()
   const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
   const dateDuration = 1000 + (index * 50)
 
-  // Trigger number animations when card is in view
   useEffect(() => {
     if (isInView) {
       const timer = setTimeout(() => setShouldAnimateNumbers(true), 200)
@@ -109,13 +106,11 @@ function BlogCard({ post, index }: BlogCardProps) {
           className="group relative block active:scale-[0.995] transition-transform duration-200 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
           style={{ contain: 'layout style paint' }} // Prevent layout shifts
         >
-          {/* Neutral gradient background on hover */}
           <div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             aria-hidden="true"
           />
 
-          {/* ASCII texture layer */}
           <div
             className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden"
             aria-hidden="true"
@@ -148,7 +143,6 @@ function BlogCard({ post, index }: BlogCardProps) {
                     </p>
                   )}
 
-                  {/* Combine categories, tags, and topics for display */}
                   {(() => {
                     const allTags = [
                       ...(post.metadata.categories || []),
@@ -202,7 +196,6 @@ interface BlogPostsClientProps {
   posts: BlogPost[]
 }
 
-// Loading skeleton component
 function BlogCardSkeleton() {
   return (
     <li className="block p-0 m-0">
@@ -235,11 +228,9 @@ export function BlogPostsClient({ posts }: BlogPostsClientProps) {
   const [showAll, setShowAll] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
-  // Show max 3 posts if showAll is false, otherwise show all
   const displayedBlogs = showAll ? posts : posts.slice(0, 3)
   const hasMorePosts = posts.length > 3
 
-  // Simulate loading to prevent layout shifts
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 100)
     return () => clearTimeout(timer)

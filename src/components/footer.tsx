@@ -42,7 +42,6 @@ function Footer({
 }: TProps) {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Trigger animations immediately on mount
   useEffect(() => {
     const frameId = requestAnimationFrame(() => {
       setIsVisible(true);
@@ -54,7 +53,6 @@ function Footer({
     window.location.href = 'mailto:contact@example.com';
   }
 
-  // Stagger delay helper
   const stagger = (index: number, baseDelay = 0) => ({
     opacity: isVisible ? 1 : 0,
     transform: isVisible ? 'translateY(0)' : 'translateY(16px)',
@@ -63,7 +61,6 @@ function Footer({
 
   return (
     <footer className="border-t border-border/30 mt-16 relative overflow-hidden w-full group/footer">
-      {/* Ambient background */}
       <div className="absolute -top-[25%] -left-0 w-full h-[150%] pointer-events-none overflow-hidden will-change-transform">
         <div className="absolute top-[5%] left-[5%] w-[500px] h-[500px] bg-accent/10 blur-[120px] animate-pulse mix-blend-screen" />
         <div className="absolute top-[15%] right-[5%] w-[400px] h-[400px] bg-accent/5 blur-[90px] animate-pulse mix-blend-screen" style={{ animationDelay: '2s' }} />
@@ -73,7 +70,6 @@ function Footer({
 
       <div className="max-w-3xl mx-auto px-6 md:px-12 py-12 sm:py-16 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-          {/* Left section */}
           <div className="lg:col-span-2 space-y-6">
             <div className="space-y-4">
               <h3 

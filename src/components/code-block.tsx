@@ -1,31 +1,4 @@
-/**
- * Beautiful Code Block Component
- * 
- * A feature-rich, customizable code display component for React/Next.js applications
- * with syntax highlighting, search functionality, keyboard shortcuts, and custom badges.
- * 
- * Features:
- * • Syntax highlighting for 100+ languages
- * • Interactive search with Cmd/Ctrl+F
- * • Line highlighting and click callbacks
- * • Copy to clipboard with Cmd/Ctrl+C
- * • Collapsible code blocks with smooth animations
- * • Custom badge system with variants and auto-scroll
- * • Keyboard shortcuts and accessibility support
- * 
- * Installation:
- * 1. Install dependencies: framer-motion lucide-react react-syntax-highlighter clsx tailwind-merge @radix-ui/react-slot class-variance-authority
- * 2. Copy this file to your components directory
- * 3. Import and use: import { CodeBlock } from './beautiful-code-block'
- * 
 
- * @author Remco Stoeten
- * @name  Beautiful Code Block 
- * 
- * @description 
- * A feature-rich, performant, accessible code-block render component, which probably is the most beautiful you'll see.
- * 110+ languages, search highlight, programatic line highlighting, per-language icons, custom labels/themes, copy button, kbd-shortcuts
-*/
 
 'use client';
 
@@ -40,27 +13,21 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { getLanguageIcon } from "./language-icons";
+import { getLanguageIcon } from "./code-block/language-icons";
 import { useCallback, useEffect, useRef, useState, useMemo, memo } from "react";
 import React from "react";
 import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
 import { clsx, type ClassValue } from "clsx";
 import type { CSSProperties } from "react";
 
-// ============================================================================
-// UTILITIES
-// ============================================================================
 
-// Simple className merger - replaces twMerge with basic deduplication
 export const cn = (...inputs: ClassValue[]) => {
   const classes = clsx(inputs).split(' ');
   const merged = new Map<string, string>();
 
-  // Simple deduplication for common conflicting classes
   for (const cls of classes) {
     if (!cls) continue;
 
-    // Handle responsive variants and state variants
     const baseClass = cls.replace(/^(sm|md|lg|xl|2xl|hover|focus|active|disabled):/, '');
     const prefix = cls.match(/^(sm|md|lg|xl|2xl|hover|focus|active|disabled):/)?.[1] || '';
     const key = prefix ? `${prefix}:${baseClass.split('-')[0]}` : baseClass.split('-')[0];
@@ -78,7 +45,6 @@ const calculateCodeStats = (code: string) => {
   return { lines, chars, words };
 };
 
-// Detect light/dark mode based on Tailwind's `dark` class or system preference
 function useIsDarkMode() {
   const [isDark, setIsDark] = useState(false);
 
@@ -105,13 +71,9 @@ function useIsDarkMode() {
   return isDark;
 }
 
-// ============================================================================
-// OPTIMIZED THEME CONFIGURATION
-// ============================================================================
 
 type TCustomTheme = { [key: string]: CSSProperties };
 
-// Dark theme - One Dark Pro inspired with colorful syntax highlighting
 const customTheme: TCustomTheme = {
   'code[class*="language-"]': {
     color: "#abb2bf",
@@ -180,7 +142,6 @@ const customTheme: TCustomTheme = {
   italic: { fontStyle: "italic" },
 };
 
-// Light theme - GitHub Light inspired with colorful syntax highlighting
 const customThemeLight: TCustomTheme = {
   'code[class*="language-"]': {
     color: "#24292f",
@@ -249,9 +210,6 @@ const customThemeLight: TCustomTheme = {
   italic: { fontStyle: "italic" },
 };
 
-// ============================================================================
-// OPTIMIZED LANGUAGE ICONS
-// ============================================================================
 
 type TIconProps = {
   className?: string;
@@ -260,7 +218,6 @@ type TIconProps = {
 
 const DEFAULT_ICON_SIZE = 16;
 
-// Beautiful icon component for languages using react-icons
 function SimpleIcon({
   language,
   className = "",
@@ -276,13 +233,7 @@ function SimpleIcon({
   );
 }
 
-// ============================================================================
-// CSS ANIMATIONS (moved to global.css)
-// ============================================================================
 
-// ============================================================================
-// SIMPLIFIED BUTTON COMPONENT
-// ============================================================================
 
 type TButtonVariant = "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 type TButtonSize = "default" | "sm" | "lg" | "icon";
@@ -292,7 +243,6 @@ interface TButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: TButtonSize;
 }
 
-// Simple button class generator - replaces CVA
 const getButtonClasses = (variant: TButtonVariant = "default", size: TButtonSize = "default") => {
   const base = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0";
 
@@ -329,9 +279,6 @@ const Button = memo(function Button({
   );
 });
 
-// ============================================================================
-// TYPES
-// ============================================================================
 
 export type TBadgeVariant = "default" | "primary" | "secondary" | "success" | "warning" | "danger" | "custom";
 
@@ -344,73 +291,39 @@ export type TBadge = {
 
 
 export type TCodeBlockProps = {
-  /** The source code to display */
   code: string;
-  /** Programming language for syntax highlighting */
   language: string;
-  /** Optional file name to display in header */
   fileName?: string;
-  /** Array of badges to display in header */
   badges?: TBadge[];
-  /** Whether to show line numbers (default: true) */
   showLineNumbers?: boolean;
-  /** Enable interactive line highlighting (default: false) */
   enableLineHighlight?: boolean;
-  /** Enable hover highlighting for lines (default: false) */
   enableLineHover?: boolean;
-  /** Custom color for hover highlighting (default: 'rgba(255, 255, 255, 0.1)' for dark, 'rgba(0, 0, 0, 0.05)' for light) */
   hoverHighlightColor?: string;
-  /** Show metadata like line count in header (default: true) */
   showMetaInfo?: boolean;
-  /** Maximum height before scrolling (default: "400px") */
   maxHeight?: string;
-  /** Additional CSS classes */
   className?: string;
-  /** Callback when code is copied */
   onCopy?: (code: string) => void;
-  /** Callback when a line is clicked (requires enableLineHighlight) */
   onLineClick?: (lineNumber: number) => void;
-  /** Callback when search is performed */
   onSearch?: (query: string, results: number[]) => void;
-  /** Default badge variant for all badges */
   badgeVariant?: TBadgeVariant;
-  /** Custom color for badges when variant is "custom" */
   badgeColor?: string;
-  /** Custom color for file name label */
   fileNameColor?: string;
-  /** Initial search query */
   initialSearchQuery?: string;
-  /** Initial search results (line numbers) */
   initialSearchResults?: number[];
-  /** Initial highlighted lines */
   initialHighlightedLines?: number[];
-  /** Auto-scroll speed for badges (pixels per second, default: 20) */
   autoScrollSpeed?: number;
-  /** Enable auto-scroll for badges (default: true) */
   enableAutoScroll?: boolean;
-  /** Whether to show the language icon in header (default: false) */
   showIcon?: boolean;
-  /** Show bottom fade effect (default: true) */
   showBottomFade?: boolean;
-  /** Custom width */
   width?: string;
-  /** Custom height */
   height?: string;
-  /** Enable resizing with corner handles (default: false) */
   resizable?: boolean;
-  /** Storage key for persisting resize dimensions (default: 'codeblock-resize') */
   resizeStorageKey?: string;
-  /** Disable search functionality entirely (default: false) */
   disableSearch?: boolean;
-  /** Disable copy functionality entirely (default: false) */
   disableCopy?: boolean;
-  /** Disable the entire top bar/header (default: false) */
   disableTopBar?: boolean;
 };
 
-// ============================================================================
-// OPTIMIZED BADGE UTILITIES
-// ============================================================================
 
 type TBadgeProps = {
   variant?: TBadgeVariant;
@@ -438,9 +351,6 @@ const getBadgeClasses = ({ variant = "default", customClass }: TBadgeProps): str
   return cn(base, variants[variant]);
 };
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
 
 /**
  * Beautiful Code Block Component - Ultra Optimized for Size with Auto-Scroll Badges
@@ -492,7 +402,6 @@ export function CodeBlock({
   disableCopy = false,
   disableTopBar = false,
 }: TCodeBlockProps) {
-  // State management
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -512,38 +421,30 @@ export function CodeBlock({
   const [showContentAnimation, setShowContentAnimation] = useState(!isCollapsed);
   const [showToastAnimation, setShowToastAnimation] = useState(false);
 
-  // Theme detection
   const isDark = useIsDarkMode();
 
-  // Refs
   const codeRef = useRef<HTMLDivElement>(null);
   const badgeScrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Drag-to-scroll state
   const [isDragging, setIsDragging] = useState(false);
   const startX = useRef(0);
   const scrollLeft = useRef(0);
 
-  // Memoized values
   const stats = useMemo(() => calculateCodeStats(code), [code]);
   const hoverColorStyle = useMemo(() => ({
     ['--bcv2-hover-color' as any]: hoverHighlightColor || (isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.03)")
   }), [hoverHighlightColor, isDark]);
 
-  // Generate line background color based on state priority: clicked > search > hover
   const getLineBackgroundColor = useCallback((lineNumber: number): string => {
-    // Priority 1: Click-highlighted lines (highest priority)
     if (highlightedLines.includes(lineNumber)) {
       return isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)";
     }
 
-    // Priority 2: Search results (medium priority)
     if (searchResults.includes(lineNumber)) {
       return isDark ? "rgba(212, 212, 216, 0.15)" : "rgba(72, 72, 74, 0.1)";
     }
 
-    // Priority 3: Hover state (lowest priority)
     if (enableLineHover && hoveredLine === lineNumber) {
       return hoverHighlightColor || (isDark ? "rgba(255, 255, 255, 0.06)" : "rgba(0, 0, 0, 0.03)");
     }
@@ -551,7 +452,6 @@ export function CodeBlock({
     return "transparent";
   }, [highlightedLines, searchResults, hoveredLine, enableLineHover, hoverHighlightColor, isDark]);
 
-  // Hover handlers
   const handleLineMouseEnter = useCallback((lineNumber: number) => {
     if (enableLineHover) {
       setHoveredLine(lineNumber);
@@ -564,7 +464,6 @@ export function CodeBlock({
     }
   }, [enableLineHover]);
 
-  // Auto-scroll functionality for badges
   useEffect(() => {
     const element = badgeScrollRef.current;
     if (!element || !isAutoScrolling || badges.length === 0) return;
@@ -576,10 +475,8 @@ export function CodeBlock({
       if (!startTime) startTime = timestamp;
       const elapsed = timestamp - startTime;
 
-      // Calculate scroll position based on time
       const scrollAmount = (elapsed * autoScrollSpeed) / 1000;
 
-      // Check if we've reached the end, reset to beginning for infinite scroll
       if (element.scrollLeft >= element.scrollWidth - element.clientWidth) {
         element.scrollLeft = 0;
         startTime = timestamp; // Reset timer
@@ -590,7 +487,6 @@ export function CodeBlock({
       animationId = requestAnimationFrame(animate);
     };
 
-    // Only start auto-scroll if content overflows
     if (element.scrollWidth > element.clientWidth) {
       animationId = requestAnimationFrame(animate);
     }
@@ -602,7 +498,6 @@ export function CodeBlock({
     };
   }, [badges, isAutoScrolling, autoScrollSpeed]);
 
-  // Check if search results are visible in viewport
   const updateSearchIndicators = useCallback(() => {
     if (searchResults.length === 0) {
       setHasResultsAbove(false);
@@ -640,20 +535,17 @@ export function CodeBlock({
     setHasResultsBelow(hasBelow);
   }, [searchResults]);
 
-  // Enhanced scroll to specific line with viewport checking
   const scrollToLine = useCallback((lineNumber: number) => {
     const lineElement = codeRef.current?.querySelector(`[data-line-number="${lineNumber}"]`);
     if (lineElement) {
       lineElement.scrollIntoView({ behavior: "smooth", block: "center" });
 
-      // Update indicators after scrolling
       setTimeout(() => {
         updateSearchIndicators();
       }, 100);
     }
   }, [updateSearchIndicators]);
 
-  // Load saved dimensions from localStorage
   useEffect(() => {
     if (resizable && resizeStorageKey) {
       try {
@@ -668,7 +560,6 @@ export function CodeBlock({
     }
   }, [resizable, resizeStorageKey]);
 
-  // Save dimensions to localStorage
   const saveDimensions = useCallback((dimensions: { width: string; height: string }) => {
     if (resizable && resizeStorageKey) {
       try {
@@ -679,7 +570,6 @@ export function CodeBlock({
     }
   }, [resizable, resizeStorageKey]);
 
-  // Resize functionality
   const handleResize = useCallback((e: MouseEvent) => {
     if (!isResizing || !containerRef.current) return;
 
@@ -687,17 +577,12 @@ export function CodeBlock({
     const container = containerRef.current;
     const rect = container.getBoundingClientRect();
 
-    // Get parent container bounds
     const parentContainer = container.parentElement;
     const parentRect = parentContainer?.getBoundingClientRect();
 
-    // Calculate new dimensions
-    // Width: distance from left edge to mouse X
     const newWidth = Math.max(200, e.clientX - rect.left);
-    // Height: distance from top edge to mouse Y (for bottom-right corner resize)
     const newHeight = Math.max(150, e.clientY - rect.top);
 
-    // Constrain to parent container if it exists
     let constrainedWidth = newWidth;
     let constrainedHeight = newHeight;
 
@@ -727,7 +612,6 @@ export function CodeBlock({
     setIsResizing(false);
   }, []);
 
-  // Add resize event listeners
   useEffect(() => {
     if (isResizing) {
       document.addEventListener('mousemove', handleResize);
@@ -744,7 +628,6 @@ export function CodeBlock({
     }
   }, [isResizing, handleResize, handleResizeEnd]);
 
-  // Search handler with debouncing via useEffect
   const handleSearch = useCallback(
     (query: string) => {
       setSearchQuery(query);
@@ -776,18 +659,15 @@ export function CodeBlock({
     [code, onSearch, scrollToLine],
   );
 
-  // Debounced search effect
   useEffect(() => {
     const timeoutId = setTimeout(() => handleSearch(searchQuery), 300);
     return () => clearTimeout(timeoutId);
   }, [searchQuery, handleSearch]);
 
-  // Update search indicators when results change
   useEffect(() => {
     updateSearchIndicators();
   }, [searchResults, updateSearchIndicators]);
 
-  // Add scroll listener to update indicators
   useEffect(() => {
     const container = codeRef.current?.querySelector('[style*="maxHeight"]') as HTMLElement;
     if (!container) return;
@@ -800,7 +680,6 @@ export function CodeBlock({
     return () => container.removeEventListener('scroll', handleScroll);
   }, [updateSearchIndicators]);
 
-  // Manage search animation state
   useEffect(() => {
     if (isSearching !== showSearchAnimation) {
       const timer = setTimeout(() => setShowSearchAnimation(isSearching), 10);
@@ -808,7 +687,6 @@ export function CodeBlock({
     }
   }, [isSearching, showSearchAnimation]);
 
-  // Manage content animation state
   useEffect(() => {
     if (isCollapsed !== showContentAnimation) {
       const timer = setTimeout(() => setShowContentAnimation(!isCollapsed), 10);
@@ -816,7 +694,6 @@ export function CodeBlock({
     }
   }, [isCollapsed, showContentAnimation]);
 
-  // Manage toast animation state
   useEffect(() => {
     if (isCopied !== showToastAnimation) {
       setShowToastAnimation(isCopied);
@@ -827,7 +704,6 @@ export function CodeBlock({
     }
   }, [isCopied, showToastAnimation]);
 
-  // Copy to clipboard
   const copyToClipboard = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(code);
@@ -839,7 +715,6 @@ export function CodeBlock({
     }
   }, [code, onCopy]);
 
-  // Search navigation
   const goToNextResult = useCallback(() => {
     if (searchResults.length === 0) return;
     const nextIndex = (currentResultIndex + 1) % searchResults.length;
@@ -854,7 +729,6 @@ export function CodeBlock({
     scrollToLine(searchResults[prevIndex]);
   }, [searchResults, currentResultIndex, scrollToLine]);
 
-  // Line click handler
   const handleLineClick = useCallback(
     (lineNumber: number) => {
       if (enableLineHighlight) {
@@ -869,7 +743,6 @@ export function CodeBlock({
     [enableLineHighlight, onLineClick],
   );
 
-  // Keyboard shortcuts
   useEffect(() => {
     function handleKeyboard(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === "c" && !disableCopy && !disableTopBar) {
@@ -914,7 +787,6 @@ export function CodeBlock({
     disableTopBar,
   ]);
 
-  // Drag-to-scroll functionality for badges
   useEffect(() => {
     const slider = badgeScrollRef.current;
     if (!slider) return;
@@ -952,7 +824,6 @@ export function CodeBlock({
     };
   }, [isDragging]);
 
-  // Custom line renderer with enhanced highlighting
   const renderLine = useCallback((line: string, i: number) => {
     const lineNumber = i + 1;
     const isHighlighted = highlightedLines.includes(lineNumber);
@@ -1011,7 +882,6 @@ export function CodeBlock({
     isDark,
   ]);
 
-  // Render the code content
   const renderCode = useCallback(() => {
     return (
       <div className="overflow-x-auto">
@@ -1022,7 +892,6 @@ export function CodeBlock({
     );
   }, [code, renderLine]);
 
-  // Return the complete component
   return (
     <div
       ref={containerRef}
@@ -1047,7 +916,6 @@ export function CodeBlock({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Header */}
       {!disableTopBar && (
         <div
           className="flex items-center justify-between px-4 py-2 border-b border-[var(--bcv2-border-color)]"
@@ -1056,7 +924,6 @@ export function CodeBlock({
           }}
         >
           <div className="flex items-center gap-3 flex-1">
-            {/* Language Icon */}
             {showIcon && (
               <div
                 style={{
@@ -1071,7 +938,6 @@ export function CodeBlock({
               </div>
             )}
 
-            {/* File Name */}
             {fileName && (
               <span
                 className="font-medium text-sm truncate mr-2"
@@ -1083,7 +949,6 @@ export function CodeBlock({
               </span>
             )}
 
-            {/* Badges */}
             {badges.length > 0 && (
               <div
                 ref={badgeScrollRef}
@@ -1112,9 +977,7 @@ export function CodeBlock({
             )}
           </div>
 
-          {/* Right Side Controls */}
           <div className="flex items-center gap-2">
-            {/* Search */}
             {!disableSearch && (
               <>
                 {showSearchAnimation && (
@@ -1185,7 +1048,6 @@ export function CodeBlock({
               </>
             )}
 
-            {/* Search Toggle */}
             {!disableSearch && !isSearching && (
               <Button
                 size="icon"
@@ -1197,7 +1059,6 @@ export function CodeBlock({
               </Button>
             )}
 
-            {/* Copy Button */}
             {!disableCopy && (
               <Button
                 size="icon"
@@ -1217,7 +1078,6 @@ export function CodeBlock({
               </Button>
             )}
 
-            {/* Collapse Toggle */}
             <Button
               size="icon"
               variant="ghost"
@@ -1232,7 +1092,6 @@ export function CodeBlock({
         </div>
       )}
 
-      {/* Code Content */}
       <>
         {showContentAnimation && (
           <div
@@ -1242,7 +1101,6 @@ export function CodeBlock({
             )}
             style={{ maxHeight: height || maxHeight }}
           >
-            {/* Search Indicators */}
             {searchResults.length > 0 && (hasResultsAbove || hasResultsBelow) && (
               <div className="absolute top-0 left-0 right-0 flex justify-between pointer-events-none z-10">
                 {hasResultsAbove && (
@@ -1278,7 +1136,6 @@ export function CodeBlock({
         )}
       </>
 
-      {/* Resize Handle */}
       {resizable && (
         <div
           className="absolute bottom-0 right-0 w-4 h-4 cursor-nw-resize opacity-0 group-hover:opacity-50 transition-opacity"
@@ -1290,7 +1147,6 @@ export function CodeBlock({
         />
       )}
 
-      {/* Bottom Fade Effect */}
       {showBottomFade && !isCollapsed && (
         <div
           className="absolute bottom-0 left-0 right-0 h-8 pointer-events-none z-10"

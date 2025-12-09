@@ -26,7 +26,6 @@ function parseFrontmatter(fileContent: string) {
     value = value.replace(/^['"](.*)['"]$/, '$1') // Remove quotes
     const trimmedKey = key.trim()
     
-    // Handle array values like categories: [Engineering, Design], tags: [React, TypeScript], topics: [Frontend]
     if (value.startsWith('[') && value.endsWith(']')) {
       const arrayValue = value.slice(1, -1)
         .split(',')
@@ -40,7 +39,6 @@ function parseFrontmatter(fileContent: string) {
         metadata.topics = arrayValue
       }
     } else {
-      // Handle string values
       switch (trimmedKey) {
         case 'title':
           metadata.title = value
@@ -77,7 +75,6 @@ function getMDXFiles(dir) {
       if (stat.isDirectory()) {
         scanDirectory(fullPath)
       } else if (path.extname(item) === '.mdx') {
-        // Get relative path from the base dir
         const relativePath = path.relative(dir, fullPath)
         files.push(relativePath)
       }
@@ -96,14 +93,22 @@ function readMDXFile(filePath) {
 function getMDXData(dir) {
   let mdxFiles = getMDXFiles(dir)
   return mdxFiles.map((file) => {
-    let { metadata, content } = readMDXFile(path.join(dir, file))
-    // Convert the relative file path to a slug (remove .mdx extension)
-    let slug = file.replace(/\.mdx$/, '')
+    try {
+      let { metadata, content } = readMDXFile(path.join(dir, file))
+      let slug = file.replace(/\.mdx$/, '')
 
-    return {
-      metadata,
-      slug,
-      content,
+      return {
+        metadata,
+        slug,
+        content,
+      }
+    } catch (error) {
+      console.error(`Error parsing MDX file ${file}:`, error)
+      return {
+        metadata: { title: 'Error', publishedAt: '', summary: 'Error parsing file' },
+        slug: file.replace(/\.mdx$/, ''),
+        content: '',
+      }
     }
   })
 }
@@ -153,7 +158,6 @@ export function getAllCategories() {
   const categoryMap = new Map<string, number>()
   
   posts.forEach(post => {
-    // Combine categories, tags, and topics into a single collection
     const allTags = [
       ...(post.metadata.categories || []),
       ...(post.metadata.tags || []),

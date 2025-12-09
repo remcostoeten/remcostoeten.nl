@@ -1,4 +1,3 @@
-// Format relative timestamp
 export const formatRelativeTime = (dateString: string): string => {
   const now = new Date();
   const date = new Date(dateString);
@@ -13,6 +12,5 @@ export const formatRelativeTime = (dateString: string): string => {
   if (diffDays === 1) return 'yesterday';
   if (diffDays < 7) return `${diffDays} days ago`;
   
-  // For older tracks, just show the date
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };

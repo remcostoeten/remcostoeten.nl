@@ -1,6 +1,4 @@
-/* View Transitions for File Tree Component */
 
-/* File content transition */
 ::view-transition-old(file-content),
 ::view-transition-new(file-content) {
     animation-duration: 0.25s;
@@ -15,7 +13,6 @@
     animation-name: fade-in;
 }
 
-/* File header transition */
 ::view-transition-old(file-header),
 ::view-transition-new(file-header) {
     animation-duration: 0.2s;
@@ -30,7 +27,6 @@
     animation-name: slide-in-down;
 }
 
-/* Custom keyframe animations */
 @keyframes fade-out {
     from {
         opacity: 1;
@@ -75,13 +71,11 @@
     }
 }
 
-/* Performance optimizations */
 ::view-transition-group(file-content),
 ::view-transition-group(file-header) {
     animation-fill-mode: both;
 }
 
-/* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
 
     ::view-transition-old(file-content),

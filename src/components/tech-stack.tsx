@@ -34,7 +34,6 @@ interface TechItem {
 }
 
 const techData: TechItem[] = [
-  // Frontend
   {
     name: 'React',
     description: 'Building interactive user interfaces with hooks, context, and modern patterns',
@@ -80,7 +79,6 @@ const techData: TechItem[] = [
     color: 'text-muted-foreground',
     bgGradient: 'from-muted/5 to-muted/10'
   },
-  // Backend
   {
     name: 'Node.js',
     description: 'Server-side JavaScript runtime for building scalable applications',
@@ -108,7 +106,6 @@ const techData: TechItem[] = [
     color: 'text-foreground',
     bgGradient: 'from-muted/10 to-muted/20'
   },
-  // Database
   {
     name: 'PostgreSQL',
     description: 'Advanced SQL queries, indexing, and performance optimization',
@@ -136,7 +133,6 @@ const techData: TechItem[] = [
     color: 'text-foreground',
     bgGradient: 'from-muted/10 to-muted/20'
   },
-  // DevOps & Tools
   {
     name: 'Git',
     description: 'Version control, branching strategies, and collaborative workflows',
@@ -164,7 +160,6 @@ const techData: TechItem[] = [
     color: 'text-foreground',
     bgGradient: 'from-muted/10 to-muted/20'
   },
-  // Design
   {
     name: 'UI/UX Design',
     description: 'User-centered design principles, accessibility, and responsive layouts',
@@ -256,7 +251,6 @@ export function TechStack() {
 
   return (
     <section className="space-y-8 animate-enter">
-      {/* Header */}
       <div className="space-y-4">
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-6 h-6 text-primary" />
@@ -269,7 +263,6 @@ export function TechStack() {
         </p>
       </div>
 
-      {/* Category Filter */}
       <div className="flex flex-wrap gap-2">
         <button
           onClick={() => setSelectedCategory('all')}
@@ -297,7 +290,6 @@ export function TechStack() {
         ))}
       </div>
 
-      {/* Technologies Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredTechnologies.map((tech, index) => (
           <motion.div
@@ -317,7 +309,6 @@ export function TechStack() {
             <div className={`relative p-4 bg-card border border-border/50 rounded-xl hover:border-border transition-all duration-300 overflow-hidden ${
               tech.bgGradient ? `bg-gradient-to-br ${tech.bgGradient}` : ''
             }`}>
-              {/* Header */}
               <div className="flex items-start justify-between mb-3">
                 <div className="space-y-1">
                   <h3 className={`font-semibold text-foreground ${tech.color}`}>
@@ -330,7 +321,6 @@ export function TechStack() {
                   </div>
                 </div>
 
-                {/* Proficiency Indicator */}
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 rounded-full bg-muted/50" />
                   <div className="w-2 h-2 rounded-full bg-muted/50" />
@@ -343,12 +333,10 @@ export function TechStack() {
                 </div>
               </div>
 
-              {/* Description */}
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 {tech.description}
               </p>
 
-              {/* Proficiency Bar */}
               <div className="relative h-1.5 bg-muted/50 rounded-full overflow-hidden">
                 <motion.div
                   className={`absolute inset-y-0 left-0 ${getProficiencyColor(tech.proficiency)} rounded-full`}
@@ -358,14 +346,12 @@ export function TechStack() {
                 />
               </div>
 
-              {/* Hover Effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
             </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
         <div className="text-center p-4 bg-muted/30 rounded-lg">
           <div className="text-2xl font-bold text-foreground">{techData.length}+</div>

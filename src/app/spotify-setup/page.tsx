@@ -20,7 +20,6 @@ function SpotifySetupContent() {
   const [showSecret, setShowSecret] = useState(false);
   const [copied, setCopied] = useState('');
 
-  // Check for success/error from OAuth callback
   useEffect(() => {
     const success = searchParams.get('success');
     const error = searchParams.get('error');
@@ -29,12 +28,10 @@ function SpotifySetupContent() {
 
     if (success === '1' && refreshToken && accessToken) {
       setTokens({ refresh_token: refreshToken, access_token: accessToken });
-      // Clear the URL parameters
       window.history.replaceState({}, '', '/spotify-setup');
     } else if (error) {
       const details = searchParams.get('details');
       setError(details || error);
-      // Clear the URL parameters
       window.history.replaceState({}, '', '/spotify-setup');
     }
   }, [searchParams]);
@@ -85,7 +82,6 @@ SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/spotify/callback`;
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 max-w-3xl">
-        {/* Header */}
         <div className="flex items-center gap-3 mb-8">
           <div className="p-3 bg-green-500/10 rounded-lg">
             <Music className="w-6 h-6 text-green-500" />
@@ -96,7 +92,6 @@ SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/spotify/callback`;
           </div>
         </div>
 
-        {/* Success State */}
         {tokens && (
           <div className="mb-8 p-6 bg-green-50 border border-green-200 rounded-xl dark:bg-green-950 dark:border-green-800">
             <div className="flex items-center gap-2 mb-4">
@@ -189,9 +184,7 @@ SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/spotify/callback`;
           </div>
         )}
 
-        {/* Setup Instructions */}
         <div className="space-y-6">
-          {/* Step 1: Create Spotify App */}
           <div className="p-6 bg-card border rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
@@ -214,7 +207,6 @@ SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/spotify/callback`;
             </ol>
           </div>
 
-          {/* Step 2: Configure Redirect URI */}
           <div className="p-6 bg-card border rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">
@@ -242,7 +234,6 @@ SPOTIFY_REDIRECT_URI=http://127.0.0.1:3000/api/spotify/callback`;
             </p>
           </div>
 
-          {/* Step 3: Connect Your Account */}
           <div className="p-6 bg-card border rounded-xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-semibold">

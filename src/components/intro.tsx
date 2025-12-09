@@ -3,7 +3,6 @@ import { MapPin, Briefcase } from 'lucide-react';
 export function Intro() {
   return (
     <header className="animate-enter">
-      {/* Profile Section */}
       <div className="flex items-start gap-4 mb-4">
         <img
           src="https://github.com/remcostoeten.png"
@@ -21,7 +20,6 @@ export function Intro() {
         </div>
       </div>
 
-      {/* Bio */}
       <p className="text-sm text-muted-foreground leading-relaxed">
         Dutch software engineer focused on front-end development with a background in{' '}
         <span className="text-foreground/80 italic">graphic design</span>.{' '}

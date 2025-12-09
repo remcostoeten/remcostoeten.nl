@@ -27,7 +27,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/spotify-setup?error=missing_credentials', request.url));
     }
 
-    // Exchange code for tokens
     const authString = `${clientId}:${clientSecret}`;
     const base64Auth = Buffer.from(authString).toString('base64');
 
@@ -51,7 +50,6 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenResponse.json();
 
-    // Redirect to setup page with tokens (only showing refresh token for security)
     const redirectUrl = new URL('/spotify-setup', request.url);
     redirectUrl.searchParams.set('success', 'true');
     redirectUrl.searchParams.set('refresh_token', tokenData.refresh_token);

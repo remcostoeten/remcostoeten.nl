@@ -25,7 +25,6 @@ export function ShikiCodeBlock({
     const [copied, setCopied] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
 
-    // Highlight code on mount and when code/language changes
     useEffect(() => {
         let mounted = true;
 
@@ -45,7 +44,6 @@ export function ShikiCodeBlock({
             } catch (error) {
                 console.error('Shiki highlighting error:', error);
                 if (mounted) {
-                    // Fallback to plain code
                     setHtml(`<pre><code>${escapeHtml(code)}</code></pre>`);
                     setIsLoading(false);
                 }
@@ -56,7 +54,6 @@ export function ShikiCodeBlock({
         return () => { mounted = false; };
     }, [code, language]);
 
-    // Escape HTML for fallback
     function escapeHtml(text: string) {
         return text
             .replace(/&/g, '&amp;')
@@ -64,14 +61,12 @@ export function ShikiCodeBlock({
             .replace(/>/g, '&gt;');
     }
 
-    // Copy to clipboard
     const handleCopy = useCallback(() => {
         navigator.clipboard.writeText(code);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }, [code]);
 
-    // Add line numbers to the HTML
     const addLineNumbers = useCallback((htmlContent: string) => {
         if (!showLineNumbers) return htmlContent;
 
@@ -80,7 +75,6 @@ export function ShikiCodeBlock({
             `<span class="line-number">${i + 1}</span>`
         ).join('');
 
-        // Wrap with line numbers container
         return `
       <div class="code-with-lines">
         <div class="line-numbers">${lineNumbersHtml}</div>
@@ -100,7 +94,6 @@ export function ShikiCodeBlock({
             "shiki-code-block rounded-lg border border-[#222] bg-[#09090b] overflow-hidden my-6",
             className
         )}>
-            {/* Header */}
             <div className="flex items-center justify-between px-4 py-2 bg-[#09090b] border-b border-[#222]">
                 <div className="flex items-center gap-3">
                     {filename && (
@@ -144,7 +137,6 @@ export function ShikiCodeBlock({
                 </div>
             </div>
 
-            {/* Code Content */}
             {!isCollapsed && (
                 <div className="overflow-auto max-h-[500px]">
                     {isLoading ? (

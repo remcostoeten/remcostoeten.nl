@@ -22,7 +22,6 @@ export default function CategoriesPage() {
               className="group relative block animate-stagger active:scale-[0.995] transition-transform overflow-hidden first:rounded-t-2xl last:rounded-b-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              {/* Hover gradient */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
               <article className="relative flex items-center justify-between gap-4 py-8 px-6 border-b border-neutral-800/40 z-10">
