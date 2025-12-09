@@ -8,9 +8,6 @@ import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
 import { clsx, type ClassValue } from "clsx";
 import type { CSSProperties } from "react";
 
-// ============================================================================
-// UTILITIES
-// ============================================================================
 
 export const cn = (...inputs: ClassValue[]) => {
   const classes = clsx(inputs).split(' ');
@@ -35,9 +32,6 @@ const calculateCodeStats = (code: string) => {
 };
 
 
-// ============================================================================
-// THEME CONFIGURATION
-// ============================================================================
 
 type TCustomTheme = { [key: string]: CSSProperties };
 
@@ -109,13 +103,7 @@ const customTheme: TCustomTheme = {
   italic: { fontStyle: "italic" },
 };
 
-// ============================================================================
-// CSS ANIMATIONS (moved to global.css)
-// ============================================================================
 
-// ============================================================================
-// BUTTON COMPONENT
-// ============================================================================
 
 type TButtonVariant = "default" | "ghost";
 type TButtonSize = "default" | "sm" | "icon";
@@ -156,9 +144,6 @@ const Button = memo(function Button({
   );
 });
 
-// ============================================================================
-// TYPES
-// ============================================================================
 
 export type TCodeBlockProps = {
   code: string;
@@ -176,9 +161,6 @@ export type TCodeBlockProps = {
   disableTopBar?: boolean;
 };
 
-// ============================================================================
-// ICON COMPONENT
-// ============================================================================
 
 const DEFAULT_ICON_SIZE = 16;
 
@@ -197,9 +179,6 @@ function SimpleIcon({
   );
 }
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
 
 export function CodeBlock({
   code,
@@ -343,7 +322,6 @@ export function CodeBlock({
     disableTopBar,
   ]);
 
-  // Manage search animation state
   useEffect(() => {
     if (isSearching !== showSearchAnimation) {
       const timer = setTimeout(() => setShowSearchAnimation(isSearching), 10);
@@ -351,7 +329,6 @@ export function CodeBlock({
     }
   }, [isSearching, showSearchAnimation]);
 
-  // Manage content animation state
   useEffect(() => {
     if (!isCollapsed !== showContentAnimation) {
       const timer = setTimeout(() => setShowContentAnimation(!isCollapsed), 10);
@@ -359,7 +336,6 @@ export function CodeBlock({
     }
   }, [isCollapsed, showContentAnimation]);
 
-  // Manage toast animation state
   useEffect(() => {
     if (isCopied !== showToastAnimation) {
       setShowToastAnimation(isCopied);

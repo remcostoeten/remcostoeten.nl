@@ -26,9 +26,7 @@ export function Section({
 }: SectionProps) {
     return (
         <section className={`relative ${className}`}>
-            {/* Section container with border */}
             <div className="rounded-xl border border-border/50 bg-card/30 backdrop-blur-[2px] overflow-hidden">
-                {/* Header */}
                 {title && (
                     <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-muted/20">
                         <div className="flex items-center gap-2.5">
@@ -49,7 +47,6 @@ export function Section({
                     </div>
                 )}
 
-                {/* Content */}
                 <div className={noPadding ? '' : 'p-4'}>
                     {children}
                 </div>
@@ -105,15 +102,12 @@ export function TimelineItem({
 }) {
     return (
         <div className={`relative pl-7 pb-4 last:pb-0 ${className}`}>
-            {/* Timeline line */}
             <div className="absolute left-[11px] top-6 bottom-0 w-px bg-border/50 last:hidden" />
 
-            {/* Timeline dot/icon */}
             <div className="absolute left-0 top-0.5 flex size-6 items-center justify-center rounded-md bg-muted/80 border border-border/50">
                 {Icon && <Icon className="size-3.5 text-muted-foreground" />}
             </div>
 
-            {/* Content */}
             <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                     <h4 className="text-sm font-medium text-foreground truncate">{title}</h4>

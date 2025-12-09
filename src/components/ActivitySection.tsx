@@ -1,16 +1,14 @@
 'use client';
 
 import { useState, useEffect, Fragment } from 'react';
-import { motion as motionOriginal, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Music, GitBranch, Calendar, Activity } from 'lucide-react';
 import { useRecentCommits } from '@/hooks/use-github';
 import { getLatestTracks, SpotifyTrack } from '@/core/spotify-service';
 import { ActivityContributionGraph } from './activity-contribution-graph';
 import { Section, TimelineItem } from './ui/section';
 
-const motion = motionOriginal as any;
-
-const SPRING_EASE = [0.32, 0.72, 0, 1];
+const SPRING_EASE = [0.32, 0.72, 0, 1] as const;
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -114,11 +112,9 @@ export const ActivitySection = () => {
   return (
     <Section
       title="Activity & Contributions"
-      icon={Activity}
       headerAction={<span className="text-muted-foreground/60">{year}</span>}
     >
       <div className="space-y-4">
-        {/* Contribution Graph */}
         <div className="rounded-lg border border-border/30 bg-background/50 p-3">
           <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/20">
             <Calendar className="size-3.5 text-muted-foreground" />
@@ -127,9 +123,7 @@ export const ActivitySection = () => {
           <ActivityContributionGraph year={year} showLegend={true} />
         </div>
 
-        {/* Activity Timeline */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {/* Latest Commit */}
           <div className="rounded-lg border border-border/30 bg-background/50 p-3">
             <div className="flex items-center gap-2 mb-2">
               <div className="flex size-5 items-center justify-center rounded bg-muted/80">
@@ -172,7 +166,6 @@ export const ActivitySection = () => {
             </AnimatePresence>
           </div>
 
-          {/* Currently Playing */}
           <div className="rounded-lg border border-border/30 bg-background/50 p-3">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">

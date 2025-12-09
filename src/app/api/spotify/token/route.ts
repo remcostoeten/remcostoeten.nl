@@ -4,7 +4,6 @@ export const dynamic = 'force-dynamic';
 
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com';
 
-// Exchange authorization code for tokens
 export async function POST(request: Request) {
   try {
     const { code } = await request.json();

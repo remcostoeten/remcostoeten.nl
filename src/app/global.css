@@ -143,7 +143,6 @@
 
 @plugin '@tailwindcss/typography';
 
-/* Page Transition Animations - matching SPA behavior */
 @keyframes enter {
 	0% {
 		opacity: 0;
@@ -212,7 +211,6 @@
 	will-change: transform;
 }
 
-/* Prevent layout shifts during animations */
 @keyframes music-bar {
 
 	0%,
@@ -225,12 +223,10 @@
 	}
 }
 
-/* Improve animation performance */
 .animate-pulse {
 	will-change: opacity;
 }
 
-/* Contain animations to prevent layout shifts */
 @keyframes music-bar {
 
 	0%,
@@ -243,12 +239,10 @@
 	}
 }
 
-/* Improve animation performance */
 .animate-pulse {
 	will-change: opacity;
 }
 
-/* Contain animations to prevent layout shifts */
 .blog-card {
 	contain: layout style paint;
 }
@@ -257,13 +251,11 @@
 	contain: layout style;
 }
 
-/* Prevent layout shifts during loading */
 .layout-stable {
 	contain: layout style;
 	overflow: hidden;
 }
 
-/* Smooth transitions without layout shifts */
 .smooth-transition {
 	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: transform, opacity;
@@ -273,7 +265,6 @@
 	contain: layout style;
 }
 
-/* Stagger delays for list items */
 .stagger-1 {
 	animation-delay: 50ms;
 }
@@ -306,20 +297,15 @@
 	animation-delay: 400ms;
 }
 
-/* Beautiful CodeBlock Utilities */
 .scrollbar-hide {
 	-ms-overflow-style: none;
-	/* Internet Explorer 10+ */
 	scrollbar-width: none;
-	/* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
 	display: none;
-	/* Safari and Chrome */
 }
 
-/* Code Block Animations */
 @keyframes codeblock-enter {
 	0% {
 		opacity: 0;
@@ -419,7 +405,6 @@
 	}
 }
 
-/* Code Block Animation Classes */
 .codeblock-enter {
 	animation: codeblock-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 	will-change: opacity, transform;
@@ -460,7 +445,6 @@
 	will-change: transform;
 }
 
-/* Code block line highlighting */
 .bcv2-code-line {
 	transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: background-color;
@@ -478,7 +462,6 @@
 	background-color: rgba(212, 212, 216, 0.12);
 }
 
-/* Dark mode adjustments for code block */
 .dark .bcv2-code-line:hover {
 	background-color: var(--bcv2-hover-color, rgba(212, 212, 216, 0.1));
 }
@@ -491,7 +474,6 @@
 	background-color: rgba(212, 212, 216, 0.12);
 }
 
-/* Light mode adjustments */
 .bcv2-code-line:hover {
 	background-color: var(--bcv2-hover-color, rgba(72, 72, 74, 0.08));
 }
@@ -504,7 +486,6 @@
 	background-color: rgba(72, 72, 74, 0.1);
 }
 
-/* Code block container transitions */
 .codeblock-container {
 	transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: border-color;
@@ -525,7 +506,6 @@
 	will-change: background-color, color, border-color;
 }
 
-/* Performance optimizations */
 .codeblock-content {
 	contain: layout style paint;
 }
@@ -534,7 +514,6 @@
 	contain: layout style;
 }
 
-/* Projects Showcase Animations */
 @keyframes project-card-hover {
 	0% {
 		transform: translateY(0) scale(1);
@@ -583,7 +562,6 @@
 	animation: tech-shimmer 2s infinite;
 }
 
-/* Proficiency Bar Animation */
 @keyframes proficiency-fill {
 	0% {
 		width: 0;
@@ -601,7 +579,6 @@
 	animation: proficiency-fill 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Line Clamp Utility */
 .line-clamp-3 {
 	display: -webkit-box;
 	-webkit-line-clamp: 3;
@@ -609,7 +586,6 @@
 	overflow: hidden;
 }
 
-/* Project and Tech Grid Performance */
 .projects-grid {
 	contain: layout style;
 }
@@ -618,7 +594,6 @@
 	contain: layout style;
 }
 
-/* Hover Effects for Links */
 .link-hover-effect {
 	position: relative;
 	transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1);

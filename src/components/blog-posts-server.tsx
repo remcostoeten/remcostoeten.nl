@@ -6,7 +6,6 @@ import { FileText } from 'lucide-react'
 export function BlogPosts() {
   let allBlogs = getBlogPosts()
 
-  // Sort posts by date (newest first)
   const sortedBlogs = allBlogs.sort((a, b) => {
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
       return -1
@@ -17,7 +16,6 @@ export function BlogPosts() {
   return (
     <Section
       title="Recent Posts"
-      icon={FileText}
       headerAction={<span className="text-muted-foreground/60">{sortedBlogs.length} posts</span>}
       noPadding
     >

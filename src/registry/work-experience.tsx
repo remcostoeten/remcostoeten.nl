@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown from 'react-markdown';
 
 import {
   Collapsible,
@@ -96,27 +96,6 @@ export function ExperienceItem({
   return (
     <div className="space-y-4 py-4">
       <div className="not-prose flex items-center gap-3">
-        <div
-          className="flex size-6 shrink-0 items-center justify-center"
-          aria-hidden
-        >
-          {experience.companyLogo ? (
-            <Image
-              src={experience.companyLogo}
-              alt={experience.companyName}
-              width={24}
-              height={24}
-              quality={100}
-              className="rounded-full"
-              unoptimized
-            />
-          ) : (
-            <div className="flex size-6 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-medium">
-              {getCompanyInitials(experience.companyName)}
-            </div>
-          )}
-        </div>
-
         <h3 className="text-lg leading-snug font-medium text-foreground">
           {experience.companyName}
         </h3>
@@ -152,17 +131,10 @@ export function ExperiencePositionItem({
         <CollapsibleTrigger
           className={cn(
             "group/experience not-prose block w-full text-left select-none",
-            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-7 before:rounded-lg hover:before:bg-muted/50"
+            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-0 before:rounded-lg hover:before:bg-muted/50"
           )}
         >
           <div className="relative z-1 mb-1 flex items-center gap-3">
-            <div
-              className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground"
-              aria-hidden
-            >
-              <ExperienceIcon className="size-4" />
-            </div>
-
             <h4 className="flex-1 text-base font-medium text-balance text-foreground">
               {position.title}
             </h4>
@@ -176,7 +148,7 @@ export function ExperiencePositionItem({
             </div>
           </div>
 
-          <div className="relative z-1 flex items-center gap-2 pl-9 text-sm text-muted-foreground">
+          <div className="relative z-1 flex items-center gap-2 pl-0 text-sm text-muted-foreground">
             {position.employmentType && (
               <>
                 <dl>
@@ -200,13 +172,13 @@ export function ExperiencePositionItem({
 
         <CollapsibleContent className="overflow-hidden duration-300 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
           {position.description && (
-            <Prose className="pt-2 pl-9">
+            <Prose className="pt-2 pl-0">
               <ReactMarkdown>{position.description}</ReactMarkdown>
             </Prose>
           )}
 
           {Array.isArray(position.skills) && position.skills.length > 0 && (
-            <ul className="not-prose flex flex-wrap gap-1.5 pt-2 pl-9">
+            <ul className="not-prose flex flex-wrap gap-1.5 pt-2 pl-0">
               {position.skills.map((skill, index) => (
                 <li key={index} className="flex">
                   <Skill>{skill}</Skill>

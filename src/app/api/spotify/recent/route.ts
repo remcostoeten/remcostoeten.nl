@@ -6,7 +6,6 @@ export const dynamic = 'force-dynamic';
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com';
 
-// Get recently played tracks
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -19,7 +18,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'No refresh token configured' }, { status: 404 });
     }
 
-    // Get fresh access token
     const clientId = process.env.SPOTIFY_CLIENT_ID;
     const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
@@ -51,7 +49,6 @@ export async function GET(request: NextRequest) {
 
     const accessToken = tokenData.access_token;
 
-    // Get recent tracks
     const recentResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/recently-played?limit=${limit}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`

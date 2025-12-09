@@ -25,7 +25,6 @@ export const getLatestCommit = async (owner: string, repo: string): Promise<Comm
   }
 
   try {
-    // Direct API call to GitHub from client side
     const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits/main`, {
       headers: {
         'Authorization': `token ${token}`,

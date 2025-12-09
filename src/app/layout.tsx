@@ -71,6 +71,6 @@ export default function RootLayout({
           <SpeedInsights />
         </CustomQueryClientProvider>
       </body>
-    </html>
+                        </html>
   )
 }

@@ -2,9 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-// ============================================================================
-// Types
-// ============================================================================
 
 export interface GitHubUser {
     login: string;
@@ -101,23 +98,16 @@ export interface AllGitHubData {
     commits: RecentMultiProjectCommits;
 }
 
-// ============================================================================
-// Configuration
-// ============================================================================
 
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_USERNAME = 'remcostoeten';
 
-// Your latest projects with their colors for display
 const LATEST_PROJECTS = [
     { owner: 'remcostoeten', repo: 'remcostoeten.nl', name: 'remcostoeten.nl', color: 'text-yellow-400' },
     { owner: 'remcostoeten', repo: 'drizzleasy', name: 'drizzleasy', color: 'text-orange-400' },
     { owner: 'remcostoeten', repo: 'fync', name: 'fync', color: 'text-green-400' },
 ];
 
-// ============================================================================
-// Fetch Helpers
-// ============================================================================
 
 function getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
@@ -125,7 +115,6 @@ function getHeaders(): Record<string, string> {
         'User-Agent': 'remcostoeten-portfolio-activity',
     };
 
-    // Use public token for client-side (limited permissions) or server token
     const token = typeof window === 'undefined'
         ? process.env.GITHUB_TOKEN
         : process.env.NEXT_PUBLIC_GITHUB_TOKEN;
@@ -152,9 +141,6 @@ async function fetchGitHub<T>(endpoint: string): Promise<T> {
     return response.json();
 }
 
-// ============================================================================
-// API Functions
-// ============================================================================
 
 async function fetchGitHubUser(): Promise<GitHubUser> {
     return fetchGitHub<GitHubUser>(`/users/${GITHUB_USERNAME}`);
@@ -206,7 +192,6 @@ async function fetchRecentCommits(projectLimit = 5): Promise<RecentMultiProjectC
     const results = await Promise.all(commitPromises);
     const validCommits = results.filter((c): c is CommitData => c !== null);
 
-    // Sort by date (most recent first)
     validCommits.sort((a, b) => {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
@@ -227,9 +212,6 @@ async function fetchAllGitHubData(): Promise<AllGitHubData> {
     return { user, activity, commits };
 }
 
-// ============================================================================
-// React Query Hooks
-// ============================================================================
 
 /**
  * Fetch GitHub user profile data

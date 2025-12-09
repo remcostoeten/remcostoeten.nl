@@ -8,7 +8,6 @@
   --accent: 85 100% 75%; 
   --border: 0 0% 20%;
   
-  /* Shadcn UI Tokens for Contact Form */
   --primary: 0 0% 98%;
   --primary-foreground: 0 0% 9%;
   --destructive: 0 62.8% 30.6%;
@@ -24,7 +23,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Code Block Overrides for Prism One Dark consistency */
 code[class*="language-"],
 pre[class*="language-"] {
   font-family: 'JetBrains Mono', monospace !important;
@@ -33,12 +31,10 @@ pre[class*="language-"] {
   text-shadow: none !important;
 }
 
-/* Utility for the entrance animation delay */
 .animate-enter {
   animation: enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
-/* Utilities for animation delays */
 .animation-delay-2000 {
   animation-delay: 2s;
 }
@@ -46,7 +42,6 @@ pre[class*="language-"] {
   animation-delay: 4s;
 }
 
-/* Custom Scrollbar for form */
 .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
 }
@@ -58,7 +53,6 @@ pre[class*="language-"] {
     border-radius: 20px;
 }
 
-/* Animations */
 @keyframes enter {
   0% { opacity: 0; transform: translateY(20px); }
   100% { opacity: 1; transform: translateY(0); }
