@@ -1,4 +1,3 @@
-// GitHub API service for fetching contribution data
 
 interface GitHubContributionDay {
   date: string;
@@ -55,12 +54,10 @@ class GitHubService {
     if (!this.token) {
       console.warn('GitHub token not found in environment variables');
     }
-    // You can also make this configurable
     this.username = 'remcostoeten'; // Change this to your GitHub username
   }
 
   private getGitHubToken(): string {
-    // Try both environment variable naming conventions
     return (
       process.env.NEXT_PUBLIC_GITHUB_TOKEN ||
       process.env.GITHUB_TOKEN ||
@@ -90,7 +87,6 @@ class GitHubService {
       const startDate = new Date(year, 0, 1);
       const endDate = new Date(year, 11, 31);
 
-      // GitHub GraphQL query for contribution data
       const query = `
         query($username: String!, $from: DateTime!, $to: DateTime!) {
           user(login: $username) {
@@ -156,7 +152,6 @@ class GitHubService {
 
     } catch (error) {
       console.error('Error fetching GitHub contributions:', error);
-      // Return empty data structure on error
       return {
         totalContributions: 0,
         weeks: []
@@ -274,7 +269,6 @@ class GitHubService {
    */
   async getRecentCommits(limit: number = 10): Promise<GitHubCommit[]> {
     try {
-      // Get user's recent events to find commits
       const response = await fetch(
         `${this.baseUrl}/users/${this.username}/events?per_page=${limit}`,
         {
@@ -358,7 +352,6 @@ class GitHubService {
     let tempStreak = 0;
     let startDate: string | undefined;
 
-    // Calculate current streak (working backwards from today)
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
 
@@ -374,7 +367,6 @@ class GitHubService {
       }
     }
 
-    // Calculate longest streak
     for (const date of dates) {
       const contribution = dailyContributions.get(date);
       if (contribution && contribution.contributionCount > 0) {
@@ -393,10 +385,8 @@ class GitHubService {
   }
 }
 
-// Create singleton instance
 export const githubService = new GitHubService();
 
-// Export types
 export type {
   GitHubContributionDay,
   GitHubContributionWeek,

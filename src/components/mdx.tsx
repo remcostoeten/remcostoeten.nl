@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
-import { Code } from './simple-code-block'
+import { CodeBlock } from './code-block'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -48,9 +48,11 @@ function RoundedImage(props) {
   return <Image alt={props.alt} className="rounded-lg" {...props} />
 }
 
-// Simple Code component now imported from simple-code-block.tsx
 
 function slugify(str) {
+  if (!str || typeof str !== 'string') {
+    return 'heading'
+  }
   return str
     .toString()
     .toLowerCase()
@@ -63,6 +65,10 @@ function slugify(str) {
 
 function createHeading(level) {
   const Heading = ({ children }) => {
+    if (!children) {
+      return React.createElement(`h${level}`, {}, 'Heading')
+    }
+    
     let slug = slugify(children)
     return React.createElement(
       `h${level}`,
@@ -92,7 +98,7 @@ let components = {
   h6: createHeading(6),
   Image: RoundedImage,
   a: CustomLink,
-  pre: Code,
+  pre: CodeBlock,
   Table,
 }
 

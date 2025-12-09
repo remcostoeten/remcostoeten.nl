@@ -56,7 +56,6 @@ interface GitHubEvent {
   created_at: string;
 }
 
-// Your latest projects with their colors
 const LATEST_PROJECTS = [
   { owner: 'remcostoeten', repo: 'remcostoeten.nl', name: 'remcostoeten.nl', color: 'text-blue-400' },
   { owner: 'remcostoeten', repo: 'drizzleasy', name: 'drizzleasy', color: 'text-yellow-400' },
@@ -68,7 +67,6 @@ const formatTimestamp = (dateString: string): string => {
 };
 
 const fetchCommitDetails = async (owner: string, repo: string, sha: string): Promise<GitHubCommit | null> => {
-  // Use public environment variable for client-side access
   const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
 
   const headers: Record<string, string> = {
@@ -98,7 +96,6 @@ const fetchCommitDetails = async (owner: string, repo: string, sha: string): Pro
 };
 
 export async function getLatestCommit(owner: string, repo: string): Promise<CommitData | null> {
-  // Use public environment variable for client-side access
   const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
 
   const headers: Record<string, string> = {
@@ -111,7 +108,6 @@ export async function getLatestCommit(owner: string, repo: string): Promise<Comm
   }
 
   try {
-    // Fetch latest commits for the repository
     const response = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/commits?per_page=1`,
       { headers }
@@ -156,7 +152,6 @@ export async function getLatestCommits(): Promise<CommitData[]> {
   const commitResults = await Promise.all(commitPromises);
   const validCommits = commitResults.filter(Boolean) as CommitData[];
 
-  // Sort by date (most recent first)
   validCommits.sort((a, b) => {
     const timeA = new Date(a.date).getTime();
     const timeB = new Date(b.date).getTime();
@@ -166,9 +161,7 @@ export async function getLatestCommits(): Promise<CommitData[]> {
   return validCommits;
 }
 
-// Alternative function to get recent activity from user events
 export async function getRecentActivity(): Promise<CommitData[]> {
-  // Use public environment variable for client-side access
   const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
 
   const headers: Record<string, string> = {
@@ -181,7 +174,6 @@ export async function getRecentActivity(): Promise<CommitData[]> {
   }
 
   try {
-    // Fetch user's public events from the last month
     const oneMonthAgo = new Date();
     oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
 
@@ -196,7 +188,6 @@ export async function getRecentActivity(): Promise<CommitData[]> {
 
     const events: GitHubEvent[] = await response.json();
 
-    // Filter for PushEvent events within the last month and from our target repos
     const pushEvents = events.filter(event => {
       if (event.type !== 'PushEvent') return false;
 
@@ -205,13 +196,11 @@ export async function getRecentActivity(): Promise<CommitData[]> {
 
       if (!event.payload.commits || event.payload.commits.length === 0) return false;
 
-      // Only include events from our target projects
       return LATEST_PROJECTS.some(project =>
         event.repo.name === `${project.owner}/${project.repo}`
       );
     });
 
-    // Process each push event to get commit details
     const commits: CommitData[] = [];
 
     for (const event of pushEvents) {
@@ -220,10 +209,8 @@ export async function getRecentActivity(): Promise<CommitData[]> {
 
       if (!projectInfo) continue;
 
-      // Get the latest commit from this push
       const latestCommitSha = event.payload.head || event.payload.commits![0].sha;
 
-      // Fetch detailed commit information
       const commitDetails = await fetchCommitDetails(owner, repo, latestCommitSha);
 
       if (commitDetails) {
@@ -242,7 +229,6 @@ export async function getRecentActivity(): Promise<CommitData[]> {
       }
     }
 
-    // Sort by date (most recent first) and limit to 20
     commits.sort((a, b) => {
       const timeA = new Date(a.date).getTime();
       const timeB = new Date(b.date).getTime();

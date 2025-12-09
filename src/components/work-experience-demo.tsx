@@ -85,8 +85,8 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
 
 export default function WorkExperienceDemo() {
   return (
-    <Section title="Experience" icon={Briefcase} noPadding>
-      <WorkExperience className="w-full" experiences={WORK_EXPERIENCE} />
+    <Section title="Experience" noPadding>
+      <WorkExperience experiences={WORK_EXPERIENCE} />
     </Section>
   )
 }

@@ -42,14 +42,12 @@ export const getLatestTracks = async (limit = 10): Promise<SpotifyTrack[]> => {
   try {
     console.log('🎵 Fetching Spotify tracks from API...');
 
-    // Try to get real Spotify data
     const response = await fetch(`/api/spotify/recent?limit=${limit}`);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.warn('🎵 Spotify API error:', errorData.error || 'Unknown error');
 
-      // If no refresh token configured, try to fetch mock data
       if (errorData.error === 'No refresh token configured') {
         console.log('🎵 No Spotify token, trying mock data...');
         try {
@@ -81,7 +79,6 @@ export const getLatestTracks = async (limit = 10): Promise<SpotifyTrack[]> => {
   } catch (error) {
     console.error('🎵 Error fetching Spotify tracks:', error);
 
-    // Try fallback to mock data on network error
     try {
       console.log('🎵 Network error, trying mock data...');
       const mockResponse = await fetch('/api/spotify.json');
@@ -100,14 +97,12 @@ export const getLatestTracks = async (limit = 10): Promise<SpotifyTrack[]> => {
   }
 };
 
-// Additional helper function to format track duration
 export const formatDuration = (durationMs: number): string => {
   const minutes = Math.floor(durationMs / 60000);
   const seconds = Math.floor((durationMs % 60000) / 1000);
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-// Helper function to get relative time
 export const getRelativeTime = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();

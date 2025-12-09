@@ -36,13 +36,11 @@ export function BlogPostClient({
 }: BlogPostClientProps) {
   const router = useRouter()
 
-  // Format date for AnimatedNumber (extract day number)
   const dateObj = new Date(publishedAt)
   const dayNumber = dateObj.getDate()
   const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
   const dateDuration = 500
 
-  // Combine all tags for display
   const allTags = [
     ...(categories || []),
     ...(tags || []),
@@ -51,7 +49,6 @@ export function BlogPostClient({
 
   return (
     <>
-      {/* Top Navigation Bar */}
       <div className="flex items-center justify-between mb-8 flex-col">
         <div className='flex items-center gap-1.5 w-full text-sm text-muted-foreground'>
           <nav className="flex items-center w-full">
@@ -74,7 +71,6 @@ export function BlogPostClient({
             </span>
           </nav>
 
-          {/* Back Button */}
           <button
             onClick={() => router.back()}
             className="w-full  flex-end inline-flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800/50 rounded-lg transition-all group justify-end"
@@ -130,7 +126,6 @@ export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
   return (
     <nav className="mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Previous Post */}
         {prevPost ? (
           <Link
             href={`/blog/${prevPost.slug}`}
@@ -153,7 +148,6 @@ export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
           <div />
         )}
 
-        {/* Next Post */}
         {nextPost ? (
           <Link
             href={`/blog/${nextPost.slug}`}

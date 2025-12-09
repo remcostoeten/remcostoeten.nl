@@ -30,7 +30,6 @@ const FALLBACK_TRACKS: SpotifyTrack[] = [
 ];
 
 export const getLatestTracks = async (): Promise<SpotifyTrack[]> => {
-  // Check if Spotify credentials are available
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
   const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
@@ -51,7 +50,6 @@ export const getLatestTracks = async (): Promise<SpotifyTrack[]> => {
   }
 
   try {
-    // First, get access token using client credentials flow with refresh token
     const tokenResponse = await fetch('/api/spotify-token', {
       method: 'POST',
       headers: {
@@ -72,7 +70,6 @@ export const getLatestTracks = async (): Promise<SpotifyTrack[]> => {
     const tokenData = await tokenResponse.json();
     const accessToken = tokenData.access_token;
 
-    // Get recently played tracks through proxy
     const recentResponse = await fetch('/api/spotify-recent?limit=10', {
       headers: {
         'Authorization': `Bearer ${accessToken}`

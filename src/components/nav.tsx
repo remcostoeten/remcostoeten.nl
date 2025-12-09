@@ -46,7 +46,6 @@ export function Navbar() {
                 <Icon className="w-4 h-4" />
                 <span className="capitalize">{name}</span>
                 
-                {/* Active indicator dot */}
                 {active && (
                   <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-foreground" />
                 )}

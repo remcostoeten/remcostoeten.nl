@@ -36,7 +36,6 @@ export function ActivityContributionGraph({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<HTMLDivElement>(null);
 
-  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,7 +53,6 @@ export function ActivityContributionGraph({
     fetchData();
   }, [year]);
 
-  // Scroll to current month on load
   useLayoutEffect(() => {
     if (!loading && scrollContainerRef.current) {
       const now = new Date();
@@ -62,17 +60,14 @@ export function ActivityContributionGraph({
       const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
       const weekOfYear = Math.floor(dayOfYear / 7);
 
-      // Calculate scroll position (13px per week = 10px cell + 3px gap)
       const scrollPosition = Math.max(0, (weekOfYear - 8) * 13);
 
       scrollContainerRef.current.scrollLeft = scrollPosition;
 
-      // Trigger animation after scroll
       setTimeout(() => setIsVisible(true), 100);
     }
   }, [loading, year]);
 
-  // Process activity data
   const activityData = useMemo(() => {
     if (loading) return [];
 
@@ -138,7 +133,6 @@ export function ActivityContributionGraph({
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  // Calculate weeks
   const weeks = useMemo(() => {
     const weeksArray: ActivityDay[][] = [];
     let currentWeek: ActivityDay[] = [];
@@ -174,7 +168,6 @@ export function ActivityContributionGraph({
     return weeksArray;
   }, [activityData, year]);
 
-  // Month label positions
   const monthLabels = useMemo(() => {
     const labels: { month: string; position: number }[] = [];
     let lastMonth = -1;
@@ -234,7 +227,6 @@ export function ActivityContributionGraph({
         <style jsx>{`.overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
 
         <div ref={graphRef} className="inline-block min-w-max">
-          {/* Month labels */}
           <div className="flex text-[10px] text-muted-foreground mb-1 pl-7 h-4">
             {monthLabels.map(({ month, position }, idx) => (
               <motion.span
@@ -250,9 +242,7 @@ export function ActivityContributionGraph({
             ))}
           </div>
 
-          {/* Grid */}
           <div className="flex gap-0">
-            {/* Day labels */}
             <div className="flex flex-col gap-[3px] pr-1 text-[9px] text-muted-foreground w-7">
               {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((day, i) => (
                 <div key={i} className="h-[10px] flex items-center justify-end pr-1">
@@ -261,7 +251,6 @@ export function ActivityContributionGraph({
               ))}
             </div>
 
-            {/* Contribution grid */}
             <div className="flex gap-[3px]">
               {weeks.map((week, weekIndex) => (
                 <div key={weekIndex} className="flex flex-col gap-[3px]">
@@ -294,7 +283,6 @@ export function ActivityContributionGraph({
         </div>
       </div>
 
-      {/* Legend */}
       {showLegend && (
         <motion.div
           className="flex items-center gap-2 text-[10px] text-muted-foreground"
@@ -312,7 +300,6 @@ export function ActivityContributionGraph({
         </motion.div>
       )}
 
-      {/* Modal */}
       {selectedDay && (
         <motion.div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"

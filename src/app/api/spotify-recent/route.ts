@@ -5,7 +5,6 @@ export async function GET(request: NextRequest) {
   const limit = searchParams.get('limit') || '10';
 
   try {
-    // Get the access token from the Authorization header
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(

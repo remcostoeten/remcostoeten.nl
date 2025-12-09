@@ -23,12 +23,10 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
     currentPath += `/${segment}`
     const isLast = index === segments.length - 1
     
-    // Format the label - decode URI and capitalize
     let label = decodeURIComponent(segment)
       .replace(/-/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase())
     
-    // Special case handling for known routes
     if (segment === 'blog') label = 'Blog'
     if (segment === 'categories') label = 'Categories'
     if (segment === 'topics') label = 'Topics'
@@ -47,7 +45,6 @@ export function Breadcrumbs() {
   const pathname = usePathname()
   const breadcrumbs = generateBreadcrumbs(pathname)
   
-  // Don't show breadcrumbs on home page
   if (pathname === '/' || breadcrumbs.length === 0) {
     return null
   }
@@ -58,7 +55,6 @@ export function Breadcrumbs() {
       className="mb-6"
     >
       <ol className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
-        {/* Home link */}
         <li className="flex items-center">
           <Link 
             href="/"
