@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
 
-import { getBlogPosts, calculateReadTime } from 'src/utils/utils'
-import { baseUrl } from 'src/app/sitemap'
-import { CustomMDX } from 'src/components/mdx'
-import { BlogPostClient, PostNavigation } from 'src/components/blog-post-client'
+import { getBlogPosts, calculateReadTime } from '@/utils/utils'
+import { baseUrl } from '@/app/sitemap'
+import { CustomMDX } from '@/components/mdx'
+import { BlogPostClient, PostNavigation } from '@/components/blog-post-client'
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()
@@ -111,13 +111,13 @@ export default async function Blog({ params }) {
         readTime={calculateReadTime(post.content)}
       />
 
-      <h1 className=" font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight mb-10 leading-[1.1] 
-      
+      <h1 className=" font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight mb-10 leading-[1.1]
+
 bg-gradient-to-b from-[#ebeaea] via-[#efedeb] to-[#90cc7f] bg-clip-text text-transparent">
         {post.metadata.title}
       </h1>
 
-      <article className="prose prose-neutral dark:prose-invert max-w-none 
+      <article className="prose prose-neutral dark:prose-invert max-w-none
         prose-headings:font-sans prose-headings:font-bold prose-headings:tracking-tight
         prose-p:font-reading prose-p:leading-relaxed prose-p:text-lg prose-p:text-neutral-700 dark:prose-p:text-neutral-300
         prose-a:text-lime-600 dark:prose-a:text-lime-400 prose-a:no-underline hover:prose-a:underline

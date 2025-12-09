@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 
 import { AnimatedNumber } from './animated-number'
 
@@ -28,15 +29,26 @@ function BlogCard({ post, index }: BlogCardProps) {
   const asciiRef = useRef<HTMLDivElement | null>(null)
   const asciiCharsRef = useRef<string[]>([])
   const frameRef = useRef<number | null>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(cardRef, { once: true, margin: "-100px" })
+  const [shouldAnimateNumbers, setShouldAnimateNumbers] = useState(false)
 
   // Calculate animation duration for index (staggered)
   const indexDuration = 800 + (index * 100)
-  
+
   // Format date for AnimatedNumber (extract day number)
   const dateObj = new Date(post.metadata.publishedAt)
   const dayNumber = dateObj.getDate()
   const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
   const dateDuration = 1000 + (index * 50)
+
+  // Trigger number animations when card is in view
+  useEffect(() => {
+    if (isInView) {
+      const timer = setTimeout(() => setShouldAnimateNumbers(true), 200)
+      return () => clearTimeout(timer)
+    }
+  }, [isInView])
 
   useEffect(() => {
     const chars = ['+', '.', ':', '-', '·', ' ']
@@ -61,7 +73,7 @@ function BlogCard({ post, index }: BlogCardProps) {
           if (Math.random() > 0.5) {
             asciiCharsRef.current[idx] =
               asciiChars[
-                Math.floor(Math.random() * asciiChars.length)
+              Math.floor(Math.random() * asciiChars.length)
               ]
           }
         }
@@ -82,95 +94,106 @@ function BlogCard({ post, index }: BlogCardProps) {
 
   return (
     <li className="block p-0 m-0">
-      <Link
-        href={`/blog/${post.slug}`}
-        className="group relative block active:scale-[0.995] transition-transform duration-200 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
-        style={{ contain: 'layout style paint' }} // Prevent layout shifts
+      <motion.div
+        ref={cardRef}
+        initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
+        animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 40, filter: 'blur(8px)' }}
+        transition={{
+          duration: 0.6,
+          delay: index * 0.1,
+          ease: [0.16, 1, 0.3, 1]
+        }}
       >
-        {/* Neutral gradient background on hover */}
-        <div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-          aria-hidden="true"
-        />
-
-        {/* ASCII texture layer */}
-        <div
-          className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden"
-          aria-hidden="true"
+        <Link
+          href={`/blog/${post.slug}`}
+          className="group relative block active:scale-[0.995] transition-transform duration-200 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+          style={{ contain: 'layout style paint' }} // Prevent layout shifts
         >
+          {/* Neutral gradient background on hover */}
           <div
-            ref={asciiRef}
-            className="w-full h-full font-mono text-[10px] leading-[10px] text-lime-400/12 break-all select-none tracking-widest p-4"
-            style={{ contain: 'strict' }} // Contain ASCII animation
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+            aria-hidden="true"
           />
-        </div>
 
-        <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8 px-6 border-b border-neutral-800/60 z-10 min-h-[120px]">
-          <div className="flex-1 min-w-0">
-            <header className="flex items-start gap-3">
-              <span
-                className="text-4xl font-bold text-neutral-600/30 leading-none flex items-center min-h-[3.5rem] w-[3rem] select-none tabular-nums flex-shrink-0"
-                aria-hidden="true"
-              >
-                <AnimatedNumber value={formattedIndex} duration={indexDuration} />
-              </span>
+          {/* ASCII texture layer */}
+          <div
+            className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden"
+            aria-hidden="true"
+          >
+            <div
+              ref={asciiRef}
+              className="w-full h-full font-mono text-[10px] leading-[10px] text-lime-400/12 break-all select-none tracking-widest p-4"
+              style={{ contain: 'strict' }} // Contain ASCII animation
+            />
+          </div>
 
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug truncate min-h-[1.5rem]">
-                  {post.metadata.title}
-                </p>
+          <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8 px-6 border-b border-neutral-800/60 z-10 min-h-[120px]">
+            <div className="flex-1 min-w-0">
+              <header className="flex items-start gap-3">
+                <span
+                  className="text-4xl font-bold text-neutral-600/30 leading-none flex items-center min-h-[3.5rem] w-[3rem] select-none tabular-nums flex-shrink-0"
+                  aria-hidden="true"
+                >
+                  {shouldAnimateNumbers && <AnimatedNumber value={formattedIndex} duration={indexDuration} />}
+                </span>
 
-                {post.metadata.summary && (
-                  <p className="text-xs text-neutral-400/80 line-clamp-2 mt-1.5 leading-relaxed min-h-[2.5rem]">
-                    {post.metadata.summary}
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug truncate min-h-[1.5rem]">
+                    {post.metadata.title}
                   </p>
-                )}
 
-                {/* Combine categories, tags, and topics for display */}
-                {(() => {
-                  const allTags = [
-                    ...(post.metadata.categories || []),
-                    ...(post.metadata.tags || []),
-                    ...(post.metadata.topics || [])
-                  ]
-                  return allTags.length > 0 ? (
-                    <div className="flex flex-wrap gap-2 mt-3 mb-1" aria-label="Tags">
-                      {allTags.slice(0, 3).map((tag) => (
-                        <Link
-                          key={tag}
-                          href={`/topics/${tag.toLowerCase()}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-400 border border-transparent hover:border-lime-500/30 hover:text-lime-400 transition-colors duration-300 cursor-pointer"
-                        >
-                          {tag}
-                        </Link>
-                      ))}
-                      {allTags.length > 3 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-500">
-                          +{allTags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  ) : null
-                })()}
+                  {post.metadata.summary && (
+                    <p className="text-xs text-neutral-400/80 line-clamp-2 mt-1.5 leading-relaxed min-h-[2.5rem]">
+                      {post.metadata.summary}
+                    </p>
+                  )}
 
-                <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500">
-                  <time dateTime={post.metadata.publishedAt} className="tabular-nums">
-                    <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
-                  </time>
-                </footer>
-              </div>
-            </header>
-          </div>
+                  {/* Combine categories, tags, and topics for display */}
+                  {(() => {
+                    const allTags = [
+                      ...(post.metadata.categories || []),
+                      ...(post.metadata.tags || []),
+                      ...(post.metadata.topics || [])
+                    ]
+                    return allTags.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 mt-3 mb-1" aria-label="Tags">
+                        {allTags.slice(0, 3).map((tag) => (
+                          <Link
+                            key={tag}
+                            href={`/topics/${tag.toLowerCase()}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-400 border border-transparent hover:border-lime-500/30 hover:text-lime-400 transition-colors duration-300 cursor-pointer"
+                          >
+                            {tag}
+                          </Link>
+                        ))}
+                        {allTags.length > 3 && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-500">
+                            +{allTags.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    ) : null
+                  })()}
 
-          <div className="flex-shrink-0 ml-auto sm:ml-0" aria-hidden="true">
-            <div className="relative w-10 h-10 rounded-full bg-neutral-900/60 group-hover:bg-lime-500/20 flex items-center justify-center overflow-hidden transition-all duration-200 group-hover:scale-110">
-              <ArrowUpRight className="absolute w-4 h-4 text-neutral-400 group-hover:text-lime-400 transition-all duration-300 group-hover:-translate-y-6 group-hover:translate-x-6" />
-              <ArrowUpRight className="absolute w-4 h-4 text-lime-400 -translate-x-6 translate-y-6 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0" />
+                  <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500">
+                    <time dateTime={post.metadata.publishedAt} className="tabular-nums">
+                      {shouldAnimateNumbers && <AnimatedNumber value={dayNumber} duration={dateDuration} />} {monthYear}
+                    </time>
+                  </footer>
+                </div>
+              </header>
             </div>
-          </div>
-        </article>
-      </Link>
+
+            <div className="flex-shrink-0 ml-auto sm:ml-0" aria-hidden="true">
+              <div className="relative w-10 h-10 rounded-full bg-neutral-900/60 group-hover:bg-lime-500/20 flex items-center justify-center overflow-hidden transition-all duration-200 group-hover:scale-110">
+                <ArrowUpRight className="absolute w-4 h-4 text-neutral-400 group-hover:text-lime-400 transition-all duration-300 group-hover:-translate-y-6 group-hover:translate-x-6" />
+                <ArrowUpRight className="absolute w-4 h-4 text-lime-400 -translate-x-6 translate-y-6 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0" />
+              </div>
+            </div>
+          </article>
+        </Link>
+      </motion.div>
     </li>
   )
 }

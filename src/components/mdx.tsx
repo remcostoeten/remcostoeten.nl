@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
-import { ShikiCodeBlock } from './shiki-viewer/shiki-viewer'
+import { Code } from './simple-code-block'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -48,32 +48,7 @@ function RoundedImage(props) {
   return <Image alt={props.alt} className="rounded-lg" {...props} />
 }
 
-function Code({ children, ...props }) {
-  // The pre element receives a code element as children
-  // Extract the actual code string and language from the code element
-  const codeElement = React.Children.toArray(children)[0] as React.ReactElement
-  const codeProps = codeElement?.props || {}
-
-  // Handle nested children structure - MDX can nest content deeply
-  const extractText = (node: any): string => {
-    if (typeof node === 'string') return node
-    if (Array.isArray(node)) return node.map(extractText).join('')
-    if (node?.props?.children) return extractText(node.props.children)
-    return ''
-  }
-
-  const codeString = extractText(codeProps.children).replace(/\n$/, '') // Remove trailing newline
-  const language = codeProps.className?.replace(/language-/, '') || 'text'
-
-  return (
-    <ShikiCodeBlock
-      code={codeString}
-      language={language}
-      showLineNumbers={true}
-      className="my-6"
-    />
-  )
-}
+// Simple Code component now imported from simple-code-block.tsx
 
 function slugify(str) {
   return str

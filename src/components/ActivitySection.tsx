@@ -1,56 +1,51 @@
 'use client';
 
-import { useState, useEffect, useRef, Fragment } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { motion as motionOriginal, AnimatePresence } from 'framer-motion';
-import { Music, GitBranch } from 'lucide-react';
-import { getLatestCommit, CommitData } from 'src/services/core/github-service';
-import { getLatestTracks, SpotifyTrack } from 'src/services/core/spotify-service';
-import { ActivityHoverCard } from './ActivityHoverCard';
+import { Music, GitBranch, Calendar, Activity } from 'lucide-react';
+import { useRecentCommits } from '@/hooks/use-github';
+import { getLatestTracks, SpotifyTrack } from '@/core/spotify-service';
+import { ActivityContributionGraph } from './activity-contribution-graph';
+import { Section, TimelineItem } from './ui/section';
 
-// Workaround for framer-motion type mismatch
 const motion = motionOriginal as any;
 
-// Modern spring-like easing for smooth, natural motion
 const SPRING_EASE = [0.32, 0.72, 0, 1];
 
-// Staggered animation variants
 const containerVariants = {
   initial: { opacity: 0 },
-  animate: { 
+  animate: {
     opacity: 1,
     transition: { staggerChildren: 0.08, delayChildren: 0.02 }
   },
-  exit: { 
+  exit: {
     opacity: 0,
     transition: { staggerChildren: 0.04, staggerDirection: -1 }
   }
 };
 
 const itemVariants = {
-  initial: { y: 12, opacity: 0, filter: 'blur(4px)' },
-  animate: { 
-    y: 0, 
-    opacity: 1, 
-    filter: 'blur(0px)',
-    transition: { duration: 0.4, ease: SPRING_EASE }
+  initial: { y: 8, opacity: 0 },
+  animate: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.3, ease: SPRING_EASE }
   },
-  exit: { 
-    y: -8, 
-    opacity: 0, 
-    filter: 'blur(2px)',
-    transition: { duration: 0.25, ease: [0.4, 0, 1, 1] }
+  exit: {
+    y: -6,
+    opacity: 0,
+    transition: { duration: 0.2 }
   }
 };
 
 const Equalizer = () => (
-  <div className="flex items-end gap-[1px] h-3 ml-2" aria-hidden="true">
-    <div className="w-[2px] bg-muted-foreground/50 group-hover:bg-muted-foreground/70 transition-colors duration-300 animate-[music-bar_0.8s_ease-in-out_infinite] rounded-sm" />
-    <div className="w-[2px] bg-muted-foreground/50 group-hover:bg-muted-foreground/70 transition-colors duration-300 animate-[music-bar_1.2s_ease-in-out_infinite_0.1s] rounded-sm" />
-    <div className="w-[2px] bg-muted-foreground/50 group-hover:bg-muted-foreground/70 transition-colors duration-300 animate-[music-bar_0.5s_ease-in-out_infinite_0.2s] rounded-sm" />
+  <div className="flex items-end gap-[1px] h-3" aria-hidden="true">
+    <div className="w-[2px] bg-green-500 rounded-full animate-[music-bar_0.8s_ease-in-out_infinite]" />
+    <div className="w-[2px] bg-green-500 rounded-full animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]" />
+    <div className="w-[2px] bg-green-500 rounded-full animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]" />
   </div>
 );
 
-// Format relative timestamp
 const formatRelativeTime = (dateString: string): string => {
   const now = new Date();
   const date = new Date(dateString);
@@ -60,62 +55,38 @@ const formatRelativeTime = (dateString: string): string => {
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffMins < 1) return 'just now';
-  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays === 1) return 'yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  
-  // For older tracks, just show the date
+  if (diffDays < 7) return `${diffDays}d ago`;
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 
-// Your 5 latest projects
-const LATEST_PROJECTS = [
-  { owner: 'remcostoeten', repo: 'remcostoeten.nl', name: 'remcostoeten.nl', color: 'text-foreground' },
-  { owner: 'remcostoeten', repo: 'drizzleasy', name: 'drizzleasy', color: 'text-foreground' },
-  { owner: 'remcostoeten', repo: 'fync', name: 'fync', color: 'text-foreground' },
-  { owner: 'remcostoeten', repo: 'next-forge', name: 'next-forge', color: 'text-foreground' },
-  { owner: 'remcostoeten', repo: 'planorama', name: 'planorama', color: 'text-foreground' }
-];
-
 export const ActivitySection = () => {
+  const year = new Date().getFullYear();
   const [songIndex, setSongIndex] = useState(0);
   const [activityIndex, setActivityIndex] = useState(0);
-  const [commits, setCommits] = useState<(CommitData & { color: string })[]>([]);
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  // Hover state
-  const [hoveredItem, setHoveredItem] = useState<{ type: 'github' | 'spotify'; data: any } | null>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const activityRef = useRef<HTMLDivElement>(null);
+  const [spotifyLoading, setSpotifyLoading] = useState(true);
+
+  const { data: commitsData, isLoading: githubLoading } = useRecentCommits(5);
+  const commits = commitsData?.commits || [];
+  const loading = spotifyLoading || githubLoading;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSpotifyData = async () => {
       try {
-        const commitPromises = LATEST_PROJECTS.map(async (project) => {
-          const commit = await getLatestCommit(project.owner, project.repo);
-          return commit ? { ...commit, color: project.color, projectName: project.name } : null;
-        });
-        
-        const commitResults = await Promise.all(commitPromises);
-        const validCommits = commitResults.filter(Boolean) as (CommitData & { color: string; projectName: string })[];
-        setCommits(validCommits);
-
-        // Fetch Spotify tracks
         const spotifyTracks = await getLatestTracks();
         setTracks(spotifyTracks);
       } catch (error) {
-        console.error('Error fetching activity data:', error);
+        console.error('Error fetching Spotify data:', error);
       } finally {
-        setLoading(false);
+        setSpotifyLoading(false);
       }
     };
-
-    fetchData();
+    fetchSpotifyData();
   }, []);
 
-  // Cycle Music every 5 seconds
   useEffect(() => {
     if (tracks.length === 0) return;
     const interval = setInterval(() => {
@@ -124,7 +95,6 @@ export const ActivitySection = () => {
     return () => clearInterval(interval);
   }, [tracks.length]);
 
-  // Cycle Activity every 4 seconds
   useEffect(() => {
     if (commits.length === 0) return;
     const interval = setInterval(() => {
@@ -133,205 +103,122 @@ export const ActivitySection = () => {
     return () => clearInterval(interval);
   }, [commits.length]);
 
-  // Mouse move handler for hover card positioning
-  const handleMouseMove = (e: React.MouseEvent) => {
-    setMousePosition({
-      x: e.clientX,
-      y: e.clientY
-    });
+  const currentTrack = tracks[songIndex] || { name: 'Loading...', artist: '...', url: '#', played_at: new Date().toISOString() };
+  const currentCommit = commits[activityIndex] || {
+    message: 'Loading...',
+    url: '#',
+    projectName: '...',
+    date: new Date().toISOString()
   };
-
-  // Hover handlers
-  const handleGitHubHover = () => {
-    setHoveredItem({ type: 'github', data: currentCommit });
-  };
-
-  const handleSpotifyHover = () => {
-    setHoveredItem({ type: 'spotify', data: currentTrack });
-  };
-
-  const handleHoverEnd = () => {
-    setHoveredItem(null);
-  };
-
-  const currentTrack = tracks[songIndex] || { name: 'Loading...', artist: '...', url: '#' };
-  const currentCommit = commits[activityIndex] || { 
-    message: 'Loading recent commits...', 
-    url: '#', 
-    shortHash: '....',
-    color: 'text-muted-foreground',
-    projectName: 'Loading...',
-    hash: '....',
-    date: '',
-    author: ''
-  };
-
-  if (loading) {
-    return (
-      <div className="w-full rounded-xl border border-border/40 bg-muted/10 p-1 md:p-1.5 mb-12 shadow-sm group">
-        <div className="relative flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border/40 bg-background/40 backdrop-blur-sm rounded-lg overflow-hidden">
-          <div className="flex-1 flex items-center gap-4 p-4 min-h-[80px]">
-            <div className="shrink-0 w-10 h-10 rounded-lg bg-accent/5 border border-accent/10 animate-pulse" />
-            <div className="flex-1 min-w-0">
-              <div className="h-4 bg-muted rounded animate-pulse mb-2 min-h-[1rem]" />
-              <div className="h-3 bg-muted rounded w-3/4 animate-pulse min-h-[0.75rem]" />
-            </div>
-          </div>
-          <div className="flex-1 flex items-center gap-4 p-4 min-h-[80px]">
-            <div className="shrink-0 w-10 h-10 rounded-lg bg-muted/20 border border-border/40 animate-pulse" />
-            <div className="flex-1 min-w-0">
-              <div className="h-4 bg-muted rounded animate-pulse mb-2 min-h-[1rem]" />
-              <div className="h-3 bg-muted rounded w-3/4 animate-pulse min-h-[0.75rem]" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <Fragment>
-      <div 
-        ref={activityRef}
-        className="w-full rounded-xl border border-border/40 bg-muted/10  md:p-1.5 mb-12 animate-enter shadow-sm group transition-all duration-300 group-hover:border-border/60 group-hover:bg-muted/15"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleHoverEnd}
-      >
-        <div className="relative flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-border/40 bg-background/40 backdrop-blur-sm rounded-lg overflow-hidden transition-all duration-300 group-hover:bg-background/50">
-
-        <div 
-          className="flex-1 flex items-center gap-4 p-4 min-w-0 cursor-pointer"
-          onMouseEnter={handleGitHubHover}
-        >
-          <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-accent/5 border border-accent/10 text-accent transition-all duration-300 group-hover:bg-accent/10 group-hover:border-accent/20 group-hover:scale-105">
-            <GitBranch className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+    <Section
+      title="Activity & Contributions"
+      icon={Activity}
+      headerAction={<span className="text-muted-foreground/60">{year}</span>}
+    >
+      <div className="space-y-4">
+        {/* Contribution Graph */}
+        <div className="rounded-lg border border-border/30 bg-background/50 p-3">
+          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/20">
+            <Calendar className="size-3.5 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">Contribution Graph</span>
           </div>
-          
-          <div className="flex-1 min-w-0 flex flex-col justify-center h-full overflow-hidden">
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Building</span>
-              <span className="w-1 h-1 rounded-full bg-accent animate-pulse" />
-            </div>
-            
-            <AnimatePresence mode='wait'>
-               <motion.div
-                  key={activityIndex}
-                  variants={containerVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="w-full flex flex-col gap-1"
-               >
-                 <div className="flex items-center gap-2">
-                   <motion.a 
-                      href={currentCommit.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`text-sm font-medium truncate shrink-0 ${currentCommit.color} hover:underline`}
-                      variants={itemVariants}
-                   >
-                     {(currentCommit as any).projectName}
-                   </motion.a>
-                   
-                   <motion.span 
-                      className="text-muted-foreground/30 font-light hidden sm:inline-block"
-                      variants={itemVariants}
-                   >
-                     /
-                   </motion.span>
-                   
-                   <motion.span 
-                      className="text-xs text-muted-foreground font-mono truncate"
-                      variants={itemVariants}
-                   >
-                     {currentCommit.message.split('\n')[0]}
-                   </motion.span>
-                 </div>
-                 
-                 <motion.div 
-                    className="flex items-center gap-2"
-                    variants={itemVariants}
-                 >
-                   <motion.span 
-                      className="text-xs text-muted-foreground/60 font-medium"
-                      variants={itemVariants}
-                   >
-                     • {formatRelativeTime(currentCommit.date)}
-                   </motion.span>
-                 </motion.div>
-               </motion.div>
-            </AnimatePresence>
-          </div>
+          <ActivityContributionGraph year={year} showLegend={true} />
         </div>
 
-        {/* Section 2: Listening (Music) */}
-        <div 
-          className="flex-1 flex items-center gap-4 p-4 min-w-0 cursor-pointer"
-          onMouseEnter={handleSpotifyHover}
-        >
-          <div className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-muted/20 border border-border/40 text-muted-foreground transition-all duration-300 group-hover:bg-muted/30 group-hover:border-border/60 group-hover:scale-105">
-            <Music className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+        {/* Activity Timeline */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Latest Commit */}
+          <div className="rounded-lg border border-border/30 bg-background/50 p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex size-5 items-center justify-center rounded bg-muted/80">
+                <GitBranch className="size-3 text-muted-foreground" />
+              </div>
+              <span className="text-xs font-medium text-foreground">Latest Commit</span>
+            </div>
+
+            <AnimatePresence mode='wait'>
+              <motion.div
+                key={activityIndex}
+                variants={containerVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="pl-7 space-y-0.5"
+              >
+                <motion.a
+                  href={currentCommit.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
+                  variants={itemVariants}
+                >
+                  {(currentCommit as any).projectName}
+                </motion.a>
+                <motion.p
+                  className="text-xs text-muted-foreground truncate"
+                  variants={itemVariants}
+                >
+                  {currentCommit.message.split('\n')[0]}
+                </motion.p>
+                <motion.span
+                  className="text-[10px] text-muted-foreground/60"
+                  variants={itemVariants}
+                >
+                  {formatRelativeTime(currentCommit.date)}
+                </motion.span>
+              </motion.div>
+            </AnimatePresence>
           </div>
-          
-          <div className="flex-1 min-w-0 flex flex-col justify-center h-full overflow-hidden">
-            <div className="flex items-center gap-2 mb-0.5">
-              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Whilst probably listening to</span>
+
+          {/* Currently Playing */}
+          <div className="rounded-lg border border-border/30 bg-background/50 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="flex size-5 items-center justify-center rounded bg-green-500/10">
+                  <Music className="size-3 text-green-500" />
+                </div>
+                <span className="text-xs font-medium text-foreground">Currently Playing</span>
+              </div>
               <Equalizer />
             </div>
-            
+
             <AnimatePresence mode='wait'>
-               <motion.div
-                  key={songIndex}
-                  variants={containerVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  className="w-full flex flex-col gap-1"
-               >
-                 <div className="flex items-center gap-2">
-                   <motion.a 
-                      href={currentTrack.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium text-foreground truncate block hover:underline"
-                      variants={itemVariants}
-                   >
-                     {currentTrack.name}
-                   </motion.a>
-                 </div>
-                 
-                 <div className="flex items-center gap-2">
-                   <motion.span 
-                      className="text-xs text-muted-foreground truncate block"
-                      variants={itemVariants}
-                   >
-                     {currentTrack.artist}
-                   </motion.span>
-                   
-                   <motion.span 
-                      className="text-xs text-muted-foreground/60 font-medium"
-                      variants={itemVariants}
-                   >
-                     • {formatRelativeTime(currentTrack.played_at)}
-                   </motion.span>
-                 </div>
-               </motion.div>
+              <motion.div
+                key={songIndex}
+                variants={containerVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="pl-7 space-y-0.5"
+              >
+                <motion.a
+                  href={currentTrack.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
+                  variants={itemVariants}
+                >
+                  {currentTrack.name}
+                </motion.a>
+                <motion.p
+                  className="text-xs text-muted-foreground truncate"
+                  variants={itemVariants}
+                >
+                  {currentTrack.artist}
+                </motion.p>
+                <motion.span
+                  className="text-[10px] text-muted-foreground/60"
+                  variants={itemVariants}
+                >
+                  {formatRelativeTime(currentTrack.played_at)}
+                </motion.span>
+              </motion.div>
             </AnimatePresence>
           </div>
         </div>
-
       </div>
-      </div>
-
-      {/* Hover Card */}
-      {hoveredItem && (
-        <ActivityHoverCard
-          type={hoveredItem.type}
-          data={hoveredItem.data}
-          isVisible={true}
-          position={mousePosition}
-        />
-      )}
-    </Fragment>
+    </Section>
   );
 };

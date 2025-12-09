@@ -1,1 +1,2 @@
-export { ShikiCodeBlock, default } from './shiki-viewer';
+export { ShikiCodeBlock } from './shiki-viewer';
+export { default } from './shiki-viewer';

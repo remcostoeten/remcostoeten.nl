@@ -533,3 +533,108 @@
 .codeblock-syntax {
 	contain: layout style;
 }
+
+/* Projects Showcase Animations */
+@keyframes project-card-hover {
+	0% {
+		transform: translateY(0) scale(1);
+	}
+	100% {
+		transform: translateY(-4px) scale(1.02);
+	}
+}
+
+@keyframes tech-shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+.project-card {
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: transform, box-shadow, border-color;
+}
+
+.project-card:hover {
+	animation: project-card-hover 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.tech-shimmer-effect {
+	position: relative;
+	overflow: hidden;
+}
+
+.tech-shimmer-effect::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.1),
+		transparent
+	);
+	animation: tech-shimmer 2s infinite;
+}
+
+/* Proficiency Bar Animation */
+@keyframes proficiency-fill {
+	0% {
+		width: 0;
+		opacity: 0;
+	}
+	50% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.proficiency-bar {
+	animation: proficiency-fill 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Line Clamp Utility */
+.line-clamp-3 {
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* Project and Tech Grid Performance */
+.projects-grid {
+	contain: layout style;
+}
+
+.tech-grid {
+	contain: layout style;
+}
+
+/* Hover Effects for Links */
+.link-hover-effect {
+	position: relative;
+	transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-hover-effect::after {
+	content: '';
+	position: absolute;
+	bottom: -2px;
+	left: 0;
+	width: 0;
+	height: 2px;
+	background: currentColor;
+	transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-hover-effect:hover::after {
+	width: 100%;
+}

@@ -3,9 +3,9 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, GitBranch, Calendar, Clock, User, ExternalLink, Code, Disc } from 'lucide-react';
-import type { CommitData } from 'src/services/core/github-service';
-import type { SpotifyTrack } from 'src/services/core/spotify-service';
-import { formatRelativeTime } from 'src/utils/shared';
+import type { CommitData } from '@/hooks/use-github';
+import type { SpotifyTrack } from '@/core/spotify-service';
+import { getRelativeTime } from '@/core/spotify-service';
 
 interface ActivityHoverCardProps {
   type: 'github' | 'spotify';
@@ -15,24 +15,22 @@ interface ActivityHoverCardProps {
 }
 
 const cardVariants = {
-  initial: { 
-    opacity: 0, 
-    scale: 0.98, 
+  initial: {
+    opacity: 0,
+    scale: 0.98,
     y: -8
   },
-  animate: { 
-    opacity: 1, 
-    scale: 1, 
+  animate: {
+    opacity: 1,
+    scale: 1,
     y: 0,
     transition: {
-      type: 'tween',
-      duration: 0.2,
-      ease: [0.16, 1, 0.3, 1]
+      duration: 0.2
     }
   },
-  exit: { 
-    opacity: 0, 
-    scale: 0.98, 
+  exit: {
+    opacity: 0,
+    scale: 0.98,
     y: -8,
     transition: { duration: 0.15 }
   }
@@ -45,33 +43,35 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
   const commit = data as CommitData & { projectName?: string; color?: string };
   const track = data as SpotifyTrack;
 
-  // Calculate dynamic positioning to keep card in viewport
+  // Calculate dynamic positioning to keep card in viewport and follow mouse
   const getCardPosition = () => {
     const cardWidth = 340; // Approximate card width
     const cardHeight = 200; // Approximate card height
-    const offset = 15; // Distance from cursor
-    
-    let x = position.x;
-    let y = position.y;
-    
+    const offset = 20; // Distance from cursor
+
+    let x = position.x + offset;
+    let y = position.y + offset;
+
     // Check if card would go off right edge
-    if (x + cardWidth / 2 > window.innerWidth - 20) {
-      x = window.innerWidth - cardWidth / 2 - 20;
+    if (x + cardWidth > window.innerWidth - 20) {
+      x = position.x - cardWidth - offset;
     }
-    
-    // Check if card would go off left edge  
-    if (x - cardWidth / 2 < 20) {
-      x = cardWidth / 2 + 20;
+
+    // Check if card would go off left edge
+    if (x < 20) {
+      x = 20;
     }
-    
-    // Position above cursor by default
-    y = position.y - cardHeight - offset;
-    
-    // If not enough space above, position below
+
+    // Check if card would go off bottom edge
+    if (y + cardHeight > window.innerHeight - 20) {
+      y = position.y - cardHeight - offset;
+    }
+
+    // Check if card would go off top edge
     if (y < 20) {
-      y = position.y + offset;
+      y = 20;
     }
-    
+
     return { x, y };
   };
 
@@ -81,10 +81,9 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
     <AnimatePresence mode="wait">
       <motion.div
         className="fixed z-50 pointer-events-none"
-        style={{ 
-          left: cardPosition.x, 
-          top: cardPosition.y,
-          transform: 'translate(-50%, 0)'
+        style={{
+          left: cardPosition.x,
+          top: cardPosition.y
         }}
         variants={cardVariants}
         initial="initial"
@@ -131,7 +130,7 @@ export const ActivityHoverCard = React.memo(({ type, data, isVisible, position }
                 {/* Time */}
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock className="w-3 h-3" />
-                  <span>{formatRelativeTime(isGitHub ? commit.date : track.played_at)}</span>
+                  <span>{getRelativeTime(isGitHub ? commit.date : track.played_at)}</span>
                 </div>
 
                 {/* Date */}

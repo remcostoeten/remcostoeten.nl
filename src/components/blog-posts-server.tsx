@@ -1,5 +1,7 @@
-import { getBlogPosts } from 'src/utils/utils'
+import { getBlogPosts } from '@/utils/utils'
 import { BlogPostsClient } from './blog-posts-client'
+import { Section } from './ui/section'
+import { FileText } from 'lucide-react'
 
 export function BlogPosts() {
   let allBlogs = getBlogPosts()
@@ -13,6 +15,13 @@ export function BlogPosts() {
   })
 
   return (
-    <BlogPostsClient posts={sortedBlogs} />
+    <Section
+      title="Recent Posts"
+      icon={FileText}
+      headerAction={<span className="text-muted-foreground/60">{sortedBlogs.length} posts</span>}
+      noPadding
+    >
+      <BlogPostsClient posts={sortedBlogs} />
+    </Section>
   )
 }

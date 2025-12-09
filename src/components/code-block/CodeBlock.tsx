@@ -1,16 +1,6 @@
 'use client';
 
-import {
-  ArrowDown,
-  ArrowUp,
-  Check,
-  CheckCircle2,
-  ChevronDown,
-  Copy,
-  File,
-  Search,
-  X,
-} from "lucide-react";
+import { Copy, Search, X, ArrowUp, ArrowDown, ChevronDown, Check, CheckCircle2, File as FileIcon } from "lucide-react";
 import { getLanguageIcon } from "./language-icons";
 import { useCallback, useEffect, useRef, useState, useMemo, memo } from "react";
 import React from "react";
@@ -474,7 +464,7 @@ export function CodeBlock({
               )}
               {fileName && (
                 <div className="shrink-0 flex items-center gap-2 rounded-full px-3 py-1 border bg-[#111111] border-[#333333] group-hover:border-[#444444]">
-                  <File size={12} className="text-zinc-400" />
+                  <FileIcon size={12} className="text-zinc-400" />
                   <span className="text-sm font-medium text-zinc-400 group-hover:text-zinc-300">
                     {fileName}
                   </span>

@@ -1,5 +1,5 @@
-import { getBlogPostsByCategory, getAllCategories } from 'src/utils/utils'
-import { formatDate } from 'src/utils/client-utils'
+import { getBlogPostsByCategory, getAllCategories } from '@/utils/utils'
+import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'

@@ -4,11 +4,12 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 
-import { Navbar } from 'src/components/nav'
+import { Navbar } from '@/components/nav'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import Footer from 'src/components/footer'
-import { PageTransition } from 'src/components/PageTransition'
+import Footer from '@/components/footer'
+import { PageTransition } from '@/components/PageTransition'
+import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 
@@ -57,16 +58,18 @@ export default function RootLayout({
       )}
     >
       <body className="antialiased bg-background text-foreground">
-        <div className="min-h-screen w-full flex flex-col">
-          <main className="px-6 py-8 md:px-12 md:py-12 max-w-5xl mx-auto w-full grow">
-            <PageTransition>
-              {children}
-            </PageTransition>
-          </main>
-          <Footer />
-        </div>
-        <Analytics />
-        <SpeedInsights />
+        <CustomQueryClientProvider>
+          <div className="min-h-screen w-full flex flex-col">
+            <main className="px-6 py-8 md:px-12 md:py-12 max-w-2xl mx-auto w-full grow">
+              <PageTransition>
+                {children}
+              </PageTransition>
+            </main>
+            <Footer />
+          </div>
+          <Analytics />
+          <SpeedInsights />
+        </CustomQueryClientProvider>
       </body>
     </html>
   )

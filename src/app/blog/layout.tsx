@@ -1,10 +1,10 @@
 import { ReactNode } from 'react'
-import { TopicsSidebar } from 'src/components/topics-sidebar'
+import { TopicsSidebar } from '@/components/topics-sidebar'
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="flex gap-12">
-            <div className="flex-1 min-w-0">
+        <div className="relative">
+            <div className="w-full lg:pr-56">
                 {children}
             </div>
             <TopicsSidebar />

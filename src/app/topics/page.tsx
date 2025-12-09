@@ -1,4 +1,4 @@
-import { getAllCategories } from 'src/utils/utils'
+import { getAllCategories } from '@/utils/utils'
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
 

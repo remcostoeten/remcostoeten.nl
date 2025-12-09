@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
-import { getAllCategories } from 'src/utils/utils'
+import { getAllCategories } from '@/utils/utils'
 
 export function TopicsSidebar() {
     const categories = getAllCategories()
 
     return (
-        <aside className="hidden lg:block w-48 flex-shrink-0">
-            <div className="sticky top-8">
+        <aside className="hidden lg:block fixed top-24 right-8 w-48 z-40">
+            <div>
                 <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-500 mb-4">
                     Topics
                 </h2>

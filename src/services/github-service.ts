@@ -56,13 +56,11 @@ interface GitHubEvent {
   created_at: string;
 }
 
-// Your 5 latest projects with their colors
+// Your latest projects with their colors
 const LATEST_PROJECTS = [
   { owner: 'remcostoeten', repo: 'remcostoeten.nl', name: 'remcostoeten.nl', color: 'text-blue-400' },
   { owner: 'remcostoeten', repo: 'drizzleasy', name: 'drizzleasy', color: 'text-yellow-400' },
   { owner: 'remcostoeten', repo: 'fync', name: 'fync', color: 'text-orange-400' },
-  { owner: 'remcostoeten', repo: 'next-forge', name: 'next-forge', color: 'text-purple-400' },
-  { owner: 'remcostoeten', repo: 'planorama', name: 'planorama', color: 'text-green-400' }
 ];
 
 const formatTimestamp = (dateString: string): string => {
@@ -72,7 +70,7 @@ const formatTimestamp = (dateString: string): string => {
 const fetchCommitDetails = async (owner: string, repo: string, sha: string): Promise<GitHubCommit | null> => {
   // Use public environment variable for client-side access
   const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-    
+
   const headers: Record<string, string> = {
     'Accept': 'application/vnd.github.v3+json',
     'User-Agent': 'remcostoeten-portfolio-activity',
@@ -102,7 +100,7 @@ const fetchCommitDetails = async (owner: string, repo: string, sha: string): Pro
 export async function getLatestCommit(owner: string, repo: string): Promise<CommitData | null> {
   // Use public environment variable for client-side access
   const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-    
+
   const headers: Record<string, string> = {
     'Accept': 'application/vnd.github.v3+json',
     'User-Agent': 'remcostoeten-portfolio-activity',
@@ -125,14 +123,14 @@ export async function getLatestCommit(owner: string, repo: string): Promise<Comm
     }
 
     const commits: GitHubCommit[] = await response.json();
-    
+
     if (commits.length === 0) {
       return null;
     }
 
     const latestCommit = commits[0];
     const projectInfo = LATEST_PROJECTS.find(p => p.owner === owner && p.repo === repo);
-    
+
     return {
       message: latestCommit.commit.message,
       url: latestCommit.html_url,
@@ -154,17 +152,17 @@ export async function getLatestCommits(): Promise<CommitData[]> {
     const commit = await getLatestCommit(project.owner, project.repo);
     return commit ? { ...commit, color: project.color, projectName: project.name } : null;
   });
-  
+
   const commitResults = await Promise.all(commitPromises);
   const validCommits = commitResults.filter(Boolean) as CommitData[];
-  
+
   // Sort by date (most recent first)
   validCommits.sort((a, b) => {
     const timeA = new Date(a.date).getTime();
     const timeB = new Date(b.date).getTime();
     return timeB - timeA;
   });
-  
+
   return validCommits;
 }
 
@@ -172,7 +170,7 @@ export async function getLatestCommits(): Promise<CommitData[]> {
 export async function getRecentActivity(): Promise<CommitData[]> {
   // Use public environment variable for client-side access
   const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-    
+
   const headers: Record<string, string> = {
     'Accept': 'application/vnd.github.v3+json',
     'User-Agent': 'remcostoeten-portfolio-activity',
@@ -201,14 +199,14 @@ export async function getRecentActivity(): Promise<CommitData[]> {
     // Filter for PushEvent events within the last month and from our target repos
     const pushEvents = events.filter(event => {
       if (event.type !== 'PushEvent') return false;
-      
+
       const eventDate = new Date(event.created_at);
       if (eventDate < oneMonthAgo) return false;
-      
+
       if (!event.payload.commits || event.payload.commits.length === 0) return false;
-      
+
       // Only include events from our target projects
-      return LATEST_PROJECTS.some(project => 
+      return LATEST_PROJECTS.some(project =>
         event.repo.name === `${project.owner}/${project.repo}`
       );
     });
@@ -219,7 +217,7 @@ export async function getRecentActivity(): Promise<CommitData[]> {
     for (const event of pushEvents) {
       const [owner, repo] = event.repo.name.split('/');
       const projectInfo = LATEST_PROJECTS.find(p => p.owner === owner && p.repo === repo);
-      
+
       if (!projectInfo) continue;
 
       // Get the latest commit from this push

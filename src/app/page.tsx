@@ -1,19 +1,20 @@
-import { BlogPosts } from 'src/components/posts'
-import { Intro } from 'src/components/intro'
-import { ActivitySection } from 'src/components/ActivitySection'
+import { BlogPosts } from '@/components/posts'
+import { Intro } from '@/components/intro'
+import { ActivitySection } from '@/components/ActivitySection'
+import WorkExperienceDemo from '@/components/work-experience-demo'
 
 export default function Page() {
   return (
-    <section className="space-y-8" style={{ contain: 'layout' }}>
-      <div style={{ contain: 'layout style' }}>
-        <Intro />
-      </div>
-      <div style={{ contain: 'layout style' }}>
+    <div className="space-y-6">
+      {/* Intro - no border, just content */}
+      <Intro />
+
+      {/* Main content sections with consistent bordered design */}
+      <div className="space-y-4">
         <ActivitySection />
-      </div>
-      <div className="my-4" style={{ contain: 'layout' }}>
+        <WorkExperienceDemo />
         <BlogPosts />
       </div>
-    </section>
+    </div>
   )
 }
