@@ -2,7 +2,7 @@ import { MapPin, Briefcase } from 'lucide-react';
 
 export function Intro() {
   return (
-    <header className="animate-enter">
+    <header className="animate-enter px-6 md:px-12">
       <div className="flex items-start gap-4 mb-4">
         <img
           src="https://github.com/remcostoeten.png"

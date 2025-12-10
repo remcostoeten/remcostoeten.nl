@@ -115,7 +115,7 @@ export const ActivitySection = () => {
       headerAction={<span className="text-muted-foreground/60">{year}</span>}
     >
       <div className="space-y-4">
-        <div className="rounded-lg border border-border/30 bg-background/50 p-3">
+        <div className="p-3">
           <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/20">
             <Calendar className="size-3.5 text-muted-foreground" />
             <span className="text-xs font-medium text-muted-foreground">Contribution Graph</span>

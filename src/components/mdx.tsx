@@ -68,7 +68,7 @@ function createHeading(level) {
     if (!children) {
       return React.createElement(`h${level}`, {}, 'Heading')
     }
-    
+
     let slug = slugify(children)
     return React.createElement(
       `h${level}`,
@@ -98,7 +98,21 @@ let components = {
   h6: createHeading(6),
   Image: RoundedImage,
   a: CustomLink,
-  pre: CodeBlock,
+  pre: ({ children, ...props }) => {
+    // Extract code and language from the code element (children)
+    const codeElement = children as React.ReactElement<any>;
+    const code = codeElement?.props?.children || '';
+    const className = codeElement?.props?.className || '';
+    const language = className.replace('language-', '');
+
+    return (
+      <CodeBlock
+        code={code}
+        language={language}
+        {...props}
+      />
+    );
+  },
   Table,
 }
 

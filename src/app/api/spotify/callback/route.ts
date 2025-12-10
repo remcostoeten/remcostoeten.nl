@@ -12,11 +12,11 @@ export async function GET(request: NextRequest) {
     const error = searchParams.get('error');
 
     if (error) {
-      return NextResponse.redirect(new URL('/spotify-setup?error=' + error, request.url));
+      return NextResponse.redirect(new URL('/?error=' + error, request.url));
     }
 
     if (!code) {
-      return NextResponse.redirect(new URL('/spotify-setup?error=no_code', request.url));
+      return NextResponse.redirect(new URL('/?error=no_code', request.url));
     }
 
     const clientId = process.env.SPOTIFY_CLIENT_ID;
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
 
     if (!clientId || !clientSecret) {
-      return NextResponse.redirect(new URL('/spotify-setup?error=missing_credentials', request.url));
+      return NextResponse.redirect(new URL('/?error=missing_credentials', request.url));
     }
 
     const authString = `${clientId}:${clientSecret}`;
@@ -45,12 +45,12 @@ export async function GET(request: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.json();
-      return NextResponse.redirect(new URL(`/spotify-setup?error=token_exchange_failed&details=${errorData.error_description || errorData.error}`, request.url));
+      return NextResponse.redirect(new URL(`/?error=token_exchange_failed&details=${errorData.error_description || errorData.error}`, request.url));
     }
 
     const tokenData = await tokenResponse.json();
 
-    const redirectUrl = new URL('/spotify-setup', request.url);
+    const redirectUrl = new URL('/', request.url);
     redirectUrl.searchParams.set('success', 'true');
     redirectUrl.searchParams.set('refresh_token', tokenData.refresh_token);
     redirectUrl.searchParams.set('access_token', tokenData.access_token);
@@ -58,6 +58,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error('Error in Spotify callback:', error);
-    return NextResponse.redirect(new URL('/spotify-setup?error=unknown_error', request.url));
+    return NextResponse.redirect(new URL('/?error=unknown_error', request.url));
   }
 }

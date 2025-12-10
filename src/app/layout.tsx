@@ -4,7 +4,6 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 
-import { Navbar } from '@/components/nav'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from '@/components/footer'
@@ -60,7 +59,7 @@ export default function RootLayout({
       <body className="antialiased bg-background text-foreground">
         <CustomQueryClientProvider>
           <div className="min-h-screen w-full flex flex-col">
-            <main className="px-6 py-8 md:px-12 md:py-12 max-w-2xl mx-auto w-full grow">
+            <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
               <PageTransition>
                 {children}
               </PageTransition>
@@ -71,6 +70,6 @@ export default function RootLayout({
           <SpeedInsights />
         </CustomQueryClientProvider>
       </body>
-                        </html>
+    </html>
   )
 }
