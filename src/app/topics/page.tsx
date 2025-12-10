@@ -1,6 +1,9 @@
 import { getAllCategories } from '@/utils/utils'
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
+import { topicsMetadata } from '@/core/metadata'
+
+export { topicsMetadata as metadata }
 
 export default function TopicsPage() {
   const categories = getAllCategories()

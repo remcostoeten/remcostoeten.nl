@@ -1,4 +1,5 @@
+import { topicsMetadata } from '@/core/metadata/topics'
+
 export const metadata = {
-  title: 'Topics',
-  description: 'Browse blog posts by topic, category, or tag.',
+  ...topicsMetadata,
 }

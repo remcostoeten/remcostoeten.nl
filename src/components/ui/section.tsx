@@ -17,39 +17,30 @@ interface SectionProps {
  * Inspired by chanhdai.com design pattern
  */
 export function Section({
-    children,
     title,
-    icon: Icon,
-    className = '',
+    children,
+    className = "",
     headerAction,
     noPadding = false
 }: SectionProps) {
     return (
         <section className={`relative ${className}`}>
-            <div className="rounded-xl border border-border/50 bg-card/30 backdrop-blur-[2px] overflow-hidden">
-                {title && (
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-border/40 bg-muted/20">
-                        <div className="flex items-center gap-2.5">
-                            {Icon && (
-                                <div className="flex size-5 items-center justify-center text-muted-foreground">
-                                    <Icon className="size-4" />
-                                </div>
-                            )}
-                            <h2 className="text-sm font-medium text-foreground tracking-tight">
-                                {title}
-                            </h2>
-                        </div>
+            {title && (
+                <div className="full-width-header">
+                    <div className="header-content-container flex items-center justify-between">
+                        <h2 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                            {title}
+                        </h2>
                         {headerAction && (
-                            <div className="text-xs text-muted-foreground">
+                            <div className="flex items-center gap-2">
                                 {headerAction}
                             </div>
                         )}
                     </div>
-                )}
-
-                <div className={noPadding ? '' : 'p-4'}>
-                    {children}
                 </div>
+            )}
+            <div className={noPadding ? '' : 'px-1'}>
+                {children}
             </div>
         </section>
     );

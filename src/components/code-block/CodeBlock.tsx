@@ -424,53 +424,48 @@ export function CodeBlock({
   }
 
   return (
-    <div ref={containerRef} className={cn("relative my-8", className)}>
+    <div ref={containerRef} className={cn("relative my-6", className)}>
       <div
-        className="group relative rounded-xl overflow-hidden bg-[#0A0A0A] border border-[#333333] w-full transition-all duration-200"
+        className="group relative rounded-lg overflow-hidden bg-neutral-950 dark:bg-neutral-950 border border-neutral-800 dark:border-neutral-800 w-full transition-all duration-200 hover:border-neutral-700 dark:hover:border-neutral-700"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         {!disableTopBar && (
-          <header className="flex justify-between items-center px-4 py-2.5 bg-[#0A0A0A] border-b border-[#333333]">
+          <header className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-neutral-950 to-neutral-900 dark:from-neutral-950 dark:to-neutral-900 border-b border-neutral-800 dark:border-neutral-800">
             <div className="flex items-center gap-3 min-w-0 flex-1">
               {showIcon && (
-                <span className="flex items-center justify-center shrink-0 text-zinc-500 transition-colors duration-200 group-hover:text-zinc-400">
+                <span className="flex items-center justify-center shrink-0 text-neutral-500 transition-colors duration-200 group-hover:text-neutral-400">
                   <SimpleIcon language={language} />
                 </span>
               )}
               {fileName && (
-                <div className="shrink-0 flex items-center gap-2 rounded-full px-3 py-1 border bg-[#111111] border-[#333333] group-hover:border-[#444444]">
-                  <FileIcon size={12} className="text-zinc-400" />
-                  <span className="text-sm font-medium text-zinc-400 group-hover:text-zinc-300">
-                    {fileName}
-                  </span>
+                <div className="shrink-0 flex items-center gap-2 px-2.5 py-1 rounded text-sm font-medium text-neutral-400 group-hover:text-neutral-300 transition-colors">
+                  <span>{fileName}</span>
                 </div>
               )}
 
               {showMetaInfo && (
-                <span className="shrink-0 px-2 py-0.5 text-xs font-medium text-zinc-500">
+                <span className="shrink-0 text-xs font-medium text-neutral-500 ml-auto lg:ml-0">
                   {stats.lines} lines
                 </span>
               )}
             </div>
 
-            <div className="flex items-center space-x-1.5 h-8">
-              <div className="w-8 h-8 flex items-center justify-center">
-                {!disableSearch && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsSearching(true)}
-                    className={cn(
-                      "relative h-8 w-8 text-zinc-500 hover:text-zinc-200 rounded-md transition-all duration-200 hover:bg-white/10",
-                      isSearching && "invisible pointer-events-none"
-                    )}
-                    title="Search (⌘/Ctrl + F)"
-                  >
-                    <Search size={16} />
-                  </Button>
-                )}
-              </div>
+            <div className="flex items-center gap-1 h-8">
+              {!disableSearch && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsSearching(true)}
+                  className={cn(
+                    "h-8 w-8 text-neutral-500 hover:text-neutral-300 rounded transition-colors duration-200",
+                    isSearching && "invisible pointer-events-none"
+                  )}
+                  title="Search (⌘/Ctrl + F)"
+                >
+                  <Search size={16} />
+                </Button>
+              )}
 
               {renderSearchUI()}
 
@@ -478,7 +473,7 @@ export function CodeBlock({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="relative h-8 w-8 text-zinc-500 hover:text-zinc-200 rounded-md transition-all duration-200 hover:bg-white/10"
+                className="h-8 w-8 text-neutral-500 hover:text-neutral-300 rounded transition-colors duration-200"
               >
                 <div className={cn(isCollapsed && "codeblock-chevron-rotate")}>
                   <ChevronDown size={16} />
@@ -490,11 +485,11 @@ export function CodeBlock({
                   variant="ghost"
                   size="icon"
                   onClick={copyToClipboard}
-                  className="relative h-8 w-8 text-zinc-500 hover:text-zinc-200 rounded-md transition-all duration-200 hover:bg-white/10"
+                  className="h-8 w-8 text-neutral-500 hover:text-neutral-300 rounded transition-colors duration-200"
                   title="Copy code (⌘/Ctrl + C)"
                 >
                   {isCopied ? (
-                    <div className={cn("text-emerald-400", "codeblock-copy-success")}>
+                    <div className={cn("text-emerald-500", "codeblock-copy-success")}>
                       <Check size={16} />
                     </div>
                   ) : (
@@ -515,13 +510,9 @@ export function CodeBlock({
               )}
             >
               <div className="relative" ref={codeRef}>
-                {showLineNumbers && (
-                  <div className="absolute left-0 top-0 bottom-0 w-[3.5rem] bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/50 to-transparent pointer-events-none z-10" />
-                )}
-
                 <div className="relative">
                   <div
-                    className="pt-4 px-4 overflow-y-auto"
+                    className="px-4 py-4 overflow-y-auto"
                     style={{ maxHeight }}
                   >
                     {React.createElement(SyntaxHighlighter as any, {
@@ -532,15 +523,16 @@ export function CodeBlock({
                         padding: 0,
                         background: "transparent",
                         fontSize: "0.875rem",
+                        lineHeight: "1.6",
                       },
                       showLineNumbers: showLineNumbers,
                       lineNumberStyle: {
-                        color: "#666666",
+                        color: "#6b7280",
                         minWidth: "2.5em",
-                        paddingRight: "1em",
+                        paddingRight: "1.5em",
                         textAlign: "right",
                         userSelect: "none",
-                        opacity: isHovered ? 1 : 0.5,
+                        opacity: 0.6,
                         transition: "opacity 0.2s ease",
                       },
                       wrapLines: true,
@@ -549,10 +541,14 @@ export function CodeBlock({
                         style: {
                           display: "block",
                           backgroundColor: highlightedLines.includes(lineNumber)
-                            ? "rgba(212, 212, 216, 0.15)"
+                            ? "rgba(34, 197, 94, 0.1)"
                             : searchResults.includes(lineNumber)
-                            ? "rgba(212, 212, 216, 0.1)"
+                            ? "rgba(168, 85, 247, 0.08)"
                             : "transparent",
+                          paddingLeft: "0.5rem",
+                          paddingRight: "0.5rem",
+                          marginLeft: "-0.5rem",
+                          marginRight: "-0.5rem",
                         },
                         "data-line-number": lineNumber,
                       }),
@@ -560,7 +556,7 @@ export function CodeBlock({
                     })}
                   </div>
                   {showBottomFade && (
-                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent pointer-events-none" />
                   )}
                 </div>
               </div>
@@ -573,12 +569,12 @@ export function CodeBlock({
         {showToastAnimation && (
           <div
             className={cn(
-              "absolute top-3 right-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1A1A1A] border border-[#333333] shadow-lg",
+              "absolute top-3 right-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 shadow-lg",
               showToastAnimation && "codeblock-toast"
             )}
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span className="text-sm font-medium text-zinc-200">Copied to clipboard</span>
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <span className="text-sm font-medium text-neutral-200">Copied to clipboard</span>
           </div>
         )}
       </>

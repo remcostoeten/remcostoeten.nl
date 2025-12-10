@@ -4,13 +4,16 @@ import { getBlogPosts, calculateReadTime } from '@/utils/utils'
 import { baseUrl } from '@/app/sitemap'
 import { CustomMDX } from '@/components/mdx'
 import { BlogPostClient, PostNavigation } from '@/components/blog-post-client'
+import { TableOfContents } from '@/components/table-of-contents'
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()
 
-  return posts.filter(post => post && post.slug).map((post) => ({
-    slug: post.slug.split('/'), // Convert string slug to array for catch-all route
-  }))
+  return posts
+    .filter(post => post && post.slug)
+    .map((post) => ({
+      slug: post.slug.split('/'),
+    }))
 }
 
 export async function generateMetadata({ params }) {
@@ -18,11 +21,11 @@ export async function generateMetadata({ params }) {
   let slug = Array.isArray(resolvedParams.slug)
     ? resolvedParams.slug.join('/')
     : resolvedParams.slug
-  
+
   if (!slug) {
     return {}
   }
-  
+
   let post = getBlogPosts().find((post) => post.slug === slug)
   if (!post) {
     return {}
@@ -84,21 +87,37 @@ export default async function Blog({ params }) {
   const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null
 
   return (
-    <section>
-      <BlogPostClient
-        publishedAt={post.metadata.publishedAt}
-        categories={post.metadata.categories}
-        tags={post.metadata.tags}
-        topics={post.metadata.topics}
-        title={post.metadata.title}
-        readTime={calculateReadTime(post.content)}
-      />
-      <h1>{post.metadata.title}</h1>
-      <p>{post.metadata.summary}</p>
-      <div className="prose">
-        {/* MDX content temporarily disabled */}
-        <p>Content rendering temporarily disabled due to build issues.</p>
-      </div>
-    </section>
+    <>
+      <TableOfContents />
+      <section className="bg-pattern relative">
+        <BlogPostClient
+          publishedAt={post.metadata.publishedAt}
+          categories={post.metadata.categories}
+          tags={post.metadata.tags}
+          topics={post.metadata.topics}
+          title={post.metadata.title}
+          readTime={calculateReadTime(post.content)}
+        />
+
+        <div className="space-y-6 mb-12">
+          <h1 className="title font-medium text-3xl tracking-tight max-w-3xl leading-tight">
+            {post.metadata.title}
+          </h1>
+          <div className="flex justify-between items-start mt-4 mb-8 text-sm max-w-3xl">
+            <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
+              {post.metadata.summary}
+            </p>
+          </div>
+        </div>
+
+        <div className="screen-border mb-12" />
+
+        <article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-3xl">
+          <CustomMDX source={post.content} />
+        </article>
+
+        <PostNavigation prevPost={prevPost} nextPost={nextPost} />
+      </section>
+    </>
   )
 }
