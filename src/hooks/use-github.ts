@@ -273,3 +273,70 @@ export function useLatestCommit(owner: string, repo: string) {
         enabled: !!owner && !!repo,
     });
 }
+
+export interface GitHubEventDetail {
+    id: string;
+    type: 'commit' | 'pr' | 'issue' | 'review' | 'release' | 'fork' | 'star' | 'create' | 'unknown';
+    title: string;
+    description: string;
+    url: string;
+    repository: string;
+    timestamp: string;
+    icon?: string;
+    payload?: any;
+}
+
+/**
+ * Fetch detailed GitHub activity for the activity feed
+ */
+export function useGitHubRecentActivity(limit = 10) {
+    return useQuery({
+        queryKey: ['github', 'recent-activity', limit],
+        queryFn: async () => {
+            const response = await fetch(`/api/github/activity?limit=${limit}`);
+            if (!response.ok) throw new Error('Failed to fetch GitHub activity');
+            return response.json() as Promise<GitHubEventDetail[]>;
+        },
+        staleTime: 60 * 1000, // 1 minute
+        retry: 2
+    });
+}
+
+/**
+ * Fetch detailed events for a date range (for calendar)
+ */
+export function useGitHubEventsByDate(from: string, to: string) {
+    return useQuery({
+        queryKey: ['github', 'events', from, to],
+        queryFn: async () => {
+            if (!from || !to) return [];
+            const response = await fetch(`/api/github/events?from=${from}&to=${to}`);
+            if (!response.ok) throw new Error('Failed to fetch GitHub events');
+            return response.json();
+        },
+        enabled: !!from && !!to,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+}
+
+/**
+ * Fetch contribution data for the graph
+ */
+export function useGitHubContributions(year: number = new Date().getFullYear()) {
+    return useQuery({
+        queryKey: ['github', 'contributions', year],
+        queryFn: async () => {
+            const response = await fetch(`/api/github/contributions?year=${year}`);
+            if (!response.ok) throw new Error('Failed to fetch contributions');
+            const data = await response.json();
+
+            // Convert back to Map
+            const contributionsMap = new Map<string, any>();
+            data.forEach((item: any) => {
+                contributionsMap.set(item.date, item.data);
+            });
+            return contributionsMap;
+        },
+        staleTime: 60 * 60 * 1000, // 1 hour
+    });
+}

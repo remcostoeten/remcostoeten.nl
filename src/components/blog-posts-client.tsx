@@ -152,14 +152,12 @@ function BlogCard({ post, index }: BlogCardProps) {
                     return allTags.length > 0 ? (
                       <div className="flex flex-wrap gap-2 mt-3 mb-1" aria-label="Tags">
                         {allTags.slice(0, 3).map((tag) => (
-                          <Link
+                          <span
                             key={tag}
-                            href={`/topics/${tag.toLowerCase()}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-400 border border-transparent hover:border-lime-500/30 hover:text-lime-400 transition-colors duration-300 cursor-pointer"
+                            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-400 cursor-default"
                           >
                             {tag}
-                          </Link>
+                          </span>
                         ))}
                         {allTags.length > 3 && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-500">

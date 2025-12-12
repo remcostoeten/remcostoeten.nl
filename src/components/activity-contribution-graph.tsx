@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/core/spotify-service';
-import { githubService, GitHubContributionDay } from '@/core/github-service';
+import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
 
 interface ActivityDay {
   date: string;
@@ -30,9 +30,18 @@ export function ActivityContributionGraph({
 }: ActivityContributionGraphProps) {
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
   const [selectedDay, setSelectedDay] = useState<ActivityDay | null>(null);
-  const [githubContributions, setGithubContributions] = useState<Map<string, GitHubContributionDay>>(new Map());
+
+  const { data: githubContributions = new Map(), isLoading: githubLoading } = useGitHubContributions(year);
+
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
+
+  // Use new hook for detailed events on demand or pre-fetch
+  // For now, we'll fetch a broad range to cover the view
+  const startDate = `${year}-01-01`;
+  const endDate = `${year}-12-31`;
+  const { data: detailedEvents } = useGitHubEventsByDate(startDate, endDate);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<HTMLDivElement>(null);
 
@@ -40,8 +49,7 @@ export function ActivityContributionGraph({
     const fetchData = async () => {
       try {
         setLoading(true);
-        const githubData = await githubService.getDailyContributions(year);
-        setGithubContributions(githubData);
+        // GitHub contributions now fetched via hook
         const spotifyTracks = await getLatestTracks();
         setTracks(spotifyTracks);
       } catch (error) {
@@ -69,7 +77,7 @@ export function ActivityContributionGraph({
   }, [loading, year]);
 
   const activityData = useMemo(() => {
-    if (loading) return [];
+    if (githubLoading || loading) return [];
 
     const startOfYear = new Date(year, 0, 1);
     const endOfYear = new Date(year, 11, 31);
@@ -91,6 +99,24 @@ export function ActivityContributionGraph({
         totalActivity: githubCount,
         level: 0,
         details: { commits: [], tracks: [] }
+      });
+    }
+
+    // Merge detailed events if available
+    if (detailedEvents) {
+      detailedEvents.forEach((day: { date: string, events: GitHubEventDetail[] }) => {
+        const mapDay = activityMap.get(day.date);
+        if (mapDay) {
+          // Map detailed events to the expected structure
+          mapDay.details = mapDay.details || { commits: [], tracks: [] };
+          day.events.forEach(event => {
+            mapDay.details!.commits.push({
+              message: event.title,
+              url: event.url,
+              projectName: event.repository
+            });
+          });
+        }
       });
     }
 
@@ -118,7 +144,7 @@ export function ActivityContributionGraph({
     });
 
     return Array.from(activityMap.values());
-  }, [githubContributions, tracks, year, loading]);
+  }, [githubContributions, tracks, year, loading, githubLoading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
     const colors = [
@@ -187,7 +213,9 @@ export function ActivityContributionGraph({
     return labels;
   }, [weeks]);
 
-  if (loading) {
+
+
+  if (loading || githubLoading) {
     return (
       <div className={`${className}`}>
         <div className="space-y-2">
