@@ -55,8 +55,9 @@ export default function RootLayout({
         GeistSans.variable,
         GeistMono.variable
       )}
+      suppressContentEditableWarning
     >
-      <body className="antialiased bg-background text-foreground">
+      <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
         <CustomQueryClientProvider>
           <div className="min-h-screen w-full flex flex-col">
             <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">

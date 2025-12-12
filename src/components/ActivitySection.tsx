@@ -2,11 +2,11 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Music, GitBranch, Calendar, Activity } from 'lucide-react';
-import { useRecentCommits } from '@/hooks/use-github';
+import { Music, Calendar } from 'lucide-react';
 import { getLatestTracks, SpotifyTrack } from '@/core/spotify-service';
 import { ActivityContributionGraph } from './activity-contribution-graph';
-import { Section, TimelineItem } from './ui/section';
+import { Section } from './ui/section';
+import { GitHubActivityCard } from './github-activity-card';
 
 const SPRING_EASE = [0.32, 0.72, 0, 1] as const;
 
@@ -67,9 +67,8 @@ export const ActivitySection = () => {
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
   const [spotifyLoading, setSpotifyLoading] = useState(true);
 
-  const { data: commitsData, isLoading: githubLoading } = useRecentCommits(5);
-  const commits = commitsData?.commits || [];
-  const loading = spotifyLoading || githubLoading;
+
+  const loading = spotifyLoading;
 
   useEffect(() => {
     const fetchSpotifyData = async () => {
@@ -93,21 +92,9 @@ export const ActivitySection = () => {
     return () => clearInterval(interval);
   }, [tracks.length]);
 
-  useEffect(() => {
-    if (commits.length === 0) return;
-    const interval = setInterval(() => {
-      setActivityIndex((prev) => (prev + 1) % commits.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [commits.length]);
+
 
   const currentTrack = tracks[songIndex] || { name: 'Loading...', artist: '...', url: '#', played_at: new Date().toISOString() };
-  const currentCommit = commits[activityIndex] || {
-    message: 'Loading...',
-    url: '#',
-    projectName: '...',
-    date: new Date().toISOString()
-  };
 
   return (
     <Section
@@ -124,47 +111,7 @@ export const ActivitySection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="rounded-lg border border-border/30 bg-background/50 p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="flex size-5 items-center justify-center rounded bg-muted/80">
-                <GitBranch className="size-3 text-muted-foreground" />
-              </div>
-              <span className="text-xs font-medium text-foreground">Latest Commit</span>
-            </div>
-
-            <AnimatePresence mode='wait'>
-              <motion.div
-                key={activityIndex}
-                variants={containerVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="pl-7 space-y-0.5"
-              >
-                <motion.a
-                  href={currentCommit.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
-                  variants={itemVariants}
-                >
-                  {(currentCommit as any).projectName}
-                </motion.a>
-                <motion.p
-                  className="text-xs text-muted-foreground truncate"
-                  variants={itemVariants}
-                >
-                  {currentCommit.message.split('\n')[0]}
-                </motion.p>
-                <motion.span
-                  className="text-[10px] text-muted-foreground/60"
-                  variants={itemVariants}
-                >
-                  {formatRelativeTime(currentCommit.date)}
-                </motion.span>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+          <GitHubActivityCard />
 
           <div className="rounded-lg border border-border/30 bg-background/50 p-3">
             <div className="flex items-center justify-between mb-2">
