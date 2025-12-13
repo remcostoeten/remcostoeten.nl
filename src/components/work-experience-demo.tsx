@@ -14,8 +14,10 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         employmentPeriod: "2025 — present",
         employmentType: "Full-time",
         icon: "code",
-        description: `Building modern learning platforms and educational tools with scalable frontend architecture.`,
-        skills: ["React", "Next.js", "TypeScript", "Tailwind CSS"],
+        description: `- Building modern learning platforms and educational tools
+- Developing scalable frontend architecture with React and Next.js
+- Collaborating with cross-functional teams to deliver user-centric solutions`,
+        skills: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Frontend Architecture"],
         isExpanded: true,
       },
     ],
@@ -31,8 +33,10 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         employmentPeriod: "2023 — 2025",
         employmentType: "Full-time",
         icon: "code",
-        description: `Developed accessible government collaboration platforms with modern frontend practices.`,
-        skills: ["React", "TypeScript", "GraphQL", "Accessibility"],
+        description: `- Developed and maintained government-focused collaboration platforms
+- Built accessible and performant web applications
+- Implemented modern frontend practices and design systems`,
+        skills: ["React", "TypeScript", "GraphQL", "Accessibility", "Design Systems"],
       },
     ],
   },
@@ -46,8 +50,10 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         employmentPeriod: "2022 — 2023",
         employmentType: "Full-time",
         icon: "code",
-        description: `Created custom e-commerce and marketing web solutions for diverse clients.`,
-        skills: ["JavaScript", "React", "CSS", "E-commerce"],
+        description: `- Created custom web solutions for diverse clients
+- Worked on e-commerce and marketing websites
+- Collaborated with designers to implement pixel-perfect interfaces`,
+        skills: ["JavaScript", "React", "CSS", "WordPress", "E-commerce"],
       },
     ],
   },
@@ -61,8 +67,10 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         employmentPeriod: "2016 — 2022",
         employmentType: "Full-time",
         icon: "code",
-        description: `Grew from junior to senior developer, building numerous web applications.`,
-        skills: ["PHP", "JavaScript", "Laravel", "WordPress"],
+        description: `- Started career as junior developer and grew to senior role
+- Built numerous websites and web applications for clients
+- Gained expertise in full-stack development and project delivery`,
+        skills: ["PHP", "JavaScript", "Laravel", "WordPress", "MySQL", "Frontend Development"],
       },
     ],
   },
@@ -76,8 +84,10 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         employmentPeriod: "2012 — 2016",
         employmentType: "Education",
         icon: "education",
-        description: `Completed MBO-level education in Application Development.`,
-        skills: ["Programming", "Software Development", "Database Design"],
+        description: `- Completed MBO-level education in Application Development
+- Learned fundamentals of programming and software development
+- Built foundation for professional development career`,
+        skills: ["Programming Fundamentals", "Software Development", "Database Desig"],
       },
     ],
   },
