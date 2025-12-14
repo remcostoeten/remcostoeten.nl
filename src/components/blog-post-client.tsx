@@ -96,7 +96,7 @@ export function BlogPostClient({
               {allTags.map((tag) => (
                 <Link
                   key={tag}
-                  href={`/topics/${tag.toLowerCase()}`}
+                  href={`/blog/topics/${tag.toLowerCase()}`}
                   className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium 
                   bg-neutral-100 dark:bg-neutral-800/60 
                   text-neutral-600 dark:text-neutral-400 

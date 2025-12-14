@@ -14,7 +14,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ category: string }> }) {
   const { category } = await params
   const decodedCategory = decodeURIComponent(category)
-  
+
   return {
     title: `${decodedCategory.charAt(0).toUpperCase() + decodedCategory.slice(1)} Posts`,
     description: `Browse all posts in the ${decodedCategory} category.`,
@@ -25,7 +25,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
   const { category } = await params
   const decodedCategory = decodeURIComponent(category)
   const posts = getBlogPostsByCategory(decodedCategory)
-  
+
   if (posts.length === 0) {
     notFound()
   }
@@ -34,8 +34,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
 
   return (
     <section>
-      <Link 
-        href="/categories"
+      <Link
+        href="/blog/categories"
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 group"
       >
         <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
@@ -76,21 +76,21 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
                     <h3 className="font-medium text-lg text-neutral-100 group-hover:text-lime-400 transition-colors leading-snug mb-2">
                       {post.metadata.title}
                     </h3>
-                    
+
                     <p className="text-sm text-neutral-400 line-clamp-2 mb-3">
                       {post.metadata.summary}
                     </p>
-                    
+
                     <div className="flex items-center gap-4 text-xs text-neutral-500">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="w-3.5 h-3.5" />
                         <span>{formatDate(post.metadata.publishedAt)}</span>
                       </div>
-                      
+
                       {post.metadata.categories && post.metadata.categories.length > 0 && (
                         <div className="flex items-center gap-2">
                           {post.metadata.categories.map(cat => (
-                            <span 
+                            <span
                               key={cat}
                               className="px-2 py-0.5 rounded-full bg-neutral-800/50 text-neutral-400"
                             >

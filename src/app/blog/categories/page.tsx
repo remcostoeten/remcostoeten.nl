@@ -13,12 +13,12 @@ export default function CategoriesPage() {
   return (
     <section>
       <h1 className="font-semibold text-2xl mb-8 tracking-tighter">Categories</h1>
-      
+
       <ul className="flex flex-col m-0 p-0 list-none">
         {categories.map((category, index) => (
           <li key={category.name} className="block p-0 m-0">
             <Link
-              href={`/categories/${category.name.toLowerCase()}`}
+              href={`/blog/categories/${category.name.toLowerCase()}`}
               className="group relative block animate-stagger active:scale-[0.995] transition-transform overflow-hidden first:rounded-t-2xl last:rounded-b-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               style={{ animationDelay: `${index * 50}ms` }}
             >
@@ -30,7 +30,7 @@ export default function CategoriesPage() {
                     <span className="text-4xl font-bold text-neutral-700 leading-none flex items-center min-h-[3.5rem] select-none w-16">
                       {(index + 1).toString().padStart(2, '0')}
                     </span>
-                    
+
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <Hash className="w-4 h-4 text-lime-400/50" />
@@ -38,7 +38,7 @@ export default function CategoriesPage() {
                           {category.name}
                         </h3>
                       </div>
-                      
+
                       <div className="flex items-center gap-2 text-sm text-neutral-400">
                         <FileText className="w-3.5 h-3.5 opacity-60 transition-transform group-hover:scale-110" />
                         <span className="tabular-nums font-medium">{category.count}</span>

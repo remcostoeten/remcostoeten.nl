@@ -1,6 +1,6 @@
 import { getBlogPosts, getAllCategories } from '@/utils/utils'
 
-export const baseUrl = 'https://portfolio-blog-starter.vercel.app'
+export const baseUrl = 'https://remcostoeten.nl'
 
 export default async function sitemap() {
   let blogs = getBlogPosts().map((post) => ({
@@ -9,11 +9,11 @@ export default async function sitemap() {
   }))
 
   let categories = getAllCategories().map((category) => ({
-    url: `${baseUrl}/categories/${category.name.toLowerCase()}`,
+    url: `${baseUrl}/blog/categories/${category.name.toLowerCase()}`,
     lastModified: new Date().toISOString().split('T')[0],
   }))
 
-  let routes = ['', '/blog', '/categories'].map((route) => ({
+  let routes = ['', '/blog', '/blog/categories', '/blog/topics'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString().split('T')[0],
   }))

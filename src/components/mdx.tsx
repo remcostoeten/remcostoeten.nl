@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
 import { CodeBlock } from './code-block'
+import remarkGfm from 'remark-gfm'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -103,7 +104,7 @@ let components = {
     const codeElement = children as React.ReactElement<any>;
     const code = codeElement?.props?.children || '';
     const className = codeElement?.props?.className || '';
-    const language = className.replace('language-', '');
+    const language = className.replace('language-', '') || 'text';
 
     return (
       <CodeBlock
@@ -121,6 +122,12 @@ export function CustomMDX(props) {
     <MDXRemote
       {...props}
       components={{ ...components, ...(props.components || {}) }}
+      options={{
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+          rehypePlugins: [],
+        },
+      }}
     />
   )
 }

@@ -6,7 +6,7 @@ export function TopicsSidebar() {
     const categories = getAllCategories()
 
     return (
-        <aside className="hidden lg:block fixed top-24 right-8 w-48 z-40">
+        <aside className="hidden lg:block fixed -right-52 w-48 z-40 top-1.5">
             <div>
                 <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-500 mb-4">
                     Topics
@@ -15,7 +15,7 @@ export function TopicsSidebar() {
                     {categories.map((category) => (
                         <li key={category.name}>
                             <Link
-                                href={`/topics/${category.name.toLowerCase()}`}
+                                href={`/blog/topics/${category.name.toLowerCase()}`}
                                 className="group flex items-center justify-between py-1.5 text-sm text-neutral-400 hover:text-lime-400 transition-colors"
                             >
                                 <span className="flex items-center gap-2">
