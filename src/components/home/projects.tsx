@@ -4,19 +4,19 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ExternalLink, Github, Star, GitBranch, Package } from 'lucide-react';
 
-interface Project {
-  id: string;
-  name: string;
-  description: string;
-  url: string;
-  github: string;
-  stars: number;
-  forks: number;
-  language: string;
-  languageColor: string;
-  tags: string[];
-  featured: boolean;
-  status: 'active' | 'maintained' | 'archived';
+type Project = {
+  id: string
+  name: string
+  description: string
+  url: string
+  github: string
+  stars: number
+  forks: number
+  language: string
+  languageColor: string
+  tags: string[]
+  featured: boolean
+  status: 'active' | 'maintained' | 'archived'
 }
 
 const projects: Project[] = [
@@ -137,8 +137,8 @@ export function ProjectsShowcase() {
           <button
             onClick={() => setFilter('all')}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${filter === 'all'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
               }`}
           >
             All Projects
@@ -146,8 +146,8 @@ export function ProjectsShowcase() {
           <button
             onClick={() => setFilter('featured')}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${filter === 'featured'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
               }`}
           >
             Featured
@@ -172,10 +172,10 @@ export function ProjectsShowcase() {
             <div className="relative h-full p-6 bg-card border border-border/50 rounded-xl hover:border-border/80 transition-all duration-300 hover:shadow-lg overflow-hidden">
               <div className="absolute top-4 right-4">
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${project.status === 'active'
-                    ? 'bg-muted/50 text-muted-foreground'
-                    : project.status === 'maintained'
-                      ? 'bg-muted/30 text-muted-foreground'
-                      : 'bg-muted/20 text-muted-foreground'
+                  ? 'bg-muted/50 text-muted-foreground'
+                  : project.status === 'maintained'
+                    ? 'bg-muted/30 text-muted-foreground'
+                    : 'bg-muted/20 text-muted-foreground'
                   }`}>
                   {project.status}
                 </span>

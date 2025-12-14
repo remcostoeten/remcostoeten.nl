@@ -3,9 +3,9 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, ChevronRight, Home } from 'lucide-react'
-import { AnimatedNumber } from './animated-number'
+import { AnimatedNumber } from '../ui/animated-number'
 
-interface BlogPost {
+type BlogPost = {
   metadata: {
     title: string
     publishedAt: string
@@ -17,7 +17,7 @@ interface BlogPost {
   slug: string
 }
 
-interface BlogPostClientProps {
+type Props = {
   publishedAt: string
   categories?: string[]
   tags?: string[]
@@ -33,7 +33,7 @@ export function BlogPostClient({
   topics,
   title,
   readTime
-}: BlogPostClientProps) {
+}: Props) {
   const router = useRouter()
 
   const dateObj = new Date(publishedAt)

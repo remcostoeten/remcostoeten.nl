@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { githubService } from '@/core/github-service';
+import { NextRequest, NextResponse } from 'next/server'
+import { githubService } from '@/core/github-service'
 
-export const revalidate = 300; // Cache for 5 minutes
+export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
     try {

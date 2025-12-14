@@ -16,16 +16,16 @@ const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)'; // Snappier easing
 
 const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => i % DIGITS_PER_SET);
 
-type TSlotDigit = {
-  digit: number;
-  trigger: boolean;
-  duration: number;
-  delay?: number;
-  className?: string;
-  index: number;
-};
+type SlotDigitProps = {
+  digit: number
+  trigger: boolean
+  duration: number
+  delay?: number
+  className?: string
+  index: number
+}
 
-function SlotDigit({ digit, trigger, duration, delay = 0, className, index }: TSlotDigit) {
+function SlotDigit({ digit, trigger, duration, delay = 0, className, index }: SlotDigitProps) {
   const targetOffset = digit + (TARGET_SET_INDEX * DIGITS_PER_SET);
   const initialOffset = targetOffset - SCROLL_DISTANCE;
   const itemHeightPercent = 100 / TOTAL_DIGITS;
@@ -71,14 +71,14 @@ function SlotDigit({ digit, trigger, duration, delay = 0, className, index }: TS
   );
 }
 
-type TProps = {
-  value: string | number;
-  className?: string;
-  duration?: number;
-  delay?: number;
-};
+type Props = {
+  value: string | number
+  className?: string
+  duration?: number
+  delay?: number
+}
 
-export function AnimatedNumber({ value, className, duration = 500, delay = 0 }: TProps) {
+export function AnimatedNumber({ value, className, duration = 500, delay = 0 }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef<HTMLSpanElement>(null);
   const stringValue = String(value);

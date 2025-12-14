@@ -8,10 +8,10 @@ import {
 } from "lucide-react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
-import { AnimatedNumber as NumberFlow } from "@/components/animated-number"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
+import { AnimatedNumber } from "@/components/ui/animated-number"
 
 const iconMap = {
   code: CodeXmlIcon,
@@ -154,7 +154,7 @@ export function ExperiencePositionItem({
               <dd>
                 {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
                   const year = Number.parseInt(part)
-                  return isNaN(year) ? part : <NumberFlow key={i} value={year} />
+                  return isNaN(year) ? part : <AnimatedNumber key={i} value={year} />
                 })}
               </dd>
             </dl>

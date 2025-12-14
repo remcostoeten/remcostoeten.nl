@@ -326,17 +326,19 @@ export function useGitHubContributions(year: number = new Date().getFullYear()) 
     return useQuery({
         queryKey: ['github', 'contributions', year],
         queryFn: async () => {
-            const response = await fetch(`/api/github/contributions?year=${year}`);
-            if (!response.ok) throw new Error('Failed to fetch contributions');
-            const data = await response.json();
+            const response = await fetch(`/api/github/contributions?year=${year}`)
+            if (!response.ok) throw new Error('Failed to fetch contributions')
+            const data = await response.json()
 
-            // Convert back to Map
-            const contributionsMap = new Map<string, any>();
+            const contributionsMap = new Map<string, any>()
             data.forEach((item: any) => {
-                contributionsMap.set(item.date, item.data);
-            });
-            return contributionsMap;
+                contributionsMap.set(item.date, item.data)
+            })
+            return contributionsMap
         },
-        staleTime: 60 * 60 * 1000, // 1 hour
-    });
+        staleTime: 60 * 60 * 1000,
+        gcTime: 24 * 60 * 60 * 1000,
+        retry: 3,
+        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000)
+    })
 }

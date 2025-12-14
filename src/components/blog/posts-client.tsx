@@ -18,7 +18,7 @@ export function PostCountHeader({ count }: { count: number }) {
   )
 }
 
-interface BlogPost {
+type BlogPost = {
   metadata: {
     title: string
     publishedAt: string
@@ -30,12 +30,12 @@ interface BlogPost {
   slug: string
 }
 
-interface BlogCardProps {
+type Props = {
   post: BlogPost
   index: number
 }
 
-function BlogCard({ post, index }: BlogCardProps) {
+function BlogCard({ post, index }: Props) {
   const formattedIndex = (index + 1).toString().padStart(2, '0')
   const asciiRef = useRef<HTMLDivElement | null>(null)
   const asciiCharsRef = useRef<string[]>([])
@@ -201,7 +201,7 @@ function BlogCard({ post, index }: BlogCardProps) {
   )
 }
 
-interface BlogPostsClientProps {
+type BlogPostsProps = {
   posts: BlogPost[]
 }
 
@@ -233,7 +233,7 @@ function BlogCardSkeleton() {
   )
 }
 
-export function BlogPostsClient({ posts }: BlogPostsClientProps) {
+export function BlogPostsClient({ posts }: BlogPostsProps) {
   const [showAll, setShowAll] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
