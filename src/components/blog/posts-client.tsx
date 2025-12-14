@@ -70,7 +70,8 @@ function BlogCard({ post, index }: Props) {
       asciiRef.current.innerText = asciiCharsRef.current.join('')
     }
 
-    const animate = () => {
+    function animate() {
+
       const asciiChars = ['+', '.', ':', '-', '·', ' ']
 
       if (asciiRef.current && asciiCharsRef.current.length > 0) {
