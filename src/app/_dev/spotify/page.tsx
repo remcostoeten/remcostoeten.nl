@@ -58,7 +58,7 @@ function SpotifyDevContent() {
         setTimeout(() => setCopied(null), 2000);
     };
 
-    const handleStartAuth = () => {
+    function handleStartAuth() {
         if (authUrl) {
             window.location.href = authUrl;
         }

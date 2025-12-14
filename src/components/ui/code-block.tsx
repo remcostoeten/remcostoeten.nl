@@ -84,7 +84,7 @@ function useIsDarkMode() {
     const root = document.documentElement;
     const media = window.matchMedia('(prefers-color-scheme: dark)');
 
-    const update = () => {
+    function update() {
       setIsDark(root.classList.contains('dark') || media.matches);
     };
 
@@ -707,7 +707,7 @@ export function CodeBlock({
     const container = codeRef.current?.querySelector('[style*="maxHeight"]') as HTMLElement;
     if (!container) return;
 
-    const handleScroll = () => {
+    function handleScroll() {
       updateSearchIndicators();
     };
 
@@ -834,7 +834,7 @@ export function CodeBlock({
       scrollLeft.current = slider.scrollLeft;
     };
 
-    const mouseUpHandler = () => {
+    function mouseUpHandler() {
       setIsDragging(false);
     };
 
@@ -1149,24 +1149,24 @@ export function CodeBlock({
               </div>
             )}
 
-<div ref={codeRef} className="p-4">
-                <SyntaxHighlighter
-                  language={language || 'text'}
-                  style={isDark ? customTheme : customThemeLight}
-                  PreTag="div"
-                  CodeTag="div"
-                  showLineNumbers={false} // We handle line numbers manually
-                  useStyleTags={false}
-                  customStyle={{
-                    margin: 0,
-                    padding: 0,
-                    background: 'transparent',
-                    fontSize: '14px',
-                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                  }}
-                >
-                  {code}
-                </SyntaxHighlighter>
+            <div ref={codeRef} className="p-4">
+              <SyntaxHighlighter
+                language={language || 'text'}
+                style={isDark ? customTheme : customThemeLight}
+                PreTag="div"
+                CodeTag="div"
+                showLineNumbers={false} // We handle line numbers manually
+                useStyleTags={false}
+                customStyle={{
+                  margin: 0,
+                  padding: 0,
+                  background: 'transparent',
+                  fontSize: '14px',
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                }}
+              >
+                {code}
+              </SyntaxHighlighter>
             </div>
           </div>
         )}
