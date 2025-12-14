@@ -95,6 +95,32 @@ export const getLatestTracks = async (limit = 10): Promise<SpotifyTrack[]> => {
 
     return FALLBACK_TRACKS;
   }
+}
+
+export type NowPlaying = {
+  isPlaying: boolean;
+  track: SpotifyTrack | null;
+  progress_ms: number;
+  duration_ms: number;
+}
+
+export async function getNowPlaying(): Promise<NowPlaying> {
+  try {
+    const response = await fetch('/api/spotify/now-playing');
+    if (!response.ok) {
+      return { isPlaying: false, track: null, progress_ms: 0, duration_ms: 0 };
+    }
+    const data = await response.json();
+    return {
+      isPlaying: data.isPlaying,
+      track: data.track || null,
+      progress_ms: data.progress_ms || 0,
+      duration_ms: data.duration_ms || 0
+    };
+  } catch (error) {
+    console.error('Error fetching now playing:', error);
+    return { isPlaying: false, track: null, progress_ms: 0, duration_ms: 0 };
+  }
 };
 
 export const formatDuration = (durationMs: number): string => {

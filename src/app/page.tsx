@@ -1,7 +1,7 @@
-import { BlogPosts } from '@/components/posts'
-import { Intro } from '@/components/intro'
-import { ActivitySection } from '@/components/ActivitySection'
-import WorkExperienceDemo from '@/components/work-experience-demo'
+import { BlogPosts } from '@/components/blog/posts';
+import { Intro } from '@/components/home/hero';
+import { ActivitySection } from '@/components/activity/section';
+import WorkExperienceDemo from '@/components/home/work-experience';
 import { homeMetadata } from '@/core/metadata'
 
 export { homeMetadata as metadata }

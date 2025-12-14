@@ -5,7 +5,18 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 
-import { AnimatedNumber } from './animated-number'
+import { AnimatedNumber } from '../ui/animated-number'
+
+export function PostCountHeader({ count }: { count: number }) {
+  return (
+    <span className="text-muted-foreground/60 inline-flex items-baseline">
+      <span className="-translate-y-[1px]">
+        <AnimatedNumber value={count} duration={600} />
+      </span>
+      {' '}posts
+    </span>
+  )
+}
 
 interface BlogPost {
   metadata: {
