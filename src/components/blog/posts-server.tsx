@@ -1,7 +1,6 @@
 import { getBlogPosts } from '@/utils/utils'
-import { BlogPostsClient } from './blog-posts-client'
-import { Section } from './ui/section'
-import { FileText } from 'lucide-react'
+import { BlogPostsClient, PostCountHeader } from './posts-client'
+import { Section } from '../ui/section'
 
 export function BlogPosts() {
   let allBlogs = getBlogPosts()
@@ -16,10 +15,11 @@ export function BlogPosts() {
   return (
     <Section
       title="Recent Posts"
-      headerAction={<span className="text-muted-foreground/60">{sortedBlogs.length} posts</span>}
+      headerAction={<PostCountHeader count={sortedBlogs.length} />}
       noPadding
     >
       <BlogPostsClient posts={sortedBlogs} />
     </Section>
   )
 }
+

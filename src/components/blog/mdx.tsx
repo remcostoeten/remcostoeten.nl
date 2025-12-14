@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
-import { CodeBlock } from './code-block'
+import { CodeBlock } from '../ui/code-block'
 import remarkGfm from 'remark-gfm'
 
 function Table({ data }) {

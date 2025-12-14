@@ -1,5 +1,5 @@
 import { Briefcase } from 'lucide-react';
-import { AnimatedNumber } from './animated-number';
+import { AnimatedNumber } from '../ui/animated-number';
 import Image from 'next/image';
 
 export function Intro() {

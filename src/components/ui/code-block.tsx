@@ -301,13 +301,16 @@ const Button = memo(function Button({
   className,
   variant = "default",
   size = "default",
+  children,
   ...props
-}: TButtonProps) {
+}: TButtonProps & { children?: React.ReactNode }) {
   return (
     <button
       className={cn(getButtonClasses(variant, size), className)}
       {...props}
-    />
+    >
+      {children}
+    </button>
   );
 });
 
@@ -1146,23 +1149,24 @@ export function CodeBlock({
               </div>
             )}
 
-            <div ref={codeRef} className="p-4">
-              {React.createElement(SyntaxHighlighter as any, {
-                language: language || 'text',
-                style: isDark ? customTheme : customThemeLight,
-                PreTag: "div",
-                CodeTag: "div",
-                showLineNumbers: false, // We handle line numbers manually
-                useStyleTags: false,
-                customStyle: {
-                  margin: 0,
-                  padding: 0,
-                  background: 'transparent',
-                  fontSize: '14px',
-                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                },
-                children: code
-              })}
+<div ref={codeRef} className="p-4">
+                <SyntaxHighlighter
+                  language={language || 'text'}
+                  style={isDark ? customTheme : customThemeLight}
+                  PreTag="div"
+                  CodeTag="div"
+                  showLineNumbers={false} // We handle line numbers manually
+                  useStyleTags={false}
+                  customStyle={{
+                    margin: 0,
+                    padding: 0,
+                    background: 'transparent',
+                    fontSize: '14px',
+                    fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                  }}
+                >
+                  {code}
+                </SyntaxHighlighter>
             </div>
           </div>
         )}

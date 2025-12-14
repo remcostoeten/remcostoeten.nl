@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenResponse.json();
 
-    const redirectUrl = new URL('/', request.url);
+    const redirectUrl = new URL('/dev/spotify', request.url);
     redirectUrl.searchParams.set('success', 'true');
     redirectUrl.searchParams.set('refresh_token', tokenData.refresh_token);
     redirectUrl.searchParams.set('access_token', tokenData.access_token);

@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation'
 
 import { getBlogPosts, calculateReadTime } from '@/utils/utils'
 import { baseUrl } from '@/app/sitemap'
-import { CustomMDX } from '@/components/mdx'
-import { BlogPostClient, PostNavigation } from '@/components/blog-post-client'
-import { TableOfContents } from '@/components/table-of-contents'
+import { CustomMDX } from '@/components/blog/mdx'
+import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
+import { TableOfContents } from '@/components/blog/table-of-contents'
 
 export async function generateStaticParams() {
   let posts = getBlogPosts()

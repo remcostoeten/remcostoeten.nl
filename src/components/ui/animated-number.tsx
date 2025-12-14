@@ -20,11 +20,12 @@ type TSlotDigit = {
   digit: number;
   trigger: boolean;
   duration: number;
+  delay?: number;
   className?: string;
   index: number;
 };
 
-function SlotDigit({ digit, trigger, duration, className, index }: TSlotDigit) {
+function SlotDigit({ digit, trigger, duration, delay = 0, className, index }: TSlotDigit) {
   const targetOffset = digit + (TARGET_SET_INDEX * DIGITS_PER_SET);
   const initialOffset = targetOffset - SCROLL_DISTANCE;
   const itemHeightPercent = 100 / TOTAL_DIGITS;
@@ -44,7 +45,7 @@ function SlotDigit({ digit, trigger, duration, className, index }: TSlotDigit) {
         style={{
           transform: trigger ? transformTarget : transformInitial,
           filter: trigger ? 'blur(0px)' : `blur(${INITIAL_BLUR_PX}px)`,
-          transition: `transform ${duration}ms ${EASING} 0s, filter ${duration}ms ease-out 0s`,
+          transition: `transform ${duration}ms ${EASING} ${delay}ms, filter ${duration}ms ease-out ${delay}ms`,
         }}
         aria-hidden="true"
       >
@@ -74,9 +75,10 @@ type TProps = {
   value: string | number;
   className?: string;
   duration?: number;
+  delay?: number;
 };
 
-export function AnimatedNumber({ value, className, duration = 500 }: TProps) {
+export function AnimatedNumber({ value, className, duration = 500, delay = 0 }: TProps) {
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef<HTMLSpanElement>(null);
   const stringValue = String(value);
@@ -113,6 +115,7 @@ export function AnimatedNumber({ value, className, duration = 500 }: TProps) {
                 digit={parseInt(char, 10)}
                 trigger={isVisible}
                 duration={currentDigitDuration}
+                delay={delay}
                 index={currentDigitIndex}
               />
             );
