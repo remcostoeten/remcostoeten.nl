@@ -33,48 +33,48 @@ const itemVariants = {
     }
 };
 
-const formatRelativeTime = (dateString: string): string => {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+function formatRelativeTime(dateString: string): string {
+    const now = new Date()
+    const date = new Date(dateString)
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return 'yesterday';
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-};
+    if (diffMins < 1) return 'just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays === 1) return 'yesterday'
+    if (diffDays < 7) return `${diffDays}d ago`
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 
-const getEventIcon = (type: GitHubEventDetail['type']) => {
+function getEventIcon(type: GitHubEventDetail['type']) {
     switch (type) {
-        case 'commit': return <GitCommit className="size-3" />;
-        case 'pr': return <GitPullRequest className="size-3" />;
-        case 'issue': return <AlertCircle className="size-3" />;
-        case 'review': return <Eye className="size-3" />;
-        case 'release': return <Box className="size-3" />;
-        case 'fork': return <Copy className="size-3" />;
-        case 'star': return <Star className="size-3" />;
-        case 'create': return <Plus className="size-3" />;
-        default: return <GitBranch className="size-3" />;
+        case 'commit': return <GitCommit className='size-3' />
+        case 'pr': return <GitPullRequest className='size-3' />
+        case 'issue': return <AlertCircle className='size-3' />
+        case 'review': return <Eye className='size-3' />
+        case 'release': return <Box className='size-3' />
+        case 'fork': return <Copy className='size-3' />
+        case 'star': return <Star className='size-3' />
+        case 'create': return <Plus className='size-3' />
+        default: return <GitBranch className='size-3' />
     }
-};
+}
 
-const getEventColor = (type: GitHubEventDetail['type']) => {
+function getEventColor(type: GitHubEventDetail['type']) {
     switch (type) {
-        case 'commit': return 'bg-muted/60 text-foreground/70';
-        case 'pr': return 'bg-muted/60 text-foreground/70';
-        case 'issue': return 'bg-muted/60 text-foreground/70';
-        case 'review': return 'bg-muted/60 text-foreground/70';
-        case 'release': return 'bg-muted/60 text-foreground/70';
-        case 'star': return 'bg-muted/60 text-foreground/70';
-        case 'create': return 'bg-muted/60 text-foreground/70';
-        default: return 'bg-muted/50 text-muted-foreground';
+        case 'commit': return 'bg-muted/60 text-foreground/70'
+        case 'pr': return 'bg-muted/60 text-foreground/70'
+        case 'issue': return 'bg-muted/60 text-foreground/70'
+        case 'review': return 'bg-muted/60 text-foreground/70'
+        case 'release': return 'bg-muted/60 text-foreground/70'
+        case 'star': return 'bg-muted/60 text-foreground/70'
+        case 'create': return 'bg-muted/60 text-foreground/70'
+        default: return 'bg-muted/50 text-muted-foreground'
     }
-};
+}
 
 function getShortRepoName(fullName: string) {
     return fullName?.split('/').pop() || fullName;

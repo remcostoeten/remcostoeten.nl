@@ -9,16 +9,14 @@ import { ActivityContributionGraph } from './contribution-graph';
 import { Section } from '../ui/section';
 import { GitHubActivityCard } from './github-card';
 
-// Awwwards-like spring config for buttery smooth animations
-const springConfig = {
+const SPRING_CONFIG = {
   type: "spring" as const,
   stiffness: 400,
   damping: 30,
   mass: 0.8,
 };
 
-// Premium cubic-bezier easing
-const smoothEase = [0.22, 1, 0.36, 1] as [number, number, number, number];
+const SMOOTH_EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -51,8 +49,8 @@ const itemVariants = {
     scale: 1,
     filter: "blur(0px)",
     transition: {
-      ...springConfig,
-      opacity: { duration: 0.4, ease: smoothEase },
+      ...SPRING_CONFIG,
+      opacity: { duration: 0.4, ease: SMOOTH_EASE },
       filter: { duration: 0.3 },
     }
   },
@@ -63,7 +61,7 @@ const itemVariants = {
     filter: "blur(2px)",
     transition: {
       duration: 0.25,
-      ease: smoothEase,
+      ease: SMOOTH_EASE,
     }
   }
 };
@@ -75,7 +73,7 @@ const wrapperVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: smoothEase,
+      ease: SMOOTH_EASE,
     }
   },
   exit: {
@@ -83,26 +81,28 @@ const wrapperVariants = {
     y: -4,
     transition: {
       duration: 0.3,
-      ease: smoothEase,
+      ease: SMOOTH_EASE,
     }
   }
 };
 
-const Equalizer = () => (
-  <div className="flex items-end gap-[1px] h-3" aria-hidden="true">
-    <div className="w-[2px] bg-green-500 rounded-full animate-[music-bar_0.8s_ease-in-out_infinite]" />
-    <div className="w-[2px] bg-green-500 rounded-full animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]" />
-    <div className="w-[2px] bg-green-500 rounded-full animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]" />
-  </div>
-);
+function Equalizer() {
+  return (
+    <div className='flex items-end gap-[1px] h-3' aria-hidden='true'>
+      <div className='w-[2px] bg-green-500 rounded-full animate-[music-bar_0.8s_ease-in-out_infinite]' />
+      <div className='w-[2px] bg-green-500 rounded-full animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]' />
+      <div className='w-[2px] bg-green-500 rounded-full animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]' />
+    </div>
+  )
+}
 
 type RelativeTime = {
-  number: number | null;
-  suffix: string;
-  isSpecial: boolean;
-};
+  number: number | null
+  suffix: string
+  isSpecial: boolean
+}
 
-const formatRelativeTime = (dateString: string): RelativeTime => {
+function formatRelativeTime(dateString: string): RelativeTime {
   const now = new Date();
   const date = new Date(dateString);
   const diffMs = now.getTime() - date.getTime();
@@ -118,7 +118,7 @@ const formatRelativeTime = (dateString: string): RelativeTime => {
   return { number: null, suffix: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), isSpecial: true };
 };
 
-export const ActivitySection = () => {
+export function ActivitySection() {
   const year = new Date().getFullYear();
   const [songIndex, setSongIndex] = useState(0);
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);

@@ -1,5 +1,5 @@
+import { TopicsSidebar } from '@/components/blog/topics-sidebar'
 import { ReactNode } from 'react'
-import { TopicsSidebar } from '@/components/topics-sidebar'
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
     return (

@@ -1,11 +1,11 @@
-export interface SpotifyTrack {
-  id: string;
-  name: string;
-  artist: string;
-  album: string;
-  url: string;
-  image: string;
-  played_at: string;
+export type SpotifyTrack = {
+  id: string
+  name: string
+  artist: string
+  album: string
+  url: string
+  image: string
+  played_at: string
 }
 
 const FALLBACK_TRACKS: SpotifyTrack[] = [
@@ -38,7 +38,7 @@ const FALLBACK_TRACKS: SpotifyTrack[] = [
   }
 ];
 
-export const getLatestTracks = async (limit = 10): Promise<SpotifyTrack[]> => {
+export async function getLatestTracks(limit = 10): Promise<SpotifyTrack[]> {
   try {
     console.log('🎵 Fetching Spotify tracks from API...');
 
@@ -123,22 +123,22 @@ export async function getNowPlaying(): Promise<NowPlaying> {
   }
 };
 
-export const formatDuration = (durationMs: number): string => {
-  const minutes = Math.floor(durationMs / 60000);
-  const seconds = Math.floor((durationMs % 60000) / 1000);
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
+export function formatDuration(durationMs: number): string {
+  const minutes = Math.floor(durationMs / 60000)
+  const seconds = Math.floor((durationMs % 60000) / 1000)
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
 
-export const getRelativeTime = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
+export function getRelativeTime(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
 
-  if (diffMins < 1) return 'just now';
-  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-};
+  if (diffMins < 1) return 'just now'
+  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+}
