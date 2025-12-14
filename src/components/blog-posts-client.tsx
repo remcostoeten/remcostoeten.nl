@@ -117,12 +117,12 @@ function BlogCard({ post, index }: BlogCardProps) {
           >
             <div
               ref={asciiRef}
-              className="w-full h-full font-mono text-[10px] leading-[10px] text-lime-400/12 break-all select-none tracking-widest p-4"
+              className="w-full h-full font-mono text-[10px] leading-[10px] text-lime-400/12 break-all select-none tracking-widest"
               style={{ contain: 'strict' }} // Contain ASCII animation
             />
           </div>
 
-          <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8 px-6 border-b border-neutral-800/60 z-10 min-h-[120px]">
+          <article className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 py-8 px-6 border-b border-neutral-800/60 z-10 min-h-[120px]">
             <div className="flex-1 min-w-0">
               <header className="flex items-start gap-3">
                 <span

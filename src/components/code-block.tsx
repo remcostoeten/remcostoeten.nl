@@ -1,7 +1,36 @@
 
+/**
+ * Beautiful Code Block Component
+ * 
+ * A feature-rich, customizable code display component for React/Next.js applications
+ * with syntax highlighting, search functionality, keyboard shortcuts, and custom badges.
+ * 
+ * Features:
+ * • Syntax highlighting for 100+ languages
+ * • Interactive search with Cmd/Ctrl+F
+ * • Line highlighting and click callbacks
+ * • Copy to clipboard with Cmd/Ctrl+C
+ * • Collapsible code blocks with smooth animations
+ * • Custom badge system with variants and auto-scroll
+ * • Keyboard shortcuts and accessibility support
+ * 
+ * Installation:
+ * 1. Install dependencies: framer-motion lucide-react react-syntax-highlighter clsx tailwind-merge @radix-ui/react-slot class-variance-authority
+ * 2. Copy this file to your components directory
+ * 3. Import and use: import { CodeBlock } from './beautiful-code-block'
+ * 
+
+ * @author Remco Stoeten
+ * @name  Beautiful Code Block 
+ * 
+ * @description 
+ * A feature-rich, performant, accessible code-block render component, which probably is the most beautiful you'll see.
+ * 110+ languages, search highlight, programatic line highlighting, per-language icons, custom labels/themes, copy button, kbd-shortcuts
+*/
 
 'use client';
 
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowDown,
   ArrowUp,
@@ -15,12 +44,15 @@ import {
 } from "lucide-react";
 import { getLanguageIcon } from "./code-block/language-icons";
 import { useCallback, useEffect, useRef, useState, useMemo, memo } from "react";
-import React from "react";
-import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
+import { PrismAsyncLight as SyntaxHighlighter } from "react-syntax-highlighter";
 import { clsx, type ClassValue } from "clsx";
 import type { CSSProperties } from "react";
 
+// ============================================================================
+// UTILITIES
+// ============================================================================
 
+// Simple className merger - replaces twMerge with basic deduplication
 export const cn = (...inputs: ClassValue[]) => {
   const classes = clsx(inputs).split(' ');
   const merged = new Map<string, string>();
@@ -1116,7 +1148,7 @@ export function CodeBlock({
 
             <div ref={codeRef} className="p-4">
               {React.createElement(SyntaxHighlighter as any, {
-                language: language,
+                language: language || 'text',
                 style: isDark ? customTheme : customThemeLight,
                 PreTag: "div",
                 CodeTag: "div",

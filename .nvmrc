@@ -1,10 +1,1 @@
 24
-
-$BASEURL = $ // indicated
-
-
-$ === landing
-$/blog === blog overview page with list of blogs, categories/topics
-$/blog/:slug === blog post page / blog detail page
-$/blog/:slug/analytics === blog post analytics page (not created yet)
-$/blog/{categories,topics} === blog category/topic overview page (maybe overkill)

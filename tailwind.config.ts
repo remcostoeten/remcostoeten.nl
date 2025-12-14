@@ -1,9 +1,9 @@
 export default {
   darkMode: 'class',
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -43,47 +43,47 @@ export default {
           '50%': { height: '100%' },
         },
         'blob-float': {
-          "0%, 100%": { 
-            transform: "translate(0, 0) scale(1)", 
+          "0%, 100%": {
+            transform: "translate(0, 0) scale(1)",
             borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
-            opacity: "0.15" 
+            opacity: "0.15"
           },
-          "25%": { 
-            transform: "translate(20px, -30px) scale(1.1)", 
+          "25%": {
+            transform: "translate(20px, -30px) scale(1.1)",
             borderRadius: "40% 60% 70% 30% / 50% 60% 30% 60%",
-            opacity: "0.25" 
+            opacity: "0.25"
           },
-          "50%": { 
-            transform: "translate(-20px, 20px) scale(0.9)", 
+          "50%": {
+            transform: "translate(-20px, 20px) scale(0.9)",
             borderRadius: "70% 30% 50% 50% / 30% 30% 70% 70%",
-            opacity: "0.15" 
+            opacity: "0.15"
           },
-          "75%": { 
-            transform: "translate(10px, -10px) scale(1.05)", 
+          "75%": {
+            transform: "translate(10px, -10px) scale(1.05)",
             borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%",
-            opacity: "0.25" 
+            opacity: "0.25"
           }
         },
         'blob-sway': {
-          "0%, 100%": { 
-            transform: "translate(0, 0) rotate(0deg) scale(1)", 
+          "0%, 100%": {
+            transform: "translate(0, 0) rotate(0deg) scale(1)",
             borderRadius: "70% 30% 30% 70% / 60% 40% 60% 40%",
-            opacity: "0.1" 
+            opacity: "0.1"
           },
-          "33%": { 
-            transform: "translate(-30px, 10px) rotate(10deg) scale(1.1)", 
+          "33%": {
+            transform: "translate(-30px, 10px) rotate(10deg) scale(1.1)",
             borderRadius: "40% 60% 60% 40% / 50% 50% 50% 50%",
-            opacity: "0.2" 
+            opacity: "0.2"
           },
-          "66%": { 
-            transform: "translate(20px, -20px) rotate(-5deg) scale(0.95)", 
+          "66%": {
+            transform: "translate(20px, -20px) rotate(-5deg) scale(0.95)",
             borderRadius: "60% 40% 50% 50% / 40% 60% 40% 60%",
-            opacity: "0.15" 
+            opacity: "0.15"
           }
         },
         'blob-pulse': {
-           "0%, 100%": { transform: "scale(1)", opacity: "0.1" },
-           "50%": { transform: "scale(1.2)", opacity: "0.2" }
+          "0%, 100%": { transform: "scale(1)", opacity: "0.1" },
+          "50%": { transform: "scale(1.2)", opacity: "0.2" }
         },
         'wiggle': {
           '0%, 100%': { transform: 'rotate(-12deg)' },

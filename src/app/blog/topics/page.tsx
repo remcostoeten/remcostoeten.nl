@@ -16,7 +16,7 @@ export default function TopicsPage() {
         {categories.map((category, index) => (
           <li key={category.name} className="block p-0 m-0">
             <Link
-              href={`/topics/${category.name.toLowerCase()}`}
+              href={`/blog/topics/${category.name.toLowerCase()}`}
               className="group relative block animate-stagger overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               style={{ animationDelay: `${index * 50}ms` }}
             >

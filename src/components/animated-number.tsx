@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useInView } from 'framer-motion';
 
 const DIGIT_SETS = 3;
 const DIGITS_PER_SET = 10;
@@ -80,13 +81,13 @@ export function AnimatedNumber({ value, className, duration = 500 }: TProps) {
   const elementRef = useRef<HTMLSpanElement>(null);
   const stringValue = String(value);
 
-  useEffect(() => {
-    const frameId = requestAnimationFrame(() => {
-      setIsVisible(true);
-    });
+  const isInView = useInView(elementRef, { once: true, margin: "-100px" });
 
-    return () => cancelAnimationFrame(frameId);
-  }, []);
+  useEffect(() => {
+    if (isInView) {
+      setIsVisible(true);
+    }
+  }, [isInView]);
 
   const chars = stringValue.split('');
   let digitIndex = 0;
@@ -94,7 +95,7 @@ export function AnimatedNumber({ value, className, duration = 500 }: TProps) {
   return (
     <span
       ref={elementRef}
-      className={`inline-flex items-baseline whitespace-pre-wrap ${className || ''}`}
+      className={`inline-flex items-baseline whitespace-pre-wrap  translate-y-0.5 ${className || ''}`}
       aria-label={stringValue}
     >
       <span className="sr-only">{stringValue}</span>
