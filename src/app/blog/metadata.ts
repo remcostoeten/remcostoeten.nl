@@ -1,4 +1,4 @@
-import { blogMetadata } from '@/core/metadata/blog'
+import { blogMetadata } from '@/services/metadata/blog'
 
 export const metadata = {
   ...blogMetadata,

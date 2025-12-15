@@ -1,4 +1,4 @@
-import { homeMetadata } from '@/core/metadata/home'
+import { homeMetadata } from '@/services/metadata/home'
 
 export const metadata = {
   ...homeMetadata,

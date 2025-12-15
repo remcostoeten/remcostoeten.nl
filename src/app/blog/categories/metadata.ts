@@ -1,4 +1,4 @@
-import { categoriesMetadata } from '@/core/metadata/categories'
+import { categoriesMetadata } from '@/services/metadata/categories'
 
 export const metadata = {
   ...categoriesMetadata,

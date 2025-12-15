@@ -2,10 +2,9 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Music, Calendar } from 'lucide-react';
-import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying, formatDuration } from '@/core/spotify-service';
+import { Music } from 'lucide-react';
+import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying, formatDuration } from '@/services/spotify-service';
 import { AnimatedNumber } from '../ui/animated-number';
-import { ActivityContributionGraph } from './contribution-graph';
 import { Section } from '../ui/section';
 import { GitHubActivityCard } from './github-card';
 
@@ -180,7 +179,7 @@ export function ActivitySection() {
 
   return (
     <Section
-      title="Activity & Contributions"
+      title="Activity"
       headerAction={
         <span className="text-muted-foreground/60 inline-flex items-baseline">
           <span className="-translate-y-[1px]">
@@ -189,93 +188,83 @@ export function ActivitySection() {
         </span>
       }
     >
-      <div className="space-y-4">
-        <div className="p-3">
-          <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border/20">
-            <Calendar className="size-3.5 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">Contribution Graph</span>
-          </div>
-          <ActivityContributionGraph year={year} showLegend={true} />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 -m-1">
+        <GitHubActivityCard />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 -m-1">
-          <GitHubActivityCard />
-
-          <div className="rounded-lg border border-border/30 bg-background/50 p-3">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <div className={`flex size-5 items-center justify-center rounded ${showProgressBar ? 'bg-green-500/10' : 'bg-orange-500/10'}`}>
-                  <Music className={`size-3 ${showProgressBar ? 'text-green-500' : 'text-orange-500'}`} />
-                </div>
-                <span className="text-xs font-medium text-foreground">{label}</span>
+        <div className="rounded-lg border border-border/30 bg-background/50 p-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className={`flex size-5 items-center justify-center rounded ${showProgressBar ? 'bg-green-500/10' : 'bg-orange-500/10'}`}>
+                <Music className={`size-3 ${showProgressBar ? 'text-green-500' : 'text-orange-500'}`} />
               </div>
-              {showProgressBar && <Equalizer />}
+              <span className="text-xs font-medium text-foreground">{label}</span>
             </div>
-
-            <AnimatePresence mode='wait'>
-              <motion.div
-                key={shouldShowNowPlaying ? 'now-playing' : `recent-${songIndex}`}
-                variants={containerVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="pl-7 space-y-0.5"
-              >
-                <motion.a
-                  href={currentTrack.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
-                  variants={itemVariants}
-                >
-                  {currentTrack.name}
-                </motion.a>
-                <motion.p
-                  className="text-xs text-muted-foreground truncate"
-                  variants={itemVariants}
-                >
-                  {currentTrack.artist}
-                </motion.p>
-
-                <motion.div variants={itemVariants} className="pt-1">
-                  {showProgressBar ? (
-                    <div className="space-y-1">
-                      {/* Progress Bar */}
-                      <div className="h-1 w-full bg-border/30 rounded-full overflow-hidden">
-                        <motion.div
-                          className="h-full bg-green-500 rounded-full"
-                          initial={{ width: `${progressPercent}%` }}
-                          animate={{ width: `${progressPercent}%` }}
-                          transition={{ duration: 1, ease: "linear" }}
-                        />
-                      </div>
-
-                      {/* Time Stamps */}
-                      <div className="flex justify-between text-[10px] text-muted-foreground/60 tabular-nums">
-                        <span>{formatDuration(nowPlaying.progress_ms)}</span>
-                        <span>{formatDuration(nowPlaying.duration_ms)}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <span className="text-[10px] text-muted-foreground/60 inline-flex items-baseline">
-                      {(() => {
-                        const time = formatRelativeTime(currentTrack.played_at);
-                        if (time.isSpecial) return time.suffix;
-                        return (
-                          <>
-                            <span className="-translate-y-[1px]">
-                              <AnimatedNumber key={`time-${songIndex}`} value={time.number!} duration={800} delay={250} />
-                            </span>
-                            {time.suffix}
-                          </>
-                        );
-                      })()}
-                    </span>
-                  )}
-                </motion.div>
-              </motion.div>
-            </AnimatePresence>
+            {showProgressBar && <Equalizer />}
           </div>
+
+          <AnimatePresence mode='wait'>
+            <motion.div
+              key={shouldShowNowPlaying ? 'now-playing' : `recent-${songIndex}`}
+              variants={containerVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="pl-7 space-y-0.5"
+            >
+              <motion.a
+                href={currentTrack.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
+                variants={itemVariants}
+              >
+                {currentTrack.name}
+              </motion.a>
+              <motion.p
+                className="text-xs text-muted-foreground truncate"
+                variants={itemVariants}
+              >
+                {currentTrack.artist}
+              </motion.p>
+
+              <motion.div variants={itemVariants} className="pt-1">
+                {showProgressBar ? (
+                  <div className="space-y-1">
+                    {/* Progress Bar */}
+                    <div className="h-1 w-full bg-border/30 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-green-500 rounded-full"
+                        initial={{ width: `${progressPercent}%` }}
+                        animate={{ width: `${progressPercent}%` }}
+                        transition={{ duration: 1, ease: "linear" }}
+                      />
+                    </div>
+
+                    {/* Time Stamps */}
+                    <div className="flex justify-between text-[10px] text-muted-foreground/60 tabular-nums">
+                      <span>{formatDuration(nowPlaying.progress_ms)}</span>
+                      <span>{formatDuration(nowPlaying.duration_ms)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <span className="text-[10px] text-muted-foreground/60 inline-flex items-baseline">
+                    {(() => {
+                      const time = formatRelativeTime(currentTrack.played_at);
+                      if (time.isSpecial) return time.suffix;
+                      return (
+                        <>
+                          <span className="-translate-y-[1px]">
+                            <AnimatedNumber key={`time-${songIndex}`} value={time.number!} duration={800} delay={250} />
+                          </span>
+                          {time.suffix}
+                        </>
+                      );
+                    })()}
+                  </span>
+                )}
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </Section>

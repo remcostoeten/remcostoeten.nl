@@ -21,6 +21,21 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "env": [
+        "./src/server/env.ts"
+      ],
+      "schema": [
+        "./src/server/db/schema.ts"
+      ],
+      "db": [
+        "./src/server/db/index.ts"
+      ],
+      "ui": [
+        "src/common/ui/index.ts"
+      ],
+      "utilities": [
+        "src/common/utilities/*"
       ]
     },
     "incremental": true,

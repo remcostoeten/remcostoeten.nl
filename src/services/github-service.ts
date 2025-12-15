@@ -1,244 +1,195 @@
-export interface CommitData {
-  message: string;
-  url: string;
-  shortHash: string;
-  hash: string;
-  date: string;
-  author: string;
-  projectName: string;
-  color: string;
-}
-
-interface GitHubCommit {
-  sha: string;
-  message: string;
-  author: {
-    name: string;
-    email: string;
-    date: string;
-  };
-  url: string;
-  html_url: string;
-  stats?: {
-    additions: number;
-    deletions: number;
-    total: number;
-  };
-  commit: {
-    author: {
-      name: string;
-      email: string;
-      date: string;
-    };
-    message: string;
-  };
-}
-
-interface GitHubEvent {
+interface GitHubEventDetail {
   id: string;
-  type: string;
-  actor: {
-    login: string;
-    url: string;
-  };
-  repo: {
-    name: string;
-    url: string;
-  };
-  payload: {
-    ref?: string;
-    head?: string;
-    commits?: Array<{
-      sha: string;
-      message: string;
-    }>;
-  };
-  created_at: string;
+  type: 'commit' | 'pr' | 'issue' | 'review' | 'release' | 'fork' | 'star' | 'create' | 'unknown';
+  title: string;
+  description: string;
+  url: string;
+  repository: string;
+  timestamp: string;
+  icon?: string;
+  payload?: any;
 }
 
-const LATEST_PROJECTS = [
-  { owner: 'remcostoeten', repo: 'remcostoeten.nl', name: 'remcostoeten.nl', color: 'text-blue-400' },
-  { owner: 'remcostoeten', repo: 'drizzleasy', name: 'drizzleasy', color: 'text-yellow-400' },
-  { owner: 'remcostoeten', repo: 'fync', name: 'fync', color: 'text-orange-400' },
-];
+class GitHubService {
+  private token: string;
+  private baseUrl = 'https://api.github.com';
+  private username: string;
 
-const formatTimestamp = (dateString: string): string => {
-  return new Date(dateString).toISOString();
-};
-
-const fetchCommitDetails = async (owner: string, repo: string, sha: string): Promise<GitHubCommit | null> => {
-  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-
-  const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'remcostoeten-portfolio-activity',
-  };
-
-  if (token) {
-    headers['Authorization'] = `token ${token}`;
+  constructor() {
+    this.token = this.getGitHubToken();
+    if (!this.token) {
+      console.warn('GitHub token not found in environment variables');
+    }
+    this.username = 'remcostoeten';
   }
 
-  try {
-    const response = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/commits/${sha}`,
-      { headers }
-    );
-
-    if (!response.ok) {
-      return null;
+  private getGitHubToken(): string {
+    const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN || '';
+    if (token) {
+      return token.trim();
     }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`Error fetching commit details for ${owner}/${repo}/${sha}:`, error);
-    return null;
-  }
-};
-
-export async function getLatestCommit(owner: string, repo: string): Promise<CommitData | null> {
-  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-
-  const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'remcostoeten-portfolio-activity',
-  };
-
-  if (token) {
-    headers['Authorization'] = `token ${token}`;
+    return '';
   }
 
-  try {
-    const response = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/commits?per_page=1`,
-      { headers }
-    );
-
-    if (!response.ok) {
-      console.error(`GitHub API error for ${owner}/${repo}: ${response.statusText}`);
-      return null;
-    }
-
-    const commits: GitHubCommit[] = await response.json();
-
-    if (commits.length === 0) {
-      return null;
-    }
-
-    const latestCommit = commits[0];
-    const projectInfo = LATEST_PROJECTS.find(p => p.owner === owner && p.repo === repo);
-
-    return {
-      message: latestCommit.commit.message,
-      url: latestCommit.html_url,
-      shortHash: latestCommit.sha.substring(0, 7),
-      hash: latestCommit.sha,
-      date: latestCommit.commit.author.date,
-      author: latestCommit.commit.author.name,
-      projectName: projectInfo?.name || repo,
-      color: projectInfo?.color || 'text-muted-foreground'
+  private getHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
     };
-  } catch (error) {
-    console.error(`Error fetching latest commit for ${owner}/${repo}:`, error);
-    return null;
-  }
-}
 
-export async function getLatestCommits(): Promise<CommitData[]> {
-  const commitPromises = LATEST_PROJECTS.map(async (project) => {
-    const commit = await getLatestCommit(project.owner, project.repo);
-    return commit ? { ...commit, color: project.color, projectName: project.name } : null;
-  });
-
-  const commitResults = await Promise.all(commitPromises);
-  const validCommits = commitResults.filter(Boolean) as CommitData[];
-
-  validCommits.sort((a, b) => {
-    const timeA = new Date(a.date).getTime();
-    const timeB = new Date(b.date).getTime();
-    return timeB - timeA;
-  });
-
-  return validCommits;
-}
-
-export async function getRecentActivity(): Promise<CommitData[]> {
-  const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN;
-
-  const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3+json',
-    'User-Agent': 'remcostoeten-portfolio-activity',
-  };
-
-  if (token) {
-    headers['Authorization'] = `token ${token}`;
-  }
-
-  try {
-    const oneMonthAgo = new Date();
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-
-    const response = await fetch(
-      `https://api.github.com/users/remcostoeten/events?per_page=100`,
-      { headers }
-    );
-
-    if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.statusText}`);
+    if (this.token) {
+      headers['Authorization'] = `token ${this.token}`;
     }
 
-    const events: GitHubEvent[] = await response.json();
+    return headers;
+  }
 
-    const pushEvents = events.filter(event => {
-      if (event.type !== 'PushEvent') return false;
+  /**
+   * Parse raw GitHub event into normalized detail format
+   */
+  private parseGitHubEvent(event: any): GitHubEventDetail | null {
+    const base = {
+      id: event.id,
+      timestamp: event.created_at,
+      repository: event.repo.name,
+      url: `https://github.com/${event.repo.name}`,
+    };
 
-      const eventDate = new Date(event.created_at);
-      if (eventDate < oneMonthAgo) return false;
+    switch (event.type) {
+      case 'PushEvent':
+        if (!event.payload) return null;
+        let commitCount = 0;
 
-      if (!event.payload.commits || event.payload.commits.length === 0) return false;
+        if (typeof event.payload.size === 'number') {
+          commitCount = event.payload.size;
+        } else if (event.payload.commits) {
+          commitCount = event.payload.commits.length;
+        }
 
-      return LATEST_PROJECTS.some(project =>
-        event.repo.name === `${project.owner}/${project.repo}`
-      );
-    });
+        if (commitCount === 0) return null;
 
-    const commits: CommitData[] = [];
-
-    for (const event of pushEvents) {
-      const [owner, repo] = event.repo.name.split('/');
-      const projectInfo = LATEST_PROJECTS.find(p => p.owner === owner && p.repo === repo);
-
-      if (!projectInfo) continue;
-
-      const latestCommitSha = event.payload.head || event.payload.commits![0].sha;
-
-      const commitDetails = await fetchCommitDetails(owner, repo, latestCommitSha);
-
-      if (commitDetails) {
-        const commitData: CommitData = {
-          message: commitDetails.commit.message,
-          url: commitDetails.html_url,
-          shortHash: commitDetails.sha.substring(0, 7),
-          hash: commitDetails.sha,
-          date: commitDetails.commit.author.date,
-          author: commitDetails.commit.author.name,
-          projectName: projectInfo.name,
-          color: projectInfo.color
+        return {
+          ...base,
+          type: 'commit',
+          title: `Pushed ${commitCount} commit${commitCount === 1 ? '' : 's'} to ${event.payload.ref?.replace('refs/heads/', '') || 'branch'}`,
+          description: event.payload.commits?.[0]?.message || 'No commit message',
+          url: `https://github.com/${event.repo.name}/commits/${event.payload.head}`,
+          payload: event.payload
         };
-
-        commits.push(commitData);
-      }
+      case 'CreateEvent':
+        return {
+          ...base,
+          type: 'create',
+          title: `Created ${event.payload.ref_type} ${event.payload.ref || ''}`,
+          description: `Created new ${event.payload.ref_type} in ${event.repo.name}`,
+          url: `https://github.com/${event.repo.name}`,
+          payload: event.payload
+        };
+      case 'PullRequestEvent':
+        return {
+          ...base,
+          type: 'pr',
+          title: `${event.payload.action === 'opened' ? 'Opened' : 'Closed'} PR #${event.payload.number}`,
+          description: event.payload.pull_request.title,
+          url: event.payload.pull_request.html_url,
+          payload: event.payload
+        };
+      case 'IssuesEvent':
+        return {
+          ...base,
+          type: 'issue',
+          title: `${event.payload.action === 'opened' ? 'Opened' : 'Closed'} Issue #${event.payload.issue.number}`,
+          description: event.payload.issue.title,
+          url: event.payload.issue.html_url,
+          payload: event.payload
+        };
+      case 'PullRequestReviewEvent':
+        return {
+          ...base,
+          type: 'review',
+          title: 'Reviewed Pull Request',
+          description: event.payload.pull_request.title,
+          url: event.payload.review.html_url,
+          payload: event.payload
+        };
+      case 'ReleaseEvent':
+        return {
+          ...base,
+          type: 'release',
+          title: 'Published Release',
+          description: event.payload.release.name || event.payload.release.tag_name,
+          url: event.payload.release.html_url,
+          payload: event.payload
+        };
+      case 'WatchEvent':
+        return {
+          ...base,
+          type: 'star',
+          title: `Starred ${event.repo.name}`,
+          description: 'Added to favorites',
+          url: `https://github.com/${event.repo.name}`,
+          payload: event.payload
+        };
+      case 'ForkEvent':
+        return {
+          ...base,
+          type: 'fork',
+          title: `Forked ${event.repo.name}`,
+          description: `Forked to ${event.payload.forkee.full_name}`,
+          url: event.payload.forkee.html_url,
+          payload: event.payload
+        };
+      default:
+        return {
+          ...base,
+          type: 'unknown',
+          title: event.type.replace('Event', ''),
+          description: event.repo.name,
+          url: `https://github.com/${event.repo.name}`,
+          payload: event.payload
+        };
     }
+  }
 
-    commits.sort((a, b) => {
-      const timeA = new Date(a.date).getTime();
-      const timeB = new Date(b.date).getTime();
-      return timeB - timeA;
-    });
+  /**
+   * Get recent activity for the feed component
+   */
+  async getRecentActivity(limit: number = 10): Promise<GitHubEventDetail[]> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/users/${this.username}/events?per_page=50`,
+        {
+          headers: this.getHeaders(),
+          next: { revalidate: 60 } // Cache for 1 min
+        } as any
+      );
 
-    return commits.slice(0, 20);
+      if (!response.ok) {
+        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      }
 
-  } catch (error) {
-    console.error('Error fetching GitHub activities:', error);
-    return [];
+      const events = await response.json();
+      const details: GitHubEventDetail[] = [];
+      const seenRepos = new Set<string>();
+
+      for (const event of events) {
+        if (!seenRepos.has(event.repo.name)) {
+          const detail = this.parseGitHubEvent(event);
+          if (detail) {
+            details.push(detail);
+            seenRepos.add(event.repo.name);
+          }
+        }
+        if (details.length >= limit) break;
+      }
+
+      return details;
+    } catch (error) {
+      console.error('Error fetching recent activity:', error);
+      return [];
+    }
   }
 }
+
+export const githubService = new GitHubService();
+export type { GitHubEventDetail };

@@ -1,8 +1,9 @@
 import { BlogPosts } from '@/components/blog/posts';
 import { Intro } from '@/components/home/hero';
 import { ActivitySection } from '@/components/activity/section';
+import { GithubContributionGraph } from '@/components/home/contribution-graph-wrapper';
 import WorkExperienceDemo from '@/components/home/work-experience';
-import { homeMetadata } from '@/core/metadata'
+import { homeMetadata } from '@/services/metadata'
 
 export { homeMetadata as metadata }
 
@@ -12,6 +13,7 @@ export default function Page() {
       <Intro />
 
       <div className="space-y-4">
+        <GithubContributionGraph />
         <ActivitySection />
         <WorkExperienceDemo />
         <div className="screen-border" />

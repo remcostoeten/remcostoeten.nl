@@ -1,7 +1,7 @@
 import { getAllCategories } from '@/utils/utils'
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
-import { topicsMetadata } from '@/core/metadata'
+import { topicsMetadata } from '@/services/metadata'
 
 export { topicsMetadata as metadata }
 
