@@ -1,0 +1,198 @@
+:root {
+  --snap-to-close-duration: 300ms;
+  --snap-to-close-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  --snap-to-close-bounce-easing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --snap-to-close-smooth-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.snap-to-close-panel {
+  transition: 
+    width var(--snap-to-close-duration) var(--snap-to-close-easing),
+    min-width var(--snap-to-close-duration) var(--snap-to-close-easing),
+    max-width var(--snap-to-close-duration) var(--snap-to-close-easing),
+    opacity var(--snap-to-close-duration) var(--snap-to-close-easing),
+    transform var(--snap-to-close-duration) var(--snap-to-close-easing);
+}
+
+.snap-to-close-panel--animating {
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.snap-to-close-panel--collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.snap-to-close-panel--expanding {
+  animation: snap-expand var(--snap-to-close-duration) var(--snap-to-close-bounce-easing) forwards;
+}
+
+.snap-to-close-panel--collapsing {
+  animation: snap-collapse var(--snap-to-close-duration) var(--snap-to-close-easing) forwards;
+}
+
+.snap-to-close-content {
+  transition: 
+    opacity calc(var(--snap-to-close-duration) * 0.6) var(--snap-to-close-smooth-easing),
+    transform calc(var(--snap-to-close-duration) * 0.8) var(--snap-to-close-smooth-easing);
+}
+
+.snap-to-close-content--hidden {
+  opacity: 0;
+  transform: translateX(-20px) scale(0.95);
+  pointer-events: none;
+}
+
+.snap-to-close-content--visible {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+}
+
+.snap-to-close-handle {
+  transition: 
+    background-color 150ms ease-in-out,
+    border-color 150ms ease-in-out,
+    transform 200ms var(--snap-to-close-smooth-easing);
+}
+
+.snap-to-close-handle:hover {
+  background-color: hsl(var(--accent));
+  transform: scale(1.1);
+}
+
+.snap-to-close-handle--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.snap-to-close-handle__toggle {
+  transition: 
+    opacity 200ms ease-in-out,
+    transform 300ms var(--snap-to-close-bounce-easing),
+    background-color 150ms ease-in-out;
+  transform: scale(0.9);
+}
+
+.snap-to-close-handle__toggle:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
+  background-color: hsl(var(--accent));
+}
+
+.snap-to-close-handle__toggle--collapsed {
+  transform: rotate(180deg) scale(0.9);
+}
+
+.snap-to-close-handle__toggle--collapsed:hover {
+  transform: rotate(180deg) scale(1.1);
+}
+
+@keyframes snap-expand {
+  0% {
+    width: 0;
+    opacity: 0;
+    transform: translateX(-10px) scale(0.98);
+  }
+  60% {
+    opacity: 0.8;
+  }
+  80% {
+    transform: translateX(2px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes snap-collapse {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translateX(-5px) scale(0.98);
+  }
+  100% {
+    width: 0;
+    opacity: 0;
+    transform: translateX(-10px) scale(0.95);
+  }
+}
+
+.snap-to-close-threshold-indicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    hsl(var(--warning)) 20%,
+    hsl(var(--destructive)) 50%,
+    hsl(var(--warning)) 80%,
+    transparent 100%
+  );
+  opacity: 0;
+  transform: scaleY(0.5);
+  transition: 
+    opacity 200ms ease-in-out,
+    transform 300ms var(--snap-to-close-bounce-easing);
+}
+
+.snap-to-close-threshold-indicator--active {
+  opacity: 0.8;
+  transform: scaleY(1);
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleY(1.1);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --snap-to-close-duration: 250ms;
+  }
+  
+  .snap-to-close-panel {
+    transition-duration: 250ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --snap-to-close-duration: 150ms;
+    --snap-to-close-easing: ease-out;
+    --snap-to-close-bounce-easing: ease-out;
+    --snap-to-close-smooth-easing: ease-out;
+  }
+  
+  .snap-to-close-panel--expanding,
+  .snap-to-close-panel--collapsing {
+    animation: none;
+  }
+  
+  .snap-to-close-threshold-indicator--active {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .snap-to-close-threshold-indicator {
+    background: hsl(var(--foreground));
+  }
+}

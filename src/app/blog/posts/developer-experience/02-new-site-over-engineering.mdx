@@ -1,0 +1,232 @@
+---
+title: 'New Site: The Over-Engineering Chronicles Continue'
+publishedAt: '2025-12-09'
+summary: 'Building a new site that somehow ended up more over-engineered than the last one. Custom build tools, monorepo structure, environment validation, and of course, a developer widget that runs cleanup jobs.'
+categories: [Developer Experience, Engineering, Over-engineering]
+series: 'Developer Experience'
+seriesIndex: 2
+tags: [Next.js, TypeScript, Monorepo, Vercel, Environment Variables, Cron Jobs]
+---
+
+*This is part 2 of the Developer Experience series. After building our [environment validator](/blog/posts/developer-experience/01-environment-validator), we're applying those principles to a real project. Spoiler: it got complicated.*
+
+## It Started Simple
+
+The original goal was refreshingly simple: build a site that doesn't make me want to throw my laptop out the window every time I need to update it. My old site, while entertainingly [over-engineered](/blog/posts/over-engineering-my-site), had become a maintenance nightmare.
+
+Three weeks later, I have:
+
+- A monorepo with 4 packages
+- Custom environment validation with UI error states
+- A developer widget with cron job management
+- Anonymous user cleanup with batch processing
+- More TypeScript types than actual content
+
+Some people never learn.
+
+## The Monorepo Rabbit Hole
+
+It began innocently. "I'll just separate the DB logic," I said. "Maybe some shared types," I thought. Before I knew it:
+
+```
+skriuwde/
+├── apps/
+│   └── web/                 # Next.js app
+├── packages/
+│   ├── core-logic/         # Shared utilities
+│   ├── db/                 # Database schema & migrations
+│   └── crud/               # API wrappers
+└── tools/
+    └── check-db.ts         # Database health checker
+```
+
+Why? Because I wanted to reuse the database logic across multiple apps that I will probably never build. The siren call of "future-proofing" strikes again.
+
+## Environment Validation: Episode II
+
+Remember that environment validator we built? Let's just say I implemented it with the enthusiasm of someone who's been burned too many times.
+
+```typescript
+// .env.example with actual helpful comments
+# =============================================================================
+# DATABASE (Required)
+# =============================================================================
+# PostgreSQL connection string
+# Neon: postgresql://user:password@host.neon.tech/database?sslmode=require
+# Local: postgresql://user:password@localhost:5432/database
+DATABASE_URL=postgresql://user:password@localhost:5432/skriuw
+
+# =============================================================================
+# DEVELOPMENT: Quick Reference
+# =============================================================================
+# Bun commands: bun run dev | bun run build | bun run lint
+# Database: drizzle-kit studio (UI) | drizzle-kit generate (migrations)
+# Install: bun install (most projects) or pnpm install (snippets)
+```
+
+No more guessing what format the database URL should be. No more discovering missing variables in production. Just clear, helpful configuration with zero ambiguity.
+
+## The Developer Widget: Because Why Not?
+
+Every good over-engineered project needs a developer widget. Mine has:
+
+- **Database stats** with real-time connection monitoring
+- **User management** with anonymous user tracking
+- **Manual cleanup controls** with dry run mode
+- **Cron job status** with run history
+- **System health monitoring**
+- **Cookie management** (because sometimes you need to hide the hero badge)
+
+```typescript
+// The widget that does way too much
+export function DevWidget() {
+  const [stats, setStats] = useState<DbStats | null>(null)
+  const [users, setUsers] = useState<UserInfo[]>([])
+  const [cronStatus, setCronStatus] = useState<CronStatus>(...))
+  const [activeTab, setActiveTab] = useState<TabType>('database')
+
+  // Five tabs of pure developer productivity
+  return <FiveTabbedInterfaceThatDoesEverything />
+}
+```
+
+## Anonymous User Cleanup: A Feature I Didn't Need
+
+The site supports anonymous sign-ins. This naturally led to needing cleanup for old anonymous users. Which naturally led to:
+
+1. **Cron job configuration** in Vercel
+2. **Batch deletion** (100 users at a time)
+3. **Dry run mode** for testing
+4. **Run history tracking** with success/failure states
+5. **Beautiful UI** for managing it all
+
+```typescript
+// The cleanup route that does too much
+export async function cleanupProcess(dryRun: boolean) {
+  const usersToDelete = await db.query.user.findMany({
+    where: and(
+      eq(schema.user.isAnonymous, true),
+      lt(schema.user.createdAt, twentyFourHoursAgo)
+    )
+  })
+
+  if (!dryRun) {
+    // Delete in batches to be a good citizen
+    for (let i = 0; i < ids.length; i += batchSize) {
+      await db.delete(schema.user).where(inArray(schema.user.id, batch))
+    }
+  }
+}
+```
+
+All this to delete anonymous users older than 24 hours. The complexity is impressive; the necessity is questionable.
+
+## The Stack: Because More Tools = Better Developer Experience
+
+- **Next.js 16** with Turbopack (because waiting is for peasants)
+- **TypeScript** with strict mode (for the type safety gods)
+- **Drizzle ORM** (TypeScript for your database)
+- **Bun** (Fast package manager with built-in everything)
+- **Tailwind CSS v4** (The new hotness)
+- **Zustand** (State management that doesn't make you cry)
+- **Better Auth** (Authentication that doesn't hate you)
+
+Each tool was carefully chosen for maximum developer productivity. The irony that I spent more time configuring tools than building features is not lost on me.
+
+## Environment Variables: The Professional Approach
+
+Remember the pain of environment variables from my old site? Fixed it:
+
+```typescript
+// Clean, type-safe environment access
+export const env = createEnv({
+  client: {
+    NEXT_PUBLIC_APP_URL: z.string().url(),
+  },
+  server: {
+    DATABASE_URL: z.string().url(),
+    SECRET_KEY: z.string().min(32),
+    CRON_SECRET: z.string().min(16),
+    // OAuth providers with conditional requirements
+    GITHUB_CLIENT_ID: z.string().optional(),
+    GITHUB_CLIENT_SECRET: z.string().optional(),
+  },
+  validation: {
+    github: {
+      validate: ({ GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET }) => {
+        if (GITHUB_CLIENT_ID && !GITHUB_CLIENT_SECRET) {
+          throw new Error('GITHUB_CLIENT_SECRET required with GITHUB_CLIENT_ID')
+        }
+      }
+    }
+  }
+})
+```
+
+If something's wrong? Beautiful error UI tells you exactly what to fix. No more cryptic runtime errors or midnight debugging sessions.
+
+## The Build Process: Optimized Into Oblivion
+
+Of course, I couldn't leave well enough alone. The build process includes:
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "turbo build --filter=web",
+  "installCommand": "bun install",
+  "framework": "nextjs",
+  "outputDirectory": "apps/web/.next",
+  "crons": [
+    {
+      "path": "/api/cron/cleanup",
+      "schedule": "0 2 * * *"
+    }
+  ],
+  "build": {
+    "env": {
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  }
+}
+```
+
+- **Turbo** for monorepo builds
+- **Bun** for faster installs
+- **Optimized Vercel configuration**
+- **Disabled Next.js telemetry** (because privacy)
+- **Automated cron jobs** for user cleanup
+
+The build is fast, the deployment is smooth, and the maintenance overhead is... significant.
+
+## Was It Worth It?
+
+Let's be honest: probably not.
+
+I could have built a simple site in a weekend that does 90% of what this does. Instead, I spent weeks building a developer experience that will save me... maybe a few hours per year?
+
+But here's the thing: I learned a ton about:
+
+- Monorepo management with Turborepo
+- Advanced TypeScript patterns
+- Environment validation best practices
+- Vercel cron jobs and edge functions
+- React state management patterns
+- Database optimization with Drizzle
+
+And most importantly? I built a development setup that doesn't make me hate coding. The environment validation catches issues before they ship. The developer widget makes debugging a joy. The monorepo structure makes adding features painless.
+
+Sometimes the over-engineering journey is the destination. Even if the destination is just a blog with three posts and a developer widget that has five tabs.
+
+## The Real Takeaway
+
+Good developer experience isn't about having the most tools or the fanciest setup. It's about building something that makes you want to keep coding.
+
+My old site was a maintenance nightmare. This new one? It's a joy to work with. The environment validation prevents the stupid mistakes. The developer widget makes debugging actually pleasant. The monorepo structure makes adding features feel easy.
+
+Is it over-engineered? Absolutely. But it's over-engineered in service of making my daily development life better. And sometimes, that's exactly what you need.
+
+---
+
+*P.S. If you're building a new site and want to avoid my mistakes... just use Next.js with the defaults. Maybe add environment validation. Everything else is probably overkill.*
+
+*P.P.S. The developer widget is actually pretty cool though. You should check it out.*

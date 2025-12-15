@@ -1,0 +1,132 @@
+---
+title: 'Stop using arrow constants'
+publishedAt: '2025-12-14'
+summary: 'Why arrow constants in SVG icons do not actually reduce complexity, and often make code and assets harder to reason about.'
+categories: [Dotfiles DX, Engineering, Productivity]
+series: 'Developer Experience'
+seriesIndex: 1
+tags: [Dotfiles, Linux, Productivity, Developer Experience]
+---
+
+Aaah, JavaScript. The language we all love. It comes with its own set of quirks that we have collectively accepted over the years.
+
+For example, being able to calculate with strings and integers combined:
+
+```javascript
+console.log(1 + 2)     // 3
+console.log(1 + "2")   // "12"
+```
+
+Another gem is `NaN` (not a number). Literally checking if a value is not a number. Right?
+
+```javascript
+console.log(typeof NaN)          // "number"
+console.log(NaN === NaN)         // false
+console.log(Number.isNaN(NaN))   // true
+```
+
+These are quirks we have learned to live with.
+
+What we ~~don't~~ _should not_ have to deal with are **arrow constants inside icon SVG definitions**.
+
+To be clear, this is not about arrow functions in JavaScript. This is about **arrows as icons**, and the habit of defining one arrow and rotating it everywhere.
+
+---
+
+## A reasonable looking example
+
+I understand why people do this. It looks neat and DRY at first glance.
+
+```tsx
+const ArrowIcon = ({ direction = "right" }) => {
+  const rotation =
+    direction === "up" ? -90 :
+    direction === "down" ? 90 :
+    direction === "left" ? 180 : 0
+
+  return (
+    <svg viewBox="0 0 24 24" style={{ transform: `rotate(${rotation}deg)` }}>
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  )
+}
+```
+
+This works. Nobody is arguing that.
+
+---
+
+## The important part people miss
+
+After this point, the argument is usually that this approach is **shorter** or **simpler**.
+
+It is not.
+
+The total amount of code is not smaller. It is just distributed differently.
+
+You still have:
+- Conditionals
+- Direction mapping
+- Mental overhead
+- Indirection between intent and result
+
+The SVG is no longer self-describing. To understand what an arrow looks like, you now need to read JavaScript.
+
+---
+
+## The React file problem
+
+This also shows up immediately when opening a React file.
+
+Instead of seeing a clear component definition, you are greeted with this pattern everywhere:
+
+```tsx
+const ArrowIcon = ({ direction }) => {
+  const rotation = getRotation(direction)
+  return <svg />
+}
+```
+
+Multiply this by dozens of icons and components, and suddenly:
+- Every file starts with `const X = (...) =>`
+- Visual scanning becomes harder
+- Components look the same at the top
+- Intent is buried below setup code
+
+None of this makes the codebase easier to read.
+
+---
+
+## The length argument does not hold
+
+If you compare the two approaches honestly:
+
+- One explicit SVG per direction
+- One rotated SVG with constants and logic
+
+The **total length is roughly the same**.
+
+What changes is not size, but **clarity**.
+
+Explicit SVGs:
+- Are WYSIWYG
+- Can be opened and understood instantly
+- Do not require React, JavaScript, or transforms to reason about
+
+That matters more than saving a few lines.
+
+---
+
+## The rule that scales
+
+- Icons are assets
+- Assets should be explicit
+- Code should not be required to understand visuals
+
+If an icon has a direction, encode that direction directly in the SVG.
+
+No arrow constants.  
+No rotation logic.  
+No pretending the file is smaller when it is not.
+
+Boring wins. Every time.

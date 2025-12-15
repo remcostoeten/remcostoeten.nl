@@ -1,0 +1,30 @@
+---
+title: 'New site 🎉 Self-induced neuronal deficiency is an over-engineering catalyst'
+publishedAt: '2025-10-06'
+summary: 'Building a simple personal website that spiraled into over-engineering territory: custom npm packages, monorepo setup, multiple APIs integration, and several scrapped features along the way.'
+categories: [Engineering, Design]
+---
+
+It started as a simple idea: *"I just need a place to put my thoughts."*
+
+Three months, two monorepo migrations, and a custom build tool later, I finally have... a place to put my thoughts. But was it worth it? Absolutely not. Would I do it again? In a heartbeat.
+
+## The Stack
+
+I decided to forego the usual suspects (Next.js, Remix) initially to write my own static site generator. Why? Because I hate myself, apparently. But also because I wanted to understand the **build process** intimately.
+
+```javascript
+// The initial build script
+const build = async () => {
+  const posts = await fs.readdir('./posts');
+  // ... complexity ensues
+}
+```
+
+### Key Features I Didn't Need But Added Anyway
+
+- Real-time weather data in the footer (because why not?)
+- A custom markdown parser that supports ASCII art natively
+- **Three** different state management libraries just to toggle dark mode
+
+In the end, I moved everything to Next.js because I missed Hot Module Replacement. The irony is not lost on me.
