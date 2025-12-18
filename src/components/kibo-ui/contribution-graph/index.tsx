@@ -19,7 +19,9 @@ import {
   type HTMLAttributes,
   type ReactNode,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
 } from "react";
 import { cn } from "@/lib/utils";
 
@@ -328,11 +330,11 @@ export const ContributionGraphBlock = ({
   return (
     <rect
       className={cn(
-        'data-[level="0"]:fill-muted',
-        'data-[level="1"]:fill-muted-foreground/20',
-        'data-[level="2"]:fill-muted-foreground/40',
-        'data-[level="3"]:fill-muted-foreground/60',
-        'data-[level="4"]:fill-muted-foreground/80',
+        'data-[level="0"]:fill-muted/50',
+        'data-[level="1"]:fill-emerald-900/60',
+        'data-[level="2"]:fill-emerald-700/70',
+        'data-[level="3"]:fill-emerald-500/80',
+        'data-[level="4"]:fill-emerald-400',
         className
       )}
       data-count={activity.count}
@@ -370,14 +372,23 @@ export const ContributionGraphCalendar = ({
 }: ContributionGraphCalendarProps) => {
   const { weeks, width, height, blockSize, blockMargin, labels } =
     useContributionGraph();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const monthLabels = useMemo(
     () => getMonthLabels(weeks, labels.months),
     [weeks, labels.months]
   );
 
+  // Scroll to the right (current month) on mount
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = scrollContainerRef.current.scrollWidth;
+    }
+  }, []);
+
   return (
     <div
+      ref={scrollContainerRef}
       className={cn("max-w-full overflow-x-auto overflow-y-hidden", className)}
       {...props}
     >
@@ -493,12 +504,11 @@ export const ContributionGraphLegend = ({
             <title>{`${level} contributions`}</title>
             <rect
               className={cn(
-                "stroke-[1px] stroke-border",
-                'data-[level="0"]:fill-muted',
-                'data-[level="1"]:fill-muted-foreground/20',
-                'data-[level="2"]:fill-muted-foreground/40',
-                'data-[level="3"]:fill-muted-foreground/60',
-                'data-[level="4"]:fill-muted-foreground/80'
+                'data-[level="0"]:fill-muted/50',
+                'data-[level="1"]:fill-emerald-900/60',
+                'data-[level="2"]:fill-emerald-700/70',
+                'data-[level="3"]:fill-emerald-500/80',
+                'data-[level="4"]:fill-emerald-400'
               )}
               data-level={level}
               height={blockSize}

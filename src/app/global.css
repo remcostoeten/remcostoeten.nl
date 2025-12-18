@@ -119,6 +119,7 @@
 
 	body {
 		@apply bg-background text-foreground;
+		overflow-x: hidden;
 	}
 
 	:where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
@@ -657,19 +658,11 @@
 	margin-right: -50vw;
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
-	background-color: transparent;
-	/* Reusing the subtle pattern from screen-border but filling the area */
-	background-image: repeating-linear-gradient(-45deg,
-			transparent,
-			transparent 2px,
-			hsl(var(--foreground) / 0.03) 2px,
-			hsl(var(--foreground) / 0.03) 3px);
+	background-color: hsl(var(--muted) / 0.3);
 	height: 48px;
-	/* Fixed height as requested */
 	display: flex;
 	align-items: center;
 	margin-bottom: 1.5rem;
-	/* Space after the header */
 }
 
 .header-content-container {

@@ -17,9 +17,9 @@ interface SectionProps {
  * Inspired by chanhdai.com design pattern
  */
 export function Section({
-    title,
     children,
-    className = "",
+    title,
+    className = '',
     headerAction,
     noPadding = false
 }: SectionProps) {

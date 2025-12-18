@@ -68,11 +68,15 @@ class GitHubService {
 
         if (commitCount === 0) return null;
 
+        const branchName = event.payload.ref?.replace('refs/heads/', '') || 'branch';
+        const commitMessage = event.payload.commits?.[0]?.message || 'No commit message';
+        const shortMessage = commitMessage.split('\n')[0].trim();
+
         return {
           ...base,
           type: 'commit',
-          title: `Pushed ${commitCount} commit${commitCount === 1 ? '' : 's'} to ${event.payload.ref?.replace('refs/heads/', '') || 'branch'}`,
-          description: event.payload.commits?.[0]?.message || 'No commit message',
+          title: `Pushed ${commitCount} commit${commitCount === 1 ? '' : 's'} to ${branchName}`,
+          description: shortMessage || `Updated ${branchName} branch`,
           url: `https://github.com/${event.repo.name}/commits/${event.payload.head}`,
           payload: event.payload
         };
@@ -86,39 +90,63 @@ class GitHubService {
           payload: event.payload
         };
       case 'PullRequestEvent':
+        const prAction = event.payload.action;
+        const prNumber = event.payload.number;
+        const prTitle = event.payload.pull_request?.title || 'No title';
+        const prState = event.payload.pull_request?.state || 'unknown';
+        
+        let actionText = prAction;
+        if (prAction === 'closed') {
+          actionText = event.payload.pull_request?.merged ? 'Merged' : 'Closed';
+        }
+        
         return {
           ...base,
           type: 'pr',
-          title: `${event.payload.action === 'opened' ? 'Opened' : 'Closed'} PR #${event.payload.number}`,
-          description: event.payload.pull_request.title,
-          url: event.payload.pull_request.html_url,
+          title: `${actionText.charAt(0).toUpperCase() + actionText.slice(1)} PR #${prNumber}`,
+          description: prTitle,
+          url: event.payload.pull_request?.html_url || `https://github.com/${event.repo.name}/pull/${prNumber}`,
           payload: event.payload
         };
       case 'IssuesEvent':
+        const issueAction = event.payload.action;
+        const issueNumber = event.payload.issue?.number || 'unknown';
+        const issueTitle = event.payload.issue?.title || 'No title';
+        
         return {
           ...base,
           type: 'issue',
-          title: `${event.payload.action === 'opened' ? 'Opened' : 'Closed'} Issue #${event.payload.issue.number}`,
-          description: event.payload.issue.title,
-          url: event.payload.issue.html_url,
+          title: `${issueAction.charAt(0).toUpperCase() + issueAction.slice(1)} Issue #${issueNumber}`,
+          description: issueTitle,
+          url: event.payload.issue?.html_url || `https://github.com/${event.repo.name}/issues/${issueNumber}`,
           payload: event.payload
         };
       case 'PullRequestReviewEvent':
+        const reviewPrTitle = event.payload.pull_request?.title || 'No title';
+        const reviewState = event.payload.review?.state || 'unknown';
+        const reviewAction = reviewState === 'approved' ? 'Approved' : 
+                           reviewState === 'changes_requested' ? 'Requested changes on' : 
+                           'Reviewed';
+        
         return {
           ...base,
           type: 'review',
-          title: 'Reviewed Pull Request',
-          description: event.payload.pull_request.title,
-          url: event.payload.review.html_url,
+          title: `${reviewAction} Pull Request`,
+          description: reviewPrTitle,
+          url: event.payload.review?.html_url || event.payload.pull_request?.html_url || `https://github.com/${event.repo.name}`,
           payload: event.payload
         };
       case 'ReleaseEvent':
+        const releaseName = event.payload.release?.name;
+        const releaseTag = event.payload.release?.tag_name;
+        const releaseTitle = releaseName || releaseTag || 'No title';
+        
         return {
           ...base,
           type: 'release',
           title: 'Published Release',
-          description: event.payload.release.name || event.payload.release.tag_name,
-          url: event.payload.release.html_url,
+          description: releaseTitle,
+          url: event.payload.release?.html_url || `https://github.com/${event.repo.name}/releases`,
           payload: event.payload
         };
       case 'WatchEvent':
@@ -131,12 +159,14 @@ class GitHubService {
           payload: event.payload
         };
       case 'ForkEvent':
+        const forkedTo = event.payload.forkee?.full_name || 'unknown repository';
+        
         return {
           ...base,
           type: 'fork',
           title: `Forked ${event.repo.name}`,
-          description: `Forked to ${event.payload.forkee.full_name}`,
-          url: event.payload.forkee.html_url,
+          description: `Forked to ${forkedTo}`,
+          url: event.payload.forkee?.html_url || `https://github.com/${event.repo.name}`,
           payload: event.payload
         };
       default:

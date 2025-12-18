@@ -81,7 +81,7 @@ function getShortRepoName(fullName: string) {
 };
 
 function formatCommitMessage(message: string | undefined, maxLength = 50) {
-    if (!message) return 'No description';
+    if (!message || message === 'No description') return 'No description available';
     const firstLine = message.split('\n')[0].trim();
     if (firstLine.length <= maxLength) return firstLine;
     return firstLine.substring(0, maxLength - 3) + '...';
@@ -89,7 +89,7 @@ function formatCommitMessage(message: string | undefined, maxLength = 50) {
 
 export function GitHubActivityCard() {
     const [currentIndex, setCurrentIndex] = useState(0);
-    const { data: activities = [], isLoading } = useGitHubRecentActivity(5);
+    const { data: activities = [], isLoading, isError } = useGitHubRecentActivity(5);
 
     useEffect(() => {
         if (activities.length === 0) return;
@@ -99,19 +99,22 @@ export function GitHubActivityCard() {
         return () => clearInterval(interval);
     }, [activities.length]);
 
-    const currentActivity = activities[currentIndex] || {
-        type: 'unknown' as const,
-        title: 'Loading...',
-        description: 'Fetching GitHub activity',
-        repository: 'github',
-        url: '#',
-        timestamp: new Date().toISOString()
-    };
+    const hasActivities = activities.length > 0;
+    const currentActivity = hasActivities 
+        ? activities[currentIndex]
+        : {
+            type: 'commit' as const,
+            title: isLoading ? 'Loading...' : 'No recent activity',
+            description: isLoading ? 'Fetching GitHub activity' : 'Check back later for updates',
+            repository: 'remcostoeten',
+            url: 'https://github.com/remcostoeten',
+            timestamp: new Date().toISOString()
+        };
 
     const repoName = getShortRepoName(currentActivity.repository);
 
     return (
-        <div className="border-t border-border/30 bg-background/50 p-3 relative overflow-hidden group min-h-[100px]">
+        <div className="rounded-lg border border-border/30 bg-background/50 p-3 relative overflow-hidden group min-h-[100px]">
             <div className="absolute inset-0 bg-gradient-to-br from-muted/5 via-transparent to-muted/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             {/* Header */}
@@ -147,7 +150,17 @@ export function GitHubActivityCard() {
                         className="text-sm font-medium text-foreground leading-snug"
                         variants={itemVariants}
                     >
-                        "{formatCommitMessage(currentActivity.description)}"
+                        {currentActivity.description === 'No description available' ? (
+                            <span className="text-muted-foreground">
+                                {currentActivity.type === 'star' ? 'Starred repository' :
+                                 currentActivity.type === 'fork' ? 'Forked repository' :
+                                 currentActivity.type === 'create' ? 'Created new item' :
+                                 currentActivity.type === 'release' ? 'Published release' :
+                                 'Activity in repository'}
+                            </span>
+                        ) : (
+                            `"${formatCommitMessage(currentActivity.description)}"`
+                        )}
                     </motion.p>
 
                     {/* Secondary: Action + Repo */}

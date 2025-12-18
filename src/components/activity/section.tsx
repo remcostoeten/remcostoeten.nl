@@ -7,6 +7,7 @@ import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying, formatDuratio
 import { AnimatedNumber } from '../ui/animated-number';
 import { Section } from '../ui/section';
 import { GitHubActivityCard } from './github-card';
+import { ContributionGraphWrapper } from './contribution-graph';
 
 const SPRING_CONFIG = {
   type: "spring" as const,
@@ -87,7 +88,7 @@ const wrapperVariants = {
 
 function Equalizer() {
   return (
-    <div className='flex items-end gap-[1px] h-3' aria-hidden='true'>
+    <div className='flex items-end gap-px h-3' aria-hidden='true'>
       <div className='w-[2px] bg-green-500 rounded-full animate-[music-bar_0.8s_ease-in-out_infinite]' />
       <div className='w-[2px] bg-green-500 rounded-full animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]' />
       <div className='w-[2px] bg-green-500 rounded-full animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]' />
@@ -117,7 +118,17 @@ function formatRelativeTime(dateString: string): RelativeTime {
   return { number: null, suffix: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), isSpecial: true };
 };
 
-export function ActivitySection() {
+interface ContributionDay {
+  date: string;
+  count: number;
+  level: number;
+}
+
+interface ActivitySectionProps {
+  contributionData?: ContributionDay[];
+}
+
+export function ActivitySection({ contributionData = [] }: ActivitySectionProps) {
   const year = new Date().getFullYear();
   const [songIndex, setSongIndex] = useState(0);
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
@@ -179,19 +190,22 @@ export function ActivitySection() {
 
   return (
     <Section
-      title="Activity"
+      title="Activity & Contributions"
       headerAction={
         <span className="text-muted-foreground/60 inline-flex items-baseline">
-          <span className="-translate-y-[1px]">
+          <span className="-translate-y-px">
             <AnimatedNumber value={year} duration={800} />
           </span>
         </span>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 -m-1">
-        <GitHubActivityCard />
+      <div className="space-y-4">
+        <ContributionGraphWrapper data={contributionData} />
 
-        <div className="rounded-lg border border-border/30 bg-background/50 p-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 -m-1">
+          <GitHubActivityCard />
+
+          <div className="rounded-lg border border-border/30 bg-background/50 p-3">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <div className={`flex size-5 items-center justify-center rounded ${showProgressBar ? 'bg-green-500/10' : 'bg-orange-500/10'}`}>
@@ -202,69 +216,70 @@ export function ActivitySection() {
             {showProgressBar && <Equalizer />}
           </div>
 
-          <AnimatePresence mode='wait'>
-            <motion.div
-              key={shouldShowNowPlaying ? 'now-playing' : `recent-${songIndex}`}
-              variants={containerVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="pl-7 space-y-0.5"
-            >
-              <motion.a
-                href={currentTrack.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
-                variants={itemVariants}
+            <AnimatePresence mode='wait'>
+              <motion.div
+                key={shouldShowNowPlaying ? 'now-playing' : `recent-${songIndex}`}
+                variants={containerVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="pl-7 space-y-0.5"
               >
-                {currentTrack.name}
-              </motion.a>
-              <motion.p
-                className="text-xs text-muted-foreground truncate"
-                variants={itemVariants}
-              >
-                {currentTrack.artist}
-              </motion.p>
+                <motion.a
+                  href={currentTrack.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium text-foreground hover:text-primary transition-colors block truncate"
+                  variants={itemVariants}
+                >
+                  {currentTrack.name}
+                </motion.a>
+                <motion.p
+                  className="text-xs text-muted-foreground truncate"
+                  variants={itemVariants}
+                >
+                  {currentTrack.artist}
+                </motion.p>
 
-              <motion.div variants={itemVariants} className="pt-1">
-                {showProgressBar ? (
-                  <div className="space-y-1">
-                    {/* Progress Bar */}
-                    <div className="h-1 w-full bg-border/30 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-green-500 rounded-full"
-                        initial={{ width: `${progressPercent}%` }}
-                        animate={{ width: `${progressPercent}%` }}
-                        transition={{ duration: 1, ease: "linear" }}
-                      />
-                    </div>
+                <motion.div variants={itemVariants} className="pt-1">
+                  {showProgressBar ? (
+                    <div className="space-y-1">
+                      {/* Progress Bar */}
+                      <div className="h-1 w-full bg-border/30 rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full bg-green-500 rounded-full"
+                          initial={{ width: `${progressPercent}%` }}
+                          animate={{ width: `${progressPercent}%` }}
+                          transition={{ duration: 1, ease: "linear" }}
+                        />
+                      </div>
 
-                    {/* Time Stamps */}
-                    <div className="flex justify-between text-[10px] text-muted-foreground/60 tabular-nums">
-                      <span>{formatDuration(nowPlaying.progress_ms)}</span>
-                      <span>{formatDuration(nowPlaying.duration_ms)}</span>
+                      {/* Time Stamps */}
+                      <div className="flex justify-between text-[10px] text-muted-foreground/60 tabular-nums">
+                        <span>{formatDuration(nowPlaying.progress_ms)}</span>
+                        <span>{formatDuration(nowPlaying.duration_ms)}</span>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <span className="text-[10px] text-muted-foreground/60 inline-flex items-baseline">
-                    {(() => {
-                      const time = formatRelativeTime(currentTrack.played_at);
-                      if (time.isSpecial) return time.suffix;
-                      return (
-                        <>
-                          <span className="-translate-y-[1px]">
-                            <AnimatedNumber key={`time-${songIndex}`} value={time.number!} duration={800} delay={250} />
-                          </span>
-                          {time.suffix}
-                        </>
-                      );
-                    })()}
-                  </span>
-                )}
+                  ) : (
+                    <span className="text-[10px] text-muted-foreground/60 inline-flex items-baseline">
+                      {(() => {
+                        const time = formatRelativeTime(currentTrack.played_at);
+                        if (time.isSpecial) return time.suffix;
+                        return (
+                          <>
+                            <span className="-translate-y-px">
+                              <AnimatedNumber key={`time-${songIndex}`} value={time.number!} duration={800} delay={250} />
+                            </span>
+                            {time.suffix}
+                          </>
+                        );
+                      })()}
+                    </span>
+                  )}
+                </motion.div>
               </motion.div>
-            </motion.div>
-          </AnimatePresence>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </Section>
