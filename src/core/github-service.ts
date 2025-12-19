@@ -744,10 +744,10 @@ class GitHubService {
   async getRecentActivity(limit: number = 10): Promise<GitHubEventDetail[]> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/users/${this.username}/events?per_page=50`, // Fetch sufficient info to filter by unique repos
+        `${this.baseUrl}/users/${this.username}/events?per_page=50`,
         {
           headers: this.getHeaders(),
-          next: { revalidate: 60 } // Cache for 1 min
+          next: { revalidate: 60 }
         } as any
       );
 
@@ -757,15 +757,11 @@ class GitHubService {
 
       const events = await response.json();
       const details: GitHubEventDetail[] = [];
-      const seenRepos = new Set<string>();
 
       for (const event of events) {
-        if (!seenRepos.has(event.repo.name)) {
-          const detail = this.parseGitHubEvent(event);
-          if (detail) {
-            details.push(detail);
-            seenRepos.add(event.repo.name);
-          }
+        const detail = this.parseGitHubEvent(event);
+        if (detail) {
+          details.push(detail);
         }
         if (details.length >= limit) break;
       }

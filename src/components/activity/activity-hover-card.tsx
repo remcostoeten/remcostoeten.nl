@@ -4,6 +4,26 @@ import { useState, useRef, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Hook to detect if device is touch/mobile
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        // Check for touch capability and screen size
+        const checkMobile = () => {
+            const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            const isSmallScreen = window.innerWidth < 768;
+            setIsMobile(hasTouch || isSmallScreen);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    return isMobile;
+}
+
 interface ActivityHoverCardProps {
     trigger: ReactNode;
     children: ReactNode;
@@ -25,13 +45,17 @@ export function ActivityHoverCard({
     const [position, setPosition] = useState({ top: 0, left: 0 });
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
     const triggerRef = useRef<HTMLSpanElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const isMobile = useIsMobile();
 
     const updatePosition = () => {
         if (!triggerRef.current) return;
 
         const rect = triggerRef.current.getBoundingClientRect();
-        const cardWidth = 300; // approximate width
-        const cardHeight = 200; // approximate height
+
+        // Use actual card dimensions if available, otherwise use defaults
+        const cardWidth = cardRef.current?.offsetWidth || 300;
+        const cardHeight = cardRef.current?.offsetHeight || 200;
         const gap = 8;
 
         let top = side === 'top' ? rect.top - cardHeight - gap : rect.bottom + gap;
@@ -44,21 +68,26 @@ export function ActivityHoverCard({
             left = rect.right - cardWidth;
         }
 
-        // Keep within viewport bounds
+        // Keep within viewport bounds with padding
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
+        const padding = 16;
 
-        if (left + cardWidth > viewportWidth - 16) {
-            left = viewportWidth - cardWidth - 16;
+        // Horizontal bounds
+        if (left + cardWidth > viewportWidth - padding) {
+            left = viewportWidth - cardWidth - padding;
         }
-        if (left < 16) {
-            left = 16;
+        if (left < padding) {
+            left = padding;
         }
 
-        if (top + cardHeight > viewportHeight - 16) {
+        // Vertical bounds - flip if needed
+        if (top + cardHeight > viewportHeight - padding) {
+            // Try flipping to top
             top = rect.top - cardHeight - gap;
         }
-        if (top < 16) {
+        if (top < padding) {
+            // If still out of bounds, position below
             top = rect.bottom + gap;
         }
 
@@ -66,7 +95,10 @@ export function ActivityHoverCard({
     };
 
     const handleMouseEnter = () => {
-        if (disabled) return;
+        if (disabled || isMobile) return;
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
         updatePosition();
         timeoutRef.current = setTimeout(() => {
             setIsOpen(true);
@@ -77,12 +109,19 @@ export function ActivityHoverCard({
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
         }
-        setIsOpen(false);
+        // Add a small delay before closing to allow mouse to move to card
+        timeoutRef.current = setTimeout(() => {
+            setIsOpen(false);
+        }, 100);
     };
 
     useEffect(() => {
-        if (isOpen) {
-            updatePosition();
+        if (isOpen && !isMobile) {
+            // Update position after card renders to get accurate dimensions
+            requestAnimationFrame(() => {
+                updatePosition();
+            });
+
             window.addEventListener('scroll', updatePosition, true);
             window.addEventListener('resize', updatePosition);
             return () => {
@@ -90,7 +129,12 @@ export function ActivityHoverCard({
                 window.removeEventListener('resize', updatePosition);
             };
         }
-    }, [isOpen]);
+    }, [isOpen, isMobile]);
+
+    // On mobile, just render the trigger without hover functionality
+    if (isMobile) {
+        return <span className="inline-block">{trigger}</span>;
+    }
 
     return (
         <>
@@ -106,6 +150,7 @@ export function ActivityHoverCard({
                 <AnimatePresence>
                     {isOpen && (
                         <motion.div
+                            ref={cardRef}
                             initial={{ opacity: 0, y: side === 'top' ? 8 : -8, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: side === 'top' ? 8 : -8, scale: 0.95 }}
@@ -119,7 +164,7 @@ export function ActivityHoverCard({
                             onMouseEnter={handleMouseEnter}
                             onMouseLeave={handleMouseLeave}
                         >
-                            <div className="rounded-lg border border-border/50 bg-background/95 backdrop-blur-md shadow-xl p-3 min-w-[280px] max-w-[320px]">
+                            <div className="rounded-none border border-border/50 bg-background/95 backdrop-blur-md shadow-xl p-3 min-w-[280px] max-w-[320px]">
                                 {children}
                             </div>
                         </motion.div>
@@ -157,7 +202,7 @@ export function GitHubProjectCard({
         <div className="space-y-3">
             {/* Header */}
             <div className="flex items-center gap-2">
-                <div className="size-8 rounded-md bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <div className="size-8 rounded-none bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                     <span className="text-sm font-bold text-primary">{repoName[0]?.toUpperCase()}</span>
                 </div>
                 <div>
@@ -170,7 +215,7 @@ export function GitHubProjectCard({
                         {repoName}
                     </a>
                     {isPrivate && (
-                        <span className="ml-2 text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500">
+                        <span className="ml-2 text-xs px-1.5 py-0.5 rounded-none bg-amber-500/10 text-amber-500">
                             Private
                         </span>
                     )}
@@ -188,7 +233,7 @@ export function GitHubProjectCard({
                     {topics.slice(0, 5).map((topic) => (
                         <span
                             key={topic}
-                            className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary"
+                            className="text-xs px-2 py-0.5 rounded-none bg-primary/10 text-primary"
                         >
                             {topic}
                         </span>
@@ -199,7 +244,7 @@ export function GitHubProjectCard({
             {/* Languages */}
             {languages.length > 0 && (
                 <div className="space-y-1.5">
-                    <div className="h-1.5 rounded-full overflow-hidden flex bg-muted/30">
+                    <div className="h-1.5 rounded-none overflow-hidden flex bg-muted/30">
                         {languages.map((lang) => (
                             <div
                                 key={lang.name}
@@ -212,7 +257,7 @@ export function GitHubProjectCard({
                         {languages.slice(0, 4).map((lang) => (
                             <div key={lang.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                 <span
-                                    className="size-2 rounded-full"
+                                    className="size-2 rounded-none"
                                     style={{ backgroundColor: lang.color }}
                                 />
                                 {lang.name}
@@ -333,10 +378,10 @@ export function SpotifyCard({
                 <img
                     src={albumArt}
                     alt={album || name}
-                    className="size-16 rounded-md object-cover shadow-md"
+                    className="size-16 rounded-none object-cover shadow-md"
                 />
             ) : (
-                <div className="size-16 rounded-md bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center">
+                <div className="size-16 rounded-none bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center">
                     <svg className="size-6 text-green-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" />
                     </svg>
@@ -359,11 +404,11 @@ export function SpotifyCard({
                 )}
                 <div className="flex items-center gap-2 pt-1">
                     {isPlaying && (
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-green-500/10 text-green-500 flex items-center gap-1">
+                        <span className="text-xs px-1.5 py-0.5 rounded-none bg-green-500/10 text-green-500 flex items-center gap-1">
                             <span className="inline-flex items-end gap-[2px] h-2.5">
-                                <span className="w-[2px] bg-green-500 rounded-full animate-[music-bar_0.8s_ease-in-out_infinite]" />
-                                <span className="w-[2px] bg-green-500 rounded-full animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]" />
-                                <span className="w-[2px] bg-green-500 rounded-full animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]" />
+                                <span className="w-[2px] bg-green-500 rounded-none animate-[music-bar_0.8s_ease-in-out_infinite]" />
+                                <span className="w-[2px] bg-green-500 rounded-none animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]" />
+                                <span className="w-[2px] bg-green-500 rounded-none animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]" />
                             </span>
                             Now Playing
                         </span>
