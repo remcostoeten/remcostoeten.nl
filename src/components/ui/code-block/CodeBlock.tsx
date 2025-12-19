@@ -37,7 +37,7 @@ type TCustomTheme = { [key: string]: CSSProperties };
 
 const customTheme: TCustomTheme = {
   'code[class*="language-"]': {
-    color: "#d4d4d8",
+    color: "#e2e2e2",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -45,13 +45,13 @@ const customTheme: TCustomTheme = {
     wordSpacing: "normal",
     wordBreak: "normal",
     wordWrap: "normal",
-    lineHeight: "1.5",
-    fontSize: "14px",
+    lineHeight: "1.7",
+    fontSize: "13px",
     tabSize: 2,
     hyphens: "none",
   },
   'pre[class*="language-"]': {
-    color: "#d4d4d8",
+    color: "#e2e2e2",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -59,46 +59,46 @@ const customTheme: TCustomTheme = {
     wordSpacing: "normal",
     wordBreak: "normal",
     wordWrap: "normal",
-    lineHeight: "1.5",
-    fontSize: "14px",
+    lineHeight: "1.7",
+    fontSize: "13px",
     tabSize: 2,
     hyphens: "none",
-    padding: "1em",
-    margin: "0.5em 0",
+    padding: "1.25rem",
+    margin: "0",
     overflow: "auto",
   },
-  comment: { color: "#71717a", fontStyle: "italic" },
-  "block-comment": { color: "#71717a", fontStyle: "italic" },
-  prolog: { color: "#71717a" },
-  doctype: { color: "#71717a" },
-  cdata: { color: "#71717a" },
-  punctuation: { color: "#a1a1aa" },
-  operator: { color: "#a1a1aa" },
-  url: { color: "#a1a1aa" },
-  tag: { color: "#d4d4d8" },
-  "attr-name": { color: "#d4d4d8" },
-  namespace: { color: "#d4d4d8" },
-  property: { color: "#d4d4d8" },
-  symbol: { color: "#d4d4d8" },
-  important: { color: "#d4d4d8", fontWeight: "bold" },
-  atrule: { color: "#d4d4d8" },
-  keyword: { color: "#d4d4d8" },
-  regex: { color: "#d4d4d8" },
-  entity: { color: "#d4d4d8", cursor: "help" },
-  "function-name": { color: "#d4d4d8" },
-  function: { color: "#d4d4d8" },
-  "class-name": { color: "#d4d4d8" },
-  builtin: { color: "#d4d4d8" },
-  boolean: { color: "#d4d4d8" },
-  number: { color: "#d4d4d8" },
-  constant: { color: "#d4d4d8" },
-  string: { color: "#a8a29e" },
-  char: { color: "#a8a29e" },
-  "attr-value": { color: "#a8a29e" },
-  selector: { color: "#a8a29e" },
-  deleted: { color: "#ef4444" },
-  inserted: { color: "#34d399" },
-  variable: { color: "#d4d4d8" },
+  comment: { color: "#666666", fontStyle: "italic" },
+  "block-comment": { color: "#666666", fontStyle: "italic" },
+  prolog: { color: "#666666" },
+  doctype: { color: "#666666" },
+  cdata: { color: "#666666" },
+  punctuation: { color: "#999999" },
+  operator: { color: "#999999" },
+  url: { color: "#999999" },
+  tag: { color: "#ff7b72" },
+  "attr-name": { color: "#ffa657" },
+  namespace: { color: "#ffa657" },
+  property: { color: "#79c0ff" },
+  symbol: { color: "#79c0ff" },
+  important: { color: "#d2a8ff", fontWeight: "bold" },
+  atrule: { color: "#d2a8ff" },
+  keyword: { color: "#ff7b72" },
+  regex: { color: "#a5d6ff" },
+  entity: { color: "#79c0ff", cursor: "help" },
+  "function-name": { color: "#d2a8ff" },
+  function: { color: "#d2a8ff" },
+  "class-name": { color: "#ffa657" },
+  builtin: { color: "#ffa657" },
+  boolean: { color: "#79c0ff" },
+  number: { color: "#79c0ff" },
+  constant: { color: "#79c0ff" },
+  string: { color: "#a5d6ff" },
+  char: { color: "#a5d6ff" },
+  "attr-value": { color: "#a5d6ff" },
+  selector: { color: "#7ee787" },
+  deleted: { color: "#ffa198" },
+  inserted: { color: "#7ee787" },
+  variable: { color: "#ffa657" },
   bold: { fontWeight: "bold" },
   italic: { fontStyle: "italic" },
 };
@@ -150,13 +150,11 @@ export type TCodeBlockProps = {
   language: string;
   fileName?: string;
   showLineNumbers?: boolean;
-  showMetaInfo?: boolean;
+  highlightLines?: number[];
   maxHeight?: string;
   className?: string;
   onCopy?: (code: string) => void;
   showIcon?: boolean;
-  showBottomFade?: boolean;
-  disableSearch?: boolean;
   disableCopy?: boolean;
   disableTopBar?: boolean;
 };
@@ -185,73 +183,16 @@ export function CodeBlock({
   language,
   fileName,
   showLineNumbers = true,
-  showMetaInfo = true,
-  maxHeight = "400px",
+  highlightLines = [],
+  maxHeight,
   className,
   onCopy,
   showIcon = true,
-  showBottomFade = true,
-  disableSearch = false,
   disableCopy = false,
   disableTopBar = false,
 }: TCodeBlockProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<number[]>([]);
-  const [currentResultIndex, setCurrentResultIndex] = useState(-1);
-  const [highlightedLines, setHighlightedLines] = useState<number[]>([]);
-  const [showSearchAnimation, setShowSearchAnimation] = useState(false);
-  const [showContentAnimation, setShowContentAnimation] = useState(true);
-  const [showToastAnimation, setShowToastAnimation] = useState(false);
-
   const codeRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const stats = useMemo(() => calculateCodeStats(code), [code]);
-
-  const scrollToLine = useCallback((lineNumber: number) => {
-    const lineElement = codeRef.current?.querySelector(`[data-line-number="${lineNumber}"]`);
-    if (lineElement) {
-      lineElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  }, []);
-
-  const handleSearch = useCallback(
-    (query: string) => {
-      setSearchQuery(query);
-      if (!query) {
-        setSearchResults([]);
-        setCurrentResultIndex(-1);
-        setHighlightedLines([]);
-        return;
-      }
-
-      const lines = code.split("\n");
-      const matches = lines.reduce((acc, line, index) => {
-        if (line.toLowerCase().includes(query.toLowerCase())) {
-          acc.push(index + 1);
-        }
-        return acc;
-      }, [] as number[]);
-
-      setSearchResults(matches);
-      setCurrentResultIndex(matches.length > 0 ? 0 : -1);
-      setHighlightedLines(matches);
-
-      if (matches.length > 0) {
-        scrollToLine(matches[0]);
-      }
-    },
-    [code, scrollToLine],
-  );
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => handleSearch(searchQuery), 300);
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery, handleSearch]);
 
   const copyToClipboard = useCallback(async () => {
     try {
@@ -264,320 +205,90 @@ export function CodeBlock({
     }
   }, [code, onCopy]);
 
-  const goToNextResult = useCallback(() => {
-    if (searchResults.length === 0) return;
-    const nextIndex = (currentResultIndex + 1) % searchResults.length;
-    setCurrentResultIndex(nextIndex);
-    scrollToLine(searchResults[nextIndex]);
-  }, [searchResults, currentResultIndex, scrollToLine]);
-
-  const goToPreviousResult = useCallback(() => {
-    if (searchResults.length === 0) return;
-    const prevIndex = currentResultIndex - 1 < 0 ? searchResults.length - 1 : currentResultIndex - 1;
-    setCurrentResultIndex(prevIndex);
-    scrollToLine(searchResults[prevIndex]);
-  }, [searchResults, currentResultIndex, scrollToLine]);
-
-  useEffect(() => {
-    function handleKeyboard(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "c" && !disableCopy && !disableTopBar) {
-        copyToClipboard();
-      }
-
-      if ((e.metaKey || e.ctrlKey) && e.key === "f" && !isCollapsed && !disableSearch && !disableTopBar) {
-        e.preventDefault();
-        setIsSearching(true);
-      }
-
-      if (isSearching && searchResults.length > 0) {
-        if (e.key === "Enter") {
-          if (e.shiftKey) {
-            goToPreviousResult();
-          } else {
-            goToNextResult();
-          }
-        }
-      }
-
-      if (e.key === "Escape") {
-        setHighlightedLines([]);
-        setIsSearching(false);
-        setSearchQuery("");
-        setSearchResults([]);
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyboard);
-    return () => window.removeEventListener("keydown", handleKeyboard);
-  }, [
-    isCollapsed,
-    isSearching,
-    searchResults,
-    currentResultIndex,
-    copyToClipboard,
-    goToNextResult,
-    goToPreviousResult,
-    disableSearch,
-    disableCopy,
-    disableTopBar,
-  ]);
-
-  useEffect(() => {
-    if (isSearching !== showSearchAnimation) {
-      const timer = setTimeout(() => setShowSearchAnimation(isSearching), 10);
-      return () => clearTimeout(timer);
-    }
-  }, [isSearching, showSearchAnimation]);
-
-  useEffect(() => {
-    if (!isCollapsed !== showContentAnimation) {
-      const timer = setTimeout(() => setShowContentAnimation(!isCollapsed), 10);
-      return () => clearTimeout(timer);
-    }
-  }, [isCollapsed, showContentAnimation]);
-
-  useEffect(() => {
-    if (isCopied !== showToastAnimation) {
-      setShowToastAnimation(isCopied);
-      if (isCopied) {
-        const timer = setTimeout(() => setShowToastAnimation(false), 2000);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [isCopied, showToastAnimation]);
-
-  function renderSearchUI() {
-    return (
-      <>
-        {!disableSearch && showSearchAnimation && (
-          <div
-            className={cn(
-              "flex-none flex items-center gap-2 bg-[#111111] rounded-lg border border-[#333333] p-1 h-8",
-              showSearchAnimation && "codeblock-search-toggle"
-            )}
-            role="search"
-            aria-label="Code search"
-            style={{ overflow: 'hidden', willChange: 'max-width' }}
-          >
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="w-40 px-2 py-1 text-sm bg-transparent text-zinc-300 focus:outline-none placeholder:text-zinc-600"
-                autoFocus
-              />
-              {searchQuery && (
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-500">
-                  {searchResults.length > 0 ? (
-                    <span>{currentResultIndex + 1}/{searchResults.length}</span>
-                  ) : (
-                    <span>No results</span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {searchResults.length > 0 && (
-              <>
-                <div className="h-4 w-[1px] bg-[#333333]" />
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={goToPreviousResult}
-                    className="h-6 w-6 text-zinc-500 hover:text-zinc-300"
-                  >
-                    <ArrowUp size={14} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={goToNextResult}
-                    className="h-6 w-6 text-zinc-500 hover:text-zinc-300"
-                  >
-                    <ArrowDown size={14} />
-                  </Button>
-                </div>
-              </>
-            )}
-
-            <div className="h-4 w-[1px] bg-[#333333]" />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setIsSearching(false);
-                setSearchQuery("");
-                setSearchResults([]);
-                setHighlightedLines([]);
-              }}
-              className="h-6 w-6 text-zinc-500 hover:text-zinc-300"
-            >
-              <X size={14} />
-            </Button>
-          </div>
-        )}
-      </>
-    );
-  }
-
   return (
-    <div ref={containerRef} className={cn("relative my-6", className)}>
-      <div
-        className="group relative rounded-lg overflow-hidden bg-neutral-950 dark:bg-neutral-950 border border-neutral-800 dark:border-neutral-800 w-full transition-all duration-200 hover:border-neutral-700 dark:hover:border-neutral-700"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+    <div className={cn("relative my-8 group/code", className)}>
+      <div className="relative rounded-xl overflow-hidden bg-neutral-950 border border-neutral-800/60 transition-colors duration-300 hover:border-neutral-700/80">
         {!disableTopBar && (
-          <header className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-neutral-950 to-neutral-900 dark:from-neutral-950 dark:to-neutral-900 border-b border-neutral-800 dark:border-neutral-800">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
+          <header className="flex justify-between items-center px-4 py-2.5 bg-neutral-900/50 border-b border-neutral-800/60">
+            <div className="flex items-center gap-3 min-w-0">
               {showIcon && (
-                <span className="flex items-center justify-center shrink-0 text-neutral-500 transition-colors duration-200 group-hover:text-neutral-400">
-                  <SimpleIcon language={language} />
+                <span className="text-neutral-500">
+                  <SimpleIcon language={language} size={14} />
                 </span>
               )}
               {fileName && (
-                <div className="shrink-0 flex items-center gap-2 px-2.5 py-1 rounded text-sm font-medium text-neutral-400 group-hover:text-neutral-300 transition-colors">
-                  <span>{fileName}</span>
-                </div>
-              )}
-
-              {showMetaInfo && (
-                <span className="shrink-0 text-xs font-medium text-neutral-500 ml-auto lg:ml-0">
-                  {stats.lines} lines
+                <span className="text-[12px] font-medium text-neutral-400 truncate">
+                  {fileName}
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-1 h-8">
-              {!disableSearch && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsSearching(true)}
-                  className={cn(
-                    "h-8 w-8 text-neutral-500 hover:text-neutral-300 rounded transition-colors duration-200",
-                    isSearching && "invisible pointer-events-none"
-                  )}
-                  title="Search (⌘/Ctrl + F)"
-                >
-                  <Search size={16} />
-                </Button>
-              )}
-
-              {renderSearchUI()}
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsCollapsed(!isCollapsed)}
-                className="h-8 w-8 text-neutral-500 hover:text-neutral-300 rounded transition-colors duration-200"
-              >
-                <div className={cn(isCollapsed && "codeblock-chevron-rotate")}>
-                  <ChevronDown size={16} />
-                </div>
-              </Button>
-
+            <div className="flex items-center gap-4">
+              <span className="text-[11px] font-medium text-neutral-500 uppercase tracking-wider">
+                {language}
+              </span>
               {!disableCopy && (
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <button
                   onClick={copyToClipboard}
-                  className="h-8 w-8 text-neutral-500 hover:text-neutral-300 rounded transition-colors duration-200"
-                  title="Copy code (⌘/Ctrl + C)"
+                  className="text-neutral-500 hover:text-neutral-300 transition-colors p-1"
+                  title="Copy code"
                 >
                   {isCopied ? (
-                    <div className={cn("text-emerald-500", "codeblock-copy-success")}>
-                      <Check size={16} />
-                    </div>
+                    <Check size={14} className="text-lime-500" />
                   ) : (
-                    <Copy size={16} />
+                    <Copy size={14} />
                   )}
-                </Button>
+                </button>
               )}
             </div>
           </header>
         )}
 
-        <>
-          {showContentAnimation && (
-            <div
-              className={cn(
-                "overflow-hidden",
-                showContentAnimation && "codeblock-expand"
-              )}
-            >
-              <div className="relative" ref={codeRef}>
-                <div className="relative">
-                  <div
-                    className="px-4 py-4 overflow-y-auto"
-                    style={{ maxHeight }}
-                  >
-                    {React.createElement(SyntaxHighlighter as any, {
-                      language: language.toLowerCase(),
-                      style: customTheme,
-                      customStyle: {
-                        margin: 0,
-                        padding: 0,
-                        background: "transparent",
-                        fontSize: "0.875rem",
-                        lineHeight: "1.6",
-                      },
-                      showLineNumbers: showLineNumbers,
-                      lineNumberStyle: {
-                        color: "#6b7280",
-                        minWidth: "2.5em",
-                        paddingRight: "1.5em",
-                        textAlign: "right",
-                        userSelect: "none",
-                        opacity: 0.6,
-                        transition: "opacity 0.2s ease",
-                      },
-                      wrapLines: true,
-                      wrapLongLines: true,
-                      lineProps: (lineNumber) => ({
-                        style: {
-                          display: "block",
-                          backgroundColor: highlightedLines.includes(lineNumber)
-                            ? "rgba(34, 197, 94, 0.1)"
-                            : searchResults.includes(lineNumber)
-                            ? "rgba(168, 85, 247, 0.08)"
-                            : "transparent",
-                          paddingLeft: "0.5rem",
-                          paddingRight: "0.5rem",
-                          marginLeft: "-0.5rem",
-                          marginRight: "-0.5rem",
-                        },
-                        "data-line-number": lineNumber,
-                      }),
-                      children: code
-                    })}
-                  </div>
-                  {showBottomFade && (
-                    <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-neutral-950 via-neutral-950/50 to-transparent pointer-events-none" />
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </>
-      </div>
-
-      <>
-        {showToastAnimation && (
-          <div
-            className={cn(
-              "absolute top-3 right-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 shadow-lg",
-              showToastAnimation && "codeblock-toast"
-            )}
-          >
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span className="text-sm font-medium text-neutral-200">Copied to clipboard</span>
+        <div
+          className="relative overflow-x-auto"
+          style={{ maxHeight: maxHeight || 'none' }}
+          ref={codeRef}
+        >
+          <div className="py-4">
+            {React.createElement(SyntaxHighlighter as any, {
+              language: language.toLowerCase(),
+              style: customTheme,
+              customStyle: {
+                margin: 0,
+                padding: 0,
+                background: "transparent",
+                fontSize: "0.8125rem",
+                lineHeight: "1.7",
+              },
+              showLineNumbers: showLineNumbers,
+              lineNumberStyle: {
+                color: "#444444",
+                minWidth: "3em",
+                paddingRight: "1.5rem",
+                textAlign: "right",
+                userSelect: "none",
+                fontSize: "0.75rem",
+              },
+              wrapLines: true,
+              wrapLongLines: false,
+              lineProps: (lineNumber) => ({
+                style: {
+                  display: "block",
+                  backgroundColor: highlightLines.includes(lineNumber)
+                    ? "rgba(163, 230, 53, 0.05)"
+                    : "transparent",
+                  borderLeft: highlightLines.includes(lineNumber)
+                    ? "2px solid #a3e635"
+                    : "2px solid transparent",
+                  paddingLeft: "1rem",
+                  paddingRight: "1rem",
+                },
+              }),
+              children: code.trim()
+            })}
           </div>
-        )}
-      </>
+        </div>
+      </div>
     </div>
   );
 }
