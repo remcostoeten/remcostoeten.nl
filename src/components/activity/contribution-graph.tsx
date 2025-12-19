@@ -62,7 +62,7 @@ export function ActivityContributionGraph({
   }, [year]);
 
   useLayoutEffect(() => {
-    if (!loading && scrollContainerRef.current) {
+    if (!loading && !githubLoading && scrollContainerRef.current) {
       const now = new Date();
       const startOfYear = new Date(year, 0, 1);
       const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
@@ -74,7 +74,7 @@ export function ActivityContributionGraph({
 
       setTimeout(() => setIsVisible(true), 100);
     }
-  }, [loading, year]);
+  }, [loading, githubLoading, year]);
 
   const activityData = useMemo(() => {
     if (githubLoading || loading) return [];
