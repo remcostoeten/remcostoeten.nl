@@ -60,7 +60,7 @@ function BlogCard({ post, index }: Props) {
 
   useEffect(() => {
     const chars = ['+', '.', ':', '-', '·', ' ']
-    asciiCharsRef.current = Array.from({ length: 1200 }, () => {
+    asciiCharsRef.current = Array.from({ length: 4000 }, () => {
       return Math.random() > 0.85
         ? ' '
         : chars[Math.floor(Math.random() * chars.length)]

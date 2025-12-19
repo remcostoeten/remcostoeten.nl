@@ -100,16 +100,34 @@ let components = {
   Image: RoundedImage,
   a: CustomLink,
   pre: ({ children, ...props }) => {
-    // Extract code and language from the code element (children)
     const codeElement = children as React.ReactElement<any>;
     const code = codeElement?.props?.children || '';
     const className = codeElement?.props?.className || '';
     const language = className.replace('language-', '') || 'text';
+    const metastring = codeElement?.props?.metastring || '';
+
+    // Extract fileName from metastring (e.g., `filename="index.ts"`)
+    const fileNameMatch = metastring.match(/filename="([^"]+)"/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : undefined;
+
+    // Extract highlighted lines from metastring (e.g., `{1,3-5}`)
+    const highlightMatch = metastring.match(/\{([\d,-]+)\}/);
+    const highlightLines = highlightMatch
+      ? highlightMatch[1].split(',').flatMap((v) => {
+        if (v.includes('-')) {
+          const [start, end] = v.split('-').map(Number);
+          return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+        }
+        return [Number(v)];
+      })
+      : [];
 
     return (
       <CodeBlock
         code={code}
         language={language}
+        fileName={fileName}
+        highlightLines={highlightLines}
         {...props}
       />
     );

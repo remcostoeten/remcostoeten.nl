@@ -1,0 +1,171 @@
+---
+title: 'How switching from Mac to Linux improved my productivity'
+publishedAt: '2025-12-18'
+summary: "After years of being forced to use a Mac at work, I finally made the switch to Linux and will be sharing some tooling and workflows that I found helpful."
+categories: [Developer Experience, Engineering, Productivity]
+tags: [Linux, Productivity, Workflow]
+---
+
+I have owned a 2009 MacBook, a 2017 Pro, an M2 Pro, a fully spec'd M3 Pro, and an M3 Air. The displays, battery life, and build quality are excellent.
+
+After moving my personal machine from Windows to Linux, macOS started to feel slow. I disabled animations and tried extra tooling, but switching spaces, alt-tabbing, and managing stacked windows always dragged. Mission Control only added visual noise.
+
+The missing piece: a responsive window manager. On Linux, keyboard-driven tiling made everything immediate. That contrast pushed me toward a workflow focused on speed and clarity.
+
+Over the past two years I've been building my personal dotfiles which contain countless scripts and tools to make my workflow more efficient. Most can be reproduced on Mac, but I just like bashing the operating system. My dotfiles could not save me from dying inside from the forced animations and other agony.
+
+My dotfiles are available on [GitHub](https://github.com/remcostoeten/dotfiles) and fully open source except for a private environment variables sub directory. I've built a CLI tool through [OpenTUI](https://github.com/sst/opentui) which can be used to install my dotfiles. Last time I timed a fresh installation of Ubuntu, from booting the USB, to installing the ISO, to curling the dotfiles and running the installer I was fully setup with all my tools, programs and dotfiles in less than 15 minutes. Yes Stow exists, but I like learning new things and reinventing the wheel.
+
+My entire workflow is built around using my keyboard exclusively. I rarely use my mouse anymore, except for inaccessible websites. I've tried to automate or ease tasks which I found myself doing a lot. Starting off with a simple program that's a staple, [Zoxide](https://github.com/ajeetkumar/zoxide).
+
+## Zoxide
+
+This is a program that allows you to navigate to directories without typing the full path. It registers your directories and holds an internal knowledge ranking them based on how often you visit them giving the most visited directories the highest priority. It allows you to type `z $STRING` to navigate to the directory that most closely matches the string.
+
+I've been working on [Skriuw](https://github.com/remcostoeten/skriuw) which sits at `/home/remcostoeten/development/active/skriuw`. When I launch my terminal I have it open in `/home/remcostoeten/.config/dotfiles`. Normally you'd have to do:
+
+```bash
+# pwd .config/dotfiles
+cd ../../development/active/skriuw 
+# or
+cd ~/development/active/skriuw
+```
+
+Thanks to Zoxide I can simply type `z sk` which triggers `zoxide`, and checks what folder resembles `sk` the most. But that's not all. Skriuw is a monorepo, which has a lot of subdirectories. The web app is at `/home/remcostoeten/development/active/skriuw/apps/web`, typing `z web` will probably fail due to there being a lot of directories with `web` on my machine. What I can do is simply type `z sk w` which will resolve to `/home/remcostoeten/development/active/skriuw/apps/web`. Need the `migrations` folder which sits in `packages/db/migrations`? Works exactly the same.
+
+```bash
+~/.config/dotfiles
+❯ pwd
+/home/remco-stoeten/.config/dotfiles
+
+~/.config/dotfiles
+❯ z sk db
+
+skriuwde/packages/db on  daddy [$!?] via  v22.21.0
+❯ pwd
+/home/remco-stoeten/projects/skriuwde/packages/db
+```
+
+## Aliases and Command Chaining
+
+I am a big fan of aliases, having bound `rmall` to remove `node_modules` and `.next` (or vite equivalent), `i` to `bun install`, `b` to `bun build`, `rs` to preview the build allows me to chain such combinations:
+
+```bash
+❯ pwd
+/home/remco-stoeten/.config/dotfiles
+
+dotfiles on  master 
+❯ z .nl ; rmall ; i ; b ; rs
+
+🧹 Starting cleanup...
+
+⚠ Warning: Could not create backup: ENOTDIR: not a directory, mkdir '/home/remco-stoeten/.config/dotfiles/scripts/rmall/backups/latest'
+✓ Removed directory: node_modules
+✓ Removed directory: .next
+✓ Removed file: bun.lock
+
+==================================================
+✓ Successfully removed: 3
+==================================================
+
+✨ Cleanup completed successfully!
+[0.08ms] ".env.local", ".env"
+bun install v1.2.22 (6bafe260)
+warn: incorrect peer dependency "next@16.0.10"
+
++ @tanstack/react-query-devtools@5.91.1
++ @types/react@19.2.7
++ @types/react-dom@19.2.3
++ @radix-ui/react-collapsible@1.1.12
++ @radix-ui/react-separator@1.1.8
++ @tailwindcss/postcss@4.1.18
++ @tailwindcss/typography@0.5.19
++ @tanstack/react-query@5.90.12
++ @types/node@20.11.17
++ @vercel/analytics@1.6.1
++ @vercel/speed-insights@1.3.1
++ clsx@2.1.1
++ framer-motion@12.23.26
++ geist@1.2.2
++ lucide-react@0.555.0 (v0.561.0 available)
++ next@16.0.10
++ next-mdx-remote@5.0.0
++ postcss@8.5.6
++ react@19.2.3
++ react-dom@19.2.3
++ react-icons@5.5.0
++ react-markdown@10.1.0
++ react-syntax-highlighter@16.1.0
++ remark-gfm@4.0.1
++ tailwind-merge@3.4.0
++ tailwindcss@4.1.18
++ tailwindcss-animate@1.0.7
++ tw-animate-css@1.4.0
++ typescript@5.9.3
+
+239 packages installed [554.00ms]
+$ next build
+   ▲ Next.js 16.0.10 (Turbopack)
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 8.2s
+ ✓ Finished TypeScript in 7.7s    
+ ✓ Collecting page data using 15 workers in 1833.0ms    
+ ✓ Generating static pages using 15 workers (50/50) in 4.3s
+ ✓ Finalizing page optimization in 33.2ms    
+
+Route (app)                                                  Revalidate  Expire
+┌ ○ /
+├ ○ /_not-found
+├ ○ /api/github/activity                                             1m      1y
+├ ƒ /api/github/commits
+├ ƒ /api/github/contributions
+├ ƒ /api/github/events
+├ ƒ /api/spotify/auth-url
+├ ƒ /api/spotify/callback
+├ ƒ /api/spotify/now-playing
+├ ƒ /api/spotify/recent
+├ ƒ /api/spotify/token
+├ ○ /blog
+├ ● /blog/[...slug]
+│ ├ /blog/developer-experience/00-intro
+│ ├ /blog/developer-experience/01-environment-validator
+│ ├ /blog/developer-experience/02-new-site-over-engineering
+│ └ /blog/over-engineering-my-site
+├ ○ /blog/categories
+├ ● /blog/categories/[category]
+│ ├ /blog/categories/engineering
+│ ├ /blog/categories/developer experience
+│ ├ /blog/categories/typescript
+│ └ [+11 more paths]
+├ ○ /blog/categories/opengraph-image
+├ ○ /blog/categories/twitter-image
+├ ○ /blog/opengraph-image
+├ ○ /blog/topics
+├ ● /blog/topics/[topic]
+│ ├ /blog/topics/engineering
+│ ├ /blog/topics/developer experience
+│ ├ /blog/topics/typescript
+│ └ [+11 more paths]
+├ ○ /blog/topics/opengraph-image
+├ ○ /blog/topics/twitter-image
+├ ○ /blog/twitter-image
+├ ƒ /og
+├ ○ /robots.txt
+├ ƒ /rss
+└ ○ /sitemap.xml
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+$ next start
+   ▲ Next.js 16.0.10
+   - Local:         http://localhost:3000
+   - Network:       http://192.168.1.238:3000
+
+ ✓ Starting...
+ ✓ Ready in 385ms                                       
+```
