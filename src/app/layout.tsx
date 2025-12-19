@@ -9,7 +9,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from '@/components/layout/footer'
 import { PageTransition } from '@/components/layout/page-transition'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
-import { AuthStatus } from '@/components/auth/auth-status'
+import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 
@@ -60,17 +60,16 @@ export default function RootLayout({
     >
       <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
         <CustomQueryClientProvider>
-          <div className="min-h-screen w-full flex flex-col">
-            <header className="max-w-2xl mx-auto w-full px-4 py-2 flex justify-end border-x border-border/50">
-              <AuthStatus />
-            </header>
-            <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
-              <PageTransition>
-                {children}
-              </PageTransition>
-            </main>
-            <Footer />
-          </div>
+          <VimAuthProvider>
+            <div className="min-h-screen w-full flex flex-col">
+              <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
+                <PageTransition>
+                  {children}
+                </PageTransition>
+              </main>
+              <Footer />
+            </div>
+          </VimAuthProvider>
           <Analytics />
           <SpeedInsights />
         </CustomQueryClientProvider>
