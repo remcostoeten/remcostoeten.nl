@@ -21,6 +21,15 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "env": [
+        "./src/server/env.ts"
+      ],
+      "db": [
+        "./src/server/db/connection.ts"
+      ],
+      "schema": [
+        "./src/server/db/schema.ts"
       ]
     },
     "incremental": true,
