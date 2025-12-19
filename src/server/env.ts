@@ -5,8 +5,8 @@ export const env = createEnv({
     clientPrefix: 'NEXT_PUBLIC_',
     server: {
         DATABASE_URL: z.string().url(),
-        BETTER_AUTH_URL: z.string().url(),
-        BETTER_AUTH_SECRET: z.string().min(1),
+        BETTER_AUTH_URL: z.string().url().default('http://localhost:3000'),
+        BETTER_AUTH_SECRET: z.string().min(1).default('development-secret-key-min-32-chars!'),
 
         GITHUB_CLIENT_ID: z.string().optional(),
         GITHUB_CLIENT_SECRET: z.string().optional(),
@@ -35,5 +35,7 @@ export const env = createEnv({
 
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    }
+    },
+    // Skip validation during CLI/build time when env vars may not be set
+    skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 })

@@ -1,4 +1,8 @@
 import { pgTable, text, index, primaryKey, timestamp, boolean, integer } from 'drizzle-orm/pg-core'
+
+// Re-export auth schema tables
+export * from './auth-schema'
+
 import {
     primaryId,
     timestamps,

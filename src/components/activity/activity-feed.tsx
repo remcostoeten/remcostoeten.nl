@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Plus, GitBranch, Lock, Globe } from 'lucide-react';
 import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
 import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying } from '@/core/spotify-service';
+import { ProjectHoverWrapper, ActivityHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers';
 
 const SPRING_CONFIG = {
     type: "spring" as const,
@@ -105,17 +106,22 @@ function getEventIcon(type: GitHubEventDetail['type']) {
     }
 }
 
-function getActivityVerb(type: GitHubEventDetail['type']): string {
+function getProjectVerb(type: GitHubEventDetail['type']): string {
     switch (type) {
-        case 'commit': return 'pushing commits to';
-        case 'pr': return 'working on a PR for';
-        case 'issue': return 'handling issues on';
-        case 'review': return 'reviewing code on';
-        case 'release': return 'releasing';
-        case 'fork': return 'forking';
-        case 'star': return 'starring';
-        case 'create': return 'creating';
-        default: return 'working on';
+        case 'commit':
+        case 'pr':
+        case 'create':
+        case 'review':
+            return 'building';
+        case 'issue':
+            return 'contributing to';
+        case 'star':
+        case 'fork':
+            return 'exploring';
+        case 'release':
+            return 'shipping';
+        default:
+            return 'working on';
     }
 }
 
@@ -123,11 +129,6 @@ function getShortRepoName(fullName: string) {
     return fullName?.split('/').pop() || fullName;
 }
 
-function isPrivateRepo(repoName: string): boolean {
-    const privateRepos = ['remcostoeten.nl', 'private-repo'];
-    const shortName = getShortRepoName(repoName);
-    return privateRepos.includes(shortName.toLowerCase());
-}
 
 function Equalizer({ className = '' }: { className?: string }) {
     return (
@@ -139,6 +140,23 @@ function Equalizer({ className = '' }: { className?: string }) {
     );
 }
 
+function formatRelativeTime(dateString: string): string {
+    const now = new Date()
+    const date = new Date(dateString)
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    if (diffMins < 1) return 'just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays === 1) return 'yesterday'
+    if (diffDays < 7) return `${diffDays}d ago`
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+
 interface ActivityFeedProps {
     activityCount?: number;
     rotationInterval?: number;
@@ -146,6 +164,7 @@ interface ActivityFeedProps {
 
 export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: ActivityFeedProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
     const { data: activities = [], isLoading: githubLoading } = useGitHubRecentActivity(activityCount);
     const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
     const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
@@ -179,17 +198,24 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
     // Rotate through activities
     useEffect(() => {
-        if (activities.length === 0) return;
+        if (activities.length === 0 || isPaused) return;
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % activities.length);
         }, rotationInterval);
         return () => clearInterval(interval);
-    }, [activities.length, rotationInterval]);
+    }, [activities.length, rotationInterval, isPaused]);
 
     const isLoading = githubLoading || spotifyLoading;
     const currentActivity = activities[currentIndex];
     const isRealTimePlaying = nowPlaying?.isPlaying && nowPlaying?.track;
-    const currentTrack = isRealTimePlaying ? nowPlaying.track : tracks[currentIndex % Math.max(tracks.length, 1)];
+
+    // Build the track rotation: if live playing, nowPlaying is slot 0, then 4 recent tracks
+    // If not live, just cycle through the 5 recent tracks
+    const trackRotation = isRealTimePlaying
+        ? [nowPlaying.track, ...tracks.slice(0, 4)]
+        : tracks.slice(0, 5);
+    const currentTrack = trackRotation[currentIndex % Math.max(trackRotation.length, 1)];
+    const isCurrentTrackLive = isRealTimePlaying && currentIndex % Math.max(trackRotation.length, 1) === 0;
 
     if (isLoading) {
         return (
@@ -211,22 +237,29 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     }
 
     const repoName = getShortRepoName(currentActivity.repository);
-    const activityVerb = getActivityVerb(currentActivity.type);
-    const isPrivate = isPrivateRepo(currentActivity.repository);
+    const projectVerb = getProjectVerb(currentActivity.type);
+    const isPrivate = currentActivity.isPrivate;
 
     return (
-        <div className="relative overflow-hidden rounded-xl border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm">
+        <div
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            className="relative overflow-hidden rounded-xl border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm"
+        >
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
-            
+
             {/* Progress indicator */}
             <div className="absolute top-0 left-0 w-full h-[2px] bg-border/10">
                 <motion.div
                     className="h-full bg-gradient-to-r from-primary/40 to-primary/20"
                     initial={{ width: "0%" }}
-                    animate={{ width: "100%" }}
-                    key={currentIndex}
-                    transition={{ duration: rotationInterval / 1000, ease: "linear" }}
+                    animate={{ width: isPaused ? undefined : "100%" }}
+                    key={`${currentIndex}-${isPaused}`}
+                    transition={{
+                        duration: isPaused ? 0 : rotationInterval / 1000,
+                        ease: "linear"
+                    }}
                 />
             </div>
 
@@ -242,122 +275,169 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             exit="exit"
                             className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm md:text-base leading-relaxed"
                         >
-                        {/* "Lately I've been" */}
-                        <motion.span 
-                            variants={wordVariants}
-                            className="text-muted-foreground/70"
-                        >
-                            Lately I've been
-                        </motion.span>
+                            {/* "Lately I've been" */}
+                            <motion.span
+                                variants={wordVariants}
+                                className="text-muted-foreground/70"
+                            >
+                                Lately I've been
+                            </motion.span>
 
-                        {/* Activity title with icon */}
-                        <motion.span 
-                            variants={highlightVariants}
-                            className="inline-flex items-center gap-1.5 text-foreground font-medium"
-                        >
-                            <span className="inline-flex items-center justify-center size-4 rounded bg-muted/60 text-foreground/80">
-                                {getEventIcon(currentActivity.type)}
-                            </span>
-                            {currentActivity.title.toLowerCase()}
-                        </motion.span>
+                            {/* Project Verb */}
+                            <motion.span
+                                variants={wordVariants}
+                                className="text-muted-foreground/70"
+                            >
+                                {projectVerb}
+                            </motion.span>
 
-                        {/* "on" connector */}
-                        <motion.span 
-                            variants={wordVariants}
-                            className="text-muted-foreground/70"
-                        >
-                            on
-                        </motion.span>
+                            {/* Project name with visibility indicator */}
+                            <motion.span
+                                variants={highlightVariants}
+                                className="inline-flex items-center gap-1.5"
+                            >
+                                <ProjectHoverWrapper repository={currentActivity.repository} isPrivate={isPrivate}>
+                                    {isPrivate ? (
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 font-medium cursor-pointer">
+                                            <Lock className="size-2.5" />
+                                            {repoName}
+                                        </span>
+                                    ) : (
+                                        <a
+                                            href={currentActivity.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors cursor-pointer"
+                                        >
+                                            <Globe className="size-2.5" />
+                                            {repoName}
+                                        </a>
+                                    )}
+                                </ProjectHoverWrapper>
+                            </motion.span>
 
-                        {/* Project name with visibility indicator */}
-                        <motion.span
-                            variants={highlightVariants}
-                            className="inline-flex items-center gap-1.5"
-                        >
-                            {isPrivate ? (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 font-medium">
-                                    <Lock className="size-2.5" />
-                                    {repoName}
-                                </span>
-                            ) : (
-                                <a
-                                    href={currentActivity.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors cursor-pointer"
-                                >
-                                    <Globe className="size-2.5" />
-                                    {repoName}
-                                </a>
-                            )}
-                        </motion.span>
+                            {/* ", where I recently" */}
+                            <motion.span
+                                variants={wordVariants}
+                                className="text-muted-foreground/70"
+                            >
+                                , where I recently
+                            </motion.span>
 
-                        {/* "whilst listening to" */}
-                        <motion.span 
-                            variants={wordVariants}
-                            className="text-muted-foreground/70"
-                        >
-                            whilst
-                        </motion.span>
+                            {/* Activity title with icon */}
+                            <motion.span
+                                variants={highlightVariants}
+                                className="inline-flex items-center gap-1.5 text-foreground font-medium"
+                            >
+                                <ActivityHoverWrapper activity={currentActivity}>
+                                    <span className="inline-flex items-center gap-1.5 cursor-pointer">
+                                        <span className="inline-flex items-center justify-center size-4 rounded bg-muted/60 text-foreground/80">
+                                            {getEventIcon(currentActivity.type)}
+                                        </span>
+                                        {currentActivity.title}
+                                    </span>
+                                </ActivityHoverWrapper>
+                            </motion.span>
 
-                        {/* Spotify section */}
-                        {currentTrack ? (
-                            <>
-                                <motion.span 
-                                    variants={wordVariants}
-                                    className="text-muted-foreground/70 inline-flex items-center"
-                                >
-                                    {isRealTimePlaying ? (
+                            {/* Spotify section */}
+                            {currentTrack ? (
+                                <>
+                                    <motion.span
+                                        variants={wordVariants}
+                                        className="text-muted-foreground/70"
+                                    >
+                                        whilst
+                                    </motion.span>
+
+                                    {isCurrentTrackLive ? (
                                         <>
-                                            listening to
-                                            <Equalizer />
+                                            <motion.span
+                                                variants={wordVariants}
+                                                className="text-muted-foreground/70 inline-flex items-center"
+                                            >
+                                                listening to
+                                                <Equalizer />
+                                            </motion.span>
+
+                                            {/* Song name */}
+                                            <SpotifyHoverWrapper track={currentTrack} isPlaying={true}>
+                                                <motion.a
+                                                    variants={highlightVariants}
+                                                    href={currentTrack.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-medium hover:opacity-80 transition-opacity cursor-pointer bg-green-500/10 text-green-500"
+                                                >
+                                                    <Music className="size-2.5" />
+                                                    {currentTrack.name}
+                                                </motion.a>
+                                            </SpotifyHoverWrapper>
+
+                                            {/* Artist */}
+                                            <motion.span
+                                                variants={wordVariants}
+                                                className="text-muted-foreground/70"
+                                            >
+                                                by
+                                            </motion.span>
+
+                                            <motion.span
+                                                variants={highlightVariants}
+                                                className="text-foreground/90 font-medium"
+                                            >
+                                                {currentTrack.artist}
+                                            </motion.span>
                                         </>
                                     ) : (
-                                        'I listened to'
+                                        <>
+                                            {/* Song name */}
+                                            <SpotifyHoverWrapper track={currentTrack} isPlaying={false}>
+                                                <motion.a
+                                                    variants={highlightVariants}
+                                                    href={currentTrack.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-medium hover:opacity-80 transition-opacity cursor-pointer bg-orange-500/10 text-orange-500"
+                                                >
+                                                    <Music className="size-2.5" />
+                                                    {currentTrack.name}
+                                                </motion.a>
+                                            </SpotifyHoverWrapper>
+
+                                            {/* Artist */}
+                                            <motion.span
+                                                variants={wordVariants}
+                                                className="text-muted-foreground/70"
+                                            >
+                                                by
+                                            </motion.span>
+
+                                            <motion.span
+                                                variants={highlightVariants}
+                                                className="text-foreground/90 font-medium"
+                                            >
+                                                {currentTrack.artist}
+                                            </motion.span>
+
+                                            <motion.span
+                                                variants={wordVariants}
+                                                className="text-muted-foreground/70"
+                                            >
+                                                was playing
+                                            </motion.span>
+                                        </>
                                     )}
-                                </motion.span>
-
-                                {/* Song name */}
-                                <motion.a
-                                    variants={highlightVariants}
-                                    href={currentTrack.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-medium hover:opacity-80 transition-opacity cursor-pointer ${
-                                        isRealTimePlaying 
-                                            ? 'bg-green-500/10 text-green-500' 
-                                            : 'bg-orange-500/10 text-orange-500'
-                                    }`}
-                                >
-                                    <Music className="size-2.5" />
-                                    {currentTrack.name}
-                                </motion.a>
-
-                                {/* Artist */}
-                                <motion.span 
+                                </>
+                            ) : (
+                                <motion.span
                                     variants={wordVariants}
-                                    className="text-muted-foreground/70"
+                                    className="text-muted-foreground/50"
                                 >
-                                    by
+                                    whilst enjoying some quiet time
                                 </motion.span>
-
-                                <motion.span 
-                                    variants={highlightVariants}
-                                    className="text-foreground/90 font-medium"
-                                >
-                                    {currentTrack.artist}
-                                </motion.span>
-                            </>
-                        ) : (
-                            <motion.span 
-                                variants={wordVariants}
-                                className="text-muted-foreground/50"
-                            >
-                                enjoying some quiet time
-                            </motion.span>
-                        )}
-                    </motion.div>
-                </AnimatePresence>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
 
                 {/* Commit message preview - always rendered with fixed height */}
@@ -382,15 +462,15 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
             {/* Activity indicator dots */}
             {activities.length > 1 && (
                 <div className="absolute bottom-3 right-3 flex gap-1.5">
+
                     {activities.slice(0, activityCount).map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => setCurrentIndex(idx)}
-                            className={`size-1.5 rounded-full transition-all duration-300 hover:scale-125 ${
-                                idx === currentIndex
-                                    ? 'bg-primary/60 scale-125'
-                                    : 'bg-muted-foreground/20 hover:bg-muted-foreground/40'
-                            }`}
+                            className={`size-1.5 rounded-full transition-all duration-300 hover:scale-125 ${idx === currentIndex
+                                ? 'bg-primary/60 scale-125'
+                                : 'bg-muted-foreground/20 hover:bg-muted-foreground/40'
+                                }`}
                             aria-label={`Go to activity ${idx + 1}`}
                         />
                     ))}
