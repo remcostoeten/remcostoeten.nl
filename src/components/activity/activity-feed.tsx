@@ -93,15 +93,15 @@ const highlightVariants = {
 
 function getEventIcon(type: GitHubEventDetail['type']) {
     switch (type) {
-        case 'commit': return <GitCommit className='size-3.5' />;
-        case 'pr': return <GitPullRequest className='size-3.5' />;
-        case 'issue': return <AlertCircle className='size-3.5' />;
-        case 'review': return <Eye className='size-3.5' />;
-        case 'release': return <Box className='size-3.5' />;
-        case 'fork': return <Copy className='size-3.5' />;
-        case 'star': return <Star className='size-3.5' />;
-        case 'create': return <Plus className='size-3.5' />;
-        default: return <GitBranch className='size-3.5' />;
+        case 'commit': return <GitCommit className='size-3' />;
+        case 'pr': return <GitPullRequest className='size-3' />;
+        case 'issue': return <AlertCircle className='size-3' />;
+        case 'review': return <Eye className='size-3' />;
+        case 'release': return <Box className='size-3' />;
+        case 'fork': return <Copy className='size-3' />;
+        case 'star': return <Star className='size-3' />;
+        case 'create': return <Plus className='size-3' />;
+        default: return <GitBranch className='size-3' />;
     }
 }
 
@@ -230,9 +230,9 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                 />
             </div>
 
-            <div className="p-6 md:p-8">
+            <div className="p-4 md:p-5">
                 {/* Fixed height container to prevent layout shift */}
-                <div className="min-h-[4.5rem] md:min-h-[5rem]">
+                <div className="min-h-[3.5rem] md:min-h-[4rem]">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={`${currentIndex}-${currentActivity.id}`}
@@ -240,7 +240,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-lg md:text-xl leading-relaxed"
+                            className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm md:text-base leading-relaxed"
                         >
                         {/* "Lately I've been" */}
                         <motion.span 
@@ -250,15 +250,23 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             Lately I've been
                         </motion.span>
 
-                        {/* Activity verb with icon */}
+                        {/* Activity title with icon */}
                         <motion.span 
                             variants={highlightVariants}
                             className="inline-flex items-center gap-1.5 text-foreground font-medium"
                         >
-                            <span className="inline-flex items-center justify-center size-5 rounded-md bg-muted/60 text-foreground/80">
+                            <span className="inline-flex items-center justify-center size-4 rounded bg-muted/60 text-foreground/80">
                                 {getEventIcon(currentActivity.type)}
                             </span>
-                            {activityVerb}
+                            {currentActivity.title.toLowerCase()}
+                        </motion.span>
+
+                        {/* "on" connector */}
+                        <motion.span 
+                            variants={wordVariants}
+                            className="text-muted-foreground/70"
+                        >
+                            on
                         </motion.span>
 
                         {/* Project name with visibility indicator */}
@@ -267,8 +275,8 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             className="inline-flex items-center gap-1.5"
                         >
                             {isPrivate ? (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 font-semibold">
-                                    <Lock className="size-3" />
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 font-medium">
+                                    <Lock className="size-2.5" />
                                     {repoName}
                                 </span>
                             ) : (
@@ -276,9 +284,9 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                     href={currentActivity.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary/10 text-primary font-semibold hover:bg-primary/20 transition-colors cursor-pointer"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors cursor-pointer"
                                 >
-                                    <Globe className="size-3" />
+                                    <Globe className="size-2.5" />
                                     {repoName}
                                 </a>
                             )}
@@ -315,13 +323,13 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                     href={currentTrack.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md font-semibold hover:opacity-80 transition-opacity cursor-pointer ${
+                                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-medium hover:opacity-80 transition-opacity cursor-pointer ${
                                         isRealTimePlaying 
                                             ? 'bg-green-500/10 text-green-500' 
                                             : 'bg-orange-500/10 text-orange-500'
                                     }`}
                                 >
-                                    <Music className="size-3.5" />
+                                    <Music className="size-2.5" />
                                     {currentTrack.name}
                                 </motion.a>
 
