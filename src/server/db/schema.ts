@@ -95,3 +95,45 @@ export const githubActivities = pgTable('github_activities', {
 
 export type GitHubActivity = typeof githubActivities.$inferSelect
 export type NewGitHubActivity = typeof githubActivities.$inferInsert
+
+// ============================================
+// Spotify Listening History
+// ============================================
+
+export const spotifyListens = pgTable('spotify_listens', {
+    ...primaryId,
+    trackId: text('track_id').notNull(), // Spotify track ID
+    trackName: text('track_name').notNull(),
+    artistName: text('artist_name').notNull(),
+    albumName: text('album_name'),
+    albumImage: text('album_image'),
+    trackUrl: text('track_url').notNull(),
+    durationMs: integer('duration_ms'),
+    playedAt: timestamp('played_at').notNull().unique(), // When the track was played (unique to prevent duplicates)
+    // Optional link to a GitHub activity that happened around the same time
+    linkedActivityId: text('linked_activity_id').references(() => githubActivities.id, { onDelete: 'set null' }),
+    ...createdTimestamp,
+}, (t) => [
+    index('spotify_listens_played_at_idx').on(t.playedAt),
+    index('spotify_listens_track_idx').on(t.trackId),
+    index('spotify_listens_artist_idx').on(t.artistName),
+    index('spotify_listens_linked_idx').on(t.linkedActivityId),
+])
+
+export type SpotifyListen = typeof spotifyListens.$inferSelect
+export type NewSpotifyListen = typeof spotifyListens.$inferInsert
+
+// ============================================
+// Sync Metadata (for tracking last sync times)
+// ============================================
+
+export const syncMetadata = pgTable('sync_metadata', {
+    service: text('service').primaryKey(), // 'github' | 'spotify'
+    lastSyncAt: timestamp('last_sync_at').notNull(),
+    lastEventId: text('last_event_id'), // For GitHub: last event ID, for Spotify: last played_at timestamp
+    syncCount: integer('sync_count').default(0).notNull(),
+    ...timestamps,
+})
+
+export type SyncMetadata = typeof syncMetadata.$inferSelect
+
