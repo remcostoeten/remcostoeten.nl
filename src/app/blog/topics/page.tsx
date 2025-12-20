@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { topicsMetadata } from '@/core/metadata'
 
+export const dynamic = 'force-dynamic'
+
 export { topicsMetadata as metadata }
 
 export default function TopicsPage() {

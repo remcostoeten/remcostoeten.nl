@@ -14,6 +14,7 @@ import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 import { cn } from '@/lib/utils'
+import { WebsiteStructuredData, PersonStructuredData } from '@/components/seo/structured-data'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -45,8 +46,7 @@ export const metadata: Metadata = {
     icon: '/favicon.svg',
   },
   other: {
-    'dns-prefetch': '//api.github.com',
-    'dns-prefetch': '//api.spotify.com',
+    'dns-prefetch': ['//api.github.com', '//api.spotify.com'],
   },
 }
 
@@ -60,12 +60,14 @@ export default function RootLayout({
     <html
       lang="en"
       className={cn(
-        'dark',
-        GeistSans.variable,
-        GeistMono.variable
+        'scroll-smooth bg-white text-black antialiased dark:bg-black dark:text-white',
+        `${GeistSans.variable} ${GeistMono.variable} font-sans`
       )}
-      suppressHydrationWarning
     >
+      <head>
+        <WebsiteStructuredData />
+        <PersonStructuredData />
+      </head>
       <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
         <CustomQueryClientProvider>
           <VimAuthProvider>

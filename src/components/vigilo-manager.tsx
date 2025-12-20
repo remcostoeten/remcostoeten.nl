@@ -1,6 +1,6 @@
 'use client'
 
-import Vigilo from '@remcostoeten/vigilo'
+import { Vigilo } from '@remcostoeten/vigilo/react'
 import { todoCategories } from '@/todos'
 
 export function VigiloManager({ category = "code-audit" }: { category?: string }) {
