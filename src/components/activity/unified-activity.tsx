@@ -79,7 +79,7 @@ export function UnifiedActivity() {
             setNowPlaying(data);
         };
         checkNowPlaying();
-        const interval = setInterval(checkNowPlaying, 10000);
+        const interval = setInterval(checkNowPlaying, 30000);
         return () => clearInterval(interval);
     }, []);
 

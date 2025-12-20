@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createPortal } from 'react-dom'
+import { ChevronDown, ChevronUp, List } from 'lucide-react'
 
 interface Heading {
   id: string
@@ -14,6 +15,7 @@ export function TableOfContents() {
   const [headings, setHeadings] = useState<Heading[]>([])
   const [activeId, setActiveId] = useState<string>('')
   const [mounted, setMounted] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -69,7 +71,51 @@ export function TableOfContents() {
     return null
   }
 
-  return createPortal(
+  const MobileToC = () => (
+    <div className="2xl:hidden mb-6">
+      <button
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+        className="w-full flex items-center justify-between p-3 bg-muted/50 border border-border rounded-lg hover:bg-muted transition-colors"
+        aria-expanded={isMobileOpen}
+      >
+        <span className="flex items-center gap-2 text-sm font-medium">
+          <List className="w-4 h-4" />
+          Table of Contents ({headings.length})
+        </span>
+        {isMobileOpen ? (
+          <ChevronUp className="w-4 h-4" />
+        ) : (
+          <ChevronDown className="w-4 h-4" />
+        )}
+      </button>
+
+      {isMobileOpen && (
+        <div className="mt-2 p-3 bg-background border border-border rounded-lg">
+          <ul className="space-y-1.5 text-sm">
+            {headings.map((heading) => (
+              <li
+                key={heading.id}
+                style={{ marginLeft: `${(heading.level - 2) * 12}px` }}
+              >
+                <Link
+                  href={`#${heading.id}`}
+                  onClick={() => setIsMobileOpen(false)}
+                  className={`block py-1.5 px-2 rounded transition-all duration-200 ${activeId === heading.id
+                      ? 'text-lime-600 dark:text-lime-400 font-semibold bg-lime-500/10 dark:bg-lime-500/5 border-l-2 border-lime-600 dark:border-lime-400 pl-1.5'
+                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900/50'
+                    }`}
+                >
+                  {heading.text}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+
+  const DesktopToC = () => createPortal(
     <div className="fixed inset-0 z-50 pointer-events-none">
       <div className="max-w-2xl mx-auto h-full relative">
         <aside className="hidden 2xl:block absolute right-full top-32 mr-12 w-56 max-h-[calc(100vh-140px)] overflow-y-auto pointer-events-auto">
@@ -100,5 +146,12 @@ export function TableOfContents() {
       </div>
     </div>,
     document.body
+  )
+
+  return (
+    <>
+      <MobileToC />
+      <DesktopToC />
+    </>
   )
 }

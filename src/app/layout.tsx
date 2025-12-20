@@ -13,6 +13,7 @@ import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
+import { cn } from '@/lib/utils'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -40,9 +41,15 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
+  icons: {
+    icon: '/favicon.svg',
+  },
+  other: {
+    'dns-prefetch': '//api.github.com',
+    'dns-prefetch': '//api.spotify.com',
+  },
 }
 
-const cx = (...classes) => classes.filter(Boolean).join(' ')
 
 export default function RootLayout({
   children,
@@ -52,7 +59,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cx(
+      className={cn(
         'dark',
         GeistSans.variable,
         GeistMono.variable
@@ -78,4 +85,17 @@ export default function RootLayout({
       </body>
     </html>
   )
+}
+
+// Service worker registration
+if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration);
+      })
+      .catch((registrationError) => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
 }

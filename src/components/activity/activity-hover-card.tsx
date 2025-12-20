@@ -362,6 +362,90 @@ interface SpotifyCardProps {
     isPlaying?: boolean;
 }
 
+// === Skeleton Loaders ===
+export function GitHubProjectCardSkeleton() {
+    return (
+        <div className="space-y-3">
+            {/* Header */}
+            <div className="flex items-center gap-2">
+                <div className="size-8 rounded-none bg-muted/40 animate-pulse" />
+                <div className="flex-1">
+                    <div className="h-4 w-32 bg-muted/40 rounded-none animate-pulse" />
+                    <div className="mt-1 h-3 w-16 bg-muted/30 rounded-none animate-pulse" />
+                </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-1">
+                <div className="h-3.5 bg-muted/30 rounded-none animate-pulse" />
+                <div className="h-3.5 w-4/5 bg-muted/30 rounded-none animate-pulse" />
+            </div>
+
+            {/* Topics */}
+            <div className="flex flex-wrap gap-1.5">
+                <div className="h-5 w-16 bg-muted/30 rounded-none animate-pulse" />
+                <div className="h-5 w-20 bg-muted/30 rounded-none animate-pulse" />
+                <div className="h-5 w-14 bg-muted/30 rounded-none animate-pulse" />
+            </div>
+
+            {/* Languages */}
+            <div className="space-y-1.5">
+                <div className="h-1.5 rounded-none overflow-hidden flex bg-muted/20">
+                    <div className="h-full w-3/5 bg-muted/40 animate-pulse" />
+                    <div className="h-full w-1/4 bg-muted/30 animate-pulse" />
+                    <div className="h-full w-1/6 bg-muted/35 animate-pulse" />
+                </div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1">
+                    <div className="flex items-center gap-1.5">
+                        <div className="size-2 rounded-none bg-muted/40 animate-pulse" />
+                        <div className="h-3 w-12 bg-muted/30 rounded-none animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <div className="size-2 rounded-none bg-muted/40 animate-pulse" />
+                        <div className="h-3 w-16 bg-muted/30 rounded-none animate-pulse" />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <div className="size-2 rounded-none bg-muted/40 animate-pulse" />
+                        <div className="h-3 w-10 bg-muted/30 rounded-none animate-pulse" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Stats */}
+            <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1 border-t border-border/30">
+                <div className="flex items-center gap-1">
+                    <div className="size-3.5 bg-muted/30 rounded-none animate-pulse" />
+                    <div className="h-3 w-8 bg-muted/30 rounded-none animate-pulse" />
+                </div>
+                <div className="flex items-center gap-1">
+                    <div className="size-3.5 bg-muted/30 rounded-none animate-pulse" />
+                    <div className="h-3 w-6 bg-muted/30 rounded-none animate-pulse" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export function SpotifyCardSkeleton() {
+    return (
+        <div className="flex gap-3">
+            {/* Album Art */}
+            <div className="size-16 rounded-none bg-muted/30 animate-pulse" />
+
+            {/* Track Info */}
+            <div className="flex-1 min-w-0 space-y-1">
+                <div className="h-4 w-4/5 bg-muted/40 rounded-none animate-pulse" />
+                <div className="h-3.5 w-3/5 bg-muted/30 rounded-none animate-pulse" />
+                <div className="h-3 w-1/2 bg-muted/25 rounded-none animate-pulse" />
+                <div className="flex items-center gap-2 pt-1">
+                    <div className="h-5 w-20 bg-muted/30 rounded-none animate-pulse" />
+                    <div className="h-3 w-12 bg-muted/25 rounded-none animate-pulse" />
+                </div>
+            </div>
+        </div>
+    );
+}
+
 export function SpotifyCard({
     name,
     artist,
@@ -379,6 +463,9 @@ export function SpotifyCard({
                     src={albumArt}
                     alt={album || name}
                     className="size-16 rounded-none object-cover shadow-md"
+                    loading="lazy"
+                    decoding="async"
+                    sizes="64px"
                 />
             ) : (
                 <div className="size-16 rounded-none bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center">

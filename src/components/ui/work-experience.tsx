@@ -74,34 +74,26 @@ export function WorkExperience({
   const education = experiences.find(exp => exp.id === 'education');
   const workHistory = experiences.filter(exp => !exp.isCurrentEmployer && exp.id !== 'education');
 
-  // For preview: show first work history item (second overall job)
   const previewJob = workHistory[0];
   const remainingJobs = workHistory.slice(1);
 
   return (
     <div className={cn("bg-background px-4", className)}>
-      {/* Current Job - Always visible */}
       {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} />}
 
-      {/* Work History Section */}
       <div className="relative">
-        {/* Preview of second job with fade */}
         {!showAll && previewJob && (
           <div className="relative">
             <div className="relative overflow-hidden">
               <ExperienceItem key={previewJob.id} experience={previewJob} />
-              {/* Fade overlay */}
               <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
             </div>
           </div>
         )}
 
-        {/* Full work history when expanded */}
         {showAll && workHistory.map((experience) => (
           <ExperienceItem key={experience.id} experience={experience} />
         ))}
-
-        {/* View All / Show Less Button */}
         {workHistory.length > 0 && (
           <div className="flex justify-center py-4">
             <button
@@ -124,7 +116,6 @@ export function WorkExperience({
         )}
       </div>
 
-      {/* Education - Always visible at bottom */}
       {education && (
         <div className="border-t border-border pt-4 mt-4">
           <ExperienceItem key={education.id} experience={education} />
@@ -139,10 +130,8 @@ export function ExperienceItem({
 }: {
   experience: ExperienceItemType
 }) {
-  // Get the first letter of the company name
   const initial = experience.companyName.charAt(0).toUpperCase();
 
-  // Get information from the first position
   const firstPosition = experience.positions[0];
   const location = firstPosition?.description && firstPosition.description.split('\n').length === 1
     ? firstPosition.description

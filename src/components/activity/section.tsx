@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedNumber } from '../ui/animated-number';
 import { ActivityContributionGraph } from './contribution-graph';
@@ -46,8 +46,9 @@ export function ActivitySection() {
     };
   }, []);
 
-  const currentVerb = VERBS[verbIndex];
-  const currentActivity = ACTIVITIES[activityIndex];
+  // Memoize to prevent unnecessary re-renders
+  const currentVerb = useMemo(() => VERBS[verbIndex], [verbIndex]);
+  const currentActivity = useMemo(() => ACTIVITIES[activityIndex], [activityIndex]);
 
   return (
     <Section

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ActivityHoverCard, GitHubProjectCard, GitHubActivityCard, SpotifyCard } from './activity-hover-card';
+import { ActivityHoverCard, GitHubProjectCard, GitHubActivityCard, SpotifyCard, GitHubProjectCardSkeleton, SpotifyCardSkeleton } from './activity-hover-card';
 import { useRepoDetails } from '@/hooks/use-repo-details';
 import { GitHubEventDetail } from '@/hooks/use-github';
 import { SpotifyTrack } from '@/server/services/spotify';
@@ -20,9 +20,11 @@ export function ProjectHoverWrapper({ children, repository, isPrivate }: Project
 
     return (
         <ActivityHoverCard
+            delay={200}
             trigger={
                 <span
                     onMouseEnter={() => setIsHovering(true)}
+                    onFocus={() => setIsHovering(true)} // Also prefetch on focus
                 >
                     {children}
                 </span>
@@ -31,10 +33,7 @@ export function ProjectHoverWrapper({ children, repository, isPrivate }: Project
             align="start"
         >
             {isLoading ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <div className="size-4 rounded-none border-2 border-primary/30 border-t-primary animate-spin" />
-                    Loading...
-                </div>
+                <GitHubProjectCardSkeleton />
             ) : repoDetails ? (
                 <GitHubProjectCard
                     repoName={repoDetails.name}

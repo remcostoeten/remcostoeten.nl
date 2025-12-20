@@ -20,14 +20,11 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
         setError(null);
 
         try {
-            // Use better-auth's signIn - it will handle the OAuth flow
-            // This will redirect to the OAuth provider and back
             await signIn.social({
                 provider,
                 callbackURL: `${window.location.origin}`,
             });
 
-            // Close modal on success
             onClose();
         } catch (err) {
             console.error('OAuth error:', err);
@@ -40,7 +37,6 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
         <AnimatePresence>
             {isOpen && (
                 <>
-                    {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -49,7 +45,6 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
                         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9998]"
                     />
 
-                    {/* Modal */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -58,7 +53,6 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
                         className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-full max-w-md"
                     >
                         <div className="bg-zinc-950 border border-zinc-800 rounded-lg shadow-2xl overflow-hidden">
-                            {/* Header */}
                             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
                                 <h2 className="text-lg font-semibold text-white">
                                     Sign in with {provider === 'github' ? 'GitHub' : 'Google'}
@@ -72,7 +66,6 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
                                 </button>
                             </div>
 
-                            {/* Content */}
                             <div className="px-6 py-8">
                                 <div className="text-center space-y-6">
                                     <div className="w-16 h-16 mx-auto bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-700">
