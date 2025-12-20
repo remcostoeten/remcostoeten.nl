@@ -9,6 +9,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from '@/components/layout/footer'
 import { PageTransition } from '@/components/layout/page-transition'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
+import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 
@@ -55,18 +56,20 @@ export default function RootLayout({
         GeistSans.variable,
         GeistMono.variable
       )}
-      suppressContentEditableWarning
+      suppressHydrationWarning
     >
       <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
         <CustomQueryClientProvider>
-          <div className="min-h-screen w-full flex flex-col">
-            <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
-              <PageTransition>
-                {children}
-              </PageTransition>
-            </main>
-            <Footer />
-          </div>
+          <VimAuthProvider>
+            <div className="min-h-screen w-full flex flex-col">
+              <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
+                <PageTransition>
+                  {children}
+                </PageTransition>
+              </main>
+              <Footer />
+            </div>
+          </VimAuthProvider>
           <Analytics />
           <SpeedInsights />
         </CustomQueryClientProvider>

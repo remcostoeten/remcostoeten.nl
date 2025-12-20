@@ -451,18 +451,20 @@ class GitHubService {
   }
 
   /**
-   * Parse raw GitHub event into normalized detail format
+   * Parse raw GitHub event into normalized detail format with natural language
    */
   private parseGitHubEvent(event: any): GitHubEventDetail | null {
+    const repoName = event.repo.name.split('/').pop() || event.repo.name;
     const base = {
       id: event.id,
       timestamp: event.created_at,
       repository: event.repo.name,
       url: `https://github.com/${event.repo.name}`,
+      isPrivate: event.public === false,
     };
 
     switch (event.type) {
-      case 'PushEvent':
+      case 'PushEvent': {
         if (!event.payload) return null;
         let commitCount = 0;
 
@@ -472,87 +474,264 @@ class GitHubService {
           commitCount = event.payload.commits.length;
         }
 
-        // Skip 0-commit pushes (usually branch creation/deletion which are covered by Create/Delete events, or empty pushes)
+        // Skip 0-commit pushes
         if (commitCount === 0) return null;
 
+        const commitMsg = event.payload.commits?.[0]?.message?.split('\n')[0] || 'No commit message';
         return {
           ...base,
           type: 'commit',
-          title: `Pushed ${commitCount} commit${commitCount === 1 ? '' : 's'}`,
-          description: event.payload.commits?.[0]?.message || 'No commit message',
+          title: `pushed ${commitCount} commit${commitCount === 1 ? '' : 's'}`,
+          description: commitMsg,
           url: `https://github.com/${event.repo.name}/commits/${event.payload.head}`,
           payload: event.payload
         };
-      case 'CreateEvent':
+      }
+
+      case 'CreateEvent': {
+        const refType = event.payload.ref_type || 'repository';
+        const ref = event.payload.ref;
+
+        if (refType === 'repository') {
+          return {
+            ...base,
+            type: 'create',
+            title: 'created a repository',
+            description: repoName,
+            url: `https://github.com/${event.repo.name}`,
+            payload: event.payload
+          };
+        } else if (refType === 'branch') {
+          return {
+            ...base,
+            type: 'create',
+            title: 'created a branch',
+            description: `Branch: ${ref}`,
+            url: `https://github.com/${event.repo.name}/tree/${ref}`,
+            payload: event.payload
+          };
+        } else if (refType === 'tag') {
+          return {
+            ...base,
+            type: 'create',
+            title: 'created a tag',
+            description: `Tag: ${ref}`,
+            url: `https://github.com/${event.repo.name}/releases/tag/${ref}`,
+            payload: event.payload
+          };
+        }
         return {
           ...base,
-          type: 'create', // You might need to add this to the type definition if strict
-          title: `Created ${event.payload.ref_type || 'repository'}`,
-          description: event.payload.ref || event.repo.name,
+          type: 'create',
+          title: `created a ${refType}`,
+          description: ref || repoName,
           url: `https://github.com/${event.repo.name}`,
           payload: event.payload
         };
-      case 'PullRequestEvent':
+      }
+
+      case 'DeleteEvent': {
+        const refType = event.payload.ref_type || 'ref';
+        const ref = event.payload.ref;
+        return {
+          ...base,
+          type: 'create',
+          title: `deleted a ${refType}`,
+          description: `${refType}: ${ref}`,
+          url: `https://github.com/${event.repo.name}`,
+          payload: event.payload
+        };
+      }
+
+      case 'PullRequestEvent': {
+        const action = event.payload.action;
+        const prNumber = event.payload.number;
+        const prTitle = event.payload.pull_request?.title || '';
+
+        let verb = 'worked on';
+        if (action === 'opened') verb = 'opened';
+        else if (action === 'closed' && event.payload.pull_request?.merged) verb = 'merged';
+        else if (action === 'closed') verb = 'closed';
+        else if (action === 'reopened') verb = 'reopened';
+        else if (action === 'synchronize') verb = 'updated';
+
         return {
           ...base,
           type: 'pr',
-          title: `${event.payload.action === 'opened' ? 'Opened' : 'Closed'} PR #${event.payload.number}`,
-          description: event.payload.pull_request.title,
-          url: event.payload.pull_request.html_url,
+          title: `${verb} PR #${prNumber}`,
+          description: prTitle,
+          url: event.payload.pull_request?.html_url || base.url,
           payload: event.payload
         };
-      case 'IssuesEvent':
+      }
+
+      case 'IssuesEvent': {
+        const action = event.payload.action;
+        const issueNumber = event.payload.issue?.number;
+        const issueTitle = event.payload.issue?.title || '';
+
+        let verb = 'worked on';
+        if (action === 'opened') verb = 'opened';
+        else if (action === 'closed') verb = 'closed';
+        else if (action === 'reopened') verb = 'reopened';
+        else if (action === 'edited') verb = 'edited';
+        else if (action === 'assigned') verb = 'assigned';
+        else if (action === 'labeled') verb = 'labeled';
+
         return {
           ...base,
           type: 'issue',
-          title: `${event.payload.action === 'opened' ? 'Opened' : 'Closed'} Issue #${event.payload.issue.number}`,
-          description: event.payload.issue.title,
-          url: event.payload.issue.html_url,
+          title: `${verb} issue #${issueNumber}`,
+          description: issueTitle,
+          url: event.payload.issue?.html_url || base.url,
           payload: event.payload
         };
-      case 'PullRequestReviewEvent':
+      }
+
+      case 'IssueCommentEvent': {
+        const issueNumber = event.payload.issue?.number;
+        const commentBody = event.payload.comment?.body?.split('\n')[0] || '';
+        const isPR = !!event.payload.issue?.pull_request;
+
+        return {
+          ...base,
+          type: 'issue',
+          title: `commented on ${isPR ? 'PR' : 'issue'} #${issueNumber}`,
+          description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
+          url: event.payload.comment?.html_url || base.url,
+          payload: event.payload
+        };
+      }
+
+      case 'PullRequestReviewEvent': {
+        const prNumber = event.payload.pull_request?.number;
+        const prTitle = event.payload.pull_request?.title || '';
+        const reviewState = event.payload.review?.state;
+
+        let verb = 'reviewed';
+        if (reviewState === 'approved') verb = 'approved';
+        else if (reviewState === 'changes_requested') verb = 'requested changes on';
+        else if (reviewState === 'commented') verb = 'commented on';
+
         return {
           ...base,
           type: 'review',
-          title: 'Reviewed Pull Request',
-          description: event.payload.pull_request.title,
-          url: event.payload.review.html_url,
+          title: `${verb} PR #${prNumber}`,
+          description: prTitle,
+          url: event.payload.review?.html_url || event.payload.pull_request?.html_url || base.url,
           payload: event.payload
         };
-      case 'ReleaseEvent':
+      }
+
+      case 'PullRequestReviewCommentEvent': {
+        const prNumber = event.payload.pull_request?.number;
+        const commentBody = event.payload.comment?.body?.split('\n')[0] || '';
+
+        return {
+          ...base,
+          type: 'review',
+          title: `reviewed code in PR #${prNumber}`,
+          description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
+          url: event.payload.comment?.html_url || base.url,
+          payload: event.payload
+        };
+      }
+
+      case 'ReleaseEvent': {
+        const releaseName = event.payload.release?.name || event.payload.release?.tag_name || '';
         return {
           ...base,
           type: 'release',
-          title: 'Published Release',
-          description: event.payload.release.name || event.payload.release.tag_name,
-          url: event.payload.release.html_url,
+          title: 'published a release',
+          description: releaseName,
+          url: event.payload.release?.html_url || base.url,
           payload: event.payload
         };
-      case 'WatchEvent':
+      }
+
+      case 'WatchEvent': {
         return {
           ...base,
           type: 'star',
-          title: 'Starred Repository',
-          description: event.repo.name,
+          title: 'starred it',
+          description: repoName,
           url: `https://github.com/${event.repo.name}`,
           payload: event.payload
         };
-      case 'ForkEvent':
+      }
+
+      case 'ForkEvent': {
+        const forkName = event.payload.forkee?.full_name || '';
         return {
           ...base,
           type: 'fork',
-          title: 'Forked Repository',
-          description: event.payload.forkee.full_name,
-          url: event.payload.forkee.html_url,
+          title: 'forked it',
+          description: forkName,
+          url: event.payload.forkee?.html_url || base.url,
           payload: event.payload
         };
-      default:
-        // Include other events as unknown or generic activity
+      }
+
+      case 'GollumEvent': {
+        // Wiki page edits
+        const pages = event.payload.pages || [];
+        const action = pages[0]?.action === 'created' ? 'created' : 'edited';
+        const pageName = pages[0]?.page_name || 'wiki';
         return {
           ...base,
           type: 'unknown',
-          title: event.type.replace('Event', ''),
-          description: event.repo.name,
+          title: `${action} wiki page`,
+          description: pageName,
+          url: pages[0]?.html_url || base.url,
+          payload: event.payload
+        };
+      }
+
+      case 'MemberEvent': {
+        const memberLogin = event.payload.member?.login || '';
+        const action = event.payload.action === 'added' ? 'added' : 'removed';
+        return {
+          ...base,
+          type: 'unknown',
+          title: `${action} a collaborator`,
+          description: memberLogin,
+          url: base.url,
+          payload: event.payload
+        };
+      }
+
+      case 'PublicEvent': {
+        return {
+          ...base,
+          type: 'unknown',
+          title: 'made repository public',
+          description: repoName,
+          url: base.url,
+          payload: event.payload
+        };
+      }
+
+      case 'CommitCommentEvent': {
+        const commitId = event.payload.comment?.commit_id?.substring(0, 7) || '';
+        const commentBody = event.payload.comment?.body?.split('\n')[0] || '';
+        return {
+          ...base,
+          type: 'commit',
+          title: `commented on commit ${commitId}`,
+          description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
+          url: event.payload.comment?.html_url || base.url,
+          payload: event.payload
+        };
+      }
+
+      default:
+        // Skip unknown events or make them more readable
+        const typeName = event.type.replace('Event', '').replace(/([A-Z])/g, ' $1').trim().toLowerCase();
+        return {
+          ...base,
+          type: 'unknown',
+          title: typeName,
+          description: repoName,
           url: `https://github.com/${event.repo.name}`,
           payload: event.payload
         };
@@ -565,10 +744,10 @@ class GitHubService {
   async getRecentActivity(limit: number = 10): Promise<GitHubEventDetail[]> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/users/${this.username}/events?per_page=50`, // Fetch sufficient info to filter by unique repos
+        `${this.baseUrl}/users/${this.username}/events?per_page=50`,
         {
           headers: this.getHeaders(),
-          next: { revalidate: 60 } // Cache for 1 min
+          next: { revalidate: 60 }
         } as any
       );
 
@@ -578,15 +757,11 @@ class GitHubService {
 
       const events = await response.json();
       const details: GitHubEventDetail[] = [];
-      const seenRepos = new Set<string>();
 
       for (const event of events) {
-        if (!seenRepos.has(event.repo.name)) {
-          const detail = this.parseGitHubEvent(event);
-          if (detail) {
-            details.push(detail);
-            seenRepos.add(event.repo.name);
-          }
+        const detail = this.parseGitHubEvent(event);
+        if (detail) {
+          details.push(detail);
         }
         if (details.length >= limit) break;
       }

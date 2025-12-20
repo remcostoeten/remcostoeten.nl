@@ -10,24 +10,33 @@ interface SectionProps {
     className?: string;
     headerAction?: ReactNode;
     noPadding?: boolean;
+    /** Apply consistent horizontal padding (px-6 md:px-12) to content */
+    contentPadding?: boolean;
+    /** Remove margin-bottom from the header */
+    noHeaderMargin?: boolean;
 }
 
 /**
  * Bordered section component for consistent layout
  * Inspired by chanhdai.com design pattern
  */
+/** Standard horizontal padding class for consistent site-wide spacing */
+export const SECTION_PADDING = 'px-0'
+
 export function Section({
     title,
     children,
     className = "",
     headerAction,
-    noPadding = false
+    noPadding = false,
+    contentPadding = true,
+    noHeaderMargin = false
 }: SectionProps) {
     return (
         <section className={`relative ${className}`}>
             {title && (
-                <div className="full-width-header">
-                    <div className="header-content-container flex items-center justify-between">
+                <div className={`full-width-header ${noHeaderMargin ? '!mb-0' : ''}`}>
+                    <div className="header-content-container flex items-center justify-between header-content-container--with-padding">
                         <h2 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                             {title}
                         </h2>
@@ -39,7 +48,7 @@ export function Section({
                     </div>
                 </div>
             )}
-            <div className={noPadding ? '' : 'px-1'}>
+            <div className={contentPadding ? SECTION_PADDING : ''}>
                 {children}
             </div>
         </section>

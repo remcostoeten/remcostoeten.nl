@@ -16,7 +16,6 @@ export function BlogPosts() {
     <Section
       title="Recent Posts"
       headerAction={<PostCountHeader count={sortedBlogs.length} />}
-      noPadding
     >
       <BlogPostsClient posts={sortedBlogs} />
     </Section>

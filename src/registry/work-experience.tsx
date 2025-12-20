@@ -96,8 +96,8 @@ export function ExperienceItem({
 
         {experience.isCurrentEmployer && (
           <span className="relative flex items-center justify-center">
-            <span className="absolute inline-flex size-3 animate-ping rounded-full bg-[#22c55e] opacity-50" />
-            <span className="relative inline-flex size-2 rounded-full bg-[#22c55e]" />
+            <span className="absolute inline-flex size-3 animate-ping rounded-full bg-brand-500 opacity-50" />
+            <span className="relative inline-flex size-2 rounded-full bg-brand-500" />
             <span className="sr-only">Current Employer</span>
           </span>
         )}
