@@ -1,7 +1,7 @@
 import { BlogPosts } from '@/components/blog/posts';
 import { Intro } from '@/components/home/hero';
 import { ActivitySection } from '@/components/activity/section';
-import { SearchBarServer } from '@/components/search/search-bar-server';
+import { TechStackCloud } from '@/components/ui/tech-stack-cloud';
 import { homeMetadata } from '@/core/metadata'
 import nextDynamic from 'next/dynamic'
 
@@ -20,16 +20,20 @@ export default function Page() {
       <div className="space-y-6">
         <Intro />
 
-        {/* Search Section */}
-        <div className="px-4 md:px-0">
-          <SearchBarServer placeholder="Search for posts, topics, or categories..." />
-        </div>
-
         <div className="space-y-4">
           <div>
             <ActivitySection />
             <WorkExperienceDemo />
           </div>
+
+          {/* Tech Stack - Above Blog */}
+          <div className="px-4 md:px-0 py-8">
+            <h3 className="text-center font-medium text-lg text-muted-foreground tracking-tight md:text-xl mb-6">
+              Tech stack I work with
+            </h3>
+            <TechStackCloud />
+          </div>
+
           <BlogPosts />
         </div>
       </div>

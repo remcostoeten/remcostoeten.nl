@@ -10,6 +10,7 @@ import Footer from '@/components/layout/footer'
 import { PageTransition } from '@/components/layout/page-transition'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
+import { ThemeSwitch } from '@/components/ui/theme-switch'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
@@ -65,6 +66,23 @@ export default function RootLayout({
       )}
     >
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (!theme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         <WebsiteStructuredData />
         <PersonStructuredData />
       </head>
@@ -81,6 +99,7 @@ export default function RootLayout({
               <Footer />
             </div>
           </VimAuthProvider>
+          <ThemeSwitch position="fixed" offset={20} side="right" />
           <Analytics />
           <SpeedInsights />
         </CustomQueryClientProvider>

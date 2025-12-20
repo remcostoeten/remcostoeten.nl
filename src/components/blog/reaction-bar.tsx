@@ -46,7 +46,6 @@ export function ReactionBar({ slug }: ReactionBarProps) {
     const handleReaction = async (emoji: EmojiType) => {
         setLoadingEmoji(emoji)
 
-        // Optimistic update
         setReactions(prev => ({
             ...prev,
             [emoji]: {
@@ -61,7 +60,6 @@ export function ReactionBar({ slug }: ReactionBarProps) {
             const result = await toggleReaction(slug, emoji)
 
             if (result.error) {
-                // Revert on error
                 const fresh = await getReactions(slug)
                 if (fresh.reactions) {
                     setReactions(fresh.reactions)
