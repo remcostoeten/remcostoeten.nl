@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Plus, GitBranch, Lock, Globe } from 'lucide-react';
 import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying } from '@/server/services/spotify';
@@ -290,44 +290,66 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     // Real-time playback monitoring
     const playbackState = useSpotifyPlayback();
 
-    // Fetch recent tracks history
+    // Fetch recent tracks history (memoized)
     useEffect(() => {
+        let cancelled = false;
         const fetchRecent = async () => {
             try {
                 const spotifyTracks = await getLatestTracks(activityCount);
-                setTracks(spotifyTracks);
+                if (!cancelled) {
+                    setTracks(spotifyTracks);
+                }
             } catch (error) {
-                console.error('Error fetching recent tracks:', error);
+                if (!cancelled) {
+                    console.error('Error fetching recent tracks:', error);
+                }
             } finally {
-                setSpotifyLoading(false);
+                if (!cancelled) {
+                    setSpotifyLoading(false);
+                }
             }
         };
         fetchRecent();
+        return () => { cancelled = true; };
     }, [activityCount]);
+
+    // Memoize callback to prevent re-renders
+    const rotateActivity = useCallback(() => {
+        if (activities.length === 0 || isPaused) return;
+        setCurrentIndex((prev) => (prev + 1) % activities.length);
+    }, [activities.length, isPaused]);
 
     // Rotate through activities
     useEffect(() => {
         if (activities.length === 0 || isPaused) return;
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % activities.length);
-        }, rotationInterval);
+        const interval = setInterval(rotateActivity, rotationInterval);
         return () => clearInterval(interval);
-    }, [activities.length, rotationInterval, isPaused]);
+    }, [rotateActivity, rotationInterval]);
 
+  // Memoize expensive calculations
     const isLoading = githubLoading || spotifyLoading;
-    const currentActivity = activities[currentIndex];
-    const isRealTimePlaying = playbackState.isPlaying && playbackState.track;
+    const currentActivity = useMemo(() => activities[currentIndex], [activities, currentIndex]);
+    const isRealTimePlaying = useMemo(() => playbackState.isPlaying && playbackState.track, [playbackState.isPlaying, playbackState.track]);
 
     // Build the track rotation: if live playing, playbackState.track is slot 0, then recent tracks (excluding the current song)
-    // If not live, just cycle through the 5 recent tracks
-    const filteredTracks = isRealTimePlaying && playbackState.track
-        ? tracks.filter(t => t.name !== playbackState.track!.name || t.artist !== playbackState.track!.artist)
-        : tracks;
-    const trackRotation = isRealTimePlaying
-        ? [playbackState.track, ...filteredTracks.slice(0, 4)]
-        : tracks.slice(0, 5);
-    const currentTrack = trackRotation[currentIndex % Math.max(trackRotation.length, 1)];
-    const isCurrentTrackLive = isRealTimePlaying && currentIndex % Math.max(trackRotation.length, 1) === 0;
+    // If not live, just cycle through the 5 recent tracks (memoized)
+    const trackRotation = useMemo(() => {
+        const filteredTracks = isRealTimePlaying && playbackState.track
+            ? tracks.filter(t => t.name !== playbackState.track!.name || t.artist !== playbackState.track!.artist)
+            : tracks;
+        return isRealTimePlaying
+            ? [playbackState.track, ...filteredTracks.slice(0, 4)]
+            : tracks.slice(0, 5);
+    }, [isRealTimePlaying, tracks, playbackState.track]);
+
+    const currentTrack = useMemo(() =>
+        trackRotation[currentIndex % Math.max(trackRotation.length, 1)],
+        [trackRotation, currentIndex]
+    );
+    const isCurrentTrackLive = useMemo(() =>
+        isRealTimePlaying && currentIndex % Math.max(trackRotation.length, 1) === 0,
+        [isRealTimePlaying, currentIndex, trackRotation.length]
+    );
 
     // Skeleton loading state - matches final layout to prevent CLS
     if (isLoading) {
@@ -403,7 +425,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
             <div className="p-4 md:p-5">
                 {/* Fixed height container to prevent layout shift */}
-                <div className="h-[4.5rem] md:h-[5rem] overflow-hidden">
+                <div className="min-h-[4.5rem] md:min-h-[5rem]">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={`${currentIndex}-${currentActivity.id}`}
@@ -505,7 +527,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     href={currentTrack.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-green-500/10 text-green-500 border border-green-500/20 max-w-[140px]"
+                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-green-500/10 text-green-500 border border-green-500/20 max-w-[200px]"
                                                 >
                                                     <Music className="size-3 shrink-0" />
                                                     <span className="truncate">{currentTrack.name}</span>
@@ -522,7 +544,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
                                             <motion.span
                                                 variants={highlightVariants}
-                                                className="text-foreground/90 font-medium truncate max-w-[120px]"
+                                                className="text-foreground/90 font-medium truncate max-w-[160px]"
                                             >
                                                 {currentTrack.artist}
                                             </motion.span>
@@ -556,7 +578,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     href={currentTrack.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-orange-500/10 text-orange-500 border border-orange-500/20 max-w-[140px]"
+                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-orange-500/10 text-orange-500 border border-orange-500/20 max-w-[200px]"
                                                 >
                                                     <Music className="size-3 shrink-0" />
                                                     <span className="truncate">{currentTrack.name}</span>
@@ -573,7 +595,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
                                             <motion.span
                                                 variants={highlightVariants}
-                                                className="text-foreground/90 font-medium truncate max-w-[120px]"
+                                                className="text-foreground/90 font-medium truncate max-w-[160px]"
                                             >
                                                 {currentTrack.artist}
                                             </motion.span>

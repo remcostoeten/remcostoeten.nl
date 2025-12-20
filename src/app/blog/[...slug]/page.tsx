@@ -6,6 +6,9 @@ import { baseUrl } from '@/app/sitemap'
 import { CustomMDX } from '@/components/blog/mdx'
 import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
 import { TableOfContents } from '@/components/blog/table-of-contents'
+import { ReactionBar } from '@/components/blog/reaction-bar'
+import { CommentSection } from '@/components/blog/comment-section'
+import { VigiloManager } from '@/components/vigilo-manager'
 
 export const dynamic = 'force-dynamic'
 
@@ -138,8 +141,14 @@ export default async function Blog({ params }) {
           <CustomMDX source={post.content} />
         </article>
 
+        <div className="max-w-3xl">
+          <ReactionBar slug={post.slug} />
+          <CommentSection slug={post.slug} />
+        </div>
+
         <PostNavigation prevPost={prevPost} nextPost={nextPost} />
       </section>
+      <VigiloManager category="blog-tasks" />
     </>
   )
 }

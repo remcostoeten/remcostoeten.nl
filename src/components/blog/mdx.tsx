@@ -3,6 +3,16 @@ import Image from 'next/image'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
 import { CodeBlock } from '../ui/code-block'
+import { CollapsibleMedia } from './collapsible-media'
+import {
+  Notice,
+  NoticeAlert,
+  NoticeWarning,
+  NoticeSuccess,
+  NoticeInfo,
+  NoticeNeutral,
+  NoticeRegular
+} from '../ui/notice'
 import remarkGfm from 'remark-gfm'
 
 function Table({ data }) {
@@ -98,7 +108,15 @@ let components = {
   h5: createHeading(5),
   h6: createHeading(6),
   Image: RoundedImage,
+  CollapsibleMedia,
   a: CustomLink,
+  Notice,
+  NoticeAlert,
+  NoticeWarning,
+  NoticeSuccess,
+  NoticeInfo,
+  NoticeNeutral,
+  NoticeRegular,
   pre: ({ children, ...props }) => {
     const codeElement = children as React.ReactElement<any>;
     const code = codeElement?.props?.children || '';

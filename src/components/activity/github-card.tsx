@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GitBranch, GitPullRequest, GitCommit, Star, AlertCircle, Eye, Box, Copy, Plus, ExternalLink } from 'lucide-react';
 import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
@@ -91,13 +91,15 @@ export function GitHubActivityCard() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const { data: activities = [], isLoading } = useGitHubRecentActivity(5);
 
+    const rotateActivity = useCallback(() => {
+        setCurrentIndex((prev) => (prev + 1) % Math.max(activities.length, 1));
+    }, [activities.length]);
+
     useEffect(() => {
         if (activities.length === 0) return;
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % activities.length);
-        }, 6000);
+        const interval = setInterval(rotateActivity, 6000);
         return () => clearInterval(interval);
-    }, [activities.length]);
+    }, [rotateActivity]);
 
     const currentActivity = activities[currentIndex] || {
         type: 'unknown' as const,

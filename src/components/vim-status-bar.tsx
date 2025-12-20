@@ -15,15 +15,12 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
     const { data: session } = useSession();
 
     const handleCommand = useCallback((cmd: string) => {
-        // Normalize: remove ':' if present, remove all spaces, and lowercase
         const normalized = cmd.trim().toLowerCase().replace(/^:/, '').replace(/\s+/g, '');
 
-        // Close the status bar
         setIsVisible(false);
         setInput('');
         setMode('normal');
 
-        // Execute command
         if (onCommand) {
             onCommand(normalized);
         }
@@ -31,7 +28,6 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Ignore if user is typing in an input/textarea
             if (
                 e.target instanceof HTMLInputElement ||
                 e.target instanceof HTMLTextAreaElement ||
@@ -40,36 +36,37 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                 return;
             }
 
-            // Trigger for command mode: ';' or ':'
             if ((e.key === ';' || e.key === ':') && !isVisible) {
                 e.preventDefault();
+                e.stopPropagation();
                 setIsVisible(true);
                 setMode('command');
                 setInput(':');
                 return;
             }
 
-            // Escape to close
             if (e.key === 'Escape' && isVisible) {
                 e.preventDefault();
+                e.stopPropagation();
                 setIsVisible(false);
                 setInput('');
                 setMode('normal');
                 return;
             }
 
-            // Handle input when visible
             if (isVisible && mode === 'command') {
                 if (e.key === 'Enter') {
                     e.preventDefault();
+                    e.stopPropagation();
                     if (input.length > 1) {
-                        handleCommand(input.slice(1)); // Remove the ':'
+                        handleCommand(input.slice(1));
                     }
                     return;
                 }
 
                 if (e.key === 'Backspace') {
                     e.preventDefault();
+                    e.stopPropagation();
                     if (input.length > 1) {
                         setInput(input.slice(0, -1));
                     } else {
@@ -80,16 +77,16 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                     return;
                 }
 
-                // Add character to input
                 if (e.key.length === 1) {
                     e.preventDefault();
+                    e.stopPropagation();
                     setInput(input + e.key);
                 }
             }
         };
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', handleKeyDown, true);
+        return () => window.removeEventListener('keydown', handleKeyDown, true);
     }, [isVisible, input, mode, handleCommand]);
 
     const getStatusText = () => {
@@ -110,19 +107,15 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                     className="fixed bottom-0 left-0 right-0 z-[9999] bg-black/95 border-t border-zinc-800 backdrop-blur-sm"
                 >
                     <div className="container mx-auto px-4 py-2 flex items-center justify-between font-mono text-sm">
-                        {/* Left: Command input */}
                         <div className="flex items-center gap-2 flex-1">
                             <span className="text-green-500">{input}</span>
                             <span className="w-2 h-4 bg-green-500 animate-pulse" />
                         </div>
 
-                        {/* Right: Status */}
                         <div className="text-zinc-500 text-xs">
                             {getStatusText()}
                         </div>
                     </div>
-
-                    {/* Command hints */}
                     <div className="container mx-auto px-4 pb-2">
                         <div className="text-xs text-zinc-600 font-mono flex gap-4">
                             <span>:signin - Authenticate with GitHub</span>

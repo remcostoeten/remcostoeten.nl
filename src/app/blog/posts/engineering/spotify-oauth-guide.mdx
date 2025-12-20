@@ -1,0 +1,83 @@
+---
+title: "Spotify OAuth2 Setup Tutorial: Working Redirects, Tokens, and Refresh Logic"
+publishedAt: "20-12-2025"
+summary: "A guide for setting up Spotify OAuth2 to obtain access and refresh tokens and API integration."
+categories: ["Engineering", "Spotify API", "OAuth2", "Guide"]
+tags: ["spotify oauth2", "redirect uri", "refresh token", "authorization code flow", "access token expiration"]
+slug: "spotify-oauth2-working-setup"
+---
+
+Accessing the Spotify API requires configuring OAuth2. It is not overly complex, although Spotify adds a few extra steps compared to providers like GitHub or Google. These differences cost me hours of debugging due to browser caching and redirect quirks, so I’m documenting the full workflow to save you time.
+
+### In this guide we will
+
+- create a Spotify developer application  
+- configure redirect and callback URLs  
+- obtain the client ID and client secret  
+- implement refresh token generation  
+- use the access token to make authenticated API calls  
+
+The examples use Next.js for convenience, though the concepts translate cleanly to Node.js or any backend framework. You only need minimal familiarity with Next.js to follow along.
+
+---
+
+## Spotify Developer Account
+
+You will need a Spotify developer account to create an OAuth2 application. Navigate to the developer dashboard and click “Create app”, then fill in the fields:
+
+- **Name**: any label for your integration  
+- **Description**: a short explanation  
+- **Website**: optional for development  
+- **Redirect URIs**: the callback endpoint in your project
+
+<Notice type="warning" title="API Setup Required">
+If you don't have an API setup yet, I'll be showing how to [implement the API routes here](#api-routes).
+</Notice>
+Most implementations use something like:
+
+```bash
+/api/spotify/callback
+```
+
+### Important: Spotify rejects localhost
+
+This is where many people encounter invalid redirect errors. It is common to assume that this works:
+
+```bash
+http://localhost:3000/api/spotify/callback
+```
+Spotify will refuse it. Instead register the loopback IP form:
+
+```bash
+http://127.0.0.1:3000/api/spotify/callback
+```
+
+Both map to your machine, but Spotify validates them differently. `localhost` is a hostname that depends on DNS resolution. `127.0.0.1` is an explicit IP address and always resolves to the local interface, which is why Spotify accepts it. Make sure your OAuth redirect in your code matches exactly what you register in the developer dashboard.
+
+Last question is: Which API/SDKs are you planning to use? Fill in your usecase and click "Save". Af
+
+After having pressed save you'll see your client ID, and secret if you press "View client secret". Copy these, and add to your .env file like so:
+
+```bash
+SPOTIFY_CLIENT_ID=your-client-id
+SPOTIFY_CLIENT_SECRET=your-client-secret
+```
+
+<NoticeInfo title="The more you know">
+It doesn't matter whether you use quotes around your environment variable values. All of these work:
+- `SPOTIFY_CLIENT_ID=value`
+- `SPOTIFY_CLIENT_ID="value"`
+- `SPOTIFY_CLIENT_ID='value'`
+
+Choose the style you prefer!
+</NoticeInfo>
+
+If your API calls for different variable names than these two, obviously change those. 
+Next we will configure the authorization code flow, exchanging the temporary code for both an access token and a refresh token.
+
+
+### API Routes {#api-routes}
+
+Continue with the API implementation here...
+
+

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
@@ -522,16 +523,16 @@ export function ActivityContributionGraph({
       )}
 
       {/* Custom Tooltip */}
-      {hoveredDay && hoveredDay.githubCount > 0 && (
+      {hoveredDay && hoveredDay.githubCount > 0 && typeof document !== 'undefined' && createPortal(
         <div
           className="fixed z-[100] pointer-events-none"
           style={{
-            left: tooltipPosition.x + 20,
-            top: tooltipPosition.y - 55,
-            transform: 'translateX(-50%)',
+            left: tooltipPosition.x,
+            top: tooltipPosition.y - 12, // Reduced offset to bring it closer to the element
+            transform: 'translate(-50%, -100%)', // Anchor bottom-center
           }}
         >
-          <div className="relative">
+          <div className="relative mb-2">
             <div className="bg-card/95 backdrop-blur-md border border-border/50 rounded-md shadow-xl px-2.5 py-1.5">
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-sm ${getColorForLevel(hoveredDay.level)}`}></div>
@@ -540,9 +541,11 @@ export function ActivityContributionGraph({
                 </span>
               </div>
             </div>
-            <div className="absolute w-1.5 h-1.5 bg-card/95 border-r border-b border-border/50 transform rotate-45 -bottom-[3px] left-1/2 -translate-x-1/2"></div>
+            {/* Triangle/Arrow pointing down */}
+            <div className="absolute w-2 h-2 bg-card/95 border-r border-b border-border/50 transform rotate-45 -bottom-1 left-1/2 -translate-x-1/2"></div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

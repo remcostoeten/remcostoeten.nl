@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
-import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 
 import { AnimatedNumber } from '../ui/animated-number'
 
@@ -36,9 +36,6 @@ type Props = {
 
 function BlogCard({ post, index }: Props) {
   const formattedIndex = (index + 1).toString().padStart(2, '0')
-  const asciiRef = useRef<HTMLDivElement | null>(null)
-  const asciiCharsRef = useRef<string[]>([])
-  const frameRef = useRef<number | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
 
@@ -48,49 +45,6 @@ function BlogCard({ post, index }: Props) {
   const dayNumber = dateObj.getDate()
   const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
   const dateDuration = 1000 + (index * 50)
-
-  useEffect(() => {
-    const chars = ['+', '.', ':', '-', '·', ' ']
-    asciiCharsRef.current = Array.from({ length: 4000 }, () => {
-      return Math.random() > 0.85
-        ? ' '
-        : chars[Math.floor(Math.random() * chars.length)]
-    })
-
-    if (asciiRef.current) {
-      asciiRef.current.innerText = asciiCharsRef.current.join('')
-    }
-
-    function animate() {
-
-      const asciiChars = ['+', '.', ':', '-', '·', ' ']
-
-      if (asciiRef.current && asciiCharsRef.current.length > 0) {
-        for (let i = 0; i < 5; i++) {
-          const idx = Math.floor(
-            Math.random() * asciiCharsRef.current.length,
-          )
-          if (Math.random() > 0.5) {
-            asciiCharsRef.current[idx] =
-              asciiChars[
-              Math.floor(Math.random() * asciiChars.length)
-              ]
-          }
-        }
-        asciiRef.current.innerText = asciiCharsRef.current.join('')
-      }
-
-      frameRef.current = window.requestAnimationFrame(animate)
-    }
-
-    frameRef.current = window.requestAnimationFrame(animate)
-
-    return () => {
-      if (frameRef.current) {
-        window.cancelAnimationFrame(frameRef.current)
-      }
-    }
-  }, [])
 
   return (
     <li className="block p-0 m-0">
@@ -107,27 +61,15 @@ function BlogCard({ post, index }: Props) {
         <Link
           href={`/blog/${post.slug}`}
           className="group relative block active:scale-[0.995] transition-transform duration-200 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
-          style={{ contain: 'layout style paint' }} // Prevent layout shifts
+          style={{ contain: 'layout style paint' }}
         >
           <div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             aria-hidden="true"
           />
 
-          <div
-            className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden"
-            aria-hidden="true"
-          >
-            <div
-              ref={asciiRef}
-              className="w-full h-full font-mono text-[10px] leading-[10px] text-lime-400/12 break-all select-none tracking-widest"
-              style={{ contain: 'strict' }} // Contain ASCII animation
-            />
-          </div>
-
           <article className="relative flex flex-col sm:flex-row sm:items-start gap-5 py-6 px-2 border-b border-neutral-800/60 z-10">
             <div className="flex items-start gap-4 flex-1 min-w-0">
-              {/* Index number */}
               <span
                 className="text-5xl font-bold text-neutral-700/40 leading-none select-none tabular-nums flex-shrink-0 w-16 text-right"
                 aria-hidden="true"
@@ -135,7 +77,6 @@ function BlogCard({ post, index }: Props) {
                 <AnimatedNumber value={formattedIndex} duration={indexDuration} />
               </span>
 
-              {/* Content */}
               <div className="flex-1 min-w-0 pt-1">
                 <h2 className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug pr-4">
                   {post.metadata.draft && (

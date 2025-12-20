@@ -1,5 +1,6 @@
 
 import { AnimatedNumber } from '../ui/animated-number';
+import { TechStackCloud } from '../ui/tech-stack-cloud';
 import Image from 'next/image';
 
 export function Intro() {
@@ -33,6 +34,13 @@ export function Intro() {
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">government</span>, and{' '}
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">e-learning</span> projects.
       </p>
+
+      <div className="mt-8">
+        <h3 className="text-center font-medium text-lg text-muted-foreground tracking-tight md:text-xl mb-6">
+          Tech stack I work with
+        </h3>
+        <TechStackCloud />
+      </div>
     </header>
   );
 }

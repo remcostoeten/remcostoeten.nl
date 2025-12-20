@@ -11,6 +11,9 @@ export const env = createEnv({
         GITHUB_CLIENT_ID: z.string().optional(),
         GITHUB_CLIENT_SECRET: z.string().optional(),
 
+        GOOGLE_CLIENT_ID: z.string().optional(),
+        GOOGLE_CLIENT_SECRET: z.string().optional(),
+
         ADMIN_EMAIL: z.string().email().optional(),
 
         RESEND_API_KEY: z.string().optional(),
@@ -28,6 +31,9 @@ export const env = createEnv({
 
         GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
         GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+        GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 
         ADMIN_EMAIL: process.env.ADMIN_EMAIL,
 

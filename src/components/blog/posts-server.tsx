@@ -6,7 +6,6 @@ import { Section } from '../ui/section'
 export async function BlogPosts() {
   const userIsAdmin = await isAdmin()
 
-  // Admin sees all posts including drafts, regular users only see published
   const allBlogs = userIsAdmin ? getAllBlogPosts() : getBlogPosts()
 
   const sortedBlogs = allBlogs.sort((a, b) => {
