@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+
+# Sitemaps
+Sitemap: https://remcostoeten.nl/sitemap.xml
+Sitemap: https://remcostoeten.nl/sitemap-pages.xml
+Sitemap: https://remcostoeten.nl/sitemap-posts.xml
+Sitemap: https://remcostoeten.nl/sitemap-categories.xml

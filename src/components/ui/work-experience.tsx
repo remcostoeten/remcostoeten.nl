@@ -82,35 +82,54 @@ export function WorkExperience({
       {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} />}
 
       <div className="relative">
-        {!showAll && previewJob && (
-          <div className="relative">
-            <div className="relative overflow-hidden">
-              <ExperienceItem key={previewJob.id} experience={previewJob} />
-              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
-            </div>
+        {/* Preview state - shows first job with gradient overlay */}
+        <div
+          className="grid transition-all duration-500 ease-in-out"
+          style={{
+            gridTemplateRows: showAll ? '0fr' : '1fr',
+            opacity: showAll ? 0 : 1,
+          }}
+        >
+          <div className="overflow-hidden">
+            {previewJob && (
+              <div className="relative">
+                <ExperienceItem key={previewJob.id} experience={previewJob} />
+                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
-        {showAll && workHistory.map((experience) => (
-          <ExperienceItem key={experience.id} experience={experience} />
-        ))}
+        {/* Expanded state - shows all jobs */}
+        <div
+          className="grid transition-all duration-500 ease-in-out"
+          style={{
+            gridTemplateRows: showAll ? '1fr' : '0fr',
+            opacity: showAll ? 1 : 0,
+          }}
+        >
+          <div className="overflow-hidden">
+            {workHistory.map((experience) => (
+              <ExperienceItem key={experience.id} experience={experience} />
+            ))}
+          </div>
+        </div>
+
         {workHistory.length > 0 && (
           <div className="flex justify-center py-4">
             <button
               onClick={() => setShowAll(!showAll)}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted/50 transition-colors"
             >
-              {showAll ? (
-                <>
-                  <ChevronsDownUpIcon className="size-4" />
-                  Show Less
-                </>
-              ) : (
-                <>
-                  <ChevronsUpDownIcon className="size-4" />
-                  View All Experience ({workHistory.length} more)
-                </>
-              )}
+              <span
+                className="inline-flex transition-transform duration-300"
+                style={{ transform: showAll ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              >
+                <ChevronsUpDownIcon className="size-4" />
+              </span>
+              <span className="transition-opacity duration-300">
+                {showAll ? 'Show Less' : `View All Experience (${workHistory.length} more)`}
+              </span>
             </button>
           </div>
         )}

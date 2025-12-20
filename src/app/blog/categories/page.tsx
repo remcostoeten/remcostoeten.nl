@@ -2,6 +2,8 @@ import { getAllCategories } from '@/utils/utils'
 import Link from 'next/link'
 import { Hash, FileText, ArrowUpRight } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Categories',
   description: 'Browse blog posts by category.',

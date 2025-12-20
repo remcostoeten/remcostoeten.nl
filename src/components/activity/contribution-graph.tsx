@@ -142,14 +142,28 @@ export function ActivityContributionGraph({
   }, [githubContributions, tracks, year, loading, githubLoading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
-    const colors = [
+    // Dark theme colors (GitHub default)
+    const darkColors = [
       'bg-[#161b22]',
       'bg-[#0e4429]',
       'bg-[#006d32]',
       'bg-[#26a641]',
       'bg-[#39d353]'
     ];
-    return colors[level];
+    
+    // Light theme colors (subtle)
+    const lightColors = [
+      'bg-gray-200',
+      'bg-green-100/60',
+      'bg-green-200/70',
+      'bg-green-300/80',
+      'bg-green-400'
+    ];
+    
+    // Check if we're in dark theme by checking document class
+    const isDarkTheme = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+    
+    return isDarkTheme ? darkColors[level] : lightColors[level];
   };
 
   const handleMouseEnter = (e: React.MouseEvent, day: ActivityDay) => {

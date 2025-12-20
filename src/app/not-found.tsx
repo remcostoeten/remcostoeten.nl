@@ -1,8 +1,26 @@
 import Link from 'next/link'
 import { Home, FileText, Search, ArrowLeft } from 'lucide-react'
+import { baseUrl } from './sitemap'
 
 export default function NotFound() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "404 - Page Not Found",
+    "description": "The page you're looking for could not be found. Return to the homepage or browse the blog.",
+    "url": `${baseUrl}/404`,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/404`
+    }
+  }
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
     <section className="flex flex-col items-center justify-center min-h-[60vh] text-center">
       <div className="space-y-6 max-w-lg">
         {/* 404 Graphic */}
@@ -73,8 +91,16 @@ export default function NotFound() {
             <Search className="inline w-3.5 h-3.5 mr-1" />
             Tip: Use the search bar to find specific content
           </p>
+          <form action="/search" method="get" className="flex items-center gap-2 pt-2">
+            <input type="search" name="q" placeholder="Search..." className="py-1 pl-8 text-sm text-muted-foreground rounded-lg bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary" />
+            <button type="submit" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium">
+              <Search className="w-4 h-4" />
+              Search
+            </button>
+          </form>
         </div>
       </div>
     </section>
+    </>
   )
 }
