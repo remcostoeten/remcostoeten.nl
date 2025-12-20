@@ -8,6 +8,13 @@
       "when": 1766197615131,
       "tag": "0000_jazzy_meggan",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766199403542,
+      "tag": "0001_famous_shockwave",
+      "breakpoints": true
     }
   ]
 }

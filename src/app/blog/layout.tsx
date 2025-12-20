@@ -1,4 +1,3 @@
-import { TopicsSidebar } from '@/components/blog/topics-sidebar'
 import { ReactNode } from 'react'
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
@@ -7,7 +6,6 @@ export default function BlogLayout({ children }: { children: ReactNode }) {
             <div className="w-full">
                 {children}
             </div>
-            <TopicsSidebar />
         </div>
     )
 }

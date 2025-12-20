@@ -18,7 +18,6 @@ export default function Page() {
           <ActivitySection />
           <WorkExperienceDemo />
         </div>
-        <div className="screen-border" />
         <BlogPosts />
       </div>
     </div>
