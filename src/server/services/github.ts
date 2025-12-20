@@ -791,6 +791,7 @@ export interface GitHubEventDetail {
   url: string;
   repository: string;
   timestamp: string;
+  isPrivate: boolean;
   icon?: string;
   payload?: any;
 }
