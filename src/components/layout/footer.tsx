@@ -1,125 +1,128 @@
 'use client';
 
-import { useState } from "react";
-import { Github, Linkedin, ArrowUpRight, ExternalLink } from "lucide-react";
+import { useState, useMemo } from 'react';
+import { Copy, Check, Github, Linkedin, Twitter, GitCommit } from 'lucide-react';
+import { toast } from 'sonner';
+import Link from 'next/link';
+import { useLatestCommit } from '@/hooks/use-github';
+import { AnimatedNumber } from '../ui/animated-number';
 
-function Footer() {
-  const [update] = useState("latest commit message, timestamp placeholder");
+const Footer = () => {
+  const [copied, setCopied] = useState(false);
+  const email = 'stoetenremco.rs@gmail.com';
+  const displayEmail = 'stoetenremco [dot] rs [at] gmail [dot] com';
 
-  const social = [
-    { name: "GitHub", handle: "remcostoeten", href: "https://github.com/remcostoeten", icon: Github },
-    { name: "LinkedIn", handle: "/in/remco-stoeten", href: "https://www.linkedin.com/in/remco-stoeten", icon: Linkedin },
-  ];
+  const { data: latestCommit } = useLatestCommit('remcostoeten', 'remcostoeten.nl');
 
-  const quick = [
-    { name: "Skriuw", href: "#" },
-    { name: "Satio CLI", href: "#" },
-    { name: "Servo PM", href: "#" },
-    { name: "Kllippy", href: "#" },
+  const relativeTimeInfo = useMemo(() => {
+    if (!latestCommit?.date) return null;
+    const now = new Date();
+    const date = new Date(latestCommit.date);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 60) return { value: diffMins, unit: diffMins === 1 ? 'min' : 'mins' };
+    if (diffHours < 24) return { value: diffHours, unit: diffHours === 1 ? 'hr' : 'hrs' };
+    return { value: diffDays, unit: diffDays === 1 ? 'day' : 'days' };
+  }, [latestCommit?.date]);
+
+  const copyEmail = async () => {
+    await navigator.clipboard.writeText(email);
+    setCopied(true);
+    toast.success('Email copied');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const socialLinks = [
+    { name: 'GitHub', href: 'https://github.com/remcostoeten', icon: Github },
+    { name: 'LinkedIn', href: 'https://linkedin.com/in/remcostoeten', icon: Linkedin },
+    { name: 'X', href: 'https://x.com/remcostoeten', icon: Twitter },
   ];
 
   return (
-    <footer className="relative overflow-hidden border-t border-border/30 bg-background/95 backdrop-blur-sm pt-16 pb-8">
-      <div className="absolute inset-0 bg-gradient-to-t from-muted/10 via-transparent to-transparent pointer-events-none" />
-
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 mb-16">
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <span className="text-muted-foreground/70 text-sm font-medium tracking-wide uppercase">
-                Say hello 👋
-              </span>
-              
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground leading-tight">
-                Want to <span className="text-primary">collaborate</span> on something?
-              </h2>
-
-              <p className="text-muted-foreground text-base max-w-md leading-relaxed">
-                Open for meaningful work, OSS contributions, and long-term collaborations. 
-                If the project excites or challenges, I want to hear about it.
-              </p>
-            </div>
-
-            <div className="pt-2">
+    <footer className="border-t border-border/40 bg-background">
+      <div className="container mx-auto px-6 py-8">
+        {/* Main row */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
+          {/* Brand & Git stats */}
+          <div className="flex flex-col gap-2">
+            <Link href="/" className="text-lg font-semibold tracking-tight hover:opacity-70 transition-opacity">
+              remcostoeten<span className="text-primary">.</span>nl
+            </Link>
+            {latestCommit && relativeTimeInfo && (
               <a
-                href="#contact"
-                className="group inline-flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground rounded-md font-medium transition-all duration-300 hover:bg-primary/90 hover:scale-[1.01] active:scale-[0.99]"
+                href={latestCommit.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                Start a conversation
-                <ArrowUpRight className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-300" />
+                <GitCommit className="w-3 h-3" />
+                <span>
+                  Updated <AnimatedNumber value={relativeTimeInfo.value} duration={600} className="text-foreground" /> {relativeTimeInfo.unit} ago
+                </span>
+                <span className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors truncate max-w-[180px]">
+                  · {latestCommit.message}
+                </span>
               </a>
-            </div>
-
-            <div className="text-xs text-muted-foreground/50 font-mono pt-1">
-              latest update: {update}
-            </div>
+            )}
           </div>
 
-          <div className="lg:pt-2 space-y-8">
-            <div className="space-y-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
-                Projects
-              </h3>
-              <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {quick.map(link => (
-                  <a
-                    key={link.name}
-                    href={link.href}
-                    className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors text-sm font-medium"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary transition-colors"></span>
-                    {link.name}
-                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
-                  </a>
-                ))}
-              </nav>
-            </div>
+          {/* Contact */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={copyEmail}
+              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-green-500" />
+                  <span>Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{displayEmail}</span>
+                </>
+              )}
+            </button>
 
-            <div className="space-y-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
-                Follow me
-              </h3>
-              <div className="flex gap-3">
-                {social.map(s => (
-                  <a
-                    key={s.name}
-                    href={s.href}
-                    className="group flex items-center justify-center w-10 h-10 rounded-md border border-border/50 text-muted-foreground/70 transition-all duration-300 hover:border-primary/30 hover:text-primary hover:bg-primary/5"
-                    aria-label={s.name}
-                  >
-                    <s.icon className="w-4.5 h-4.5" />
-                  </a>
-                ))}
-              </div>
+            <span className="text-border">|</span>
+
+            {/* Social icons */}
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={social.name}
+                >
+                  <social.icon className="w-4 h-4" />
+                </a>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-border/30">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="text-xl font-semibold text-foreground">
-              <span className="text-muted-foreground">remco</span>
-              <span className="text-primary">.</span>
-              <span className="text-muted-foreground">stoeten</span>
-            </div>
-
-            <p className="text-xs text-muted-foreground/60">
-              © {new Date().getFullYear()} Built with intention. Crafted with care.
-            </p>
-
-            <div className="flex items-center gap-6 text-xs text-muted-foreground/60">
-              <a href="#" className="hover:text-foreground/80 transition-colors">
-                Privacy
-              </a>
-              <a href="#" className="hover:text-foreground/80 transition-colors">
-                Terms
-              </a>
-            </div>
+        {/* Bottom row */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">
+          <p>© {new Date().getFullYear()} Remco Stoeten</p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy" className="hover:text-foreground transition-colors">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-foreground transition-colors">
+              Terms
+            </Link>
           </div>
         </div>
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;

@@ -13,11 +13,11 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         title: "Frontend Developer",
         employmentPeriod: "2025 — present",
         employmentType: "Full-time",
-        icon: "code",
+        icon: "education",
         description: `- Building modern learning platforms and educational tools
 - Developing scalable frontend architecture with React and Next.js
 - Collaborating with cross-functional teams to deliver user-centric solutions`,
-        skills: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Frontend Architecture"],
+        skills: ["React", "Next.js", "TypeScript", "CSS Modules ", "Tanstack Query", "REST"],
         isExpanded: true,
       },
     ],
@@ -32,7 +32,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         title: "Frontend Developer",
         employmentPeriod: "2023 — 2025",
         employmentType: "Full-time",
-        icon: "code",
+        icon: "business",
         description: `- Developed and maintained government-focused collaboration platforms
 - Built accessible and performant web applications
 - Implemented modern frontend practices and design systems`,
@@ -49,7 +49,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         title: "Frontend Developer",
         employmentPeriod: "2022 — 2023",
         employmentType: "Full-time",
-        icon: "code",
+        icon: "design",
         description: `- Created custom web solutions for diverse clients
 - Worked on e-commerce and marketing websites
 - Collaborated with designers to implement pixel-perfect interfaces`,
@@ -76,18 +76,16 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
   },
   {
     id: "education",
-    companyName: "ROC Friese Poort Sneek",
+    companyName: "ROC Friese Poort",
     positions: [
       {
-        id: "education-mbo",
-        title: "MBO Application Development",
+        id: "education-graphic-design",
+        title: "Graphic design",
         employmentPeriod: "2012 — 2016",
         employmentType: "Education",
         icon: "education",
-        description: `- Completed MBO-level education in Application Development
-- Learned fundamentals of programming and software development
-- Built foundation for professional development career`,
-        skills: ["Programming Fundamentals", "Software Development", "Database Desig"],
+        description: `Sneek`,
+        skills: ["Design Theory", "Typography", "Visual Communication", "Adobe Creative Suite"],
       },
     ],
   },

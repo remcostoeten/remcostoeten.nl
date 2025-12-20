@@ -121,11 +121,11 @@ export default async function Blog({ params }) {
           readTime={calculateReadTime(post.content)}
         />
 
-        <div className="space-y-6 mb-12">
-          <h1 className="title font-medium text-3xl tracking-tight max-w-3xl leading-tight">
+        <div className="space-y-6 mb">
+          <h1 className="title font-medium text-3xl tracking-tight max-w-3xl mb-2 leading-tight">
             {post.metadata.title}
           </h1>
-          <div className="flex justify-between items-start mt-4 mb-8 text-sm max-w-3xl">
+          <div className="flex justify-between items-start text-sm max-w-3xl">
             <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
               {post.metadata.summary}
             </p>
