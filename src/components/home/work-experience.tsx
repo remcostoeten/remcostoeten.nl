@@ -1,5 +1,5 @@
-import type { ExperienceItemType } from "@/registry/work-experience"
-import { WorkExperience } from "@/registry/work-experience"
+import type { ExperienceItemType } from "@/components/ui/work-experience"
+import { WorkExperience } from "@/components/ui/work-experience"
 import { Section } from "@/components/ui/section"
 import { Briefcase } from "lucide-react"
 

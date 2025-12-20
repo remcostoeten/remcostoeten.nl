@@ -1,5 +1,7 @@
 import { BlogPosts } from '@/components/blog/posts'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Blog',
   description: 'Read my blog.',

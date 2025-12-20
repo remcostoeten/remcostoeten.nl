@@ -24,6 +24,7 @@ type BlogPost = {
     categories?: string[]
     tags?: string[]
     topics?: string[]
+    draft?: boolean
   }
   slug: string
 }
@@ -143,7 +144,12 @@ function BlogCard({ post, index }: Props) {
                 </span>
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug truncate min-h-[1.5rem]">
+                  <p className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug truncate min-h-[1.5rem] flex items-center gap-2">
+                    {post.metadata.draft && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 flex-shrink-0">
+                        Draft
+                      </span>
+                    )}
                     {post.metadata.title}
                   </p>
 

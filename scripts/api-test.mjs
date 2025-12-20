@@ -2,6 +2,8 @@
 
 import readline from 'readline';
 import { exec } from 'child_process';
+import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
 
 /**
  * API Tester CLI
@@ -10,16 +12,28 @@ import { exec } from 'child_process';
  * It fetches the data, renders the JSON, and copies the curl command to your clipboard.
  */
 
-const BASE_URL = 'http://localhost:3000';
-
-const endpoints = [
-    { name: 'GitHub Activity', path: '/api/github/activity' },
-    { name: 'GitHub Contributions', path: '/api/github/contributions' },
-    { name: 'GitHub Commits', path: '/api/github/commits' },
-    { name: 'GitHub Repo (remcostoeten.nl)', path: '/api/github/repo?owner=remcostoeten&repo=remcostoeten.nl' },
-    { name: 'Spotify Now Playing', path: '/api/spotify/now-playing' },
-    { name: 'Spotify Recent', path: '/api/spotify/recent' },
+let BASE_URL = 'http://localhost:3000';
+let endpoints = [
+    { name: 'GitHub Activity', path: '/api/github/activity', method: 'GET' },
+    { name: 'GitHub Contributions', path: '/api/github/contributions', method: 'GET' },
+    { name: 'GitHub Commits', path: '/api/github/commits', method: 'GET' },
+    { name: 'GitHub Repo (remcostoeten.nl)', path: '/api/github/repo?owner=remcostoeten&repo=remcostoeten.nl', method: 'GET' },
+    { name: 'Spotify Now Playing', path: '/api/spotify/now-playing', method: 'GET' },
+    { name: 'Spotify Recent', path: '/api/spotify/recent', method: 'GET' },
 ];
+
+async function loadConfig() {
+    const configPath = './api-test.config.json';
+    if (existsSync(configPath)) {
+        try {
+            const config = JSON.parse(await readFile(configPath, 'utf8'));
+            if (config.baseUrl) BASE_URL = config.baseUrl;
+            if (config.endpoints) endpoints = config.endpoints;
+        } catch (err) {
+            console.log('\x1b[33mWarning: Could not load config file, using defaults\x1b[0m');
+        }
+    }
+}
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -32,7 +46,8 @@ function showMenu() {
     console.log('\x1b[90m%s\x1b[0m', 'Select an endpoint to fetch data and copy curl to clipboard\n');
 
     endpoints.forEach((ep, i) => {
-        console.log(`\x1b[33m${i + 1}\x1b[0m: ${ep.name} \x1b[90m(${ep.path})\x1b[0m`);
+        const method = ep.method || 'GET';
+        console.log(`\x1b[33m${i + 1}\x1b[0m: ${ep.name} \x1b[90m${method} ${ep.path}\x1b[0m`);
     });
 
     console.log('\n\x1b[31mq\x1b[0m: Quit');
@@ -53,50 +68,81 @@ async function handleInput(input) {
         return;
     }
 
-    if (platform === 'darwin') {
-        command = `echo '${text}' | pbcopy`;
-    } else if (platform === 'linux') {
-        // Try xclip first, then wl-copy for Wayland
-        command = `echo '${text}' | xclip -selection clipboard || echo '${text}' | wl-copy`;
-    } else if (platform === 'win32') {
-        command = `echo ${text} | clip`;
+    const endpoint = endpoints[index];
+    const url = BASE_URL + endpoint.path;
+    const curlCmd = `curl -X GET "${url}" -H "Accept: application/json"`;
+
+    function copyToClipboard(text) {
+        const platform = process.platform;
+        let command;
+
+        if (platform === 'darwin') {
+            command = `echo '${text}' | pbcopy`;
+        } else if (platform === 'linux') {
+            // Try xclip first, then wl-copy for Wayland
+            command = `echo '${text}' | xclip -selection clipboard || echo '${text}' | wl-copy`;
+        } else if (platform === 'win32') {
+            command = `echo ${text} | clip`;
+        }
+
+        if (command) {
+            exec(command, (err) => {
+                if (!err) {
+                    console.log('\x1b[32m✓ Curl command copied to clipboard\x1b[0m');
+                }
+            });
+        }
     }
 
-    if (command) {
-        exec(command, (err) => {
-            if (!err) {
-                console.log('\x1b[32m✓ Curl command copied to clipboard\x1b[0m');
+    copyToClipboard(curlCmd);
+    console.log(`\x1b[33mFetching:\x1b[0m ${url}`);
+
+    try {
+        const startTime = Date.now();
+        const res = await fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'api-test.mjs/1.0'
             }
         });
+        const duration = Date.now() - startTime;
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(`HTTP ${res.status}: ${res.statusText}\nResponse: ${errorText.substring(0, 200)}...`);
+        }
+
+        const contentType = res.headers.get('content-type');
+        let data;
+        
+        if (contentType?.includes('application/json')) {
+            data = await res.json();
+        } else {
+            data = await res.text();
+        }
+
+        console.log(`\x1b[32mStatus:\x1b[0m ${res.status} OK \x1b[90m(${duration}ms)\x1b[0m`);
+        console.log(`\x1b[36mContent-Type:\x1b[0m ${contentType || 'unknown'}`);
+        console.log(`\x1b[33m\nResponse Body:\x1b[0m`);
+        
+        if (typeof data === 'object') {
+            console.log(JSON.stringify(data, null, 2));
+        } else {
+            console.log(data);
+        }
+    } catch (err) {
+        console.log(`\x1b[31m\nError:\x1b[0m ${err.message}`);
+        if (err.code === 'ECONNREFUSED') {
+            console.log(`\x1b[90mConnection refused. Make sure your Next.js server is running at ${BASE_URL}\x1b[0m`);
+        } else {
+            console.log(`\x1b[90mCheck your network connection and server status\x1b[0m`);
+        }
     }
-};
 
-copyToClipboard(curlCmd);
-console.log(`\x1b[33mFetching:\x1b[0m ${url}`);
-
-try {
-    const startTime = Date.now();
-    const res = await fetch(url);
-    const duration = Date.now() - startTime;
-
-    if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-    }
-
-    const data = await res.json();
-
-    console.log(`\x1b[32mStatus:\x1b[0m ${res.status} OK \x1b[90m(${duration}ms)\x1b[0m`);
-    console.log(`\x1b[33m\nResponse Body:\x1b[0m`);
-    console.log(JSON.stringify(data, null, 2));
-} catch (err) {
-    console.log(`\x1b[31m\nError:\x1b[0m ${err.message}`);
-    console.log(`\x1b[90mMake sure your Next.js server is running at ${BASE_URL}\x1b[0m`);
-}
-
-console.log(`\x1b[90m\n--------------------------------------------------\x1b[0m`);
-rl.question('Press Enter to return to menu...', () => {
-    showMenu();
-});
+    console.log(`\x1b[90m\n--------------------------------------------------\x1b[0m`);
+    rl.question('Press Enter to return to menu...', () => {
+        showMenu();
+    });
 }
 
 // Handle Ctrl+C
@@ -105,4 +151,9 @@ rl.on('SIGINT', () => {
     process.exit(0);
 });
 
-showMenu();
+async function start() {
+    await loadConfig();
+    showMenu();
+}
+
+start();
