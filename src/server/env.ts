@@ -15,6 +15,7 @@ export const env = createEnv({
 
         RESEND_API_KEY: z.string().optional(),
         RESEND_EMAIL_FROM: z.string().email().optional(),
+        CRON_SECRET: z.string().min(1).optional(),
     },
     client: {
         NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
@@ -32,6 +33,7 @@ export const env = createEnv({
 
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         RESEND_EMAIL_FROM: process.env.RESEND_EMAIL_FROM,
+        CRON_SECRET: process.env.CRON_SECRET,
 
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
         NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
