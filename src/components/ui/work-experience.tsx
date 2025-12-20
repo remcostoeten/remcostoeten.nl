@@ -1,3 +1,5 @@
+'use client';
+
 import {
   BriefcaseBusinessIcon,
   ChevronsDownUpIcon,
@@ -65,11 +67,69 @@ export function WorkExperience({
   className?: string
   experiences: ExperienceItemType[]
 }) {
+  const [showAll, setShowAll] = React.useState(false);
+
+  // Separate experiences into categories
+  const currentJob = experiences.find(exp => exp.isCurrentEmployer);
+  const education = experiences.find(exp => exp.id === 'education');
+  const workHistory = experiences.filter(exp => !exp.isCurrentEmployer && exp.id !== 'education');
+
+  // For preview: show first work history item (second overall job)
+  const previewJob = workHistory[0];
+  const remainingJobs = workHistory.slice(1);
+
   return (
     <div className={cn("bg-background px-4", className)}>
-      {experiences.map((experience) => (
-        <ExperienceItem key={experience.id} experience={experience} />
-      ))}
+      {/* Current Job - Always visible */}
+      {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} />}
+
+      {/* Work History Section */}
+      <div className="relative">
+        {/* Preview of second job with fade */}
+        {!showAll && previewJob && (
+          <div className="relative">
+            <div className="relative overflow-hidden">
+              <ExperienceItem key={previewJob.id} experience={previewJob} />
+              {/* Fade overlay */}
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+            </div>
+          </div>
+        )}
+
+        {/* Full work history when expanded */}
+        {showAll && workHistory.map((experience) => (
+          <ExperienceItem key={experience.id} experience={experience} />
+        ))}
+
+        {/* View All / Show Less Button */}
+        {workHistory.length > 0 && (
+          <div className="flex justify-center py-4">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              {showAll ? (
+                <>
+                  <ChevronsDownUpIcon className="size-4" />
+                  Show Less
+                </>
+              ) : (
+                <>
+                  <ChevronsUpDownIcon className="size-4" />
+                  View All Experience ({workHistory.length} more)
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Education - Always visible at bottom */}
+      {education && (
+        <div className="border-t border-border pt-4 mt-4">
+          <ExperienceItem key={education.id} experience={education} />
+        </div>
+      )}
     </div>
   )
 }
@@ -79,20 +139,35 @@ export function ExperienceItem({
 }: {
   experience: ExperienceItemType
 }) {
+  // Get the first letter of the company name
+  const initial = experience.companyName.charAt(0).toUpperCase();
+
+  // Get information from the first position
+  const firstPosition = experience.positions[0];
+  const location = firstPosition?.description && firstPosition.description.split('\n').length === 1
+    ? firstPosition.description
+    : null;
+
   return (
     <div className="space-y-4 py-4">
       <div className="not-prose flex items-center gap-3">
         <div className="flex size-6 shrink-0 items-center justify-center" aria-hidden>
-          {experience.positions[0]?.icon ? (
-            <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-              {React.createElement(iconMap[experience.positions[0].icon], { className: "size-4" })}
-            </div>
-          ) : (
-            <span className="flex size-2 rounded-full bg-zinc-300 dark:bg-zinc-600" />
-          )}
+          <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+            <span className="text-xs font-semibold">{initial}</span>
+          </div>
         </div>
 
-        <h3 className="text-lg leading-snug font-medium text-foreground">{experience.companyName}</h3>
+        <div className="flex flex-1 items-baseline gap-2 overflow-hidden">
+          <h3 className="text-lg leading-snug font-medium text-foreground truncate">
+            {experience.companyName}
+          </h3>
+          {location && (
+            <span className="text-sm font-normal text-muted-foreground/60 whitespace-nowrap">
+              <span className="mx-1 opacity-40">·</span>
+              {location}
+            </span>
+          )}
+        </div>
 
         {experience.isCurrentEmployer && (
           <span className="relative flex items-center justify-center">
@@ -117,6 +192,49 @@ export function ExperiencePositionItem({
 }: {
   position: ExperiencePositionItemType
 }) {
+  const hasContent = (position.description && position.description.trim().length > 0) || (Array.isArray(position.skills) && position.skills.length > 0);
+  const isEducation = position.id.startsWith('education');
+  const canCollapse = hasContent && !isEducation;
+
+  if (!canCollapse) {
+    return (
+      <div className="relative">
+        <div className="relative z-1 flex flex-col pl-9">
+          <h4 className="text-base font-medium text-foreground tracking-tight">{position.title}</h4>
+
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-sm text-muted-foreground/80">
+            {position.employmentType && <span>{position.employmentType}</span>}
+
+            <Separator className="h-3 w-[1px] bg-border/50" orientation="vertical" />
+
+            <div className="flex items-center">
+              {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
+                const year = Number.parseInt(part)
+                return isNaN(year) ? part : <AnimatedNumber key={i} value={year} />
+              })}
+            </div>
+          </div>
+        </div>
+
+        {position.description && position.description.split('\n').length > 1 && (
+          <Prose className="pt-2 pl-9">
+            <ReactMarkdown>{position.description}</ReactMarkdown>
+          </Prose>
+        )}
+
+        {Array.isArray(position.skills) && position.skills.length > 0 && (
+          <ul className="not-prose flex flex-wrap gap-1.5 pt-3 pl-9">
+            {position.skills.map((skill, index) => (
+              <li key={index} className="flex">
+                <Skill>{skill}</Skill>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
   return (
     <Collapsible defaultOpen={position.isExpanded} asChild>
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">

@@ -40,45 +40,56 @@ export function useVimCommand() {
                 return;
             }
 
+            // Only start capturing if we see a ':' or if we're already capturing
+            if (!buffer && e.key !== ':') {
+                return;
+            }
+
+            // Also ignore non-character keys (Enter, Shift, etc. except Escape and Backspace which we handle)
+            if (e.key.length > 1 && e.key !== 'Escape' && e.key !== 'Backspace') {
+                return;
+            }
+
             // Clear buffer after 2 seconds of inactivity
             clearTimeout(timeout);
             timeout = setTimeout(() => {
                 if (buffer) {
                     console.log('[vim-cmd] Buffer cleared (timeout)');
+                    setBuffer('');
                 }
-                setBuffer('');
             }, 2000);
 
             // Build buffer
-            const newBuffer = buffer + e.key.toLowerCase();
+            const char = e.key.toLowerCase();
+            const newBuffer = buffer + char;
             setBuffer(newBuffer);
 
-            // Log the current sequence
+            // ONLY log if we're in command mode (buffer exists)
             console.log(`[vim-cmd] Sequence: "${newBuffer}"`);
 
             // Normalize: remove spaces for matching
             const normalized = newBuffer.replace(/\s+/g, '');
 
-            // Check for sign-in patterns: :signin, :sign in, : sign in
-            if (normalized.includes(':signin')) {
-                console.log('[vim-cmd] ✓ SUCCESS: :signin command detected');
+            // Check for sign-in patterns: :signin, :sign in, :login
+            if (normalized.includes(':signin') || normalized.includes(':login')) {
+                console.log('[vim-cmd] ✓ SUCCESS: :signin/:login command detected');
                 setCommand('signin');
                 setBuffer('');
                 return;
             }
 
-            // Check for sign-out patterns: :signout, :sign out, : sign out
-            if (normalized.includes(':signout')) {
-                console.log('[vim-cmd] ✓ SUCCESS: :signout command detected');
+            // Check for sign-out patterns: :signout, :sign out, :logout
+            if (normalized.includes(':signout') || normalized.includes(':logout')) {
+                console.log('[vim-cmd] ✓ SUCCESS: :signout/:logout command detected');
                 setCommand('signout');
                 setBuffer('');
                 return;
             }
 
-            // Limit buffer size
+            // Limit buffer size - if it gets too long without a match, it's likely not a command
             if (newBuffer.length > 20) {
-                console.log('[vim-cmd] Buffer truncated (too long)');
-                setBuffer(newBuffer.slice(-15));
+                console.log('[vim-cmd] Buffer cleared (no match)');
+                setBuffer('');
             }
         };
 

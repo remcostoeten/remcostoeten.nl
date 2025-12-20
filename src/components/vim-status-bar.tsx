@@ -15,7 +15,8 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
     const { data: session } = useSession();
 
     const handleCommand = useCallback((cmd: string) => {
-        const trimmed = cmd.trim().toLowerCase();
+        // Normalize: remove ':' if present, remove all spaces, and lowercase
+        const normalized = cmd.trim().toLowerCase().replace(/^:/, '').replace(/\s+/g, '');
 
         // Close the status bar
         setIsVisible(false);
@@ -24,7 +25,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 
         // Execute command
         if (onCommand) {
-            onCommand(trimmed);
+            onCommand(normalized);
         }
     }, [onCommand]);
 
@@ -39,8 +40,8 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                 return;
             }
 
-            // Semicolon to open command mode
-            if (e.key === ';' && !isVisible) {
+            // Trigger for command mode: ';' or ':'
+            if ((e.key === ';' || e.key === ':') && !isVisible) {
                 e.preventDefault();
                 setIsVisible(true);
                 setMode('command');

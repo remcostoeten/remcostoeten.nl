@@ -12,6 +12,7 @@ import { CustomQueryClientProvider } from '@/components/providers/query-client-p
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
+import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -65,6 +66,7 @@ export default function RootLayout({
               <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
                 <PageTransition>
                   {children}
+                  <Toaster />
                 </PageTransition>
               </main>
               <Footer />

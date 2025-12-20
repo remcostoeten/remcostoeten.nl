@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { signIn, signOut, useSession } from '@/lib/auth-client';
 import { VimStatusBar } from '@/components/vim-status-bar';
 import { OAuthModal } from '@/components/auth/oauth-modal';
+import { useVimCommand } from '@/hooks/use-vim-command';
 
 const ALLOWED_GITHUB_USERNAME = 'remcostoeten';
 
@@ -15,17 +16,26 @@ interface VimAuthProviderProps {
 export function VimAuthProvider({ children }: VimAuthProviderProps) {
     const { data: session } = useSession();
     const [showOAuthModal, setShowOAuthModal] = useState(false);
+    const { command: backgroundCommand, clearCommand: clearBackgroundCommand } = useVimCommand();
 
     const handleCommand = async (command: string) => {
         const cmd = command.toLowerCase().trim();
 
-        if (cmd === 'signin' && !session) {
+        if ((cmd === 'signin' || cmd === 'login') && !session) {
             // Show the modal
             setShowOAuthModal(true);
-        } else if (cmd === 'signout' && session) {
+        } else if ((cmd === 'signout' || cmd === 'logout') && session) {
             await signOut();
         }
     };
+
+    // Handle commands from the background listener (:signin typed anywhere)
+    useEffect(() => {
+        if (backgroundCommand) {
+            handleCommand(backgroundCommand);
+            clearBackgroundCommand();
+        }
+    }, [backgroundCommand, clearBackgroundCommand]);
 
     // Check if logged-in user is allowed (only remcostoeten)
     useEffect(() => {

@@ -41,21 +41,13 @@ function BlogCard({ post, index }: Props) {
   const frameRef = useRef<number | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
-  const [shouldAnimateNumbers, setShouldAnimateNumbers] = useState(false)
 
-  const indexDuration = 800 + (index * 100)
+  const indexDuration = 600 + (index * 200) // Lower posts animate longer
 
   const dateObj = new Date(post.metadata.publishedAt)
   const dayNumber = dateObj.getDate()
   const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
   const dateDuration = 1000 + (index * 50)
-
-  useEffect(() => {
-    if (isInView) {
-      const timer = setTimeout(() => setShouldAnimateNumbers(true), 200)
-      return () => clearTimeout(timer)
-    }
-  }, [isInView])
 
   useEffect(() => {
     const chars = ['+', '.', ':', '-', '·', ' ']
@@ -133,67 +125,68 @@ function BlogCard({ post, index }: Props) {
             />
           </div>
 
-          <article className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 py-8 border-b border-neutral-800/60 z-10 min-h-[120px]">
-            <div className="flex-1 min-w-0">
-              <header className="flex items-start gap-3">
-                <span
-                  className="text-4xl font-bold text-neutral-600/30 leading-none flex items-center min-h-[3.5rem] w-[3rem] select-none tabular-nums flex-shrink-0"
-                  aria-hidden="true"
-                >
-                  {shouldAnimateNumbers && <AnimatedNumber value={formattedIndex} duration={indexDuration} />}
-                </span>
+          <article className="relative flex flex-col sm:flex-row sm:items-start gap-5 py-6 px-2 border-b border-neutral-800/60 z-10">
+            <div className="flex items-start gap-4 flex-1 min-w-0">
+              {/* Index number */}
+              <span
+                className="text-5xl font-bold text-neutral-700/40 leading-none select-none tabular-nums flex-shrink-0 w-16 text-right"
+                aria-hidden="true"
+              >
+                <AnimatedNumber value={formattedIndex} duration={indexDuration} />
+              </span>
 
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug truncate min-h-[1.5rem] flex items-center gap-2">
-                    {post.metadata.draft && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 flex-shrink-0">
-                        Draft
-                      </span>
-                    )}
-                    {post.metadata.title}
-                  </p>
-
-                  {post.metadata.summary && (
-                    <p className="text-xs text-neutral-400/80 line-clamp-2 mt-1.5 leading-relaxed min-h-[2.5rem]">
-                      {post.metadata.summary}
-                    </p>
+              {/* Content */}
+              <div className="flex-1 min-w-0 pt-1">
+                <h2 className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug pr-4">
+                  {post.metadata.draft && (
+                    <span className="inline-flex items-center mr-2 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 flex-shrink-0">
+                      Draft
+                    </span>
                   )}
+                  {post.metadata.title}
+                </h2>
 
-                  {(() => {
-                    const allTags = [
-                      ...(post.metadata.categories || []),
-                      ...(post.metadata.tags || []),
-                      ...(post.metadata.topics || [])
-                    ]
-                    return allTags.length > 0 ? (
-                      <div className="flex flex-wrap gap-2 mt-3 mb-1" aria-label="Tags">
-                        {allTags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-400 cursor-default"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {allTags.length > 3 && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-500">
-                            +{allTags.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    ) : null
-                  })()}
+                {post.metadata.summary && (
+                  <p className="text-sm text-neutral-400/80 line-clamp-2 mt-2 leading-relaxed max-w-xl">
+                    {post.metadata.summary}
+                  </p>
+                )}
 
-                  <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500">
-                    <time dateTime={post.metadata.publishedAt} className="tabular-nums">
-                      {shouldAnimateNumbers && <AnimatedNumber value={dayNumber} duration={dateDuration} />} {monthYear}
-                    </time>
-                  </footer>
-                </div>
-              </header>
+                {(() => {
+                  const allTags = [
+                    ...(post.metadata.categories || []),
+                    ...(post.metadata.tags || []),
+                    ...(post.metadata.topics || [])
+                  ]
+                  return allTags.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 mt-3" aria-label="Tags">
+                      {allTags.slice(0, 3).map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-400 cursor-default"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {allTags.length > 3 && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-500">
+                          +{allTags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  ) : null
+                })()}
+
+                <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500">
+                  <time dateTime={post.metadata.publishedAt} className="tabular-nums">
+                    <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
+                  </time>
+                </footer>
+              </div>
             </div>
 
-            <div className="flex-shrink-0 ml-auto sm:ml-0" aria-hidden="true">
+            {/* Arrow button */}
+            <div className="flex-shrink-0 self-center" aria-hidden="true">
               <div className="relative w-10 h-10 rounded-full bg-neutral-900/60 group-hover:bg-lime-500/20 flex items-center justify-center overflow-hidden transition-all duration-200 group-hover:scale-110">
                 <ArrowUpRight className="absolute w-4 h-4 text-neutral-400 group-hover:text-lime-400 transition-all duration-300 group-hover:-translate-y-6 group-hover:translate-x-6" />
                 <ArrowUpRight className="absolute w-4 h-4 text-lime-400 -translate-x-6 translate-y-6 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0" />
