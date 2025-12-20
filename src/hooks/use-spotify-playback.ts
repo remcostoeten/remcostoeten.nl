@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { getCurrentPlayback, SpotifyTrack, formatDuration } from '@/core/spotify-service';
+import { getCurrentPlayback, SpotifyTrack, formatDuration } from '@/server/services/spotify';
 
 export interface SpotifyPlaybackState {
     track: SpotifyTrack | null;

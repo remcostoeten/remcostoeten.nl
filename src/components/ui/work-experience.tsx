@@ -122,8 +122,8 @@ export function ExperiencePositionItem({
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
         <CollapsibleTrigger
           className={cn(
-            "group/experience not-prose block w-full text-left select-none",
-            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-7 before:rounded-lg hover:before:bg-muted/50",
+            "group/experience not-prose block w-full text-left select-none accordion-smooth",
+            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-7 before:rounded-lg before:accordion-smooth hover:before:bg-muted/50",
           )}
         >
           <div className="relative z-1 mb-1 flex items-center gap-3">
@@ -131,9 +131,9 @@ export function ExperiencePositionItem({
 
             <h4 className="flex-1 text-base font-medium text-balance text-foreground">{position.title}</h4>
 
-            <div className="shrink-0 text-muted-foreground [&_svg]:size-4" aria-hidden>
-              <ChevronsDownUpIcon className="hidden group-data-[state=open]/experience:block" />
-              <ChevronsUpDownIcon className="hidden group-data-[state=closed]/experience:block" />
+            <div className="shrink-0 text-muted-foreground smooth-transition [&_svg]:size-4" aria-hidden>
+              <ChevronsDownUpIcon className="hidden group-data-[state=open]/experience:block smooth-transition" />
+              <ChevronsUpDownIcon className="hidden group-data-[state=closed]/experience:block smooth-transition" />
             </div>
           </div>
 
@@ -161,7 +161,7 @@ export function ExperiencePositionItem({
           </div>
         </CollapsibleTrigger>
 
-        <CollapsibleContent className="overflow-hidden duration-300 data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+        <CollapsibleContent className="overflow-hidden accordion-smooth data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
           {position.description && (
             <Prose className="pt-2 pl-9">
               <ReactMarkdown>{position.description}</ReactMarkdown>

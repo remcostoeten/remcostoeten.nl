@@ -4,7 +4,7 @@ import { useState, useEffect, Fragment } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, GitBranch, GitPullRequest, GitCommit, Star, AlertCircle, Eye, Box, Copy, Plus, ExternalLink, Lock, Unlock } from 'lucide-react';
 import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
-import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying, formatDuration } from '@/core/spotify-service';
+import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying, formatDuration } from '@/server/services/spotify';
 import { AnimatedNumber } from '../ui/animated-number';
 
 function getEventIcon(type: GitHubEventDetail['type']) {

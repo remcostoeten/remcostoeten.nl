@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ActivityHoverCard, GitHubProjectCard, GitHubActivityCard, SpotifyCard } from './activity-hover-card';
 import { useRepoDetails } from '@/hooks/use-repo-details';
 import { GitHubEventDetail } from '@/hooks/use-github';
-import { SpotifyTrack } from '@/core/spotify-service';
+import { SpotifyTrack } from '@/server/services/spotify';
 
 interface ProjectHoverWrapperProps {
     children: React.ReactNode;

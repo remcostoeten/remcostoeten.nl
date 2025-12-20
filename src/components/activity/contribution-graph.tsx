@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getLatestTracks, SpotifyTrack } from '@/core/spotify-service';
+import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
 
 interface ActivityDay {
@@ -65,14 +65,19 @@ export function ActivityContributionGraph({
   const activityData = useMemo(() => {
     if (githubLoading || loading) return [];
 
-    const startOfYear = new Date(year, 0, 1);
-    const endOfYear = new Date(year, 11, 31);
-    const days = Math.ceil((endOfYear.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+    const now = new Date();
+    const isCurrentYear = year === now.getFullYear();
+
+    // If current year, end at today. Otherwise end at Dec 31st.
+    const end = isCurrentYear ? now : new Date(year, 11, 31);
+    const start = new Date(year, 0, 1);
+
+    const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
     const activityMap = new Map<string, ActivityDay>();
 
     for (let i = 0; i <= days; i++) {
-      const date = new Date(startOfYear);
+      const date = new Date(start);
       date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
       const githubData = githubContributions.get(dateStr);
@@ -148,15 +153,21 @@ export function ActivityContributionGraph({
   const weeks = useMemo(() => {
     const weeksArray: ActivityDay[][] = [];
     let currentWeek: ActivityDay[] = [];
-    const startOfYear = new Date(year, 0, 1);
-    const endOfYear = new Date(year, 11, 31);
 
-    let currentDate = new Date(startOfYear);
+    const now = new Date();
+    const isCurrentYear = year === now.getFullYear();
+    const end = isCurrentYear ? now : new Date(year, 11, 31);
+
+    // Default to start of year, but if current year we might want a rolling window.
+    // However, the task specifically mentions not having empty space at the end.
+    const start = new Date(year, 0, 1);
+
+    let currentDate = new Date(start);
     const dayOfWeek = currentDate.getDay();
     const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     currentDate.setDate(currentDate.getDate() - daysToMonday);
 
-    while (currentDate <= endOfYear || currentWeek.length > 0) {
+    while (currentDate <= end) {
       const dateStr = currentDate.toISOString().split('T')[0];
       const day = activityData.find(d => d.date === dateStr);
       currentWeek.push(day || { date: dateStr, githubCount: 0, spotifyCount: 0, totalActivity: 0, level: 0 });
@@ -170,6 +181,7 @@ export function ActivityContributionGraph({
       if (weeksArray.length > 60) break;
     }
 
+    // Add the remaining days of the current week if any, padding to 7 days
     if (currentWeek.length > 0) {
       while (currentWeek.length < 7) {
         currentWeek.push({ date: '', githubCount: 0, spotifyCount: 0, totalActivity: 0, level: 0 });
@@ -363,7 +375,7 @@ export function ActivityContributionGraph({
         </motion.div>
       )}
 
-      {selectedDay && selectedDay.details?.commits && selectedDay.details.commits.length > 0 && (
+      {selectedDay && selectedDay.githubCount > 0 && (
         <motion.div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4"
           onClick={() => setSelectedDay(null)}
@@ -410,15 +422,32 @@ export function ActivityContributionGraph({
               <div className="space-y-3">
                 {/* Group commits by project */}
                 {(() => {
-                  const groupedByProject = selectedDay.details!.commits.reduce((acc, commit) => {
+                  const commits = selectedDay.details?.commits || [];
+
+                  if (commits.length === 0) {
+                    return (
+                      <div className="text-center py-6">
+                        <div className="text-muted-foreground text-sm">
+                          <p className="mb-2">No detailed activity available</p>
+                          <p className="text-xs opacity-75">
+                            GitHub only provides detailed events for the last ~90 days.
+                            <br />
+                            Contribution counts are still tracked via the contributions API.
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  const groupedByProject = commits.reduce((acc, commit) => {
                     const project = commit.projectName || 'Unknown';
                     if (!acc[project]) acc[project] = [];
                     acc[project].push(commit);
                     return acc;
-                  }, {} as Record<string, typeof selectedDay.details.commits>);
+                  }, {} as Record<string, typeof commits>);
 
-                  return Object.entries(groupedByProject).map(([projectName, commits]) => {
-                    const isPrivate = !commits[0]?.url || commits[0].url === '#';
+                  return Object.entries(groupedByProject).map(([projectName, projectCommits]) => {
+                    const isPrivate = !projectCommits[0]?.url || projectCommits[0].url === '#';
                     const repoName = projectName.split('/').pop() || projectName;
 
                     return (
@@ -446,13 +475,13 @@ export function ActivityContributionGraph({
                             </a>
                           )}
                           <span className="text-muted-foreground">
-                            {commits.length} {commits.length === 1 ? 'activity' : 'activities'}
+                            {projectCommits.length} {projectCommits.length === 1 ? 'activity' : 'activities'}
                           </span>
                         </div>
 
                         {/* Commits List */}
                         <div className="space-y-1 pl-2 border-l-2 border-border ml-1">
-                          {commits.slice(0, 10).map((commit, idx) => (
+                          {projectCommits.slice(0, 10).map((commit, idx) => (
                             <div key={idx} className="pl-3 py-1.5">
                               {isPrivate || !commit.url || commit.url === '#' ? (
                                 <p className="text-xs text-muted-foreground leading-relaxed wrap-break-word">
@@ -470,9 +499,9 @@ export function ActivityContributionGraph({
                               )}
                             </div>
                           ))}
-                          {commits.length > 10 && (
+                          {projectCommits.length > 10 && (
                             <p className="text-xs text-muted-foreground pl-3 py-1">
-                              +{commits.length - 10} more...
+                              +{projectCommits.length - 10} more...
                             </p>
                           )}
                         </div>

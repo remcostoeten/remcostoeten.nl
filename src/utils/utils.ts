@@ -10,6 +10,7 @@ type Metadata = {
   tags?: string[]
   topics?: string[]
   readTime?: string
+  draft?: boolean
 }
 
 function parseFrontmatter(fileContent: string) {
@@ -25,7 +26,7 @@ function parseFrontmatter(fileContent: string) {
     let value = valueArr.join(': ').trim()
     value = value.replace(/^['"](.*)['"]$/, '$1') // Remove quotes
     const trimmedKey = key.trim()
-    
+
     if (value.startsWith('[') && value.endsWith(']')) {
       const arrayValue = value.slice(1, -1)
         .split(',')
@@ -54,6 +55,9 @@ function parseFrontmatter(fileContent: string) {
           break
         case 'readTime':
           metadata.readTime = value
+          break
+        case 'draft':
+          metadata.draft = value.toLowerCase() === 'true'
           break
       }
     }
@@ -113,10 +117,20 @@ function getMDXData(dir) {
   })
 }
 
-export function getBlogPosts() {
+/**
+ * Get all blog posts including drafts (for admin use)
+ */
+export function getAllBlogPosts() {
   return getMDXData(path.join(process.cwd(), 'src', 'app', 'blog', 'posts')).filter(
     post => post && post.slug && post.metadata && post.metadata.title
   )
+}
+
+/**
+ * Get published blog posts only (drafts filtered out)
+ */
+export function getBlogPosts() {
+  return getAllBlogPosts().filter(post => !post.metadata.draft)
 }
 
 export function formatDate(date: string, includeRelative = false) {
@@ -158,19 +172,19 @@ export function formatDate(date: string, includeRelative = false) {
 export function getAllCategories() {
   const posts = getBlogPosts()
   const categoryMap = new Map<string, number>()
-  
+
   posts.forEach(post => {
     const allTags = [
       ...(post.metadata.categories || []),
       ...(post.metadata.tags || []),
       ...(post.metadata.topics || [])
     ]
-    
+
     allTags.forEach(tag => {
       categoryMap.set(tag, (categoryMap.get(tag) || 0) + 1)
     })
   })
-  
+
   return Array.from(categoryMap.entries())
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
@@ -178,7 +192,7 @@ export function getAllCategories() {
 
 export function getBlogPostsByCategory(category: string) {
   const posts = getBlogPosts()
-  return posts.filter(post => 
+  return posts.filter(post =>
     [
       ...(post.metadata.categories || []),
       ...(post.metadata.tags || []),

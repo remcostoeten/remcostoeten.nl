@@ -4,6 +4,8 @@ import { ActivitySection } from '@/components/activity/section';
 import WorkExperienceDemo from '@/components/home/work-experience';
 import { homeMetadata } from '@/core/metadata'
 
+export const dynamic = 'force-dynamic'
+
 export { homeMetadata as metadata }
 
 export default function Page() {

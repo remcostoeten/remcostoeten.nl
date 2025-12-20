@@ -1,77 +1,125 @@
 'use client';
 
-import { ArrowUpRight, Github, Linkedin, Mail, Twitter } from 'lucide-react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { Github, Linkedin, ArrowUpRight, ExternalLink } from "lucide-react";
 
-export default function Footer() {
-  const currentYear = new Date().getFullYear();
+function Footer() {
+  const [update] = useState("latest commit message, timestamp placeholder");
+
+  const social = [
+    { name: "GitHub", handle: "remcostoeten", href: "https://github.com/remcostoeten", icon: Github },
+    { name: "LinkedIn", handle: "/in/remco-stoeten", href: "https://www.linkedin.com/in/remco-stoeten", icon: Linkedin },
+  ];
+
+  const quick = [
+    { name: "Skriuw", href: "#" },
+    { name: "Satio CLI", href: "#" },
+    { name: "Servo PM", href: "#" },
+    { name: "Kllippy", href: "#" },
+  ];
 
   return (
-    <footer className="relative w-full bg-background border-t border-border/30 overflow-hidden">
-      {/* Background Grid/Glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-yellow-500/5 blur-[120px] rounded-full mix-blend-screen" />
-      </div>
+    <footer className="relative overflow-hidden border-t border-border/30 bg-background/95 backdrop-blur-sm pt-16 pb-8">
+      <div className="absolute inset-0 bg-gradient-to-t from-muted/10 via-transparent to-transparent pointer-events-none" />
 
-      <div className="max-w-[1400px] mx-auto">
-
-
-        {/* Hero CTA Section */}
-        <div className="relative border-b border-border/30">
-          {/* Vertical lines for the middle separation look */}
-          <div className="absolute top-0 bottom-0 left-0 w-px bg-border/30 hidden md:block" />
-          <div className="absolute top-0 bottom-0 right-0 w-px bg-border/30 hidden md:block" />
-          <div className="absolute top-0 bottom-0 left-1/4 w-px bg-border/30 hidden lg:block opacity-30" />
-          <div className="absolute top-0 bottom-0 right-1/4 w-px bg-border/30 hidden lg:block opacity-30" />
-
-          <div className="py-24 md:py-32 flex flex-col items-center justify-center text-center relative z-10 px-6">
-            <h2 className="text-3xl md:text-5xl font-medium tracking-tight text-foreground mb-12 max-w-2xl mx-auto leading-tight">
-              Ready to make your<br />website stand out?
-            </h2>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative inline-flex items-center justify-center px-8 py-4 bg-[#E2E673] hover:bg-[#Dbe060] text-black text-sm font-semibold tracking-wide uppercase transition-colors"
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                Start a Project
-                {/* Tiny decorative dots */}
-                <span className="absolute -top-1 -left-1 size-1 bg-black rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="absolute -top-1 -right-1 size-1 bg-black rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="absolute -bottom-1 -left-1 size-1 bg-black rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                <span className="absolute -bottom-1 -right-1 size-1 bg-black rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 mb-16">
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <span className="text-muted-foreground/70 text-sm font-medium tracking-wide uppercase">
+                Say hello 👋
               </span>
-              <div className="absolute inset-0 bg-white/20 blur-xl opacity-0 group-hover:opacity-50 transition-opacity" />
-            </motion.button>
+              
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground leading-tight">
+                Want to <span className="text-primary">collaborate</span> on something?
+              </h2>
+
+              <p className="text-muted-foreground text-base max-w-md leading-relaxed">
+                Open for meaningful work, OSS contributions, and long-term collaborations. 
+                If the project excites or challenges, I want to hear about it.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <a
+                href="#contact"
+                className="group inline-flex items-center gap-2 px-5 py-3 bg-primary text-primary-foreground rounded-md font-medium transition-all duration-300 hover:bg-primary/90 hover:scale-[1.01] active:scale-[0.99]"
+              >
+                Start a conversation
+                <ArrowUpRight className="w-4 h-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-300" />
+              </a>
+            </div>
+
+            <div className="text-xs text-muted-foreground/50 font-mono pt-1">
+              latest update: {update}
+            </div>
+          </div>
+
+          <div className="lg:pt-2 space-y-8">
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                Projects
+              </h3>
+              <nav className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {quick.map(link => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors text-sm font-medium"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary transition-colors"></span>
+                    {link.name}
+                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-50 transition-opacity" />
+                  </a>
+                ))}
+              </nav>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                Follow me
+              </h3>
+              <div className="flex gap-3">
+                {social.map(s => (
+                  <a
+                    key={s.name}
+                    href={s.href}
+                    className="group flex items-center justify-center w-10 h-10 rounded-md border border-border/50 text-muted-foreground/70 transition-all duration-300 hover:border-primary/30 hover:text-primary hover:bg-primary/5"
+                    aria-label={s.name}
+                  >
+                    <s.icon className="w-4.5 h-4.5" />
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Footer Bottom Links */}
-        <div className="grid grid-cols-1 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border/30 text-xs text-muted-foreground">
-          <div className="p-6 flex items-center justify-center md:justify-start">
-            <span>&copy; {currentYear} Remco Stoeten</span>
-          </div>
-          <div className="p-6 flex items-center justify-center md:col-span-2 gap-8">
-            <Link href="/about" className="hover:text-foreground transition-colors">About</Link>
-            <Link href="/work" className="hover:text-foreground transition-colors">Work</Link>
-            <Link href="/services" className="hover:text-foreground transition-colors">Services</Link>
-            <Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link>
-          </div>
-          <div className="p-6 flex items-center justify-center md:justify-end gap-4">
-            <Link href="https://github.com/remcostoeten" target="_blank" className="hover:text-foreground transition-colors">
-              <Github className="size-4" />
-            </Link>
-            <Link href="https://linkedin.com/in/remco-stoeten" target="_blank" className="hover:text-foreground transition-colors">
-              <Linkedin className="size-4" />
-            </Link>
-            <Link href="https://twitter.com" target="_blank" className="hover:text-foreground transition-colors">
-              <Twitter className="size-4" />
-            </Link>
+        <div className="pt-8 border-t border-border/30">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="text-xl font-semibold text-foreground">
+              <span className="text-muted-foreground">remco</span>
+              <span className="text-primary">.</span>
+              <span className="text-muted-foreground">stoeten</span>
+            </div>
+
+            <p className="text-xs text-muted-foreground/60">
+              © {new Date().getFullYear()} Built with intention. Crafted with care.
+            </p>
+
+            <div className="flex items-center gap-6 text-xs text-muted-foreground/60">
+              <a href="#" className="hover:text-foreground/80 transition-colors">
+                Privacy
+              </a>
+              <a href="#" className="hover:text-foreground/80 transition-colors">
+                Terms
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </footer>
   );
 }
+
+export default Footer;

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Plus, GitBranch, Lock, Globe } from 'lucide-react';
+import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying } from '@/server/services/spotify';
 import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
-import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying } from '@/core/spotify-service';
 import { ProjectHoverWrapper, ActivityHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers';
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback';
 
@@ -601,48 +601,48 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                 </div>
 
                 {/* Activity metric - always rendered with fixed height */}
-                <div className="h-6 mt-3">
+                <div className="h-5 mt-2">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={`metric-${currentIndex}`}
-                            initial={{ opacity: 0, y: 6 }}
+                            initial={{ opacity: 0, y: 4 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -6 }}
-                            transition={{ delay: 0.5, duration: 0.3 }}
-                            className="flex items-center gap-2"
+                            exit={{ opacity: 0, y: -4 }}
+                            transition={{ delay: 0.5, duration: 0.25 }}
+                            className="flex items-center justify-between gap-2"
                         >
                             {(() => {
                                 const metric = getActivityMetric(currentActivity);
                                 if (metric) {
                                     return (
-                                        <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                            <span className="text-sm text-muted-foreground/60">
+                                        <>
+                                            <div className="flex items-center gap-1 min-w-0">
                                                 {metric.icon && (
-                                                    <span className="text-muted-foreground/40 mr-1.5">
+                                                    <span className="text-muted-foreground/30 shrink-0">
                                                         {metric.icon}
                                                     </span>
                                                 )}
-                                                <span className="text-muted-foreground/40 uppercase tracking-widest text-[10px] font-bold mr-1">{metric.label}:</span>
-                                                <span className="text-foreground/70 font-medium truncate max-w-[150px] md:max-w-xs">
+                                                <span className="text-muted-foreground/30 uppercase tracking-wide text-[9px] font-medium shrink-0">{metric.label}:</span>
+                                                <span className="text-muted-foreground/50 text-xs truncate">
                                                     {metric.value}
                                                 </span>
+                                            </div>
+                                            <span className="text-[9px] text-muted-foreground/40 tabular-nums font-mono shrink-0 ml-auto">
+                                                {formatRelativeTime(currentActivity.timestamp)}
                                             </span>
-                                            <span className="text-[10px] text-muted-foreground/30 tabular-nums font-mono">
-                                                · {formatRelativeTime(currentActivity.timestamp)}
-                                            </span>
-                                        </div>
+                                        </>
                                     );
                                 }
                                 // Fallback to description or dash
                                 return (
-                                    <div className="flex items-center gap-1.5 whitespace-nowrap">
-                                        <span className="text-sm text-muted-foreground/60 truncate max-w-[150px] md:max-w-xl italic">
+                                    <>
+                                        <span className="text-xs text-muted-foreground/40 italic truncate">
                                             {currentActivity.description ? `"${currentActivity.description}"` : '—'}
                                         </span>
-                                        <span className="text-[10px] text-muted-foreground/30 tabular-nums font-mono">
-                                            · {formatRelativeTime(currentActivity.timestamp)}
+                                        <span className="text-[9px] text-muted-foreground/40 tabular-nums font-mono shrink-0 ml-auto">
+                                            {formatRelativeTime(currentActivity.timestamp)}
                                         </span>
-                                    </div>
+                                    </>
                                 );
                             })()}
                         </motion.div>
