@@ -418,7 +418,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                 variants={wordVariants}
                                 className="text-muted-foreground/70"
                             >
-                                Lately I've been
+                                Furthermore, I've been
                             </motion.span>
 
                             {/* Project Verb */}
@@ -454,12 +454,11 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                 </ProjectHoverWrapper>
                             </motion.span>
 
-                            {/* ", where I recently" */}
                             <motion.span
                                 variants={wordVariants}
                                 className="text-muted-foreground/70"
                             >
-                                , where I recently
+                                where I recently
                             </motion.span>
 
                             {/* Activity title with icon and timestamp */}

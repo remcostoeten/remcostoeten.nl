@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
+import { GraphSkeleton } from '@/components/ui/skeletons';
 
 interface ActivityDay {
   date: string;
@@ -30,6 +31,8 @@ export function ActivityContributionGraph({
 }: ActivityContributionGraphProps) {
   const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
   const [selectedDay, setSelectedDay] = useState<ActivityDay | null>(null);
+  const [hoveredDay, setHoveredDay] = useState<ActivityDay | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   const { data: githubContributions = new Map(), isLoading: githubLoading } = useGitHubContributions(year);
 
@@ -148,6 +151,16 @@ export function ActivityContributionGraph({
     return colors[level];
   };
 
+  const handleMouseEnter = (e: React.MouseEvent, day: ActivityDay) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
+    setHoveredDay(day);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredDay(null);
+  };
+
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const weeks = useMemo(() => {
@@ -245,43 +258,7 @@ export function ActivityContributionGraph({
 
 
   if (loading || githubLoading) {
-    return (
-      <div className={`${className}`}>
-        <div className="space-y-2">
-          <div className="flex gap-[3px] pl-7">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="w-10 h-3 bg-muted/20 rounded animate-pulse"></div>
-            ))}
-          </div>
-          <div className="flex gap-0">
-            <div className="w-7 flex flex-col gap-[3px]">
-              {[0, 1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="h-[10px]"></div>
-              ))}
-            </div>
-            <div className="flex gap-[3px]">
-              {Array.from({ length: 20 }).map((_, i) => (
-                <div key={i} className="flex flex-col gap-[3px]">
-                  {Array.from({ length: 7 }).map((_, j) => (
-                    <motion.div
-                      key={j}
-                      className="w-[10px] h-[10px] bg-muted/20 rounded-sm animate-pulse"
-                      initial={{ opacity: 0, scale: 0.5 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        delay: Math.random() * 0.8,
-                        duration: 0.2,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                      }}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <GraphSkeleton className={className} />;
   }
 
   return (
@@ -340,9 +317,9 @@ export function ActivityContributionGraph({
                           duration: 0.2,
                           ease: [0.25, 0.46, 0.45, 0.94]
                         }}
-                        onClick={() => setSelectedDay(day)}
-                        title={`${day.date}: ${day.githubCount} contributions`}
-                        whileHover={{ scale: 1.5, zIndex: 10 }}
+                        onMouseEnter={(e) => handleMouseEnter(e, day)}
+                        onMouseLeave={handleMouseLeave}
+                        whileHover={{ scale: 1.3, zIndex: 10 }}
                       />
                     );
                   })}
@@ -542,6 +519,30 @@ export function ActivityContributionGraph({
             </div>
           </motion.div>
         </motion.div>
+      )}
+
+      {/* Custom Tooltip */}
+      {hoveredDay && hoveredDay.githubCount > 0 && (
+        <div
+          className="fixed z-[100] pointer-events-none"
+          style={{
+            left: tooltipPosition.x + 20,
+            top: tooltipPosition.y - 55,
+            transform: 'translateX(-50%)',
+          }}
+        >
+          <div className="relative">
+            <div className="bg-card/95 backdrop-blur-md border border-border/50 rounded-md shadow-xl px-2.5 py-1.5">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-sm ${getColorForLevel(hoveredDay.level)}`}></div>
+                <span className="text-xs font-medium text-foreground whitespace-nowrap">
+                  {hoveredDay.githubCount} on {new Date(hoveredDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+              </div>
+            </div>
+            <div className="absolute w-1.5 h-1.5 bg-card/95 border-r border-b border-border/50 transform rotate-45 -bottom-[3px] left-1/2 -translate-x-1/2"></div>
+          </div>
+        </div>
       )}
     </div>
   );
