@@ -1,10 +1,10 @@
-import { Briefcase } from 'lucide-react';
+
 import { AnimatedNumber } from '../ui/animated-number';
 import Image from 'next/image';
 
 export function Intro() {
   return (
-    <header className="animate-enter px-6 md:px-12">
+    <header className="animate-enter px-4 md:px-5">
       <div className="flex items-start gap-4 mb-4">
         <Image
           src="/images/remco-stoeten.png"
@@ -18,8 +18,7 @@ export function Intro() {
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Remco Stoeten
           </h1>
-          <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
-            <Briefcase className="size-3.5" />
+          <p className="text-sm text-muted-foreground mt-0.5">
             Frontend Engineer
           </p>
         </div>

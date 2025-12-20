@@ -61,20 +61,6 @@ export function ActivityContributionGraph({
     fetchData();
   }, [year]);
 
-  useLayoutEffect(() => {
-    if (!loading && scrollContainerRef.current) {
-      const now = new Date();
-      const startOfYear = new Date(year, 0, 1);
-      const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-      const weekOfYear = Math.floor(dayOfYear / 7);
-
-      const scrollPosition = Math.max(0, (weekOfYear - 8) * 13);
-
-      scrollContainerRef.current.scrollLeft = scrollPosition;
-
-      setTimeout(() => setIsVisible(true), 100);
-    }
-  }, [loading, year]);
 
   const activityData = useMemo(() => {
     if (githubLoading || loading) return [];
@@ -194,24 +180,55 @@ export function ActivityContributionGraph({
     return weeksArray;
   }, [activityData, year]);
 
+  useLayoutEffect(() => {
+    if (!loading && !githubLoading && scrollContainerRef.current) {
+      const now = new Date();
+      const startOfYear = new Date(year, 0, 1);
+      const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
+      const weekOfYear = Math.floor(dayOfYear / 7);
+      const currentMonth = now.getMonth();
+
+      let scrollPosition;
+
+      // If we're in December (month 11), scroll to show the complete December
+      if (currentMonth === 11) {
+        // Scroll to show the last few weeks including December
+        scrollPosition = Math.max(0, (weeks.length - 10) * 13);
+      } else {
+        // Default behavior: center the current week
+        scrollPosition = Math.max(0, (weekOfYear - 8) * 13);
+      }
+
+      scrollContainerRef.current.scrollLeft = scrollPosition;
+
+      setTimeout(() => setIsVisible(true), 100);
+    }
+  }, [loading, githubLoading, year, weeks]);
+
   const monthLabels = useMemo(() => {
-    const labels: { month: string; position: number }[] = [];
+    const labels: { month: string; weekIndex: number }[] = [];
     let lastMonth = -1;
 
     weeks.forEach((week, weekIndex) => {
-      const firstDayWithDate = week.find(d => d.date);
-      if (firstDayWithDate?.date) {
-        const date = new Date(firstDayWithDate.date);
+      // Only consider days that are actually in the current year
+      const firstDayInYear = week.find(d => d.date && new Date(d.date).getFullYear() === year);
+      if (firstDayInYear?.date) {
+        const date = new Date(firstDayInYear.date);
         const month = date.getMonth();
         if (month !== lastMonth) {
-          labels.push({ month: months[month], position: weekIndex * 13 });
+          labels.push({ month: months[month], weekIndex });
           lastMonth = month;
         }
       }
     });
 
     return labels;
-  }, [weeks]);
+  }, [weeks, year]);
+
+  // Calculate total contributions for the year
+  const totalContributions = useMemo(() => {
+    return activityData.reduce((sum, day) => sum + day.githubCount, 0);
+  }, [activityData]);
 
 
 
@@ -234,7 +251,17 @@ export function ActivityContributionGraph({
               {Array.from({ length: 20 }).map((_, i) => (
                 <div key={i} className="flex flex-col gap-[3px]">
                   {Array.from({ length: 7 }).map((_, j) => (
-                    <div key={j} className="w-[10px] h-[10px] bg-muted/20 rounded-sm animate-pulse"></div>
+                    <motion.div
+                      key={j}
+                      className="w-[10px] h-[10px] bg-muted/20 rounded-sm animate-pulse"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        delay: Math.random() * 0.8,
+                        duration: 0.2,
+                        ease: [0.25, 0.46, 0.45, 0.94]
+                      }}
+                    />
                   ))}
                 </div>
               ))}
@@ -249,25 +276,28 @@ export function ActivityContributionGraph({
     <div className={`space-y-2 ${className}`}>
       <div
         ref={scrollContainerRef}
-        className="overflow-x-auto"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        className="overflow-hidden"
       >
-        <style jsx>{`.overflow-x-auto::-webkit-scrollbar { display: none; }`}</style>
-
-        <div ref={graphRef} className="inline-block min-w-max">
-          <div className="flex text-[10px] text-muted-foreground mb-1 pl-7 h-4">
-            {monthLabels.map(({ month, position }, idx) => (
-              <motion.span
-                key={idx}
-                className="absolute"
-                style={{ marginLeft: `${position + 28}px` }}
-                initial={{ opacity: 0, y: -5 }}
-                animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: idx * 0.03, duration: 0.3 }}
-              >
-                {month}
-              </motion.span>
-            ))}
+        <div ref={graphRef} className="flex flex-col w-full">
+          {/* Month labels row */}
+          <div className="flex text-[10px] text-muted-foreground mb-1 ml-7">
+            {weeks.map((_, weekIndex) => {
+              const label = monthLabels.find(l => l.weekIndex === weekIndex);
+              return (
+                <div key={weekIndex} className="w-[13px] shrink-0">
+                  {label && (
+                    <motion.span
+                      className="whitespace-nowrap"
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                      transition={{ delay: weekIndex * 0.01, duration: 0.3 }}
+                    >
+                      {label.month}
+                    </motion.span>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <div className="flex gap-0">
@@ -290,17 +320,17 @@ export function ActivityContributionGraph({
                     return (
                       <motion.div
                         key={dayIndex}
-                        className={`w-[10px] h-[10px] rounded-sm cursor-pointer transition-colors hover:ring-1 hover:ring-white/30 ${getColorForLevel(day.level)}`}
+                        className={`w-[10px] h-[10px] rounded-sm cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-brand-500/50 hover:shadow-[0_0_8px_hsl(var(--brand-500)/0.5)] ${getColorForLevel(day.level)}`}
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={isVisible ? { opacity: 1, scale: 1 } : {}}
                         transition={{
-                          delay: weekIndex * 0.015 + dayIndex * 0.008,
+                          delay: Math.random() * 0.8,
                           duration: 0.2,
                           ease: [0.25, 0.46, 0.45, 0.94]
                         }}
                         onClick={() => setSelectedDay(day)}
                         title={`${day.date}: ${day.githubCount} contributions`}
-                        whileHover={{ scale: 1.3 }}
+                        whileHover={{ scale: 1.5, zIndex: 10 }}
                       />
                     );
                   })}
@@ -313,63 +343,170 @@ export function ActivityContributionGraph({
 
       {showLegend && (
         <motion.div
-          className="flex items-center gap-2 text-[10px] text-muted-foreground"
+          className="flex items-center justify-between text-[10px] text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={isVisible ? { opacity: 1 } : {}}
           transition={{ delay: 0.8 }}
         >
-          <span>Less</span>
-          <div className="flex gap-[2px]">
-            {[0, 1, 2, 3, 4].map(level => (
-              <div key={level} className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`} />
-            ))}
+          <div className="flex items-center gap-2">
+            <span>Less</span>
+            <div className="flex gap-[2px]">
+              {[0, 1, 2, 3, 4].map(level => (
+                <div key={level} className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`} />
+              ))}
+            </div>
+            <span>More</span>
           </div>
-          <span>More</span>
+          <span className="text-muted-foreground/80">
+            <span className="text-foreground font-medium">{totalContributions.toLocaleString()}</span> contributions in {year}
+          </span>
         </motion.div>
       )}
 
-      {selectedDay && (
+      {selectedDay && selectedDay.details?.commits && selectedDay.details.commits.length > 0 && (
         <motion.div
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4"
           onClick={() => setSelectedDay(null)}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
           <motion.div
-            className="bg-card border border-border rounded-lg p-4 max-w-xs w-full"
+            className="bg-card border border-border rounded-lg w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-medium text-foreground">
-                {new Date(selectedDay.date).toLocaleDateString('en-US', {
-                  weekday: 'short',
-                  month: 'short',
-                  day: 'numeric'
-                })}
-              </h3>
+            {/* Header */}
+            <div className="flex justify-between items-center p-4 border-b border-border shrink-0">
+              <div className="flex items-center gap-3">
+                <div className={`w-4 h-4 rounded-sm ${getColorForLevel(selectedDay.level)}`} />
+                <div>
+                  <h3 className="text-sm font-medium text-foreground">
+                    {new Date(selectedDay.date).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric'
+                    })}
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedDay.githubCount} contribution{selectedDay.githubCount !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              </div>
               <button
                 onClick={() => setSelectedDay(null)}
-                className="text-muted-foreground hover:text-foreground text-lg leading-none"
+                className="text-muted-foreground hover:text-foreground p-1 hover:bg-muted/50 rounded transition-colors"
               >
-                ×
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-sm ${getColorForLevel(selectedDay.level)}`}></div>
-                <span className="text-muted-foreground">
-                  {selectedDay.githubCount} contribution{selectedDay.githubCount !== 1 ? 's' : ''}
-                </span>
+            {/* Activity List */}
+            <div className="overflow-y-auto flex-1 p-4">
+              <div className="space-y-3">
+                {/* Group commits by project */}
+                {(() => {
+                  const groupedByProject = selectedDay.details!.commits.reduce((acc, commit) => {
+                    const project = commit.projectName || 'Unknown';
+                    if (!acc[project]) acc[project] = [];
+                    acc[project].push(commit);
+                    return acc;
+                  }, {} as Record<string, typeof selectedDay.details.commits>);
+
+                  return Object.entries(groupedByProject).map(([projectName, commits]) => {
+                    const isPrivate = !commits[0]?.url || commits[0].url === '#';
+                    const repoName = projectName.split('/').pop() || projectName;
+
+                    return (
+                      <div key={projectName} className="space-y-2">
+                        {/* Project Header */}
+                        <div className="flex items-center gap-2 text-xs">
+                          {isPrivate ? (
+                            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-amber-500/10 text-amber-500 font-medium">
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                              </svg>
+                              {repoName}
+                            </span>
+                          ) : (
+                            <a
+                              href={`https://github.com/${projectName}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
+                            >
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+                              </svg>
+                              {repoName}
+                            </a>
+                          )}
+                          <span className="text-muted-foreground">
+                            {commits.length} {commits.length === 1 ? 'activity' : 'activities'}
+                          </span>
+                        </div>
+
+                        {/* Commits List */}
+                        <div className="space-y-1 pl-2 border-l-2 border-border ml-1">
+                          {commits.slice(0, 10).map((commit, idx) => (
+                            <div key={idx} className="pl-3 py-1.5">
+                              {isPrivate || !commit.url || commit.url === '#' ? (
+                                <p className="text-xs text-muted-foreground leading-relaxed wrap-break-word">
+                                  {commit.message}
+                                </p>
+                              ) : (
+                                <a
+                                  href={commit.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs text-foreground/80 hover:text-primary leading-relaxed wrap-break-word transition-colors block"
+                                >
+                                  {commit.message}
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                          {commits.length > 10 && (
+                            <p className="text-xs text-muted-foreground pl-3 py-1">
+                              +{commits.length - 10} more...
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
 
+              {/* Spotify Tracks Section */}
               {selectedDay.details?.tracks && selectedDay.details.tracks.length > 0 && (
-                <div className="pt-2 border-t border-border">
-                  <div className="text-muted-foreground text-xs mb-1">
-                    🎵 {selectedDay.spotifyCount} track{selectedDay.spotifyCount !== 1 ? 's' : ''}
+                <div className="mt-4 pt-4 border-t border-border">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                    <span>🎵</span>
+                    <span>{selectedDay.spotifyCount} track{selectedDay.spotifyCount !== 1 ? 's' : ''} played</span>
+                  </div>
+                  <div className="space-y-1">
+                    {selectedDay.details.tracks.slice(0, 5).map((track, idx) => (
+                      <a
+                        key={idx}
+                        href={track.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-xs text-foreground/70 hover:text-green-500 transition-colors"
+                      >
+                        <span className="truncate">{track.name}</span>
+                        <span className="text-muted-foreground shrink-0">by {track.artist}</span>
+                      </a>
+                    ))}
+                    {selectedDay.details.tracks.length > 5 && (
+                      <p className="text-xs text-muted-foreground">
+                        +{selectedDay.details.tracks.length - 5} more tracks...
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
