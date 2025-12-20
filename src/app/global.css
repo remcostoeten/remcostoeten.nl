@@ -677,16 +677,19 @@
 	max-width: 42rem;
 	/* max-w-2xl equivalent */
 	margin: 0 auto;
-	padding-left: 1.5rem;
-	/* px-6 equivalent */
-	padding-right: 1.5rem;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.header-content-container--with-padding {
+	padding-left: calc(var(--spacing) * 5) !important;
+	padding-right: calc(var(--spacing) * 5) !important;
 }
 
 @media (min-width: 768px) {
 	.header-content-container {
-		padding-left: 3rem;
-		/* md:px-12 equivalent */
-		padding-right: 3rem;
+		padding-left: 0;
+		padding-right: 0;
 	}
 }
 
