@@ -12,8 +12,10 @@ export default function Page() {
       <Intro />
 
       <div className="space-y-4">
-        <ActivitySection />
-        <WorkExperienceDemo />
+        <div>
+          <ActivitySection />
+          <WorkExperienceDemo />
+        </div>
         <div className="screen-border" />
         <BlogPosts />
       </div>

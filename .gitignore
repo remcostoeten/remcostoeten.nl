@@ -39,3 +39,7 @@ next-env.d.ts
 setup-posthog.md
 src/app/blog/posts/productivity/mac-to-linux.mdx
 src/app/blog/posts/productivity/mac-to-linux.mdx
+
+tmp/
+tmp
+tmp/*

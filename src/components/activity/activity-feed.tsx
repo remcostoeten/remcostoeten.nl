@@ -130,6 +130,123 @@ function getShortRepoName(fullName: string) {
     return fullName?.split('/').pop() || fullName;
 }
 
+/**
+ * Generate a meaningful metric/stat line for any activity type
+ * This ensures every slide has something interesting to show at the bottom
+ */
+function getActivityMetric(activity: GitHubEventDetail): { label: string; value: string; icon?: React.ReactNode } | null {
+    const payload = activity.payload;
+
+    switch (activity.type) {
+        case 'commit': {
+            // Show commit count and short SHA
+            const commitCount = payload?.size || payload?.commits?.length || 1;
+            const sha = payload?.head?.substring(0, 7) || '';
+            return {
+                label: 'Commits',
+                value: `${commitCount} ${commitCount === 1 ? 'commit' : 'commits'}${sha ? ` · ${sha}` : ''}`,
+                icon: <GitCommit className="size-3" />
+            };
+        }
+        case 'pr': {
+            // Show additions/deletions if available, or just PR status
+            const pr = payload?.pull_request;
+            const additions = pr?.additions;
+            const deletions = pr?.deletions;
+            const changedFiles = pr?.changed_files;
+
+            if (additions !== undefined && deletions !== undefined) {
+                return {
+                    label: 'Changes',
+                    value: `+${additions} / -${deletions}${changedFiles ? ` in ${changedFiles} files` : ''}`,
+                    icon: <GitPullRequest className="size-3" />
+                };
+            }
+            // Fallback: show PR number and state
+            const prNum = payload?.number || pr?.number;
+            const state = pr?.state || payload?.action;
+            return {
+                label: 'Pull Request',
+                value: `#${prNum}${state ? ` · ${state}` : ''}`,
+                icon: <GitPullRequest className="size-3" />
+            };
+        }
+        case 'create': {
+            const refType = payload?.ref_type;
+            const ref = payload?.ref;
+
+            if (refType === 'branch' && ref) {
+                return {
+                    label: 'Branch',
+                    value: ref,
+                    icon: <GitBranch className="size-3" />
+                };
+            }
+            if (refType === 'tag' && ref) {
+                return {
+                    label: 'Tag',
+                    value: ref,
+                    icon: <Box className="size-3" />
+                };
+            }
+            if (refType === 'repository') {
+                return {
+                    label: 'Repository',
+                    value: getShortRepoName(activity.repository),
+                    icon: <Plus className="size-3" />
+                };
+            }
+            return null;
+        }
+        case 'issue': {
+            const issueNum = payload?.issue?.number;
+            const state = payload?.issue?.state;
+            return {
+                label: 'Issue',
+                value: `#${issueNum}${state ? ` · ${state}` : ''}`,
+                icon: <AlertCircle className="size-3" />
+            };
+        }
+        case 'review': {
+            const prNum = payload?.pull_request?.number;
+            const state = payload?.review?.state;
+            const stateLabel = state === 'approved' ? 'approved' :
+                state === 'changes_requested' ? 'changes requested' :
+                    state === 'commented' ? 'commented' : state;
+            return {
+                label: 'Review',
+                value: `PR #${prNum}${stateLabel ? ` · ${stateLabel}` : ''}`,
+                icon: <Eye className="size-3" />
+            };
+        }
+        case 'release': {
+            const tagName = payload?.release?.tag_name;
+            return {
+                label: 'Release',
+                value: tagName || 'new release',
+                icon: <Box className="size-3" />
+            };
+        }
+        case 'star': {
+            return {
+                label: 'Starred',
+                value: getShortRepoName(activity.repository),
+                icon: <Star className="size-3" />
+            };
+        }
+        case 'fork': {
+            const forkName = payload?.forkee?.full_name;
+            return {
+                label: 'Forked to',
+                value: forkName || 'new fork',
+                icon: <Copy className="size-3" />
+            };
+        }
+        default:
+            return null;
+    }
+}
+
 
 function Equalizer({ className = '' }: { className?: string }) {
     return (
@@ -286,7 +403,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
             <div className="p-4 md:p-5">
                 {/* Fixed height container to prevent layout shift */}
-                <div className="min-h-[3.5rem] md:min-h-[4rem]">
+                <div className="h-[4.5rem] md:h-[5rem] overflow-hidden">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={`${currentIndex}-${currentActivity.id}`}
@@ -294,7 +411,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             initial="initial"
                             animate="animate"
                             exit="exit"
-                            className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1 text-sm md:text-base leading-relaxed"
+                            className="flex flex-wrap items-center gap-x-2 gap-y-2 text-sm md:text-base"
                         >
                             {/* "Lately I've been" */}
                             <motion.span
@@ -319,8 +436,8 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             >
                                 <ProjectHoverWrapper repository={currentActivity.repository} isPrivate={isPrivate}>
                                     {isPrivate ? (
-                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-none bg-amber-500/10 text-amber-500 font-medium cursor-pointer">
-                                            <Lock className="size-2.5" />
+                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none bg-amber-500/10 text-amber-500 font-medium border border-amber-500/20 cursor-pointer">
+                                            <Lock className="size-3" />
                                             {repoName}
                                         </span>
                                     ) : (
@@ -328,9 +445,9 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                             href={currentActivity.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-none bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors cursor-pointer"
+                                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none bg-primary/10 text-primary font-medium border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer"
                                         >
-                                            <Globe className="size-2.5" />
+                                            <Globe className="size-3" />
                                             {repoName}
                                         </a>
                                     )}
@@ -352,14 +469,11 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             >
                                 <ActivityHoverWrapper activity={currentActivity}>
                                     <span className="inline-flex items-center gap-1.5 cursor-pointer">
-                                        <span className="inline-flex items-center justify-center size-4 rounded-none bg-muted/60 text-foreground/80">
+                                        <span className="inline-flex items-center justify-center size-5 rounded-none bg-muted/30 text-foreground/80 border border-border/20">
                                             {getEventIcon(currentActivity.type)}
                                         </span>
                                         <span className="flex items-center gap-1.5">
                                             {currentActivity.title}
-                                            <span className="text-[10px] font-normal text-muted-foreground/40 tabular-nums">
-                                                · {formatRelativeTime(currentActivity.timestamp)}
-                                            </span>
                                         </span>
                                     </span>
                                 </ActivityHoverWrapper>
@@ -392,10 +506,10 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     href={currentTrack.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-green-500/10 text-green-500"
+                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-green-500/10 text-green-500 border border-green-500/20 max-w-[140px]"
                                                 >
-                                                    <Music className="size-2.5" />
-                                                    {currentTrack.name}
+                                                    <Music className="size-3 shrink-0" />
+                                                    <span className="truncate">{currentTrack.name}</span>
                                                 </motion.a>
                                             </SpotifyHoverWrapper>
 
@@ -409,7 +523,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
                                             <motion.span
                                                 variants={highlightVariants}
-                                                className="text-foreground/90 font-medium"
+                                                className="text-foreground/90 font-medium truncate max-w-[120px]"
                                             >
                                                 {currentTrack.artist}
                                             </motion.span>
@@ -443,10 +557,10 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     href={currentTrack.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-orange-500/10 text-orange-500"
+                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-orange-500/10 text-orange-500 border border-orange-500/20 max-w-[140px]"
                                                 >
-                                                    <Music className="size-2.5" />
-                                                    {currentTrack.name}
+                                                    <Music className="size-3 shrink-0" />
+                                                    <span className="truncate">{currentTrack.name}</span>
                                                 </motion.a>
                                             </SpotifyHoverWrapper>
 
@@ -460,7 +574,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
                                             <motion.span
                                                 variants={highlightVariants}
-                                                className="text-foreground/90 font-medium"
+                                                className="text-foreground/90 font-medium truncate max-w-[120px]"
                                             >
                                                 {currentTrack.artist}
                                             </motion.span>
@@ -486,33 +600,65 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                     </AnimatePresence>
                 </div>
 
-                {/* Commit message preview - always rendered with fixed height */}
+                {/* Activity metric - always rendered with fixed height */}
                 <div className="h-6 mt-3">
                     <AnimatePresence mode="wait">
-                        <motion.p
-                            key={`desc-${currentIndex}`}
+                        <motion.div
+                            key={`metric-${currentIndex}`}
                             initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -6 }}
                             transition={{ delay: 0.5, duration: 0.3 }}
-                            className="text-sm text-muted-foreground/60 truncate max-w-xl"
+                            className="flex items-center gap-2"
                         >
-                            {currentActivity.description ? `"${currentActivity.description}"` : '—'}
-                        </motion.p>
+                            {(() => {
+                                const metric = getActivityMetric(currentActivity);
+                                if (metric) {
+                                    return (
+                                        <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                            <span className="text-sm text-muted-foreground/60">
+                                                {metric.icon && (
+                                                    <span className="text-muted-foreground/40 mr-1.5">
+                                                        {metric.icon}
+                                                    </span>
+                                                )}
+                                                <span className="text-muted-foreground/40 uppercase tracking-widest text-[10px] font-bold mr-1">{metric.label}:</span>
+                                                <span className="text-foreground/70 font-medium truncate max-w-[150px] md:max-w-xs">
+                                                    {metric.value}
+                                                </span>
+                                            </span>
+                                            <span className="text-[10px] text-muted-foreground/30 tabular-nums font-mono">
+                                                · {formatRelativeTime(currentActivity.timestamp)}
+                                            </span>
+                                        </div>
+                                    );
+                                }
+                                // Fallback to description or dash
+                                return (
+                                    <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                        <span className="text-sm text-muted-foreground/60 truncate max-w-[150px] md:max-w-xl italic">
+                                            {currentActivity.description ? `"${currentActivity.description}"` : '—'}
+                                        </span>
+                                        <span className="text-[10px] text-muted-foreground/30 tabular-nums font-mono">
+                                            · {formatRelativeTime(currentActivity.timestamp)}
+                                        </span>
+                                    </div>
+                                );
+                            })()}
+                        </motion.div>
                     </AnimatePresence>
                 </div>
             </div>
 
-            {/* Activity indicator dots */}
+            {/* Activity indicator - subtle dots */}
             {activities.length > 1 && (
-                <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex gap-2 md:gap-1.5">
-
+                <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex items-center gap-1">
                     {activities.slice(0, activityCount).map((_, idx) => (
                         <button
                             key={idx}
                             onClick={() => setCurrentIndex(idx)}
-                            className={`size-2.5 md:size-1.5 rounded-none transition-all duration-300 hover:scale-125 ${idx === currentIndex
-                                ? 'bg-primary/60 scale-110 md:scale-125'
+                            className={`size-1.5 rounded-full transition-all duration-300 ${idx === currentIndex
+                                ? 'bg-brand-500 scale-125'
                                 : 'bg-muted-foreground/20 hover:bg-muted-foreground/40'
                                 }`}
                             aria-label={`Go to activity ${idx + 1}`}

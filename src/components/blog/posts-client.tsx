@@ -9,11 +9,9 @@ import { AnimatedNumber } from '../ui/animated-number'
 
 export function PostCountHeader({ count }: { count: number }) {
   return (
-    <span className="text-muted-foreground/60 inline-flex items-baseline">
-      <span className="-translate-y-[1px]">
-        <AnimatedNumber value={count} duration={600} />
-      </span>
-      {' '}posts
+    <span className="text-muted-foreground/60 inline-flex items-baseline gap-1">
+      <AnimatedNumber value={count} duration={600} />
+      <span>posts</span>
     </span>
   )
 }
@@ -134,7 +132,7 @@ function BlogCard({ post, index }: Props) {
             />
           </div>
 
-          <article className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 py-8 px-6 border-b border-neutral-800/60 z-10 min-h-[120px]">
+          <article className="relative flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 py-8 border-b border-neutral-800/60 z-10 min-h-[120px]">
             <div className="flex-1 min-w-0">
               <header className="flex items-start gap-3">
                 <span
@@ -210,7 +208,7 @@ function BlogCardSkeleton() {
   return (
     <li className="block p-0 m-0">
       <div className="relative block overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0">
-        <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8 px-6 border-b border-neutral-800/60 min-h-[120px]">
+        <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8 border-b border-neutral-800/60 min-h-[120px]">
           <div className="flex-1 min-w-0">
             <header className="flex items-start gap-3">
               <div className="w-[3rem] h-[3.5rem] bg-neutral-800/40 rounded animate-pulse flex-shrink-0" />

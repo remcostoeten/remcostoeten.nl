@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export function Intro() {
   return (
-    <header className="animate-enter px-6 md:px-12">
+    <header className="animate-enter px-4 md:px-5">
       <div className="flex items-start gap-4 mb-4">
         <Image
           src="/images/remco-stoeten.png"
