@@ -89,10 +89,10 @@ export function CommentSection({ slug }: Props) {
                             <img
                                 src={session.user.image}
                                 alt={session.user.name || 'User'}
-                                className="w-10 h-10 rounded-full flex-shrink-0"
+                                className="w-10 h-10 rounded-full shrink-0"
                             />
                         ) : (
-                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
                                 <span className="text-sm font-medium text-zinc-400">
                                     {session.user.name?.[0]?.toUpperCase() || '?'}
                                 </span>
@@ -139,7 +139,6 @@ export function CommentSection({ slug }: Props) {
                 </div>
             )}
 
-            {/* Comments List */}
             {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                     <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
@@ -163,10 +162,10 @@ export function CommentSection({ slug }: Props) {
                                     <img
                                         src={comment.userImage}
                                         alt={comment.userName || 'User'}
-                                        className="w-10 h-10 rounded-full flex-shrink-0"
+                                        className="w-10 h-10 rounded-full shrink-0"
                                     />
                                 ) : (
-                                    <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0">
+                                    <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
                                         <span className="text-sm font-medium text-zinc-400">
                                             {comment.userName?.[0]?.toUpperCase() || '?'}
                                         </span>
@@ -184,11 +183,10 @@ export function CommentSection({ slug }: Props) {
                                             <span className="text-xs text-zinc-600">(edited)</span>
                                         )}
                                     </div>
-                                    <p className="mt-1 text-zinc-300 whitespace-pre-wrap break-words">
+                                    <p className="mt-1 text-zinc-300 whitespace-pre-wrap wrap-break-word">
                                         {comment.content}
                                     </p>
 
-                                    {/* Delete button for own comments */}
                                     {session?.user?.id === comment.userId && (
                                         <button
                                             onClick={() => handleDelete(comment.id)}
