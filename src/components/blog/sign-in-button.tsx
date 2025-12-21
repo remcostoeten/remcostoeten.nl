@@ -11,8 +11,7 @@ export function SignInButton() {
     const handleSignIn = async (provider: 'github' | 'google') => {
         setIsLoading(provider)
 
-        // Track sign in initiated event
-        posthog.capture('sign_in_initiated', {
+                posthog.capture('sign_in_initiated', {
             provider: provider,
             source: 'blog_sign_in_button',
         })
@@ -26,8 +25,7 @@ export function SignInButton() {
             console.error('Sign in error:', error)
             setIsLoading(null)
 
-            // Track error
-            posthog.captureException(error instanceof Error ? error : new Error('Sign in failed'))
+                        posthog.captureException(error instanceof Error ? error : new Error('Sign in failed'))
         }
     }
 

@@ -158,7 +158,7 @@ function TechCard({
     >
       <motion.div
         className="relative"
-        initial={{ opacity: 0, scale: 0.5, filter: 'blur(8px)' }}
+        initial={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
         animate={
           isInView
             ? {
@@ -169,7 +169,7 @@ function TechCard({
             : {}
         }
         transition={{
-          duration: 0.5,
+          duration: 0.4,
           delay,
           ease: [0.22, 1, 0.36, 1]
         }}

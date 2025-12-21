@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import { ReactNode } from 'react'
 
@@ -10,11 +10,6 @@ interface PageTransitionProps {
 
 export function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname()
-  const shouldReduceMotion = useReducedMotion()
-
-  if (shouldReduceMotion) {
-    return <div className="w-full">{children}</div>
-  }
 
   return (
     <AnimatePresence mode="wait">

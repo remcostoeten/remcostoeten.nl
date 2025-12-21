@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export function Intro() {
   return (
-    <header className="animate-enter px-4 md:px-5">
+    <header className="px-4 md:px-5">
       <div className="flex items-start gap-4 mb-4">
         <Image
           src="/images/remco-stoeten.png"
@@ -27,7 +27,7 @@ export function Intro() {
       <p className="text-sm text-muted-foreground leading-relaxed">
         Dutch software engineer focused on front-end development with a background in{' '}
         <span className="text-foreground/80 italic">graphic design</span>.{' '}
-        <span className="font-semibold text-foreground"><AnimatedNumber value={8} duration={2000} priority /> years</span> of experience across{' '}
+        <span className="font-semibold text-foreground"><AnimatedNumber value={8} duration={1200} immediate={true} /> years</span> of experience across{' '}
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">e-commerce</span>,{' '}
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">SaaS</span>,{' '}
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">government</span>, and{' '}

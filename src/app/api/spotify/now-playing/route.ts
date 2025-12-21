@@ -24,8 +24,7 @@ export async function GET(request: NextRequest) {
         const authString = `${clientId}:${clientSecret}`;
         const base64Auth = Buffer.from(authString).toString('base64');
 
-        // 1. Refresh Access Token
-        const tokenResponse = await fetch(`${SPOTIFY_ACCOUNTS_BASE}/api/token`, {
+                const tokenResponse = await fetch(`${SPOTIFY_ACCOUNTS_BASE}/api/token`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -46,16 +45,14 @@ export async function GET(request: NextRequest) {
 
         const accessToken = tokenData.access_token;
 
-        // 2. Fetch Currently Playing
-        const nowPlayingResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
+                const nowPlayingResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
         });
 
         if (nowPlayingResponse.status === 204 || nowPlayingResponse.status > 400) {
-            // 204 means nothing is playing
-            return NextResponse.json({ isPlaying: false });
+                        return NextResponse.json({ isPlaying: false });
         }
 
         const data = await nowPlayingResponse.json();
@@ -75,7 +72,7 @@ export async function GET(request: NextRequest) {
             album: item.album.name,
             url: item.external_urls.spotify,
             image: item.album.images[0]?.url || '',
-            played_at: new Date().toISOString(), // Current time for "now"
+            played_at: new Date().toISOString(),
             duration_ms: item.duration_ms
         };
 

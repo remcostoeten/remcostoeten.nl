@@ -5,7 +5,6 @@ import { Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import posthog from 'posthog-js'
 
-// Search results type
 interface SearchResult {
   slug: string
   title: string
@@ -34,13 +33,11 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
   const listboxId = `${id}-search-results`
   const getOptionId = (index: number) => `${id}-search-option-${index}`
 
-  // Load all posts on mount
-  useEffect(() => {
+    useEffect(() => {
     setAllPosts(posts)
   }, [posts])
 
-  // Search functionality
-  useEffect(() => {
+    useEffect(() => {
     if (!query.trim()) {
       setResults([])
       setIsOpen(false)
@@ -51,8 +48,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
 
     setIsLoading(true)
 
-    // Simple search implementation
-    const searchResults = allPosts.filter(post => {
+      const searchResults = allPosts.filter(post => {
       const searchTerm = query.toLowerCase()
       const title = post.title.toLowerCase()
       const summary = post.summary?.toLowerCase() || ''
@@ -65,7 +61,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
         categories.includes(searchTerm) ||
         tags.includes(searchTerm)
       )
-    }).slice(0, 8) // Limit to 8 results
+    }).slice(0, 8)
 
     setResults(searchResults)
     setIsOpen(true)
@@ -73,8 +69,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
     setIsLoading(false)
   }, [query, allPosts])
 
-  // Close on click outside
-  useEffect(() => {
+    useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false)
@@ -98,8 +93,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
   }, [])
 
   const handleResultClick = (slug: string, title?: string) => {
-    // Track search result clicked event
-    posthog.capture('blog_search_result_clicked', {
+      posthog.capture('blog_search_result_clicked', {
       slug: slug,
       title: title,
       query: query,
@@ -115,8 +109,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Track search performed event
-    posthog.capture('blog_search_performed', {
+        posthog.capture('blog_search_performed', {
       query: query,
       results_count: results.length,
       has_results: results.length > 0,
@@ -220,8 +213,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
         </div>
       </form>
 
-      {/* Search Results Dropdown */}
-      {isOpen && (
+        {isOpen && (
         <div
           id={listboxId}
           role="listbox"

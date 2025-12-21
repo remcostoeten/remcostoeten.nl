@@ -21,11 +21,9 @@ export function ThemeSwitch({
   const [checked, setChecked] = useState<boolean | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  // Initialize theme from localStorage or system preference
   useEffect(() => {
     setMounted(true);
 
-    // Add transition class to enable smooth theme switching
     document.documentElement.style.setProperty('--theme-transition', '0.3s');
 
     const savedTheme = localStorage.getItem('theme');
@@ -46,7 +44,6 @@ export function ThemeSwitch({
     const newChecked = e.target.checked;
     setChecked(newChecked);
 
-    // Toggle dark class on document with smooth transition
     document.documentElement.classList.add('theme-transitioning');
 
     if (newChecked) {
@@ -57,7 +54,6 @@ export function ThemeSwitch({
       localStorage.setItem('theme', 'light');
     }
 
-    // Remove transition class after animation completes
     setTimeout(() => {
       document.documentElement.classList.remove('theme-transitioning');
     }, 300);
@@ -66,7 +62,6 @@ export function ThemeSwitch({
     onToggle?.(newChecked);
   }
 
-  // Don't render until mounted to avoid hydration mismatch
   if (!mounted || checked === null) {
     return null;
   }
@@ -95,6 +90,7 @@ export function ThemeSwitch({
         }
         
         .theme-switch {
+        scale: 0.5;
           --toggle-size: 16px;
           --container-width: 5.625em;
           --container-height: 2.5em;

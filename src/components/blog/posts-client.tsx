@@ -10,7 +10,7 @@ import { AnimatedNumber } from '../ui/animated-number'
 export function PostCountHeader({ count }: { count: number }) {
   return (
     <span className="text-muted-foreground/60 inline-flex items-baseline gap-1">
-      <AnimatedNumber value={count} duration={600} />
+      <AnimatedNumber value={count} duration={500} />
       <span>posts</span>
     </span>
   )
@@ -40,24 +40,25 @@ type Props = {
 function BlogCard({ post, index }: Props) {
   const formattedIndex = (index + 1).toString().padStart(2, '0')
   const cardRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(cardRef, { once: true, margin: "-100px" })
+  const isInView = useInView(cardRef, { once: true, margin: "-50px" })
 
-  const indexDuration = 600 + (index * 200)
+  // Optimized duration calculations - capped and more consistent
+  const indexDuration = Math.min(600 + (index * 100), 1200)
 
   const dateObj = new Date(post.metadata.publishedAt)
   const dayNumber = dateObj.getDate()
   const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
-  const dateDuration = 1000 + (index * 50)
+  const dateDuration = Math.min(800 + (index * 30), 1000)
 
   return (
     <li className="block p-0 m-0">
       <motion.div
         ref={cardRef}
-        initial={{ opacity: 0, y: 40, filter: 'blur(8px)' }}
-        animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 40, filter: 'blur(8px)' }}
+        initial={{ opacity: 0, y: 20, filter: 'blur(2px)' }}
+        animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 20, filter: 'blur(2px)' }}
         transition={{
-          duration: 0.6,
-          delay: index * 0.1,
+          duration: 0.5,
+          delay: index * 0.06, // Reduced stagger delay for smoother flow
           ease: [0.16, 1, 0.3, 1]
         }}
       >
@@ -172,23 +173,41 @@ function BlogCardSkeleton() {
   return (
     <li className="block p-0 m-0">
       <div className="relative block overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0">
-        <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8 border-b border-neutral-800/60 min-h-[120px]">
-          <div className="flex-1 min-w-0">
-            <header className="flex items-start gap-3">
-              <div className="w-12 h-14 bg-neutral-800/40 rounded animate-pulse shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="h-6 bg-neutral-800/40 rounded animate-pulse mb-2 min-h-6" />
-                <div className="h-10 bg-neutral-800/40 rounded animate-pulse min-h-10" />
-                <div className="flex gap-2 mt-3 mb-1">
-                  <div className="h-5 w-16 bg-neutral-800/40 rounded animate-pulse" />
-                  <div className="h-5 w-20 bg-neutral-800/40 rounded animate-pulse" />
-                </div>
-                <div className="h-4 bg-neutral-800/40 rounded animate-pulse mt-3 w-24" />
+        <article className="relative flex flex-col sm:flex-row sm:items-start gap-5 py-6 px-2 border-b border-neutral-200 dark:border-neutral-800/60">
+          {/* Main content area with index number and content */}
+          <div className="flex items-start gap-4 flex-1 min-w-0">
+            {/* Index number skeleton */}
+            <div className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right">
+              <div className="bg-neutral-100 dark:bg-neutral-700/40 rounded animate-pulse h-12 w-12 ml-auto" />
+            </div>
+
+            {/* Content area */}
+            <div className="flex-1 min-w-0 pt-1">
+              {/* Title skeleton */}
+              <div className="font-medium text-lg leading-snug pr-4 mb-2">
+                <div className="h-6 bg-neutral-100 dark:bg-neutral-700/40 rounded animate-pulse min-h-[24px]" />
               </div>
-            </header>
-          </div>
-          <div className="shrink-0 ml-auto sm:ml-0">
-            <div className="w-10 h-10 rounded-full bg-neutral-800/40 animate-pulse" />
+
+              {/* Summary skeleton */}
+              <div className="text-sm leading-relaxed max-w-xl mb-3">
+                <div className="h-4 bg-neutral-100 dark:bg-neutral-700/40 rounded animate-pulse mb-2" />
+                <div className="h-4 bg-neutral-100 dark:bg-neutral-700/40 rounded animate-pulse w-3/4" />
+              </div>
+
+              {/* Tags skeleton */}
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                <div className="h-6 w-16 bg-white dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700/50 rounded-full animate-pulse" />
+                <div className="h-6 w-20 bg-white dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700/50 rounded-full animate-pulse" />
+                <div className="h-6 w-12 bg-white dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700/50 rounded-full animate-pulse" />
+              </div>
+
+              {/* Footer metadata */}
+              <footer className="flex flex-wrap items-center gap-3 text-xs">
+                <div className="h-4 w-24 bg-neutral-50 dark:bg-neutral-700/40 rounded animate-pulse" />
+                <div className="h-4 w-20 bg-neutral-50 dark:bg-neutral-700/40 rounded animate-pulse" />
+                <div className="h-4 w-16 bg-neutral-50 dark:bg-neutral-700/40 rounded animate-pulse" />
+              </footer>
+            </div>
           </div>
         </article>
       </div>
