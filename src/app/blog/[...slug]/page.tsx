@@ -10,6 +10,9 @@ import { CommentSection } from '@/components/blog/comment-section'
 import { checkAdminStatus } from '@/actions/auth'
 import { PostAdminControls } from '@/components/blog/post-admin-controls'
 import { BlogPostStructuredData } from '@/components/seo/structured-data'
+import { db } from '@/server/db/connection'
+import { blogPosts } from '@/server/db/schema'
+import { eq } from 'drizzle-orm'
 
 // Force dynamic rendering due to auth requirements
 export const dynamic = 'force-dynamic'
@@ -96,11 +99,19 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
 
   // Check if user is admin on the server side for initial render
   const isAdminUser = await checkAdminStatus()
-  
-  // If it's a draft and user is not admin, show 404
+
   if (post.metadata.draft && !isAdminUser) {
     notFound()
   }
+
+  // Fetch view counts
+  const viewData = await db.query.blogPosts.findFirst({
+    where: eq(blogPosts.slug, slug),
+    columns: {
+      uniqueViews: true,
+      totalViews: true
+    }
+  })
 
   const currentIndex = allPosts.findIndex(p => p.slug === slug)
   const prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null
@@ -118,7 +129,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
         keywords={post.metadata.tags || []}
       />
       <TableOfContents />
-      
+
       {/* Client-side admin controls and draft banner */}
       <PostAdminControls post={post} />
 
@@ -130,6 +141,9 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
           topics={post.metadata.topics}
           title={post.metadata.title}
           readTime={calculateReadTime(post.content)}
+          slug={post.slug}
+          uniqueViews={viewData?.uniqueViews || 0}
+          totalViews={viewData?.totalViews || 0}
         />
 
         <div className="space-y-6 mb">

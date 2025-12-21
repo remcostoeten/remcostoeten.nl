@@ -85,7 +85,7 @@ export function AnimatedNumber({ value, className, duration = 500, delay = 0 }: 
 
   const shouldReduceMotion = useReducedMotion();
 
-  const isInView = useInView(elementRef, { once: true, margin: "-100px" });
+  const isInView = useInView(elementRef, { once: true, margin: "0px" });
 
   useEffect(() => {
     if (isInView) {

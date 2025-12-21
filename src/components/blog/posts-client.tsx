@@ -28,6 +28,8 @@ type BlogPost = {
     draft?: boolean
   }
   slug: string
+  views?: number
+  uniqueViews?: number
 }
 
 type Props = {
@@ -126,7 +128,23 @@ function BlogCard({ post, index }: Props) {
                   {post.metadata.readTime && (
                     <>
                       <span className="text-neutral-300 dark:text-neutral-700">•</span>
-                      <span>{post.metadata.readTime}</span>
+                      <span>
+                        <AnimatedNumber
+                          value={parseInt(post.metadata.readTime)}
+                          duration={dateDuration}
+                        /> min read
+                      </span>
+                    </>
+                  )}
+                  {typeof post.uniqueViews === 'number' && (
+                    <>
+                      <span className="text-neutral-300 dark:text-neutral-700">•</span>
+                      <span title={`${post.views} total views`}>
+                        <AnimatedNumber
+                          value={post.uniqueViews}
+                          duration={dateDuration}
+                        /> unique views
+                      </span>
                     </>
                   )}
                 </footer>

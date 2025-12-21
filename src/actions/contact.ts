@@ -8,6 +8,7 @@ import { gt, and, eq, count, desc } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { v4 as uuidv4 } from 'uuid'
 import { getClientIp, checkHoneypot, checkRateLimit } from '@/lib/protection'
+import { fetchGeoInfo } from '@/lib/geo'
 
 const validation = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -96,22 +97,6 @@ async function getVisitorId(): Promise<string> {
     })
 
     return newVisitorId
-}
-
-async function fetchGeoInfo(ip: string) {
-    if (ip === 'unknown' || ip === '127.0.0.1' || ip === '::1') return null
-    try {
-        const token = process.env.IP_INFO_TOKEN
-        if (!token) return null
-
-        const response = await fetch(`https://ipinfo.io/${ip}?token=${token}`)
-        if (!response.ok) return null
-
-        return await response.json()
-    } catch (error) {
-        console.error('Failed to fetch geo info:', error)
-        return null
-    }
 }
 
 async function getClientInfo() {

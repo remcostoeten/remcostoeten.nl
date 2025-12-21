@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, ChevronRight, Home } from 'lucide-react'
 import { AnimatedNumber } from '../ui/animated-number'
+import { useEffect } from 'react'
+import { trackBlogView } from '@/actions/analytics'
 
 type BlogPost = {
   metadata: {
@@ -24,6 +26,9 @@ type Props = {
   topics?: string[]
   title: string
   readTime: string
+  slug: string
+  uniqueViews?: number
+  totalViews?: number
 }
 
 export function BlogPostClient({
@@ -32,7 +37,10 @@ export function BlogPostClient({
   tags,
   topics,
   title,
-  readTime
+  readTime,
+  slug,
+  uniqueViews = 0,
+  totalViews = 0
 }: Props) {
   const router = useRouter()
 
@@ -46,6 +54,13 @@ export function BlogPostClient({
     ...(tags || []),
     ...(topics || [])
   ]
+
+
+  useEffect(() => {
+    if (slug) {
+      trackBlogView(slug)
+    }
+  }, [slug])
 
   return (
     <>
@@ -88,6 +103,14 @@ export function BlogPostClient({
             <p className="text-neutral-500 dark:text-neutral-400">
               {readTime}
             </p>
+            {uniqueViews > 0 && (
+              <>
+                <span className="text-neutral-300 dark:text-neutral-700">•</span>
+                <span className="text-neutral-500 dark:text-neutral-400" title={`${totalViews} total views`}>
+                  <AnimatedNumber value={uniqueViews} duration={500} /> unique views
+                </span>
+              </>
+            )}
           </div>
 
 
