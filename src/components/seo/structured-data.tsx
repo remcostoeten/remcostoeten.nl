@@ -87,13 +87,13 @@ export function PersonStructuredData() {
     url: baseUrl,
     sameAs: [
       'https://github.com/remcostoeten',
-      'https://www.linkedin.com/in/remcostoeten/',
+      'https://www.linkedin.com/in/remco-stoeten/',
       // Add other social profiles here
     ],
     jobTitle: 'Frontend Engineer',
     worksFor: {
       '@type': 'Organization',
-      name: 'Freelance',
+      name: 'Brainstud',
     },
     description: 'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
   }

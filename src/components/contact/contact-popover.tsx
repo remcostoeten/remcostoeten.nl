@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { submitContactForm } from '@/actions/contact';
 import { EmailAutocomplete } from './email-autocomplete';
 import { cn } from '@/lib/utils';
+import posthog from 'posthog-js';
 
 export function ContactPopover() {
     const [isOpen, setIsOpen] = useState(false);

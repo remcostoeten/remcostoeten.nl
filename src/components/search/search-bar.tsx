@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef, useId } from 'react'
+import { useState, useEffect, useRef, useId, useCallback } from 'react'
 import { Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
 
 // Search results type
 interface SearchResult {
@@ -96,7 +97,15 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
     }
   }, [])
 
-  const handleResultClick = (slug: string) => {
+  const handleResultClick = (slug: string, title?: string) => {
+    // Track search result clicked event
+    posthog.capture('blog_search_result_clicked', {
+      slug: slug,
+      title: title,
+      query: query,
+      results_count: results.length,
+    })
+
     router.push(`/blog/${slug}`)
     setIsOpen(false)
     setQuery('')
@@ -105,8 +114,16 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Track search performed event
+    posthog.capture('blog_search_performed', {
+      query: query,
+      results_count: results.length,
+      has_results: results.length > 0,
+    })
+
     if (results.length > 0) {
-      handleResultClick(results[0].slug)
+      handleResultClick(results[0].slug, results[0].title)
     }
   }
 
@@ -146,7 +163,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
     if (event.key === 'Enter') {
       if (isOpen && activeIndex >= 0 && activeIndex < results.length) {
         event.preventDefault()
-        handleResultClick(results[activeIndex].slug)
+        handleResultClick(results[activeIndex].slug, results[activeIndex].title)
       }
       return
     }
@@ -229,7 +246,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
                   aria-selected={activeIndex === index}
                   onMouseEnter={() => setActiveIndex(index)}
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => handleResultClick(result.slug)}
+                  onClick={() => handleResultClick(result.slug, result.title)}
                   className={`w-full px-4 py-3 text-left cursor-pointer transition-colors ${
                     activeIndex === index ? 'bg-muted/50' : 'hover:bg-muted/50'
                   }`}

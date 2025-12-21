@@ -26,6 +26,13 @@ export async function trackBlogView(slug: string) {
         const fingerprintInput = `${ip}|${userAgent}`
         const fingerprint = createHash('sha256').update(fingerprintInput).digest('hex')
 
+        // 0. Ensure the blog post exists in the database
+        // This is crucial for new MDX files to be tracked automatically without manual sync
+        await db.insert(blogPosts)
+            .values({ slug })
+            .onConflictDoNothing()
+            .execute()
+
         // 1. Check if this specific fingerprint has already viewed this post
         const existingView = await db.query.blogViews.findFirst({
             where: and(
