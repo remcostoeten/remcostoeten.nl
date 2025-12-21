@@ -14,7 +14,6 @@ export function ContactPopover() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Form state
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [subject, setSubject] = useState('');
@@ -23,7 +22,6 @@ export function ContactPopover() {
 
     const toggleOpen = () => setIsOpen(!isOpen);
 
-    // Close when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
@@ -56,7 +54,6 @@ export function ContactPopover() {
             if (result.success) {
                 toast.success(result.message);
                 setIsOpen(false);
-                // Reset form
                 setName('');
                 setEmail('');
                 setSubject('');
@@ -91,7 +88,7 @@ export function ContactPopover() {
                 {isOpen && (
                     <motion.div
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: -10, scale: 1 }} // Move up slightly to sit above footer
+                        animate={{ opacity: 1, y: -10, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
                         className="absolute bottom-full right-0 mb-2 w-[350px] md:w-[400px] z-50 origin-bottom-right"
@@ -184,8 +181,7 @@ export function ContactPopover() {
                                     {errors.message && <p className="text-xs text-destructive">{errors.message[0]}</p>}
                                 </div>
 
-                                {/* Honeypot field - keeping it simple for now */}
-                                <input
+                                  <input
                                     type="text"
                                     name="_gotcha"
                                     style={{ display: 'none' }}

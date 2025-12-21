@@ -4,8 +4,7 @@ import { getSessionCookie } from "better-auth/cookies"
 export async function proxy(request: NextRequest) {
     const sessionCookie = getSessionCookie(request)
 
-    // Optimistic redirect - actual auth check should happen in pages/routes
-    if (!sessionCookie) {
+        if (!sessionCookie) {
         return NextResponse.redirect(new URL("/", request.url))
     }
 

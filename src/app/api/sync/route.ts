@@ -3,7 +3,7 @@ import { syncAll, syncGitHubActivities, syncSpotifyListens, getSyncStatus } from
 import { isAdmin } from '@/utils/is-admin'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60 // Allow up to 60 seconds for sync
+export const maxDuration = 60
 
 /**
  * GET /api/sync - Get sync status
@@ -27,16 +27,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
     try {
-        // Check authorization: either admin user or Vercel cron secret
-        const authHeader = request.headers.get('authorization')
+                const authHeader = request.headers.get('authorization')
         const cronSecret = process.env.CRON_SECRET
         const isCronRequest = cronSecret && authHeader === `Bearer ${cronSecret}`
 
-        // Also check if it's from Vercel cron (they set this header)
-        const isVercelCron = request.headers.get('x-vercel-cron') === '1'
+                const isVercelCron = request.headers.get('x-vercel-cron') === '1'
 
-        // If not cron, check if user is admin
-        if (!isCronRequest && !isVercelCron) {
+                if (!isCronRequest && !isVercelCron) {
             const userIsAdmin = await isAdmin()
             if (!userIsAdmin) {
                 return NextResponse.json(

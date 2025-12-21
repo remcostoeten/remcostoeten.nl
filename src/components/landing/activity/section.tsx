@@ -56,7 +56,7 @@ export function ActivitySection() {
       noHeaderMargin
       headerAction={
         <span className="text-muted-foreground/60 inline-flex items-baseline">
-          <AnimatedNumber value={year} duration={800} />
+          <AnimatedNumber value={year} duration={600} />
         </span>
       }
     >

@@ -1,3 +1,5 @@
+'use server'
+
 import { getBlogPosts, getAllBlogPosts } from '@/utils/utils'
 import { isAdmin } from '@/utils/is-admin'
 import { BlogPostsClient, PostCountHeader } from './posts-client'
@@ -10,7 +12,6 @@ export async function BlogPosts() {
 
   const allBlogs = userIsAdmin ? getAllBlogPosts() : getBlogPosts()
 
-  // Fetch view counts from DB
   const viewData = await db.select({
     slug: blogPosts.slug,
     views: blogPosts.totalViews,

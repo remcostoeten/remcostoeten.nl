@@ -6,7 +6,6 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
 import { env } from '@/server/env'
 
-// Initialize PostHog
 if (typeof window !== 'undefined') {
   posthog.init(env.NEXT_PUBLIC_POSTHOG_KEY!, {
     api_host: env.NEXT_PUBLIC_POSTHOG_HOST,

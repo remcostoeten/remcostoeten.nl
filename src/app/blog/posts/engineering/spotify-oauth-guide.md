@@ -3,7 +3,7 @@ title: "Spotify OAuth2 Setup Tutorial: Working Redirects, Tokens, and Refresh Lo
 publishedAt: "20-12-2025"
 summary: "A guide for setting up Spotify OAuth2 to obtain access and refresh tokens and API integration."
 categories: ["Engineering", "Spotify API", "OAuth2", "Guide"]
-tags: ["spotify oauth2", "redirect uri", "refresh token", "authorization code flow", "access token expiration"]
+tags: ["Engineering", "Authentication", "OAuth2", "Guide", "Next.js"]
 slug: "spotify-oauth2-working-setup"
 ---
 Accessing the Spotify API requires configuring OAuth2. It is not overly complex, although Spotify adds a few extra steps compared to providers like GitHub or Google. These differences cost me hours of debugging due to browser caching and redirect quirks, so I’m documenting the full workflow to save you time.
