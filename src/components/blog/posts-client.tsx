@@ -78,7 +78,7 @@ function BlogCard({ post, index }: Props) {
               </span>
 
               <div className="flex-1 min-w-0 pt-1">
-                <h2 className="font-medium text-lg text-neutral-800 dark:text-neutral-50 group-hover:text-emerald-600 dark:group-hover:text-lime-400 transition-colors duration-200 leading-snug pr-4">
+                <h2 className="font-medium text-lg text-neutral-900 dark:text-neutral-50 group-hover:text-emerald-600 dark:group-hover:text-lime-400 transition-colors duration-200 leading-snug pr-4">
                   {post.metadata.draft && (
                     <span className="inline-flex items-center mr-2 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
                       Draft
@@ -104,13 +104,13 @@ function BlogCard({ post, index }: Props) {
                       {allTags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-neutral-100 dark:bg-neutral-800/80 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700/50 hover:bg-neutral-200 dark:hover:bg-neutral-700/80 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors cursor-default"
+                          className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700/50 hover:bg-neutral-50 dark:hover:bg-neutral-700/80 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-default"
                         >
                           {tag}
                         </span>
                       ))}
                       {allTags.length > 3 && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-500 border border-neutral-200 dark:border-neutral-800">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-500 border border-neutral-300 dark:border-neutral-800">
                           +{allTags.length - 3}
                         </span>
                       )}
@@ -127,7 +127,7 @@ function BlogCard({ post, index }: Props) {
             </div>
 
             <div className="shrink-0 self-center" aria-hidden="true">
-              <div className="relative w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-900/60 group-hover:bg-emerald-100 dark:group-hover:bg-lime-500/20 flex items-center justify-center overflow-hidden transition-all duration-200 group-hover:scale-110">
+              <div className="relative w-10 h-10 rounded-full bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-transparent group-hover:bg-emerald-100 dark:group-hover:bg-lime-500/20 group-hover:border-emerald-200 dark:group-hover:border-transparent flex items-center justify-center overflow-hidden transition-all duration-200 group-hover:scale-110">
                 <ArrowUpRight className="absolute w-4 h-4 text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-lime-400 transition-all duration-300 group-hover:-translate-y-6 group-hover:translate-x-6" />
                 <ArrowUpRight className="absolute w-4 h-4 text-emerald-600 dark:text-lime-400 -translate-x-6 translate-y-6 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0" />
               </div>

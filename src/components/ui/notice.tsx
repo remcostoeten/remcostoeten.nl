@@ -90,7 +90,6 @@ export function Notice({ type = 'notice', title, children, className = '' }: Not
   )
 }
 
-// Individual components for easier use
 export function NoticeAlert({ title, children, className }: Omit<NoticeProps, 'type'>) {
   return <Notice type="alert" title={title} className={className}>{children}</Notice>
 }

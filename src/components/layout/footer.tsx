@@ -44,9 +44,7 @@ const Footer = () => {
   return (
     <footer className="border-t border-border/40 bg-background">
       <div className="container mx-auto px-6 py-8">
-        {/* Main row */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
-          {/* Brand & Git stats */}
           <div className="flex flex-col gap-2">
             <Link href="/" className="text-lg font-semibold tracking-tight hover:opacity-70 transition-opacity">
               remcostoeten<span className="text-primary">.</span>nl
@@ -69,7 +67,6 @@ const Footer = () => {
             )}
           </div>
 
-          {/* Contact */}
           <div className="flex items-center gap-4">
             <button
               onClick={copyEmail}
@@ -90,7 +87,6 @@ const Footer = () => {
 
             <span className="text-border">|</span>
 
-            {/* Social icons */}
             <div className="flex items-center gap-3">
               {socialLinks.map((social) => (
                 <a
@@ -108,7 +104,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Bottom row */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} Remco Stoeten</p>
           <div className="flex items-center gap-4">

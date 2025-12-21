@@ -1,5 +1,6 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 
 type TProps = {
   defaultChecked?: boolean;
@@ -10,14 +11,64 @@ type TProps = {
   side?: 'left' | 'right';
 };
 
-export function ThemeSwitch({ defaultChecked = false, onChange, onToggle, position = 'fixed', offset = 20, side = 'right' }: TProps) {
-  const [checked, setChecked] = useState(defaultChecked);
+export function ThemeSwitch({
+  onChange,
+  onToggle,
+  position = 'fixed',
+  offset = 20,
+  side = 'right'
+}: TProps) {
+  const [checked, setChecked] = useState<boolean | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    setMounted(true);
+
+    // Add transition class to enable smooth theme switching
+    document.documentElement.style.setProperty('--theme-transition', '0.3s');
+
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+
+    setChecked(isDark);
+
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newChecked = e.target.checked;
     setChecked(newChecked);
+
+    // Toggle dark class on document with smooth transition
+    document.documentElement.classList.add('theme-transitioning');
+
+    if (newChecked) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transitioning');
+    }, 300);
+
     onChange?.(newChecked);
     onToggle?.(newChecked);
+  }
+
+  // Don't render until mounted to avoid hydration mismatch
+  if (!mounted || checked === null) {
+    return null;
   }
 
   const positionStyles = {
@@ -30,8 +81,21 @@ export function ThemeSwitch({ defaultChecked = false, onChange, onToggle, positi
   return (
     <>
       <style>{`
+        /* Smooth theme transition styles */
+        html.theme-transitioning,
+        html.theme-transitioning *,
+        html.theme-transitioning *::before,
+        html.theme-transitioning *::after {
+          transition: background-color 0.3s ease, 
+                      border-color 0.3s ease, 
+                      color 0.3s ease,
+                      fill 0.3s ease,
+                      stroke 0.3s ease,
+                      box-shadow 0.3s ease !important;
+        }
+        
         .theme-switch {
-          --toggle-size: 15px;
+          --toggle-size: 16px;
           --container-width: 5.625em;
           --container-height: 2.5em;
           --container-radius: 6.25em;
@@ -51,6 +115,18 @@ export function ThemeSwitch({ defaultChecked = false, onChange, onToggle, positi
           --transition: 0.5s cubic-bezier(0, -0.02, 0.4, 1.25);
           --circle-transition: 0.3s cubic-bezier(0, -0.02, 0.35, 1.17);
         }
+        
+        /* Mobile responsive sizing */
+        @media (max-width: 640px) {
+          .theme-switch {
+            --toggle-size: 14px;
+            top: auto !important;
+            bottom: 20px !important;
+            right: 16px !important;
+            left: auto !important;
+          }
+        }
+        
         .theme-switch,
         .theme-switch *,
         .theme-switch *::before,
@@ -475,6 +551,7 @@ export function ThemeSwitch({ defaultChecked = false, onChange, onToggle, positi
           type="checkbox"
           checked={checked}
           onChange={handleChange}
+          aria-label="Toggle dark mode"
         />
         <div className="theme-switch__container">
           <div className="theme-switch__clouds"></div>
@@ -518,3 +595,4 @@ export function ThemeSwitch({ defaultChecked = false, onChange, onToggle, positi
   );
 }
 
+export default ThemeSwitch;

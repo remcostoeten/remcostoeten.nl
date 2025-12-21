@@ -31,7 +31,7 @@ export function useRepoDetails(owner: string, repo: string, enabled = false) {
             return response.json() as Promise<RepoDetails>;
         },
         enabled: enabled && !!owner && !!repo,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 30 * 60 * 1000, // 30 minutes
+        staleTime: 5 * 60 * 1000,
+        gcTime: 30 * 60 * 1000,
     });
 }

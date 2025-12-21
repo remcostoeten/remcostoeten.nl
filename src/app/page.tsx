@@ -1,11 +1,11 @@
 import { BlogPosts } from '@/components/blog/posts';
 import { Intro } from '@/components/home/hero';
-import { ActivitySection } from '@/components/activity/section';
-import { TechStackCloud } from '@/components/ui/tech-stack-cloud';
+import { ActivitySection } from '@/components/landing/activity/section';
+import { TechStackCloud } from '@/components/landing/tech-stack-cloud';
+import { Section } from '@/components/ui/section';
 import { homeMetadata } from '@/core/metadata'
 import nextDynamic from 'next/dynamic'
 
-// Lazy load non-critical components
 const WorkExperienceDemo = nextDynamic(() => import('@/components/home/work-experience'), {
   loading: () => null // Don't show loading state - appears instantly usually
 })
@@ -27,12 +27,11 @@ export default function Page() {
           </div>
 
           {/* Tech Stack - Above Blog */}
-          <div className="px-4 md:px-0 py-8">
-            <h3 className="text-center font-medium text-lg text-muted-foreground tracking-tight md:text-xl mb-6">
-              Tech stack I work with
-            </h3>
-            <TechStackCloud />
-          </div>
+          <Section title="Tech Stack" noHeaderMargin>
+            <div className="px-4 md:px-5 pt-4">
+              <TechStackCloud />
+            </div>
+          </Section>
 
           <BlogPosts />
         </div>
@@ -40,3 +39,4 @@ export default function Page() {
     </>
   )
 }
+
