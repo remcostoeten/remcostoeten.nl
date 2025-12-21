@@ -11,6 +11,7 @@ import { PageTransition } from '@/components/layout/page-transition'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { ThemeSwitch } from '@/components/ui/theme-switch'
+import { PosthogProvider } from './providers'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
@@ -87,22 +88,24 @@ export default function RootLayout({
         <PersonStructuredData />
       </head>
       <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
-        <CustomQueryClientProvider>
-          <VimAuthProvider>
-            <div className="min-h-screen w-full flex flex-col">
-              <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
-                <PageTransition>
-                  {children}
-                  <Toaster />
-                </PageTransition>
-              </main>
-              <Footer />
-            </div>
-          </VimAuthProvider>
-          <ThemeSwitch position="fixed" offset={20} side="right" />
-          <Analytics />
-          <SpeedInsights />
-        </CustomQueryClientProvider>
+        <PosthogProvider>
+          <CustomQueryClientProvider>
+            <VimAuthProvider>
+              <div className="min-h-screen w-full flex flex-col">
+                <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
+                  <PageTransition>
+                    {children}
+                    <Toaster />
+                  </PageTransition>
+                </main>
+                <Footer />
+              </div>
+            </VimAuthProvider>
+            <ThemeSwitch position="fixed" offset={20} side="right" />
+            <Analytics />
+            <SpeedInsights />
+          </CustomQueryClientProvider>
+        </PosthogProvider>
       </body>
     </html>
   )

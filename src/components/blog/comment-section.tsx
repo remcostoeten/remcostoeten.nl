@@ -6,6 +6,7 @@ import { Trash2, MessageSquare, Loader2 } from 'lucide-react'
 import { useSession } from '@/lib/auth-client'
 import { addComment, deleteComment, getComments } from '@/server/actions/comments'
 import { SignInButton } from './sign-in-button'
+import posthog from 'posthog-js'
 
 type Comment = {
     id: string
@@ -52,6 +53,12 @@ export function CommentSection({ slug }: Props) {
             if (result.error) {
                 setError(result.error)
             } else {
+                // Track comment submitted event
+                posthog.capture('blog_comment_submitted', {
+                    slug: slug,
+                    comment_length: newComment.length,
+                })
+
                 setNewComment('')
                 const fresh = await getComments(slug)
                 setComments(fresh.comments as Comment[])
@@ -64,6 +71,12 @@ export function CommentSection({ slug }: Props) {
             const result = await deleteComment(commentId)
 
             if (!result.error) {
+                // Track comment deleted event
+                posthog.capture('blog_comment_deleted', {
+                    slug: slug,
+                    comment_id: commentId,
+                })
+
                 setComments(prev => prev.filter(c => c.id !== commentId))
             }
         })

@@ -3,12 +3,20 @@
 import { useState } from 'react'
 import { Github } from 'lucide-react'
 import { signIn } from '@/lib/auth-client'
+import posthog from 'posthog-js'
 
 export function SignInButton() {
     const [isLoading, setIsLoading] = useState<'github' | 'google' | null>(null)
 
     const handleSignIn = async (provider: 'github' | 'google') => {
         setIsLoading(provider)
+
+        // Track sign in initiated event
+        posthog.capture('sign_in_initiated', {
+            provider: provider,
+            source: 'blog_sign_in_button',
+        })
+
         try {
             await signIn.social({
                 provider,
@@ -17,6 +25,9 @@ export function SignInButton() {
         } catch (error) {
             console.error('Sign in error:', error)
             setIsLoading(null)
+
+            // Track error
+            posthog.captureException(error instanceof Error ? error : new Error('Sign in failed'))
         }
     }
 

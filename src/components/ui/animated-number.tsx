@@ -76,9 +76,10 @@ type Props = {
   className?: string
   duration?: number
   delay?: number
+  priority?: boolean
 }
 
-export function AnimatedNumber({ value, className, duration = 500, delay = 0 }: Props) {
+export function AnimatedNumber({ value, className, duration = 500, delay = 0, priority = false }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef<HTMLSpanElement>(null);
   const stringValue = String(value);
@@ -88,10 +89,12 @@ export function AnimatedNumber({ value, className, duration = 500, delay = 0 }: 
   const isInView = useInView(elementRef, { once: true, margin: "0px" });
 
   useEffect(() => {
-    if (isInView) {
+    if (priority) {
+      setIsVisible(true);
+    } else if (isInView) {
       setIsVisible(true);
     }
-  }, [isInView]);
+  }, [isInView, priority]);
 
   const chars = stringValue.split('');
   let digitIndex = 0;

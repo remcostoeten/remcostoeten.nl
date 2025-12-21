@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from 'react'
 import { motion } from 'framer-motion'
 import { toggleReaction, getReactions } from '@/server/actions/reactions'
 import type { EmojiType } from '@/server/db/schema'
+import posthog from 'posthog-js'
 
 const EMOJI_CONFIG: Record<EmojiType, { emoji: string; label: string }> = {
     fire: { emoji: '🔥', label: 'Fire' },
@@ -45,6 +46,16 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 
     const handleReaction = async (emoji: EmojiType) => {
         setLoadingEmoji(emoji)
+
+        const wasReacted = reactions[emoji].hasReacted
+
+        // Track blog post reaction event
+        posthog.capture('blog_post_reaction', {
+            slug: slug,
+            emoji_type: emoji,
+            emoji_label: EMOJI_CONFIG[emoji].label,
+            action: wasReacted ? 'removed' : 'added',
+        })
 
         setReactions(prev => ({
             ...prev,
