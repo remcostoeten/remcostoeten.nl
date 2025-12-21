@@ -13,9 +13,10 @@ export interface SpotifyPlaybackState {
     formattedDuration: string; // "mm:ss"
 }
 
-const POLL_INTERVAL = 'connection' in navigator && navigator.connection?.saveData
+const POLL_INTERVAL = 'connection' in navigator &&
+    (navigator.connection as any)?.saveData
     ? 30000 // 30 seconds on data saver mode (balanced UX)
-    : 'connection' in navigator && navigator.connection?.effectiveType === 'slow-2g' || navigator.connection?.effectiveType === '2g'
+    : 'connection' in navigator && ((navigator.connection as any)?.effectiveType === 'slow-2g' || (navigator.connection as any)?.effectiveType === '2g')
     ? 20000 // 20 seconds on slow connections
     : 10000; // 10 seconds on normal connections (still responsive)
 const TIMER_INTERVAL = 200; // Update local progress every 200ms

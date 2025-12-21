@@ -67,11 +67,11 @@ function slugify(str) {
   return str
     .toString()
     .toLowerCase()
-    .trim() // Remove whitespace from both ends of a string
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/&/g, '-and-') // Replace & with 'and'
-    .replace(/[^\w\-]+/g, '') // Remove all non-word characters except for -
-    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/&/g, '-and-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
 }
 
 function createHeading(level) {
@@ -124,11 +124,9 @@ let components = {
     const language = className.replace('language-', '') || 'text';
     const metastring = codeElement?.props?.metastring || '';
 
-    // Extract fileName from metastring (e.g., `filename="index.ts"`)
     const fileNameMatch = metastring.match(/filename="([^"]+)"/);
     const fileName = fileNameMatch ? fileNameMatch[1] : undefined;
 
-    // Extract highlighted lines from metastring (e.g., `{1,3-5}`)
     const highlightMatch = metastring.match(/\{([\d,-]+)\}/);
     const highlightLines = highlightMatch
       ? highlightMatch[1].split(',').flatMap((v) => {

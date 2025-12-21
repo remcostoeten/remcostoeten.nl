@@ -23,6 +23,27 @@ export const blogPosts = pgTable('blog_posts', {
     index('blog_posts_draft_idx').on(t.isDraft),
 ])
 
+export const blogViews = pgTable('blog_views', {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    slug: text('slug').notNull().references(() => blogPosts.slug, { onDelete: 'cascade' }),
+    fingerprint: text('fingerprint').notNull(), // Hash(IP + UserAgent)
+    visitorId: text('visitor_id'), // Cookie-based fallback/correlation
+    viewedAt: timestamp('viewed_at').defaultNow().notNull(),
+
+    // Geolocation Data
+    ipAddress: text('ip_address'), // Optional: consider hashing this too if privacy is strict, but user asked for GEO info
+    geoCountry: text('geo_country'),
+    geoCity: text('geo_city'),
+    geoRegion: text('geo_region'),
+    geoLoc: text('geo_loc'),
+    geoOrg: text('geo_org'),
+    geoTimezone: text('geo_timezone'),
+}, (t) => [
+    index('blog_views_slug_idx').on(t.slug),
+    index('blog_views_fingerprint_idx').on(t.fingerprint), // Fast lookups for uniqueness check
+    index('blog_views_visitor_idx').on(t.visitorId),
+])
+
 export const blogSessions = pgTable('blog_sessions', {
     ...primaryId,
     ...blogSlug,
@@ -158,5 +179,84 @@ export const syncMetadata = pgTable('sync_metadata', {
     ...timestamps,
 })
 
+
 export type SyncMetadata = typeof syncMetadata.$inferSelect
+
+// ============================================
+// Contact Form Submissions
+// ============================================
+
+export const contactSubmissions = pgTable('contact_submissions', {
+    ...primaryId,
+    name: text('name').notNull(),
+    email: text('email').notNull(),
+    subject: text('subject'),
+    message: text('message').notNull(),
+    ipAddress: text('ip_address'),
+    geoCountry: text('geo_country'),
+    geoCity: text('geo_city'),
+    geoRegion: text('geo_region'),
+    geoLoc: text('geo_loc'), // Lat,Long
+    geoOrg: text('geo_org'), // ISP/Organization
+    geoTimezone: text('geo_timezone'),
+    ...createdTimestamp,
+})
+
+export type ContactSubmission = typeof contactSubmissions.$inferSelect
+export type NewContactSubmission = typeof contactSubmissions.$inferInsert
+
+// ============================================
+// Contact Form Interaction Tracking
+// ============================================
+
+export const contactInteractions = pgTable('contact_interactions', {
+    ...primaryId,
+    ...visitorId,
+    interactionType: text('interaction_type').notNull(), // 'button_click' | 'form_start' | 'form_abandon'
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    referrer: text('referrer'),
+    sessionId: text('session_id'), // Optional: to track user sessions
+    geoCountry: text('geo_country'),
+    geoCity: text('geo_city'),
+    geoRegion: text('geo_region'),
+    geoLoc: text('geo_loc'), // Lat,Long
+    geoOrg: text('geo_org'), // ISP/Organization
+    geoTimezone: text('geo_timezone'),
+    ...createdTimestamp,
+}, (t) => [
+    index('contact_interactions_type_idx').on(t.interactionType),
+    index('contact_interactions_visitor_idx').on(t.visitorId),
+    index('contact_interactions_session_idx').on(t.sessionId),
+    index('contact_interactions_created_idx').on(t.createdAt),
+])
+
+export const contactAbandonments = pgTable('contact_abandonments', {
+    ...primaryId,
+    ...visitorId,
+    interactionId: text('interaction_id').references(() => contactInteractions.id, { onDelete: 'cascade' }),
+    timeToAbandon: integer('time_to_abandon'), // Time in milliseconds from form start to abandonment
+    lastFieldTouched: text('last_field_touched'), // Which field user was last interacting with
+    formData: text('form_data'), // JSON string of partial form data
+    ipAddress: text('ip_address'),
+    geoCountry: text('geo_country'),
+    geoCity: text('geo_city'),
+    geoRegion: text('geo_region'),
+    geoLoc: text('geo_loc'), // Lat,Long
+    geoOrg: text('geo_org'), // ISP/Organization
+    geoTimezone: text('geo_timezone'),
+    ...createdTimestamp,
+}, (t) => [
+    index('contact_abandonments_interaction_idx').on(t.interactionId),
+    index('contact_abandonments_visitor_idx').on(t.visitorId),
+    index('contact_abandonments_time_idx').on(t.timeToAbandon),
+])
+
+export type ContactInteraction = typeof contactInteractions.$inferSelect
+export type NewContactInteraction = typeof contactInteractions.$inferInsert
+export type ContactAbandonment = typeof contactAbandonments.$inferSelect
+export type NewContactAbandonment = typeof contactAbandonments.$inferInsert
+
+export type BlogView = typeof blogViews.$inferSelect
+export type NewBlogView = typeof blogViews.$inferInsert
 

@@ -1,0 +1,67 @@
+[
+  {
+    "eventName": "sign_in_initiated",
+    "eventDescription": "User initiated sign in with OAuth provider (GitHub or Google)",
+    "filePath": "src/components/auth/oauth-modal.tsx"
+  },
+  {
+    "eventName": "sign_in_completed",
+    "eventDescription": "User successfully completed sign in via OAuth",
+    "filePath": "src/components/blog/sign-in-button.tsx"
+  },
+  {
+    "eventName": "blog_post_reaction",
+    "eventDescription": "User reacted to a blog post with an emoji (fire, heart, clap, thinking, rocket)",
+    "filePath": "src/components/blog/reaction-bar.tsx"
+  },
+  {
+    "eventName": "blog_comment_submitted",
+    "eventDescription": "User submitted a comment on a blog post",
+    "filePath": "src/components/blog/comment-section.tsx"
+  },
+  {
+    "eventName": "blog_comment_deleted",
+    "eventDescription": "User deleted their own comment",
+    "filePath": "src/components/blog/comment-section.tsx"
+  },
+  {
+    "eventName": "blog_search_performed",
+    "eventDescription": "User performed a search query in the blog search bar",
+    "filePath": "src/components/search/search-bar.tsx"
+  },
+  {
+    "eventName": "blog_search_result_clicked",
+    "eventDescription": "User clicked on a search result to navigate to a blog post",
+    "filePath": "src/components/search/search-bar.tsx"
+  },
+  {
+    "eventName": "contact_form_opened",
+    "eventDescription": "User opened the contact form popover",
+    "filePath": "src/components/contact/contact-popover.tsx"
+  },
+  {
+    "eventName": "contact_form_submitted",
+    "eventDescription": "User submitted the contact form (conversion event)",
+    "filePath": "src/components/contact/contact-popover.tsx"
+  },
+  {
+    "eventName": "email_copied",
+    "eventDescription": "User copied the email address from the footer",
+    "filePath": "src/components/layout/footer.tsx"
+  },
+  {
+    "eventName": "social_link_clicked",
+    "eventDescription": "User clicked a social media link (GitHub, LinkedIn, X)",
+    "filePath": "src/components/layout/footer.tsx"
+  },
+  {
+    "eventName": "project_link_clicked",
+    "eventDescription": "User clicked on a project link (GitHub or live site)",
+    "filePath": "src/components/home/projects.tsx"
+  },
+  {
+    "eventName": "theme_toggled",
+    "eventDescription": "User toggled between light and dark theme",
+    "filePath": "src/components/ui/theme-switch.tsx"
+  }
+]

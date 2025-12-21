@@ -67,7 +67,6 @@ export async function updateComment(commentId: string, content: string) {
     }
 
     try {
-        // Verify ownership
         const [existing] = await db
             .select()
             .from(blogComments)
@@ -112,7 +111,6 @@ export async function deleteComment(commentId: string) {
     }
 
     try {
-        // Get the comment
         const [existing] = await db
             .select()
             .from(blogComments)
@@ -123,7 +121,6 @@ export async function deleteComment(commentId: string) {
             return { error: 'Comment not found' }
         }
 
-        // Check authorization: owner or admin
         const userIsAdmin = await isAdmin()
         if (existing.userId !== session.user.id && !userIsAdmin) {
             return { error: 'You can only delete your own comments' }

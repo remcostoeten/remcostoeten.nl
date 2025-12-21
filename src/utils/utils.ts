@@ -102,14 +102,22 @@ function getMDXData(dir) {
       let slug = file.replace(/\.mdx$/, '')
 
       return {
-        metadata,
         slug,
         content,
+        metadata: {
+          ...metadata,
+          readTime: metadata.readTime || calculateReadTime(content)
+        }
       }
     } catch (error) {
       console.error(`Error parsing MDX file ${file}:`, error)
       return {
-        metadata: { title: 'Error', publishedAt: '', summary: 'Error parsing file' },
+        metadata: {
+          title: 'Error',
+          publishedAt: '',
+          summary: 'Error parsing file',
+          readTime: '0 min'
+        } as Metadata,
         slug: file.replace(/\.mdx$/, ''),
         content: '',
       }

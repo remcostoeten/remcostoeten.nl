@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Plus, GitBranch, Lock, Globe } from 'lucide-react';
 import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying } from '@/server/services/spotify';
@@ -319,6 +319,22 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         setCurrentIndex((prev) => (prev + 1) % activities.length);
     }, [activities.length, isPaused]);
 
+    // Navigate to specific slide
+    const goToSlide = useCallback((index: number) => {
+        setCurrentIndex(index);
+    }, []);
+
+    // Navigate to next/prev slide
+    const goToNextSlide = useCallback(() => {
+        if (activities.length === 0) return;
+        setCurrentIndex((prev) => (prev + 1) % activities.length);
+    }, [activities.length]);
+
+    const goToPrevSlide = useCallback(() => {
+        if (activities.length === 0) return;
+        setCurrentIndex((prev) => (prev - 1 + activities.length) % activities.length);
+    }, [activities.length]);
+
     // Rotate through activities
     useEffect(() => {
         if (activities.length === 0 || isPaused) return;
@@ -326,7 +342,38 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         return () => clearInterval(interval);
     }, [rotateActivity, rotationInterval]);
 
-  // Memoize expensive calculations
+    // Touch/swipe handling
+    const touchStartX = useRef<number | null>(null);
+    const touchEndX = useRef<number | null>(null);
+    const minSwipeDistance = 50;
+
+    const handleTouchStart = useCallback((e: React.TouchEvent) => {
+        touchStartX.current = e.targetTouches[0].clientX;
+        touchEndX.current = null;
+    }, []);
+
+    const handleTouchMove = useCallback((e: React.TouchEvent) => {
+        touchEndX.current = e.targetTouches[0].clientX;
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        if (!touchStartX.current || !touchEndX.current) return;
+
+        const distance = touchStartX.current - touchEndX.current;
+        const isLeftSwipe = distance > minSwipeDistance;
+        const isRightSwipe = distance < -minSwipeDistance;
+
+        if (isLeftSwipe) {
+            goToNextSlide();
+        } else if (isRightSwipe) {
+            goToPrevSlide();
+        }
+
+        touchStartX.current = null;
+        touchEndX.current = null;
+    }, [goToNextSlide, goToPrevSlide]);
+
+    // Memoize expensive calculations
     const isLoading = githubLoading || spotifyLoading;
     const currentActivity = useMemo(() => activities[currentIndex], [activities, currentIndex]);
     const isRealTimePlaying = useMemo(() => playbackState.isPlaying && playbackState.track, [playbackState.isPlaying, playbackState.track]);
@@ -404,7 +451,10 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         <div
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm touch-pan-y"
         >
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
@@ -671,18 +721,19 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                 </div>
             </div>
 
-            {/* Activity indicator - subtle dots */}
+            {/* Activity indicator - clickable dots */}
             {activities.length > 1 && (
-                <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex items-center gap-1">
+                <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex items-center gap-1.5">
                     {activities.slice(0, activityCount).map((_, idx) => (
                         <button
                             key={idx}
-                            onClick={() => setCurrentIndex(idx)}
-                            className={`size-1.5 rounded-full transition-all duration-300 ${idx === currentIndex
-                                ? 'bg-brand-500 scale-125'
-                                : 'bg-muted-foreground/20 hover:bg-muted-foreground/40'
+                            onClick={() => goToSlide(idx)}
+                            className={`rounded-full transition-all duration-300 cursor-pointer hover:scale-150 focus:outline-none focus:ring-1 focus:ring-brand-500/50 ${idx === currentIndex
+                                    ? 'size-2 bg-brand-500 scale-125'
+                                    : 'size-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60'
                                 }`}
                             aria-label={`Go to activity ${idx + 1}`}
+                            aria-current={idx === currentIndex ? 'true' : undefined}
                         />
                     ))}
                 </div>

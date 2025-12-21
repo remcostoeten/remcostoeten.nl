@@ -19,9 +19,7 @@ export function TableOfContents() {
 
   useEffect(() => {
     setMounted(true)
-    // Delay to ensure DOM is fully rendered
     const timer = setTimeout(() => {
-      // Extract headings from the article
       const article = document.querySelector('article')
       if (!article) return
 
@@ -39,7 +37,6 @@ export function TableOfContents() {
 
       setHeadings(extractedHeadings)
 
-      // Set up intersection observer for active heading
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {

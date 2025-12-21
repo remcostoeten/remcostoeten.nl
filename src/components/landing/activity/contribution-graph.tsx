@@ -142,14 +142,28 @@ export function ActivityContributionGraph({
   }, [githubContributions, tracks, year, loading, githubLoading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
-    const colors = [
+    // Dark theme colors (GitHub default)
+    const darkColors = [
       'bg-[#161b22]',
       'bg-[#0e4429]',
       'bg-[#006d32]',
       'bg-[#26a641]',
       'bg-[#39d353]'
     ];
-    return colors[level];
+
+    // Light theme colors (subtle)
+    const lightColors = [
+      'bg-gray-200',
+      'bg-green-100/60',
+      'bg-green-200/70',
+      'bg-green-300/80',
+      'bg-green-400'
+    ];
+
+    // Check if we're in dark theme by checking document class
+    const isDarkTheme = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
+    return isDarkTheme ? darkColors[level] : lightColors[level];
   };
 
   const handleMouseEnter = (e: React.MouseEvent, day: ActivityDay) => {
@@ -523,13 +537,13 @@ export function ActivityContributionGraph({
       )}
 
       {/* Custom Tooltip */}
-      {hoveredDay && hoveredDay.githubCount > 0 && typeof document !== 'undefined' && createPortal(
+      {hoveredDay && hoveredDay.date && typeof document !== 'undefined' && createPortal(
         <div
           className="fixed z-[100] pointer-events-none"
           style={{
             left: tooltipPosition.x,
-            top: tooltipPosition.y - 12, // Reduced offset to bring it closer to the element
-            transform: 'translate(-50%, -100%)', // Anchor bottom-center
+            top: tooltipPosition.y - 12,
+            transform: 'translate(-50%, -100%)',
           }}
         >
           <div className="relative mb-2">
@@ -537,7 +551,10 @@ export function ActivityContributionGraph({
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-sm ${getColorForLevel(hoveredDay.level)}`}></div>
                 <span className="text-xs font-medium text-foreground whitespace-nowrap">
-                  {hoveredDay.githubCount} on {new Date(hoveredDay.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  {hoveredDay.githubCount === 0
+                    ? `No contributions on ${new Date(hoveredDay.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
+                    : `${hoveredDay.githubCount} contribution${hoveredDay.githubCount !== 1 ? 's' : ''} on ${new Date(hoveredDay.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
+                  }
                 </span>
               </div>
             </div>

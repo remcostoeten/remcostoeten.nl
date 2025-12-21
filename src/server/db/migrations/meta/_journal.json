@@ -15,6 +15,27 @@
       "when": 1766199403542,
       "tag": "0001_famous_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766280078986,
+      "tag": "0002_fair_invaders",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1766282520135,
+      "tag": "0003_productive_overlord",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1766289353042,
+      "tag": "0004_stale_bullseye",
+      "breakpoints": true
     }
   ]
 }

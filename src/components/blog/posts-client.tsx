@@ -24,9 +24,12 @@ type BlogPost = {
     categories?: string[]
     tags?: string[]
     topics?: string[]
+    readTime?: string
     draft?: boolean
   }
   slug: string
+  views?: number
+  uniqueViews?: number
 }
 
 type Props = {
@@ -39,7 +42,7 @@ function BlogCard({ post, index }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(cardRef, { once: true, margin: "-100px" })
 
-  const indexDuration = 600 + (index * 200) // Lower posts animate longer
+  const indexDuration = 600 + (index * 200)
 
   const dateObj = new Date(post.metadata.publishedAt)
   const dayNumber = dateObj.getDate()
@@ -64,23 +67,23 @@ function BlogCard({ post, index }: Props) {
           style={{ contain: 'layout style paint' }}
         >
           <div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+            className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             aria-hidden="true"
           />
 
-          <article className="relative flex flex-col sm:flex-row sm:items-start gap-5 py-6 px-2 border-b border-neutral-800/60 z-10">
+          <article className="relative flex flex-col sm:flex-row sm:items-start gap-5 py-6 px-2 border-b border-neutral-200 dark:border-neutral-800/60 z-10">
             <div className="flex items-start gap-4 flex-1 min-w-0">
               <span
-                className="text-5xl font-bold text-neutral-700/40 leading-none select-none tabular-nums flex-shrink-0 w-16 text-right"
+                className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right"
                 aria-hidden="true"
               >
                 <AnimatedNumber value={formattedIndex} duration={indexDuration} />
               </span>
 
               <div className="flex-1 min-w-0 pt-1">
-                <h2 className="font-medium text-lg text-neutral-50 group-hover:text-lime-400 transition-colors duration-200 leading-snug pr-4">
+                <h2 className="font-medium text-lg text-neutral-900 dark:text-neutral-50 group-hover:text-emerald-600 dark:group-hover:text-lime-400 transition-colors duration-200 leading-snug pr-4">
                   {post.metadata.draft && (
-                    <span className="inline-flex items-center mr-2 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 flex-shrink-0">
+                    <span className="inline-flex items-center mr-2 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
                       Draft
                     </span>
                   )}
@@ -88,7 +91,7 @@ function BlogCard({ post, index }: Props) {
                 </h2>
 
                 {post.metadata.summary && (
-                  <p className="text-sm text-neutral-400/80 line-clamp-2 mt-2 leading-relaxed max-w-xl">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400/80 line-clamp-2 mt-2 leading-relaxed max-w-xl">
                     {post.metadata.summary}
                   </p>
                 )}
@@ -100,17 +103,17 @@ function BlogCard({ post, index }: Props) {
                     ...(post.metadata.topics || [])
                   ]
                   return allTags.length > 0 ? (
-                    <div className="flex flex-wrap gap-2 mt-3" aria-label="Tags">
+                    <div className="flex flex-wrap gap-1.5 mt-3" aria-label="Tags">
                       {allTags.slice(0, 3).map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-400 cursor-default"
+                          className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700/50 hover:bg-neutral-50 dark:hover:bg-neutral-700/80 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-default"
                         >
                           {tag}
                         </span>
                       ))}
                       {allTags.length > 3 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-neutral-900/60 text-neutral-500">
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-500 border border-neutral-300 dark:border-neutral-800">
                           +{allTags.length - 3}
                         </span>
                       )}
@@ -118,19 +121,40 @@ function BlogCard({ post, index }: Props) {
                   ) : null
                 })()}
 
-                <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500">
+                <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500 dark:text-neutral-500">
                   <time dateTime={post.metadata.publishedAt} className="tabular-nums">
                     <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
                   </time>
+                  {post.metadata.readTime && (
+                    <>
+                      <span className="text-neutral-300 dark:text-neutral-700">•</span>
+                      <span>
+                        <AnimatedNumber
+                          value={parseInt(post.metadata.readTime)}
+                          duration={dateDuration}
+                        /> min read
+                      </span>
+                    </>
+                  )}
+                  {typeof post.uniqueViews === 'number' && (
+                    <>
+                      <span className="text-neutral-300 dark:text-neutral-700">•</span>
+                      <span title={`${post.views} total views`}>
+                        <AnimatedNumber
+                          value={post.uniqueViews}
+                          duration={dateDuration}
+                        /> unique views
+                      </span>
+                    </>
+                  )}
                 </footer>
               </div>
             </div>
 
-            {/* Arrow button */}
-            <div className="flex-shrink-0 self-center" aria-hidden="true">
-              <div className="relative w-10 h-10 rounded-full bg-neutral-900/60 group-hover:bg-lime-500/20 flex items-center justify-center overflow-hidden transition-all duration-200 group-hover:scale-110">
-                <ArrowUpRight className="absolute w-4 h-4 text-neutral-400 group-hover:text-lime-400 transition-all duration-300 group-hover:-translate-y-6 group-hover:translate-x-6" />
-                <ArrowUpRight className="absolute w-4 h-4 text-lime-400 -translate-x-6 translate-y-6 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0" />
+            <div className="shrink-0 self-center" aria-hidden="true">
+              <div className="relative w-10 h-10 rounded-full bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-transparent group-hover:bg-emerald-100 dark:group-hover:bg-lime-500/20 group-hover:border-emerald-200 dark:group-hover:border-transparent flex items-center justify-center overflow-hidden transition-all duration-200 group-hover:scale-110">
+                <ArrowUpRight className="absolute w-4 h-4 text-neutral-400 group-hover:text-emerald-600 dark:group-hover:text-lime-400 transition-all duration-300 group-hover:-translate-y-6 group-hover:translate-x-6" />
+                <ArrowUpRight className="absolute w-4 h-4 text-emerald-600 dark:text-lime-400 -translate-x-6 translate-y-6 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0" />
               </div>
             </div>
           </article>
@@ -151,10 +175,10 @@ function BlogCardSkeleton() {
         <article className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-8 border-b border-neutral-800/60 min-h-[120px]">
           <div className="flex-1 min-w-0">
             <header className="flex items-start gap-3">
-              <div className="w-[3rem] h-[3.5rem] bg-neutral-800/40 rounded animate-pulse flex-shrink-0" />
+              <div className="w-12 h-14 bg-neutral-800/40 rounded animate-pulse shrink-0" />
               <div className="flex-1 min-w-0">
-                <div className="h-6 bg-neutral-800/40 rounded animate-pulse mb-2 min-h-[1.5rem]" />
-                <div className="h-10 bg-neutral-800/40 rounded animate-pulse min-h-[2.5rem]" />
+                <div className="h-6 bg-neutral-800/40 rounded animate-pulse mb-2 min-h-6" />
+                <div className="h-10 bg-neutral-800/40 rounded animate-pulse min-h-10" />
                 <div className="flex gap-2 mt-3 mb-1">
                   <div className="h-5 w-16 bg-neutral-800/40 rounded animate-pulse" />
                   <div className="h-5 w-20 bg-neutral-800/40 rounded animate-pulse" />
@@ -163,7 +187,7 @@ function BlogCardSkeleton() {
               </div>
             </header>
           </div>
-          <div className="flex-shrink-0 ml-auto sm:ml-0">
+          <div className="shrink-0 ml-auto sm:ml-0">
             <div className="w-10 h-10 rounded-full bg-neutral-800/40 animate-pulse" />
           </div>
         </article>
@@ -208,7 +232,7 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
         <div className="mt-8 flex justify-end animate-enter" style={{ animationDelay: '400ms', contain: 'layout' }}>
           <button
             onClick={() => setShowAll(!showAll)}
-            className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-100 transition-colors"
+            className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
           >
             {showAll ? 'Show less posts' : 'View all posts'}
             <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />

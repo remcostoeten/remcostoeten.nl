@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export async function generateStaticParams() {
   const categories = getAllCategories()
   return categories.map((cat) => ({

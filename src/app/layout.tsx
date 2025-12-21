@@ -10,10 +10,13 @@ import Footer from '@/components/layout/footer'
 import { PageTransition } from '@/components/layout/page-transition'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
+import { ThemeSwitch } from '@/components/ui/theme-switch'
+import { PosthogProvider } from './providers'
 import { baseUrl } from './sitemap'
 import { ReactNode } from 'react'
 import { Toaster } from 'sonner'
 import { cn } from '@/lib/utils'
+import { WebsiteStructuredData, PersonStructuredData } from '@/components/seo/structured-data'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -45,8 +48,7 @@ export const metadata: Metadata = {
     icon: '/favicon.svg',
   },
   other: {
-    'dns-prefetch': '//api.github.com',
-    'dns-prefetch': '//api.spotify.com',
+    'dns-prefetch': ['//api.github.com', '//api.spotify.com'],
   },
 }
 
@@ -60,28 +62,50 @@ export default function RootLayout({
     <html
       lang="en"
       className={cn(
-        'dark',
-        GeistSans.variable,
-        GeistMono.variable
+        'scroll-smooth bg-white text-black antialiased dark:bg-black dark:text-white',
+        `${GeistSans.variable} ${GeistMono.variable} font-sans`
       )}
-      suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('theme');
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'dark' || (!theme && prefersDark)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+        <WebsiteStructuredData />
+        <PersonStructuredData />
+      </head>
       <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
-        <CustomQueryClientProvider>
-          <VimAuthProvider>
-            <div className="min-h-screen w-full flex flex-col">
-              <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
-                <PageTransition>
-                  {children}
-                  <Toaster />
-                </PageTransition>
-              </main>
-              <Footer />
-            </div>
-          </VimAuthProvider>
-          <Analytics />
-          <SpeedInsights />
-        </CustomQueryClientProvider>
+        <PosthogProvider>
+          <CustomQueryClientProvider>
+            <VimAuthProvider>
+              <div className="min-h-screen w-full flex flex-col">
+                <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
+                  <PageTransition>
+                    {children}
+                    <Toaster />
+                  </PageTransition>
+                </main>
+                <Footer />
+              </div>
+            </VimAuthProvider>
+            <ThemeSwitch position="fixed" offset={20} side="right" />
+            <Analytics />
+            <SpeedInsights />
+          </CustomQueryClientProvider>
+        </PosthogProvider>
       </body>
     </html>
   )

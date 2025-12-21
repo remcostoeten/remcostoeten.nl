@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { signIn } from '@/lib/auth-client';
+import posthog from 'posthog-js';
 
 interface OAuthModalProps {
     isOpen: boolean;
@@ -19,6 +20,12 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
         setIsLoading(true);
         setError(null);
 
+        // Track sign in initiated event
+        posthog.capture('sign_in_initiated', {
+            provider: provider,
+            source: 'oauth_modal',
+        });
+
         try {
             await signIn.social({
                 provider,
@@ -28,8 +35,12 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
             onClose();
         } catch (err) {
             console.error('OAuth error:', err);
-            setError(err instanceof Error ? err.message : 'Authentication failed');
+            const errorMessage = err instanceof Error ? err.message : 'Authentication failed';
+            setError(errorMessage);
             setIsLoading(false);
+
+            // Track error
+            posthog.captureException(err instanceof Error ? err : new Error(errorMessage));
         }
     };
 
