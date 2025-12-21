@@ -1,4 +1,4 @@
-import { getBlogPostsByCategory, getAllCategories } from '@/utils/utils'
+import { getBlogPostsByTag, getAllTags } from '@/utils/utils'
 import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -7,9 +7,9 @@ import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
-  const categories = getAllCategories()
-  return categories.map((cat) => ({
-    topic: cat.name.toLowerCase(),
+  const tags = getAllTags()
+  return tags.map((tag) => ({
+    topic: tag.name.toLowerCase(),
   }))
 }
 
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ topic: st
 export default async function TopicPage({ params }: { params: Promise<{ topic: string }> }) {
   const { topic } = await params
   const decodedTopic = decodeURIComponent(topic)
-  const posts = getBlogPostsByCategory(decodedTopic)
+  const posts = getBlogPostsByTag(decodedTopic)
 
   if (posts.length === 0) {
     notFound()
@@ -90,11 +90,7 @@ export default async function TopicPage({ params }: { params: Promise<{ topic: s
                       </div>
 
                       {(() => {
-                        const allTags = [
-                          ...(post.metadata.categories || []),
-                          ...(post.metadata.tags || []),
-                          ...(post.metadata.topics || [])
-                        ]
+                        const allTags = post.metadata.tags || []
                         return allTags.length > 0 ? (
                           <div className="flex items-center gap-2">
                             {allTags.slice(0, 3).map(tag => (

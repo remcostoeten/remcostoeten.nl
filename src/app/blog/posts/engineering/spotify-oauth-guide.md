@@ -2,8 +2,7 @@
 title: "Spotify OAuth2 Setup Tutorial: Working Redirects, Tokens, and Refresh Logic"
 publishedAt: "20-12-2025"
 summary: "A guide for setting up Spotify OAuth2 to obtain access and refresh tokens and API integration."
-categories: ["Engineering", "Spotify API", "OAuth2", "Guide"]
-tags: ["Engineering", "Authentication", "OAuth2", "Guide", "Next.js"]
+tags: ["engineering", "spotify-api", "oauth2", "authentication", "nextjs", "tutorial", "guide"]
 slug: "spotify-oauth2-working-setup"
 ---
 Accessing the Spotify API requires configuring OAuth2. It is not overly complex, although Spotify adds a few extra steps compared to providers like GitHub or Google. These differences cost me hours of debugging due to browser caching and redirect quirks, so I’m documenting the full workflow to save you time.
@@ -34,7 +33,7 @@ If you don't have an API setup yet, I'll be showing how to [implement the API ro
 </NoticeWarning>
 Most implementations use something like:
 
-```bash
+```bash title="Callback Endpoint"
 /api/spotify/callback
 ```
 
@@ -42,7 +41,7 @@ Most implementations use something like:
 
 This is the first part which is new for most. Setting the url to `http://localhost:3000` will not work.
 
-Instead register the loopback IP form:
+Instead register the loopback IP format:
 
 ```bash
 http://127.0.0.1:3000/api/spotify/callback
@@ -50,7 +49,7 @@ http://127.0.0.1:3000/api/spotify/callback
 
 *Both map to your machine, but Spotify validates them differently. `localhost` is a hostname that depends on DNS resolution. `127.0.0.1` is an explicit IP address and always resolves to the local interface, which is why Spotify accepts it. Make sure your OAuth redirect in your code matches exactly what you register in the developer dashboard.*
 
-Last question is: Which API/SDKs are you planning to use? Fill in your usecase (most likely web) and click "Save". After having pressed save you'll see your client ID, and secret if you press "View client secret". Copy these, and add to your `.env`or `.env.local` file like so:
+Last question is: Which API/SDKs are you planning to use? Fill in your use case (most likely web) and click "Save". After pressing save you'll see your client ID, and secret if you press "View client secret". Copy these, and add to your `.env` or `.env.local` file like so:
 
 ```bash
 SPOTIFY_CLIENT_ID=your-client-id
@@ -71,7 +70,7 @@ Next we will configure the authorization code flow, exchanging the temporary cod
 Now you'll have to implement the API route which you registered in the developer dashboard. Like I mentioned this implementation is following Next.js but you should just register an api in your desired framework.
 
 Create the api route
-```bash
+```bash title="Create Route File"
 touch src/app/api/spotify/callback/route.ts
 ## or app/api/spotify/callback/route.ts if no src dir
 ```
@@ -83,7 +82,7 @@ And insert your improved GET request handler:
 - Better error handling with fallbacks for JSON parsing
 - Consistent redirect URI usage from environment variables
 </NoticeInfo>
-```typescript
+```typescript title="src/app/api/spotify/callback/route.ts"
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 
@@ -209,9 +208,9 @@ async function fetchSpotifyData(accessToken: string) {
 
 ### Refreshing the Access Token
 
-Access tokens expire after 1 hour, so you'll need to refresh them using the refresh token:
+Access tokens expire after 1 hour, so you'll need to refresh them using the refresh token. Create a new route handler for this:
 
-```typescript
+```typescript title="src/app/api/spotify/refresh/route.ts"
 export async function POST(request: NextRequest) {
   try {
     const { refresh_token } = await request.json();
@@ -308,7 +307,7 @@ For production deployments:
 
 Here's a complete example of a Spotify API service:
 
-```typescript
+```typescript title="Spotify API Service"
 class SpotifyAPIService {
   private accessToken: string | null = null;
   private tokenExpiry: number = 0;

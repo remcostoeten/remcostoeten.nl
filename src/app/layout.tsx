@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 import { WebsiteStructuredData, PersonStructuredData } from '@/components/seo/structured-data'
 import { AppProviders } from '@/components/providers/providers'
 import { baseUrl } from './sitemap'
+import './global.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),

@@ -1,4 +1,4 @@
-import { getBlogPosts, getAllCategories } from '@/utils/utils'
+import { getBlogPosts, getAllTags } from '@/utils/utils'
 
 export const baseUrl = 'https://remcostoeten.nl'
 
@@ -8,15 +8,15 @@ export default async function sitemap() {
     lastModified: post.metadata.publishedAt,
   }))
 
-  let categories = getAllCategories().map((category) => ({
-    url: `${baseUrl}/blog/categories/${category.name.toLowerCase()}`,
+  let tags = getAllTags().map((tag) => ({
+    url: `${baseUrl}/blog/tags/${tag.name.toLowerCase()}`,
     lastModified: new Date().toISOString().split('T')[0],
   }))
 
-  let routes = ['', '/blog', '/blog/categories', '/blog/topics'].map((route) => ({
+  let routes = ['', '/blog', '/blog/tags', '/blog/topics'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString().split('T')[0],
   }))
 
-  return [...routes, ...blogs, ...categories]
+  return [...routes, ...blogs, ...tags]
 }

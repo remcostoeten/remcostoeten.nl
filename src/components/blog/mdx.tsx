@@ -125,7 +125,8 @@ let components = {
     const metastring = codeElement?.props?.metastring || '';
 
     const fileNameMatch = metastring.match(/filename="([^"]+)"/);
-    const fileName = fileNameMatch ? fileNameMatch[1] : undefined;
+    const titleMatch = metastring.match(/title="([^"]+)"/);
+    const fileName = fileNameMatch ? fileNameMatch[1] : (titleMatch ? titleMatch[1] : undefined);
 
     const highlightMatch = metastring.match(/\{([\d,-]+)\}/);
     const highlightLines = highlightMatch

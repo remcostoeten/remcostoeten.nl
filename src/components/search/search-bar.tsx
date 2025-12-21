@@ -249,18 +249,18 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
                       {result.summary}
                     </div>
                   )}
-                  {(result.categories || result.tags) && (
+                  {result.tags && result.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {result.categories?.slice(0, 2).map((category) => (
-                        <span key={category} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
-                          {category}
-                        </span>
-                      ))}
-                      {result.tags?.slice(0, 2).map((tag) => (
+                      {result.tags.slice(0, 3).map((tag) => (
                         <span key={tag} className="text-xs px-2 py-0.5 bg-muted text-muted-foreground rounded">
                           {tag}
                         </span>
                       ))}
+                      {result.tags.length > 3 && (
+                        <span className="text-xs px-2 py-0.5 text-muted-foreground">
+                          +{result.tags.length - 3}
+                        </span>
+                      )}
                     </div>
                   )}
                 </div>

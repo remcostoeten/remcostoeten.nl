@@ -115,7 +115,7 @@ export function TableOfContents() {
   const DesktopToC = () => createPortal(
     <div className="fixed inset-0 z-50 pointer-events-none">
       <div className="max-w-2xl mx-auto h-full relative">
-        <aside className="hidden 2xl:block absolute right-full top-32 mr-12 w-56 max-h-[calc(100vh-140px)] overflow-y-auto pointer-events-auto">
+        <aside className="hidden 2xl:block absolute left-full top-32 ml-12 w-56 max-h-[calc(100vh-140px)] overflow-y-auto pointer-events-auto">
           <div className="sticky top-0">
             <h2 className="text-xs font-medium uppercase tracking-wider text-neutral-500 mb-4">
               On this page

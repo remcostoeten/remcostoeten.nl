@@ -8,7 +8,6 @@ import { TableOfContents } from '@/components/blog/table-of-contents'
 import { ReactionBar } from '@/components/blog/reaction-bar'
 import { CommentSection } from '@/components/blog/comment-section'
 import { checkAdminStatus } from '@/actions/auth'
-import { PostAdminControls } from '@/components/blog/post-admin-controls'
 import { BlogPostStructuredData } from '@/components/seo/structured-data'
 import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
@@ -130,15 +129,11 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
       />
       <TableOfContents />
 
-      {/* Client-side admin controls and draft banner */}
-      <PostAdminControls post={post} />
-
+  
       <section className="bg-pattern relative">
         <BlogPostClient
           publishedAt={post.metadata.publishedAt}
-          categories={post.metadata.categories}
           tags={post.metadata.tags}
-          topics={post.metadata.topics}
           title={post.metadata.title}
           readTime={calculateReadTime(post.content)}
           slug={post.slug}

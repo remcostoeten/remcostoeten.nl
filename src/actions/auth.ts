@@ -8,9 +8,14 @@ const ADMIN_EMAIL = env.ADMIN_EMAIL
 
 export async function checkAdminStatus(): Promise<boolean> {
   try {
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.getAll()
+      .map(cookie => `${cookie.name}=${cookie.value}`)
+      .join('; ')
+
     const session = await auth.api.getSession({
       headers: {
-        cookie: cookies().toString()
+        cookie: cookieHeader
       }
     })
 

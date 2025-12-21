@@ -1,8 +1,8 @@
 ---
 title: 'Building a draft system for markdown files in Next.js'
 publishedAt: '16-12-2025'
-summary: 'Running a blog throug filesystem is great, althrough accidental commits of unfinished posts are bound to happen sooner or later. Here’s how I implemented a draft system using MDX frontmatter'
-categories: [Engineering, Next.js, Authentication']
+summary: 'Running a blog throug filesystem is great, althrough accidental commits of unfinished posts are bound to happen sooner or later. Here's how I implemented a draft system using MDX frontmatter'
+tags: ["engineering", "nextjs", "authentication", "blog", "markdown", "draft-system", "mdx"]
 draft: true
 ---
  As I am  building a [Notion-like app called Skriuw](https://skriuw.vercel.app) that has rich text editing capabilities I opted for Markdown files in my [repository](https://github.com/remcostoeten/remcostoeten.nl) so to change things up.

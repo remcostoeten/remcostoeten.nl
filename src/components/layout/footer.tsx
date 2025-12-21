@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useLatestCommit } from '@/hooks/use-github';
 import { AnimatedNumber } from '../ui/animated-number';
 import { ContactPopover } from '@/components/contact/contact-popover';
+import { ResumeDrawer } from '../resume-drawer';
 
 export function Footer() {
   const [copied, setCopied] = useState(false);
@@ -90,11 +91,11 @@ export function Footer() {
 
 
           <div className="flex items-center gap-4">
-
+            <ContactPopover />
 
             <span className="text-border">|</span>
 
-            <ContactPopover />
+            <ResumeDrawer />
 
             <span className="text-border">|</span>
 

@@ -21,9 +21,7 @@ type BlogPost = {
 
 type Props = {
   publishedAt: string
-  categories?: string[]
   tags?: string[]
-  topics?: string[]
   title: string
   readTime: string
   slug: string
@@ -33,9 +31,7 @@ type Props = {
 
 export function BlogPostClient({
   publishedAt,
-  categories,
   tags,
-  topics,
   title,
   readTime,
   slug,
@@ -49,11 +45,7 @@ export function BlogPostClient({
   const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
   const dateDuration = 500
 
-  const allTags = [
-    ...(categories || []),
-    ...(tags || []),
-    ...(topics || [])
-  ]
+  const allTags = tags || []
 
 
   useEffect(() => {
@@ -94,7 +86,7 @@ export function BlogPostClient({
             Back
           </button>
         </div>
-        <div className="flex items-center gap-3 w-full justify-between">
+        <div className="flex flex-col gap-4 w-full">
           <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
             <p className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
               <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
@@ -113,17 +105,16 @@ export function BlogPostClient({
             )}
           </div>
 
-
           {allTags.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {allTags.map((tag) => (
                 <Link
                   key={tag}
-                  href={`/blog/topics/${tag.toLowerCase()}`}
-                  className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium 
-                  bg-neutral-100 dark:bg-neutral-800/60 
-                  text-neutral-600 dark:text-neutral-400 
-                  hover:bg-neutral-200 dark:hover:bg-neutral-700/60 
+                  href={`/blog/tags/${tag.toLowerCase()}`}
+                  className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                  bg-neutral-100 dark:bg-neutral-800/60
+                  text-neutral-600 dark:text-neutral-400
+                  hover:bg-neutral-200 dark:hover:bg-neutral-700/60
                   border border-transparent hover:border-neutral-300 dark:hover:border-neutral-600
                   transition-all duration-200"
                 >

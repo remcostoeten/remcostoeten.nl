@@ -6,7 +6,6 @@ type SearchResult = {
   slug: string
   title: string
   summary?: string
-  categories?: string[]
   tags?: string[]
 }
 
@@ -24,7 +23,6 @@ export async function SearchBarServer({ placeholder, className }: SearchBarServe
     slug: post.slug,
     title: post.metadata.title,
     summary: post.metadata.summary,
-    categories: post.metadata.categories,
     tags: post.metadata.tags,
   }))
 

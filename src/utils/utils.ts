@@ -6,11 +6,10 @@ type Metadata = {
   publishedAt: string
   summary: string
   image?: string
-  categories?: string[]
   tags?: string[]
-  topics?: string[]
   readTime?: string
   draft?: boolean
+  slug?: string
 }
 
 function parseFrontmatter(fileContent: string) {
@@ -32,12 +31,8 @@ function parseFrontmatter(fileContent: string) {
         .split(',')
         .map(item => item.trim().replace(/['"]/g, ''))
         .filter(Boolean)
-      if (trimmedKey === 'categories') {
-        metadata.categories = arrayValue
-      } else if (trimmedKey === 'tags') {
+      if (trimmedKey === 'tags') {
         metadata.tags = arrayValue
-      } else if (trimmedKey === 'topics') {
-        metadata.topics = arrayValue
       }
     } else {
       switch (trimmedKey) {
@@ -59,6 +54,9 @@ function parseFrontmatter(fileContent: string) {
         case 'draft':
           metadata.draft = value.toLowerCase() === 'true'
           break
+        case 'slug':
+          metadata.slug = value
+          break
       }
     }
   })
@@ -78,7 +76,7 @@ function getMDXFiles(dir) {
 
       if (stat.isDirectory()) {
         scanDirectory(fullPath)
-      } else if (path.extname(item) === '.mdx') {
+      } else if (path.extname(item) === '.mdx' || path.extname(item) === '.md') {
         const relativePath = path.relative(dir, fullPath)
         files.push(relativePath)
       }
@@ -99,7 +97,7 @@ function getMDXData(dir) {
   return mdxFiles.map((file) => {
     try {
       let { metadata, content } = readMDXFile(path.join(dir, file))
-      let slug = file.replace(/\.mdx$/, '')
+      let slug = metadata.slug || file.replace(/\.(mdx|md)$/, '')
 
       return {
         slug,
@@ -118,7 +116,7 @@ function getMDXData(dir) {
           summary: 'Error parsing file',
           readTime: '0 min'
         } as Metadata,
-        slug: file.replace(/\.mdx$/, ''),
+        slug: file.replace(/\.(mdx|md)$/, ''),
         content: '',
       }
     }
@@ -177,36 +175,27 @@ export function formatDate(date: string, includeRelative = false) {
   return `${fullDate} (${formattedDate})`
 }
 
-export function getAllCategories() {
+export function getAllTags() {
   const posts = getBlogPosts()
-  const categoryMap = new Map<string, number>()
+  const tagMap = new Map<string, number>()
 
   posts.forEach(post => {
-    const allTags = [
-      ...(post.metadata.categories || []),
-      ...(post.metadata.tags || []),
-      ...(post.metadata.topics || [])
-    ]
-
-    allTags.forEach(tag => {
-      categoryMap.set(tag, (categoryMap.get(tag) || 0) + 1)
+    const tags = post.metadata.tags || []
+    tags.forEach(tag => {
+      tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
     })
   })
 
-  return Array.from(categoryMap.entries())
+  return Array.from(tagMap.entries())
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
 }
 
-export function getBlogPostsByCategory(category: string) {
+export function getBlogPostsByTag(tag: string) {
   const posts = getBlogPosts()
   return posts.filter(post =>
-    [
-      ...(post.metadata.categories || []),
-      ...(post.metadata.tags || []),
-      ...(post.metadata.topics || [])
-    ].some(
-      cat => cat.toLowerCase() === category.toLowerCase()
+    (post.metadata.tags || []).some(
+      postTag => postTag.toLowerCase() === tag.toLowerCase()
     )
   )
 }

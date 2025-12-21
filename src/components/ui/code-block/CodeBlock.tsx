@@ -37,7 +37,7 @@ type TCustomTheme = { [key: string]: CSSProperties };
 
 const customTheme: TCustomTheme = {
   'code[class*="language-"]': {
-    color: "#e2e2e2",
+    color: "hsl(var(--sh-text))",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -45,13 +45,13 @@ const customTheme: TCustomTheme = {
     wordSpacing: "normal",
     wordBreak: "normal",
     wordWrap: "normal",
-    lineHeight: "1.7",
-    fontSize: "13px",
+    lineHeight: "1.6",
+    fontSize: "14px",
     tabSize: 2,
     hyphens: "none",
   },
   'pre[class*="language-"]': {
-    color: "#e2e2e2",
+    color: "hsl(var(--sh-text))",
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
@@ -59,46 +59,46 @@ const customTheme: TCustomTheme = {
     wordSpacing: "normal",
     wordBreak: "normal",
     wordWrap: "normal",
-    lineHeight: "1.7",
-    fontSize: "13px",
+    lineHeight: "1.6",
+    fontSize: "14px",
     tabSize: 2,
     hyphens: "none",
     padding: "1.25rem",
     margin: "0",
     overflow: "auto",
   },
-  comment: { color: "#666666", fontStyle: "italic" },
-  "block-comment": { color: "#666666", fontStyle: "italic" },
-  prolog: { color: "#666666" },
-  doctype: { color: "#666666" },
-  cdata: { color: "#666666" },
-  punctuation: { color: "#999999" },
-  operator: { color: "#999999" },
-  url: { color: "#999999" },
-  tag: { color: "#ff7b72" },
-  "attr-name": { color: "#ffa657" },
-  namespace: { color: "#ffa657" },
-  property: { color: "#79c0ff" },
-  symbol: { color: "#79c0ff" },
-  important: { color: "#d2a8ff", fontWeight: "bold" },
-  atrule: { color: "#d2a8ff" },
-  keyword: { color: "#ff7b72" },
-  regex: { color: "#a5d6ff" },
-  entity: { color: "#79c0ff", cursor: "help" },
-  "function-name": { color: "#d2a8ff" },
-  function: { color: "#d2a8ff" },
-  "class-name": { color: "#ffa657" },
-  builtin: { color: "#ffa657" },
-  boolean: { color: "#79c0ff" },
-  number: { color: "#79c0ff" },
-  constant: { color: "#79c0ff" },
-  string: { color: "#a5d6ff" },
-  char: { color: "#a5d6ff" },
-  "attr-value": { color: "#a5d6ff" },
-  selector: { color: "#7ee787" },
-  deleted: { color: "#ffa198" },
-  inserted: { color: "#7ee787" },
-  variable: { color: "#ffa657" },
+  comment: { color: "hsl(var(--sh-comment))", fontStyle: "italic" },
+  "block-comment": { color: "hsl(var(--sh-comment))", fontStyle: "italic" },
+  prolog: { color: "hsl(var(--sh-comment))" },
+  doctype: { color: "hsl(var(--sh-comment))" },
+  cdata: { color: "hsl(var(--sh-comment))" },
+  punctuation: { color: "hsl(var(--sh-punctuation))" },
+  operator: { color: "hsl(var(--sh-operator))" },
+  url: { color: "hsl(var(--sh-string))" },
+  tag: { color: "hsl(var(--sh-tag))" },
+  "attr-name": { color: "hsl(var(--sh-function))" },
+  namespace: { color: "hsl(var(--sh-keyword))" },
+  property: { color: "hsl(var(--sh-function))" },
+  symbol: { color: "hsl(var(--sh-function))" },
+  important: { color: "hsl(var(--sh-keyword))", fontWeight: "bold" },
+  atrule: { color: "hsl(var(--sh-keyword))" },
+  keyword: { color: "hsl(var(--sh-keyword))" },
+  regex: { color: "hsl(var(--sh-string))" },
+  entity: { color: "hsl(var(--sh-keyword))", cursor: "help" },
+  "function-name": { color: "hsl(var(--sh-function))" },
+  function: { color: "hsl(var(--sh-function))" },
+  "class-name": { color: "hsl(var(--sh-function))" },
+  builtin: { color: "hsl(var(--sh-keyword))" },
+  boolean: { color: "hsl(var(--sh-number))" },
+  number: { color: "hsl(var(--sh-number))" },
+  constant: { color: "hsl(var(--sh-number))" },
+  string: { color: "hsl(var(--sh-string))" },
+  char: { color: "hsl(var(--sh-string))" },
+  "attr-value": { color: "hsl(var(--sh-string))" },
+  selector: { color: "hsl(var(--sh-keyword))" },
+  deleted: { color: "hsl(var(--destructive))" },
+  inserted: { color: "hsl(var(--sh-string))" },
+  variable: { color: "hsl(var(--sh-function))" },
   bold: { fontWeight: "bold" },
   italic: { fontStyle: "italic" },
 };
@@ -207,40 +207,35 @@ export function CodeBlock({
 
   return (
     <div className={cn("relative my-8 group/code", className)}>
-      <div className="relative rounded-xl overflow-hidden bg-neutral-950 border border-neutral-800/60 transition-colors duration-300 hover:border-neutral-700/80">
+      <div className="relative overflow-hidden bg-[hsl(var(--sh-background))]/90 backdrop-blur shadow-xl rounded-xl transition-all duration-300 ring-1 ring-[hsl(var(--sh-border))] group-hover/code:ring-[hsl(var(--sh-border))]/80 group-hover/code:shadow-2xl">
         {!disableTopBar && (
-          <header className="flex justify-between items-center px-4 py-2.5 bg-neutral-900/50 border-b border-neutral-800/60">
+          <header className="flex justify-between items-center px-4 py-3 bg-[hsl(var(--sh-background))]/80 backdrop-blur-md border-b border-[hsl(var(--sh-border))] z-10 relative">
             <div className="flex items-center gap-3 min-w-0">
               {showIcon && (
-                <span className="text-neutral-500">
+                <span className="text-muted-foreground/60">
                   <SimpleIcon language={language} size={14} />
                 </span>
               )}
               {fileName && (
-                <span className="text-[12px] font-medium text-neutral-400 truncate">
+                <span className="text-xs text-[hsl(var(--sh-text))] opacity-70 font-mono tracking-tight">
                   {fileName}
                 </span>
               )}
             </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-[11px] font-medium text-neutral-500 uppercase tracking-wider">
-                {language}
-              </span>
-              {!disableCopy && (
-                <button
-                  onClick={copyToClipboard}
-                  className="text-neutral-500 hover:text-neutral-300 transition-colors p-1"
-                  title="Copy code"
-                >
-                  {isCopied ? (
-                    <Check size={14} className="text-lime-500" />
-                  ) : (
-                    <Copy size={14} />
-                  )}
-                </button>
-              )}
-            </div>
+            {!disableCopy && (
+              <button
+                onClick={copyToClipboard}
+                className="text-muted-foreground/60 hover:text-[hsl(var(--sh-text))] transition-all duration-200 p-1.5 rounded-md hover:bg-[hsl(var(--sh-text))]/5"
+                title="Copy code"
+              >
+                {isCopied ? (
+                  <Check size={14} className="text-emerald-500 scale-110" />
+                ) : (
+                  <Copy size={14} />
+                )}
+              </button>
+            )}
           </header>
         )}
 
@@ -262,7 +257,7 @@ export function CodeBlock({
               },
               showLineNumbers: showLineNumbers,
               lineNumberStyle: {
-                color: "#444444",
+                color: "hsl(var(--sh-comment))",
                 minWidth: "3em",
                 paddingRight: "1.5rem",
                 textAlign: "right",

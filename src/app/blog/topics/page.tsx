@@ -1,4 +1,4 @@
-import { getAllCategories } from '@/utils/utils'
+import { getAllTags } from '@/utils/utils'
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { topicsMetadata } from '@/core/metadata'
@@ -8,17 +8,17 @@ export const dynamic = 'force-dynamic'
 export { topicsMetadata as metadata }
 
 export default function TopicsPage() {
-  const categories = getAllCategories()
+  const tags = getAllTags()
 
   return (
     <section>
       <h1 className="font-semibold text-2xl mb-8 tracking-tighter">Topics</h1>
 
       <ul className="flex flex-col m-0 p-0 list-none" role="list">
-        {categories.map((category, index) => (
-          <li key={category.name} className="block p-0 m-0">
+        {tags.map((tag, index) => (
+          <li key={tag.name} className="block p-0 m-0">
             <Link
-              href={`/blog/topics/${category.name.toLowerCase()}`}
+              href={`/blog/topics/${tag.name.toLowerCase()}`}
               className="group relative block animate-stagger overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
               style={{ animationDelay: `${index * 50}ms` }}
             >
@@ -31,12 +31,12 @@ export default function TopicsPage() {
                 <div className="flex items-center gap-3">
                   <Hash className="w-4 h-4 text-neutral-600 group-hover:text-lime-400 transition-colors" />
                   <span className="font-medium text-neutral-100 group-hover:text-lime-400 transition-colors">
-                    {category.name}
+                    {tag.name}
                   </span>
                 </div>
 
                 <span className="text-sm text-neutral-500 tabular-nums">
-                  {category.count} {category.count === 1 ? 'post' : 'posts'}
+                  {tag.count} {tag.count === 1 ? 'post' : 'posts'}
                 </span>
               </article>
             </Link>
