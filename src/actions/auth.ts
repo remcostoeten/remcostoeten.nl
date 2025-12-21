@@ -1,9 +1,10 @@
 'use server'
 
 import { auth } from '@/server/auth'
+import { env } from '@/server/env'
 import { cookies } from 'next/headers'
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'remcostoeten@gmail.com'
+const ADMIN_EMAIL = env.ADMIN_EMAIL
 
 export async function checkAdminStatus(): Promise<boolean> {
   try {
@@ -17,7 +18,7 @@ export async function checkAdminStatus(): Promise<boolean> {
       return false
     }
 
-    const isEmailMatch = session.user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()
+    const isEmailMatch = session.user.email?.toLowerCase() === ADMIN_EMAIL?.toLowerCase()
     const isRoleAdmin = session.user.role === 'admin'
 
     return isRoleAdmin || isEmailMatch

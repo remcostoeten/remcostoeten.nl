@@ -24,6 +24,7 @@ type BlogPost = {
     categories?: string[]
     tags?: string[]
     topics?: string[]
+    readTime?: string
     draft?: boolean
   }
   slug: string
@@ -122,6 +123,12 @@ function BlogCard({ post, index }: Props) {
                   <time dateTime={post.metadata.publishedAt} className="tabular-nums">
                     <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
                   </time>
+                  {post.metadata.readTime && (
+                    <>
+                      <span className="text-neutral-300 dark:text-neutral-700">•</span>
+                      <span>{post.metadata.readTime}</span>
+                    </>
+                  )}
                 </footer>
               </div>
             </div>

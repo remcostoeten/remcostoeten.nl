@@ -79,7 +79,7 @@ export function WorkExperience({
 
   return (
     <div className={cn("bg-background px-4", className)}>
-      {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} />}
+      {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} shouldExpandAll={showAll} />}
 
       <div className="relative">
         {/* Preview state - shows first job with gradient overlay */}
@@ -93,7 +93,7 @@ export function WorkExperience({
           <div className="overflow-hidden">
             {previewJob && (
               <div className="relative">
-                <ExperienceItem key={previewJob.id} experience={previewJob} />
+                <ExperienceItem key={previewJob.id} experience={previewJob} shouldExpandAll={false} />
                 <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
               </div>
             )}
@@ -110,7 +110,7 @@ export function WorkExperience({
         >
           <div className="overflow-hidden">
             {workHistory.map((experience) => (
-              <ExperienceItem key={experience.id} experience={experience} />
+              <ExperienceItem key={experience.id} experience={experience} shouldExpandAll={true} />
             ))}
           </div>
         </div>
@@ -137,7 +137,7 @@ export function WorkExperience({
 
       {education && (
         <div className="border-t border-border pt-4 mt-4">
-          <ExperienceItem key={education.id} experience={education} />
+          <ExperienceItem key={education.id} experience={education} shouldExpandAll={showAll} />
         </div>
       )}
     </div>
@@ -146,8 +146,10 @@ export function WorkExperience({
 
 export function ExperienceItem({
   experience,
+  shouldExpandAll = false,
 }: {
   experience: ExperienceItemType
+  shouldExpandAll?: boolean
 }) {
   const initial = experience.companyName.charAt(0).toUpperCase();
 
@@ -188,7 +190,7 @@ export function ExperienceItem({
 
       <div className="relative space-y-4 before:absolute before:left-3 before:top-0 before:h-full before:w-px before:bg-border">
         {experience.positions.map((position) => (
-          <ExperiencePositionItem key={position.id} position={position} />
+          <ExperiencePositionItem key={position.id} position={position} shouldExpandAll={shouldExpandAll} />
         ))}
       </div>
     </div>
@@ -197,8 +199,10 @@ export function ExperienceItem({
 
 export function ExperiencePositionItem({
   position,
+  shouldExpandAll = false,
 }: {
   position: ExperiencePositionItemType
+  shouldExpandAll?: boolean
 }) {
   const hasContent = (position.description && position.description.trim().length > 0) || (Array.isArray(position.skills) && position.skills.length > 0);
   const isEducation = position.id.startsWith('education');
@@ -244,7 +248,7 @@ export function ExperiencePositionItem({
   }
 
   return (
-    <Collapsible defaultOpen={position.isExpanded} asChild>
+    <Collapsible defaultOpen={position.isExpanded || shouldExpandAll} asChild>
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
         <CollapsibleTrigger
           className={cn(
