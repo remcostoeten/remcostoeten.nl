@@ -71,6 +71,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
                                 <button
                                     onClick={onClose}
                                     disabled={isLoading}
+                                    aria-label="Close modal"
                                     className="text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
                                 >
                                     <X className="w-5 h-5" />

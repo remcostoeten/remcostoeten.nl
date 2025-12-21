@@ -91,7 +91,7 @@ export function ContactPopover() {
                         animate={{ opacity: 1, y: -10, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute bottom-full right-0 mb-2 w-[350px] md:w-[400px] z-50 origin-bottom-right"
+                        className="absolute bottom-full right-0 mb-2 w-[calc(100vw-32px)] sm:w-[350px] md:w-[400px] z-50 origin-bottom-right"
                     >
                         <div className="bg-popover text-popover-foreground rounded-xl border shadow-xl overflow-hidden p-6">
                             <div className="flex justify-between items-center mb-4">
@@ -101,6 +101,7 @@ export function ContactPopover() {
                                 </h3>
                                 <button
                                     onClick={() => setIsOpen(false)}
+                                    aria-label="Close contact form"
                                     className="text-muted-foreground hover:text-foreground rounded-full p-1 hover:bg-accent transition-colors"
                                 >
                                     <X className="w-4 h-4" />
@@ -181,7 +182,7 @@ export function ContactPopover() {
                                     {errors.message && <p className="text-xs text-destructive">{errors.message[0]}</p>}
                                 </div>
 
-                                  <input
+                                <input
                                     type="text"
                                     name="_gotcha"
                                     style={{ display: 'none' }}

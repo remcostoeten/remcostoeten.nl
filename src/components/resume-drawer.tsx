@@ -36,6 +36,7 @@ export function ResumeDrawer() {
                                 onClick={() => setIsFullscreen(!isFullscreen)}
                                 className="p-2 hover:bg-muted rounded-full transition-colors hidden md:block"
                                 title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                                aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
                             >
                                 {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                             </button>
@@ -48,7 +49,7 @@ export function ResumeDrawer() {
                                 <Download className="w-4 h-4" />
                             </a>
                             <Drawer.Close asChild>
-                                <button className="p-2 hover:bg-muted rounded-full transition-colors">
+                                <button className="p-2 hover:bg-muted rounded-full transition-colors" aria-label="Close resume drawer">
                                     <X className="w-4 h-4" />
                                 </button>
                             </Drawer.Close>
