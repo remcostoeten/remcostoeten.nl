@@ -22,7 +22,6 @@ export function useVimCommand() {
         let timeout: NodeJS.Timeout;
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            // Ignore if user is typing in an input/textarea
             if (
                 e.target instanceof HTMLInputElement ||
                 e.target instanceof HTMLTextAreaElement ||
@@ -31,7 +30,6 @@ export function useVimCommand() {
                 return;
             }
 
-            // Escape key resets the buffer
             if (e.key === 'Escape') {
                 if (buffer) {
                     console.log('[vim-cmd] Buffer cleared (Escape pressed)');
@@ -40,17 +38,14 @@ export function useVimCommand() {
                 return;
             }
 
-            // Only start capturing if we see a ':' or if we're already capturing
             if (!buffer && e.key !== ':') {
                 return;
             }
 
-            // Also ignore non-character keys (Enter, Shift, etc. except Escape and Backspace which we handle)
             if (e.key.length > 1 && e.key !== 'Escape' && e.key !== 'Backspace') {
                 return;
             }
 
-            // Clear buffer after 2 seconds of inactivity
             clearTimeout(timeout);
             timeout = setTimeout(() => {
                 if (buffer) {

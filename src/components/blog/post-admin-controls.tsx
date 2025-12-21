@@ -53,7 +53,6 @@ export function PostAdminControls({ post }: PostAdminControlsProps) {
             className="text-xs px-3 py-1 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/50 text-red-700 dark:text-red-300 rounded transition-colors"
             onClick={() => {
               if (confirm('Are you sure you want to delete this post?')) {
-                // Handle delete
               }
             }}
           >

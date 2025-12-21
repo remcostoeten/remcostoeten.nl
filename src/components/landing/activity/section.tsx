@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedNumber } from '../ui/animated-number';
+import { AnimatedNumber } from '../../ui/animated-number';
 import { ActivityContributionGraph } from './contribution-graph';
-import { Section } from '../ui/section';
+import { Section } from '../../ui/section';
 import { ActivityFeed } from './activity-feed';
 import { ProjectHoverWrapper } from './hover-wrappers';
 import Link from 'next/link';

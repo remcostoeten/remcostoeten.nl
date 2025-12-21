@@ -26,7 +26,6 @@ export async function isAdmin(): Promise<boolean> {
 
         console.log(`[isAdmin] email: ${session.user.email}, isMatch: ${isEmailMatch}, role: ${session.user.role}, isRoleAdmin: ${isRoleAdmin}`)
 
-        // Check if user has admin role OR is the hardcoded admin email
         return isRoleAdmin || isEmailMatch
     } catch (error) {
         console.error('[isAdmin] Error:', error)
