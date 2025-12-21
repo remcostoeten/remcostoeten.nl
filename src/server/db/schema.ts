@@ -23,6 +23,27 @@ export const blogPosts = pgTable('blog_posts', {
     index('blog_posts_draft_idx').on(t.isDraft),
 ])
 
+export const blogViews = pgTable('blog_views', {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    slug: text('slug').notNull().references(() => blogPosts.slug, { onDelete: 'cascade' }),
+    fingerprint: text('fingerprint').notNull(), // Hash(IP + UserAgent)
+    visitorId: text('visitor_id'), // Cookie-based fallback/correlation
+    viewedAt: timestamp('viewed_at').defaultNow().notNull(),
+
+    // Geolocation Data
+    ipAddress: text('ip_address'), // Optional: consider hashing this too if privacy is strict, but user asked for GEO info
+    geoCountry: text('geo_country'),
+    geoCity: text('geo_city'),
+    geoRegion: text('geo_region'),
+    geoLoc: text('geo_loc'),
+    geoOrg: text('geo_org'),
+    geoTimezone: text('geo_timezone'),
+}, (t) => [
+    index('blog_views_slug_idx').on(t.slug),
+    index('blog_views_fingerprint_idx').on(t.fingerprint), // Fast lookups for uniqueness check
+    index('blog_views_visitor_idx').on(t.visitorId),
+])
+
 export const blogSessions = pgTable('blog_sessions', {
     ...primaryId,
     ...blogSlug,
@@ -235,4 +256,7 @@ export type ContactInteraction = typeof contactInteractions.$inferSelect
 export type NewContactInteraction = typeof contactInteractions.$inferInsert
 export type ContactAbandonment = typeof contactAbandonments.$inferSelect
 export type NewContactAbandonment = typeof contactAbandonments.$inferInsert
+
+export type BlogView = typeof blogViews.$inferSelect
+export type NewBlogView = typeof blogViews.$inferInsert
 

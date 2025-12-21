@@ -4,6 +4,7 @@ import { useState, useRef, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { Icons } from '@/components/brand-icons'
+import { Plus } from 'lucide-react'
 
 type Logo = {
   name: keyof typeof Icons
@@ -19,6 +20,62 @@ const LOGOS: Logo[] = [
   { name: 'postgres', label: 'PostgreSQL' },
   { name: 'docker', label: 'Docker' },
   { name: 'javascript', label: 'JavaScript' }
+]
+
+const CARD_STYLES = [
+  {
+    className: "relative border-r border-b bg-secondary dark:bg-secondary/30",
+    decorators: (
+      <Plus
+        className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6"
+        strokeWidth={1}
+      />
+    )
+  },
+  {
+    className: "border-b md:border-r",
+    decorators: null
+  },
+  {
+    className: "relative border-r border-b md:bg-secondary dark:md:bg-secondary/30",
+    decorators: (
+      <>
+        <Plus
+          className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6"
+          strokeWidth={1}
+        />
+        <Plus
+          className="-bottom-[12.5px] -left-[12.5px] absolute z-10 hidden size-6 md:block"
+          strokeWidth={1}
+        />
+      </>
+    )
+  },
+  {
+    className: "relative border-b bg-secondary md:bg-background dark:bg-secondary/30 md:dark:bg-background",
+    decorators: null
+  },
+  {
+    className: "relative border-r border-b bg-secondary md:border-b-0 md:bg-background dark:bg-secondary/30 md:dark:bg-background",
+    decorators: (
+      <Plus
+        className="-right-[12.5px] -bottom-[12.5px] md:-left-[12.5px] absolute z-10 size-6 md:hidden"
+        strokeWidth={1}
+      />
+    )
+  },
+  {
+    className: "border-b bg-background md:border-r md:border-b-0 md:bg-secondary dark:md:bg-secondary/30",
+    decorators: null
+  },
+  {
+    className: "border-r",
+    decorators: null
+  },
+  {
+    className: "bg-secondary dark:bg-secondary/30",
+    decorators: null
+  }
 ]
 
 type TechStackCloudProps = React.ComponentProps<'div'>
@@ -45,6 +102,7 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
       <div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t" />
 
       {LOGOS.map(function (logo, i) {
+        const style = CARD_STYLES[i] || {}
         return (
           <TechCard
             key={logo.name}
@@ -52,8 +110,10 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
             label={logo.label}
             delay={delays[i]}
             isInView={isInView}
-            className="border-r border-b bg-background dark:bg-background/20"
-          />
+            className={style.className}
+          >
+            {style.decorators}
+          </TechCard>
         )
       })}
 
