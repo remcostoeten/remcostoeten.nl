@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trash2, MessageSquare, Loader2 } from 'lucide-react'
 import { useSession } from '@/lib/auth-client'
+import Image from 'next/image'
 import { addComment, deleteComment, getComments } from '@/server/actions/comments'
 import { SignInButton } from './sign-in-button'
 import posthog from 'posthog-js'
@@ -99,9 +100,11 @@ export function CommentSection({ slug }: Props) {
                 <form onSubmit={handleSubmit} className="mb-8">
                     <div className="flex gap-3">
                         {session.user.image ? (
-                            <img
+                            <Image
                                 src={session.user.image}
                                 alt={session.user.name || 'User'}
+                                width={40}
+                                height={40}
                                 className="w-10 h-10 rounded-full shrink-0"
                             />
                         ) : (
@@ -172,9 +175,11 @@ export function CommentSection({ slug }: Props) {
                                 className="flex gap-3"
                             >
                                 {comment.userImage ? (
-                                    <img
+                                    <Image
                                         src={comment.userImage}
                                         alt={comment.userName || 'User'}
+                                        width={40}
+                                        height={40}
                                         className="w-10 h-10 rounded-full shrink-0"
                                     />
                                 ) : (

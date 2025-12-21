@@ -3,6 +3,7 @@
 import { useState, useRef, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 // Hook to detect if device is touch/mobile
 function useIsMobile() {
@@ -459,13 +460,13 @@ export function SpotifyCard({
         <div className="flex gap-3">
             {/* Album Art */}
             {albumArt ? (
-                <img
+                <Image
                     src={albumArt}
                     alt={album || name}
+                    width={64}
+                    height={64}
                     className="size-16 rounded-none object-cover shadow-md"
-                    loading="lazy"
-                    decoding="async"
-                    sizes="64px"
+                    priority={false}
                 />
             ) : (
                 <div className="size-16 rounded-none bg-gradient-to-br from-green-500/20 to-green-500/5 flex items-center justify-center">
