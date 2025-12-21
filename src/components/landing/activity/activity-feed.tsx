@@ -728,9 +728,9 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                         <button
                             key={idx}
                             onClick={() => goToSlide(idx)}
-                            className={`rounded-full transition-all duration-300 cursor-pointer hover:scale-150 focus:outline-none focus:ring-1 focus:ring-brand-500/50 ${idx === currentIndex
-                                    ? 'size-2 bg-brand-500 scale-125'
-                                    : 'size-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60'
+                            className={`rounded-none transition-all duration-300 cursor-pointer hover:scale-150 focus:outline-none focus:ring-1 focus:ring-brand-500/50 ${idx === currentIndex
+                                ? 'size-2 bg-brand-500 scale-125'
+                                : 'size-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60'
                                 }`}
                             aria-label={`Go to activity ${idx + 1}`}
                             aria-current={idx === currentIndex ? 'true' : undefined}

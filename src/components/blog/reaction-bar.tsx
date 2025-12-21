@@ -49,8 +49,7 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 
         const wasReacted = reactions[emoji].hasReacted
 
-        // Track blog post reaction event
-        posthog.capture('blog_post_reaction', {
+                posthog.capture('blog_post_reaction', {
             slug: slug,
             emoji_type: emoji,
             emoji_label: EMOJI_CONFIG[emoji].label,

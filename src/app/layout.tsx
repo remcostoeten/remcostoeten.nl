@@ -1,22 +1,11 @@
-import './global.css'
+import { ReactNode } from 'react'
 import type { Metadata } from 'next'
-
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
-import Footer from '@/components/layout/footer'
-import { PageTransition } from '@/components/layout/page-transition'
-import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
-import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
-import { ThemeSwitch } from '@/components/ui/theme-switch'
-import { PosthogProvider } from './providers'
-import { baseUrl } from './sitemap'
-import { ReactNode } from 'react'
-import { Toaster } from 'sonner'
 import { cn } from '@/lib/utils'
 import { WebsiteStructuredData, PersonStructuredData } from '@/components/seo/structured-data'
+import { AppProviders } from '@/components/providers/providers'
+import { baseUrl } from './sitemap'
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
@@ -52,12 +41,7 @@ export const metadata: Metadata = {
   },
 }
 
-
-export default function RootLayout({
-  children,
-}: {
-  children: ReactNode
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
@@ -88,38 +72,10 @@ export default function RootLayout({
         <PersonStructuredData />
       </head>
       <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
-        <PosthogProvider>
-          <CustomQueryClientProvider>
-            <VimAuthProvider>
-              <div className="min-h-screen w-full flex flex-col">
-                <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
-                  <PageTransition>
-                    {children}
-                    <Toaster />
-                  </PageTransition>
-                </main>
-                <Footer />
-              </div>
-            </VimAuthProvider>
-            <ThemeSwitch position="fixed" offset={20} side="right" />
-            <Analytics />
-            <SpeedInsights />
-          </CustomQueryClientProvider>
-        </PosthogProvider>
+        <AppProviders>
+          {children}
+        </AppProviders>
       </body>
     </html>
   )
-}
-
-// Service worker registration
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then((registration) => {
-        console.log('SW registered: ', registration);
-      })
-      .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
-      });
-  });
 }

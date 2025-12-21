@@ -6,13 +6,13 @@ import { useInView, useReducedMotion } from 'framer-motion';
 const DIGIT_SETS = 3;
 const DIGITS_PER_SET = 10;
 const TOTAL_DIGITS = DIGIT_SETS * DIGITS_PER_SET;
-const SCROLL_DISTANCE = 12;
+const SCROLL_DISTANCE = 8; // Reduced for better performance
 const TARGET_SET_INDEX = 2;
-const STAGGER_DELAY_MS = 60; // Faster stagger
+const STAGGER_DELAY_MS = 40; // Faster stagger for smoother flow
 const GRADIENT_HEIGHT_PERCENT = 20;
-const INITIAL_BLUR_PX = 1;
+const INITIAL_BLUR_PX = 0.5; // Reduced blur for performance
 
-const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)'; // Snappier easing
+const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
 const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => i % DIGITS_PER_SET);
 
@@ -45,7 +45,7 @@ function SlotDigit({ digit, trigger, duration, delay = 0, className, index }: Sl
         style={{
           transform: trigger ? transformTarget : transformInitial,
           filter: trigger ? 'blur(0px)' : `blur(${INITIAL_BLUR_PX}px)`,
-          transition: `transform ${duration}ms ${EASING} ${delay}ms, filter ${duration}ms ease-out ${delay}ms`,
+          transition: `transform ${duration}ms ${EASING} ${delay}ms, filter ${Math.min(duration * 0.6, 300)}ms ease-out ${delay}ms`,
         }}
         aria-hidden="true"
       >
@@ -76,34 +76,35 @@ type Props = {
   className?: string
   duration?: number
   delay?: number
-  priority?: boolean
+  immediate?: boolean // For hero section numbers that should animate immediately
 }
 
-export function AnimatedNumber({ value, className, duration = 500, delay = 0, priority = false }: Props) {
-  const [isVisible, setIsVisible] = useState(false);
+export function AnimatedNumber({ value, className, duration = 600, delay = 0, immediate = false }: Props) {
+  const [isVisible, setIsVisible] = useState(immediate);
+  const [isClient, setIsClient] = useState(false);
   const elementRef = useRef<HTMLSpanElement>(null);
   const stringValue = String(value);
-
   const shouldReduceMotion = useReducedMotion();
 
-  const isInView = useInView(elementRef, { once: true, margin: "0px" });
+  // Only enable view-based animations on client side
+  const isInView = useInView(elementRef, { once: true, margin: "-50px" });
 
   useEffect(() => {
-    if (priority) {
-      setIsVisible(true);
-    } else if (isInView) {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isInView && !immediate && !shouldReduceMotion) {
       setIsVisible(true);
     }
-  }, [isInView, priority]);
+  }, [isInView, immediate, shouldReduceMotion]);
 
-  const chars = stringValue.split('');
-  let digitIndex = 0;
-
-  if (shouldReduceMotion) {
+  // For SSR or reduced motion, show static number
+  if (!isClient || shouldReduceMotion) {
     return (
       <span
         ref={elementRef}
-        className={`inline-flex items-baseline whitespace-pre-wrap  translate-y-0.5 ${className || ''}`}
+        className={`inline-flex items-baseline whitespace-pre-wrap ${className || ''}`}
         aria-label={stringValue}
       >
         {stringValue}
@@ -111,10 +112,13 @@ export function AnimatedNumber({ value, className, duration = 500, delay = 0, pr
     );
   }
 
+  const chars = stringValue.split('');
+  let digitIndex = 0;
+
   return (
     <span
       ref={elementRef}
-      className={`inline-flex items-baseline whitespace-pre-wrap  translate-y-0.5 ${className || ''}`}
+      className={`inline-flex items-baseline whitespace-pre-wrap translate-y-0.5 ${className || ''}`}
       aria-label={stringValue}
     >
       <span className="sr-only">{stringValue}</span>
@@ -122,7 +126,7 @@ export function AnimatedNumber({ value, className, duration = 500, delay = 0, pr
       <span className="inline-flex items-baseline" aria-hidden="true">
         {chars.map((char, i) => {
           if (/\d/.test(char)) {
-            const currentDigitDuration = duration + (digitIndex * STAGGER_DELAY_MS);
+            const currentDigitDuration = Math.min(duration + (digitIndex * STAGGER_DELAY_MS), 1500); // Cap duration
             const currentDigitIndex = digitIndex;
             digitIndex++;
 

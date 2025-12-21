@@ -52,11 +52,10 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // Fetch repo info and languages in parallel
-        const [repoRes, langRes] = await Promise.all([
+                const [repoRes, langRes] = await Promise.all([
             fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
                 headers: getHeaders(),
-                next: { revalidate: 300 }, // Cache for 5 minutes
+                next: { revalidate: 300 }
             }),
             fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}/languages`, {
                 headers: getHeaders(),
@@ -74,8 +73,7 @@ export async function GET(request: NextRequest) {
         const repoData = await repoRes.json();
         const langData = langRes.ok ? await langRes.json() : {};
 
-        // Calculate language percentages
-        const totalBytes: number = Object.values(langData as Record<string, number>).reduce((sum, val) => sum + val, 0);
+                const totalBytes: number = Object.values(langData as Record<string, number>).reduce((sum, val) => sum + val, 0);
         const languages = Object.entries(langData as Record<string, number>)
             .map(([name, bytes]) => ({
                 name,
