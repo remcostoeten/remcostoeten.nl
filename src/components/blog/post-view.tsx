@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, ChevronRight, Home } from 'lucide-react'
 import { AnimatedNumber } from '../ui/animated-number'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/actions/analytics'
+import { getDateParts, readMinutes } from '@/lib/blog-format'
 
 type BlogPost = {
   metadata: {
@@ -40,9 +41,8 @@ export function BlogPostClient({
 }: Props) {
   const router = useRouter()
 
-  const dateObj = new Date(publishedAt)
-  const dayNumber = dateObj.getDate()
-  const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
+  const dateParts = getDateParts(publishedAt)
+  const readTimeMinutes = readMinutes(readTime)
   const dateDuration = 500
 
   const allTags = tags || []
@@ -89,11 +89,11 @@ export function BlogPostClient({
         <div className="flex flex-col gap-4 w-full">
           <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
             <p className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
-              <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
+              <AnimatedNumber value={dateParts.day} duration={dateDuration} /> {dateParts.month} <AnimatedNumber value={dateParts.year} duration={dateDuration} />
             </p>
             <span className="text-neutral-300 dark:text-neutral-700">•</span>
             <p className="text-neutral-500 dark:text-neutral-400">
-              {readTime}
+              <AnimatedNumber value={readTimeMinutes} duration={dateDuration} /> min read
             </p>
             {uniqueViews > 0 && (
               <>
