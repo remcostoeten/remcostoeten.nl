@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { AlertTriangle, FileText, Github, Shield } from 'lucide-react'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
 import { LegalHeader } from '../legal/legal-header'
@@ -241,7 +242,17 @@ const termsCopy: Record<LegalLanguage, TermsCopy> = {
 }
 
 export default function TermsContent() {
+  const searchParams = useSearchParams()
   const [language, setLanguage] = useState<LegalLanguage>('en')
+
+  useEffect(() => {
+    const langParam = searchParams.get('lang')
+    if (langParam === 'nl') {
+      setLanguage('nl')
+    } else {
+      setLanguage('en')
+    }
+  }, [searchParams])
 
   const lastUpdated = useMemo(function deriveDate() {
     return new Date().toLocaleDateString(language === 'nl' ? 'nl-NL' : 'en-US', {

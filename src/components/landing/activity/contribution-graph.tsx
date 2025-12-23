@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
 import { GraphSkeleton } from '@/components/ui/skeletons';
+import { AnimatedNumber } from '../../ui/animated-number';
 
 interface ActivityDay {
   date: string;
@@ -47,7 +48,33 @@ export function ActivityContributionGraph({
   const { data: detailedEvents } = useGitHubEventsByDate(startDate, endDate);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   const graphRef = useRef<HTMLDivElement>(null);
+
+  const handleDragMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
+    setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
+    e.preventDefault();
+  };
+
+  const handleDragMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - (scrollContainerRef.current.offsetLeft || 0);
+    const walk = (x - startX) * 1.5; // Adjust scroll speed
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleDragMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleDragMouseLeave = () => {
+    setIsDragging(false);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +91,19 @@ export function ActivityContributionGraph({
     };
     fetchData();
   }, [year]);
+
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+      return () => {
+        document.removeEventListener('mouseup', handleGlobalMouseUp);
+      };
+    }
+  }, [isDragging]);
 
 
   const activityData = useMemo(() => {
@@ -142,22 +182,22 @@ export function ActivityContributionGraph({
   }, [githubContributions, tracks, year, loading, githubLoading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
-    // Dark theme colors (GitHub default)
+    // Dark theme colors using brand color variants
     const darkColors = [
-      'bg-[#161b22]',
-      'bg-[#0e4429]',
-      'bg-[#006d32]',
-      'bg-[#26a641]',
-      'bg-[#39d353]'
+      'bg-[#0d1117]', // Very dark background (level 0 - no activity)
+      'bg-brand-500/20', // Very light brand tint (level 1)
+      'bg-brand-500/40', // Light brand tint (level 2) 
+      'bg-brand-500/60', // Medium brand tint (level 3)
+      'bg-brand-500' // Full brand color (level 4 - highest activity)
     ];
 
-    // Light theme colors (subtle)
+    // Light theme colors using brand color variants
     const lightColors = [
-      'bg-gray-200',
-      'bg-green-100/60',
-      'bg-green-200/70',
-      'bg-green-300/80',
-      'bg-green-400'
+      'bg-gray-200/50', // Very light gray (level 0 - no activity)
+      'bg-brand-500/15', // Very light brand tint (level 1)
+      'bg-brand-500/30', // Light brand tint (level 2)
+      'bg-brand-500/45', // Medium brand tint (level 3)
+      'bg-brand-500/70' // Strong brand tint (level 4 - highest activity)
     ];
 
     // Check if we're in dark theme by checking document class
@@ -280,7 +320,11 @@ export function ActivityContributionGraph({
     <div className={`space-y-2 ${className}`}>
       <div
         ref={scrollContainerRef}
-        className="overflow-hidden"
+        className={`overflow-x-auto overflow-y-hidden scrollbar-hide ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
+        onMouseDown={handleDragMouseDown}
+        onMouseMove={handleDragMouseMove}
+        onMouseUp={handleDragMouseUp}
+        onMouseLeave={handleDragMouseLeave}
       >
         <div ref={graphRef} className="flex flex-col w-full">
           {/* Month labels row */}
@@ -362,7 +406,7 @@ export function ActivityContributionGraph({
             <span>More</span>
           </div>
           <span className="text-muted-foreground/80">
-            <span className="text-foreground font-medium">{totalContributions.toLocaleString()}</span> contributions in {year}
+            <AnimatedNumber value={totalContributions.toLocaleString()} duration={800} group="contributions" priority={1} className="text-foreground font-medium" /> contributions in <AnimatedNumber value={year} duration={600} group="contributions" priority={2} />
           </span>
         </motion.div>
       )}

@@ -9,6 +9,8 @@ import { CustomQueryClientProvider } from '@/components/providers/query-client-p
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { Footer } from '@/components/layout/footer'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { AnimatedNumberProvider } from '@/components/ui/animated-number'
+import { StaggerProvider } from '@/components/ui/stagger-system'
 
 type TProps = {
     children: ReactNode
@@ -19,16 +21,22 @@ export function AppProviders({ children }: TProps) {
         <PosthogProvider>
             <CustomQueryClientProvider>
                 <VimAuthProvider>
-                    <div className="min-h-screen w-full flex flex-col">
-                        <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
-                            {children}
-                            <Toaster />
-                        </main>
-                        <Footer />
-                    </div>
-                    <ThemeSwitch position="fixed" offset={20} side="right" />
-                    <Analytics />
-                    <SpeedInsights />
+                    <StaggerProvider config={{ baseDelay: 80, initialDelay: 0 }}>
+                        <AnimatedNumberProvider>
+
+
+                            <div className="min-h-screen w-full flex flex-col">
+                                <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
+                                    {children}
+                                    <Toaster />
+                                </main>
+                                <Footer />
+                            </div>
+                            <ThemeSwitch position="fixed" offset={20} side="right" />
+                            <Analytics />
+                            <SpeedInsights />
+                        </AnimatedNumberProvider>
+                    </StaggerProvider>
                 </VimAuthProvider>
             </CustomQueryClientProvider>
         </PosthogProvider>

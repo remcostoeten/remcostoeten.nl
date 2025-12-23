@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { ChevronRight, Home } from 'lucide-react'
 import { Fragment } from 'react'
 
@@ -43,7 +43,12 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
 
 export function Breadcrumbs() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const breadcrumbs = generateBreadcrumbs(pathname)
+  
+  // Preserve language parameter in breadcrumb links
+  const langParam = searchParams.get('lang')
+  const linkParams = langParam ? `?lang=${langParam}` : ''
   
   if (pathname === '/' || breadcrumbs.length === 0) {
     return null
@@ -80,7 +85,7 @@ export function Breadcrumbs() {
                 </span>
               ) : (
                 <Link
-                  href={crumb.href}
+                  href={`${crumb.href}${linkParams}`}
                   className="hover:text-foreground transition-colors truncate max-w-[200px]"
                 >
                   {crumb.label}

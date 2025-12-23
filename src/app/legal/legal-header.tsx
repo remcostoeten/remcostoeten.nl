@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { Home } from 'lucide-react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
@@ -15,6 +16,9 @@ interface HeaderProps {
 export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
   const [isHidden, setIsHidden] = useState(false)
   const lastScroll = useRef(0)
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(function handleScrollDirection() {
     function handleScroll() {
@@ -54,6 +58,23 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
               <span className="hidden sm:inline">Home</span>
             </Link>
           </Button>
+          
+          {/* Navigation between legal pages */}
+          {pathname === '/terms' && (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}>
+                Privacy
+              </Link>
+            </Button>
+          )}
+          {pathname === '/privacy' && (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}>
+                Terms
+              </Link>
+            </Button>
+          )}
+          
           <Breadcrumbs />
         </div>
         <div className="flex items-center gap-2">
@@ -73,10 +94,22 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
   )
 
   function handleEnglish() {
+    const params = new URLSearchParams(searchParams.toString())
+    if (language === 'nl') {
+      params.set('lang', 'en')
+    } else {
+      params.delete('lang')
+    }
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    router.replace(newUrl, { scroll: false })
     onLanguageChange('en')
   }
 
   function handleDutch() {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('lang', 'nl')
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    router.replace(newUrl, { scroll: false })
     onLanguageChange('nl')
   }
 }

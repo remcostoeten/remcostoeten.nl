@@ -48,7 +48,7 @@ export function Section({
                     </div>
                 </div>
             )}
-            <div className={contentPadding ? SECTION_PADDING : ''}>
+            <div className={contentPadding && !noPadding ? SECTION_PADDING : ''}>
                 {children}
             </div>
         </section>

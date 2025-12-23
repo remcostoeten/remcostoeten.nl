@@ -103,6 +103,7 @@ function getEventIcon(type: GitHubEventDetail['type']) {
         case 'fork': return <Copy className='size-3' />;
         case 'star': return <Star className='size-3' />;
         case 'create': return <Plus className='size-3' />;
+        case 'delete': return <GitBranch className='size-3 opacity-70' />; // Using GitBranch for delete as it's often branch/tag related
         default: return <GitBranch className='size-3' />;
     }
 }
@@ -121,6 +122,8 @@ function getProjectVerb(type: GitHubEventDetail['type']): string {
             return 'exploring';
         case 'release':
             return 'shipping';
+        case 'delete':
+            return 'maintaining';
         default:
             return 'working on';
     }
@@ -198,6 +201,16 @@ function getActivityMetric(activity: GitHubEventDetail): { label: string; value:
             }
             return null;
         }
+        case 'delete': {
+            const refType = payload?.ref_type;
+            const ref = payload?.ref;
+
+            return {
+                label: refType === 'branch' ? 'Deleted Branch' : refType === 'tag' ? 'Deleted Tag' : 'Deleted',
+                value: ref || 'unknown',
+                icon: <GitBranch className="size-3 opacity-70" />
+            };
+        }
         case 'issue': {
             const issueNum = payload?.issue?.number;
             const state = payload?.issue?.state;
@@ -255,6 +268,52 @@ function Equalizer({ className = '' }: { className?: string }) {
             <span className='w-[2px] bg-green-500 rounded-none animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]' />
             <span className='w-[2px] bg-green-500 rounded-none animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]' />
         </span>
+    );
+}
+
+
+
+function LiveGlow({ progress }: { progress: number }) {
+    return (
+        <motion.div
+            className="absolute bottom-0 left-0 right-0 h-[1.5px] pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+        >
+            {/* Track background */}
+            <div className="absolute inset-0 bg-white/5 w-full" />
+
+            {/* Progress line */}
+            <motion.div
+                className="absolute inset-y-0 left-0 bg-green-500/80 shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                style={{ width: `${progress}%` }}
+                layout
+            />
+
+            {/* Pulsing glow point at the head of the progress */}
+            <motion.div
+                className="absolute inset-y-0 bg-green-400 blur-[2px]"
+                animate={{
+                    opacity: [0.4, 1, 0.4],
+                    left: `${progress}%`
+                }}
+                style={{
+                    width: '4px',
+                    marginLeft: '-2px'
+                }}
+                transition={{
+                    opacity: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
+                    left: { duration: 0.1 }
+                }}
+            />
+
+            {/* Soft upward fade following progress */}
+            <motion.div
+                className="absolute bottom-0 left-0 h-4 bg-gradient-to-t from-green-500/10 to-transparent"
+                style={{ width: `${progress}%` }}
+            />
+        </motion.div>
     );
 }
 
@@ -340,7 +399,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         if (activities.length === 0 || isPaused) return;
         const interval = setInterval(rotateActivity, rotationInterval);
         return () => clearInterval(interval);
-    }, [rotateActivity, rotationInterval]);
+    }, [rotateActivity, rotationInterval, isPaused]);
 
     // Touch/swipe handling
     const touchStartX = useRef<number | null>(null);
@@ -473,7 +532,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                 />
             </div>
 
-            <div className="p-4 md:p-5">
+            <div className="relative z-10 p-4 md:p-5">
                 {/* Fixed height container to prevent layout shift */}
                 <div className="min-h-[4.5rem] md:min-h-[5rem]">
                     <AnimatePresence mode="wait">
@@ -564,10 +623,13 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                         <>
                                             <motion.span
                                                 variants={wordVariants}
-                                                className="text-muted-foreground/70 inline-flex items-center"
+                                                className="text-muted-foreground/70 inline-flex items-center gap-1.5"
                                             >
                                                 listening to
-                                                <Equalizer />
+                                                <div className="flex items-center gap-1 bg-green-500/10 px-1.5 py-0.5 rounded-none border border-green-500/20">
+                                                    <span className="text-[10px] font-bold text-green-500 tracking-wider">LIVE</span>
+                                                    <Equalizer className="translate-y-[-1px]" />
+                                                </div>
                                             </motion.span>
 
                                             {/* Song name */}
@@ -598,26 +660,6 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                             >
                                                 {currentTrack.artist}
                                             </motion.span>
-
-                                            {/* Live Progress Bar & Timestamp */}
-                                            {isCurrentTrackLive && playbackState.duration > 0 && (
-                                                <motion.div
-                                                    variants={wordVariants}
-                                                    className="inline-flex items-center gap-2 ml-2 px-2 py-1 rounded-none bg-green-500/5 border border-green-500/20"
-                                                >
-                                                    <div className="flex items-center gap-1.5">
-                                                        <div className="w-16 h-1 bg-muted/30 rounded-none overflow-hidden">
-                                                            <div
-                                                                className="h-full bg-green-500 transition-all duration-200 ease-linear"
-                                                                style={{ width: `${playbackState.percentage}%` }}
-                                                            />
-                                                        </div>
-                                                        <span className="text-[10px] text-green-500 font-mono tabular-nums">
-                                                            {playbackState.formattedProgress} / {playbackState.formattedDuration}
-                                                        </span>
-                                                    </div>
-                                                </motion.div>
-                                            )}
                                         </>
                                     ) : (
                                         <>
@@ -667,11 +709,11 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                     whilst enjoying some quiet time
                                 </motion.span>
                             )}
+
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
-                {/* Activity metric - always rendered with fixed height */}
                 <div className="h-5 mt-2">
                     <AnimatePresence mode="wait">
                         <motion.div
@@ -687,30 +729,33 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                 if (metric) {
                                     return (
                                         <>
-                                            <div className="flex items-center gap-1 min-w-0">
+                                            <div className="flex items-center gap-1.5 min-w-0">
                                                 {metric.icon && (
-                                                    <span className="text-muted-foreground/30 shrink-0">
+                                                    <span className="text-muted-foreground/30 shrink-0 flex items-center translate-y-[0.5px]">
                                                         {metric.icon}
                                                     </span>
                                                 )}
-                                                <span className="text-muted-foreground/30 uppercase tracking-wide text-[9px] font-medium shrink-0">{metric.label}:</span>
-                                                <span className="text-muted-foreground/50 text-xs truncate">
+                                                <span className="text-muted-foreground/30 uppercase tracking-wide text-[9px] font-medium shrink-0 leading-none">
+                                                    {metric.label}:
+                                                </span>
+                                                <span className="text-muted-foreground/50 text-xs truncate leading-none">
                                                     {metric.value}
                                                 </span>
                                             </div>
-                                            <span className="text-[9px] text-muted-foreground/40 tabular-nums font-mono shrink-0 ml-auto">
+                                            <span className="text-[9px] text-muted-foreground/40 tabular-nums font-mono shrink-0 ml-auto flex items-center gap-1">
+                                                <span className="opacity-50 font-sans">GH ·</span>
                                                 {formatRelativeTime(currentActivity.timestamp)}
                                             </span>
                                         </>
                                     );
                                 }
-                                // Fallback to description or dash
                                 return (
                                     <>
                                         <span className="text-xs text-muted-foreground/40 italic truncate">
                                             {currentActivity.description ? `"${currentActivity.description}"` : '—'}
                                         </span>
-                                        <span className="text-[9px] text-muted-foreground/40 tabular-nums font-mono shrink-0 ml-auto">
+                                        <span className="text-[9px] text-muted-foreground/40 tabular-nums font-mono shrink-0 ml-auto flex items-center gap-1">
+                                            <span className="opacity-50 font-sans">GH ·</span>
                                             {formatRelativeTime(currentActivity.timestamp)}
                                         </span>
                                     </>
@@ -722,22 +767,28 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
             </div>
 
             {/* Activity indicator - clickable dots */}
-            {activities.length > 1 && (
-                <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex items-center gap-1.5">
-                    {activities.slice(0, activityCount).map((_, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => goToSlide(idx)}
-                            className={`rounded-none transition-all duration-300 cursor-pointer hover:scale-150 focus:outline-none focus:ring-1 focus:ring-brand-500/50 ${idx === currentIndex
-                                ? 'size-2 bg-brand-500 scale-125'
-                                : 'size-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60'
-                                }`}
-                            aria-label={`Go to activity ${idx + 1}`}
-                            aria-current={idx === currentIndex ? 'true' : undefined}
-                        />
-                    ))}
-                </div>
-            )}
-        </div>
+            {
+                activities.length > 1 && (
+                    <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex items-center gap-1.5">
+                        {activities.slice(0, activityCount).map((_, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => goToSlide(idx)}
+                                className={`rounded-none transition-all duration-300 cursor-pointer hover:scale-150 focus:outline-none focus:ring-1 focus:ring-brand-500/50 ${idx === currentIndex
+                                    ? 'size-2 bg-brand-500 scale-125'
+                                    : 'size-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60'
+                                    }`}
+                                aria-label={`Go to activity ${idx + 1}`}
+                                aria-current={idx === currentIndex ? 'true' : undefined}
+                            />
+                        ))}
+                    </div>
+                )
+            }
+            {/* Live Glow Effect */}
+            <AnimatePresence>
+                {isCurrentTrackLive && <LiveGlow progress={playbackState.percentage} />}
+            </AnimatePresence>
+        </div >
     );
 }

@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Cookie, Database, Eye, Mail, Shield, Users } from 'lucide-react'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
 import { LegalHeader } from '../legal/legal-header'
@@ -245,7 +246,17 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 }
 
 export default function PrivacyContent() {
+  const searchParams = useSearchParams()
   const [language, setLanguage] = useState<LegalLanguage>('en')
+
+  useEffect(() => {
+    const langParam = searchParams.get('lang')
+    if (langParam === 'nl') {
+      setLanguage('nl')
+    } else {
+      setLanguage('en')
+    }
+  }, [searchParams])
 
   const lastUpdated = useMemo(function deriveDate() {
     return new Date().toLocaleDateString(language === 'nl' ? 'nl-NL' : 'en-US', {

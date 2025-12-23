@@ -746,3 +746,44 @@
 	scrollbar-width: thin;
 	scrollbar-color: rgb(60 60 60) rgb(15 15 15);
 }
+
+/* Utility class to hide scrollbars */
+.scrollbar-hide {
+	-ms-overflow-style: none;  /* Internet Explorer 10+ */
+	scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+	display: none;  /* Safari and Chrome */
+}
+@keyframes pattern-flow {
+	0% {
+		background-position: 0 0;
+	}
+	100% {
+		background-position: 42.4264px 42.4264px;
+	}
+}
+
+.animate-pattern-flow {
+	animation: pattern-flow 2s linear infinite;
+}
+
+.hue-overlay::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, 
+		hsl(var(--brand-500) / 0.1),
+		hsl(var(--primary) / 0.1),
+		hsl(var(--brand-500) / 0.1)
+	);
+	background-size: 200% 100%;
+	animation: tech-shimmer 8s linear infinite;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.header-content-container {
+    position: relative;
+    z-index: 1;
+}
