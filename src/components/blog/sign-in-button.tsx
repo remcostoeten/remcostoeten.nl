@@ -69,7 +69,7 @@ export function SignInButton() {
     }
 
     function renderGithubButton() {
-        if (!providers.includes('github')) return null
+        if (!providers || !providers.includes('github')) return null
 
         return (
             <button
@@ -86,7 +86,7 @@ export function SignInButton() {
     }
 
     function renderGoogleButton() {
-        if (!providers.includes('google')) return null
+        if (!providers || !providers.includes('google')) return null
 
         return (
             <button
