@@ -13,7 +13,7 @@ type ProviderList = {
 
 export function SignInButton() {
     const [isLoading, setIsLoading] = useState<Provider | null>(null)
-    const [providers, setProviders] = useState<Provider[]>([])
+    const [providers, setProviders] = useState<Provider[] | null>(null)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [authError, setAuthError] = useState<string | null>(null)
 
@@ -22,6 +22,7 @@ export function SignInButton() {
 
         async function fetchProviders() {
             try {
+                setLoadError(null)
                 const response = await fetch('/api/auth/providers', { cache: 'no-store' })
                 if (!response.ok) {
                     throw new Error('Failed to load sign-in options')
@@ -34,6 +35,7 @@ export function SignInButton() {
                 }
             } catch (error) {
                 if (!isActive) return
+                setProviders([])
                 setLoadError('Unable to load sign-in options. Please try again later.')
             }
         }
@@ -106,6 +108,14 @@ export function SignInButton() {
     }
 
     function renderButtons() {
+        if (providers === null) {
+            return (
+                <p className="text-sm text-zinc-400 text-center" role="status" aria-live="polite">
+                    Loading sign-in options...
+                </p>
+            )
+        }
+
         if (loadError) {
             return (
                 <div className="text-sm text-destructive" role="alert">
