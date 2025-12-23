@@ -3,12 +3,15 @@ import { getAllBlogPosts } from '@/utils/utils'
 import { BlogList } from '@/components/admin/blogs/blog-list'
 import { UserMetrics } from '@/components/admin/metrics/user-metrics'
 import { ContactOverview } from '@/components/admin/contact/contact-overview'
+import { getAllCommentsAdmin } from '@/server/actions/comments'
+import { AdminComments } from '@/components/admin/comments/admin-comments'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPage() {
     const metrics = await getAdminMetrics()
     const allPosts = getAllBlogPosts()
+    const { comments, recentCount } = await getAllCommentsAdmin()
 
     const statsMap = new Map(metrics.postStats.map(s => [s.slug, s]))
 
@@ -46,9 +49,12 @@ export default async function AdminPage() {
                 {/* Right Column: Analytics & Metrics (1/3 width) */}
                 <div className="space-y-8">
                     <UserMetrics data={metrics} />
+                    <AdminComments comments={comments.map(comment => ({
+                        ...comment,
+                        createdAt: comment.createdAt.toISOString(),
+                    }))} recentCount={recentCount} />
                 </div>
             </div>
         </div>
     );
 }
-
