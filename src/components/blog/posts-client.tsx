@@ -85,7 +85,7 @@ function BlogCard({ post, index }: Props) {
                 className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right"
                 aria-hidden="true"
               >
-                <AnimatedNumber value={formattedIndex} duration={indexDuration} />
+                <AnimatedNumber value={formattedIndex} duration={indexDuration} animateOnMount />
               </span>
 
               <div className="flex-1 min-w-0 pt-1">
@@ -124,11 +124,7 @@ function BlogCard({ post, index }: Props) {
 
                 <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500 dark:text-neutral-500">
                   <time dateTime={post.metadata.publishedAt} className="tabular-nums">
-                    <span className="inline-flex items-baseline gap-1">
-                      <AnimatedNumber value={dateParts.day} duration={dateDuration} />
-                      <span>{dateParts.month}</span>
-                      <AnimatedNumber value={dateParts.year} duration={dateDuration} />
-                    </span>
+                    <AnimatedNumber value={dayNumber} duration={dateDuration} animateOnMount /> {monthYear}
                   </time>
                   {post.metadata.readTime && (
                     <>
@@ -137,6 +133,7 @@ function BlogCard({ post, index }: Props) {
                         <AnimatedNumber
                           value={readTimeMinutes}
                           duration={dateDuration}
+                          animateOnMount
                         /> min read
                       </span>
                     </>
@@ -148,6 +145,7 @@ function BlogCard({ post, index }: Props) {
                         <AnimatedNumber
                           value={post.uniqueViews}
                           duration={dateDuration}
+                          animateOnMount
                         /> unique views
                       </span>
                     </>
@@ -221,15 +219,10 @@ function BlogCardSkeleton() {
 
 export function BlogPostsClient({ posts }: BlogPostsProps) {
   const [showAll, setShowAll] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const displayedBlogs = showAll ? posts : posts.slice(0, 3)
   const hasMorePosts = posts.length > 3
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 100)
-    return () => clearTimeout(timer)
-  }, [])
 
   if (isLoading) {
     return (

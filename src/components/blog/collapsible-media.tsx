@@ -24,7 +24,7 @@ export function CollapsibleMedia({
     const [isLoaded, setIsLoaded] = useState(false)
 
     return (
-        <div className="my-8 border border-zinc-800 rounded-lg overflow-hidden bg-zinc-900/30">
+        <div className="my-8 border border-zinc-800 rounded-none AAAA overflow-hidden bg-zinc-900/30">
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between p-4 hover:bg-zinc-800/50 transition-colors text-left group"
@@ -54,7 +54,7 @@ export function CollapsibleMedia({
                     >
                         <div className="p-4 pt-0 border-t border-zinc-800/50">
                             <div className={`
-                                relative rounded-lg overflow-hidden bg-zinc-950
+                                relative rounded-none AAAA overflow-hidden bg-zinc-950
                                 ${!isLoaded ? 'min-h-[200px] animate-pulse' : ''}
                             `}>
                                 <Image
@@ -63,7 +63,7 @@ export function CollapsibleMedia({
                                     width={width}
                                     height={height}
                                     className={`
-                                        w-full h-auto rounded-lg transition-opacity duration-500
+                                        w-full h-auto rounded-none AAAA transition-opacity duration-500
                                         ${isLoaded ? 'opacity-100' : 'opacity-0'}
                                     `}
                                     onLoadingComplete={() => setIsLoaded(true)}

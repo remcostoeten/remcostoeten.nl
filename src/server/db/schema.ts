@@ -114,7 +114,7 @@ export type NewBlogComment = typeof blogComments.$inferInsert
 // ============================================
 
 export const GITHUB_EVENT_TYPES = [
-    'commit', 'pr', 'issue', 'review', 'release', 'fork', 'star', 'create', 'unknown'
+    'commit', 'pr', 'issue', 'review', 'release', 'fork', 'star', 'create', 'delete', 'unknown'
 ] as const
 export type GitHubEventType = typeof GITHUB_EVENT_TYPES[number]
 

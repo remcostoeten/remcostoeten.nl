@@ -48,7 +48,7 @@ export function Section({
                     </div>
                 </div>
             )}
-            <div className={contentPadding ? SECTION_PADDING : ''}>
+            <div className={contentPadding && !noPadding ? SECTION_PADDING : ''}>
                 {children}
             </div>
         </section>
@@ -70,7 +70,7 @@ export function SubSection({
     className?: string;
 }) {
     return (
-        <div className={`rounded-lg border border-border/30 bg-background/50 ${className}`}>
+        <div className={`rounded-none AAAA border border-border/30 bg-background/50 ${className}`}>
             {title && (
                 <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
                     {Icon && <Icon className="size-3.5 text-muted-foreground" />}

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedNumber } from '../../ui/animated-number';
 import { ActivityContributionGraph } from './contribution-graph';
 import { Section } from '../../ui/section';
+import { Heading } from '../../ui/heading';
 import { ActivityFeed } from './activity-feed';
 import { ProjectHoverWrapper } from './hover-wrappers';
 import Link from 'next/link';
@@ -51,18 +52,21 @@ export function ActivitySection() {
   const currentActivity = useMemo(() => ACTIVITIES[activityIndex], [activityIndex]);
 
   return (
-    <Section
-      title="Activity &amp; Contributions"
-      noHeaderMargin
-      headerAction={
-        <span className="text-muted-foreground/60 inline-flex items-baseline">
-          <AnimatedNumber value={year} duration={600} />
-        </span>
-      }
-    >
+    <Section noPadding contentPadding={true}>
+      <Heading
+        title="Activity & Contributions"
+        noMargin
+        bgDirection="diagonal"
+        colorPattern="light"
+        headerAction={
+          <span className="text-muted-foreground/60 inline-flex items-baseline">
+            <AnimatedNumber value={year} duration={600} delay={200} />
+          </span>
+        }
+      />
       <div className="space-y-4 pt-3">
         <p className="px-4 md:px-5 text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
-          Besides my proffesional work, I also build a lot of open source, Primairly been working on <Link href="https://skriuw.vercel.app" target="_blank">
+          Besides my professional work, I also build a lot of open source. Primarily I've been working on <Link href="https://skriuw.vercel.app" target="_blank">
             <ProjectHoverWrapper repository="remcostoeten/skriuw" isPrivate={false}>
               <span className="text-foreground/80 underline decoration-dotted underline-offset-4">Skriuw</span>
             </ProjectHoverWrapper>
@@ -70,11 +74,11 @@ export function ActivitySection() {
         </p>
 
         <div className="px-4 md:px-5">
-          <ActivityContributionGraph year={year} showLegend={false} />
+          <ActivityContributionGraph year={year} showLegend={true} />
         </div>
 
         <ActivityFeed activityCount={5} rotationInterval={6000} />
       </div>
-    </Section >
+    </Section>
   );
 }
