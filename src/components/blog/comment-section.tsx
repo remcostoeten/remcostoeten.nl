@@ -121,7 +121,7 @@ export function CommentSection({ slug }: Props) {
                                 placeholder="Write a comment..."
                                 rows={3}
                                 maxLength={2000}
-                                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-lg
+                                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-none AAAA
                                     text-white placeholder-zinc-500 resize-none
                                     focus:outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600
                                     transition-colors"
@@ -137,7 +137,7 @@ export function CommentSection({ slug }: Props) {
                                     type="submit"
                                     disabled={!newComment.trim() || isPending}
                                     className="px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-900 
-                                        font-medium rounded-lg transition-colors
+                                        font-medium rounded-none AAAA transition-colors
                                         disabled:opacity-50 disabled:cursor-not-allowed
                                         flex items-center gap-2"
                                 >
@@ -149,7 +149,7 @@ export function CommentSection({ slug }: Props) {
                     </div>
                 </form>
             ) : (
-                <div className="mb-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-lg text-center">
+                <div className="mb-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-none AAAA text-center">
                     <p className="text-zinc-400 mb-4">Sign in to join the conversation</p>
                     <SignInButton />
                 </div>

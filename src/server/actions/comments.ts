@@ -7,6 +7,7 @@ import { db } from 'db'
 import { blogComments, user } from '@/server/db/schema'
 import { auth } from '@/server/auth'
 import { isAdmin } from '@/utils/is-admin'
+import { blogPosts } from '@/server/db/schema'
 
 /**
  * Get the current user session
@@ -162,5 +163,47 @@ export async function getComments(slug: string) {
     } catch (error) {
         console.error('[getComments] Error:', error)
         return { comments: [] }
+    }
+}
+
+export type AdminComment = {
+    id: string
+    slug: string
+    content: string
+    createdAt: Date
+    userName: string | null
+    userImage: string | null
+    isEdited: boolean
+}
+
+export type AdminCommentsResult = {
+    comments: AdminComment[]
+    recentCount: number
+}
+
+export async function getAllCommentsAdmin(): Promise<AdminCommentsResult> {
+    try {
+        const rows = await db
+            .select({
+                id: blogComments.id,
+                slug: blogComments.slug,
+                content: blogComments.content,
+                createdAt: blogComments.createdAt,
+                userName: user.name,
+                userImage: user.image,
+                isEdited: blogComments.isEdited,
+            })
+            .from(blogComments)
+            .leftJoin(user, eq(blogComments.userId, user.id))
+            .leftJoin(blogPosts, eq(blogComments.slug, blogPosts.slug))
+            .orderBy(desc(blogComments.createdAt))
+
+        const since = new Date(Date.now() - 24 * 60 * 60 * 1000)
+        const recentCount = rows.filter(row => row.createdAt >= since).length
+
+        return { comments: rows, recentCount }
+    } catch (error) {
+        console.error('[getAllCommentsAdmin] Error:', error)
+        return { comments: [], recentCount: 0 }
     }
 }

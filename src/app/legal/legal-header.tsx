@@ -1,7 +1,11 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
+import { Home } from 'lucide-react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
+import { Button } from '@/components/ui/button'
 import { LegalLanguage } from './legal-language'
 
 interface HeaderProps {
@@ -12,6 +16,9 @@ interface HeaderProps {
 export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
   const [isHidden, setIsHidden] = useState(false)
   const lastScroll = useRef(0)
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(function handleScrollDirection() {
     function handleScroll() {
@@ -43,9 +50,34 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
         isHidden ? '-translate-y-full md:translate-y-0' : 'translate-y-0'
       }`}
     >
-      <div className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 md:px-6">
-        <Breadcrumbs params={{ lang: language }} showRootIcon={false} rootLabel="Home" />
-        <div className="flex items-center gap-2 sm:self-start">
+      <div className="flex items-center justify-between gap-4 px-4 py-3 md:px-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button asChild variant="ghost" size="sm" className="gap-2">
+            <Link href="/" aria-label="Back to home">
+              <Home className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
+          </Button>
+          
+          {/* Navigation between legal pages */}
+          {pathname === '/terms' && (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}>
+                Privacy
+              </Link>
+            </Button>
+          )}
+          {pathname === '/privacy' && (
+            <Button asChild variant="ghost" size="sm">
+              <Link href={`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}>
+                Terms
+              </Link>
+            </Button>
+          )}
+          
+          <Breadcrumbs />
+        </div>
+        <div className="flex items-center gap-2">
           <LanguageToggle
             label="EN"
             isActive={language === 'en'}
@@ -62,10 +94,22 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
   )
 
   function handleEnglish() {
+    const params = new URLSearchParams(searchParams.toString())
+    if (language === 'nl') {
+      params.set('lang', 'en')
+    } else {
+      params.delete('lang')
+    }
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    router.replace(newUrl, { scroll: false })
     onLanguageChange('en')
   }
 
   function handleDutch() {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('lang', 'nl')
+    const newUrl = `${window.location.pathname}?${params.toString()}`
+    router.replace(newUrl, { scroll: false })
     onLanguageChange('nl')
   }
 }

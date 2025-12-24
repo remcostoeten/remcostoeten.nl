@@ -478,10 +478,11 @@ class GitHubService {
         if (commitCount === 0) return null;
 
         const commitMsg = event.payload.commits?.[0]?.message?.split('\n')[0] || 'No commit message';
+        const ref = event.payload.ref?.replace('refs/heads/', '') || '';
         return {
           ...base,
           type: 'commit',
-          title: `pushed ${commitCount} commit${commitCount === 1 ? '' : 's'}`,
+          title: `pushed ${commitCount} commit${commitCount === 1 ? '' : 's'}${ref ? ` to ${ref}` : ''}`,
           description: commitMsg,
           url: `https://github.com/${event.repo.name}/commits/${event.payload.head}`,
           payload: event.payload
@@ -496,7 +497,7 @@ class GitHubService {
           return {
             ...base,
             type: 'create',
-            title: 'created a repository',
+            title: `created repository ${repoName}`,
             description: repoName,
             url: `https://github.com/${event.repo.name}`,
             payload: event.payload
@@ -505,7 +506,7 @@ class GitHubService {
           return {
             ...base,
             type: 'create',
-            title: 'created a branch',
+            title: `created branch ${ref}`,
             description: `Branch: ${ref}`,
             url: `https://github.com/${event.repo.name}/tree/${ref}`,
             payload: event.payload
@@ -514,7 +515,7 @@ class GitHubService {
           return {
             ...base,
             type: 'create',
-            title: 'created a tag',
+            title: `created tag ${ref}`,
             description: `Tag: ${ref}`,
             url: `https://github.com/${event.repo.name}/releases/tag/${ref}`,
             payload: event.payload
@@ -535,8 +536,8 @@ class GitHubService {
         const ref = event.payload.ref;
         return {
           ...base,
-          type: 'create',
-          title: `deleted a ${refType}`,
+          type: 'delete',
+          title: `deleted ${refType} ${ref}`,
           description: `${refType}: ${ref}`,
           url: `https://github.com/${event.repo.name}`,
           payload: event.payload
@@ -558,7 +559,7 @@ class GitHubService {
         return {
           ...base,
           type: 'pr',
-          title: `${verb} PR #${prNumber}`,
+          title: `${verb} PR #${prNumber}${prTitle ? `: ${prTitle}` : ''}`,
           description: prTitle,
           url: event.payload.pull_request?.html_url || base.url,
           payload: event.payload
@@ -785,7 +786,7 @@ export type {
 
 export interface GitHubEventDetail {
   id: string;
-  type: 'commit' | 'pr' | 'issue' | 'review' | 'release' | 'fork' | 'star' | 'create' | 'unknown';
+  type: 'commit' | 'pr' | 'issue' | 'review' | 'release' | 'fork' | 'star' | 'create' | 'delete' | 'unknown';
   title: string;
   description: string;
   url: string;

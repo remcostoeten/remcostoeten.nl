@@ -72,7 +72,7 @@ export function TableOfContents() {
     <div className="2xl:hidden mb-6">
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="w-full flex items-center justify-between p-3 bg-muted/50 border border-border rounded-lg hover:bg-muted transition-colors"
+        className="w-full flex items-center justify-between p-3 bg-muted/50 border border-border rounded-none AAAA hover:bg-muted transition-colors"
         aria-expanded={isMobileOpen}
       >
         <span className="flex items-center gap-2 text-sm font-medium">
@@ -87,7 +87,7 @@ export function TableOfContents() {
       </button>
 
       {isMobileOpen && (
-        <div className="mt-2 p-3 bg-background border border-border rounded-lg">
+        <div className="mt-2 p-3 bg-background border border-border rounded-none AAAA">
           <ul className="space-y-1.5 text-sm">
             {headings.map((heading) => (
               <li
@@ -98,8 +98,8 @@ export function TableOfContents() {
                   href={`#${heading.id}`}
                   onClick={() => setIsMobileOpen(false)}
                   className={`block py-1.5 px-2 rounded transition-all duration-200 ${activeId === heading.id
-                      ? 'text-lime-600 dark:text-lime-400 font-semibold bg-lime-500/10 dark:bg-lime-500/5 border-l-2 border-lime-600 dark:border-lime-400 pl-1.5'
-                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900/50'
+                    ? 'text-lime-600 dark:text-lime-400 font-semibold bg-lime-500/10 dark:bg-lime-500/5 border-l-2 border-lime-600 dark:border-lime-400 pl-1.5'
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900/50'
                     }`}
                 >
                   {heading.text}
@@ -129,8 +129,8 @@ export function TableOfContents() {
                   <Link
                     href={`#${heading.id}`}
                     className={`block py-1.5 px-2 rounded transition-all duration-200 ${activeId === heading.id
-                        ? 'text-lime-600 dark:text-lime-400 font-semibold bg-lime-500/10 dark:bg-lime-500/5 border-l-2 border-lime-600 dark:border-lime-400 pl-1.5'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900/50'
+                      ? 'text-lime-600 dark:text-lime-400 font-semibold bg-lime-500/10 dark:bg-lime-500/5 border-l-2 border-lime-600 dark:border-lime-400 pl-1.5'
+                      : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900/50'
                       }`}
                   >
                     {heading.text}

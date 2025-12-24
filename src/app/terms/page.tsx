@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import TermsContent from './terms-content'
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 }
 
 export default function TermsPage() {
-  return <TermsContent />
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <TermsContent />
+    </Suspense>
+  )
 }

@@ -276,7 +276,7 @@ export function useLatestCommit(owner: string, repo: string) {
 
 export interface GitHubEventDetail {
     id: string;
-    type: 'commit' | 'pr' | 'issue' | 'review' | 'release' | 'fork' | 'star' | 'create' | 'unknown';
+    type: 'commit' | 'pr' | 'issue' | 'review' | 'release' | 'fork' | 'star' | 'create' | 'delete' | 'unknown';
     title: string;
     description: string;
     url: string;

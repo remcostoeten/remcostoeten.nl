@@ -1,12 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useMemo, useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Cookie, Database, Eye, Mail, Shield, Users } from 'lucide-react'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
 import { LegalHeader } from '../legal/legal-header'
 import { LegalLanguage } from '../legal/legal-language'
-import { buildLanguageHref, readLanguage, readStoredLanguage, storeLanguage } from '../legal/language-utils'
 
 interface InfoSection {
   title: string
@@ -247,17 +246,27 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 }
 
 export default function PrivacyContent() {
-  const router = useRouter()
   const searchParams = useSearchParams()
-  const pathname = usePathname()
+  const [language, setLanguage] = useState<LegalLanguage>('en')
 
-  const [language, setLanguage] = useState<LegalLanguage>(function initializeLanguage() {
-    const paramLanguage = readLanguage(searchParams)
-    if (paramLanguage) return paramLanguage
-    const storedLanguage = readStoredLanguage()
-    if (storedLanguage) return storedLanguage
-    return 'en'
-  })
+  useEffect(() => {
+    const langParam = searchParams.get('lang')
+    if (langParam === 'nl') {
+      setLanguage('nl')
+    } else {
+      setLanguage('en')
+    }
+  }, [searchParams])
+
+  const lastUpdated = useMemo(function deriveDate() {
+    return new Date().toLocaleDateString(language === 'nl' ? 'nl-NL' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }, [language])
+
+  const copy = privacyCopy[language]
 
   useEffect(function syncLanguageWithUrl() {
     const paramLanguage = readLanguage(searchParams)
@@ -290,7 +299,7 @@ export default function PrivacyContent() {
 
   return (
     <div className="space-y-6">
-      <LegalHeader language={language} onLanguageChange={handleLanguageChange} />
+      <LegalHeader language={language} onLanguageChange={setLanguage} />
 
       <header className="px-4 pt-2 md:px-5">
         <h1 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
@@ -427,17 +436,6 @@ export default function PrivacyContent() {
       </div>
     </div>
   )
-
-  function handleLanguageChange(nextLanguage: LegalLanguage) {
-    setLanguage(nextLanguage)
-    storeLanguage(nextLanguage)
-    updateLanguage(nextLanguage)
-  }
-
-  function updateLanguage(nextLanguage: LegalLanguage) {
-    const href = buildLanguageHref(pathname, searchParams, nextLanguage)
-    router.replace(href, { scroll: false })
-  }
 }
 
 function mapInfoIcon(title: string) {
