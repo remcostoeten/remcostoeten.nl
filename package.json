@@ -41,7 +41,7 @@
     "next": "16",
     "next-mdx-remote": "^5.0.0",
     "postcss": "^8.4.35",
-    "posthog-js": "^1.309.1",
+    "posthog-js": "^1.310.1",
     "posthog-node": "^5.17.4",
     "react": "19",
     "react-dom": "19",

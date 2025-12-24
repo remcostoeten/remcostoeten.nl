@@ -45,7 +45,7 @@ export function ContactOverview({ data }: { data: ContactStats }) {
                     <div className="space-y-4">
                         <h4 className="text-sm font-medium text-muted-foreground">Recent Submissions</h4>
                         {data.submissions.slice(0, 5).map((sub) => (
-                            <div key={sub.id} className="flex items-start gap-3 p-3 rounded-lg border bg-muted/50">
+                            <div key={sub.id} className="flex items-start gap-3 p-3 rounded-none AAAA border bg-muted/50">
                                 <div className="shrink-0 mt-0.5">
                                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                                 </div>

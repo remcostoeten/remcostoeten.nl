@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
-import { GraphSkeleton } from '@/components/ui/skeletons';
 import { AnimatedNumber } from '../../ui/animated-number';
 
 interface ActivityDay {
@@ -52,6 +51,14 @@ export function ActivityContributionGraph({
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const graphRef = useRef<HTMLDivElement>(null);
+
+  // Mobile optimization: verify if touch device to disable tooltips
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsTouchDevice(window.matchMedia('(pointer: coarse)').matches);
+    }
+  }, []);
 
   const handleDragMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
@@ -107,8 +114,6 @@ export function ActivityContributionGraph({
 
 
   const activityData = useMemo(() => {
-    if (githubLoading || loading) return [];
-
     const now = new Date();
     const isCurrentYear = year === now.getFullYear();
 
@@ -182,22 +187,22 @@ export function ActivityContributionGraph({
   }, [githubContributions, tracks, year, loading, githubLoading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
-    // Dark theme colors using brand color variants
+    // Dark theme colors using brand color variants - more distinct shades
     const darkColors = [
-      'bg-[#0d1117]', // Very dark background (level 0 - no activity)
-      'bg-brand-500/20', // Very light brand tint (level 1)
-      'bg-brand-500/40', // Light brand tint (level 2) 
-      'bg-brand-500/60', // Medium brand tint (level 3)
-      'bg-brand-500' // Full brand color (level 4 - highest activity)
+      'bg-[#0d1117]', // Level 0: Same as background (invisible/empty)
+      'bg-brand-500/30', // Level 1: Subtle but visible
+      'bg-brand-500/50', // Level 2: Clearly active
+      'bg-brand-500/75', // Level 3: High activity
+      'bg-brand-500'     // Level 4: Peak activity (solid)
     ];
 
     // Light theme colors using brand color variants
     const lightColors = [
-      'bg-gray-200/50', // Very light gray (level 0 - no activity)
-      'bg-brand-500/15', // Very light brand tint (level 1)
-      'bg-brand-500/30', // Light brand tint (level 2)
-      'bg-brand-500/45', // Medium brand tint (level 3)
-      'bg-brand-500/70' // Strong brand tint (level 4 - highest activity)
+      'bg-gray-100',      // Level 0
+      'bg-brand-500/30',  // Level 1
+      'bg-brand-500/50',  // Level 2
+      'bg-brand-500/75',  // Level 3
+      'bg-brand-500'      // Level 4
     ];
 
     // Check if we're in dark theme by checking document class
@@ -207,6 +212,7 @@ export function ActivityContributionGraph({
   };
 
   const handleMouseEnter = (e: React.MouseEvent, day: ActivityDay) => {
+    if (isTouchDevice) return; // Disable hover tooltips on touch devices
     const rect = e.currentTarget.getBoundingClientRect();
     setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
     setHoveredDay(day);
@@ -260,6 +266,27 @@ export function ActivityContributionGraph({
     return weeksArray;
   }, [activityData, year]);
 
+  // "True Spiral" Animation Props (Option #5)
+  const getAnimationProps = (weekIndex: number, dayIndex: number, totalWeeks: number, totalDays: number = 7) => {
+    const centerX = totalWeeks / 2;
+    const centerY = totalDays / 2;
+    const dx = weekIndex - centerX;
+    const dy = dayIndex - centerY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // True Spiral (dist + angle)
+    let angle = Math.atan2(dy, dx);
+    if (angle < 0) angle += 2 * Math.PI;
+
+    return {
+      delay: (dist * 0.03) + (angle * 0.08),
+      duration: 0.4,
+      type: "spring",
+      stiffness: 200,
+      damping: 20
+    };
+  };
+
   useLayoutEffect(() => {
     if (!loading && !githubLoading && scrollContainerRef.current) {
       const now = new Date();
@@ -281,7 +308,7 @@ export function ActivityContributionGraph({
 
       scrollContainerRef.current.scrollLeft = scrollPosition;
 
-      setTimeout(() => setIsVisible(true), 100);
+      setTimeout(() => setIsVisible(true), 0);
     }
   }, [loading, githubLoading, year, weeks]);
 
@@ -309,12 +336,6 @@ export function ActivityContributionGraph({
   const totalContributions = useMemo(() => {
     return activityData.reduce((sum, day) => sum + day.githubCount, 0);
   }, [activityData]);
-
-
-
-  if (loading || githubLoading) {
-    return <GraphSkeleton className={className} />;
-  }
 
   return (
     <div className={`space-y-2 ${className}`}>
@@ -348,16 +369,25 @@ export function ActivityContributionGraph({
             })}
           </div>
 
-          <div className="flex gap-0">
-            <div className="flex flex-col gap-[3px] pr-1 text-[9px] text-muted-foreground w-7">
-              {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((day, i) => (
-                <div key={i} className="h-[10px] flex items-center justify-end pr-1">
-                  {day}
+          <div className="flex gap-0 relative">
+            {/* Background Skeleton Grid - Populated with Fake Data */}
+            <div className={`flex gap-[3px] absolute inset-0 z-0 pointer-events-none transition-opacity duration-500 ${isVisible ? 'opacity-0' : 'opacity-100'}`}>
+              {weeks.map((week, weekIndex) => (
+                <div key={`skel-week-${weekIndex}`} className="flex flex-col gap-[3px]">
+                  {week.map((day, dayIndex) => {
+                    return (
+                      <div
+                        key={`skel-day-${dayIndex}`}
+                        className="w-[10px] h-[10px] rounded-sm bg-neutral-200 dark:bg-white/5 animate-pulse"
+                      />
+                    );
+                  })}
                 </div>
               ))}
             </div>
 
-            <div className="flex gap-[3px]">
+            {/* Foreground Data Grid */}
+            <div className="flex gap-[3px] relative z-10">
               {weeks.map((week, weekIndex) => (
                 <div key={weekIndex} className="flex flex-col gap-[3px]">
                   {week.map((day, dayIndex) => {
@@ -365,20 +395,27 @@ export function ActivityContributionGraph({
                       return <div key={dayIndex} className="w-[10px] h-[10px]" />;
                     }
 
+                    const showData = !loading && !githubLoading && isVisible;
+                    const animProps = getAnimationProps(weekIndex, dayIndex, weeks.length);
+
                     return (
                       <motion.div
                         key={dayIndex}
                         className={`w-[10px] h-[10px] rounded-sm cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-brand-500/50 hover:shadow-[0_0_8px_hsl(var(--brand-500)/0.5)] ${getColorForLevel(day.level)}`}
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={isVisible ? { opacity: 1, scale: 1 } : {}}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={showData ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0 }}
                         transition={{
-                          delay: Math.random() * 0.8,
-                          duration: 0.2,
-                          ease: [0.25, 0.46, 0.45, 0.94]
+                          delay: animProps.delay,
+                          duration: animProps.duration,
+                          type: animProps.type,
+                          stiffness: (animProps as any).stiffness,
+                          damping: (animProps as any).damping,
+                          ease: (animProps as any).ease,
                         }}
                         onMouseEnter={(e) => handleMouseEnter(e, day)}
                         onMouseLeave={handleMouseLeave}
-                        whileHover={{ scale: 1.3, zIndex: 10 }}
+                        onClick={() => setSelectedDay(day)}
+                        whileHover={{ scale: 1.3, zIndex: 20 }}
                       />
                     );
                   })}
@@ -394,7 +431,7 @@ export function ActivityContributionGraph({
           className="flex items-center justify-between text-[10px] text-muted-foreground"
           initial={{ opacity: 0 }}
           animate={isVisible ? { opacity: 1 } : {}}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0 }}
         >
           <div className="flex items-center gap-2">
             <span>Less</span>
@@ -406,7 +443,7 @@ export function ActivityContributionGraph({
             <span>More</span>
           </div>
           <span className="text-muted-foreground/80">
-            <AnimatedNumber value={totalContributions.toLocaleString()} duration={800} group="contributions" priority={1} className="text-foreground font-medium" /> contributions in <AnimatedNumber value={year} duration={600} group="contributions" priority={2} />
+            <AnimatedNumber value={totalContributions.toLocaleString()} duration={800} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber value={year} duration={600} animateOnMount />
           </span>
         </motion.div>
       )}
@@ -419,7 +456,7 @@ export function ActivityContributionGraph({
           animate={{ opacity: 1 }}
         >
           <motion.div
-            className="bg-card border border-border rounded-lg w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
+            className="bg-card border border-border rounded-none AAAA w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -537,7 +574,7 @@ export function ActivityContributionGraph({
                           ))}
                           {projectCommits.length > 10 && (
                             <p className="text-xs text-muted-foreground pl-3 py-1">
-                              +{projectCommits.length - 10} more...
+                              +{projectCommits.length - 10} more tracks...
                             </p>
                           )}
                         </div>
@@ -561,7 +598,7 @@ export function ActivityContributionGraph({
                         href={track.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-xs text-foreground/70 hover:text-green-500 transition-colors"
+                        className="flex items-center gap-2 text-xs text-foreground/70 hover:text-brand-500 transition-colors"
                       >
                         <span className="truncate">{track.name}</span>
                         <span className="text-muted-foreground shrink-0">by {track.artist}</span>

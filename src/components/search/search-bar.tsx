@@ -33,11 +33,11 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
   const listboxId = `${id}-search-results`
   const getOptionId = (index: number) => `${id}-search-option-${index}`
 
-    useEffect(() => {
+  useEffect(() => {
     setAllPosts(posts)
   }, [posts])
 
-    useEffect(() => {
+  useEffect(() => {
     if (!query.trim()) {
       setResults([])
       setIsOpen(false)
@@ -48,7 +48,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
 
     setIsLoading(true)
 
-      const searchResults = allPosts.filter(post => {
+    const searchResults = allPosts.filter(post => {
       const searchTerm = query.toLowerCase()
       const title = post.title.toLowerCase()
       const summary = post.summary?.toLowerCase() || ''
@@ -69,7 +69,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
     setIsLoading(false)
   }, [query, allPosts])
 
-    useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false)
@@ -93,7 +93,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
   }, [])
 
   const handleResultClick = (slug: string, title?: string) => {
-      posthog.capture('blog_search_result_clicked', {
+    posthog.capture('blog_search_result_clicked', {
       slug: slug,
       title: title,
       query: query,
@@ -109,7 +109,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-        posthog.capture('blog_search_performed', {
+    posthog.capture('blog_search_performed', {
       query: query,
       results_count: results.length,
       has_results: results.length > 0,
@@ -184,7 +184,7 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full pl-10 pr-10 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+            className="w-full pl-10 pr-10 py-2 bg-background border border-border rounded-none AAAA focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
             role="combobox"
             aria-autocomplete="list"
             aria-expanded={isOpen}
@@ -213,13 +213,13 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
         </div>
       </form>
 
-        {isOpen && (
+      {isOpen && (
         <div
           id={listboxId}
           role="listbox"
           aria-label="Search results"
           aria-busy={isLoading}
-          className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto"
+          className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-none AAAA shadow-lg z-50 max-h-80 overflow-y-auto"
         >
           {isLoading ? (
             <div className="p-4 text-center text-sm text-muted-foreground" role="status" aria-live="polite">
@@ -239,9 +239,8 @@ export function SearchBar({ placeholder = "Search posts...", className = "", pos
                   onMouseEnter={() => setActiveIndex(index)}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => handleResultClick(result.slug, result.title)}
-                  className={`w-full px-4 py-3 text-left cursor-pointer transition-colors ${
-                    activeIndex === index ? 'bg-muted/50' : 'hover:bg-muted/50'
-                  }`}
+                  className={`w-full px-4 py-3 text-left cursor-pointer transition-colors ${activeIndex === index ? 'bg-muted/50' : 'hover:bg-muted/50'
+                    }`}
                 >
                   <div className="font-medium text-foreground">{result.title}</div>
                   {result.summary && (

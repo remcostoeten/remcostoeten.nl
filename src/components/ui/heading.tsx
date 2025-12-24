@@ -77,7 +77,6 @@ export function Heading({
         'full-width-header',
         noMargin && '!mb-0',
         customBackground,
-        animated && 'animate-pattern-flow',
         hueOverlay && 'hue-overlay',
         className
     ].filter(Boolean).join(' ');

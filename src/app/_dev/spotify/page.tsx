@@ -124,7 +124,7 @@ function SpotifyDevContent() {
                                 Add this to your <code className="text-zinc-300">.env</code>{' '}
                                 file:
                             </p>
-                            <pre className="text-sm text-emerald-400 bg-zinc-950 p-3 rounded-lg overflow-x-auto">
+                            <pre className="text-sm text-emerald-400 bg-zinc-950 p-3 rounded-none AAAA overflow-x-auto">
                                 SPOTIFY_REFRESH_TOKEN={tokens.refresh_token}
                             </pre>
                         </div>
@@ -165,7 +165,7 @@ function SpotifyDevContent() {
                             <button
                                 onClick={handleGetAuthUrl}
                                 disabled={loading}
-                                className="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-black font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-4 py-2 rounded-none AAAA bg-green-500 hover:bg-green-600 text-black font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Loading...' : 'Get Authorization URL'}
                             </button>
@@ -190,7 +190,7 @@ function SpotifyDevContent() {
 
                                 <button
                                     onClick={handleStartAuth}
-                                    className="px-4 py-2 rounded-lg bg-[#1DB954] hover:bg-[#1ed760] text-black font-medium transition-colors flex items-center gap-2"
+                                    className="px-4 py-2 rounded-none AAAA bg-[#1DB954] hover:bg-[#1ed760] text-black font-medium transition-colors flex items-center gap-2"
                                 >
                                     <SpotifyIcon />
                                     Connect Spotify
@@ -254,11 +254,11 @@ function TokenField({
                     type="text"
                     value={value}
                     readOnly
-                    className="flex-1 px-3 py-2 text-sm bg-zinc-950 border border-zinc-800 rounded-lg text-zinc-300 font-mono"
+                    className="flex-1 px-3 py-2 text-sm bg-zinc-950 border border-zinc-800 rounded-none AAAA text-zinc-300 font-mono"
                 />
                 <button
                     onClick={onCopy}
-                    className="px-3 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm transition-colors"
+                    className="px-3 py-2 rounded-none AAAA bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-sm transition-colors"
                 >
                     {copied ? '✓ Copied' : 'Copy'}
                 </button>

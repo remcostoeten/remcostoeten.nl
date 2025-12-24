@@ -118,7 +118,7 @@ export function SpotifyApiExplorer() {
         <div className="my-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 overflow-hidden">
             <div className="px-6 py-4 border-b border-zinc-800 bg-zinc-900 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-none AAAA bg-orange-500/10 flex items-center justify-center">
                         <TerminalIcon className="w-4 h-4 text-orange-500" />
                     </div>
                     <div>
@@ -253,9 +253,9 @@ export function SpotifyApiExplorer() {
                         <div className="absolute top-3 right-3 z-10">
                             <button
                                 onClick={handleCopyResponse}
-                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${copied
-                                        ? 'bg-green-500 text-black'
-                                        : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
+                                className={`px-3 py-1.5 rounded-none AAAA text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${copied
+                                    ? 'bg-green-500 text-black'
+                                    : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
                                     }`}
                             >
                                 {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

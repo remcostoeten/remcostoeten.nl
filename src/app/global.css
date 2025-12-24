@@ -688,13 +688,8 @@
 	margin-right: -50vw;
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
+	border-bottom: 1px solid hsl(var(--border));
 	background-color: transparent;
-	/* Reusing the subtle pattern from screen-border but filling the area */
-	background-image: repeating-linear-gradient(-45deg,
-			transparent,
-			transparent 2px,
-			hsl(var(--foreground) / 0.03) 2px,
-			hsl(var(--foreground) / 0.03) 3px);
 	height: 48px;
 	/* Fixed height as requested */
 	display: flex;
@@ -749,34 +744,39 @@
 
 /* Utility class to hide scrollbars */
 .scrollbar-hide {
-	-ms-overflow-style: none;  /* Internet Explorer 10+ */
-	scrollbar-width: none;  /* Firefox */
+	-ms-overflow-style: none;
+	/* Internet Explorer 10+ */
+	scrollbar-width: none;
+	/* Firefox */
 }
+
 .scrollbar-hide::-webkit-scrollbar {
-	display: none;  /* Safari and Chrome */
+	display: none;
+	/* Safari and Chrome */
 }
+
 @keyframes pattern-flow {
 	0% {
 		background-position: 0 0;
 	}
+
 	100% {
-		background-position: 42.4264px 42.4264px;
+		background-position: -42.4264px -42.4264px;
 	}
 }
 
 .animate-pattern-flow {
-	animation: pattern-flow 2s linear infinite;
+	animation: pattern-flow 60s linear infinite;
 }
 
 .hue-overlay::before {
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(90deg, 
-		hsl(var(--brand-500) / 0.1),
-		hsl(var(--primary) / 0.1),
-		hsl(var(--brand-500) / 0.1)
-	);
+	background: linear-gradient(90deg,
+			hsl(var(--brand-500) / 0.1),
+			hsl(var(--primary) / 0.1),
+			hsl(var(--brand-500) / 0.1));
 	background-size: 200% 100%;
 	animation: tech-shimmer 8s linear infinite;
 	pointer-events: none;
@@ -784,6 +784,6 @@
 }
 
 .header-content-container {
-    position: relative;
-    z-index: 1;
+	position: relative;
+	z-index: 1;
 }

@@ -264,9 +264,9 @@ function getActivityMetric(activity: GitHubEventDetail): { label: string; value:
 function Equalizer({ className = '' }: { className?: string }) {
     return (
         <span className={`inline-flex items-end gap-[2px] h-3 mx-1 ${className}`} aria-hidden='true'>
-            <span className='w-[2px] bg-green-500 rounded-none animate-[music-bar_0.8s_ease-in-out_infinite]' />
-            <span className='w-[2px] bg-green-500 rounded-none animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]' />
-            <span className='w-[2px] bg-green-500 rounded-none animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]' />
+            <span className='w-[2px] bg-brand-500 rounded-none animate-[music-bar_0.8s_ease-in-out_infinite]' />
+            <span className='w-[2px] bg-brand-500 rounded-none animate-[music-bar_1.2s_ease-in-out_infinite_0.1s]' />
+            <span className='w-[2px] bg-brand-500 rounded-none animate-[music-bar_0.5s_ease-in-out_infinite_0.2s]' />
         </span>
     );
 }
@@ -286,14 +286,14 @@ function LiveGlow({ progress }: { progress: number }) {
 
             {/* Progress line */}
             <motion.div
-                className="absolute inset-y-0 left-0 bg-green-500/80 shadow-[0_0_8px_rgba(34,197,94,0.4)]"
+                className="absolute inset-y-0 left-0 bg-brand-500/80 shadow-[0_0_8px_hsl(var(--brand-500)/0.4)]"
                 style={{ width: `${progress}%` }}
                 layout
             />
 
             {/* Pulsing glow point at the head of the progress */}
             <motion.div
-                className="absolute inset-y-0 bg-green-400 blur-[2px]"
+                className="absolute inset-y-0 bg-brand-400 blur-[2px]"
                 animate={{
                     opacity: [0.4, 1, 0.4],
                     left: `${progress}%`
@@ -310,7 +310,7 @@ function LiveGlow({ progress }: { progress: number }) {
 
             {/* Soft upward fade following progress */}
             <motion.div
-                className="absolute bottom-0 left-0 h-4 bg-gradient-to-t from-green-500/10 to-transparent"
+                className="absolute bottom-0 left-0 h-4 bg-gradient-to-t from-brand-500/10 to-transparent"
                 style={{ width: `${progress}%` }}
             />
         </motion.div>
@@ -625,11 +625,11 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                 variants={wordVariants}
                                                 className="text-muted-foreground/70 inline-flex items-center gap-1.5"
                                             >
-                                                listening to
-                                                <div className="flex items-center gap-1 bg-green-500/10 px-1.5 py-0.5 rounded-none border border-green-500/20">
-                                                    <span className="text-[10px] font-bold text-green-500 tracking-wider">LIVE</span>
+                                                <div className="flex items-center gap-1 bg-brand-500/10 px-1.5 py-0.5 rounded-none border border-brand-500/20">
+                                                    <span className="text-[10px] font-bold text-brand-500 tracking-wider">CURRENTLY</span>
                                                     <Equalizer className="translate-y-[-1px]" />
                                                 </div>
+                                                listening to
                                             </motion.span>
 
                                             {/* Song name */}
@@ -639,7 +639,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     href={currentTrack.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-green-500/10 text-green-500 border border-green-500/20 max-w-[200px]"
+                                                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none font-medium hover:opacity-80 transition-opacity cursor-pointer bg-brand-500/10 text-brand-500 border border-brand-500/20 max-w-[200px]"
                                                 >
                                                     <Music className="size-3 shrink-0" />
                                                     <span className="truncate">{currentTrack.name}</span>
@@ -735,7 +735,8 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                         {metric.icon}
                                                     </span>
                                                 )}
-                                                <span className="text-muted-foreground/30 uppercase tracking-wide text-[9px] font-medium shrink-0 leading-none">
+                                                <span className="text-muted-foreground/30 translate-y-[2px] uppercase tracking-wide text-[9px] font-medium shrink-0 leading-none">
+
                                                     {metric.label}:
                                                 </span>
                                                 <span className="text-muted-foreground/50 text-xs truncate leading-none">

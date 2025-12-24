@@ -119,7 +119,7 @@ export function WorkExperience({
           <div className="flex justify-center py-4">
             <button
               onClick={() => setShowAll(!showAll)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-lg hover:bg-muted/50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none AAAA hover:bg-muted/50 transition-colors"
             >
               <span
                 className="inline-flex transition-transform duration-300"
@@ -162,7 +162,7 @@ export function ExperienceItem({
     <div className="space-y-4 py-4">
       <div className="not-prose flex items-center gap-3">
         <div className="flex size-6 shrink-0 items-center justify-center" aria-hidden>
-          <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
+          <div className="flex size-6 shrink-0 items-center justify-center rounded-none AAAA bg-primary/10 text-primary border border-primary/20">
             <span className="text-xs font-semibold">{initial}</span>
           </div>
         </div>
@@ -253,7 +253,7 @@ export function ExperiencePositionItem({
         <CollapsibleTrigger
           className={cn(
             "group/experience not-prose block w-full text-left select-none accordion-smooth",
-            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-7 before:rounded-lg before:accordion-smooth hover:before:bg-muted/50",
+            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-7 before:rounded-none AAAA before:accordion-smooth hover:before:bg-muted/50",
           )}
         >
           <div className="relative z-1 mb-1 flex items-center gap-3">
@@ -331,7 +331,7 @@ function Skill({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-lg border bg-muted/50 px-1.5 py-0.5 font-mono text-xs text-muted-foreground",
+        "inline-flex items-center rounded-none AAAA border bg-muted/50 px-1.5 py-0.5 font-mono text-xs text-muted-foreground",
         className,
       )}
       {...props}

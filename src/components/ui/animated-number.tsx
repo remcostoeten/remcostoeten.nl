@@ -181,6 +181,8 @@ type Props = {
    * Useful for hero elements that should be partially animated on load.
    */
   initialProgress?: number
+  /** If true, starts animation on mount without waiting for viewport intersection */
+  animateOnMount?: boolean
 }
 
 export function AnimatedNumber({
@@ -192,6 +194,7 @@ export function AnimatedNumber({
   group,
   priority,
   initialProgress = 0,
+  animateOnMount = false,
 }: Props) {
   const [isVisible, setIsVisible] = useState(immediate);
   const [isClient, setIsClient] = useState(false);
@@ -230,7 +233,7 @@ export function AnimatedNumber({
 
   // Legacy visibility triggering
   useEffect(() => {
-    if (!useNewSystem && isInView && !immediate && !shouldReduceMotion) {
+    if (!useNewSystem && (isInView || animateOnMount) && !immediate && !shouldReduceMotion) {
       const delay = getStaggerDelay(id);
       setTimeout(() => {
         setIsVisible(true);

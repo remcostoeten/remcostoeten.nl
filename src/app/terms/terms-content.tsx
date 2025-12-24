@@ -290,7 +290,7 @@ export default function TermsContent() {
                 </p>
               )
             })}
-            <p className="rounded-lg border border-border/50 bg-muted/30 p-3 text-xs text-foreground">
+            <p className="rounded-none AAAA border border-border/50 bg-muted/30 p-3 text-xs text-foreground">
               {copy.license}
             </p>
           </div>

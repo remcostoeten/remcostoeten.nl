@@ -59,7 +59,7 @@ export function ResumeDrawer() {
                     <div className="flex-1 bg-muted/20 p-4 h-full overflow-hidden">
                         <iframe
                             src="/remco-stoeten-frontend-engineer-resume.pdf"
-                            className="w-full h-full rounded-lg border border-border bg-white"
+                            className="w-full h-full rounded-none AAAA border border-border bg-white"
                             title="Resume Protocol"
                         />
                     </div>

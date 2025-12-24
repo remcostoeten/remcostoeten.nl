@@ -259,7 +259,7 @@ export default function HeadingShowcasePage() {
               <Heading
                 title="Styled Heading"
                 icon={Star}
-                className="rounded-lg"
+                className="rounded-none AAAA"
               />
             </div>
           </div>
