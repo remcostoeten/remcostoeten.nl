@@ -5,6 +5,8 @@ import { useRef, useState, useEffect } from 'react'
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { motion, useInView } from 'framer-motion'
 
+import { getDateParts, readMinutes } from '@/lib/blog-format'
+
 import { AnimatedNumber } from '../ui/animated-number'
 
 export function PostCountHeader({ count }: { count: number }) {
@@ -45,10 +47,15 @@ function BlogCard({ post, index }: Props) {
   // Optimized duration calculations - capped and more consistent
   const indexDuration = Math.min(600 + (index * 100), 1200)
 
-  const dateObj = new Date(post.metadata.publishedAt)
-  const dayNumber = dateObj.getDate()
-  const monthYear = dateObj.toLocaleDateString('en-us', { month: 'long', year: 'numeric' })
+  const dateParts = getDateParts(post.metadata.publishedAt)
+  const readTimeMinutes = readMinutes(post.metadata.readTime || '')
   const dateDuration = Math.min(800 + (index * 30), 1000)
+  const allTags = [
+    ...(post.metadata.categories || []),
+    ...(post.metadata.tags || []),
+    ...(post.metadata.topics || [])
+  ]
+  const extraTags = Math.max(allTags.length - 3, 0)
 
   return (
     <li className="block p-0 m-0">
@@ -97,30 +104,23 @@ function BlogCard({ post, index }: Props) {
                   </p>
                 )}
 
-                {(() => {
-                  const allTags = [
-                    ...(post.metadata.categories || []),
-                    ...(post.metadata.tags || []),
-                    ...(post.metadata.topics || [])
-                  ]
-                  return allTags.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5 mt-3" aria-label="Tags">
-                      {allTags.slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700/50 hover:bg-neutral-50 dark:hover:bg-neutral-700/80 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-default"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {allTags.length > 3 && (
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-500 border border-neutral-300 dark:border-neutral-800">
-                          +{allTags.length - 3}
-                        </span>
-                      )}
-                    </div>
-                  ) : null
-                })()}
+                {allTags.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 mt-3" aria-label="Tags">
+                    {allTags.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-800/80 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700/50 hover:bg-neutral-50 dark:hover:bg-neutral-700/80 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-default"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {extraTags > 0 && (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-500 border border-neutral-300 dark:border-neutral-800">
+                        <AnimatedNumber value={`+${extraTags}`} duration={indexDuration} />
+                      </span>
+                    )}
+                  </div>
+                ) : null}
 
                 <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500 dark:text-neutral-500">
                   <time dateTime={post.metadata.publishedAt} className="tabular-nums">
@@ -131,7 +131,7 @@ function BlogCard({ post, index }: Props) {
                       <span className="text-neutral-300 dark:text-neutral-700">•</span>
                       <span>
                         <AnimatedNumber
-                          value={parseInt(post.metadata.readTime)}
+                          value={readTimeMinutes}
                           duration={dateDuration}
                           animateOnMount
                         /> min read
