@@ -11,37 +11,51 @@ interface BreadcrumbItem {
   isCurrentPage: boolean
 }
 
+interface BreadcrumbProps {
+  params?: Record<string, string>
+  showRootIcon?: boolean
+  rootLabel?: string
+}
+
+function buildHref(path: string, params?: Record<string, string>) {
+  if (!params) return path
+  const query = new URLSearchParams(params).toString()
+  return query.length > 0 ? `${path}?${query}` : path
+}
+
 function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
   const segments = pathname.split('/').filter(Boolean)
-  
+
   if (segments.length === 0) return []
-  
+
   const breadcrumbs: BreadcrumbItem[] = []
   let currentPath = ''
-  
-  segments.forEach((segment, index) => {
+
+  segments.forEach(function build(segment, index) {
     currentPath += `/${segment}`
     const isLast = index === segments.length - 1
-    
+
     let label = decodeURIComponent(segment)
       .replace(/-/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase())
-    
+      .replace(/\b\w/g, function upper(character) {
+        return character.toUpperCase()
+      })
+
     if (segment === 'blog') label = 'Blog'
     if (segment === 'categories') label = 'Categories'
     if (segment === 'topics') label = 'Topics'
-    
+
     breadcrumbs.push({
       label,
       href: currentPath,
-      isCurrentPage: isLast
+      isCurrentPage: isLast,
     })
   })
-  
+
   return breadcrumbs
 }
 
-export function Breadcrumbs() {
+export function Breadcrumbs({ params, showRootIcon = true, rootLabel }: BreadcrumbProps) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const breadcrumbs = generateBreadcrumbs(pathname)
@@ -53,20 +67,22 @@ export function Breadcrumbs() {
   if (pathname === '/' || breadcrumbs.length === 0) {
     return null
   }
-  
+
   return (
-    <nav 
-      aria-label="Breadcrumb" 
+    <nav
+      aria-label="Breadcrumb"
       className="mb-6"
     >
-      <ol className="flex items-center gap-1.5 text-sm text-muted-foreground flex-wrap">
+      <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
         <li className="flex items-center">
-          <Link 
-            href="/"
+          <Link
+            href={buildHref('/', params)}
             className="flex items-center gap-1 hover:text-foreground transition-colors"
           >
-            <Home className="w-3.5 h-3.5" />
-            <span className="sr-only">Home</span>
+            {showRootIcon ? (
+              <Home className="w-3.5 h-3.5" aria-hidden="true" />
+            ) : null}
+            <span>{rootLabel ?? 'Home'}</span>
           </Link>
         </li>
         

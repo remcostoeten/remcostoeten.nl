@@ -264,6 +264,35 @@ export default function TermsContent() {
 
   const copy = termsCopy[language]
 
+  useEffect(function syncLanguageWithUrl() {
+    const paramLanguage = readLanguage(searchParams)
+    if (paramLanguage && paramLanguage !== language) {
+      setLanguage(paramLanguage)
+      storeLanguage(paramLanguage)
+      return
+    }
+
+    if (!paramLanguage) {
+      const storedLanguage = readStoredLanguage()
+      if (storedLanguage && storedLanguage !== language) {
+        setLanguage(storedLanguage)
+        updateLanguage(storedLanguage)
+      } else if (storedLanguage) {
+        updateLanguage(storedLanguage)
+      }
+    }
+  }, [searchParams, language])
+
+  const lastUpdated = useMemo(function deriveDate() {
+    return new Date().toLocaleDateString(language === 'nl' ? 'nl-NL' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }, [language])
+
+  const copy = termsCopy[language]
+
   return (
     <div className="space-y-6">
       <LegalHeader language={language} onLanguageChange={setLanguage} />
