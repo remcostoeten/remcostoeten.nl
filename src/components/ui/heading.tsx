@@ -71,9 +71,18 @@ export function Heading({
 
     const bgClasses = bgDirectionClasses[bgDirection];
     const colorClasses = colorPatternClasses[colorPattern];
-    const customBackground = backgroundColor || (bgDirection !== 'default' ? `${bgClasses} ${colorClasses.from} ${colorClasses.via} ${colorClasses.to}` : '');
+    // Build the background: if a custom color is supplied we use it directly;
+    // otherwise we compose a gradient/pattern based on direction and color scheme.
+    const customBackground = backgroundColor
+        ? backgroundColor
+        : bgDirection !== 'default'
+            ? `${bgClasses} ${colorClasses.from} ${colorClasses.via} ${colorClasses.to}`
+            : '';
 
+    // Header should always span the full viewport width and hide any overflow.
     const headerClasses = [
+        'w-full',               // ensure full‑width
+        'overflow-hidden',      // prevent inner overflow
         'full-width-header',
         noMargin && '!mb-0',
         customBackground,
@@ -81,13 +90,17 @@ export function Heading({
         className
     ].filter(Boolean).join(' ');
 
+    // Container holds the actual content; we centre it and limit its max width.
     const containerClasses = [
         'header-content-container',
         'flex',
         'items-center',
         'justify-between',
         'header-content-container--with-padding',
-        padding || ''
+        padding || '',
+        'max-w-screen-xl',   // constrain content width
+        'mx-auto',           // centre horizontally
+        'px-4'               // default horizontal padding if none provided
     ].filter(Boolean).join(' ');
 
     const customStyle: React.CSSProperties = borderColor ? {

@@ -1,3 +1,4 @@
+import { ReadonlyURLSearchParams } from 'next/navigation'
 import { LegalLanguage } from './legal-language'
 
 export function readLanguage(searchParams: URLSearchParams | ReadonlyURLSearchParams): LegalLanguage | null {

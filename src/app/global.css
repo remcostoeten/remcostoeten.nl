@@ -689,6 +689,11 @@
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
+	background-image: repeating-linear-gradient(-45deg,
+			transparent,
+			transparent 2px,
+			hsl(var(--foreground) / 0.03) 2px,
+			hsl(var(--foreground) / 0.03) 3px);
 	background-color: transparent;
 	height: 48px;
 	/* Fixed height as requested */

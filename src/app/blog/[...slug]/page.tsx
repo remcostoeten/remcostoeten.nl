@@ -46,6 +46,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     publishedAt: publishedTime,
     summary: description,
     image,
+    updatedAt,
+    canonicalUrl,
   } = post.metadata
   let ogImage = image
     ? image
@@ -59,6 +61,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description,
       type: 'article',
       publishedTime,
+      modifiedTime: updatedAt,
       url: `${baseUrl}/blog/${post.slug}`,
       images: [
         {
@@ -71,6 +74,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title,
       description,
       images: [ogImage],
+    },
+    alternates: {
+      canonical: canonicalUrl || `${baseUrl}/blog/${post.slug}`,
     },
   }
 }
@@ -122,14 +128,15 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
         title={post.metadata.title}
         description={post.metadata.summary}
         publishedAt={post.metadata.publishedAt}
-        author="Remco Stoeten"
+        updatedAt={post.metadata.updatedAt}
+        author={post.metadata.author || "Remco Stoeten"}
         image={post.metadata.image}
         url={`${baseUrl}/blog/${post.slug}`}
         keywords={post.metadata.tags || []}
       />
       <TableOfContents />
 
-  
+
       <section className="bg-pattern relative">
         <BlogPostClient
           publishedAt={post.metadata.publishedAt}

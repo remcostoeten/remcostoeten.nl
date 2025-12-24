@@ -48,6 +48,8 @@ function BlogCard({ post, index }: Props) {
   const indexDuration = Math.min(600 + (index * 100), 1200)
 
   const dateParts = getDateParts(post.metadata.publishedAt)
+  const dayNumber = dateParts.day
+  const monthYear = `${dateParts.month} ${dateParts.year}`
   const readTimeMinutes = readMinutes(post.metadata.readTime || '')
   const dateDuration = Math.min(800 + (index * 30), 1000)
   const allTags = [

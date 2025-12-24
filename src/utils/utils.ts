@@ -10,6 +10,9 @@ type Metadata = {
   readTime?: string
   draft?: boolean
   slug?: string
+  updatedAt?: string
+  canonicalUrl?: string
+  author?: string
 }
 
 function parseFrontmatter(fileContent: string) {
@@ -56,6 +59,15 @@ function parseFrontmatter(fileContent: string) {
           break
         case 'slug':
           metadata.slug = value
+          break
+        case 'updatedAt':
+          metadata.updatedAt = value
+          break
+        case 'canonicalUrl':
+          metadata.canonicalUrl = value
+          break
+        case 'author':
+          metadata.author = value
           break
       }
     }

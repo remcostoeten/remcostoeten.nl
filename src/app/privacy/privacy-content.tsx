@@ -6,6 +6,7 @@ import { Cookie, Database, Eye, Mail, Shield, Users } from 'lucide-react'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
 import { LegalHeader } from '../legal/legal-header'
 import { LegalLanguage } from '../legal/legal-language'
+import { readLanguage, readStoredLanguage, storeLanguage } from '../legal/language-utils'
 
 interface InfoSection {
   title: string
@@ -280,22 +281,14 @@ export default function PrivacyContent() {
       const storedLanguage = readStoredLanguage()
       if (storedLanguage && storedLanguage !== language) {
         setLanguage(storedLanguage)
-        updateLanguage(storedLanguage)
+        storeLanguage(storedLanguage)
       } else if (storedLanguage) {
-        updateLanguage(storedLanguage)
+        storeLanguage(storedLanguage)
       }
     }
   }, [searchParams, language])
 
-  const lastUpdated = useMemo(function deriveDate() {
-    return new Date().toLocaleDateString(language === 'nl' ? 'nl-NL' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
-  }, [language])
 
-  const copy = privacyCopy[language]
 
   return (
     <div className="space-y-6">

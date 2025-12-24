@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useMemo, useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
@@ -35,6 +35,7 @@ export function ActivityContributionGraph({
   const [hoveredDay, setHoveredDay] = useState<ActivityDay | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+  const [paused, setPaused] = useState(false);
   const { data: githubContributions = new Map(), isLoading: githubLoading } = useGitHubContributions(year);
 
   const [loading, setLoading] = useState(true);
@@ -60,8 +61,21 @@ export function ActivityContributionGraph({
     }
   }, []);
 
+  const snapToNearestWeek = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft } = scrollContainerRef.current;
+      const weekWidth = 13; // 10px day + 3px gap
+      const nearestWeek = Math.round(scrollLeft / weekWidth);
+      scrollContainerRef.current.scrollTo({
+        left: nearestWeek * weekWidth,
+        behavior: 'smooth',
+      });
+    }
+  }, []);
+
   const handleDragMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    setPaused(true); // Pause auto‑scrolling when user starts dragging
     setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
     setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
     e.preventDefault();
@@ -77,10 +91,14 @@ export function ActivityContributionGraph({
 
   const handleDragMouseUp = () => {
     setIsDragging(false);
+    snapToNearestWeek(); // Snap to nearest week when drag ends
+    setPaused(false); // Resume auto‑scrolling
   };
 
   const handleDragMouseLeave = () => {
     setIsDragging(false);
+    snapToNearestWeek(); // Snap to nearest week when mouse leaves
+    setPaused(false); // Resume auto‑scrolling
   };
 
   useEffect(() => {
@@ -101,7 +119,11 @@ export function ActivityContributionGraph({
 
   useEffect(() => {
     const handleGlobalMouseUp = () => {
-      setIsDragging(false);
+      if (isDragging) {
+        setIsDragging(false);
+        snapToNearestWeek(); // Snap to nearest week if drag ends outside
+        setPaused(false); // Resume auto‑scrolling
+      }
     };
 
     if (isDragging) {
@@ -110,7 +132,29 @@ export function ActivityContributionGraph({
         document.removeEventListener('mouseup', handleGlobalMouseUp);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, snapToNearestWeek]);
+
+  // Auto‑scrolling effect (pause on hover or drag)
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (!isDragging && !paused && scrollContainerRef.current) {
+      interval = setInterval(() => {
+        if (scrollContainerRef.current) {
+          const { scrollWidth, clientWidth, scrollLeft } = scrollContainerRef.current;
+          const maxScrollLeft = scrollWidth - clientWidth;
+
+          if (scrollLeft >= maxScrollLeft) {
+            // Loop back to start when reaching the end
+            scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            // Scroll a little to the right each tick
+            scrollContainerRef.current.scrollBy({ left: 1, behavior: 'smooth' });
+          }
+        }
+      }, 50);
+    }
+    return () => clearInterval(interval);
+  }, [isDragging, paused]);
 
 
   const activityData = useMemo(() => {
@@ -198,11 +242,11 @@ export function ActivityContributionGraph({
 
     // Light theme colors using brand color variants
     const lightColors = [
-      'bg-gray-100',      // Level 0
-      'bg-brand-500/30',  // Level 1
-      'bg-brand-500/50',  // Level 2
-      'bg-brand-500/75',  // Level 3
-      'bg-brand-500'      // Level 4
+      'bg-neutral-800/60',  // Level 0: Dark subtle background to match theme
+      'bg-brand-500/30',    // Level 1
+      'bg-brand-500/50',    // Level 2
+      'bg-brand-500/75',    // Level 3
+      'bg-brand-500'        // Level 4
     ];
 
     // Check if we're in dark theme by checking document class
@@ -281,7 +325,7 @@ export function ActivityContributionGraph({
     return {
       delay: (dist * 0.03) + (angle * 0.08),
       duration: 0.4,
-      type: "spring",
+      type: "spring" as const,
       stiffness: 200,
       damping: 20
     };
@@ -337,6 +381,19 @@ export function ActivityContributionGraph({
     return activityData.reduce((sum, day) => sum + day.githubCount, 0);
   }, [activityData]);
 
+  const handleDayClick = (day: ActivityDay, weekIndex: number) => {
+    setSelectedDay(day);
+    if (scrollContainerRef.current) {
+      const weekWidth = 13; // 10px day + 3px gap
+      const containerWidth = scrollContainerRef.current.clientWidth;
+      const targetScrollLeft = (weekIndex * weekWidth) - (containerWidth / 2) + (weekWidth / 2);
+      scrollContainerRef.current.scrollTo({
+        left: targetScrollLeft,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   return (
     <div className={`space-y-2 ${className}`}>
       <div
@@ -378,7 +435,7 @@ export function ActivityContributionGraph({
                     return (
                       <div
                         key={`skel-day-${dayIndex}`}
-                        className="w-[10px] h-[10px] rounded-sm bg-neutral-200 dark:bg-white/5 animate-pulse"
+                        className="w-[10px] h-[10px] rounded-sm bg-neutral-800/40 dark:bg-white/5 animate-pulse"
                       />
                     );
                   })}
@@ -414,7 +471,7 @@ export function ActivityContributionGraph({
                         }}
                         onMouseEnter={(e) => handleMouseEnter(e, day)}
                         onMouseLeave={handleMouseLeave}
-                        onClick={() => setSelectedDay(day)}
+                        onClick={() => handleDayClick(day, weekIndex)} // Modified onClick
                         whileHover={{ scale: 1.3, zIndex: 20 }}
                       />
                     );
@@ -434,13 +491,12 @@ export function ActivityContributionGraph({
           transition={{ delay: 0 }}
         >
           <div className="flex items-center gap-2">
-            <span>Less</span>
             <div className="flex gap-[2px]">
               {[0, 1, 2, 3, 4].map(level => (
                 <div key={level} className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`} />
               ))}
             </div>
-            <span>More</span>
+            <span>More contributions</span>
           </div>
           <span className="text-muted-foreground/80">
             <AnimatedNumber value={totalContributions.toLocaleString()} duration={800} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber value={year} duration={600} animateOnMount />
