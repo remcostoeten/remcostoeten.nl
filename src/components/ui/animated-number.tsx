@@ -252,8 +252,9 @@ export function AnimatedNumber({
     }
   }, [useNewSystem, stagger.isReady, stagger.delay, shouldReduceMotion]);
 
-  // For SSR or reduced motion, show static number
-  if (!isClient || shouldReduceMotion) {
+  // For reduced motion preference only, show static number
+  // We still render slot digits even before isClient to prevent hydration flash
+  if (shouldReduceMotion) {
     return (
       <span
         ref={useNewSystem ? stagger.ref as React.RefObject<HTMLSpanElement> : elementRef}

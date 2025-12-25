@@ -548,6 +548,7 @@ class GitHubService {
         const action = event.payload.action;
         const prNumber = event.payload.number;
         const prTitle = event.payload.pull_request?.title || '';
+        const prBody = event.payload.pull_request?.body?.split('\n')[0] || '';
 
         let verb = 'worked on';
         if (action === 'opened') verb = 'opened';
@@ -555,12 +556,19 @@ class GitHubService {
         else if (action === 'closed') verb = 'closed';
         else if (action === 'reopened') verb = 'reopened';
         else if (action === 'synchronize') verb = 'updated';
+        else if (action === 'edited') verb = 'edited';
+        else if (action === 'review_requested') verb = 'requested review on';
+        else if (action === 'ready_for_review') verb = 'marked ready';
+
+        // Always try to show context: title > body snippet > just number
+        const contextText = prTitle || (prBody ? prBody.substring(0, 50) : '');
+        const titleSuffix = contextText ? `: ${contextText}` : '';
 
         return {
           ...base,
           type: 'pr',
-          title: `${verb} PR #${prNumber}${prTitle ? `: ${prTitle}` : ''}`,
-          description: prTitle,
+          title: `${verb} PR #${prNumber}${titleSuffix}`,
+          description: prTitle || prBody.substring(0, 100) || `Pull request #${prNumber}`,
           url: event.payload.pull_request?.html_url || base.url,
           payload: event.payload
         };
@@ -570,6 +578,7 @@ class GitHubService {
         const action = event.payload.action;
         const issueNumber = event.payload.issue?.number;
         const issueTitle = event.payload.issue?.title || '';
+        const issueBody = event.payload.issue?.body?.split('\n')[0] || '';
 
         let verb = 'worked on';
         if (action === 'opened') verb = 'opened';
@@ -578,12 +587,18 @@ class GitHubService {
         else if (action === 'edited') verb = 'edited';
         else if (action === 'assigned') verb = 'assigned';
         else if (action === 'labeled') verb = 'labeled';
+        else if (action === 'milestoned') verb = 'milestoned';
+        else if (action === 'pinned') verb = 'pinned';
+
+        // Always try to show context: title > body snippet > just number
+        const contextText = issueTitle || (issueBody ? issueBody.substring(0, 50) : '');
+        const titleSuffix = contextText ? `: ${contextText}` : '';
 
         return {
           ...base,
           type: 'issue',
-          title: `${verb} issue #${issueNumber}`,
-          description: issueTitle,
+          title: `${verb} issue #${issueNumber}${titleSuffix}`,
+          description: issueTitle || issueBody.substring(0, 100) || `Issue #${issueNumber}`,
           url: event.payload.issue?.html_url || base.url,
           payload: event.payload
         };
@@ -608,17 +623,22 @@ class GitHubService {
         const prNumber = event.payload.pull_request?.number;
         const prTitle = event.payload.pull_request?.title || '';
         const reviewState = event.payload.review?.state;
+        const reviewBody = event.payload.review?.body?.split('\n')[0] || '';
 
         let verb = 'reviewed';
         if (reviewState === 'approved') verb = 'approved';
         else if (reviewState === 'changes_requested') verb = 'requested changes on';
         else if (reviewState === 'commented') verb = 'commented on';
+        else if (reviewState === 'dismissed') verb = 'dismissed review on';
+
+        // Include PR title for context
+        const titleSuffix = prTitle ? `: ${prTitle}` : '';
 
         return {
           ...base,
           type: 'review',
-          title: `${verb} PR #${prNumber}`,
-          description: prTitle,
+          title: `${verb} PR #${prNumber}${titleSuffix}`,
+          description: prTitle || reviewBody.substring(0, 100) || `Review on PR #${prNumber}`,
           url: event.payload.review?.html_url || event.payload.pull_request?.html_url || base.url,
           payload: event.payload
         };
@@ -626,13 +646,18 @@ class GitHubService {
 
       case 'PullRequestReviewCommentEvent': {
         const prNumber = event.payload.pull_request?.number;
+        const prTitle = event.payload.pull_request?.title || '';
         const commentBody = event.payload.comment?.body?.split('\n')[0] || '';
+        const filePath = event.payload.comment?.path?.split('/').pop() || '';
+
+        // Show file being reviewed if available
+        const contextText = filePath ? `on ${filePath}` : (prTitle ? `: ${prTitle}` : '');
 
         return {
           ...base,
           type: 'review',
-          title: `reviewed code in PR #${prNumber}`,
-          description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
+          title: `reviewed code in PR #${prNumber}${contextText}`,
+          description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : '') || prTitle,
           url: event.payload.comment?.html_url || base.url,
           payload: event.payload
         };

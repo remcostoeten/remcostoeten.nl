@@ -138,9 +138,20 @@ function TechCard({
   children,
   ...props
 }: TechCardProps) {
-  const [hover, setHover] = useState(false)
+  const [showLabel, setShowLabel] = useState(false)
 
   const Icon = Icons[icon]
+
+  const handleToggle = () => {
+    setShowLabel(prev => !prev)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleToggle()
+    }
+  }
 
   return (
     <div
@@ -148,16 +159,10 @@ function TechCard({
         'flex items-center justify-center bg-background px-4 py-8 md:p-8 relative overflow-hidden group',
         className
       )}
-      onMouseEnter={function () {
-        setHover(true)
-      }}
-      onMouseLeave={function () {
-        setHover(false)
-      }}
       {...props}
     >
       <motion.div
-        className="relative"
+        className="relative flex flex-col items-center gap-2"
         initial={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
         animate={
           isInView
@@ -174,27 +179,32 @@ function TechCard({
           ease: [0.22, 1, 0.36, 1]
         }}
       >
-        <Icon
-          theme="dark"
-          title={label}
-          className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
-        />
+        <button
+          type="button"
+          onClick={handleToggle}
+          onKeyDown={handleKeyDown}
+          aria-label={`${label}${showLabel ? ' - tap to hide name' : ' - tap to show name'}`}
+          aria-pressed={showLabel}
+          className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1"
+        >
+          <Icon
+            theme="dark"
+            title={label}
+            className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+          />
+        </button>
 
         <AnimatePresence>
-          {hover && (
-            <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 4, scale: 0.95 }}
+          {showLabel && (
+            <motion.span
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-20"
+              className="text-[10px] font-medium text-muted-foreground whitespace-nowrap"
             >
-              <div className="px-2 py-1 rounded bg-foreground text-background text-[10px] font-medium whitespace-nowrap shadow-lg">
-                {label}
-              </div>
-
-              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-foreground rotate-45" />
-            </motion.div>
+              {label}
+            </motion.span>
           )}
         </AnimatePresence>
       </motion.div>
