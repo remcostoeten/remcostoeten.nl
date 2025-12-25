@@ -46,11 +46,14 @@ function BlogCard({ post, index }: Props) {
 
   // Animation duration calculations - slower for more satisfying effect
   const indexDuration = Math.min(1800 + (index * 200), 2400)
+  // Animation duration calculations - slower for more satisfying effect
+  const indexDuration = Math.min(1800 + (index * 200), 2400)
 
   const dateParts = getDateParts(post.metadata.publishedAt)
   const dayNumber = dateParts.day
   const monthYear = `${dateParts.month} ${dateParts.year}`
   const readTimeMinutes = readMinutes(post.metadata.readTime || '')
+  const dateDuration = Math.min(1400 + (index * 100), 1800)
   const dateDuration = Math.min(1400 + (index * 100), 1800)
   const allTags = [
     ...(post.metadata.categories || []),
@@ -87,7 +90,7 @@ function BlogCard({ post, index }: Props) {
                 className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right"
                 aria-hidden="true"
               >
-                <AnimatedNumber value={formattedIndex} duration={indexDuration} initialProgress={0} />
+                <AnimatedNumber value={formattedIndex} duration={indexDuration} />
               </span>
 
               <div className="flex-1 min-w-0 pt-1">
@@ -126,7 +129,7 @@ function BlogCard({ post, index }: Props) {
 
                 <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500 dark:text-neutral-500">
                   <time dateTime={post.metadata.publishedAt} className="tabular-nums">
-                    <AnimatedNumber value={dayNumber} duration={dateDuration} initialProgress={0} /> {monthYear}
+                    <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
                   </time>
                   {post.metadata.readTime && (
                     <>
@@ -135,7 +138,6 @@ function BlogCard({ post, index }: Props) {
                         <AnimatedNumber
                           value={readTimeMinutes}
                           duration={dateDuration}
-                          initialProgress={0}
                         /> min read
                       </span>
                     </>
@@ -147,7 +149,6 @@ function BlogCard({ post, index }: Props) {
                         <AnimatedNumber
                           value={post.uniqueViews}
                           duration={dateDuration}
-                          initialProgress={0}
                         /> unique views
                       </span>
                     </>

@@ -255,7 +255,19 @@ export function AnimatedNumber({
     }
   }, [useNewSystem, stagger.isReady, stagger.delay]);
 
-
+  // For reduced motion preference only, show static number
+  // We still render slot digits even before isClient to prevent hydration flash
+  if (shouldReduceMotion) {
+    return (
+      <span
+        ref={useNewSystem ? stagger.ref as React.RefObject<HTMLSpanElement> : elementRef}
+        className={`inline-flex items-baseline whitespace-pre-wrap ${className || ''}`}
+        aria-label={stringValue}
+      >
+        {stringValue}
+      </span>
+    );
+  }
 
   const chars = stringValue.split('');
   let digitIndex = 0;

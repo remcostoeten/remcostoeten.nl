@@ -139,6 +139,7 @@ function TechCard({
   ...props
 }: TechCardProps) {
   const [showLabel, setShowLabel] = useState(false)
+  const [showLabel, setShowLabel] = useState(false)
 
   const Icon = Icons[icon]
 
@@ -146,7 +147,12 @@ function TechCard({
     setShowLabel(prev => !prev)
   }
 
-
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      handleToggle()
+    }
+  }
 
   return (
     <div
@@ -157,6 +163,7 @@ function TechCard({
       {...props}
     >
       <motion.div
+        className="relative flex flex-col items-center gap-2"
         className="relative flex flex-col items-center gap-2"
         initial={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
         animate={
@@ -177,59 +184,31 @@ function TechCard({
         <button
           type="button"
           onClick={handleToggle}
-          aria-label={label}
+          onKeyDown={handleKeyDown}
+          aria-label={`${label}${showLabel ? ' - tap to hide name' : ' - tap to show name'}`}
           aria-pressed={showLabel}
-          className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1 min-h-4 md:min-h-5 flex items-center justify-center"
+          className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1"
         >
-          <AnimatePresence mode="wait">
-            {!showLabel ? (
-              <motion.div
-                key="icon"
-                initial={{ scale: 1, y: 0 }}
-                exit={{
-                  scale: 1.5,
-                  y: 20,
-                  opacity: 0,
-                  transition: {
-                    duration: 0.4,
-                    ease: [0.68, -0.55, 0.265, 1.55]
-                  }
-                }}
-              >
-                <Icon
-                  theme="dark"
-                  className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
-                />
-              </motion.div>
-            ) : (
-              <motion.span
-                key="text"
-                initial={{
-                  scale: 0.5,
-                  y: -20,
-                  opacity: 0
-                }}
-                animate={{
-                  scale: 1,
-                  y: 0,
-                  opacity: 1
-                }}
-                exit={{
-                  scale: 0.5,
-                  y: -20,
-                  opacity: 0
-                }}
-                transition={{
-                  duration: 0.5,
-                  ease: [0.68, -0.55, 0.265, 1.55]
-                }}
-                className="text-[10px] font-medium text-muted-foreground whitespace-nowrap"
-              >
-                {label}
-              </motion.span>
-            )}
-          </AnimatePresence>
+          <Icon
+            theme="dark"
+            title={label}
+            className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+          />
         </button>
+
+        <AnimatePresence>
+          {showLabel && (
+            <motion.span
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+              className="text-[10px] font-medium text-muted-foreground whitespace-nowrap"
+            >
+              {label}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       {children}

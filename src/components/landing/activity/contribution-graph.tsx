@@ -460,33 +460,30 @@ export function ActivityContributionGraph({
       </div>
 
       {showLegend && (
-        <div className="flex items-center justify-between text-[10px] text-muted-foreground px-4 md:px-5 pt-2 h-[24px]">
-          <span className="text-muted-foreground/80 pr-1 flex items-center gap-1">
-            {isVisible ? (
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions} duration={2000} delay={0} animateOnMount initialProgress={0} className="text-foreground font-medium" /> contributions in <time dateTime={`${year}`}><AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount initialProgress={0} /></time>
-              </motion.span>
-            ) : (
-              <div className="flex items-center gap-1.5">
-                <div className="h-2.5 w-8 bg-neutral-200 dark:bg-neutral-800 rounded-sm animate-pulse" />
-                <span>contributions in</span>
-                <div className="h-2.5 w-6 bg-neutral-200 dark:bg-neutral-800 rounded-sm animate-pulse" />
-              </div>
-            )}
-          </span>
-          <div className="flex items-center gap-2" role="legend" aria-label="Contribution intensity scale">
-            <span>More contributions</span>
+        <motion.div
+          className="flex items-center justify-between text-[10px] text-muted-foreground px-0"
+          initial={{ opacity: 0 }}
+          animate={isVisible ? { opacity: 1 } : {}}
+          transition={{ delay: 0 }}
+        >
+          <div className="flex items-center gap-2">
             <div className="flex gap-[2px]">
               {[0, 1, 2, 3, 4].map(level => (
                 <div key={level} className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`} />
               ))}
             </div>
           </div>
-        </div>
+          <span className="text-muted-foreground/80 pr-1">
+            {isVisible ? (
+              <>
+                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions.toLocaleString()} duration={2000} delay={0} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount />
+              </>
+            ) : (
+              <span className="opacity-0">0 contributions in {year}</span>
+            )}
+          </span>
+
+        </motion.div>
       )}
 
       {selectedDay && selectedDay.githubCount > 0 && (
