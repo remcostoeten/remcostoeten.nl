@@ -23,13 +23,8 @@ export function AppProviders({ children }: TProps) {
                 <VimAuthProvider>
                     <StaggerProvider config={{ baseDelay: 80, initialDelay: 0 }}>
                         <AnimatedNumberProvider>
-                            <div className="min-h-screen w-full flex flex-col">
-                                <main className="py-8 md:py-12 max-w-2xl mx-auto w-full grow border-x border-border/50">
-                                    {children}
-                                    <Toaster />
-                                </main>
-                                <Footer />
-                            </div>
+                            {children}
+                            <Toaster />
                             <ThemeSwitch position="fixed" offset={20} side="right" />
                             <Analytics />
                             <SpeedInsights />

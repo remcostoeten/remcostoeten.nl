@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Trash2, MessageSquare, Loader2 } from 'lucide-react'
 import { useSession } from '@/lib/auth-client'
 import Image from 'next/image'
-import { addComment, deleteComment, getComments } from '@/server/actions/comments'
+import { addComment, deleteComment, getComments } from '@/actions/comments'
 import { SignInButton } from './sign-in-button'
 import posthog from 'posthog-js'
 

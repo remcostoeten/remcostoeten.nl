@@ -3,7 +3,7 @@ import { getAllBlogPosts } from '@/utils/utils'
 import { BlogList } from '@/components/admin/blogs/blog-list'
 import { UserMetrics } from '@/components/admin/metrics/user-metrics'
 import { ContactOverview } from '@/components/admin/contact/contact-overview'
-import { getAllCommentsAdmin } from '@/server/actions/comments'
+import { getAllCommentsAdmin } from '@/actions/comments'
 import { AdminComments } from '@/components/admin/comments/admin-comments'
 
 export const dynamic = 'force-dynamic'

@@ -1,5 +1,5 @@
 import { getBlogPosts, getAllTags } from '@/utils/utils'
-import { getProjects } from './projects/utilities/project-registry'
+import { getProjects } from './(marketing)/projects/utilities/project-registry'
 
 export const baseUrl = 'https://remcostoeten.nl'
 

@@ -139,7 +139,7 @@ function getMDXData(dir) {
  * Get all blog posts including drafts (for admin use)
  */
 export function getAllBlogPosts() {
-  return getMDXData(path.join(process.cwd(), 'src', 'app', 'blog', 'posts')).filter(
+  return getMDXData(path.join(process.cwd(), 'src', 'app', '(marketing)', 'blog', 'posts')).filter(
     post => post && post.slug && post.metadata && post.metadata.title
   )
 }
