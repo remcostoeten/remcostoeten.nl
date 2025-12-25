@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { motion } from 'framer-motion'
-import { toggleReaction, getReactions } from '@/server/actions/reactions'
+import { toggleReaction, getReactions } from '@/actions/reactions'
 import type { EmojiType } from '@/server/db/schema'
 import posthog from 'posthog-js'
 
@@ -49,7 +49,7 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 
         const wasReacted = reactions[emoji].hasReacted
 
-                posthog.capture('blog_post_reaction', {
+        posthog.capture('blog_post_reaction', {
             slug: slug,
             emoji_type: emoji,
             emoji_label: EMOJI_CONFIG[emoji].label,
