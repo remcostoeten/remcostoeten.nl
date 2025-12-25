@@ -7,6 +7,7 @@ import { getLatestTracks, getNowPlaying, SpotifyTrack, NowPlaying } from '@/serv
 import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
 import { ProjectHoverWrapper, ActivityHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers';
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback';
+import { AnimatedNumber } from '@/components/ui/animated-number';
 
 const SPRING_CONFIG = {
     type: "spring" as const,
@@ -331,6 +332,32 @@ function formatRelativeTime(dateString: string): string {
     if (diffDays === 1) return 'yesterday'
     if (diffDays < 7) return `${diffDays}d ago`
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+/**
+ * Render metric value with animated numbers
+ * Parses strings like "#63 · opened" and animates the numeric parts
+ */
+function renderMetricValue(value: string): React.ReactNode {
+    // Split the value into parts, keeping numbers as separate segments
+    const parts = value.split(/(\d+)/);
+
+    return parts.map((part, index) => {
+        if (/^\d+$/.test(part)) {
+            // This is a number - animate it with staggered delay
+            return (
+                <AnimatedNumber
+                    key={index}
+                    value={parseInt(part, 10)}
+                    duration={800}
+                    delay={600 + (index * 100)}
+                    animateOnMount
+                />
+            );
+        }
+        // Non-numeric part - return as-is
+        return <span key={index}>{part}</span>;
+    });
 }
 
 
@@ -740,7 +767,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     {metric.label}:
                                                 </span>
                                                 <span className="text-muted-foreground/50 text-xs truncate leading-none">
-                                                    {metric.value}
+                                                    {renderMetricValue(metric.value)}
                                                 </span>
                                             </div>
                                             <span className="text-[9px] text-muted-foreground/40 tabular-nums font-mono shrink-0 ml-auto flex items-center gap-1">

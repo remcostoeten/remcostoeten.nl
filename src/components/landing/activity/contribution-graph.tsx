@@ -134,27 +134,8 @@ export function ActivityContributionGraph({
     }
   }, [isDragging, snapToNearestWeek]);
 
-  // Auto‑scrolling effect (pause on hover or drag)
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (!isDragging && !paused && scrollContainerRef.current) {
-      interval = setInterval(() => {
-        if (scrollContainerRef.current) {
-          const { scrollWidth, clientWidth, scrollLeft } = scrollContainerRef.current;
-          const maxScrollLeft = scrollWidth - clientWidth;
-
-          if (scrollLeft >= maxScrollLeft) {
-            // Loop back to start when reaching the end
-            scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-          } else {
-            // Scroll a little to the right each tick
-            scrollContainerRef.current.scrollBy({ left: 1, behavior: 'smooth' });
-          }
-        }
-      }, 50);
-    }
-    return () => clearInterval(interval);
-  }, [isDragging, paused]);
+  // Auto-scrolling disabled to remove jittery effect
+  // Users can still drag to scroll manually which is smooth
 
 
   const activityData = useMemo(() => {
@@ -499,8 +480,9 @@ export function ActivityContributionGraph({
             <span>More contributions</span>
           </div>
           <span className="text-muted-foreground/80">
-            <AnimatedNumber value={totalContributions.toLocaleString()} duration={800} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber value={year} duration={600} animateOnMount />
+            <AnimatedNumber value={totalContributions.toLocaleString()} duration={1200} delay={2500} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber value={year} duration={1000} delay={2700} animateOnMount />
           </span>
+
         </motion.div>
       )}
 
