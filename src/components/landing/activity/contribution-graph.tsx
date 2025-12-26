@@ -471,14 +471,6 @@ export function ActivityContributionGraph({
           animate={isVisible ? { opacity: 1 } : {}}
           transition={{ delay: 0 }}
         >
-          <div className="flex items-center gap-2">
-            <div className="flex gap-[2px]">
-              {[0, 1, 2, 3, 4].map(level => (
-                <div key={level} className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`} />
-              ))}
-            </div>
-            <span>More contributions</span>
-          </div>
           <span className="text-muted-foreground/80 pr-1">
             {isVisible ? (
               <>
@@ -488,6 +480,14 @@ export function ActivityContributionGraph({
               <span className="opacity-0">0 contributions in {year}</span>
             )}
           </span>
+          <div className="flex items-center gap-2">
+            <span>More contributions</span>
+            <div className="flex gap-[2px]">
+              {[0, 1, 2, 3, 4].map(level => (
+                <div key={level} className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`} />
+              ))}
+            </div>
+          </div>
 
         </motion.div>
       )}

@@ -187,26 +187,56 @@ function TechCard({
           aria-pressed={showLabel}
           className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1"
         >
-          <Icon
-            theme="dark"
-            title={label}
-            className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
-          />
+          <AnimatePresence mode="wait">
+            {!showLabel ? (
+              <motion.div
+                key="icon"
+                initial={{ scale: 1, y: 0 }}
+                exit={{ 
+                  scale: 1.5, 
+                  y: 20,
+                  opacity: 0,
+                  transition: {
+                    duration: 0.4,
+                    ease: [0.68, -0.55, 0.265, 1.55]
+                  }
+                }}
+              >
+                <Icon
+                  theme="dark"
+                  title={label}
+                  className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+                />
+              </motion.div>
+            ) : (
+              <motion.span
+                key="text"
+                initial={{ 
+                  scale: 0.5, 
+                  y: -20,
+                  opacity: 0
+                }}
+                animate={{ 
+                  scale: 1, 
+                  y: 0,
+                  opacity: 1
+                }}
+                exit={{ 
+                  scale: 0.5, 
+                  y: -20,
+                  opacity: 0
+                }}
+                transition={{
+                  duration: 0.5,
+                  ease: [0.68, -0.55, 0.265, 1.55]
+                }}
+                className="text-[10px] font-medium text-muted-foreground whitespace-nowrap"
+              >
+                {label}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </button>
-
-        <AnimatePresence>
-          {showLabel && (
-            <motion.span
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.15 }}
-              className="text-[10px] font-medium text-muted-foreground whitespace-nowrap"
-            >
-              {label}
-            </motion.span>
-          )}
-        </AnimatePresence>
       </motion.div>
 
       {children}
