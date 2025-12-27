@@ -4,13 +4,12 @@ import { useState, useRef, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 
-// Hook to detect if device is touch/mobile
 function useIsMobile() {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        // Check for touch capability and screen size
         const checkMobile = () => {
             const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
             const isSmallScreen = window.innerWidth < 768;
@@ -25,7 +24,7 @@ function useIsMobile() {
     return isMobile;
 }
 
-interface ActivityHoverCardProps {
+type ActivityHoverCardProps = {
     trigger: ReactNode;
     children: ReactNode;
     side?: 'top' | 'bottom';
@@ -54,7 +53,6 @@ export function ActivityHoverCard({
 
         const rect = triggerRef.current.getBoundingClientRect();
 
-        // Use actual card dimensions if available, otherwise use defaults
         const cardWidth = cardRef.current?.offsetWidth || 300;
         const cardHeight = cardRef.current?.offsetHeight || 200;
         const gap = 8;
@@ -62,19 +60,16 @@ export function ActivityHoverCard({
         let top = side === 'top' ? rect.top - cardHeight - gap : rect.bottom + gap;
         let left = rect.left;
 
-        // Align horizontally
         if (align === 'center') {
             left = rect.left + rect.width / 2 - cardWidth / 2;
         } else if (align === 'end') {
             left = rect.right - cardWidth;
         }
 
-        // Keep within viewport bounds with padding
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
         const padding = 16;
 
-        // Horizontal bounds
         if (left + cardWidth > viewportWidth - padding) {
             left = viewportWidth - cardWidth - padding;
         }
@@ -352,22 +347,20 @@ export function GitHubActivityCard({
     );
 }
 
-// === Spotify Content ===
-interface SpotifyCardProps {
+
+type CardProps = {
     name: string;
     artist: string;
     album?: string;
     albumArt?: string;
     duration?: string;
     url: string;
-    isPlaying?: boolean;
+    isPlaying?: boolean | null;
 }
 
-// === Skeleton Loaders ===
 export function GitHubProjectCardSkeleton() {
     return (
         <div className="space-y-3">
-            {/* Header */}
             <div className="flex items-center gap-2">
                 <div className="size-8 rounded-none bg-muted/40 animate-pulse" />
                 <div className="flex-1">
@@ -376,20 +369,17 @@ export function GitHubProjectCardSkeleton() {
                 </div>
             </div>
 
-            {/* Description */}
             <div className="space-y-1">
                 <div className="h-3.5 bg-muted/30 rounded-none animate-pulse" />
                 <div className="h-3.5 w-4/5 bg-muted/30 rounded-none animate-pulse" />
             </div>
 
-            {/* Topics */}
             <div className="flex flex-wrap gap-1.5">
                 <div className="h-5 w-16 bg-muted/30 rounded-none animate-pulse" />
                 <div className="h-5 w-20 bg-muted/30 rounded-none animate-pulse" />
                 <div className="h-5 w-14 bg-muted/30 rounded-none animate-pulse" />
             </div>
 
-            {/* Languages */}
             <div className="space-y-1.5">
                 <div className="h-1.5 rounded-none overflow-hidden flex bg-muted/20">
                     <div className="h-full w-3/5 bg-muted/40 animate-pulse" />
@@ -412,7 +402,6 @@ export function GitHubProjectCardSkeleton() {
                 </div>
             </div>
 
-            {/* Stats */}
             <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1 border-t border-border/30">
                 <div className="flex items-center gap-1">
                     <div className="size-3.5 bg-muted/30 rounded-none animate-pulse" />
@@ -430,10 +419,8 @@ export function GitHubProjectCardSkeleton() {
 export function SpotifyCardSkeleton() {
     return (
         <div className="flex gap-3">
-            {/* Album Art */}
             <div className="size-16 rounded-none bg-muted/30 animate-pulse" />
 
-            {/* Track Info */}
             <div className="flex-1 min-w-0 space-y-1">
                 <div className="h-4 w-4/5 bg-muted/40 rounded-none animate-pulse" />
                 <div className="h-3.5 w-3/5 bg-muted/30 rounded-none animate-pulse" />
@@ -455,10 +442,9 @@ export function SpotifyCard({
     duration,
     url,
     isPlaying,
-}: SpotifyCardProps) {
+}: CardProps) {
     return (
         <div className="flex gap-3">
-            {/* Album Art */}
             {albumArt ? (
                 <Image
                     src={albumArt}
@@ -476,16 +462,15 @@ export function SpotifyCard({
                 </div>
             )}
 
-            {/* Track Info */}
             <div className="flex-1 min-w-0 space-y-1">
-                <a
+                <Link
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block font-medium text-foreground hover:text-green-500 transition-colors truncate"
                 >
                     {name}
-                </a>
+                </Link>
                 <p className="text-sm text-muted-foreground truncate">{artist}</p>
                 {album && (
                     <p className="text-xs text-muted-foreground/70 truncate">{album}</p>

@@ -83,7 +83,9 @@ const INITIAL_BLUR_PX = 0.5;
 
 const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
-const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => i % DIGITS_PER_SET);
+// Create random digits 1-9 for spinning effect, ending with 8 as target
+const RANDOM_DIGITS = [1, 7, 3, 9, 2, 5, 4, 6, 1, 8];
+const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => RANDOM_DIGITS[i % RANDOM_DIGITS.length]);
 
 type SlotDigitProps = {
   digit: number
@@ -105,7 +107,13 @@ function SlotDigit({
   index,
   initialProgress = 0
 }: SlotDigitProps) {
-  const targetOffset = digit + (TARGET_SET_INDEX * DIGITS_PER_SET);
+  // Find the position of the target digit in our random sequence
+  const targetDigitIndex = RANDOM_DIGITS.indexOf(digit);
+  if (targetDigitIndex === -1) {
+    // If target digit not found in random sequence, use the digit itself as fallback
+    RANDOM_DIGITS[RANDOM_DIGITS.length - 1] = digit;
+  }
+  const targetOffset = RANDOM_DIGITS.indexOf(digit) + (TARGET_SET_INDEX * DIGITS_PER_SET);
   const itemHeightPercent = 100 / TOTAL_DIGITS;
 
   // Calculate scroll distance based on initial progress
@@ -193,7 +201,7 @@ export function AnimatedNumber({
   immediate = false,
   group,
   priority,
-  initialProgress = 0,
+  initialProgress = 1,
   animateOnMount = false,
 }: Props) {
   const [isVisible, setIsVisible] = useState(immediate);

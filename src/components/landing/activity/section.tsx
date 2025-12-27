@@ -59,9 +59,9 @@ export function ActivitySection() {
         bgDirection="diagonal"
         colorPattern="light"
         headerAction={
-          <span className="text-muted-foreground/60 inline-flex items-baseline">
+          <time dateTime={`${year}`} className="text-muted-foreground/60 inline-flex items-baseline">
             <AnimatedNumber value={year} duration={600} delay={200} />
-          </span>
+          </time>
         }
       />
       <div className="space-y-4 pt-3">
@@ -73,7 +73,7 @@ export function ActivitySection() {
           </Link>. A Notion-like desktop application which is almost in beta for you to try!
         </p>
 
-        <div className="px-4 md:px-5">
+        <div>
           <ActivityContributionGraph year={year} showLegend={true} />
         </div>
 

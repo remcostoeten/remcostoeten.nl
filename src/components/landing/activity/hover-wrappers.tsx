@@ -5,14 +5,15 @@ import { ActivityHoverCard, GitHubProjectCard, GitHubActivityCard, SpotifyCard, 
 import { useRepoDetails } from '@/hooks/use-repo-details';
 import { GitHubEventDetail } from '@/hooks/use-github';
 import { SpotifyTrack } from '@/server/services/spotify';
+import React from 'react';
 
-interface ProjectHoverWrapperProps {
+type WrapperProps = {
     children: React.ReactNode;
-    repository: string; // format: owner/repo
+    repository: string;
     isPrivate: boolean;
 }
 
-export function ProjectHoverWrapper({ children, repository, isPrivate }: ProjectHoverWrapperProps) {
+export function ProjectHoverWrapper({ children, repository, isPrivate }: WrapperProps) {
     const [isHovering, setIsHovering] = useState(false);
     const [owner, repo] = repository.split('/');
 
@@ -24,7 +25,7 @@ export function ProjectHoverWrapper({ children, repository, isPrivate }: Project
             trigger={
                 <span
                     onMouseEnter={() => setIsHovering(true)}
-                    onFocus={() => setIsHovering(true)} // Also prefetch on focus
+                    onFocus={() => setIsHovering(true)}
                 >
                     {children}
                 </span>
@@ -54,12 +55,13 @@ export function ProjectHoverWrapper({ children, repository, isPrivate }: Project
     );
 }
 
-interface ActivityHoverWrapperProps {
+
+type HoverProps = {
     children: React.ReactNode;
     activity: GitHubEventDetail;
 }
 
-export function ActivityHoverWrapper({ children, activity }: ActivityHoverWrapperProps) {
+export function ActivityHoverWrapper({ children, activity }: HoverProps) {
     return (
         <ActivityHoverCard
             trigger={children}
@@ -78,13 +80,13 @@ export function ActivityHoverWrapper({ children, activity }: ActivityHoverWrappe
     );
 }
 
-interface SpotifyHoverWrapperProps {
+type Props = {
     children: React.ReactNode;
     track: SpotifyTrack;
-    isPlaying?: boolean;
+    isPlaying?: boolean | null;
 }
 
-export function SpotifyHoverWrapper({ children, track, isPlaying }: SpotifyHoverWrapperProps) {
+export function SpotifyHoverWrapper({ children, track, isPlaying }: Props) {
     return (
         <ActivityHoverCard
             trigger={children}
