@@ -146,12 +146,7 @@ function TechCard({
     setShowLabel(prev => !prev)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      handleToggle()
-    }
-  }
+
 
   return (
     <div
@@ -182,7 +177,6 @@ function TechCard({
         <button
           type="button"
           onClick={handleToggle}
-          onKeyDown={handleKeyDown}
           aria-label={`${label}${showLabel ? ' - tap to hide name' : ' - tap to show name'}`}
           aria-pressed={showLabel}
           className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1 min-h-4 md:min-h-5 flex items-center justify-center"

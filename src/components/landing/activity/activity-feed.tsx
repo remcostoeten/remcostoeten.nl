@@ -177,7 +177,7 @@ function formatRelativeTime(dateString: string): string {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-    if (diffMins < 1) return 'just ago'
+    if (diffMins < 1) return 'just now'
     if (diffMins === 1) return 'one minute ago'
     if (diffMins < 30) return `${diffMins} minutes ago`
     if (diffMins < 45) return 'half an hour ago'
@@ -409,7 +409,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         [isRealTimePlaying, currentIndex, trackRotation.length]
     );
 
-    const totalSlides = trackRotation.length;
+    const totalSlides = Math.max(1, trackRotation.length);
 
     if (isLoading) {
         return (
@@ -458,6 +458,8 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         <motion.div
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
+            onFocus={() => setIsPaused(true)}
+            onBlur={() => setIsPaused(false)}
             className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm cursor-grab active:cursor-grabbing touch-pan-y"
             role="region"
             aria-label="Recent activity feed showing GitHub contributions and Spotify listening history"

@@ -91,7 +91,7 @@ export function ContactPopover() {
                         animate={{ opacity: 1, y: -10, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute bottom-full right-0 mb-2 w-[calc(100vw-32px)] sm:w-[350px] md:w-[400px] z-50 origin-bottom-right"
+                        className="fixed sm:absolute bottom-auto sm:bottom-full left-4 right-4 sm:left-auto sm:right-0 top-1/2 sm:top-auto -translate-y-1/2 sm:translate-y-0 sm:mb-2 w-auto sm:w-[350px] md:w-[400px] z-50 origin-center sm:origin-bottom-right"
                     >
                         <div className="bg-popover text-popover-foreground rounded-xl border shadow-xl overflow-hidden p-6">
                             <div className="flex justify-between items-center mb-4">
