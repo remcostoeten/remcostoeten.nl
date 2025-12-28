@@ -181,7 +181,7 @@ function formatRelativeTime(dateString: string): string {
     if (diffMins === 1) return 'one minute ago'
     if (diffMins < 30) return `${diffMins} minutes ago`
     if (diffMins < 45) return 'half an hour ago'
-    if (diffMins < 60) return 'three quarters ago'
+    if (diffMins < 60) return '45 minutes ago'
     if (diffHours === 1) return 'one hour ago'
     if (diffHours < 12) return `${diffHours}h ago`
     if (diffHours < 24) return 'half a day ago'
