@@ -90,7 +90,7 @@ function BlogCard({ post, index }: Props) {
                 className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right"
                 aria-hidden="true"
               >
-                <AnimatedNumber value={formattedIndex} duration={indexDuration} />
+                <AnimatedNumber value={formattedIndex} duration={indexDuration} initialProgress={0} />
               </span>
 
               <div className="flex-1 min-w-0 pt-1">
