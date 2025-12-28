@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useInView, useReducedMotion } from 'framer-motion';
+import { useInView } from 'framer-motion';
 import { useStaggerLayer } from './stagger-system';
 
 // =============================================================================
@@ -83,9 +83,9 @@ const INITIAL_BLUR_PX = 0.5;
 
 const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
-// Create random digits 1-9 for spinning effect, ending with 8 as target
-const RANDOM_DIGITS = [1, 7, 3, 9, 2, 5, 4, 6, 1, 8];
-const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => RANDOM_DIGITS[i % RANDOM_DIGITS.length]);
+// Create digit sequence 0-9 for spinning effect - must include ALL digits
+const DIGIT_SEQUENCE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => DIGIT_SEQUENCE[i % DIGIT_SEQUENCE.length]);
 
 type SlotDigitProps = {
   digit: number
@@ -107,13 +107,10 @@ function SlotDigit({
   index,
   initialProgress = 0
 }: SlotDigitProps) {
-  // Find the position of the target digit in our random sequence
-  const targetDigitIndex = RANDOM_DIGITS.indexOf(digit);
-  if (targetDigitIndex === -1) {
-    // If target digit not found in random sequence, use the digit itself as fallback
-    RANDOM_DIGITS[RANDOM_DIGITS.length - 1] = digit;
-  }
-  const targetOffset = RANDOM_DIGITS.indexOf(digit) + (TARGET_SET_INDEX * DIGITS_PER_SET);
+  // Find the position of the target digit in our digit sequence (0-9)
+  const targetDigitIndex = DIGIT_SEQUENCE.indexOf(digit);
+  // Since we include all 0-9, this should always find the digit
+  const targetOffset = (targetDigitIndex >= 0 ? targetDigitIndex : digit) + (TARGET_SET_INDEX * DIGITS_PER_SET);
   const itemHeightPercent = 100 / TOTAL_DIGITS;
 
   // Calculate scroll distance based on initial progress
@@ -208,7 +205,7 @@ export function AnimatedNumber({
   const [isClient, setIsClient] = useState(false);
   const elementRef = useRef<HTMLSpanElement>(null);
   const stringValue = String(value);
-  const shouldReduceMotion = useReducedMotion();
+
 
   // Use new stagger system if group is provided
   const useNewSystem = group !== undefined;
@@ -241,38 +238,24 @@ export function AnimatedNumber({
 
   // Legacy visibility triggering
   useEffect(() => {
-    if (!useNewSystem && (isInView || animateOnMount) && !immediate && !shouldReduceMotion) {
+    if (!useNewSystem && (isInView || animateOnMount) && !immediate) {
       const delay = getStaggerDelay(id);
       setTimeout(() => {
         setIsVisible(true);
       }, delay);
     }
-  }, [isInView, immediate, shouldReduceMotion, getStaggerDelay, id, useNewSystem]);
+  }, [isInView, immediate, getStaggerDelay, id, useNewSystem]);
 
   // New system visibility triggering
   useEffect(() => {
-    if (useNewSystem && stagger.isReady && !shouldReduceMotion) {
+    if (useNewSystem && stagger.isReady) {
       setTimeout(() => {
         setIsVisible(true);
       }, stagger.delay);
-    } else if (useNewSystem && shouldReduceMotion) {
-      setIsVisible(true);
     }
-  }, [useNewSystem, stagger.isReady, stagger.delay, shouldReduceMotion]);
+  }, [useNewSystem, stagger.isReady, stagger.delay]);
 
-  // For reduced motion preference only, show static number
-  // We still render slot digits even before isClient to prevent hydration flash
-  if (shouldReduceMotion) {
-    return (
-      <span
-        ref={useNewSystem ? stagger.ref as React.RefObject<HTMLSpanElement> : elementRef}
-        className={`inline-flex items-baseline whitespace-pre-wrap ${className || ''}`}
-        aria-label={stringValue}
-      >
-        {stringValue}
-      </span>
-    );
-  }
+
 
   const chars = stringValue.split('');
   let digitIndex = 0;

@@ -185,15 +185,15 @@ function TechCard({
           onKeyDown={handleKeyDown}
           aria-label={`${label}${showLabel ? ' - tap to hide name' : ' - tap to show name'}`}
           aria-pressed={showLabel}
-          className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1"
+          className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1 min-h-4 md:min-h-5 flex items-center justify-center"
         >
           <AnimatePresence mode="wait">
             {!showLabel ? (
               <motion.div
                 key="icon"
                 initial={{ scale: 1, y: 0 }}
-                exit={{ 
-                  scale: 1.5, 
+                exit={{
+                  scale: 1.5,
                   y: 20,
                   opacity: 0,
                   transition: {
@@ -211,18 +211,18 @@ function TechCard({
             ) : (
               <motion.span
                 key="text"
-                initial={{ 
-                  scale: 0.5, 
+                initial={{
+                  scale: 0.5,
                   y: -20,
                   opacity: 0
                 }}
-                animate={{ 
-                  scale: 1, 
+                animate={{
+                  scale: 1,
                   y: 0,
                   opacity: 1
                 }}
-                exit={{ 
-                  scale: 0.5, 
+                exit={{
+                  scale: 0.5,
                   y: -20,
                   opacity: 0
                 }}
