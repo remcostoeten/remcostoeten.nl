@@ -198,7 +198,6 @@ function TechCard({
               >
                 <Icon
                   theme="dark"
-                  title={label}
                   className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
                 />
               </motion.div>
