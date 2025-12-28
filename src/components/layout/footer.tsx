@@ -80,7 +80,7 @@ export function Footer() {
               >
                 <GitCommit className="w-3 h-3" />
                 <span>
-                  Updated <AnimatedNumber value={relativeTimeInfo.value} duration={600} className="text-foreground" /> {relativeTimeInfo.unit} ago
+                  Updated <AnimatedNumber value={relativeTimeInfo.value} duration={600} initialProgress={0} className="text-foreground" /> {relativeTimeInfo.unit} ago
                 </span>
                 <span className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors truncate max-w-[180px]">
                   · {latestCommit.message}

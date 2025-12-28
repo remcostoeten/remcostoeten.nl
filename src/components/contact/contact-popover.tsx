@@ -13,6 +13,8 @@ export function ContactPopover() {
     const [isOpen, setIsOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const popoverRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -35,6 +37,70 @@ export function ContactPopover() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
+    }, [isOpen]);
+
+    // Accessibility: Focus management and Keyboard interaction
+    useEffect(() => {
+        if (isOpen) {
+            // Save current focus is implicitly handled by triggerRef if we assume user clicked it.
+            // But if triggered differently, we might want to save activeElement.
+            // For now, restoring to triggerRef is the requirement.
+
+            // Focus the first input or close button when opened
+            // Using a small timeout to ensure DOM is ready and animation started
+            const timer = setTimeout(() => {
+                const firstInput = popoverRef.current?.querySelector('input');
+                if (firstInput) {
+                    (firstInput as HTMLElement).focus();
+                } else {
+                    popoverRef.current?.focus();
+                }
+            }, 100);
+
+            const handleKeyDown = (e: KeyboardEvent) => {
+                if (e.key === 'Escape') {
+                    setIsOpen(false);
+                }
+
+                if (e.key === 'Tab') {
+                    if (!popoverRef.current) return;
+
+                    const focusableElements = popoverRef.current.querySelectorAll(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    );
+                    const firstElement = focusableElements[0] as HTMLElement;
+                    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+                    if (e.shiftKey) {
+                        if (document.activeElement === firstElement) {
+                            lastElement.focus();
+                            e.preventDefault();
+                        }
+                    } else {
+                        if (document.activeElement === lastElement) {
+                            firstElement.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
+            };
+
+            document.addEventListener('keydown', handleKeyDown);
+
+            return () => {
+                clearTimeout(timer);
+                document.removeEventListener('keydown', handleKeyDown);
+            };
+        } else {
+            // Restore focus to trigger when closed
+            // Only if we are closing (state changed from true to false), but this useEffect runs on isOpen change.
+            // If isOpen is now false, it means we just closed it.
+            if (triggerRef.current) {
+                // Check if focus is currently inside the popover (or lost) before restoring?
+                // Standard behavior is to restore.
+                triggerRef.current.focus();
+            }
+        }
     }, [isOpen]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -75,7 +141,11 @@ export function ContactPopover() {
     return (
         <div className="relative inline-block text-left" ref={containerRef}>
             <button
+                ref={triggerRef}
                 onClick={toggleOpen}
+                aria-haspopup="dialog"
+                aria-expanded={isOpen}
+                aria-controls={isOpen ? "contact-popover-content" : undefined}
                 className={cn(
                     "text-muted-foreground hover:text-foreground transition-colors text-sm font-medium",
                     isOpen && "text-foreground"
@@ -87,6 +157,11 @@ export function ContactPopover() {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
+                        ref={popoverRef}
+                        id="contact-popover-content"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="contact-form-title"
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: -10, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -95,7 +170,7 @@ export function ContactPopover() {
                     >
                         <div className="bg-popover text-popover-foreground rounded-xl border shadow-xl overflow-hidden p-6">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="font-semibold text-lg flex items-center gap-2">
+                                <h3 id="contact-form-title" className="font-semibold text-lg flex items-center gap-2">
                                     <Mail className="w-5 h-5 text-primary" />
                                     Get in touch
                                 </h3>

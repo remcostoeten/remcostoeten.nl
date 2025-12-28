@@ -89,17 +89,17 @@ export function BlogPostClient({
         <div className="flex flex-col gap-4 w-full">
           <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
             <p className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
-              <AnimatedNumber value={dateParts.day} duration={dateDuration} /> {dateParts.month} <AnimatedNumber value={dateParts.year} duration={dateDuration} />
+              <AnimatedNumber value={dateParts.day} duration={dateDuration} initialProgress={0} /> {dateParts.month} <AnimatedNumber value={dateParts.year} duration={dateDuration} initialProgress={0} />
             </p>
             <span className="text-neutral-300 dark:text-neutral-700">•</span>
             <p className="text-neutral-500 dark:text-neutral-400">
-              <AnimatedNumber value={readTimeMinutes} duration={dateDuration} /> min read
+              <AnimatedNumber value={readTimeMinutes} duration={dateDuration} initialProgress={0} /> min read
             </p>
             {uniqueViews > 0 && (
               <>
                 <span className="text-neutral-300 dark:text-neutral-700">•</span>
                 <span className="text-neutral-500 dark:text-neutral-400" title={`${totalViews} total views`}>
-                  <AnimatedNumber value={uniqueViews} duration={500} /> unique views
+                  <AnimatedNumber value={uniqueViews} duration={500} initialProgress={0} /> unique views
                 </span>
               </>
             )}

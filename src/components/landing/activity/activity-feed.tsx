@@ -190,7 +190,6 @@ function formatRelativeTime(dateString: string): string {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-
 function Equalizer({ className = '' }: { className?: string }) {
     return (
         <span className={`inline-flex items-end gap-[2px] h-3 mx-1 ${className}`} aria-hidden='true'>

@@ -60,7 +60,7 @@ export function ActivitySection() {
         colorPattern="light"
         headerAction={
           <time dateTime={`${year}`} className="text-muted-foreground/60 inline-flex items-baseline">
-            <AnimatedNumber value={year} duration={600} delay={200} />
+            <AnimatedNumber value={year} duration={600} delay={200} initialProgress={0} />
           </time>
         }
       />

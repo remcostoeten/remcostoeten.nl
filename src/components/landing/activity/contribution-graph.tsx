@@ -468,7 +468,7 @@ export function ActivityContributionGraph({
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions.toLocaleString()} duration={2000} delay={0} animateOnMount className="text-foreground font-medium" /> contributions in <time dateTime={`${year}`}><AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount /></time>
+                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions} duration={2000} delay={0} animateOnMount initialProgress={0} className="text-foreground font-medium" /> contributions in <time dateTime={`${year}`}><AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount initialProgress={0} /></time>
               </motion.span>
             ) : (
               <div className="flex items-center gap-1.5">

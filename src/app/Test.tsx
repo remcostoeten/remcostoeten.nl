@@ -265,6 +265,7 @@ export function SectionHeading({
                 <AnimatedNumber
                     value={rightText}
                     className={`${SECTION_HEADING_DEFAULTS.fontSize.right} ${colors.rightText}`}
+                    initialProgress={0}
                     {...animatedNumberProps}
                 />
             )

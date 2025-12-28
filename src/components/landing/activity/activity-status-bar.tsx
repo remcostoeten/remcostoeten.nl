@@ -6,5 +6,6 @@ type ActivityStatusBarProps = {
 };
 
 export function ActivityStatusBar({ activity }: ActivityStatusBarProps) {
-  return <></>;
+  // TODO: Implement status bar component
+  return null;
 }

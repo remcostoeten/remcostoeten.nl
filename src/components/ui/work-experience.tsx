@@ -222,7 +222,7 @@ export function ExperiencePositionItem({
             <div className="flex items-center">
               {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
                 const year = Number.parseInt(part)
-                return isNaN(year) ? part : <AnimatedNumber key={i} value={year} />
+                return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
               })}
             </div>
           </div>
@@ -284,7 +284,7 @@ export function ExperiencePositionItem({
               <dd>
                 {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
                   const year = Number.parseInt(part)
-                  return isNaN(year) ? part : <AnimatedNumber key={i} value={year} />
+                  return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
                 })}
               </dd>
             </dl>
