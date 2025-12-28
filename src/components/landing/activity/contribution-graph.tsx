@@ -476,7 +476,7 @@ export function ActivityContributionGraph({
           <span className="text-muted-foreground/80 pr-1">
             {isVisible ? (
               <>
-                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions.toLocaleString()} duration={2000} delay={0} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount />
+                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions} duration={2000} delay={0} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount />
               </>
             ) : (
               <span className="opacity-0">0 contributions in {year}</span>
