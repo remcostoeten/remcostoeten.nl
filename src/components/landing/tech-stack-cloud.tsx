@@ -139,7 +139,6 @@ function TechCard({
   ...props
 }: TechCardProps) {
   const [showLabel, setShowLabel] = useState(false)
-  const [showLabel, setShowLabel] = useState(false)
 
   const Icon = Icons[icon]
 
