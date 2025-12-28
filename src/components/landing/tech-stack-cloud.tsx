@@ -163,8 +163,9 @@ function TechCard({
       {...props}
     >
       <motion.div
-        className="relative flex flex-col items-center gap-2"
-        className="relative flex flex-col items-center gap-2"
+       <motion.div
+         className="relative flex flex-col items-center gap-2"
+         initial={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
         initial={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
         animate={
           isInView
