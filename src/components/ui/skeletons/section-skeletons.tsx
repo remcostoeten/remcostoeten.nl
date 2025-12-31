@@ -17,31 +17,44 @@ export function TechStackSkeleton() {
 }
 
 export function ActivitySectionSkeleton() {
+    // Must match the structure of Section -> noPadding={true} contentPadding={true}
+    // Mirrors: Heading, paragraph, ContributionGraph, ActivityFeed
     return (
-        <div className="py-12 md:py-16 lg:py-24">
-            {/* Heading */}
-            <div className="flex items-center justify-between mb-8 px-4 md:px-5">
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-6 w-32" />
-            </div>
-
-            <div className="space-y-8">
-                {/* Text */}
-                <div className="px-4 md:px-5 space-y-2">
-                    <Skeleton className="h-4 w-full max-w-2xl" />
-                    <Skeleton className="h-4 w-2/3" />
-                </div>
-
-                {/* Graph Placeholder */}
-                <div className="px-4 md:px-5">
-                    <Skeleton className="h-[180px] w-full rounded-md" />
-                </div>
-
-                {/* Feed */}
-                <div className="px-4 md:px-5">
-                    <ActivitySkeleton />
+        <section className="relative">
+            {/* Header - matching full-width-header style */}
+            <div className="full-width-header">
+                <div className="header-content-container flex items-center justify-between header-content-container--with-padding">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-5 w-16" />
                 </div>
             </div>
-        </div>
+
+            <div className="space-y-4 pt-3">
+                {/* Paragraph */}
+                <div className="px-4 md:px-5">
+                    <Skeleton className="h-4 w-full max-w-xl" />
+                </div>
+
+                {/* Contribution Graph - fixed height to match actual graph */}
+                <div className="px-4 md:px-5">
+                    <div className="h-[120px] w-full" /> {/* Match contribution graph height */}
+                </div>
+
+                {/* Activity Feed - 5 items */}
+                <div className="px-4 md:px-5">
+                    <div className="space-y-3">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="flex items-start gap-3">
+                                <Skeleton className="h-6 w-6 rounded-full shrink-0" />
+                                <div className="flex-1 space-y-1">
+                                    <Skeleton className="h-4 w-3/4" />
+                                    <Skeleton className="h-3 w-1/2" />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
     )
 }
