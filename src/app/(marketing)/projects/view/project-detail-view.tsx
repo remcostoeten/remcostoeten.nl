@@ -21,9 +21,9 @@ type Props = {
 export function ProjectDetailView({ project, previous, next }: Props) {
   return (
     <OptimizedPageTransition>
-      <article className="space-y-10">
+      <article className="mx-auto max-w-6xl space-y-10">
         <ProjectNav previous={previous} next={next} />
-        <header className="space-y-4 rounded-2xl border border-border/60 bg-gradient-to-br from-background-secondary/40 via-background/80 to-background p-6 shadow-lg">
+        <header className="rounded-3xl border border-border/60 bg-gradient-to-b from-background/60 via-background-secondary/40 to-background/80 p-8 shadow-lg backdrop-blur">
           <div className="flex flex-wrap items-center gap-3">
             <StatusBadge status={project.status} />
             <div className="flex flex-wrap gap-2">
@@ -37,11 +37,11 @@ export function ProjectDetailView({ project, previous, next }: Props) {
               ))}
             </div>
           </div>
-          <div className="space-y-3">
+          <div className="mt-4 space-y-3">
             <h1 className="text-3xl font-semibold leading-tight text-foreground">{project.title}</h1>
-            <p className="text-sm leading-relaxed text-muted-foreground">{project.description}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{project.summary}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
             <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
               Started {formatDate(project.dates.start)}
             </span>
@@ -54,8 +54,8 @@ export function ProjectDetailView({ project, previous, next }: Props) {
               Updated {formatDate(project.dates.updated)}
             </span>
           </div>
-          <StackPills stack={project.stack} />
-          <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+          <StackPills stack={project.stack} className="mt-4" />
+          <div className="mt-6 flex flex-wrap gap-3 text-sm text-muted-foreground">
             {project.links?.live && (
               <Link
                 href={project.links.live}
@@ -88,10 +88,10 @@ export function ProjectDetailView({ project, previous, next }: Props) {
             )}
           </div>
         </header>
-        <MediaFrame media={project.media} />
+        {project.media && <MediaFrame media={project.media} />}
         <div className="grid gap-6 lg:grid-cols-[2fr,1fr]">
           <div className="space-y-6">
-            <section className="rounded-xl border border-border/60 bg-card/60 p-6 shadow-sm">
+            <section className="rounded-2xl border border-border/60 bg-card/60 p-6 shadow-sm">
               <h2 className="text-xl font-semibold text-foreground">About this build</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 {project.description}
