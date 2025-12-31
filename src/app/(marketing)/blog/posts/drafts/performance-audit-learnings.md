@@ -140,6 +140,61 @@ Applying these fixes targets the core metrics directly:
 
 The build is shipping now. Time to measure again.
 
+## The Regression & Recovery (Part 2)
+
+After deploying the first batch of fixes (dynamic imports + ISR), I ran the metrics again. The results were... unexpected.
+
+| Metric | Deployment #1 | Status |
+| :--- | :--- | :--- |
+| **TBT** | 14.13s | Improved (from 23s) but Critical |
+| **CLS** | **0.632** | **CRITICAL REGRESSION** (from 0.015) 🔴 |
+
+### What happened?
+We traded one problem for another. By dynamically importing `TechStackCloud` and `ActivitySection` with `loading: () => null`, we caused the layout to shift dramatically when they finally loaded in. The page content would jump down ~500px, then jump back up when the components rendered.
+
+### The Fix: Precise Skeletons
+To fix the CLS, I had to implement skeletons that **perfectly matched** the final dimensions of the loaded components.
+
+1.  **Tech Stack**: Created a skeleton for the exact 8-card grid layout.
+2.  **Activity Section**: Replicated the `Section` padding and `ContributionGraph` height (120px) exactly.
+
+**Crucial Lesson**: Standard `py-24` padding in my initial skeleton was *too tall*, causing a shift *upwards* when real content loaded. Precision is key.
+
+### The Remaining TBT (Deferred Execution)
+Even with TBT down to 14s, it was still critical. The culprit was `ActivityFeed`—a heavy component with intervals and `framer-motion` springs running immediately on mount.
+
+**The Strategy**: **Deferred Execution**.
+Instead of letting these components hydrate immediately, I wrapped their heavy logic in a "readiness" check:
+
+```tsx
+const [isReady, setIsReady] = useState(false);
+
+useEffect(() => {
+    // Wait for 3.5s - let the main thread breathe!
+    const timer = setTimeout(() => setIsReady(true), 3500);
+    return () => clearTimeout(timer);
+}, []);
+
+useEffect(() => {
+    if (!isReady) return; 
+    // ... heavy fetch and intervals start here
+}, [isReady]);
+```
+
+This ensures the main thread is completely free during the critical first few seconds of page load.
+
+## Final Results
+
+After fixing the skeletons and deferring the activity feed:
+
+| Metric | Final Value | Status |
+| :--- | :--- | :--- |
+| **LCP** | 4.57s | Acceptable (Net improvement vs load) |
+| **CLS** | **0.065** | **FIXED** (Green < 0.1) 🟢 |
+| **TBT** | **10.78s** | **Improved** (From 23s -> 10s) 🟢 |
+
+We cut the Total Blocking Time by over **50%** and completely resolved the Layout Shift regressions. Performance engineering is an iterative game of whack-a-mole—but we won this round.
+
 ## Scripts to measure
 To keep an eye on this in the future, I wrote a script that spins up the production build locally and benchmarks it with Lighthouse CLI.
 

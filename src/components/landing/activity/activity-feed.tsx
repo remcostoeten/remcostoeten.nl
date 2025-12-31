@@ -293,8 +293,18 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     const blurAmount = useTransform(velocityX, [-2000, 0, 2000], [4, 0, 4]);
     const springBlur = useSpring(blurAmount, { stiffness: 400, damping: 30 });
 
+    const [isReady, setIsReady] = useState(false);
+
+    // Delay everything to unblock initial TBT
+    useEffect(() => {
+        const timer = setTimeout(() => setIsReady(true), 3500);
+        return () => clearTimeout(timer);
+    }, []);
+
     useEffect(() => {
         let cancelled = false;
+        if (!isReady) return;
+
         const fetchRecent = async () => {
             try {
                 const spotifyTracks = await getLatestTracks(activityCount);
@@ -313,7 +323,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         };
         fetchRecent();
         return () => { cancelled = true; };
-    }, [activityCount]);
+    }, [activityCount, isReady]);
 
     const rotateActivity = useCallback(() => {
         if (activities.length === 0 || isPaused) return;
@@ -357,7 +367,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     };
 
     useEffect(() => {
-        if (activities.length === 0) return;
+        if (activities.length === 0 || !isReady) return;
 
         const interval = setInterval(() => {
             if (!isPaused) {
@@ -373,7 +383,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         }, 100);
 
         return () => clearInterval(interval);
-    }, [activities.length, isPaused, rotationInterval, rotateActivity]);
+    }, [activities.length, isPaused, rotationInterval, rotateActivity, isReady]);
 
     useEffect(() => {
         setElapsedTime(0);

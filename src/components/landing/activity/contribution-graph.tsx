@@ -57,7 +57,16 @@ export function ActivityContributionGraph({
     }
   }, []);
 
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
+    const timer = setTimeout(() => setIsReady(true), 4000); // Slightly longer delay than feed
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -70,7 +79,7 @@ export function ActivityContributionGraph({
       }
     };
     fetchData();
-  }, [year]);
+  }, [year, isReady]);
 
   useEffect(() => {
     if (!loading && !githubLoading) {
