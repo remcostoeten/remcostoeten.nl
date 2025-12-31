@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, useVelocity, useSpring, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Plus, GitBranch, Lock, Globe } from 'lucide-react';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
@@ -41,19 +41,16 @@ const slideVariants = {
         x: direction > 0 ? 300 : -300,
         opacity: 0,
         scale: 0.95,
-        filter: "blur(4px)",
     }),
     center: {
         zIndex: 1,
         x: 0,
         opacity: 1,
         scale: 1,
-        filter: "blur(0px)",
         transition: {
             x: { type: "spring" as const, stiffness: 300, damping: 30 },
             opacity: { duration: 0.2 },
             scale: { duration: 0.2 },
-            filter: { duration: 0.2 },
         }
     },
     exit: (direction: number) => ({
@@ -61,12 +58,10 @@ const slideVariants = {
         x: direction < 0 ? 300 : -300,
         opacity: 0,
         scale: 0.95,
-        filter: "blur(4px)",
         transition: {
             x: { type: "spring" as const, stiffness: 300, damping: 30 },
             opacity: { duration: 0.2 },
             scale: { duration: 0.2 },
-            filter: { duration: 0.2 },
         }
     })
 };
@@ -75,22 +70,18 @@ const wordVariants = {
     initial: {
         y: 20,
         opacity: 0,
-        filter: "blur(8px)",
     },
     animate: {
         y: 0,
         opacity: 1,
-        filter: "blur(0px)",
         transition: {
-            ...SPRING_CONFIG,
-            opacity: { duration: 0.5, ease: SMOOTH_EASE },
-            filter: { duration: 0.4 },
+            duration: 0.3,
+            ease: SMOOTH_EASE,
         }
     },
     exit: {
         y: -10,
         opacity: 0,
-        filter: "blur(4px)",
         transition: {
             duration: 0.2,
             ease: SMOOTH_EASE,
@@ -103,25 +94,20 @@ const highlightVariants = {
         y: 24,
         opacity: 0,
         scale: 0.9,
-        filter: "blur(10px)",
     },
     animate: {
         y: 0,
         opacity: 1,
         scale: 1,
-        filter: "blur(0px)",
         transition: {
-            ...SPRING_CONFIG,
-            opacity: { duration: 0.6, ease: SMOOTH_EASE },
-            filter: { duration: 0.5 },
-            scale: { duration: 0.4, ease: SMOOTH_EASE },
+            duration: 0.3,
+            ease: SMOOTH_EASE,
         }
     },
     exit: {
         y: -12,
         opacity: 0,
         scale: 0.95,
-        filter: "blur(6px)",
         transition: {
             duration: 0.25,
             ease: SMOOTH_EASE,
@@ -287,11 +273,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     const playbackState = useSpotifyPlayback();
 
     // Motion values for drag and velocity
-    const x = useMotionValue(0);
-    const velocityX = useVelocity(x);
-    // Smooth blur based on velocity
-    const blurAmount = useTransform(velocityX, [-2000, 0, 2000], [4, 0, 4]);
-    const springBlur = useSpring(blurAmount, { stiffness: 400, damping: 30 });
+    // Removed velocity-based blur for performance - was causing heavy per-frame calculations
 
     const [isReady, setIsReady] = useState(false);
 
@@ -611,7 +593,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             dragConstraints={{ left: 0, right: 0 }}
                             dragElastic={0.2}
                             onDragEnd={(_, info) => handleDragEnd(info)}
-                            style={{ x, filter: `blur(${springBlur}px)` }}
+                            style={{}} // Removed velocity-based blur
                             className="text-[13px] leading-loose"
                         >
                             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 pr-8">
