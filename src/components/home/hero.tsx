@@ -1,5 +1,4 @@
 
-import { AnimatedNumber } from '../ui/effects/animated-number';
 import Image from 'next/image';
 
 export function Intro() {
@@ -24,16 +23,27 @@ export function Intro() {
         </div>
       </div>
 
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        Dutch software engineer focused on front-end development with a background in{' '}
-        <span className="text-foreground/80 italic">graphic design</span>.{' '}
-        <span className="font-semibold text-foreground"><AnimatedNumber value={8} duration={1500} immediate initialProgress={0.6} /> years</span> of experience across{' '}
-        <span className="text-foreground/80 underline decoration-dotted underline-offset-4">e-commerce</span>,{' '}
-        <span className="text-foreground/80 underline decoration-dotted underline-offset-4">SaaS</span>,{' '}
-        <span className="text-foreground/80 underline decoration-dotted underline-offset-4">government</span>, and{' '}
-        <span className="text-foreground/80 underline decoration-dotted underline-offset-4">e-learning</span> projects.
-      </p>
 
+      {/*
+      * If you for some reason read this part
+      * Than let's just act as if you never saw t his
+      * I'm sorry for the trauma.
+      */}
+
+      <div className="prose prose-sm dark:prose-invert text-muted-foreground">
+        <p>
+          Dutch software engineer focused on front-end development with a degree in <em>graphic design</em>. <strong>8 years</strong> of experience{' '}
+          across{' '}
+          e-commerce,{' '}
+          SaaS,{' '}
+          government, and{' '}
+          e-learning projects.
+        </p>
+      </div>
     </header>
   );
+}
+
+function U({ children }: { children: React.ReactNode }) {
+  return <span className='text-foreground/80 underline decoration-dotted underline-offset-4'>{children}</span>;
 }

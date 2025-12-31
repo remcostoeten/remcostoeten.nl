@@ -195,6 +195,45 @@ After fixing the skeletons and deferring the activity feed:
 
 We cut the Total Blocking Time by over **50%** and completely resolved the Layout Shift regressions. Performance engineering is an iterative game of whack-a-mole—but we won this round.
 
+## Latest Measurements (Dec 31, 2025)
+
+After the latest round of optimizations—deferring hydration for the activity feed and graph components (`8ceb44b`), aligning skeleton heights (`960da13`), and moving the tech stack section below the fold (`3816fbd`)—here are the current metrics:
+
+| Metric | Measured Value | Status |
+| :--- | :--- | :--- |
+| **LCP** (Largest Contentful Paint) | 3.76s | 🟡 Needs Improvement |
+| **FCP** (First Contentful Paint) | 2.94s | 🟡 Needs Improvement |
+| **TBT** (Total Blocking Time) | 1.71s | 🔴 Critical |
+| **CLS** (Cumulative Layout Shift) | 0.305 | 🔴 Critical |
+| **TTI** (Time to Interactive) | 8.17s | 🔴 Critical |
+| **Speed Index** | 3.26s | 🟢 Good |
+
+**Performance Score: 41/100**
+
+### What Changed?
+
+**The Good:**
+- **TBT dropped from 10.78s → 1.71s** — a massive **84% improvement**. The deferred hydration strategy is working. The main thread is now free during the critical load window.
+- **Speed Index is green** — the page *appears* to load quickly, even if interactivity lags.
+
+**The Bad:**
+- **CLS regressed from 0.065 → 0.305** — we've lost ground here. The skeleton height fixes from `960da13` may not be matching actual content heights, or new components added in recent commits are shifting the layout.
+- **LCP and FCP are worse** — likely due to the tech stack section being moved, changing which element is the "largest contentful paint."
+
+### Next Steps
+
+1. **Audit CLS regression**: Use DevTools Performance tab to identify which elements are shifting. Likely culprits:
+   - Tech stack cloud loading
+   - Activity feed skeleton misalignment
+   - Font loading causing text reflow
+
+2. **Preload LCP element**: If the new LCP element is an image or font-dependent text, consider `<link rel="preload">`.
+
+3. **Reduce TTI**: The 8.17s TTI suggests there's still heavy JavaScript running. Consider:
+   - Further code splitting
+   - Moving non-critical scripts to `afterInteractive` strategy
+   - Reducing animation library usage
+
 ## Scripts to measure
 To keep an eye on this in the future, I wrote a script that spins up the production build locally and benchmarks it with Lighthouse CLI.
 

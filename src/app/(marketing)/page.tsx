@@ -5,7 +5,6 @@ import { homeMetadata } from '@/core/metadata'
 import nextDynamic from 'next/dynamic'
 import { TechStackSkeleton, ActivitySectionSkeleton } from '@/components/ui/skeletons/section-skeletons'
 
-// Heavy client components - dynamically imported to reduce initial bundle
 const ActivitySection = nextDynamic(
   () => import('@/components/landing/activity/section').then(m => ({ default: m.ActivitySection })),
   { loading: () => <ActivitySectionSkeleton /> }
@@ -20,7 +19,6 @@ const WorkExperienceDemo = nextDynamic(() => import('@/components/home/work-expe
   loading: () => <div className="h-[400px] w-full bg-muted/10 animate-pulse rounded-lg" />
 })
 
-// Enable ISR - revalidate every 60 seconds instead of forcing dynamic SSR
 export const revalidate = 60
 
 export { homeMetadata as metadata }

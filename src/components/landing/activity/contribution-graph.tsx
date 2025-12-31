@@ -359,7 +359,7 @@ export function ActivityContributionGraph({
               ))}
             </div>
 
-            {/* Foreground Data Grid */}
+            {/* Foreground Data Grid - Using CSS transitions instead of framer-motion for 371 cells */}
             <div className="flex w-full relative z-10">
               {weeks.map((week, weekIndex) => (
                 <div
@@ -373,27 +373,22 @@ export function ActivityContributionGraph({
                 >
                   {week.map((day, dayIndex) => {
                     const showData = !loading && !githubLoading && isVisible;
-                    const animProps = getAnimationProps(weekIndex, dayIndex, weeks.length);
                     const hasData = !!day.date;
+                    // Simple staggered delay based on position - much cheaper than spring physics
+                    const delayMs = (weekIndex * 7 + dayIndex) * 2;
 
                     return (
-                      <motion.div
+                      <div
                         key={dayIndex}
-                        style={{ height: squareSize }} // Square
-                        className={`w-full rounded-[2px] ${hasData ? 'cursor-pointer' : ''
-                          } ${hasData ? getColorForLevel(day.level) : 'bg-transparent'
-                          } ${!hasData ? 'opacity-0' : ''
-                          }`}
-                        // Animation props
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={showData ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
-                        transition={{
-                          delay: animProps.delay,
-                          duration: animProps.duration,
-                          type: animProps.type,
-                          stiffness: 200,
-                          damping: 20
+                        style={{
+                          height: squareSize,
+                          transitionDelay: `${delayMs}ms`
                         }}
+                        className={`w-full rounded-[2px] transition-all duration-300 ease-out ${hasData ? 'cursor-pointer' : ''
+                          } ${hasData ? getColorForLevel(day.level) : 'bg-transparent'
+                          } ${!hasData ? 'opacity-0 scale-0' : ''
+                          } ${showData && hasData ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
+                          }`}
                         onMouseEnter={(e) => hasData && handleMouseEnter(e, day)}
                         onMouseLeave={handleMouseLeave}
                         onClick={() => handleDayClick(day)}

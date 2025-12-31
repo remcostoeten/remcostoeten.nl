@@ -19,9 +19,9 @@ export function TechStackSkeleton() {
 export function ActivitySectionSkeleton() {
     // Must match the structure of Section -> noPadding={true} contentPadding={true}
     // Mirrors: Heading, paragraph, ContributionGraph, ActivityFeed
+    // CRITICAL: min-height must match actual content to prevent CLS
     return (
-        <section className="relative">
-            {/* Header - matching full-width-header style */}
+        <section className="relative" style={{ minHeight: '380px' }}>
             <div className="full-width-header">
                 <div className="header-content-container flex items-center justify-between header-content-container--with-padding">
                     <Skeleton className="h-5 w-48" />
@@ -35,13 +35,13 @@ export function ActivitySectionSkeleton() {
                     <Skeleton className="h-4 w-full max-w-xl" />
                 </div>
 
-                {/* Contribution Graph - fixed height to match actual graph */}
-                <div className="px-4 md:px-5">
-                    <div className="h-[120px] w-full" /> {/* Match contribution graph height */}
+                {/* Contribution Graph - min-height prevents shift when actual graph loads */}
+                <div className="px-4 md:px-5" style={{ minHeight: '90px' }}>
+                    <div className="h-[85px] w-full bg-muted/5 rounded" />
                 </div>
 
-                {/* Activity Feed - 5 items */}
-                <div className="px-4 md:px-5">
+                {/* Activity Feed - 5 items with fixed container height */}
+                <div className="px-4 md:px-5" style={{ minHeight: '120px' }}>
                     <div className="space-y-3">
                         {Array.from({ length: 3 }).map((_, i) => (
                             <div key={i} className="flex items-start gap-3">
