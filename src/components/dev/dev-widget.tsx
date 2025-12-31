@@ -26,7 +26,7 @@ export function DevWidget() {
     const pathname = usePathname()
 
     // Check if user is admin or if we're in development
-    const isAdmin = session?.user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL
+    const isAdmin = session?.user?.email && process.env.NEXT_PUBLIC_ADMIN_EMAIL && session.user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL
     const isDev = process.env.NODE_ENV === 'development'
     const shouldShow = isAdmin || isDev
 
