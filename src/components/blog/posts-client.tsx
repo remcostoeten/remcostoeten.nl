@@ -1,18 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { motion, useInView } from 'framer-motion'
 
 import { getDateParts, readMinutes } from '@/lib/blog-format'
 
-import { AnimatedNumber } from '../ui/animated-number'
+import { AnimatedNumber } from '../ui/effects/animated-number'
 
 export function PostCountHeader({ count }: { count: number }) {
   return (
     <span className="text-muted-foreground/60 inline-flex items-baseline gap-1">
-      <AnimatedNumber value={count} duration={500} />
+      <AnimatedNumber value={count} duration={500} initialProgress={0} />
       <span>posts</span>
     </span>
   )
@@ -44,14 +44,16 @@ function BlogCard({ post, index }: Props) {
   const cardRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(cardRef, { once: true, margin: "-50px" })
 
-  // Optimized duration calculations - capped and more consistent
-  const indexDuration = Math.min(600 + (index * 100), 1200)
+  // Animation duration calculations - slower for more satisfying effect
+  const indexDuration = Math.min(1800 + (index * 200), 2400)
+
 
   const dateParts = getDateParts(post.metadata.publishedAt)
   const dayNumber = dateParts.day
   const monthYear = `${dateParts.month} ${dateParts.year}`
   const readTimeMinutes = readMinutes(post.metadata.readTime || '')
-  const dateDuration = Math.min(800 + (index * 30), 1000)
+  const dateDuration = Math.min(1400 + (index * 100), 1800)
+
   const allTags = [
     ...(post.metadata.categories || []),
     ...(post.metadata.tags || []),
@@ -74,7 +76,7 @@ function BlogCard({ post, index }: Props) {
         <Link
           href={`/blog/${post.slug}`}
           className="group relative block active:scale-[0.995] transition-transform duration-200 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
-          style={{ contain: 'layout style paint' }}
+
         >
           <div
             className="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -87,7 +89,7 @@ function BlogCard({ post, index }: Props) {
                 className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right"
                 aria-hidden="true"
               >
-                <AnimatedNumber value={formattedIndex} duration={indexDuration} animateOnMount />
+                <AnimatedNumber value={formattedIndex} duration={indexDuration} />
               </span>
 
               <div className="flex-1 min-w-0 pt-1">
@@ -118,7 +120,7 @@ function BlogCard({ post, index }: Props) {
                     ))}
                     {extraTags > 0 && (
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-500 border border-neutral-300 dark:border-neutral-800">
-                        <AnimatedNumber value={`+${extraTags}`} duration={indexDuration} />
+                        <AnimatedNumber value={`+${extraTags}`} duration={indexDuration} initialProgress={0} />
                       </span>
                     )}
                   </div>
@@ -126,7 +128,7 @@ function BlogCard({ post, index }: Props) {
 
                 <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500 dark:text-neutral-500">
                   <time dateTime={post.metadata.publishedAt} className="tabular-nums">
-                    <AnimatedNumber value={dayNumber} duration={dateDuration} animateOnMount /> {monthYear}
+                    <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
                   </time>
                   {post.metadata.readTime && (
                     <>
@@ -135,7 +137,6 @@ function BlogCard({ post, index }: Props) {
                         <AnimatedNumber
                           value={readTimeMinutes}
                           duration={dateDuration}
-                          animateOnMount
                         /> min read
                       </span>
                     </>
@@ -147,7 +148,6 @@ function BlogCard({ post, index }: Props) {
                         <AnimatedNumber
                           value={post.uniqueViews}
                           duration={dateDuration}
-                          animateOnMount
                         /> unique views
                       </span>
                     </>
@@ -221,33 +221,21 @@ function BlogCardSkeleton() {
 
 export function BlogPostsClient({ posts }: BlogPostsProps) {
   const [showAll, setShowAll] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading] = useState(false)
 
   const displayedBlogs = showAll ? posts : posts.slice(0, 3)
   const hasMorePosts = posts.length > 3
 
-  if (isLoading) {
-    return (
-      <div style={{ contain: 'layout' }}>
-        <ul className="flex flex-col m-0 p-0 list-none" role="list" style={{ contain: 'layout' }}>
-          {Array.from({ length: 3 }).map((_, index) => (
-            <BlogCardSkeleton key={index} />
-          ))}
-        </ul>
-      </div>
-    )
-  }
-
   return (
-    <div style={{ contain: 'layout' }}>
-      <ul className="flex flex-col m-0 p-0 list-none" role="list" style={{ contain: 'layout' }}>
+    <div>
+      <ul className="flex flex-col m-0 p-0 list-none" role="list">
         {displayedBlogs.map((post, index) => (
           <BlogCard key={post.slug} post={post} index={index} />
         ))}
       </ul>
 
       {hasMorePosts && (
-        <div className="mt-8 flex justify-end animate-enter" style={{ animationDelay: '400ms', contain: 'layout' }}>
+        <div className="mt-8 flex justify-end animate-enter" style={{ animationDelay: '400ms' }}>
           <button
             onClick={() => setShowAll(!showAll)}
             className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"

@@ -1,5 +1,5 @@
 import { motion, useInView, useReducedMotion, Variants } from 'framer-motion'
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import { cn } from '@/lib/utils'
 
 interface StaggeredRevealProps {
@@ -125,7 +125,7 @@ export function StaggeredReveal({
 }
 
 // Hook for consistent number animations
-export function useAnimatedNumber(value: number, duration: number = 800) {
+export function useAnimatedNumber(duration: number = 800) {
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-50px" as any })
   const shouldReduceMotion = useReducedMotion()

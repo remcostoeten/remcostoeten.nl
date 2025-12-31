@@ -1,5 +1,5 @@
 
-import { AnimatedNumber } from '../ui/animated-number';
+import { AnimatedNumber } from '../ui/effects/animated-number';
 import Image from 'next/image';
 
 export function Intro() {
@@ -27,7 +27,7 @@ export function Intro() {
       <p className="text-sm text-muted-foreground leading-relaxed">
         Dutch software engineer focused on front-end development with a background in{' '}
         <span className="text-foreground/80 italic">graphic design</span>.{' '}
-        <span className="font-semibold text-foreground"><AnimatedNumber value={8} duration={1200} group="hero" priority={0} initialProgress={0.75} /> years</span> of experience across{' '}
+        <span className="font-semibold text-foreground"><AnimatedNumber value={8} duration={1500} immediate initialProgress={0.6} /> years</span> of experience across{' '}
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">e-commerce</span>,{' '}
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">SaaS</span>,{' '}
         <span className="text-foreground/80 underline decoration-dotted underline-offset-4">government</span>, and{' '}

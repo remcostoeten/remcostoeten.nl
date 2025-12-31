@@ -1,7 +1,7 @@
 "use client"
 
 import React, { type ComponentProps, type ReactNode } from "react"
-import { AnimatedNumber } from "@/components/ui/animated-number"
+import { AnimatedNumber } from "@/components/ui/effects/animated-number"
 
 // =============================================================================
 // COLOR & STYLE CONSTANTS - Customize these for your brand
@@ -265,6 +265,7 @@ export function SectionHeading({
                 <AnimatedNumber
                     value={rightText}
                     className={`${SECTION_HEADING_DEFAULTS.fontSize.right} ${colors.rightText}`}
+                    initialProgress={0}
                     {...animatedNumberProps}
                 />
             )

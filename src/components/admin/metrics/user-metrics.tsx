@@ -4,10 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Badge } from '@/components/ui/badge'
 import {
-    Users,
     Globe,
-    Activity,
-    Map as MapIcon
+    Activity
 } from 'lucide-react'
 
 type MetricsProps = {

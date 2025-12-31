@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { signIn, signOut, useSession } from '@/lib/auth-client';
+import { signOut, useSession } from '@/lib/auth-client';
 import { VimStatusBar } from '@/components/vim-status-bar';
 import { OAuthModal } from '@/components/auth/oauth-modal';
 import { useVimCommand } from '@/hooks/use-vim-command';
+import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow';
 
 const ALLOWED_GITHUB_USERNAME = 'remcostoeten';
 
-interface VimAuthProviderProps {
+type Props = {
     children: React.ReactNode;
 }
 
-export function VimAuthProvider({ children }: VimAuthProviderProps) {
+export function VimAuthProvider({ children }: Props) {
     const { data: session } = useSession();
     const [showOAuthModal, setShowOAuthModal] = useState(false);
     const { command: backgroundCommand, clearCommand: clearBackgroundCommand } = useVimCommand();
@@ -67,31 +68,8 @@ export function VimAuthProvider({ children }: VimAuthProviderProps) {
             />
 
             {/* Auth indicator glow for logged-in users */}
-            <AuthIndicator isAuthenticated={!!session?.user} />
+            {session?.user && <OuterAuthGlow />}
         </>
     );
 }
 
-// Subtle glow indicator for authenticated users
-function AuthIndicator({ isAuthenticated }: { isAuthenticated: boolean }) {
-    return (
-        <AnimatePresence>
-            {isAuthenticated && (
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="fixed bottom-4 right-4 z-40"
-                    title="Authenticated as remcostoeten"
-                >
-                    <div className="relative">
-                        {/* Glow effect */}
-                        <div className="absolute inset-0 size-3 bg-green-500 rounded-full blur-sm animate-pulse" />
-                        {/* Solid dot */}
-                        <div className="relative size-3 bg-green-500 rounded-full border border-green-400/50" />
-                    </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
-}

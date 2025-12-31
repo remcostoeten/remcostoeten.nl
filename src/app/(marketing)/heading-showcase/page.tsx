@@ -6,29 +6,13 @@ import { Badge } from '@/components/ui/badge';
 import {
   Star,
   Settings,
-  Heart,
   Download,
-  ExternalLink,
-  Search,
   Bell,
   User,
-  Home,
-  Mail,
-  Calendar,
-  Tag,
   Activity,
   Code,
   Zap,
-  Shield,
-  Globe,
-  Lock,
-  Eye,
-  Edit,
-  Trash2,
-  Plus,
-  ArrowUp,
-  ArrowDown,
-  RotateCw
+  Lock
 } from 'lucide-react';
 
 export default function HeadingShowcasePage() {
@@ -71,7 +55,6 @@ export default function HeadingShowcasePage() {
               <Heading
                 title="Dynamic Flow"
                 icon={Activity}
-                animated
                 bgDirection="diagonal"
               />
             </div>
@@ -93,7 +76,6 @@ export default function HeadingShowcasePage() {
               <Heading
                 title="System Monitor"
                 icon={Settings}
-                animated
                 colorPattern="dark"
                 bgDirection="vertical"
                 headerAction={<Badge variant="outline" className="text-green-500 border-green-500/30 bg-green-500/10">Active</Badge>}
@@ -320,7 +302,7 @@ export default function HeadingShowcasePage() {
               <Heading
                 title="Flowing Pattern"
                 icon={Activity}
-                animated
+
               />
             </div>
 
@@ -338,7 +320,6 @@ export default function HeadingShowcasePage() {
               <Heading
                 title="Premium Experience"
                 icon={Star}
-                animated
                 hueOverlay
                 headerAction={<Badge variant="secondary" className="bg-brand-500/10 text-brand-500 border-brand-500/20">Pro</Badge>}
               />

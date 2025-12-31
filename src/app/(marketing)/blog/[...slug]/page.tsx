@@ -14,6 +14,7 @@ import { blogPosts } from '@/server/db/schema'
 import { eq } from 'drizzle-orm'
 
 // Force dynamic rendering due to auth requirements
+// Must be dynamic due to auth (cookies/headers) usage
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {

@@ -1,8 +1,8 @@
 'use client';
 
-import { Copy, Search, X, ArrowUp, ArrowDown, ChevronDown, Check, CheckCircle2, File as FileIcon } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { getLanguageIcon } from "./language-icons";
-import { useCallback, useEffect, useRef, useState, useMemo, memo } from "react";
+import { useCallback, useRef, useState } from "react";
 import React from "react";
 import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
 import { clsx, type ClassValue } from "clsx";
@@ -24,12 +24,7 @@ export const cn = (...inputs: ClassValue[]) => {
   return Array.from(merged.values()).join(' ');
 };
 
-const calculateCodeStats = (code: string) => {
-  const lines = code.split("\n").length;
-  const chars = code.length;
-  const words = code.trim().split(/\s+/).length;
-  return { lines, chars, words };
-};
+
 
 
 
@@ -105,44 +100,7 @@ const customTheme: TCustomTheme = {
 
 
 
-type TButtonVariant = "default" | "ghost";
-type TButtonSize = "default" | "sm" | "icon";
 
-interface TButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: TButtonVariant;
-  size?: TButtonSize;
-}
-
-const getButtonClasses = (variant: TButtonVariant = "default", size: TButtonSize = "default") => {
-  const base = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50";
-
-  const variants = {
-    default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
-    ghost: "hover:bg-accent hover:text-accent-foreground",
-  };
-
-  const sizes = {
-    default: "h-9 px-4 py-2",
-    sm: "h-8 rounded-md px-3 text-xs",
-    icon: "h-9 w-9",
-  };
-
-  return cn(base, variants[variant], sizes[size]);
-};
-
-const Button = memo(function Button({
-  className,
-  variant = "default",
-  size = "default",
-  ...props
-}: TButtonProps) {
-  return (
-    <button
-      className={cn(getButtonClasses(variant, size), className)}
-      {...props}
-    />
-  );
-});
 
 
 export type TCodeBlockProps = {

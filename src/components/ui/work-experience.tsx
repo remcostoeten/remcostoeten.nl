@@ -13,7 +13,7 @@ import ReactMarkdown from "react-markdown"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { AnimatedNumber } from "@/components/ui/animated-number"
+import { AnimatedNumber } from "@/components/ui/effects/animated-number"
 
 const iconMap = {
   code: CodeXmlIcon,
@@ -94,7 +94,7 @@ export function WorkExperience({
             {previewJob && (
               <div className="relative">
                 <ExperienceItem key={previewJob.id} experience={previewJob} shouldExpandAll={false} />
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
               </div>
             )}
           </div>
@@ -222,7 +222,7 @@ export function ExperiencePositionItem({
             <div className="flex items-center">
               {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
                 const year = Number.parseInt(part)
-                return isNaN(year) ? part : <AnimatedNumber key={i} value={year} />
+                return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
               })}
             </div>
           </div>
@@ -284,7 +284,7 @@ export function ExperiencePositionItem({
               <dd>
                 {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
                   const year = Number.parseInt(part)
-                  return isNaN(year) ? part : <AnimatedNumber key={i} value={year} />
+                  return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
                 })}
               </dd>
             </dl>

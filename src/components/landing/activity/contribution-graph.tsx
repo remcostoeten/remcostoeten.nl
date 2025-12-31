@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
-import { AnimatedNumber } from '../../ui/animated-number';
+import { AnimatedNumber } from '../../ui/effects/animated-number';
 
 interface ActivityDay {
   date: string;
@@ -35,22 +35,18 @@ export function ActivityContributionGraph({
   const [hoveredDay, setHoveredDay] = useState<ActivityDay | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  const [paused, setPaused] = useState(false);
+
   const { data: githubContributions = new Map(), isLoading: githubLoading } = useGitHubContributions(year);
 
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
 
   // Use new hook for detailed events on demand or pre-fetch
-  // For now, we'll fetch a broad range to cover the view
   const startDate = `${year}-01-01`;
   const endDate = `${year}-12-31`;
   const { data: detailedEvents } = useGitHubEventsByDate(startDate, endDate);
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+
   const graphRef = useRef<HTMLDivElement>(null);
 
   // Mobile optimization: verify if touch device to disable tooltips
@@ -61,51 +57,10 @@ export function ActivityContributionGraph({
     }
   }, []);
 
-  const snapToNearestWeek = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft } = scrollContainerRef.current;
-      const weekWidth = 13; // 10px day + 3px gap
-      const nearestWeek = Math.round(scrollLeft / weekWidth);
-      scrollContainerRef.current.scrollTo({
-        left: nearestWeek * weekWidth,
-        behavior: 'smooth',
-      });
-    }
-  }, []);
-
-  const handleDragMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setPaused(true); // Pause auto‑scrolling when user starts dragging
-    setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
-    setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
-    e.preventDefault();
-  };
-
-  const handleDragMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - (scrollContainerRef.current.offsetLeft || 0);
-    const walk = (x - startX) * 1.5; // Adjust scroll speed
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleDragMouseUp = () => {
-    setIsDragging(false);
-    snapToNearestWeek(); // Snap to nearest week when drag ends
-    setPaused(false); // Resume auto‑scrolling
-  };
-
-  const handleDragMouseLeave = () => {
-    setIsDragging(false);
-    snapToNearestWeek(); // Snap to nearest week when mouse leaves
-    setPaused(false); // Resume auto‑scrolling
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // GitHub contributions now fetched via hook
         const spotifyTracks = await getLatestTracks();
         setTracks(spotifyTracks);
       } catch (error) {
@@ -118,31 +73,18 @@ export function ActivityContributionGraph({
   }, [year]);
 
   useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      if (isDragging) {
-        setIsDragging(false);
-        snapToNearestWeek(); // Snap to nearest week if drag ends outside
-        setPaused(false); // Resume auto‑scrolling
-      }
-    };
-
-    if (isDragging) {
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-      return () => {
-        document.removeEventListener('mouseup', handleGlobalMouseUp);
-      };
+    if (!loading && !githubLoading) {
+      setIsVisible(true);
     }
-  }, [isDragging, snapToNearestWeek]);
+  }, [loading, githubLoading]);
 
-  // Auto-scrolling disabled to remove jittery effect
-  // Users can still drag to scroll manually which is smooth
+
 
 
   const activityData = useMemo(() => {
     const now = new Date();
     const isCurrentYear = year === now.getFullYear();
 
-    // If current year, end at today. Otherwise end at Dec 31st.
     const end = isCurrentYear ? now : new Date(year, 11, 31);
     const start = new Date(year, 0, 1);
 
@@ -167,12 +109,10 @@ export function ActivityContributionGraph({
       });
     }
 
-    // Merge detailed events if available
     if (detailedEvents) {
       detailedEvents.forEach((day: { date: string, events: GitHubEventDetail[] }) => {
         const mapDay = activityMap.get(day.date);
         if (mapDay) {
-          // Map detailed events to the expected structure
           mapDay.details = mapDay.details || { commits: [], tracks: [] };
           day.events.forEach(event => {
             mapDay.details!.commits.push({
@@ -212,32 +152,28 @@ export function ActivityContributionGraph({
   }, [githubContributions, tracks, year, loading, githubLoading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
-    // Dark theme colors using brand color variants - more distinct shades
     const darkColors = [
-      'bg-[#0d1117]', // Level 0: Same as background (invisible/empty)
-      'bg-brand-500/30', // Level 1: Subtle but visible
-      'bg-brand-500/50', // Level 2: Clearly active
-      'bg-brand-500/75', // Level 3: High activity
-      'bg-brand-500'     // Level 4: Peak activity (solid)
+      'bg-[#0d1117]',
+      'bg-brand-500/30',
+      'bg-brand-500/50',
+      'bg-brand-500/75',
+      'bg-brand-500'
     ];
 
-    // Light theme colors using brand color variants
     const lightColors = [
-      'bg-neutral-800/60',  // Level 0: Dark subtle background to match theme
-      'bg-brand-500/30',    // Level 1
-      'bg-brand-500/50',    // Level 2
-      'bg-brand-500/75',    // Level 3
-      'bg-brand-500'        // Level 4
+      'bg-neutral-800/60',
+      'bg-brand-500/30',
+      'bg-brand-500/50',
+      'bg-brand-500/75',
+      'bg-brand-500'
     ];
 
-    // Check if we're in dark theme by checking document class
     const isDarkTheme = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
-
     return isDarkTheme ? darkColors[level] : lightColors[level];
   };
 
   const handleMouseEnter = (e: React.MouseEvent, day: ActivityDay) => {
-    if (isTouchDevice) return; // Disable hover tooltips on touch devices
+    if (isTouchDevice) return;
     const rect = e.currentTarget.getBoundingClientRect();
     setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top });
     setHoveredDay(day);
@@ -249,49 +185,10 @@ export function ActivityContributionGraph({
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  const weeks = useMemo(() => {
-    const weeksArray: ActivityDay[][] = [];
-    let currentWeek: ActivityDay[] = [];
+  // Dynamic sizing state - start with reasonable default to prevent tiny skeleton
+  const [containerWidth, setContainerWidth] = useState(1000);
 
-    const now = new Date();
-    const isCurrentYear = year === now.getFullYear();
-    const end = isCurrentYear ? now : new Date(year, 11, 31);
-
-    // Default to start of year, but if current year we might want a rolling window.
-    // However, the task specifically mentions not having empty space at the end.
-    const start = new Date(year, 0, 1);
-
-    let currentDate = new Date(start);
-    const dayOfWeek = currentDate.getDay();
-    const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-    currentDate.setDate(currentDate.getDate() - daysToMonday);
-
-    while (currentDate <= end) {
-      const dateStr = currentDate.toISOString().split('T')[0];
-      const day = activityData.find(d => d.date === dateStr);
-      currentWeek.push(day || { date: dateStr, githubCount: 0, spotifyCount: 0, totalActivity: 0, level: 0 });
-
-      if (currentWeek.length === 7) {
-        weeksArray.push([...currentWeek]);
-        currentWeek = [];
-      }
-
-      currentDate.setDate(currentDate.getDate() + 1);
-      if (weeksArray.length > 60) break;
-    }
-
-    // Add the remaining days of the current week if any, padding to 7 days
-    if (currentWeek.length > 0) {
-      while (currentWeek.length < 7) {
-        currentWeek.push({ date: '', githubCount: 0, spotifyCount: 0, totalActivity: 0, level: 0 });
-      }
-      weeksArray.push(currentWeek);
-    }
-
-    return weeksArray;
-  }, [activityData, year]);
-
-  // "True Spiral" Animation Props (Option #5)
+  // "True Spiral" Animation Props
   const getAnimationProps = (weekIndex: number, dayIndex: number, totalWeeks: number, totalDays: number = 7) => {
     const centerX = totalWeeks / 2;
     const centerY = totalDays / 2;
@@ -299,7 +196,6 @@ export function ActivityContributionGraph({
     const dy = dayIndex - centerY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // True Spiral (dist + angle)
     let angle = Math.atan2(dy, dx);
     if (angle < 0) angle += 2 * Math.PI;
 
@@ -313,147 +209,185 @@ export function ActivityContributionGraph({
   };
 
   useLayoutEffect(() => {
-    if (!loading && !githubLoading && scrollContainerRef.current) {
-      const now = new Date();
-      const startOfYear = new Date(year, 0, 1);
-      const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24));
-      const weekOfYear = Math.floor(dayOfYear / 7);
-      const currentMonth = now.getMonth();
+    if (graphRef.current) {
+      const updateDimensions = () => {
+        if (graphRef.current) {
+          setContainerWidth(graphRef.current.clientWidth);
+        }
+      };
 
-      let scrollPosition;
-
-      // If we're in December (month 11), scroll to show the complete December
-      if (currentMonth === 11) {
-        // Scroll to show the last few weeks including December
-        scrollPosition = Math.max(0, (weeks.length - 10) * 13);
-      } else {
-        // Default behavior: center the current week
-        scrollPosition = Math.max(0, (weekOfYear - 8) * 13);
-      }
-
-      scrollContainerRef.current.scrollLeft = scrollPosition;
-
-      setTimeout(() => setIsVisible(true), 0);
+      updateDimensions();
+      window.addEventListener('resize', updateDimensions);
+      return () => window.removeEventListener('resize', updateDimensions);
     }
-  }, [loading, githubLoading, year, weeks]);
+  }, []);
 
+  const totalWeeks = 53;
+  const gap = 3;
+
+  // Calculate dynamic size - NO TRANSITIONS to prevent layout shift
+  const squareSize = Math.max(2, (containerWidth - (totalWeeks - 1) * gap) / totalWeeks);
+
+  // STATIC skeleton structure - doesn't depend on activityData
+  const skeletonWeeks = useMemo(() => {
+    const weeksArray: ActivityDay[][] = [];
+    for (let i = 0; i < totalWeeks; i++) {
+      const week: ActivityDay[] = [];
+      for (let j = 0; j < 7; j++) {
+        week.push({ date: '', githubCount: 0, spotifyCount: 0, totalActivity: 0, level: 0 });
+      }
+      weeksArray.push(week);
+    }
+    return weeksArray;
+  }, [totalWeeks]);
+
+  // Data weeks - only for rendering actual data
+  const weeks = useMemo(() => {
+    const weeksArray: ActivityDay[][] = [];
+    const start = new Date(year, 0, 1);
+
+    let currentDate = new Date(start);
+    const dayOfWeek = currentDate.getDay();
+    currentDate.setDate(currentDate.getDate() - dayOfWeek);
+
+    for (let i = 0; i < totalWeeks; i++) {
+      const week: ActivityDay[] = [];
+      for (let j = 0; j < 7; j++) {
+        const dateStr = currentDate.toISOString().split('T')[0];
+        const day = activityData.find(d => d.date === dateStr);
+        week.push(day || { date: dateStr, githubCount: 0, spotifyCount: 0, totalActivity: 0, level: 0 });
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      weeksArray.push(week);
+    }
+
+    return weeksArray;
+  }, [activityData, year, totalWeeks]);
+
+  // STATIC month labels - calculate immediately, don't wait for data
   const monthLabels = useMemo(() => {
     const labels: { month: string; weekIndex: number }[] = [];
     let lastMonth = -1;
+    const start = new Date(year, 0, 1);
+    let currentDate = new Date(start);
+    const dayOfWeek = currentDate.getDay();
+    currentDate.setDate(currentDate.getDate() - dayOfWeek);
 
-    weeks.forEach((week, weekIndex) => {
-      // Only consider days that are actually in the current year
-      const firstDayInYear = week.find(d => d.date && new Date(d.date).getFullYear() === year);
-      if (firstDayInYear?.date) {
-        const date = new Date(firstDayInYear.date);
-        const month = date.getMonth();
+    for (let weekIndex = 0; weekIndex < totalWeeks; weekIndex++) {
+      if (currentDate.getFullYear() === year) {
+        const month = currentDate.getMonth();
         if (month !== lastMonth) {
           labels.push({ month: months[month], weekIndex });
           lastMonth = month;
         }
       }
-    });
+      currentDate.setDate(currentDate.getDate() + 7);
+    }
 
     return labels;
-  }, [weeks, year]);
+  }, [year, totalWeeks]);
 
-  // Calculate total contributions for the year
   const totalContributions = useMemo(() => {
     return activityData.reduce((sum, day) => sum + day.githubCount, 0);
   }, [activityData]);
 
-  const handleDayClick = (day: ActivityDay, weekIndex: number) => {
+  const handleDayClick = (day: ActivityDay) => {
     setSelectedDay(day);
-    if (scrollContainerRef.current) {
-      const weekWidth = 13; // 10px day + 3px gap
-      const containerWidth = scrollContainerRef.current.clientWidth;
-      const targetScrollLeft = (weekIndex * weekWidth) - (containerWidth / 2) + (weekWidth / 2);
-      scrollContainerRef.current.scrollTo({
-        left: targetScrollLeft,
-        behavior: 'smooth',
-      });
-    }
+    // Auto-scroll removed as we are now edge-to-edge
   };
 
   return (
     <div className={`space-y-2 ${className}`}>
+      {/* Container for the graph - No scroll, just fit */}
       <div
-        ref={scrollContainerRef}
-        className={`overflow-x-auto overflow-y-hidden scrollbar-hide ${isDragging ? 'cursor-grabbing select-none' : 'cursor-grab'}`}
-        onMouseDown={handleDragMouseDown}
-        onMouseMove={handleDragMouseMove}
-        onMouseUp={handleDragMouseUp}
-        onMouseLeave={handleDragMouseLeave}
+        ref={graphRef}
+        className="w-full overflow-hidden"
+        role="img"
+        aria-label={`GitHub contribution graph for ${year}, showing ${totalContributions} total contributions`}
       >
-        <div ref={graphRef} className="flex flex-col w-full">
-          {/* Month labels row */}
-          <div className="flex text-[10px] text-muted-foreground mb-1 ml-7">
-            {weeks.map((_, weekIndex) => {
+        <div className="flex flex-col w-full relative">
+          {/* Month labels row - STATIC, renders immediately */}
+          <div className="flex w-full mb-1 relative h-[15px]">
+            {skeletonWeeks.map((_, weekIndex) => {
               const label = monthLabels.find(l => l.weekIndex === weekIndex);
               return (
-                <div key={weekIndex} className="w-[13px] shrink-0">
+                <div key={weekIndex} style={{ width: squareSize, marginRight: weekIndex === skeletonWeeks.length - 1 ? 0 : gap }} className="shrink-0 flex justify-start overflow-visible z-20 relative">
                   {label && (
-                    <motion.span
-                      className="whitespace-nowrap"
-                      initial={{ opacity: 0, y: -5 }}
-                      animate={isVisible ? { opacity: 1, y: 0 } : {}}
-                      transition={{ delay: weekIndex * 0.01, duration: 0.3 }}
-                    >
+                    <span className="whitespace-nowrap absolute text-[10px] text-muted-foreground">
                       {label.month}
-                    </motion.span>
+                    </span>
                   )}
                 </div>
               );
             })}
           </div>
 
-          <div className="flex gap-0 relative">
-            {/* Background Skeleton Grid - Populated with Fake Data */}
-            <div className={`flex gap-[3px] absolute inset-0 z-0 pointer-events-none transition-opacity duration-500 ${isVisible ? 'opacity-0' : 'opacity-100'}`}>
-              {weeks.map((week, weekIndex) => (
-                <div key={`skel-week-${weekIndex}`} className="flex flex-col gap-[3px]">
-                  {week.map((day, dayIndex) => {
-                    return (
-                      <div
-                        key={`skel-day-${dayIndex}`}
-                        className="w-[10px] h-[10px] rounded-sm bg-neutral-800/40 dark:bg-white/5 animate-pulse"
-                      />
-                    );
-                  })}
+          <div className="flex flex-col relative w-full">
+
+            {/* Background Skeleton Grid - uses STATIC skeleton structure */}
+            <div
+              className={`flex w-full absolute inset-0 z-0 transition-opacity duration-500 ${isVisible ? 'opacity-0' : 'opacity-100'}`}
+              aria-hidden="true"
+            >
+              {skeletonWeeks.map((week, weekIndex) => (
+                <div
+                  key={`skel-${weekIndex}`}
+                  className="flex flex-col shrink-0"
+                  style={{
+                    width: squareSize,
+                    gap: gap,
+                    marginRight: weekIndex === skeletonWeeks.length - 1 ? 0 : gap
+                  }}
+                >
+                  {week.map((_, dayIndex) => (
+                    <div
+                      key={`skel-day-${dayIndex}`}
+                      style={{ height: squareSize }}
+                      className="w-full rounded-[2px] bg-neutral-800/20 dark:bg-white/5 animate-pulse"
+                    />
+                  ))}
                 </div>
               ))}
             </div>
 
             {/* Foreground Data Grid */}
-            <div className="flex gap-[3px] relative z-10">
+            <div className="flex w-full relative z-10">
               {weeks.map((week, weekIndex) => (
-                <div key={weekIndex} className="flex flex-col gap-[3px]">
+                <div
+                  key={weekIndex}
+                  className="flex flex-col shrink-0"
+                  style={{
+                    width: squareSize,
+                    gap: gap,
+                    marginRight: weekIndex === weeks.length - 1 ? 0 : gap
+                  }}
+                >
                   {week.map((day, dayIndex) => {
-                    if (!day.date) {
-                      return <div key={dayIndex} className="w-[10px] h-[10px]" />;
-                    }
-
                     const showData = !loading && !githubLoading && isVisible;
                     const animProps = getAnimationProps(weekIndex, dayIndex, weeks.length);
+                    const hasData = !!day.date;
 
                     return (
                       <motion.div
                         key={dayIndex}
-                        className={`w-[10px] h-[10px] rounded-sm cursor-pointer transition-all duration-200 hover:ring-2 hover:ring-brand-500/50 hover:shadow-[0_0_8px_hsl(var(--brand-500)/0.5)] ${getColorForLevel(day.level)}`}
+                        style={{ height: squareSize }} // Square
+                        className={`w-full rounded-[2px] ${hasData ? 'cursor-pointer' : ''
+                          } ${hasData ? getColorForLevel(day.level) : 'bg-transparent'
+                          } ${!hasData ? 'opacity-0' : ''
+                          }`}
+                        // Animation props
                         initial={{ opacity: 0, scale: 0 }}
-                        animate={showData ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0 }}
+                        animate={showData ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 }}
                         transition={{
                           delay: animProps.delay,
                           duration: animProps.duration,
                           type: animProps.type,
-                          stiffness: (animProps as any).stiffness,
-                          damping: (animProps as any).damping,
-                          ease: (animProps as any).ease,
+                          stiffness: 200,
+                          damping: 20
                         }}
-                        onMouseEnter={(e) => handleMouseEnter(e, day)}
+                        onMouseEnter={(e) => hasData && handleMouseEnter(e, day)}
                         onMouseLeave={handleMouseLeave}
-                        onClick={() => handleDayClick(day, weekIndex)} // Modified onClick
-                        whileHover={{ scale: 1.3, zIndex: 20 }}
+                        onClick={() => handleDayClick(day)}
                       />
                     );
                   })}
@@ -466,7 +400,7 @@ export function ActivityContributionGraph({
 
       {showLegend && (
         <motion.div
-          className="flex items-center justify-between text-[10px] text-muted-foreground"
+          className="flex items-center justify-between text-[10px] text-muted-foreground px-0"
           initial={{ opacity: 0 }}
           animate={isVisible ? { opacity: 1 } : {}}
           transition={{ delay: 0 }}
@@ -477,10 +411,15 @@ export function ActivityContributionGraph({
                 <div key={level} className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`} />
               ))}
             </div>
-            <span>More contributions</span>
           </div>
-          <span className="text-muted-foreground/80">
-            <AnimatedNumber value={totalContributions.toLocaleString()} duration={1200} delay={2500} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber value={year} duration={1000} delay={2700} animateOnMount />
+          <span className="text-muted-foreground/80 pr-1">
+            {isVisible ? (
+              <>
+                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions.toLocaleString()} duration={2000} delay={0} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount />
+              </>
+            ) : (
+              <span className="opacity-0">0 contributions in {year}</span>
+            )}
           </span>
 
         </motion.div>
@@ -492,6 +431,9 @@ export function ActivityContributionGraph({
           onClick={() => setSelectedDay(null)}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="activity-dialog-title"
         >
           <motion.div
             className="bg-card border border-border rounded-none AAAA w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
@@ -505,13 +447,15 @@ export function ActivityContributionGraph({
               <div className="flex items-center gap-3">
                 <div className={`w-4 h-4 rounded-sm ${getColorForLevel(selectedDay.level)}`} />
                 <div>
-                  <h3 className="text-sm font-medium text-foreground">
-                    {new Date(selectedDay.date).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
+                  <h3 id="activity-dialog-title" className="text-sm font-medium text-foreground">
+                    <time dateTime={selectedDay.date}>
+                      {new Date(selectedDay.date).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </time>
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     {selectedDay.githubCount} contribution{selectedDay.githubCount !== 1 ? 's' : ''}
@@ -665,20 +609,11 @@ export function ActivityContributionGraph({
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className="relative mb-2">
-            <div className="bg-card/95 backdrop-blur-md border border-border/50 rounded-md shadow-xl px-2.5 py-1.5">
-              <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-sm ${getColorForLevel(hoveredDay.level)}`}></div>
-                <span className="text-xs font-medium text-foreground whitespace-nowrap">
-                  {hoveredDay.githubCount === 0
-                    ? `No contributions on ${new Date(hoveredDay.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
-                    : `${hoveredDay.githubCount} contribution${hoveredDay.githubCount !== 1 ? 's' : ''} on ${new Date(hoveredDay.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`
-                  }
-                </span>
-              </div>
-            </div>
-            {/* Triangle/Arrow pointing down */}
-            <div className="absolute w-2 h-2 bg-card/95 border-r border-b border-border/50 transform rotate-45 -bottom-1 left-1/2 -translate-x-1/2"></div>
+          <div className="relative bg-[#1e1e1e]/90 text-white text-xs py-1.5 px-3 rounded shadow-lg backdrop-blur-sm border border-white/10 flex flex-col items-center gap-0.5 whitespace-nowrap">
+            <span className="font-medium text-white/90">
+              {hoveredDay.githubCount > 0 ? `${hoveredDay.githubCount} contributions` : 'No contributions'} on {new Date(hoveredDay.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </span>
+            <div className="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1e1e1e]/90 rotate-45 border-r border-b border-white/10"></div>
           </div>
         </div>,
         document.body

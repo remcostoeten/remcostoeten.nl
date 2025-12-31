@@ -5,7 +5,7 @@ import { Copy, Check, Github, Linkedin, Twitter, GitCommit } from 'lucide-react'
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { useLatestCommit } from '@/hooks/use-github';
-import { AnimatedNumber } from '../ui/animated-number';
+import { AnimatedNumber } from '../ui/effects/animated-number';
 import { ContactPopover } from '@/components/contact/contact-popover';
 import { ResumeDrawer } from '../resume-drawer';
 
@@ -80,7 +80,7 @@ export function Footer() {
               >
                 <GitCommit className="w-3 h-3" />
                 <span>
-                  Updated <AnimatedNumber value={relativeTimeInfo.value} duration={600} className="text-foreground" /> {relativeTimeInfo.unit} ago
+                  Updated <AnimatedNumber value={relativeTimeInfo.value} duration={600} initialProgress={0} className="text-foreground" /> {relativeTimeInfo.unit} ago
                 </span>
                 <span className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors truncate max-w-[180px]">
                   · {latestCommit.message}

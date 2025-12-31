@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useInView, useReducedMotion } from 'framer-motion';
-import { useStaggerLayer } from './stagger-system';
+import { useStaggerLayer } from '../stagger-system';
 
 // =============================================================================
 // Legacy Context (for backward compatibility)
@@ -83,7 +83,9 @@ const INITIAL_BLUR_PX = 0.5;
 
 const EASING = 'cubic-bezier(0.16, 1, 0.3, 1)';
 
-const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => i % DIGITS_PER_SET);
+// Create digit sequence 0-9 for spinning effect - must include ALL digits
+const DIGIT_SEQUENCE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+const DIGITS = Array.from({ length: TOTAL_DIGITS }, (_, i) => DIGIT_SEQUENCE[i % DIGIT_SEQUENCE.length]);
 
 type SlotDigitProps = {
   digit: number
@@ -91,7 +93,7 @@ type SlotDigitProps = {
   duration: number
   delay?: number
   className?: string
-  index: number
+
   /** Start the animation at a partially completed state (0-1, where 1 = 100% complete) */
   initialProgress?: number
 }
@@ -102,10 +104,12 @@ function SlotDigit({
   duration,
   delay = 0,
   className,
-  index,
   initialProgress = 0
 }: SlotDigitProps) {
-  const targetOffset = digit + (TARGET_SET_INDEX * DIGITS_PER_SET);
+  // Find the position of the target digit in our digit sequence (0-9)
+  const targetDigitIndex = DIGIT_SEQUENCE.indexOf(digit);
+  // Since we include all 0-9, this should always find the digit
+  const targetOffset = (targetDigitIndex >= 0 ? targetDigitIndex : digit) + (TARGET_SET_INDEX * DIGITS_PER_SET);
   const itemHeightPercent = 100 / TOTAL_DIGITS;
 
   // Calculate scroll distance based on initial progress
@@ -115,11 +119,38 @@ function SlotDigit({
 
   const initialOffset = targetOffset - effectiveScrollDistance;
 
-  const transformInitial = `translateY(-${initialOffset * itemHeightPercent}%)`;
+  // CRITICAL: When trigger is false (before animation), show the TARGET number
+  // When trigger is true, we've already animated to the target
+  // The animation starts from initialOffset and animates TO targetOffset
+  const transformInitial = `translateY(-${targetOffset * itemHeightPercent}%)`;
+  const transformAnimating = `translateY(-${initialOffset * itemHeightPercent}%)`;
   const transformTarget = `translateY(-${targetOffset * itemHeightPercent}%)`;
+
+  // State machine: 
+  // - Before trigger: show target number (no animation yet)
+  // - On trigger: animate from initialOffset to targetOffset
+  const [hasTriggered, setHasTriggered] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (trigger && !hasTriggered) {
+      setHasTriggered(true);
+      setIsAnimating(true);
+      // Animation starts from the "initial" position
+      requestAnimationFrame(() => {
+        setIsAnimating(false);
+      });
+    }
+  }, [trigger, hasTriggered]);
 
   // Adjust duration based on initial progress
   const effectiveDuration = duration * (1 - initialProgress);
+
+  // Calculate the current transform based on state
+  let currentTransform = transformInitial; // Default: show target
+  if (hasTriggered) {
+    currentTransform = isAnimating ? transformAnimating : transformTarget;
+  }
 
   return (
     <span
@@ -131,9 +162,9 @@ function SlotDigit({
       <span
         className="absolute top-0 left-0 right-0 flex flex-col items-center will-change-transform"
         style={{
-          transform: trigger ? transformTarget : transformInitial,
-          filter: trigger ? 'blur(0px)' : `blur(${INITIAL_BLUR_PX}px)`,
-          transition: `transform ${effectiveDuration}ms ${EASING} ${delay}ms, filter ${Math.min(effectiveDuration * 0.6, 300)}ms ease-out ${delay}ms`,
+          transform: currentTransform,
+          filter: hasTriggered && !isAnimating ? 'blur(0px)' : `blur(${INITIAL_BLUR_PX}px)`,
+          transition: hasTriggered && !isAnimating ? `transform ${effectiveDuration}ms ${EASING} ${delay}ms, filter ${Math.min(effectiveDuration * 0.6, 300)}ms ease-out ${delay}ms` : 'none',
         }}
         aria-hidden="true"
       >
@@ -193,14 +224,14 @@ export function AnimatedNumber({
   immediate = false,
   group,
   priority,
-  initialProgress = 0,
+  initialProgress = 1,
   animateOnMount = false,
 }: Props) {
   const [isVisible, setIsVisible] = useState(immediate);
   const [isClient, setIsClient] = useState(false);
   const elementRef = useRef<HTMLSpanElement>(null);
   const stringValue = String(value);
-  const shouldReduceMotion = useReducedMotion();
+
 
   // Use new stagger system if group is provided
   const useNewSystem = group !== undefined;
@@ -217,7 +248,7 @@ export function AnimatedNumber({
   const { registerNumber, unregisterNumber, getStaggerDelay } = useAnimatedNumberContext();
 
   // Only enable view-based animations on client side
-  const isInView = useInView(elementRef, { once: true, margin: "-50px" });
+  const isInView = useInView(elementRef, { once: true, margin: "0px" });
 
   useEffect(() => {
     setIsClient(true);
@@ -233,27 +264,28 @@ export function AnimatedNumber({
 
   // Legacy visibility triggering
   useEffect(() => {
-    if (!useNewSystem && (isInView || animateOnMount) && !immediate && !shouldReduceMotion) {
+    if (!useNewSystem && (isInView || animateOnMount) && !immediate) {
       const delay = getStaggerDelay(id);
       setTimeout(() => {
         setIsVisible(true);
       }, delay);
     }
-  }, [isInView, immediate, shouldReduceMotion, getStaggerDelay, id, useNewSystem]);
+  }, [isInView, immediate, getStaggerDelay, id, useNewSystem]);
 
   // New system visibility triggering
   useEffect(() => {
-    if (useNewSystem && stagger.isReady && !shouldReduceMotion) {
+    if (useNewSystem && stagger.isReady) {
       setTimeout(() => {
         setIsVisible(true);
       }, stagger.delay);
-    } else if (useNewSystem && shouldReduceMotion) {
-      setIsVisible(true);
     }
-  }, [useNewSystem, stagger.isReady, stagger.delay, shouldReduceMotion]);
+  }, [useNewSystem, stagger.isReady, stagger.delay]);
 
-  // For SSR or reduced motion, show static number
-  if (!isClient || shouldReduceMotion) {
+  // For reduced motion preference only, show static number
+  // We still render slot digits even before isClient to prevent hydration flash
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
     return (
       <span
         ref={useNewSystem ? stagger.ref as React.RefObject<HTMLSpanElement> : elementRef}
@@ -283,8 +315,7 @@ export function AnimatedNumber({
         {chars.map((char, i) => {
           if (/\d/.test(char)) {
             const currentDigitDuration = Math.min(duration + (digitIndex * STAGGER_DELAY_MS), 1500);
-            const currentDigitIndex = digitIndex;
-            digitIndex++;
+
 
             return (
               <SlotDigit
@@ -293,7 +324,6 @@ export function AnimatedNumber({
                 trigger={isVisible}
                 duration={currentDigitDuration}
                 delay={effectiveDelay}
-                index={currentDigitIndex}
                 initialProgress={initialProgress}
               />
             );

@@ -5,6 +5,7 @@ import { GeistMono } from 'geist/font/mono'
 import { cn } from '@/lib/utils'
 import { WebsiteStructuredData, PersonStructuredData } from '@/components/seo/structured-data'
 import { AppProviders } from '@/components/providers/providers'
+import { WebVitalsReporter } from '@/components/dev/web-vitals-reporter'
 import { baseUrl } from './sitemap'
 import './global.css'
 
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <PersonStructuredData />
       </head>
       <body className="antialiased bg-background text-foreground" suppressHydrationWarning>
+        <WebVitalsReporter />
         <AppProviders>
           {children}
         </AppProviders>

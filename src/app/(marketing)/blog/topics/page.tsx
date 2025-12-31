@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { topicsMetadata } from '@/core/metadata'
 
-export const dynamic = 'force-dynamic'
+// Enable ISR - revalidate every 60 seconds
+export const revalidate = 60
 
 export { topicsMetadata as metadata }
 

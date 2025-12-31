@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react';
 import { Play, Copy, Check, ChevronDown, ExternalLink, Loader2, AlertCircle } from 'lucide-react'
 
 interface Endpoint {
