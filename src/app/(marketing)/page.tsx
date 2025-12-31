@@ -32,6 +32,11 @@ export default function Page() {
         <Intro />
 
         <div className="space-y-4">
+          <div>
+            <ActivitySection />
+            <WorkExperienceDemo />
+          </div>
+
           <Section title="Tech Stack" noHeaderMargin>
             <div className="py-4 space-y-4">
               <p className="text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
@@ -40,11 +45,6 @@ export default function Page() {
               <TechStackCloud />
             </div>
           </Section>
-
-          <div>
-            <ActivitySection />
-            <WorkExperienceDemo />
-          </div>
 
           <BlogPosts />
         </div>
