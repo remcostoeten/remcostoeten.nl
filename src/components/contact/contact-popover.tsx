@@ -2,12 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Send, Mail, User, MessageSquare, AlertCircle, Loader2 } from 'lucide-react';
+import { X, Send, Mail, User, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { submitContactForm } from '@/actions/contact';
 import { EmailAutocomplete } from './email-autocomplete';
 import { cn } from '@/lib/utils';
-import posthog from 'posthog-js';
+
 
 export function ContactPopover() {
     const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +38,8 @@ export function ContactPopover() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [isOpen]);
+
+    const prevIsOpenRef = useRef(isOpen);
 
     // Accessibility: Focus management and Keyboard interaction
     useEffect(() => {
@@ -91,16 +93,14 @@ export function ContactPopover() {
                 clearTimeout(timer);
                 document.removeEventListener('keydown', handleKeyDown);
             };
-        } else {
-            // Restore focus to trigger when closed
-            // Only if we are closing (state changed from true to false), but this useEffect runs on isOpen change.
-            // If isOpen is now false, it means we just closed it.
+        } else if (prevIsOpenRef.current === true && isOpen === false) {
+            // Restore focus to trigger ONLY when transitioning from open -> closed
             if (triggerRef.current) {
-                // Check if focus is currently inside the popover (or lost) before restoring?
-                // Standard behavior is to restore.
                 triggerRef.current.focus();
             }
         }
+
+        prevIsOpenRef.current = isOpen;
     }, [isOpen]);
 
     const handleSubmit = async (e: React.FormEvent) => {

@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useVelocity, useSpring, PanInfo } from 'framer-motion';
 import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Plus, GitBranch, Lock, Globe } from 'lucide-react';
-import { getLatestTracks, getNowPlaying, SpotifyTrack } from '@/server/services/spotify';
+import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
 import { ProjectHoverWrapper, ActivityHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers';
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback';
@@ -271,14 +271,14 @@ interface ActivityFeedProps {
     rotationInterval?: number;
 }
 
-const MAX_SLIDES = 5;
+
 
 export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: ActivityFeedProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [direction, setDirection] = useState(0); // -1 left, 1 right
     const [isPaused, setIsPaused] = useState(false);
     const [elapsedTime, setElapsedTime] = useState(0);
-    const [lastTransitionTime, setLastTransitionTime] = useState(Date.now());
+
     const [transitionType, setTransitionType] = useState<'auto' | 'manual'>('auto');
     const { data: activities = [], isLoading: githubLoading } = useGitHubRecentActivity(activityCount);
     const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
@@ -321,7 +321,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         setDirection(1);
         setCurrentIndex((prev) => (prev + 1) % activities.length);
         setElapsedTime(0);
-        setLastTransitionTime(Date.now());
+
     }, [activities.length, isPaused]);
 
     const goToNextSlide = useCallback(() => {
@@ -330,7 +330,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         setDirection(1);
         setCurrentIndex((prev) => (prev + 1) % activities.length);
         setElapsedTime(0);
-        setLastTransitionTime(Date.now());
+
     }, [activities.length]);
 
     const goToPrevSlide = useCallback(() => {
@@ -339,10 +339,10 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         setDirection(-1);
         setCurrentIndex((prev) => (prev - 1 + activities.length) % activities.length);
         setElapsedTime(0);
-        setLastTransitionTime(Date.now());
+
     }, [activities.length]);
 
-    const handleDragEnd = (event: any, info: PanInfo) => {
+    const handleDragEnd = (info: PanInfo) => {
         const offset = info.offset.x;
         const velocity = info.velocity.x;
         const width = 100; // threshold
@@ -377,7 +377,6 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
     useEffect(() => {
         setElapsedTime(0);
-        setLastTransitionTime(Date.now());
     }, [currentIndex]);
 
     const isLoading = githubLoading || spotifyLoading;
@@ -601,7 +600,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             drag="x"
                             dragConstraints={{ left: 0, right: 0 }}
                             dragElastic={0.2}
-                            onDragEnd={handleDragEnd}
+                            onDragEnd={(_, info) => handleDragEnd(info)}
                             style={{ x, filter: `blur(${springBlur}px)` }}
                             className="text-[13px] leading-loose"
                         >
@@ -713,7 +712,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                         transition={{ delay: 0.4, duration: 0.3 }}
                         className="w-full"
                     >
-                        <ActivityStatusBar activity={currentActivity} />
+                        <ActivityStatusBar />
                     </motion.div>
                 </AnimatePresence>
             </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ActivityHoverCard, GitHubProjectCard, GitHubActivityCard, SpotifyCard, GitHubProjectCardSkeleton, SpotifyCardSkeleton } from './activity-hover-card';
+import { ActivityHoverCard, GitHubProjectCard, GitHubActivityCard, SpotifyCard, GitHubProjectCardSkeleton } from './activity-hover-card';
 import { useRepoDetails } from '@/hooks/use-repo-details';
 import { GitHubEventDetail } from '@/hooks/use-github';
 import { SpotifyTrack } from '@/server/services/spotify';

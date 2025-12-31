@@ -83,7 +83,7 @@ export function CommentSection({ slug }: Props) {
         })
     }
 
-    function formatDistanceToNow(date: Date, options: { addSuffix: boolean }) {
+    function formatDistanceToNow(date: Date) {
         return date.toDateString()
     }
 
@@ -195,7 +195,7 @@ export function CommentSection({ slug }: Props) {
                                             {comment.userName || 'Anonymous'}
                                         </span>
                                         <span className="text-xs text-zinc-500">
-                                            {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                                            {formatDistanceToNow(new Date(comment.createdAt))}
                                         </span>
                                         {comment.isEdited && (
                                             <span className="text-xs text-zinc-600">(edited)</span>

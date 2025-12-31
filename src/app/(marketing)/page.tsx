@@ -1,16 +1,26 @@
 import { BlogPosts } from '@/components/blog/posts';
 import { Intro } from '@/components/home/hero';
-import { ActivitySection } from '@/components/landing/activity/section';
-import { TechStackCloud } from '@/components/landing/tech-stack-cloud';
 import { Section } from '@/components/ui/section';
 import { homeMetadata } from '@/core/metadata'
 import nextDynamic from 'next/dynamic'
 
+// Heavy client components - dynamically imported to reduce initial bundle
+const ActivitySection = nextDynamic(
+  () => import('@/components/landing/activity/section').then(m => ({ default: m.ActivitySection })),
+  { loading: () => null }
+)
+
+const TechStackCloud = nextDynamic(
+  () => import('@/components/landing/tech-stack-cloud').then(m => ({ default: m.TechStackCloud })),
+  { loading: () => null }
+)
+
 const WorkExperienceDemo = nextDynamic(() => import('@/components/home/work-experience'), {
-  loading: () => null // Don't show loading state - appears instantly usually
+  loading: () => null
 })
 
-export const dynamic = 'force-dynamic'
+// Enable ISR - revalidate every 60 seconds instead of forcing dynamic SSR
+export const revalidate = 60
 
 export { homeMetadata as metadata }
 
@@ -21,11 +31,6 @@ export default function Page() {
         <Intro />
 
         <div className="space-y-4">
-          <div>
-            <ActivitySection />
-            <WorkExperienceDemo />
-          </div>
-
           {/* Tech Stack - Above Blog */}
           <Section title="Tech Stack" noHeaderMargin>
             <div className="px-4 md:px-5 pt-4 space-y-4">
@@ -35,6 +40,11 @@ export default function Page() {
               <TechStackCloud />
             </div>
           </Section>
+
+          <div>
+            <ActivitySection />
+            <WorkExperienceDemo />
+          </div>
 
           <BlogPosts />
         </div>

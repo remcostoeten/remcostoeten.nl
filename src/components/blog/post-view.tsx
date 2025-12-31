@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, ChevronRight, Home } from 'lucide-react'
-import { AnimatedNumber } from '../ui/animated-number'
+import { AnimatedNumber } from '../ui/effects/animated-number'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/actions/analytics'
 import { getDateParts, readMinutes } from '@/lib/blog-format'

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { RefreshCw, Play, Settings2 } from 'lucide-react';
+import { RefreshCw, Settings2 } from 'lucide-react';
 import { useState } from 'react';
 
 export type AnimationStyle = 'standard' | 'elastic' | 'wave' | 'rain' | 'spiral';

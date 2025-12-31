@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 
+// Must be dynamic due to auth (headers) usage
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {

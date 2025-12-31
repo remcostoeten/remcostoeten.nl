@@ -5,7 +5,7 @@ export type DateParts = {
 }
 
 export function parseDate(input: string): Date {
-  const value = input.trim()
+  const value = input?.trim()
   if (!value) {
     return new Date()
   }

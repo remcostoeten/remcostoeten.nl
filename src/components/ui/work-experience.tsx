@@ -13,7 +13,7 @@ import ReactMarkdown from "react-markdown"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { AnimatedNumber } from "@/components/ui/animated-number"
+import { AnimatedNumber } from "@/components/ui/effects/animated-number"
 
 const iconMap = {
   code: CodeXmlIcon,

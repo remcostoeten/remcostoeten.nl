@@ -1,25 +1,34 @@
 'use client'
 
-import { useState, useRef, useMemo } from 'react'
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { motion, AnimatePresence, useInView } from 'framer-motion'
-import { Icons } from '@/components/brand-icons'
 import { Plus } from 'lucide-react'
+import {
+  SiReact,
+  SiTypescript,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiPostgresql,
+  SiTailwindcss,
+  SiDrizzle,
+  SiDocker
+} from 'react-icons/si'
 
-type Logo = {
-  name: keyof typeof Icons
+type TechItem = {
+  name: string
   label: string
+  Icon: React.ComponentType<{ className?: string }>
 }
 
-const LOGOS: Logo[] = [
-  { name: 'react', label: 'React' },
-  { name: 'typescript', label: 'TypeScript' },
-  { name: 'next', label: 'Next.js' },
-  { name: 'bash', label: 'Shell' },
-  { name: 'node', label: 'Node.js' },
-  { name: 'postgres', label: 'PostgreSQL' },
-  { name: 'docker', label: 'Docker' },
-  { name: 'javascript', label: 'JavaScript' }
+const LOGOS: TechItem[] = [
+  { name: 'next', label: 'Next.js', Icon: SiNextdotjs },
+  { name: 'react', label: 'React', Icon: SiReact },
+  { name: 'typescript', label: 'TypeScript', Icon: SiTypescript },
+  { name: 'tailwind', label: 'Tailwind CSS', Icon: SiTailwindcss },
+  { name: 'node', label: 'Node.js', Icon: SiNodedotjs },
+  { name: 'postgres', label: 'PostgreSQL', Icon: SiPostgresql },
+  { name: 'drizzle', label: 'Drizzle ORM', Icon: SiDrizzle },
+  { name: 'docker', label: 'Docker', Icon: SiDocker },
 ]
 
 const CARD_STYLES = [
@@ -27,7 +36,7 @@ const CARD_STYLES = [
     className: "relative border-r border-b bg-secondary dark:bg-secondary/30",
     decorators: (
       <Plus
-        className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6"
+        className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50"
         strokeWidth={1}
       />
     )
@@ -41,11 +50,11 @@ const CARD_STYLES = [
     decorators: (
       <>
         <Plus
-          className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6"
+          className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50"
           strokeWidth={1}
         />
         <Plus
-          className="-bottom-[12.5px] -left-[12.5px] absolute z-10 hidden size-6 md:block"
+          className="-bottom-[12.5px] -left-[12.5px] absolute z-10 hidden size-6 md:block text-muted-foreground/50"
           strokeWidth={1}
         />
       </>
@@ -59,7 +68,7 @@ const CARD_STYLES = [
     className: "relative border-r border-b bg-secondary md:border-b-0 md:bg-background dark:bg-secondary/30 md:dark:bg-background",
     decorators: (
       <Plus
-        className="-right-[12.5px] -bottom-[12.5px] md:-left-[12.5px] absolute z-10 size-6 md:hidden"
+        className="-right-[12.5px] -bottom-[12.5px] md:-left-[12.5px] absolute z-10 size-6 md:hidden text-muted-foreground/50"
         strokeWidth={1}
       />
     )
@@ -69,11 +78,11 @@ const CARD_STYLES = [
     decorators: null
   },
   {
-    className: "border-r",
+    className: "border-r border-b md:border-b-0",
     decorators: null
   },
   {
-    className: "bg-secondary dark:bg-secondary/30",
+    className: "bg-secondary dark:bg-secondary/30 border-b md:border-b-0",
     decorators: null
   }
 ]
@@ -81,18 +90,8 @@ const CARD_STYLES = [
 type TechStackCloudProps = React.ComponentProps<'div'>
 
 export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-50px' })
-
-  const delays = useMemo(function () {
-    return LOGOS.map(function () {
-      return Math.random() * 0.6
-    })
-  }, [])
-
   return (
     <div
-      ref={ref}
       className={cn(
         'relative grid grid-cols-2 border-x md:grid-cols-4',
         className
@@ -102,14 +101,12 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
       <div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t" />
 
       {LOGOS.map(function (logo, i) {
-        const style = CARD_STYLES[i] || {}
+        // Fallback to a basic style if we run out of defined styles
+        const style = CARD_STYLES[i] || { className: "border-r border-b", decorators: null }
         return (
           <TechCard
             key={logo.name}
-            icon={logo.name}
-            label={logo.label}
-            delay={delays[i]}
-            isInView={isInView}
+            logo={logo}
             className={style.className}
           >
             {style.decorators}
@@ -123,25 +120,17 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
 }
 
 type TechCardProps = React.ComponentProps<'div'> & {
-  icon: keyof typeof Icons
-  label: string
-  isInView: boolean
-  delay: number
+  logo: TechItem
 }
 
 function TechCard({
-  icon,
-  label,
-  isInView,
-  delay,
+  logo,
   className,
   children,
   ...props
 }: TechCardProps) {
   const [showLabel, setShowLabel] = useState(false)
-  const [showLabel, setShowLabel] = useState(false)
-
-  const Icon = Icons[icon]
+  const Icon = logo.Icon
 
   const handleToggle = () => {
     setShowLabel(prev => !prev)
@@ -157,59 +146,34 @@ function TechCard({
   return (
     <div
       className={cn(
-        'flex items-center justify-center bg-background px-4 py-8 md:p-8 relative overflow-hidden group',
+        'flex items-center justify-center bg-background px-4 py-8 md:p-8 relative overflow-hidden group min-h-[120px]',
         className
       )}
       {...props}
     >
-      <motion.div
-        className="relative flex flex-col items-center gap-2"
-        className="relative flex flex-col items-center gap-2"
-        initial={{ opacity: 0, scale: 0.8, filter: 'blur(2px)' }}
-        animate={
-          isInView
-            ? {
-              opacity: 1,
-              scale: 1,
-              filter: 'blur(0px)'
-            }
-            : {}
-        }
-        transition={{
-          duration: 0.4,
-          delay,
-          ease: [0.22, 1, 0.36, 1]
-        }}
-      >
+      <div className="relative flex flex-col items-center gap-2">
         <button
           type="button"
           onClick={handleToggle}
           onKeyDown={handleKeyDown}
-          aria-label={`${label}${showLabel ? ' - tap to hide name' : ' - tap to show name'}`}
+          aria-label={`${logo.label}${showLabel ? ' - tap to hide name' : ' - tap to show name'}`}
           aria-pressed={showLabel}
           className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1"
         >
           <Icon
-            theme="dark"
-            title={label}
-            className="pointer-events-none h-4 select-none md:h-5 opacity-60 group-hover:opacity-100 transition-opacity duration-200"
+            className="w-8 h-8 md:w-10 md:h-10 text-foreground/60 group-hover:text-foreground transition-colors duration-200"
           />
         </button>
 
-        <AnimatePresence>
-          {showLabel && (
-            <motion.span
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.15 }}
-              className="text-[10px] font-medium text-muted-foreground whitespace-nowrap"
-            >
-              {label}
-            </motion.span>
+        <div
+          className={cn(
+            "text-[10px] font-medium text-muted-foreground whitespace-nowrap absolute -bottom-6 w-full text-center transition-all duration-200 ease-out",
+            showLabel ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
           )}
-        </AnimatePresence>
-      </motion.div>
+        >
+          {logo.label}
+        </div>
+      </div>
 
       {children}
     </div>

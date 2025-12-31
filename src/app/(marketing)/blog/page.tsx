@@ -1,7 +1,8 @@
 import { BlogPosts } from '@/components/blog/posts'
 import { TopicsSidebar } from '@/components/blog/topics-sidebar'
 
-export const dynamic = 'force-dynamic'
+// Enable ISR - revalidate every 60 seconds
+export const revalidate = 60
 
 export const metadata = {
   title: 'Blog',

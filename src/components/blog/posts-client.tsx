@@ -1,13 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState } from 'react'
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
 import { motion, useInView } from 'framer-motion'
 
 import { getDateParts, readMinutes } from '@/lib/blog-format'
 
-import { AnimatedNumber } from '../ui/animated-number'
+import { AnimatedNumber } from '../ui/effects/animated-number'
 
 export function PostCountHeader({ count }: { count: number }) {
   return (
@@ -46,15 +46,14 @@ function BlogCard({ post, index }: Props) {
 
   // Animation duration calculations - slower for more satisfying effect
   const indexDuration = Math.min(1800 + (index * 200), 2400)
-  // Animation duration calculations - slower for more satisfying effect
-  const indexDuration = Math.min(1800 + (index * 200), 2400)
+
 
   const dateParts = getDateParts(post.metadata.publishedAt)
   const dayNumber = dateParts.day
   const monthYear = `${dateParts.month} ${dateParts.year}`
   const readTimeMinutes = readMinutes(post.metadata.readTime || '')
   const dateDuration = Math.min(1400 + (index * 100), 1800)
-  const dateDuration = Math.min(1400 + (index * 100), 1800)
+
   const allTags = [
     ...(post.metadata.categories || []),
     ...(post.metadata.tags || []),
@@ -222,22 +221,10 @@ function BlogCardSkeleton() {
 
 export function BlogPostsClient({ posts }: BlogPostsProps) {
   const [showAll, setShowAll] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading] = useState(false)
 
   const displayedBlogs = showAll ? posts : posts.slice(0, 3)
   const hasMorePosts = posts.length > 3
-
-  if (isLoading) {
-    return (
-      <div>
-        <ul className="flex flex-col m-0 p-0 list-none" role="list">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <BlogCardSkeleton key={index} />
-          ))}
-        </ul>
-      </div>
-    )
-  }
 
   return (
     <div>

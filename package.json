@@ -13,11 +13,6 @@
   "engines": {
     "node": "24.x"
   },
-  "overrides": {
-    "better-auth": {
-      "drizzle-orm": "$drizzle-orm"
-    }
-  },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "@radix-ui/react-collapsible": "^1.1.12",

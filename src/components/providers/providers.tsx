@@ -8,9 +8,9 @@ import { CustomQueryClientProvider } from '@/components/providers/query-client-p
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { Footer } from '@/components/layout/footer'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { AnimatedNumberProvider } from '@/components/ui/animated-number'
 import { StaggerProvider } from '@/components/ui/stagger-system'
 import { PostHogProvider } from '@/components/providers/posthog-provider'
+import { DevWidget } from '@/components/dev/dev-widget'
 
 type TProps = {
     children: ReactNode
@@ -22,13 +22,12 @@ export function AppProviders({ children }: TProps) {
             <CustomQueryClientProvider>
                 <VimAuthProvider>
                     <StaggerProvider config={{ baseDelay: 80, initialDelay: 0 }}>
-                        <AnimatedNumberProvider>
-                            {children}
-                            <Toaster />
-                            <ThemeSwitch position="fixed" offset={20} side="right" />
-                            <Analytics />
-                            <SpeedInsights />
-                        </AnimatedNumberProvider>
+                        {children}
+                        <Toaster />
+                        <ThemeSwitch position="fixed" offset={20} side="right" />
+                        <Analytics />
+                        <SpeedInsights />
+                        <DevWidget />
                     </StaggerProvider>
                 </VimAuthProvider>
             </CustomQueryClientProvider>

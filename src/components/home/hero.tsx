@@ -1,5 +1,5 @@
 
-import { AnimatedNumber } from '../ui/animated-number';
+import { AnimatedNumber } from '../ui/effects/animated-number';
 import Image from 'next/image';
 
 export function Intro() {

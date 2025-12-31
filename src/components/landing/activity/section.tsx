@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedNumber } from '../../ui/animated-number';
+
+import { AnimatedNumber } from '../../ui/effects/animated-number';
 import { ActivityContributionGraph } from './contribution-graph';
 import { Section } from '../../ui/section';
 import { Heading } from '../../ui/heading';
@@ -10,46 +9,11 @@ import { ActivityFeed } from './activity-feed';
 import { ProjectHoverWrapper } from './hover-wrappers';
 import Link from 'next/link';
 
-const VERBS = [
-  { text: 'shipping', color: 'text-green-500' },
-  { text: 'breaking', color: 'text-red-500' },
-  { text: 'fixing', color: 'text-amber-500' },
-  { text: 'building', color: 'text-blue-500' },
-  { text: 'tweaking', color: 'text-purple-500' },
-  { text: 'over-engineering', color: 'text-pink-500' },
-];
 
-const ACTIVITIES = [
-  'solving problems nobody asked me to',
-  'building tools for myself',
-  'pretending this is productive',
-  'avoiding real responsibilities',
-  'calling this "research"',
-];
 
 export function ActivitySection() {
   const year = new Date().getFullYear();
-  const [verbIndex, setVerbIndex] = useState(0);
-  const [activityIndex, setActivityIndex] = useState(0);
 
-  useEffect(() => {
-    const verbInterval = setInterval(() => {
-      setVerbIndex((prev) => (prev + 1) % VERBS.length);
-    }, 3000);
-
-    const activityInterval = setInterval(() => {
-      setActivityIndex((prev) => (prev + 1) % ACTIVITIES.length);
-    }, 5000);
-
-    return () => {
-      clearInterval(verbInterval);
-      clearInterval(activityInterval);
-    };
-  }, []);
-
-  // Memoize to prevent unnecessary re-renders
-  const currentVerb = useMemo(() => VERBS[verbIndex], [verbIndex]);
-  const currentActivity = useMemo(() => ACTIVITIES[activityIndex], [activityIndex]);
 
   return (
     <Section noPadding contentPadding={true}>

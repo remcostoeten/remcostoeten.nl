@@ -1,8 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, XCircle, AlertCircle, Mail } from 'lucide-react'
+import { CheckCircle2, Mail } from 'lucide-react'
 
 
 type ContactStats = {

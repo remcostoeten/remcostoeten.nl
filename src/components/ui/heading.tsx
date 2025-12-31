@@ -23,8 +23,7 @@ interface HeadingProps {
     bgDirection?: BackgroundDirection;
     /** Color pattern for light/dark theme */
     colorPattern?: ColorPattern;
-    /** Animate the background pattern to flow in its direction */
-    animated?: boolean;
+
     /** Add a subtle color gradient overlay */
     hueOverlay?: boolean;
 }
@@ -44,7 +43,6 @@ export function Heading({
     borderColor,
     bgDirection = 'default',
     colorPattern = 'light',
-    animated = false,
     hueOverlay = false
 }: HeadingProps) {
     // Background gradient classes based on direction

@@ -5,7 +5,7 @@ import { Copy, Check, Github, Linkedin, Twitter, GitCommit } from 'lucide-react'
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { useLatestCommit } from '@/hooks/use-github';
-import { AnimatedNumber } from '../ui/animated-number';
+import { AnimatedNumber } from '../ui/effects/animated-number';
 import { ContactPopover } from '@/components/contact/contact-popover';
 import { ResumeDrawer } from '../resume-drawer';
 

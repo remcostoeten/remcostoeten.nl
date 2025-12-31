@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useInView } from 'framer-motion';
-import { useStaggerLayer } from './stagger-system';
+import { useInView, useReducedMotion } from 'framer-motion';
+import { useStaggerLayer } from '../stagger-system';
 
 // =============================================================================
 // Legacy Context (for backward compatibility)
@@ -93,7 +93,7 @@ type SlotDigitProps = {
   duration: number
   delay?: number
   className?: string
-  index: number
+
   /** Start the animation at a partially completed state (0-1, where 1 = 100% complete) */
   initialProgress?: number
 }
@@ -104,7 +104,6 @@ function SlotDigit({
   duration,
   delay = 0,
   className,
-  index,
   initialProgress = 0
 }: SlotDigitProps) {
   // Find the position of the target digit in our digit sequence (0-9)
@@ -120,11 +119,38 @@ function SlotDigit({
 
   const initialOffset = targetOffset - effectiveScrollDistance;
 
-  const transformInitial = `translateY(-${initialOffset * itemHeightPercent}%)`;
+  // CRITICAL: When trigger is false (before animation), show the TARGET number
+  // When trigger is true, we've already animated to the target
+  // The animation starts from initialOffset and animates TO targetOffset
+  const transformInitial = `translateY(-${targetOffset * itemHeightPercent}%)`;
+  const transformAnimating = `translateY(-${initialOffset * itemHeightPercent}%)`;
   const transformTarget = `translateY(-${targetOffset * itemHeightPercent}%)`;
+
+  // State machine: 
+  // - Before trigger: show target number (no animation yet)
+  // - On trigger: animate from initialOffset to targetOffset
+  const [hasTriggered, setHasTriggered] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  useEffect(() => {
+    if (trigger && !hasTriggered) {
+      setHasTriggered(true);
+      setIsAnimating(true);
+      // Animation starts from the "initial" position
+      requestAnimationFrame(() => {
+        setIsAnimating(false);
+      });
+    }
+  }, [trigger, hasTriggered]);
 
   // Adjust duration based on initial progress
   const effectiveDuration = duration * (1 - initialProgress);
+
+  // Calculate the current transform based on state
+  let currentTransform = transformInitial; // Default: show target
+  if (hasTriggered) {
+    currentTransform = isAnimating ? transformAnimating : transformTarget;
+  }
 
   return (
     <span
@@ -136,9 +162,9 @@ function SlotDigit({
       <span
         className="absolute top-0 left-0 right-0 flex flex-col items-center will-change-transform"
         style={{
-          transform: trigger ? transformTarget : transformInitial,
-          filter: trigger ? 'blur(0px)' : `blur(${INITIAL_BLUR_PX}px)`,
-          transition: `transform ${effectiveDuration}ms ${EASING} ${delay}ms, filter ${Math.min(effectiveDuration * 0.6, 300)}ms ease-out ${delay}ms`,
+          transform: currentTransform,
+          filter: hasTriggered && !isAnimating ? 'blur(0px)' : `blur(${INITIAL_BLUR_PX}px)`,
+          transition: hasTriggered && !isAnimating ? `transform ${effectiveDuration}ms ${EASING} ${delay}ms, filter ${Math.min(effectiveDuration * 0.6, 300)}ms ease-out ${delay}ms` : 'none',
         }}
         aria-hidden="true"
       >
@@ -222,7 +248,7 @@ export function AnimatedNumber({
   const { registerNumber, unregisterNumber, getStaggerDelay } = useAnimatedNumberContext();
 
   // Only enable view-based animations on client side
-  const isInView = useInView(elementRef, { once: true, margin: "-50px" });
+  const isInView = useInView(elementRef, { once: true, margin: "0px" });
 
   useEffect(() => {
     setIsClient(true);
@@ -257,6 +283,8 @@ export function AnimatedNumber({
 
   // For reduced motion preference only, show static number
   // We still render slot digits even before isClient to prevent hydration flash
+  const shouldReduceMotion = useReducedMotion();
+
   if (shouldReduceMotion) {
     return (
       <span
@@ -287,8 +315,7 @@ export function AnimatedNumber({
         {chars.map((char, i) => {
           if (/\d/.test(char)) {
             const currentDigitDuration = Math.min(duration + (digitIndex * STAGGER_DELAY_MS), 1500);
-            const currentDigitIndex = digitIndex;
-            digitIndex++;
+
 
             return (
               <SlotDigit
@@ -297,7 +324,6 @@ export function AnimatedNumber({
                 trigger={isVisible}
                 duration={currentDigitDuration}
                 delay={effectiveDelay}
-                index={currentDigitIndex}
                 initialProgress={initialProgress}
               />
             );

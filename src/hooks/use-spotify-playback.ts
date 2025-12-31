@@ -17,8 +17,8 @@ const POLL_INTERVAL = 'connection' in navigator &&
     (navigator.connection as any)?.saveData
     ? 30000 // 30 seconds on data saver mode (balanced UX)
     : 'connection' in navigator && ((navigator.connection as any)?.effectiveType === 'slow-2g' || (navigator.connection as any)?.effectiveType === '2g')
-    ? 20000 // 20 seconds on slow connections
-    : 10000; // 10 seconds on normal connections (still responsive)
+        ? 20000 // 20 seconds on slow connections
+        : 10000; // 10 seconds on normal connections (still responsive)
 const TIMER_INTERVAL = 200; // Update local progress every 200ms
 const DRIFT_THRESHOLD = 2000; // Hard reset if drift > 2 seconds
 
@@ -49,7 +49,7 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
     const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-      const calculateProgress = (isPlaying: boolean, duration: number): number => {
+    const calculateProgress = (isPlaying: boolean, duration: number): number => {
         if (!isPlaying) {
             return lastProgressRef.current;
         }
@@ -57,7 +57,7 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
         return Math.min(elapsed, duration);
     };
 
-      const updateLocalProgress = () => {
+    const updateLocalProgress = () => {
         setState((prev) => {
             if (!prev.track || !prev.isPlaying) return prev;
 
@@ -73,7 +73,7 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
         });
     };
 
-      const fetchPlaybackState = async () => {
+    const fetchPlaybackState = async () => {
         const playback = await getCurrentPlayback();
 
         if (!playback || !playback.track) {
@@ -94,7 +94,7 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
         const { track, progress_ms, duration_ms, is_playing } = playback;
         const trackChanged = lastTrackIdRef.current !== track.id;
 
-          const newT0 = Date.now() - progress_ms;
+        const newT0 = Date.now() - progress_ms;
 
         // Detect drift (if local progress differs significantly from API)
         const localProgress = calculateProgress(is_playing, duration_ms);
@@ -102,7 +102,7 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
         const shouldHardReset = drift > DRIFT_THRESHOLD || trackChanged;
 
         if (shouldHardReset) {
-                T0Ref.current = newT0;
+            T0Ref.current = newT0;
             lastProgressRef.current = progress_ms;
         } else {
             // Soft sync: gradually adjust T0
@@ -125,14 +125,17 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
         });
     };
 
-        useEffect(() => {
-          fetchPlaybackState();
-
-          pollIntervalRef.current = setInterval(fetchPlaybackState, POLL_INTERVAL);
-
+    useEffect(() => {
+        // Delay polling by 3 seconds to avoid blocking the main thread during hydration
+        // This significantly improves TBT (Total Blocking Time)
+        const startupDelay = setTimeout(() => {
+            fetchPlaybackState();
+            pollIntervalRef.current = setInterval(fetchPlaybackState, POLL_INTERVAL);
             timerIntervalRef.current = setInterval(updateLocalProgress, TIMER_INTERVAL);
+        }, 3000);
 
         return () => {
+            clearTimeout(startupDelay);
             if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
         };

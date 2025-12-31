@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
 import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
-import { AnimatedNumber } from '../../ui/animated-number';
+import { AnimatedNumber } from '../../ui/effects/animated-number';
 
 interface ActivityDay {
   date: string;
@@ -35,7 +35,7 @@ export function ActivityContributionGraph({
   const [hoveredDay, setHoveredDay] = useState<ActivityDay | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  const [paused, setPaused] = useState(false);
+
   const { data: githubContributions = new Map(), isLoading: githubLoading } = useGitHubContributions(year);
 
   const [loading, setLoading] = useState(true);
@@ -46,10 +46,7 @@ export function ActivityContributionGraph({
   const endDate = `${year}-12-31`;
   const { data: detailedEvents } = useGitHubEventsByDate(startDate, endDate);
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
+
   const graphRef = useRef<HTMLDivElement>(null);
 
   // Mobile optimization: verify if touch device to disable tooltips
@@ -59,46 +56,6 @@ export function ActivityContributionGraph({
       setIsTouchDevice(window.matchMedia('(pointer: coarse)').matches);
     }
   }, []);
-
-  const snapToNearestWeek = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft } = scrollContainerRef.current;
-      const weekWidth = 13; // 10px day + 3px gap
-      const nearestWeek = Math.round(scrollLeft / weekWidth);
-      scrollContainerRef.current.scrollTo({
-        left: nearestWeek * weekWidth,
-        behavior: 'smooth',
-      });
-    }
-  }, []);
-
-  const handleDragMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setPaused(true);
-    setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
-    setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
-    e.preventDefault();
-  };
-
-  const handleDragMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - (scrollContainerRef.current.offsetLeft || 0);
-    const walk = (x - startX) * 1.5;
-    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  const handleDragMouseUp = () => {
-    setIsDragging(false);
-    snapToNearestWeek();
-    setPaused(false);
-  };
-
-  const handleDragMouseLeave = () => {
-    setIsDragging(false);
-    snapToNearestWeek();
-    setPaused(false);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,22 +78,7 @@ export function ActivityContributionGraph({
     }
   }, [loading, githubLoading]);
 
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      if (isDragging) {
-        setIsDragging(false);
-        snapToNearestWeek();
-        setPaused(false);
-      }
-    };
 
-    if (isDragging) {
-      document.addEventListener('mouseup', handleGlobalMouseUp);
-      return () => {
-        document.removeEventListener('mouseup', handleGlobalMouseUp);
-      };
-    }
-  }, [isDragging, snapToNearestWeek]);
 
 
   const activityData = useMemo(() => {
@@ -302,14 +244,11 @@ export function ActivityContributionGraph({
   // Data weeks - only for rendering actual data
   const weeks = useMemo(() => {
     const weeksArray: ActivityDay[][] = [];
-    const end = new Date(year, 11, 31);
     const start = new Date(year, 0, 1);
 
     let currentDate = new Date(start);
     const dayOfWeek = currentDate.getDay();
     currentDate.setDate(currentDate.getDate() - dayOfWeek);
-
-    const now = new Date();
 
     for (let i = 0; i < totalWeeks; i++) {
       const week: ActivityDay[] = [];
@@ -352,7 +291,7 @@ export function ActivityContributionGraph({
     return activityData.reduce((sum, day) => sum + day.githubCount, 0);
   }, [activityData]);
 
-  const handleDayClick = (day: ActivityDay, weekIndex: number) => {
+  const handleDayClick = (day: ActivityDay) => {
     setSelectedDay(day);
     // Auto-scroll removed as we are now edge-to-edge
   };
@@ -448,7 +387,7 @@ export function ActivityContributionGraph({
                         }}
                         onMouseEnter={(e) => hasData && handleMouseEnter(e, day)}
                         onMouseLeave={handleMouseLeave}
-                        onClick={() => hasData && handleDayClick(day, weekIndex)}
+                        onClick={() => handleDayClick(day)}
                       />
                     );
                   })}
