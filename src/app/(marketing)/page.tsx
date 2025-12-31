@@ -3,20 +3,21 @@ import { Intro } from '@/components/home/hero';
 import { Section } from '@/components/ui/section';
 import { homeMetadata } from '@/core/metadata'
 import nextDynamic from 'next/dynamic'
+import { TechStackSkeleton, ActivitySectionSkeleton } from '@/components/ui/skeletons/section-skeletons'
 
 // Heavy client components - dynamically imported to reduce initial bundle
 const ActivitySection = nextDynamic(
   () => import('@/components/landing/activity/section').then(m => ({ default: m.ActivitySection })),
-  { loading: () => null }
+  { loading: () => <ActivitySectionSkeleton /> }
 )
 
 const TechStackCloud = nextDynamic(
   () => import('@/components/landing/tech-stack-cloud').then(m => ({ default: m.TechStackCloud })),
-  { loading: () => null }
+  { loading: () => <TechStackSkeleton /> }
 )
 
 const WorkExperienceDemo = nextDynamic(() => import('@/components/home/work-experience'), {
-  loading: () => null
+  loading: () => <div className="h-[400px] w-full bg-muted/10 animate-pulse rounded-lg" />
 })
 
 // Enable ISR - revalidate every 60 seconds instead of forcing dynamic SSR

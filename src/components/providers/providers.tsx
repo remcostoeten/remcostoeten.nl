@@ -21,7 +21,7 @@ export function AppProviders({ children }: TProps) {
         <PostHogProvider>
             <CustomQueryClientProvider>
                 <VimAuthProvider>
-                    <StaggerProvider config={{ baseDelay: 80, initialDelay: 0 }}>
+                    <StaggerProvider config={{ baseDelay: 80, initialDelay: 0, strategy: 'mount-order' }}>
                         {children}
                         <Toaster />
                         <ThemeSwitch position="fixed" offset={20} side="right" />

@@ -105,7 +105,11 @@ export function StaggerProvider({ children, config: userConfig }: StaggerProvide
     const debug = isDebugMode();
 
     const registerLayer = useCallback((id: string, element: HTMLElement, group: string, priority: number) => {
-        const rect = element.getBoundingClientRect();
+        // Only calculate rect if strategy requires it to avoid reflows
+        const rect = config.strategy === 'position'
+            ? element.getBoundingClientRect()
+            : new DOMRect(0, 0, 0, 0);
+
         const data: LayerData = {
             id,
             element,
