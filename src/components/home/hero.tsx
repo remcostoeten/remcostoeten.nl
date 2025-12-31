@@ -26,7 +26,7 @@ export function Intro() {
 
       {/*
       * If you for some reason read this part
-      * Than let's just act as if you never saw t his
+      * Then let's just act as if you never saw this
       * I'm sorry for the trauma.
       */}
 
