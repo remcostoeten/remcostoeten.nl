@@ -1,0 +1,188 @@
+
+---
+title: "Linux is the goat, my personal dotfiles"
+publishedAt: '2025-12-18'
+summary: "I switched to Linux on my work machine and personal computer and have increased my productivity by a lot."
+categories: [Developer Experience, Engineering, Productivity]
+tags: ["Productivity", "Personal", "Engineering"]
+---
+
+At all my jobs, I've always been an Apple user. I've owned a **2009 MacBook**, a **2017 Pro**, an **M2 Pro**, a fully spec'd **M3 Pro**, and an **M3 Air**. The displays, battery life, and build quality are undeniable—but eventually, macOS started feeling... *sluggish*.
+
+Taming macOS animations, dealing with Mission Control quirks, and the lack of a proper tiling window manager made me crave something faster. The switch to Linux unlocked a level of control and immediacy I didn't know I was missing.
+
+<NoticeInfo title="The Dotfiles">
+Of course, migrating to Linux involves tinkering. I built an evolving dotfiles repo of scripts and tooling that shape my workflow. You can check it out on my [GitHub](https://github.com/remcostoeten/dotfiles) (if it's public!).
+</NoticeInfo>
+
+My setup is now **keyboard-first**; the mouse is a last resort. One tool that made this shift possible is **Zoxide**.
+
+## Zoxide: Smarter Navigation
+
+Zoxide lets you jump to directories without typing full paths. It learns from your navigation history, ranks directories by frequency, and lets you teleport around your filesystem.
+
+Instead of this ancient ritual:
+
+```bash title="The Old Way"
+cd ~/development/active/skriuw
+```
+
+You just type:
+
+```bash title="The Zoxide Way"
+z sk
+```
+
+<NoticeSuccess title="It gets smarter">
+The more you use it, the smarter it becomes. It turns directory navigation into muscle memory.
+</NoticeSuccess>
+
+### How it works
+For example, my Skriuw project lives at:
+`/home/remco-stoeten/development/active/skriuw`
+
+Launching a terminal usually drops me into:
+`/home/remco-stoeten/.config/dotfiles`
+
+Typing `z web` might be ambiguous if I have multiple `web` folders, but Zoxide supports multi-argument matching:
+
+```bash title="Fuzzy Matching"
+z sk w
+```
+
+Boom. Zoxide narrows the match and jumps straight into `/home/remco-stoeten/development/active/skriuw/apps/web`. Even deeper paths like `packages/db/migrations` resolve instantly.
+
+
+## Aliases and Command Chaining
+
+I am a big fan of aliases. Why type four commands when you can type one?
+
+Here are a few of my favorites:
+
+| Alias | Command | Description |
+| :--- | :--- | :--- |
+| `rmall` | `rm -rf node_modules .next` | Nukes dependencies and build artifacts |
+| `i` | `bun install` | Fast installs with Bun |
+| `b` | `bun build` | Production build |
+| `rs` | `next start` | Preview the production build |
+
+I often chain these together to clean, install, build, and start my app in one go:
+
+```bash title="The Ultimate Combo"
+z .nl ; rmall ; i ; b ; rs
+```
+
+Here is what that looks like in action:
+
+```bash title="Terminal Output"
+❯ pwd
+/home/remco-stoeten/.config/dotfiles
+
+dotfiles on  master 
+❯ z .nl ; rmall ; i ; b ; rs
+
+🧹 Starting cleanup...
+
+⚠ Warning: Could not create backup: ENOTDIR: not a directory, mkdir '/home/remco-stoeten/.config/dotfiles/scripts/rmall/backups/latest'
+✓ Removed directory: node_modules
+✓ Removed directory: .next
+✓ Removed file: bun.lock
+
+==================================================
+✓ Successfully removed: 3
+==================================================
+
+✨ Cleanup completed successfully!
+[0.08ms] ".env.local", ".env"
+bun install v1.2.22 (6bafe260)
+warn: incorrect peer dependency "next@16.0.10"
+
++ @tanstack/react-query-devtools@5.91.1
+....
+239 packages installed [554.00ms]
+$ next build
+   ▲ Next.js 16.0.10 (Turbopack)
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 8.2s
+ ✓ Finished TypeScript in 7.7s    
+ ✓ Collecting page data using 15 workers in 1833.0ms    
+ ✓ Generating static pages using 15 workers (50/50) in 4.3s
+ ✓ Finalizing page optimization in 33.2ms    
+Route (app)                                                  Revalidate  Expire
+┌ ○ /
+├ ○ /_not-found
+├ ○ /api/github/activity                                             1m      1y
+├ ƒ /api/github/commits
+... all routes
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
+$ next start
+   ▲ Next.js 16.0.10
+   - Local:         http://localhost:3000
+   - Network:       http://192.168.1.238:3000
+
+ ✓ Starting...
+ ✓ Ready in 385ms                                       
+```
+Effectively what happened here without aliases is this:
+```bash
+cd /home/$USER/development/active/skriuw
+cd apps/web
+rm -rf node_modules 
+rm -rf .next
+*logic for checking if there is a dist or vite folder*
+bun install
+bun build
+bun run start
+```
+Removing all generated files and testing a fresh build.
+
+### Spellchecker
+
+Another one which saves me quite some time is my [spellchecker](https://github.com/remcostoeten/dotfiles/blob/master/scripts/spellcheck) script. This lets me type `spellcheck` and on enter it prompts me to enter text, but passing text as an argument also works.
+
+```bash
+ spellcheck  "i m writing a blog ppooost about my person
+al dvlopment enviorment"
+→ Spellchecking with claude profile done            
+→ Done.
+
+Corrected text:
+I'm writing a blog post about my personal development environment.
+
+Result copied to clipboard.
+Applied 4 change(s).
+```
+Under the hood it checks whether you have one of the most common AI CLI's installed (that take prompts via argument) and runs it with the text you passed to it. In this case it uses Claude (with Z.ai) but could've also used Codex, Cursor or Gemini.
+
+If curious you could test any of these scripts or the entire package by simply running my install script:
+```bash
+git clone https://github.com/remcostoeten/dotfiles.git;
+cd dotfiles/setup;
+bun install;
+bun run dev
+```
+
+which prompts you with an interactive menu
+
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║    🚀 Development Tools Setup                               ║
+║                                                              ║
+║    Check installed tools and install missing ones          ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+┌─ Main Menu:
+│
+│ 1. 🔍 Check Installation - Show what tools are installed
+│ 2. 📦 Install Tools - Select categories and install
+│ 3. ⚙️  Toggle Dry Run - OFF
+│ 4. ❌ Exit - Quit the setup tool
+│```
+
+The scripts directory has loads more and are all standalone, so you can use them without the setup tool.
