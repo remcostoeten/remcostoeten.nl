@@ -4,6 +4,8 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
 import { CodeBlock } from '../ui/code-block'
 import { CollapsibleMedia } from './collapsible-media'
+import { SpotifyEnvGenerator } from './spotify-env-generator'
+import { SpotifyApiExplorer } from './spotify-api-explorer'
 import {
   Notice,
   NoticeAlert,
@@ -59,6 +61,20 @@ function RoundedImage(props) {
   return <Image alt={props.alt} className="rounded-none AAAA" {...props} />
 }
 
+function Video({ src, ...props }: { src: string;[key: string]: any }) {
+  return (
+    <video
+      src={src}
+      controls
+      preload="metadata"
+      className="rounded-lg w-full max-w-2xl"
+      {...props}
+    >
+      Your browser does not support the video tag.
+    </video>
+  )
+}
+
 
 function slugify(str) {
   if (!str || typeof str !== 'string') {
@@ -108,6 +124,7 @@ let components = {
   h5: createHeading(5),
   h6: createHeading(6),
   Image: RoundedImage,
+  Video,
   CollapsibleMedia,
   a: CustomLink,
   Notice,
@@ -117,6 +134,27 @@ let components = {
   NoticeInfo,
   NoticeNeutral,
   NoticeRegular,
+  SpotifyEnvGenerator,
+  SpotifyApiExplorer,
+  code: ({ children, ...props }) => {
+    // Check if this is inline code (not inside a pre block)
+    const isInline = !props.className?.includes('language-');
+    if (isInline) {
+      // Remove any backtick artifacts from inline code
+      const content = typeof children === 'string'
+        ? children.replace(/^`|`$/g, '')
+        : children;
+      return (
+        <code
+          className="rounded-md border border-border/50 bg-muted/60 px-1.5 py-0.5 text-sm font-mono break-words"
+          {...props}
+        >
+          {content}
+        </code>
+      );
+    }
+    return <code {...props}>{children}</code>;
+  },
   pre: ({ children, ...props }) => {
     const codeElement = children as React.ReactElement<any>;
     const code = codeElement?.props?.children || '';
@@ -124,8 +162,9 @@ let components = {
     const language = className.replace('language-', '') || 'text';
     const metastring = codeElement?.props?.metastring || '';
 
-    const fileNameMatch = metastring.match(/filename="([^"]+)"/);
-    const titleMatch = metastring.match(/title="([^"]+)"/);
+    // Support both single and double quotes for filename and title
+    const fileNameMatch = metastring.match(/filename=["']([^"']+)["']/);
+    const titleMatch = metastring.match(/title=["']([^"']+)["']/);
     const fileName = fileNameMatch ? fileNameMatch[1] : (titleMatch ? titleMatch[1] : undefined);
 
     const highlightMatch = metastring.match(/\{([\d,-]+)\}/);

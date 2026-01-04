@@ -2,7 +2,8 @@ import { OptimizedPageTransition } from '@/components/ui/optimized-page-transiti
 import { ProjectCard } from '../components/project-card'
 import { ProjectFilters } from '../components/project-filters'
 import type { ProjectFilter } from '../types/project'
-import { filterProjects, getCategories, getProjects, getStatuses, getYears } from '../utilities/project-registry'
+import { filterProjects, getProjects, getStatuses, getYears } from '../utilities/project-registry'
+import { ALL_CATEGORIES } from '../utilities/categories'
 
 type Props = {
   filter: ProjectFilter
@@ -10,7 +11,7 @@ type Props = {
 
 export function ProjectsView({ filter }: Props) {
   const projects = filterProjects(getProjects(), filter)
-  const categories = getCategories()
+  const categories = ALL_CATEGORIES.map(cat => ({ label: cat.label, value: cat.id }))
   const statuses = getStatuses()
   const years = getYears()
 

@@ -1,7 +1,6 @@
 'use client';
 
 
-import { AnimatedNumber } from '../../ui/effects/animated-number';
 import { ActivityContributionGraph } from './contribution-graph';
 import { Section } from '../../ui/section';
 import { Heading } from '../../ui/heading';
@@ -16,7 +15,7 @@ export function ActivitySection() {
 
 
   return (
-    <Section noPadding contentPadding={true}>
+    <Section noPadding contentPadding={true} className="mb-0">
       <Heading
         title="Activity & Contributions"
         noMargin
@@ -24,7 +23,7 @@ export function ActivitySection() {
         colorPattern="light"
         headerAction={
           <time dateTime={`${year}`} className="text-muted-foreground/60 inline-flex items-baseline">
-            <AnimatedNumber value={year} duration={600} delay={200} initialProgress={0} />
+            {year}
           </time>
         }
       />

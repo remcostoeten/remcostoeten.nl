@@ -223,7 +223,7 @@ export function CodeBlock({
                 fontSize: "0.75rem",
               },
               wrapLines: true,
-              wrapLongLines: false,
+              wrapLongLines: true,
               lineProps: (lineNumber) => ({
                 style: {
                   display: "block",

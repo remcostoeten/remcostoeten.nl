@@ -5,7 +5,7 @@ import { ChangeEvent, useMemo, useTransition } from 'react'
 import type { ProjectFilter, ProjectStatus } from '../types/project'
 
 type Props = {
-  categories: string[]
+  categories: Array<{ label: string; value: string }>
   statuses: ProjectStatus[]
   years: number[]
   active: ProjectFilter
@@ -63,7 +63,10 @@ export function ProjectFilters({ categories, statuses, years, active }: Props) {
         label="Category"
         value={options.category}
         onChange={onCategory}
-        options={categories.map((entry) => ({ label: entry, value: entry }))}
+        options={[
+          { label: 'All categories', value: '' },
+          ...categories.map(entry => ({ label: entry.label, value: entry.value }))
+        ]}
         placeholder="All categories"
         loading={pending}
       />

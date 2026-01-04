@@ -8,8 +8,8 @@ type TProps = {
 
 export function OuterAuthGlow({
     children,
-    glowColor = '#22c55e',
-    glowSize = '80px'
+    glowColor = 'rgba(78, 201, 176, .31)',
+    glowSize = '15px'
 }: TProps) {
     return (
         <div

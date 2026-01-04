@@ -45,7 +45,3 @@ export function Intro() {
     </header>
   );
 }
-
-function U({ children }: { children: React.ReactNode }) {
-  return <span className='text-foreground/80 underline decoration-dotted underline-offset-4'>{children}</span>;
-}

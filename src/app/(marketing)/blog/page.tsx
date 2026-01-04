@@ -13,8 +13,10 @@ export default function Page() {
   return (
     <>
       <TopicsSidebar />
-      <section>
-        <h1 className="font-semibold text-2xl mb-8 tracking-tighter">My Blog</h1>
+      <section className="space-y-6 sm:space-y-8">
+        <div className="pt-1 sm:pt-2 md:pt-4">
+          <h1 className="font-semibold text-xl sm:text-2xl md:text-3xl tracking-tight">My Blog</h1>
+        </div>
         <BlogPosts />
       </section>
     </>

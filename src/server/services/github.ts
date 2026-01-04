@@ -390,8 +390,38 @@ class GitHubService {
     };
   }
   /**
-   * Get detailed GitHub events for a date range
-   */
+    * Get languages used across all repositories
+    */
+  async getLanguageStats(): Promise<Map<string, { count: number; repos: string[] }>> {
+    try {
+      const repos = await this.getUserRepositories('updated');
+
+      const languageMap = new Map<string, { count: number; repos: string[] }>();
+
+      repos.forEach((repo: GitHubRepo) => {
+        const language = repo.language;
+        if (!language) return;
+
+        const existing = languageMap.get(language) || { count: 0, repos: [] };
+        existing.count++;
+        existing.repos.push(repo.name);
+
+        languageMap.set(language, {
+          count: existing.count + 1,
+          repos: existing.repos
+        });
+      });
+
+      return languageMap;
+    } catch (error) {
+      console.error('Error fetching language stats:', error);
+      return new Map();
+    }
+  }
+
+  /**
+    * Get detailed GitHub events for a date range
+    */
   async getDetailedEvents(startDate: string, endDate: string): Promise<GitHubDayActivity[]> {
     try {
       const response = await fetch(

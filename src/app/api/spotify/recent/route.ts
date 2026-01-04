@@ -1,79 +1,78 @@
 import { NextResponse } from 'next/server';
-import { NextRequest } from 'next/server';
+import { getSpotifyAccessToken, hasSpotifyCredentials, invalidateSpotifyTokenCache } from '@/server/services/spotify-auth';
 
-export const dynamic = 'force-dynamic';
+// Use ISR with 30 second revalidation for recent tracks
+// (Recently played doesn't change that frequently)
+export const revalidate = 30;
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
-const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
 
-    const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
-
-    if (!refreshToken || refreshToken === 'your_refresh_token_here' || refreshToken.startsWith('#')) {
+    if (!hasSpotifyCredentials()) {
       console.log('🎵 No valid Spotify refresh token configured for recent tracks');
       return NextResponse.json({ error: 'No refresh token configured' }, { status: 404 });
     }
 
-    const clientId = process.env.SPOTIFY_CLIENT_ID;
-    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+    const accessToken = await getSpotifyAccessToken();
 
-    if (!clientId || !clientSecret) {
-      return NextResponse.json({ error: 'Missing Spotify credentials' }, { status: 500 });
+    if (!accessToken) {
+      return NextResponse.json({ error: 'Failed to get access token' }, { status: 401 });
     }
-
-    const authString = `${clientId}:${clientSecret}`;
-    const base64Auth = Buffer.from(authString).toString('base64');
-
-    const tokenResponse = await fetch(`${SPOTIFY_ACCOUNTS_BASE}/api/token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${base64Auth}`
-      },
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken
-      })
-    });
-
-    const tokenData = await tokenResponse.json();
-
-    if (tokenData.error) {
-      console.error('Error refreshing Spotify token for recent tracks:', tokenData.error);
-      return NextResponse.json({ error: tokenData.error }, { status: 400 });
-    }
-
-    const accessToken = tokenData.access_token;
 
     const recentResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/recently-played?limit=${limit}`, {
       headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
+        'Authorization': `Bearer ${accessToken}`,
+      },
     });
+
+    // Handle 401 by invalidating cache and retrying once
+    if (recentResponse.status === 401) {
+      invalidateSpotifyTokenCache();
+      const retryToken = await getSpotifyAccessToken();
+      if (!retryToken) {
+        return NextResponse.json({ error: 'Authentication failed' }, { status: 401 });
+      }
+
+      const retryResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/recently-played?limit=${limit}`, {
+        headers: {
+          'Authorization': `Bearer ${retryToken}`,
+        },
+      });
+
+      if (!retryResponse.ok) {
+        throw new Error(`HTTP ${retryResponse.status}: ${retryResponse.statusText}`);
+      }
+
+      const retryData = await retryResponse.json();
+      return formatResponse(retryData);
+    }
 
     if (!recentResponse.ok) {
       throw new Error(`HTTP ${recentResponse.status}: ${recentResponse.statusText}`);
     }
 
     const recentData = await recentResponse.json();
-
-    const tracks = recentData.items.map((item: any) => ({
-      id: item.track.id,
-      name: item.track.name,
-      artist: item.track.artists.map((artist: any) => artist.name).join(', '),
-      album: item.track.album.name,
-      url: item.track.external_urls.spotify,
-      image: item.track.album.images[0]?.url || '',
-      played_at: item.played_at
-    }));
-
-    return NextResponse.json({ items: recentData.items, tracks });
+    return formatResponse(recentData);
   } catch (error) {
     console.error('Error in Spotify recent tracks API:', error);
     return NextResponse.json({ error: 'Failed to fetch recent tracks' }, { status: 500 });
   }
+}
+
+function formatResponse(data: any) {
+  const tracks = data.items.map((item: any) => ({
+    id: item.track.id,
+    name: item.track.name,
+    artist: item.track.artists.map((artist: any) => artist.name).join(', '),
+    album: item.track.album.name,
+    url: item.track.external_urls.spotify,
+    image: item.track.album.images[0]?.url || '',
+    played_at: item.played_at,
+  }));
+
+  return NextResponse.json({ items: data.items, tracks });
 }

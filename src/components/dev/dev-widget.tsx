@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { X, Terminal, LogOut, Activity, Route, Clock, Zap } from 'lucide-react'
 import { signOut } from '@/lib/auth-client'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 interface MemoryPerformance extends Performance {
     memory?: {
@@ -180,18 +181,52 @@ export function DevWidget() {
                     <Route className="w-4 h-4 text-blue-400" />
                     <span className="text-sm font-medium">Available Routes ({availableRoutes.length})</span>
                 </div>
+
+                {/* Manual Navigation Input */}
+                <div className="mb-2 flex gap-1">
+                    <input
+                        type="text"
+                        placeholder="/path/to/go"
+                        className="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white placeholder:text-white/20 focus:outline-none focus:border-blue-400/50"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                window.location.href = e.currentTarget.value
+                            }
+                        }}
+                    />
+                </div>
+
                 <div className="max-h-40 overflow-y-auto space-y-1">
-                    {availableRoutes.map((route) => (
-                        <div
-                            key={route}
-                            className={`text-xs px-2 py-1 rounded transition-colors ${pathname === route
-                                ? 'bg-blue-500/20 text-blue-400'
-                                : 'text-white/60 hover:text-white hover:bg-white/10'
-                                }`}
-                        >
-                            <code className="font-mono">{route}</code>
-                        </div>
-                    ))}
+                    {availableRoutes.map((route) => {
+                        const isDynamic = route.includes('[')
+                        const isActive = pathname === route
+
+                        if (isDynamic) {
+                            return (
+                                <div
+                                    key={route}
+                                    className="text-xs px-2 py-1 rounded text-white/40 cursor-not-allowed flex items-center justify-between group"
+                                    title="Dynamic route - requires parameters"
+                                >
+                                    <code className="font-mono">{route}</code>
+                                    <span className="text-[10px] opacity-0 group-hover:opacity-100">dynamic</span>
+                                </div>
+                            )
+                        }
+
+                        return (
+                            <Link
+                                key={route}
+                                href={route}
+                                className={`block text-xs px-2 py-1 rounded transition-colors ${isActive
+                                    ? 'bg-blue-500/20 text-blue-400'
+                                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                                    }`}
+                            >
+                                <code className="font-mono">{route}</code>
+                            </Link>
+                        )
+                    })}
                 </div>
             </div>
 

@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Plus, GitBranch, Lock, Globe } from 'lucide-react';
-import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
-import { useGitHubRecentActivity, GitHubEventDetail } from '@/hooks/use-github';
+import type { SpotifyTrack } from '@/server/services/spotify';
+import type { GitHubEventDetail } from '@/hooks/use-github';
+import { useCombinedActivity } from '@/hooks/use-combined-activity';
 import { ProjectHoverWrapper, ActivityHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers';
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback';
 import { ActivityStatusBar } from './activity-status-bar';
@@ -266,9 +267,12 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     const [elapsedTime, setElapsedTime] = useState(0);
 
     const [transitionType, setTransitionType] = useState<'auto' | 'manual'>('auto');
-    const { data: activities = [], isLoading: githubLoading } = useGitHubRecentActivity(activityCount);
-    const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
-    const [spotifyLoading, setSpotifyLoading] = useState(true);
+
+    // *** PERFORMANCE OPTIMIZATION: Uses shared combined hook ***
+    // This reuses the same cached data as contribution-graph instead of making another 2 API calls
+    const { data: combinedData, isLoading: dataLoading } = useCombinedActivity(activityCount, 10);
+    const activities = combinedData?.recentActivity || [];
+    const tracks = combinedData?.spotifyTracks || [];
 
     const playbackState = useSpotifyPlayback();
 
@@ -277,35 +281,14 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
     const [isReady, setIsReady] = useState(false);
 
-    // Delay everything to unblock initial TBT
+    // Delay everything to unblock initial TBT (reduced from 3500ms since we're not making separate fetches)
     useEffect(() => {
-        const timer = setTimeout(() => setIsReady(true), 3500);
+        const timer = setTimeout(() => setIsReady(true), 500);
         return () => clearTimeout(timer);
     }, []);
 
-    useEffect(() => {
-        let cancelled = false;
-        if (!isReady) return;
-
-        const fetchRecent = async () => {
-            try {
-                const spotifyTracks = await getLatestTracks(activityCount);
-                if (!cancelled) {
-                    setTracks(spotifyTracks);
-                }
-            } catch (error) {
-                if (!cancelled) {
-                    console.error('Error fetching recent tracks:', error);
-                }
-            } finally {
-                if (!cancelled) {
-                    setSpotifyLoading(false);
-                }
-            }
-        };
-        fetchRecent();
-        return () => { cancelled = true; };
-    }, [activityCount, isReady]);
+    // No longer need separate Spotify fetch - it comes from combined data
+    const isLoading = dataLoading || !isReady;
 
     const rotateActivity = useCallback(() => {
         if (activities.length === 0 || isPaused) return;
@@ -371,7 +354,6 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         setElapsedTime(0);
     }, [currentIndex]);
 
-    const isLoading = githubLoading || spotifyLoading;
     const currentActivity = useMemo(() => activities[currentIndex], [activities, currentIndex]);
     const isRealTimePlaying = useMemo(() => playbackState.isPlaying && playbackState.track, [playbackState.isPlaying, playbackState.track]);
 
@@ -397,28 +379,38 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
 
     if (isLoading) {
         return (
-            <div className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-border/10" />
-                <div className="absolute right-4 top-3 md:right-5 flex items-center gap-0.5 pointer-events-none">
-                    <div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm" />
-                    <div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm" />
+            <div
+                role="progressbar"
+                aria-busy="true"
+                aria-label="Loading activity feed"
+                className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm"
+            >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" aria-hidden="true" />
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-border/10" aria-hidden="true" />
+                <div className="absolute right-4 top-3 md:right-5 flex items-center gap-0.5 pointer-events-none" aria-hidden="true">
+                    <div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm will-change-opacity" />
+                    <div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm will-change-opacity" />
                 </div>
-                <div className="relative px-4 py-3 md:px-5">
+                <div className="relative px-4 pt-3 pb-1 md:px-5" aria-hidden="true">
                     <div className="space-y-2">
                         <div className="flex flex-wrap items-center gap-1.5">
-                            <div className="h-3.5 w-28 bg-muted/20 animate-pulse" />
-                            <div className="h-5 w-16 bg-muted/30 animate-pulse" />
-                            <div className="h-3.5 w-14 bg-muted/20 animate-pulse" />
-                            <div className="h-5 w-32 bg-muted/30 animate-pulse" />
-                            <div className="h-3 w-12 bg-muted/15 animate-pulse" />
+                            <div className="h-3.5 w-28 bg-muted/20 animate-pulse will-change-opacity" />
+                            <div className="h-5 w-16 bg-muted/30 animate-pulse will-change-opacity" />
+                            <div className="h-3.5 w-14 bg-muted/20 animate-pulse will-change-opacity" />
+                            <div className="h-5 w-32 bg-muted/30 animate-pulse will-change-opacity" />
+                            <div className="h-3 w-12 bg-muted/15 animate-pulse will-change-opacity" />
                         </div>
                         <div className="flex flex-wrap items-center gap-1.5">
-                            <div className="h-5 w-20 bg-muted/30 animate-pulse" />
-                            <div className="h-3.5 w-8 bg-muted/20 animate-pulse" />
-                            <div className="h-3.5 w-20 bg-muted/20 animate-pulse" />
+                            <div className="h-5 w-20 bg-muted/30 animate-pulse will-change-opacity" />
+                            <div className="h-3.5 w-8 bg-muted/20 animate-pulse will-change-opacity" />
+                            <div className="h-3.5 w-20 bg-muted/20 animate-pulse will-change-opacity" />
                         </div>
                     </div>
+                </div>
+
+                {/* Bottom metric bar skeleton */}
+                <div className="h-6 flex items-center px-0 pb-1" aria-hidden="true">
+                    <div className="w-full h-[1px] bg-muted/20 animate-pulse will-change-opacity" />
                 </div>
             </div>
         );

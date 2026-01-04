@@ -1,18 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { ArrowUpRight, ArrowRight } from 'lucide-react'
-import { motion, useInView } from 'framer-motion'
 
 import { getDateParts, readMinutes } from '@/lib/blog-format'
-
-import { AnimatedNumber } from '../ui/effects/animated-number'
 
 export function PostCountHeader({ count }: { count: number }) {
   return (
     <span className="text-muted-foreground/60 inline-flex items-baseline gap-1">
-      <AnimatedNumber value={count} duration={500} initialProgress={0} />
+      {count}
       <span>posts</span>
     </span>
   )
@@ -41,18 +38,11 @@ type Props = {
 
 function BlogCard({ post, index }: Props) {
   const formattedIndex = (index + 1).toString().padStart(2, '0')
-  const cardRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(cardRef, { once: true, margin: "-50px" })
-
-  // Animation duration calculations - slower for more satisfying effect
-  const indexDuration = Math.min(1800 + (index * 200), 2400)
-
 
   const dateParts = getDateParts(post.metadata.publishedAt)
   const dayNumber = dateParts.day
   const monthYear = `${dateParts.month} ${dateParts.year}`
   const readTimeMinutes = readMinutes(post.metadata.readTime || '')
-  const dateDuration = Math.min(1400 + (index * 100), 1800)
 
   const allTags = [
     ...(post.metadata.categories || []),
@@ -63,16 +53,7 @@ function BlogCard({ post, index }: Props) {
 
   return (
     <li className="block p-0 m-0">
-      <motion.div
-        ref={cardRef}
-        initial={{ opacity: 0, y: 20, filter: 'blur(2px)' }}
-        animate={isInView ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 20, filter: 'blur(2px)' }}
-        transition={{
-          duration: 0.5,
-          delay: index * 0.06, // Reduced stagger delay for smoother flow
-          ease: [0.16, 1, 0.3, 1]
-        }}
-      >
+      <div>
         <Link
           href={`/blog/${post.slug}`}
           className="group relative block active:scale-[0.995] transition-transform duration-200 overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
@@ -83,16 +64,16 @@ function BlogCard({ post, index }: Props) {
             aria-hidden="true"
           />
 
-          <article className="relative flex flex-col sm:flex-row sm:items-start gap-5 py-6 px-2 border-b border-neutral-200 dark:border-neutral-800/60 z-10">
-            <div className="flex items-start gap-4 flex-1 min-w-0">
+          <article className="relative flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 py-5 sm:py-6 px-2 border-b border-neutral-200 dark:border-neutral-800/60 z-10">
+            <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
               <span
-                className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right"
+                className="text-4xl sm:text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-12 sm:w-16 text-right"
                 aria-hidden="true"
-              >
-                <AnimatedNumber value={formattedIndex} duration={indexDuration} />
+                >
+                {formattedIndex}
               </span>
 
-              <div className="flex-1 min-w-0 pt-1">
+              <div className="flex-1 min-w-0">
                 <h2 className="font-medium text-lg text-neutral-900 dark:text-neutral-50 group-hover:text-emerald-600 dark:group-hover:text-lime-400 transition-colors duration-200 leading-snug pr-4">
                   {post.metadata.draft && (
                     <span className="inline-flex items-center mr-2 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30 shrink-0">
@@ -118,26 +99,23 @@ function BlogCard({ post, index }: Props) {
                         {tag}
                       </span>
                     ))}
-                    {extraTags > 0 && (
+                     {extraTags > 0 && (
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-medium bg-white dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-500 border border-neutral-300 dark:border-neutral-800">
-                        <AnimatedNumber value={`+${extraTags}`} duration={indexDuration} initialProgress={0} />
+                        +{extraTags}
                       </span>
                     )}
                   </div>
                 ) : null}
 
-                <footer className="flex flex-wrap items-center gap-3 mt-3 text-xs text-neutral-500 dark:text-neutral-500">
+                <footer className="flex flex-wrap items-center gap-2 sm:gap-3 mt-3 text-xs text-neutral-500 dark:text-neutral-500">
                   <time dateTime={post.metadata.publishedAt} className="tabular-nums">
-                    <AnimatedNumber value={dayNumber} duration={dateDuration} /> {monthYear}
+                    {dayNumber} {monthYear}
                   </time>
                   {post.metadata.readTime && (
                     <>
                       <span className="text-neutral-300 dark:text-neutral-700">•</span>
                       <span>
-                        <AnimatedNumber
-                          value={readTimeMinutes}
-                          duration={dateDuration}
-                        /> min read
+                        {readTimeMinutes} min read
                       </span>
                     </>
                   )}
@@ -145,10 +123,7 @@ function BlogCard({ post, index }: Props) {
                     <>
                       <span className="text-neutral-300 dark:text-neutral-700">•</span>
                       <span title={`${post.views} total views`}>
-                        <AnimatedNumber
-                          value={post.uniqueViews}
-                          duration={dateDuration}
-                        /> unique views
+                        {post.uniqueViews} unique views
                       </span>
                     </>
                   )}
@@ -164,7 +139,7 @@ function BlogCard({ post, index }: Props) {
             </div>
           </article>
         </Link>
-      </motion.div>
+      </div>
     </li>
   )
 }
@@ -177,11 +152,11 @@ function BlogCardSkeleton() {
   return (
     <li className="block p-0 m-0">
       <div className="relative block overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0">
-        <article className="relative flex flex-col sm:flex-row sm:items-start gap-5 py-6 px-2 border-b border-neutral-200 dark:border-neutral-800/60">
+        <article className="relative flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-5 py-5 sm:py-6 px-2 border-b border-neutral-200 dark:border-neutral-800/60">
           {/* Main content area with index number and content */}
-          <div className="flex items-start gap-4 flex-1 min-w-0">
+          <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
             {/* Index number skeleton */}
-            <div className="text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-16 text-right">
+            <div className="text-4xl sm:text-5xl font-bold text-neutral-300 dark:text-neutral-700/40 leading-none select-none tabular-nums shrink-0 w-12 sm:w-16 text-right">
               <div className="bg-neutral-100 dark:bg-neutral-700/40 rounded animate-pulse h-12 w-12 ml-auto" />
             </div>
 
@@ -235,7 +210,7 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
       </ul>
 
       {hasMorePosts && (
-        <div className="mt-8 flex justify-end animate-enter" style={{ animationDelay: '400ms' }}>
+        <div className="mt-8 flex justify-end">
           <button
             onClick={() => setShowAll(!showAll)}
             className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"

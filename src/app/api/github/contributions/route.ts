@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { githubService } from '@/server/services/github'
 
-export const dynamic = 'force-dynamic'
+// Use ISR with 1 hour revalidation - contribution data doesn't change frequently
+export const revalidate = 3600
 
 async function fetchWithRetry(year: number, maxRetries = 3) {
     let lastError: Error | null = null

@@ -21,7 +21,7 @@ export default function NotFound() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <section className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <section className="flex flex-col items-center justify-center min-h-screen text-center">
         <div className="space-y-6 max-w-lg">
           {/* 404 Graphic */}
           <div className="space-y-2">
