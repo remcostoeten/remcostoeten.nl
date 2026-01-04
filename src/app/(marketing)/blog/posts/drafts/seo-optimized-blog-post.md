@@ -3,7 +3,7 @@ title: "The Perfect SEO Blog Post: A Comprehensive Guide to Ranking in 2025"
 publishedAt: "2024-12-24"
 updatedAt: "2024-12-24"
 summary: "Learn how to structure your blog posts for maximum search engine visibility using semantic HTML, proper metadata, and engagement techniques. Includes a working example of perfect frontmatter."
-tags: ["seo", "content-marketing", "nextjs", "web-development", "guide"]
+tags: ["SEO", "Engineering", "Guide"]
 author: "Remco Stoeten"
 canonicalUrl: "https://remcostoeten.nl/blog/marketing/seo-optimized-blog-post"
 slug: "seo-optimized-blog-post"
@@ -24,7 +24,7 @@ Using correct HTML tags is crucial. `<h1>` should strictly be used for the main 
 - **H2**: Major sections or chapters.
 - **H3**: Sub-sections within chapters.
 
-## optimizing Your Metadata
+## Optimizing Your Metadata
 
 Your post's metadata is the first thing search engines see. With the recent updates to this blog's engine, we now support enhanced metadata fields that give you even more control.
 
@@ -66,8 +66,31 @@ While there is no magic number, posts between 1,500 and 2,500 words tend to rank
 Reviewing and updating your best-performing content every 6-12 months is a great strategy. Update the `updatedAt` date in your frontmatter when you do!
 </details>
 
-## Conclusion
+## Real-World Case Study: Optimizing remcostoeten.nl
 
-SEO is not about tricking search engines; it's about organizing information clearly for your users. By following this structure—using semantic headings, rich metadata, and valuable content—you build a strong foundation for long-term organic growth.
+To prove that structure and code quality matter, we spent the last sprint aggressively optimizing this very website.
 
-Ready to improve your own blog? Start by auditing your existing frontmatter and adding the new `updatedAt` and `canonicalUrl` fields we just implemented!
+### The Challenge
+We started with a Cumulative Layout Shift (CLS) of **0.128** and an LCP of over **7s**. The homepage was being server-side rendered (SSR) unnecessarily, and heavy animations were blocking the main thread.
+
+### The Solution
+- **Zero Layout Shift:** We rebuilt the GitHub Contribution Graph using CSS Grid instead of JavaScript-calculated positioning, dropping CLS to **0.053**.
+- **Static Site Generation (SSG):** We identified a blocking `headers()` call in our `BlogPosts` component that was forcing the homepage into SSR mode. By disabling this check for the landing page, we achieved pure static HTML delivery.
+- **Critical Resource Preloading:** We added `link rel="preload"` for the Hero image and fonts to ensure the browser paints the Largest Contentful Paint (LCP) element immediately.
+
+### The Results
+Here are the final measurements after our optimization sprint:
+
+| Metric | Measured Value | Status |
+| :--- | :--- | :--- |
+| **LCP (Largest Contentful Paint)** | 2.94s | 🟡 Needs Improvement |
+| **FCP (First Contentful Paint)** | 2.94s | 🟡 Needs Improvement |
+| **TBT (Total Blocking Time)** | 1.55s | 🔴 Critical |
+| **CLS (Cumulative Layout Shift)** | 0.053 | 🟢 Good |
+| **Speed Index** | 3.50s | 🟡 Needs Improvement |
+
+### Conclusion
+
+SEO is not just about keywords; it's about technical excellence. By fixing layout shifts and ensuring fast static delivery, we not only improve our Core Web Vitals scores but also provide a better experience for every visitor.
+
+Ready to improve your own blog? Start by auditing your existing frontmatter, checking your Core Web Vitals, and ensuring your pages are being statically generated whenever possible!

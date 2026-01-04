@@ -2,7 +2,8 @@
 title: "Spotify OAuth2 Setup Tutorial: Working Redirects, Tokens, and Refresh Logic"
 publishedAt: "20-12-2025"
 summary: "A guide for setting up Spotify OAuth2 to obtain access and refresh tokens and API integration."
-tags: ["engineering", "spotify-api", "oauth2", "authentication", "nextjs", "tutorial", "guide"]
+categories: ["Engineering", "Spotify API", "OAuth2", "Guide"]
+tags: ["Engineering", "Authentication", "OAuth2", "Guide", "Next.js"]
 slug: "spotify-oauth2-working-setup"
 ---
 Accessing the Spotify API requires configuring OAuth2. It is not overly complex, although Spotify adds a few extra steps compared to providers like GitHub or Google. These differences cost me hours of debugging due to browser caching and redirect quirks, so I’m documenting the full workflow to save you time.
@@ -33,7 +34,7 @@ If you don't have an API setup yet, I'll be showing how to [implement the API ro
 </NoticeWarning>
 Most implementations use something like:
 
-```bash title="Callback Endpoint"
+```bash
 /api/spotify/callback
 ```
 
@@ -41,7 +42,7 @@ Most implementations use something like:
 
 This is the first part which is new for most. Setting the url to `http://localhost:3000` will not work.
 
-Instead register the loopback IP format:
+Instead register the loopback IP from:
 
 ```bash
 http://127.0.0.1:3000/api/spotify/callback
@@ -49,7 +50,7 @@ http://127.0.0.1:3000/api/spotify/callback
 
 *Both map to your machine, but Spotify validates them differently. `localhost` is a hostname that depends on DNS resolution. `127.0.0.1` is an explicit IP address and always resolves to the local interface, which is why Spotify accepts it. Make sure your OAuth redirect in your code matches exactly what you register in the developer dashboard.*
 
-Last question is: Which API/SDKs are you planning to use? Fill in your use case (most likely web) and click "Save". After pressing save you'll see your client ID, and secret if you press "View client secret". Copy these, and add to your `.env` or `.env.local` file like so:
+Last question is: Which API/SDKs are you planning to use? Fill in your use case (most likely web) and click "Save". After having pressed save you'll see your client ID, and secret if you press "View client secret". Copy these, and add to your `.env`or `.env.local` file like so:
 
 ```bash
 SPOTIFY_CLIENT_ID=your-client-id
@@ -62,6 +63,17 @@ It doesn't matter whether you use quotes around your environment variable values
 - `SPOTIFY_CLIENT_ID="value"`
 - `SPOTIFY_CLIENT_ID='value'`
 </NoticeInfo>
+
+---
+
+## Generate Your .env Block
+
+Use the interactive form below to build your environment variables. Paste your credentials from the Spotify Dashboard and copy the generated block directly into your project.
+
+<SpotifyEnvGenerator />
+
+---
+
 *If your API calls for different variable names than these two, obviously change those.*
 Next we will configure the authorization code flow, exchanging the temporary code for both an access token and a refresh token.
 
@@ -70,7 +82,7 @@ Next we will configure the authorization code flow, exchanging the temporary cod
 Now you'll have to implement the API route which you registered in the developer dashboard. Like I mentioned this implementation is following Next.js but you should just register an api in your desired framework.
 
 Create the api route
-```bash title="Create Route File"
+```bash
 touch src/app/api/spotify/callback/route.ts
 ## or app/api/spotify/callback/route.ts if no src dir
 ```
@@ -82,7 +94,7 @@ And insert your improved GET request handler:
 - Better error handling with fallbacks for JSON parsing
 - Consistent redirect URI usage from environment variables
 </NoticeInfo>
-```typescript title="src/app/api/spotify/callback/route.ts"
+```typescript
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 
@@ -90,42 +102,29 @@ export const dynamic = 'force-dynamic';
 
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com';
 
-// Validate required environment variables at startup
-const requiredEnv = {
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: process.env.SPOTIFY_REDIRECT_URI || 'http://127.0.0.1:3000/api/spotify/callback'
-};
-
-if (!requiredEnv.clientId || !requiredEnv.clientSecret) {
-  throw new Error('Missing required Spotify OAuth credentials');
-}
-
-function createRedirectUrl(baseUrl: string, params: Record<string, string>) {
-  const url = new URL(baseUrl);
-  Object.entries(params).forEach(([key, value]) => {
-    url.searchParams.set(key, value);
-  });
-  return url;
-}
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const code = searchParams.get('code');
     const error = searchParams.get('error');
 
-    // Handle OAuth errors
     if (error) {
-      return NextResponse.redirect(createRedirectUrl('/', { error }));
+      return NextResponse.redirect(new URL('/?error=' + error, request.url));
     }
 
     if (!code) {
-      return NextResponse.redirect(createRedirectUrl('/', { error: 'no_code' }));
+      return NextResponse.redirect(new URL('/?error=no_code', request.url));
     }
 
-    // Exchange code for tokens
-    const authString = `${requiredEnv.clientId}:${requiredEnv.clientSecret}`;
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+    const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
+
+    if (!clientId || !clientSecret) {
+      return NextResponse.redirect(new URL('/?error=missing_credentials', request.url));
+    }
+
+    const authString = `${clientId}:${clientSecret}`;
     const base64Auth = Buffer.from(authString).toString('base64');
 
     const tokenResponse = await fetch(`${SPOTIFY_ACCOUNTS_BASE}/api/token`, {
@@ -137,52 +136,38 @@ export async function GET(request: NextRequest) {
       body: new URLSearchParams({
         grant_type: 'authorization_code',
         code,
-        redirect_uri: requiredEnv.redirectUri
+        redirect_uri: redirectUri || 'http://127.0.0.1:3000/api/spotify/callback'
       })
     });
 
     if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.json().catch(() => ({}));
-      return NextResponse.redirect(
-        createRedirectUrl('/', {
-          error: 'token_exchange_failed',
-          details: errorData.error_description || errorData.error || 'unknown'
-        })
-      );
+      const errorData = await tokenResponse.json();
+      return NextResponse.redirect(new URL(`/?error=token_exchange_failed&details=${errorData.error_description || errorData.error}`, request.url));
     }
 
-    const { refresh_token, access_token } = await tokenResponse.json();
+    const tokenData = await tokenResponse.json();
 
-    // Success redirect with tokens
-    return NextResponse.redirect(
-      createRedirectUrl('/dev/spotify', {
-        success: 'true',
-        refresh_token: refresh_token || '',
-        access_token: access_token || ''
-      })
-    );
+    const redirectUrl = new URL('/dev/spotify', request.url);
+    redirectUrl.searchParams.set('success', 'true');
+    redirectUrl.searchParams.set('refresh_token', tokenData.refresh_token);
+    redirectUrl.searchParams.set('access_token', tokenData.access_token);
 
+    return NextResponse.redirect(redirectUrl);
   } catch (error) {
     console.error('Error in Spotify callback:', error);
-    return NextResponse.redirect(
-      createRedirectUrl('/', { error: 'unknown_error' })
-    );
+    return NextResponse.redirect(new URL('/?error=unknown_error', request.url));
   }
 }```
 
-## Testing Your OAuth Setup
-
-To test your OAuth setup and easily generate tokens, visit the `/dev/spotify` page in your application. This interactive page provides:
-
-- Step-by-step OAuth flow guidance
-- Automatic generation of authorization URLs
-- Token display with copy functionality
-- Error handling and debugging information
-- Environment variable requirements
-
-Simply navigate to `http://127.0.0.1:3000/dev/spotify` after setting up your environment variables to test the complete OAuth flow.
-
 ---
+
+## Interactive Setup Tool
+
+<NoticeInfo title="Speed up your setup">
+I've built a custom **[Spotify Token Generator](/dev/spotify)** tool specifically for this workflow. It validates your credentials and generates the `.env` block for you automatically. Use it to skip the manual work!
+</NoticeInfo>
+
+## Spotify Developer Account
 
 ## Making API Calls
 
@@ -208,9 +193,9 @@ async function fetchSpotifyData(accessToken: string) {
 
 ### Refreshing the Access Token
 
-Access tokens expire after 1 hour, so you'll need to refresh them using the refresh token. Create a new route handler for this:
+Access tokens expire after 1 hour, so you'll need to refresh them using the refresh token:
 
-```typescript title="src/app/api/spotify/refresh/route.ts"
+```typescript
 export async function POST(request: NextRequest) {
   try {
     const { refresh_token } = await request.json();
@@ -307,7 +292,7 @@ For production deployments:
 
 Here's a complete example of a Spotify API service:
 
-```typescript title="Spotify API Service"
+```typescript
 class SpotifyAPIService {
   private accessToken: string | null = null;
   private tokenExpiry: number = 0;
@@ -369,9 +354,14 @@ Setting up Spotify OAuth2 requires attention to detail, especially with redirect
 
 With this setup, you can now integrate Spotify's rich API into your applications, from music players to analytics dashboards.
 
+---
+
+## Try It Live
+
+Once you have your access token from the [Token Generator](/dev/spotify), use the API explorer below to test real Spotify API calls directly from this page:
+
+<SpotifyApiExplorer />
+
 <NoticeInfo title="Next Steps">
 Ready to build more? Check out my other guides on [API integration patterns](/blog/topics/api-integration) and [Next.js authentication](/blog/topics/auth).
 </NoticeInfo>
-
-
-
