@@ -38,6 +38,7 @@ const CARD_STYLES = [
       <Plus
         className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50"
         strokeWidth={1}
+        aria-hidden="true"
       />
     )
   },
@@ -52,10 +53,12 @@ const CARD_STYLES = [
         <Plus
           className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50"
           strokeWidth={1}
+          aria-hidden="true"
         />
         <Plus
           className="-bottom-[12.5px] -left-[12.5px] absolute z-10 hidden size-6 md:block text-muted-foreground/50"
           strokeWidth={1}
+          aria-hidden="true"
         />
       </>
     )
@@ -70,6 +73,7 @@ const CARD_STYLES = [
       <Plus
         className="-right-[12.5px] -bottom-[12.5px] md:-left-[12.5px] absolute z-10 size-6 md:hidden text-muted-foreground/50"
         strokeWidth={1}
+        aria-hidden="true"
       />
     )
   },
@@ -101,7 +105,6 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
       <div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t" />
 
       {LOGOS.map(function (logo, i) {
-        // Fallback to a basic style if we run out of defined styles
         const style = CARD_STYLES[i] || { className: "border-r border-b", decorators: null }
         return (
           <TechCard

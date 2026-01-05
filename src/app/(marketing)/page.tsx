@@ -1,9 +1,14 @@
-import { BlogPosts } from '@/components/blog/posts';
 import { Intro } from '@/components/home/hero';
 import { Section } from '@/components/ui/section';
 import { homeMetadata } from '@/core/metadata'
 import nextDynamic from 'next/dynamic'
-import { TechStackSkeleton, ActivitySectionSkeleton } from '@/components/ui/skeletons/section-skeletons'
+import {
+  ActivitySectionSkeleton,
+  TechStackSkeleton,
+  WorkExperienceSkeleton,
+  LanguageStatsSkeleton,
+  BlogPostsSkeleton
+} from '@/components/ui/skeletons/section-skeletons'
 
 const ActivitySection = nextDynamic(
   () => import('@/components/landing/activity/section').then(m => ({ default: m.ActivitySection })),
@@ -15,9 +20,25 @@ const TechStackCloud = nextDynamic(
   { loading: () => <TechStackSkeleton /> }
 )
 
-const WorkExperienceDemo = nextDynamic(() => import('@/components/home/work-experience'), {
-  loading: () => <div className="h-[400px] w-full bg-muted/10 animate-pulse rounded-lg" />
-})
+const LanguageStats = nextDynamic(
+  () => import('@/components/landing/language-stats').then(m => ({ default: m.LanguageStats })),
+  { loading: () => <LanguageStatsSkeleton /> }
+)
+
+const WorkExperienceDemo = nextDynamic(
+  () => import('@/components/home/work-experience'),
+  { loading: () => <WorkExperienceSkeleton /> }
+)
+
+const BlogPosts = nextDynamic(
+  () => import('@/components/blog/posts').then(m => ({ default: m.BlogPosts })),
+  { loading: () => <BlogPostsSkeleton /> }
+)
+
+const FeaturedProjects = nextDynamic(
+  () => import('@/components/landing/featured-projects').then(m => ({ default: m.FeaturedProjects })),
+  { loading: () => <div className="h-64 animate-pulse bg-muted/20 rounded-lg" /> }
+)
 
 export const revalidate = 60
 
@@ -30,19 +51,24 @@ export default function Page() {
         <Intro />
 
         <div className="space-y-4">
-          <div>
-            <ActivitySection />
-            <WorkExperienceDemo />
-          </div>
-
-          <Section title="Tech Stack" noHeaderMargin>
-            <div className="py-4 space-y-4">
-              <p className="text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
-                My go-to technologies for building modern web applications. From React and TypeScript on the frontend to Node.js and PostgreSQL on the backend—these are the tools I reach for daily.
+          <Section title="Tech Stack" noHeaderMargin className='!mb-0 border-b-0'>
+            <div className="pt-4 space-y-4">
+              <p className="text-sm px-4 text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
+                My go-to technologies for building modern web applications. From React and TypeScript on frontend to Node.js and PostgreSQL on backend—these are the tools I reach for daily.
               </p>
               <TechStackCloud />
             </div>
           </Section>
+
+          <WorkExperienceDemo />
+
+          <ActivitySection />
+
+          <Section title="Learning Journey" noHeaderMargin>
+            <LanguageStats />
+          </Section>
+
+          <FeaturedProjects />
 
           <BlogPosts />
         </div>

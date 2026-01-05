@@ -143,26 +143,16 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
           publishedAt={post.metadata.publishedAt}
           tags={post.metadata.tags}
           title={post.metadata.title}
+          summary={post.metadata.summary}
           readTime={calculateReadTime(post.content)}
           slug={post.slug}
           uniqueViews={viewData?.uniqueViews || 0}
           totalViews={viewData?.totalViews || 0}
         />
 
-        <div className="space-y-6 mb">
-          <h1 className="title font-medium text-3xl tracking-tight max-w-3xl mb-2 leading-tight">
-            {post.metadata.title}
-          </h1>
-          <div className="flex justify-between items-start text-sm max-w-3xl">
-            <p className="text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              {post.metadata.summary}
-            </p>
-          </div>
-        </div>
-
         <div className="screen-border mb-12" />
 
-        <article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-3xl">
+        <article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-3xl prose-code:before:content-none prose-code:after:content-none">
           <CustomMDX source={post.content} />
         </article>
 

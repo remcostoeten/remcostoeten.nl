@@ -17,7 +17,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         description: `- Building modern learning platforms and educational tools
 - Developing scalable frontend architecture with React and Next.js
 - Collaborating with cross-functional teams to deliver user-centric solutions`,
-        skills: ["React", "Next.js", "TypeScript", "CSS Modules ", "Tanstack Query", "REST"],
+        skills: [],
         isExpanded: true,
       },
     ],
@@ -36,7 +36,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         description: `- Developed and maintained government-focused collaboration platforms
 - Built accessible and performant web applications
 - Implemented modern frontend practices and design systems`,
-        skills: ["React", "TypeScript", "GraphQL", "Accessibility", "Design Systems"],
+        skills: [],
       },
     ],
   },
@@ -53,7 +53,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         description: `- Created custom web solutions for diverse clients
 - Worked on e-commerce and marketing websites
 - Collaborated with designers to implement pixel-perfect interfaces`,
-        skills: ["JavaScript", "React", "CSS", "WordPress", "E-commerce"],
+        skills: [],
       },
     ],
   },
@@ -70,7 +70,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         description: `- Started career as junior developer and grew to senior role
 - Built numerous websites and web applications for clients
 - Gained expertise in full-stack development and project delivery`,
-        skills: ["PHP", "JavaScript", "Laravel", "WordPress", "MySQL", "Frontend Development"],
+        skills: [],
       },
     ],
   },
@@ -85,7 +85,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         employmentType: "Education",
         icon: "education",
         description: `Sneek`,
-        skills: ["Design Theory", "Typography", "Visual Communication", "Adobe Creative Suite"],
+        skills: [],
       },
     ],
   },

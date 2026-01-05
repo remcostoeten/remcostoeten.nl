@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getCurrentPlayback, SpotifyTrack, formatDuration } from '@/server/services/spotify';
 
 export interface SpotifyPlaybackState {
@@ -13,24 +13,29 @@ export interface SpotifyPlaybackState {
     formattedDuration: string;
 }
 
-const POLL_INTERVAL = 'connection' in navigator &&
-    (navigator.connection as any)?.saveData
-    ? 30000 // 30 seconds on data saver mode (balanced UX)
-    : 'connection' in navigator && ((navigator.connection as any)?.effectiveType === 'slow-2g' || (navigator.connection as any)?.effectiveType === '2g')
-        ? 20000 // 20 seconds on slow connections
-        : 10000; // 10 seconds on normal connections (still responsive)
+// Adaptive polling based on connection quality
+const getPollingInterval = () => {
+    if (typeof navigator === 'undefined') return 10000;
+
+    const connection = (navigator as any).connection;
+    if (!connection) return 10000;
+
+    if (connection.saveData) return 30000; // Data saver mode
+    if (connection.effectiveType === 'slow-2g' || connection.effectiveType === '2g') return 20000;
+    return 10000; // Normal connections
+};
+
 const TIMER_INTERVAL = 200; // Update local progress every 200ms
 const DRIFT_THRESHOLD = 2000; // Hard reset if drift > 2 seconds
 
 /**
  * Real-time Spotify playback monitor hook
  * 
- * Features:
- * - Polls Spotify API every 3 seconds
- * - Updates progress locally every 200ms for smooth UI
- * - Drift compensation: resyncs with API on each poll
- * - T0 reset on track change
- * - Handles pause/resume/seek correctly
+ * Performance optimizations:
+ * - Uses Visibility API to pause polling when tab is hidden
+ * - Delays initial poll by 3s to avoid blocking hydration
+ * - Adaptive polling interval based on connection quality
+ * - Uses cached token (via API) to avoid redundant auth
  */
 export function useSpotifyPlayback(): SpotifyPlaybackState {
     const [state, setState] = useState<SpotifyPlaybackState>({
@@ -48,16 +53,17 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
     const lastProgressRef = useRef<number>(0);
     const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const isVisibleRef = useRef<boolean>(true);
 
-    const calculateProgress = (isPlaying: boolean, duration: number): number => {
+    const calculateProgress = useCallback((isPlaying: boolean, duration: number): number => {
         if (!isPlaying) {
             return lastProgressRef.current;
         }
         const elapsed = Date.now() - T0Ref.current;
         return Math.min(elapsed, duration);
-    };
+    }, []);
 
-    const updateLocalProgress = () => {
+    const updateLocalProgress = useCallback(() => {
         setState((prev) => {
             if (!prev.track || !prev.isPlaying) return prev;
 
@@ -71,13 +77,15 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
                 formattedProgress: formatDuration(currentProgress),
             };
         });
-    };
+    }, [calculateProgress]);
 
-    const fetchPlaybackState = async () => {
+    const fetchPlaybackState = useCallback(async () => {
+        // Skip polling if tab is hidden (performance optimization)
+        if (!isVisibleRef.current) return;
+
         const playback = await getCurrentPlayback();
 
         if (!playback || !playback.track) {
-            // Nothing playing
             setState({
                 track: null,
                 progress: 0,
@@ -123,23 +131,58 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
             formattedProgress: formatDuration(progress_ms),
             formattedDuration: formatDuration(duration_ms),
         });
-    };
+    }, [calculateProgress]);
+
+    const startPolling = useCallback(() => {
+        if (pollIntervalRef.current) return; // Already polling
+
+        const POLL_INTERVAL = getPollingInterval();
+        fetchPlaybackState();
+        pollIntervalRef.current = setInterval(fetchPlaybackState, POLL_INTERVAL);
+        timerIntervalRef.current = setInterval(updateLocalProgress, TIMER_INTERVAL);
+    }, [fetchPlaybackState, updateLocalProgress]);
+
+    const stopPolling = useCallback(() => {
+        if (pollIntervalRef.current) {
+            clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+        }
+        if (timerIntervalRef.current) {
+            clearInterval(timerIntervalRef.current);
+            timerIntervalRef.current = null;
+        }
+    }, []);
 
     useEffect(() => {
-        // Delay polling by 3 seconds to avoid blocking the main thread during hydration
-        // This significantly improves TBT (Total Blocking Time)
+        // Handle visibility change - pause polling when hidden
+        const handleVisibilityChange = () => {
+            isVisibleRef.current = document.visibilityState === 'visible';
+
+            if (isVisibleRef.current) {
+                // Tab became visible - resume polling immediately
+                startPolling();
+            } else {
+                // Tab hidden - stop polling to save resources
+                stopPolling();
+            }
+        };
+
+        // Delay initial polling by 3 seconds to avoid blocking hydration (TBT optimization)
         const startupDelay = setTimeout(() => {
-            fetchPlaybackState();
-            pollIntervalRef.current = setInterval(fetchPlaybackState, POLL_INTERVAL);
-            timerIntervalRef.current = setInterval(updateLocalProgress, TIMER_INTERVAL);
+            if (document.visibilityState === 'visible') {
+                startPolling();
+            }
         }, 3000);
+
+        // Listen for visibility changes
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         return () => {
             clearTimeout(startupDelay);
-            if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+            stopPolling();
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, []);
+    }, [startPolling, stopPolling]);
 
     return state;
 }

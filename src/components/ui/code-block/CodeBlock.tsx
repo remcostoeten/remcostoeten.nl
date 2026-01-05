@@ -7,6 +7,7 @@ import React from "react";
 import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
 import { clsx, type ClassValue } from "clsx";
 import type { CSSProperties } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 export const cn = (...inputs: ClassValue[]) => {
@@ -36,10 +37,10 @@ const customTheme: TCustomTheme = {
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
-    whiteSpace: "pre",
+    whiteSpace: "pre-wrap",
     wordSpacing: "normal",
     wordBreak: "normal",
-    wordWrap: "normal",
+    overflowWrap: "anywhere",
     lineHeight: "1.6",
     fontSize: "14px",
     tabSize: 2,
@@ -50,17 +51,16 @@ const customTheme: TCustomTheme = {
     background: "none",
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     textAlign: "left",
-    whiteSpace: "pre",
+    whiteSpace: "pre-wrap",
     wordSpacing: "normal",
     wordBreak: "normal",
-    wordWrap: "normal",
+    overflowWrap: "anywhere",
     lineHeight: "1.6",
     fontSize: "14px",
     tabSize: 2,
     hyphens: "none",
     padding: "1.25rem",
     margin: "0",
-    overflow: "auto",
   },
   comment: { color: "hsl(var(--sh-comment))", fontStyle: "italic" },
   "block-comment": { color: "hsl(var(--sh-comment))", fontStyle: "italic" },
@@ -115,6 +115,7 @@ export type TCodeBlockProps = {
   showIcon?: boolean;
   disableCopy?: boolean;
   disableTopBar?: boolean;
+  variant?: "default" | "sharp";
 };
 
 
@@ -148,6 +149,7 @@ export function CodeBlock({
   showIcon = true,
   disableCopy = false,
   disableTopBar = false,
+  variant = "default",
 }: TCodeBlockProps) {
   const [isCopied, setIsCopied] = useState(false);
   const codeRef = useRef<HTMLDivElement>(null);
@@ -163,9 +165,14 @@ export function CodeBlock({
     }
   }, [code, onCopy]);
 
+  const roundedClass = variant === "sharp" ? "rounded-none" : "rounded-xl";
+
   return (
-    <div className={cn("relative my-8 group/code", className)}>
-      <div className="relative overflow-hidden bg-[hsl(var(--sh-background))]/90 backdrop-blur shadow-xl rounded-xl transition-all duration-300 ring-1 ring-[hsl(var(--sh-border))] group-hover/code:ring-[hsl(var(--sh-border))]/80 group-hover/code:shadow-2xl">
+    <div className={cn("relative my-5 group/code", className)}>
+      <div className={cn(
+        "relative overflow-hidden bg-[hsl(var(--sh-background))]/90 backdrop-blur shadow-xl transition-all duration-300 ring-1 ring-[hsl(var(--sh-border))] group-hover/code:ring-[hsl(var(--sh-border))]/80 group-hover/code:shadow-2xl",
+        roundedClass
+      )}>
         {!disableTopBar && (
           <header className="flex justify-between items-center px-4 py-3 bg-[hsl(var(--sh-background))]/80 backdrop-blur-md border-b border-[hsl(var(--sh-border))] z-10 relative">
             <div className="flex items-center gap-3 min-w-0">
@@ -187,18 +194,36 @@ export function CodeBlock({
                 className="text-muted-foreground/60 hover:text-[hsl(var(--sh-text))] transition-all duration-200 p-1.5 rounded-md hover:bg-[hsl(var(--sh-text))]/5"
                 title="Copy code"
               >
-                {isCopied ? (
-                  <Check size={14} className="text-emerald-500 scale-110" />
-                ) : (
-                  <Copy size={14} />
-                )}
+                <AnimatePresence mode="wait" initial={false}>
+                  {isCopied ? (
+                    <motion.span
+                      key="check"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Check size={14} className="text-emerald-500" />
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="copy"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <Copy size={14} />
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </button>
             )}
           </header>
         )}
 
         <div
-          className="relative overflow-x-auto"
+          className="relative overflow-x-auto max-w-full"
           style={{ maxHeight: maxHeight || 'none' }}
           ref={codeRef}
         >
@@ -215,25 +240,29 @@ export function CodeBlock({
               },
               showLineNumbers: showLineNumbers,
               lineNumberStyle: {
+                position: "absolute",
+                left: 0,
+                width: "3rem",
+                paddingRight: "0.75rem",
                 color: "hsl(var(--sh-comment))",
-                minWidth: "3em",
-                paddingRight: "1.5rem",
                 textAlign: "right",
                 userSelect: "none",
                 fontSize: "0.75rem",
+                opacity: 0.5,
               },
               wrapLines: true,
-              wrapLongLines: false,
+              wrapLongLines: true,
               lineProps: (lineNumber) => ({
                 style: {
                   display: "block",
+                  paddingLeft: "3.5rem",
+                  position: "relative",
                   backgroundColor: highlightLines.includes(lineNumber)
                     ? "rgba(163, 230, 53, 0.05)"
                     : "transparent",
                   borderLeft: highlightLines.includes(lineNumber)
                     ? "2px solid #a3e635"
                     : "2px solid transparent",
-                  paddingLeft: "1rem",
                   paddingRight: "1rem",
                 },
               }),

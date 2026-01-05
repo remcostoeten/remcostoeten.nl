@@ -6,6 +6,8 @@ type ProviderResponse = {
 }
 
 export function GET() {
-    const body: ProviderResponse = { providers: listProviders() }
+    const providers = listProviders()
+    console.log('[Auth API] GET /api/auth/providers returned:', providers)
+    const body: ProviderResponse = { providers }
     return NextResponse.json(body)
 }

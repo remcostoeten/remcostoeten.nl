@@ -1,90 +1,83 @@
 import { NextResponse } from 'next/server';
-import { NextRequest } from 'next/server';
+import { getSpotifyAccessToken, hasSpotifyCredentials, invalidateSpotifyTokenCache } from '@/server/services/spotify-auth';
 
+// Now playing needs to be dynamic since it changes frequently
+// But we still use the cached token for performance
 export const dynamic = 'force-dynamic';
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
-const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
-        const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
-
-        if (!refreshToken || refreshToken === 'your_refresh_token_here' || refreshToken.startsWith('#')) {
+        if (!hasSpotifyCredentials()) {
             return NextResponse.json({ isPlaying: false, message: 'No refresh token configured' });
         }
 
-        const clientId = process.env.SPOTIFY_CLIENT_ID;
-        const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+        const accessToken = await getSpotifyAccessToken();
 
-        if (!clientId || !clientSecret) {
-            return NextResponse.json({ error: 'Missing Spotify credentials' }, { status: 500 });
+        if (!accessToken) {
+            return NextResponse.json({ isPlaying: false, error: 'Failed to get access token' });
         }
 
-        const authString = `${clientId}:${clientSecret}`;
-        const base64Auth = Buffer.from(authString).toString('base64');
-
-                const tokenResponse = await fetch(`${SPOTIFY_ACCOUNTS_BASE}/api/token`, {
-            method: 'POST',
+        const nowPlayingResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': `Basic ${base64Auth}`
+                'Authorization': `Bearer ${accessToken}`,
             },
-            body: new URLSearchParams({
-                grant_type: 'refresh_token',
-                refresh_token: refreshToken
-            })
         });
 
-        const tokenData = await tokenResponse.json();
-
-        if (tokenData.error) {
-            console.error('Error refreshing Spotify token for now playing:', tokenData.error);
-            return NextResponse.json({ error: tokenData.error }, { status: 400 });
-        }
-
-        const accessToken = tokenData.access_token;
-
-                const nowPlayingResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
+        // Handle 401 by invalidating cache and retrying once
+        if (nowPlayingResponse.status === 401) {
+            invalidateSpotifyTokenCache();
+            const retryToken = await getSpotifyAccessToken();
+            if (!retryToken) {
+                return NextResponse.json({ isPlaying: false, error: 'Authentication failed' });
             }
-        });
 
-        if (nowPlayingResponse.status === 204 || nowPlayingResponse.status > 400) {
-                        return NextResponse.json({ isPlaying: false });
+            const retryResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
+                headers: {
+                    'Authorization': `Bearer ${retryToken}`,
+                },
+            });
+
+            return handleNowPlayingResponse(retryResponse);
         }
 
-        const data = await nowPlayingResponse.json();
-
-        if (!data.item) {
-            return NextResponse.json({ isPlaying: false });
-        }
-
-        const isPlaying = data.is_playing;
-        const progressMs = data.progress_ms;
-        const item = data.item;
-
-        const track = {
-            id: item.id,
-            name: item.name,
-            artist: item.artists.map((artist: any) => artist.name).join(', '),
-            album: item.album.name,
-            url: item.external_urls.spotify,
-            image: item.album.images[0]?.url || '',
-            played_at: new Date().toISOString(),
-            duration_ms: item.duration_ms
-        };
-
-        return NextResponse.json({
-            isPlaying,
-            progress_ms: progressMs,
-            duration_ms: item.duration_ms,
-            track
-        });
-
+        return handleNowPlayingResponse(nowPlayingResponse);
     } catch (error) {
         console.error('Error in Spotify now playing API:', error);
         return NextResponse.json({ error: 'Failed to fetch now playing' }, { status: 500 });
     }
+}
+
+async function handleNowPlayingResponse(response: Response) {
+    // 204 = no content (nothing playing)
+    if (response.status === 204 || response.status > 400) {
+        return NextResponse.json({ isPlaying: false });
+    }
+
+    const data = await response.json();
+
+    if (!data.item) {
+        return NextResponse.json({ isPlaying: false });
+    }
+
+    const item = data.item;
+
+    const track = {
+        id: item.id,
+        name: item.name,
+        artist: item.artists.map((artist: any) => artist.name).join(', '),
+        album: item.album.name,
+        url: item.external_urls.spotify,
+        image: item.album.images[0]?.url || '',
+        played_at: new Date().toISOString(),
+        duration_ms: item.duration_ms,
+    };
+
+    return NextResponse.json({
+        isPlaying: data.is_playing,
+        progress_ms: data.progress_ms,
+        duration_ms: item.duration_ms,
+        track,
+    });
 }

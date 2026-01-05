@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, ChevronRight, Home } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronRight, Home, Eye } from 'lucide-react'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/actions/analytics'
@@ -24,6 +24,7 @@ type Props = {
   publishedAt: string
   tags?: string[]
   title: string
+  summary: string
   readTime: string
   slug: string
   uniqueViews?: number
@@ -34,6 +35,7 @@ export function BlogPostClient({
   publishedAt,
   tags,
   title,
+  summary,
   readTime,
   slug,
   uniqueViews = 0,
@@ -47,7 +49,6 @@ export function BlogPostClient({
 
   const allTags = tags || []
 
-
   useEffect(() => {
     if (slug) {
       trackBlogView(slug)
@@ -55,77 +56,95 @@ export function BlogPostClient({
   }, [slug])
 
   return (
-    <>
-      <div className="flex items-center justify-between mb-8 flex-col">
-        <div className='flex items-center gap-1.5 w-full text-sm text-muted-foreground'>
-          <nav className="flex items-center w-full">
-            <Link
-              href="/"
-              className="hover:text-foreground transition-colors flex items-center gap-1"
-            >
-              <Home className="w-3.5 h-3.5" />
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5 opacity-50" />
-            <Link
-              href="/blog"
-              className="hover:text-foreground transition-colors"
-            >
-              Blog
-            </Link>
-            <ChevronRight className="w-3.5 h-3.5 opacity-50" />
-            <span className="text-foreground/70 truncate max-w-[200px]">
-              {title}
-            </span>
-          </nav>
-
-          <button
-            onClick={() => router.back()}
-            className="w-full  flex-end inline-flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800/50 rounded-none AAAA transition-all group justify-end"
+    <header className="mb-16">
+      {/* Navigation Row */}
+      <div className="flex items-center justify-between mb-8">
+        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Link
+            href="/"
+            className="hover:text-foreground transition-colors p-1 -ml-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
           >
-            <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
-            Back
-          </button>
-        </div>
-        <div className="flex flex-col gap-4 w-full">
-          <div className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
-            <p className="flex items-center gap-1 text-neutral-500 dark:text-neutral-400 tabular-nums">
-              <AnimatedNumber value={dateParts.day} duration={dateDuration} initialProgress={0} /> {dateParts.month} <AnimatedNumber value={dateParts.year} duration={dateDuration} initialProgress={0} />
-            </p>
-            <span className="text-neutral-300 dark:text-neutral-700">•</span>
-            <p className="text-neutral-500 dark:text-neutral-400">
-              <AnimatedNumber value={readTimeMinutes} duration={dateDuration} initialProgress={0} /> min read
-            </p>
-            {uniqueViews > 0 && (
-              <>
-                <span className="text-neutral-300 dark:text-neutral-700">•</span>
-                <span className="text-neutral-500 dark:text-neutral-400" title={`${totalViews} total views`}>
-                  <AnimatedNumber value={uniqueViews} duration={500} initialProgress={0} /> unique views
-                </span>
-              </>
-            )}
-          </div>
+            <Home className="w-4 h-4" />
+          </Link>
+          <ChevronRight className="w-3.5 h-3.5 opacity-40" />
+          <Link
+            href="/blog"
+            className="hover:text-foreground transition-colors px-1.5 py-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
+          >
+            Blog
+          </Link>
+        </nav>
 
-          {allTags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {allTags.map((tag) => (
-                <Link
-                  key={tag}
-                  href={`/blog/tags/${tag.toLowerCase()}`}
-                  className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
-                  bg-neutral-100 dark:bg-neutral-800/60
-                  text-neutral-600 dark:text-neutral-400
-                  hover:bg-neutral-200 dark:hover:bg-neutral-700/60
-                  border border-transparent hover:border-neutral-300 dark:hover:border-neutral-600
-                  transition-all duration-200"
-                >
-                  {tag}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-all group"
+        >
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          Back
+        </button>
       </div>
-    </>
+
+      {/* Title */}
+      <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground leading-tight mb-4">
+        {title}
+      </h1>
+
+      {/* Summary */}
+      {summary && (
+        <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl mb-6">
+          {summary}
+        </p>
+      )}
+
+      {/* Metadata Row */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400 mb-6">
+        <time className="flex items-center gap-1 tabular-nums">
+          <AnimatedNumber value={dateParts.day} duration={dateDuration} initialProgress={0} />
+          <span>{dateParts.month}</span>
+          <AnimatedNumber value={dateParts.year} duration={dateDuration} initialProgress={0} />
+        </time>
+
+        <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+
+        <span className="flex items-center gap-1">
+          <AnimatedNumber value={readTimeMinutes} duration={dateDuration} initialProgress={0} />
+          <span>min read</span>
+        </span>
+
+        {uniqueViews > 0 && (
+          <>
+            <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+            <span className="flex items-center gap-1.5" title={`${totalViews} total views`}>
+              <Eye className="w-3.5 h-3.5" />
+              <AnimatedNumber value={uniqueViews} duration={500} initialProgress={0} />
+              <span>views</span>
+            </span>
+          </>
+        )}
+      </div>
+
+      {/* Tags */}
+      {allTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {allTags.map((tag) => (
+            <Link
+              key={tag}
+              href={`/blog/tags/${tag.toLowerCase()}`}
+              className="inline-flex items-center px-3 py-1.5 text-xs font-medium
+                bg-neutral-50 dark:bg-neutral-900/60
+                text-neutral-600 dark:text-neutral-400
+                border border-neutral-200 dark:border-neutral-800
+                hover:bg-neutral-100 dark:hover:bg-neutral-800/60
+                hover:border-neutral-300 dark:hover:border-neutral-700
+                hover:text-neutral-900 dark:hover:text-neutral-200
+                rounded-md transition-all duration-200"
+            >
+              {tag}
+            </Link>
+          ))}
+        </div>
+      )}
+    </header>
   )
 }
 
@@ -154,7 +173,7 @@ export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
               <ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
               Previous
             </span>
-            <span className="font-medium text-foreground group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors line-clamp-2">
+            <span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
               {prevPost.metadata.title}
             </span>
           </Link>
@@ -176,7 +195,7 @@ export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
               Next
               <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
             </span>
-            <span className="font-medium text-foreground group-hover:text-lime-600 dark:group-hover:text-lime-400 transition-colors line-clamp-2">
+            <span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
               {nextPost.metadata.title}
             </span>
           </Link>
