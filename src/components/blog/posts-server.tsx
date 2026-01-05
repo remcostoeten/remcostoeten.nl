@@ -7,8 +7,8 @@ import { Section } from '../ui/section'
 import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
 
-export async function BlogPosts() {
-  const userIsAdmin = await isAdmin()
+export async function BlogPosts({ checkAdmin = true }: { checkAdmin?: boolean }) {
+  const userIsAdmin = checkAdmin ? await isAdmin() : false
 
   const allBlogs = userIsAdmin ? getAllBlogPosts() : getBlogPosts()
 

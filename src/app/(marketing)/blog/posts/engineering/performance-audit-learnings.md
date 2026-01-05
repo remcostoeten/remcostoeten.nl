@@ -7,13 +7,12 @@ tags: ["Engineering", "Next.js", "SEO"]
 
 # Auditing Performance: Lessons from a Production Build
 
-Performance, along with accessibility, are among the most overlooked and intimidating aspects of web development. But a necessary evil.
+Performance and accessibility are among the most overlooked aspects of web development—yet they're essential. My site was 90% ready for release, so I ran a performance audit expecting minor tweaks. What I found was far worse.
 
-My site was 90% ready for release so I started cleaning things up and auditing performance revealing a shocking amount of room for improvement.
 
 ## The Baseline (Before Optimization)
 
-I started by measuring my local development build:
+My local development build looked reasonable:
 
 | Metric | Measured Value | Status |
 | :--- | :--- | :--- |
@@ -23,7 +22,7 @@ I started by measuring my local development build:
 | **TBT** (Total Blocking Time) | 8.42s | Critical |
 | **CLS** (Cumulative Layout Shift) | 0.109 | Fair |
 
-But the real shock came when I ran Lighthouse against the **deployed production build** on Vercel:
+But the **deployed production build** on Vercel told a different story:
 
 | Metric | Measured Value | Status |
 | :--- | :--- | :--- |
@@ -34,47 +33,51 @@ But the real shock came when I ran Lighthouse against the **deployed production 
 | **TTI** (Time to Interactive) | 33.42s | Critical |
 | **Speed Index** | 14.03s | Critical |
 
-**Performance Score: 43/100**. This confirmed I had a serious main-thread blocking issue.
+**Performance Score: 43/100.** I had a serious main-thread blocking issue.
+
 
 ## The Methodology
 
-I will explain what these metrics mean. If you're only interested in the fixes, skip to the [solutions](#the-solutions) section.
+*If you're only interested in the fixes, skip ahead to [The Solutions](#the-solutions).*
 
-To get these metrics, I didn't just look at a "seconds to load" timer. I used the **Web Performance APIs**...
-To get these metrics, I didn't just look at a "seconds to load" timer. I used the **Web Performance APIs** available in modern browsers, specifically the `PerformanceObserver` interface. This allows us to subscribe to specific types of performance events as they happen.
+To get these metrics, I used the **Web Performance APIs** available in modern browsers—specifically the `PerformanceObserver` interface. This lets you subscribe to specific performance events as they happen.
 
 ### 1. Largest Contentful Paint (LCP)
-LCP measures when the largest text or image element becomes visible. 
-- **How it's measured**: We observe `largest-contentful-paint` entries. The browser keeps track of the largest element as the page loads and updates the LCP entry.
-- **My Result**: **2.36s**. This is triggered by the description text in the Tech Stack section.
+LCP measures when the largest text or image element becomes visible.
+
+- **How it's measured**: Observe `largest-contentful-paint` entries. The browser tracks the largest element as the page loads.
+- **My result**: **2.36s** — triggered by the description text in the Tech Stack section.
 
 ### 2. Time to First Byte (TTFB)
-TTFB measures the time between the request for a resource and when the first byte of the response begins to arrive.
-- **How it's measured**: Using `performance.getEntriesByType('navigation')[0].responseStart`.
-- **My Result**: **1.79s**. This is a bit high for a local environment, suggesting some latency in the server-side rendering (SSR) or data fetching from external APIs like Spotify.
+TTFB measures the time between requesting a resource and receiving the first byte.
+
+- **How it's measured**: `performance.getEntriesByType('navigation')[0].responseStart`
+- **My result**: **1.79s** — a bit high, suggesting SSR or external API latency (like Spotify).
 
 ### 3. Total Blocking Time (TBT)
-TBT measures the total amount of time between First Contentful Paint (FCP) and Time to Interactive (TTI) where the main thread was blocked long enough to prevent input responsiveness.
-- **How it's measured**: By observing `longtask` entries. Any task that runs for more than 50ms is considered a "long task." We sum up the "excess" time (duration - 50ms) for all long tasks.
-- **My Result**: **8.42s**. This is the critical bottleneck. It means the browser is very busy processing JavaScript (likely hydration and heavy animations) right after the first paint.
+TBT measures how long the main thread was blocked between FCP and TTI, preventing user input.
+
+- **How it's measured**: Observe `longtask` entries. Any task over 50ms is a "long task"—we sum up the excess time.
+- **My result**: **8.42s** — the critical bottleneck. The browser was busy hydrating heavy animations.
 
 ### 4. Cumulative Layout Shift (CLS)
-CLS measures the "visual stability" of a page. If elements jump around as the page loads, you get a higher CLS score.
-- **How it's measured**: By observing `layout-shift` entries that happen without recent user input.
-- **My Result**: **0.109**. Mostly stable, but there's room for improvement to get it under the "Good" threshold of 0.1.
+CLS measures visual stability—how much elements jump around as the page loads.
+
+- **How it's measured**: Observe `layout-shift` entries that occur without user input.
+- **My result**: **0.109** — mostly stable, but ideally below 0.1.
+
 
 ## The Solutions
 
-The audit revealed three main culprits: heavy client-side bundles, eager API polling, and unnecessary server-side rendering. Here is how we fixed them.
-
-<Video src="/draft-demo.mp4" width="800" height="450" className="my-8" />
+The audit revealed three culprits: **heavy client-side bundles**, **eager API polling**, and **unnecessary server-side rendering**.
 
 ### 1. Breaking up the Bundles (Dynamic Imports)
-The `ActivitySection` component was massive—over 700 lines of code with heavy `framer-motion` animations. By default, Next.js stuffs this into the initial JavaScript bundle, so the browser has to download and parse it before *anything* becomes interactive.
 
-**The Fix:** We used `next/dynamic` to lazy-load these heavy components. This splits them into separate "chunks" that are only loaded when needed.
+The `ActivitySection` component was massive—700+ lines with heavy `framer-motion` animations. By default, Next.js bundles everything together, so the browser has to download and parse it all before anything becomes interactive.
 
-```tsx
+**The Fix:** Use `next/dynamic` to lazy-load heavy components into separate chunks.
+
+```tsx title="dynamic-import.tsx"
 // Before: Imported at the top, bundled immediately
 import { ActivitySection } from '@/components/landing/activity/section';
 
@@ -85,34 +88,36 @@ const ActivitySection = nextDynamic(
 );
 ```
 
-We applied this to:
-- `ActivitySection` (Complex animations)
-- `TechStackCloud` (16+ animated interactive cards)
-- `WorkExperience` (Interactive timeline)
+Applied to:
+- `ActivitySection` (complex animations)
+- `TechStackCloud` (16+ animated cards)
+- `WorkExperience` (interactive timeline)
 
 ### 2. Unblocking the Main Thread (Deferred Execution)
-The TBT score of 23s was screaming that the main thread was blocked. The culprit? A `useEffect` hook that started polling the Spotify API *immediately* upon hydration, alongside a 200ms interval for the progress bar.
 
-**The Fix:** We simply wrapped the start logic in a 3-second timeout. This gives the browser enough time to finish the critical initial render tasks (hydration) before starting non-critical background work.
+The 23s TBT was caused by a `useEffect` hook that started polling the Spotify API *immediately* on hydration, plus a 200ms progress bar interval.
 
-```typescript
+**The Fix:** Wrap the start logic in a 3-second timeout, giving the browser time to finish hydration first.
+
+```typescript title="deferred-polling.ts"
 useEffect(() => {
-  // Delay polling by 3 seconds to avoid blocking the main thread during hydration
+  // Delay polling by 3 seconds to avoid blocking during hydration
   const startupDelay = setTimeout(() => {
     fetchPlaybackState();
     pollIntervalRef.current = setInterval(fetchPlaybackState, POLL_INTERVAL);
   }, 3000);
 
-  return () => clearTimeout(startupDelay); // Cleanup
+  return () => clearTimeout(startupDelay);
 }, []);
 ```
 
 ### 3. Caching Strategy (ISR)
-Almost every page was exporting `export const dynamic = 'force-dynamic'`. This forces the server to regenerate the HTML for *every single request*. High TTFB? That's why.
 
-**The Fix:** We switched to **Incremental Static Regeneration (ISR)**. The page is generated once, cached on the edge, and revalidated every 60 seconds.
+Almost every page had `export const dynamic = 'force-dynamic'`, forcing the server to regenerate HTML for every request. High TTFB? That's why.
 
-```typescript
+**The Fix:** Switch to **Incremental Static Regeneration (ISR)**—generate once, cache on the edge, revalidate every 60 seconds.
+
+```typescript title="isr-config.ts"
 // Before
 export const dynamic = 'force-dynamic'
 
@@ -120,59 +125,46 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 60
 ```
 
-*Note: Some pages (like `/blog/[...slug]`) needed to stay dynamic because they check cookies/headers for authentication states.*
+*Note: Pages like `/blog/[...slug]` stayed dynamic because they check cookies for auth.*
 
 ### 4. Simplifying Animations (Removing Overhead)
-The "Tech Stack Cloud" component was animating 16 different cards using `framer-motion`, adding significant hydration weight.
 
-**The Fix:** I rewrote the component to use standard CSS transitions and reduced the number of items to the core 8 technologies. This removed the heavy animation library runtime from this component entirely.
+The Tech Stack Cloud was animating 16 cards with `framer-motion`, adding significant hydration weight.
 
-```tsx
-// Before: Heavy framer-motion unique animations for 16 items
-// After: Simple CSS hover effects, 8 items, 0 JS animation library overhead
-```
+**The Fix:** Rewrote it with CSS transitions and reduced to 8 core technologies—zero JS animation overhead.
+
 
 ## The Results
 
-Applying these fixes targets the core metrics directly:
+After deploying these fixes, I expected victory. Instead, I got a lesson in trade-offs.
 
-1.  **TBT**: Should drop significantly (targeting <300ms) because we removed the immediate 200ms polling loop and moved 50KB+ of JavaScript out of the initial bundle.
-2.  **LCP**: Should improve as the main thread is less contended, allowing the browser to paint the largest element faster.
-3.  **TTFB**: Should become near-instant (<50ms) for most users thanks to ISR caching.
-
-The build is shipping now. Time to measure again.
-
-## The Regression & Recovery (Part 2)
-
-After deploying the first batch of fixes (dynamic imports + ISR), I ran the metrics again. The results were... unexpected.
-
-| Metric | Deployment #1 | Status |
+| Metric | After Deployment | Status |
 | :--- | :--- | :--- |
-| **TBT** | 14.13s | Improved (from 23s) but Critical |
+| **TBT** | 14.13s | Improved (from 23s) but still Critical |
 | **CLS** | **0.632** | **CRITICAL REGRESSION** (from 0.015) 🔴 |
 
-### What happened?
-We traded one problem for another. By dynamically importing `TechStackCloud` and `ActivitySection` with `loading: () => null`, we caused the layout to shift dramatically when they finally loaded in. The page content would jump down ~500px, then jump back up when the components rendered.
+### What Happened?
+
+We traded one problem for another. By dynamically importing components with `loading: () => null`, we caused the layout to shift dramatically when they finally loaded—content jumping 500px down, then back up.
 
 ### The Fix: Precise Skeletons
-To fix the CLS, I had to implement skeletons that **perfectly matched** the final dimensions of the loaded components.
 
-1.  **Tech Stack**: Created a skeleton for the exact 8-card grid layout.
-2.  **Activity Section**: Replicated the `Section` padding and `ContributionGraph` height (120px) exactly.
+To fix CLS, I implemented skeletons that **perfectly matched** the final component dimensions.
 
-**Crucial Lesson**: Standard `py-24` padding in my initial skeleton was *too tall*, causing a shift *upwards* when real content loaded. Precision is key.
+1. **Tech Stack**: Created a skeleton matching the exact 8-card grid layout
+2. **Activity Section**: Replicated the padding and graph height (120px) precisely
+
+**Crucial lesson**: My initial skeleton used `py-24` padding, which was *too tall*, causing an upward shift when real content loaded. Precision is everything.
 
 ### The Remaining TBT (Deferred Execution)
-Even with TBT down to 14s, it was still critical. The culprit was `ActivityFeed`—a heavy component with intervals and `framer-motion` springs running immediately on mount.
 
-**The Strategy**: **Deferred Execution**.
-Instead of letting these components hydrate immediately, I wrapped their heavy logic in a "readiness" check:
+Even at 14s TBT, `ActivityFeed` was still the culprit—running intervals and `framer-motion` springs immediately on mount.
 
-```tsx
+```tsx title="deferred-execution.tsx"
 const [isReady, setIsReady] = useState(false);
 
 useEffect(() => {
-    // Wait for 3.5s - let the main thread breathe!
+    // Wait 3.5s — let the main thread breathe
     const timer = setTimeout(() => setIsReady(true), 3500);
     return () => clearTimeout(timer);
 }, []);
@@ -183,55 +175,60 @@ useEffect(() => {
 }, [isReady]);
 ```
 
-This ensures the main thread is completely free during the critical first few seconds of page load.
+This ensures the main thread is free during the critical first few seconds.
+
 
 ## Final Results
 
-After fixing the skeletons and deferring the activity feed:
+After fixing skeletons and deferring the activity feed:
 
 | Metric | Final Value | Status |
 | :--- | :--- | :--- |
-| **LCP** | 4.57s | Acceptable (Net improvement vs load) |
-| **CLS** | **0.065** | **FIXED** (Green < 0.1) 🟢 |
-| **TBT** | **10.78s** | **Improved** (From 23s -> 10s) 🟢 |
+| **LCP** | 4.57s | Acceptable |
+| **CLS** | **0.065** | **Fixed** 🟢 |
+| **TBT** | **10.78s** | **Improved** (from 23s → 10s) |
 
-We cut the Total Blocking Time by over **50%** and completely resolved the Layout Shift regressions. Performance engineering is an iterative game of whack-a-mole—but we won this round.
+We cut Total Blocking Time by over **50%** and resolved the Layout Shift regressions. Performance engineering is an iterative game of whack-a-mole—but we won this round.
+
 
 ## Latest Measurements (Dec 31, 2025)
 
-After the latest round of optimizations—deferring hydration for the activity feed and graph components (`8ceb44b`), aligning skeleton heights (`960da13`), and moving the tech stack section below the fold (`3816fbd`)—here are the current metrics:
+After the latest optimizations—deferred hydration (`8ceb44b`), aligned skeleton heights (`960da13`), and moving tech stack below the fold (`3816fbd`):
 
 | Metric | Measured Value | Status |
 | :--- | :--- | :--- |
-| **LCP** (Largest Contentful Paint) | 3.76s | 🟡 Needs Improvement |
-| **FCP** (First Contentful Paint) | 2.94s | 🟡 Needs Improvement |
-| **TBT** (Total Blocking Time) | 1.71s | 🔴 Critical |
-| **CLS** (Cumulative Layout Shift) | 0.305 | 🔴 Critical |
-| **TTI** (Time to Interactive) | 8.17s | 🔴 Critical |
+| **LCP** | 3.76s | 🟡 Needs Improvement |
+| **FCP** | 2.94s | 🟡 Needs Improvement |
+| **TBT** | 1.71s | 🔴 Critical |
+| **CLS** | 0.305 | 🔴 Critical |
+| **TTI** | 8.17s | 🔴 Critical |
 | **Speed Index** | 3.26s | 🟢 Good |
 
 **Performance Score: 41/100**
 
 ### The "Score" vs. Reality
 
-If you look at the 41/100 score, you might think the site is broken. The truth is more nuanced. We are effectively "cheating" the initial load by pushing work to later.
+A 41/100 looks broken. The truth is more nuanced—we're effectively "cheating" the initial load by deferring work.
 
-**The Trade-off:**
-1.  **Speed Index (3.26s) is Good:** The user sees the content and can read quickly. This is the primary goal for a blog.
-2.  **Deferred Pain:** By delaying hydration, we didn't magically delete the JavaScript execution time; we just moved it out of the initial load window. 
-3.  **The Risk:** If a user tries to interact (e.g., toggle the theme) *exactly* at the 3.5-second mark when our heavy components wake up, they might feel a stutter. 
+**The trade-off:**
+1. **Speed Index (3.26s) is Good**: Users see content quickly. That's the primary goal for a blog.
+2. **Deferred pain**: We didn't delete JavaScript execution time—we moved it out of the initial load window.
+3. **The risk**: If a user interacts exactly when our heavy components wake up (around 3.5s), they might feel a stutter.
 
 ### The Real Win: TBT Reduction
-We dropped Total Blocking Time from **23s to 1.7s**. 
-- **Before:** The browser was unresponsive for nearly 30 seconds versus now not really noticeable.
-- **Reality Check:** 1.7s is still considered "poor" by Google standards (target is <200ms). However, unlike the 23s disaster, this is a distinct compromise I'm willing to make for the sake of having a rich, animated UI on a personal site.
 
-This was the result of tinkering around a hour or two. I know the Spotify & GitHub feed are the culprits here, but I'd rather enjoy the experience and offer a bit of personality than having a perfect score. The goal was digging into the performance metrics and learning from them. 
+We dropped Total Blocking Time from **23s to 1.7s**.
 
-With the Github and spotify API disabled:
+- **Before**: The browser was unresponsive for nearly 30 seconds
+- **After**: Barely noticeable
 
+Is 1.7s still "poor" by Google's standards (target `< 200ms`)? Yes. But unlike the 23s disaster, this is a conscious trade-off for a rich, animated personal site.
 
-```text
+### With GitHub and Spotify APIs Disabled
+
+This was a few hours of tinkering. I know the Spotify & GitHub feeds are the culprits, but I'd rather have personality than a perfect score.
+
+```text title="web-vitals-results.txt"
 📊 Web Vitals Results
 ────────────────────────────────────────────────────────────
 LCP          │ 2.46s    │ 🟢 Good
@@ -243,13 +240,19 @@ Speed Index  │ 2.14s    │ 🟢 Good
 ────────────────────────────────────────────────────────────
 Performance Score: 89/100
 ```
-## Scripts to measure
-To keep an eye on this in the future, I wrote a script that spins up the production build locally and benchmarks it with Lighthouse CLI.
 
-```bash
+
+## Measuring Going Forward
+
+To keep an eye on this, I wrote a script that benchmarks the production build locally with Lighthouse CLI:
+
+```bash title="measure-vitals.sh"
 #!/bin/bash
 # scripts/measure-vitals.sh
 URL="${1:-http://localhost:3000}"
-npx -y lighthouse "$URL" --only-categories=performance --chrome-flags="--headless"
+npx -y lighthouse "$URL" \
+  --only-categories=performance \
+  --chrome-flags="--headless"
 ```
 
+The goal was never a perfect score—it was understanding what these metrics actually mean and making informed trade-offs. Mission accomplished.

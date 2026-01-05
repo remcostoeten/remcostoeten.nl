@@ -34,7 +34,7 @@ If you don't have an API setup yet, I'll be showing how to [implement the API ro
 </NoticeWarning>
 Most implementations use something like:
 
-```bash
+```bash title="Spotify Dashboard: Redirect URI"
 /api/spotify/callback
 ```
 
@@ -44,7 +44,7 @@ This is the first part which is new for most. Setting the url to `http://localho
 
 Instead register the loopback IP from:
 
-```bash
+```bash title="Localhost Loopback"
 http://127.0.0.1:3000/api/spotify/callback
 ```
 
@@ -52,7 +52,7 @@ http://127.0.0.1:3000/api/spotify/callback
 
 Last question is: Which API/SDKs are you planning to use? Fill in your use case (most likely web) and click "Save". After having pressed save you'll see your client ID, and secret if you press "View client secret". Copy these, and add to your `.env`or `.env.local` file like so:
 
-```bash
+```bash title=".env.local"
 SPOTIFY_CLIENT_ID=your-client-id
 SPOTIFY_CLIENT_SECRET=your-client-secret
 ```
@@ -82,7 +82,7 @@ Next we will configure the authorization code flow, exchanging the temporary cod
 Now you'll have to implement the API route which you registered in the developer dashboard. Like I mentioned this implementation is following Next.js but you should just register an api in your desired framework.
 
 Create the api route
-```bash
+```bash title="Terminal"
 touch src/app/api/spotify/callback/route.ts
 ## or app/api/spotify/callback/route.ts if no src dir
 ```
@@ -94,7 +94,7 @@ And insert your improved GET request handler:
 - Better error handling with fallbacks for JSON parsing
 - Consistent redirect URI usage from environment variables
 </NoticeInfo>
-```typescript
+```typescript title="src/app/api/spotify/callback/route.ts"
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 
@@ -157,7 +157,8 @@ export async function GET(request: NextRequest) {
     console.error('Error in Spotify callback:', error);
     return NextResponse.redirect(new URL('/?error=unknown_error', request.url));
   }
-}```
+}
+```
 
 ---
 
@@ -175,7 +176,7 @@ Once you have your tokens, you can make authenticated requests to the Spotify AP
 
 ### Using the Access Token
 
-```typescript
+```typescript title="src/services/spotify.ts"
 async function fetchSpotifyData(accessToken: string) {
   const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
     headers: {
@@ -195,7 +196,7 @@ async function fetchSpotifyData(accessToken: string) {
 
 Access tokens expire after 1 hour, so you'll need to refresh them using the refresh token:
 
-```typescript
+```typescript title="src/app/api/spotify/refresh/route.ts"
 export async function POST(request: NextRequest) {
   try {
     const { refresh_token } = await request.json();
@@ -292,7 +293,7 @@ For production deployments:
 
 Here's a complete example of a Spotify API service:
 
-```typescript
+```typescript title="src/services/spotify.ts"
 class SpotifyAPIService {
   private accessToken: string | null = null;
   private tokenExpiry: number = 0;

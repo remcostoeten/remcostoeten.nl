@@ -390,23 +390,70 @@ class GitHubService {
     };
   }
   /**
-   * Get detailed GitHub events for a date range
-   */
+    * Get languages used across all repositories
+    */
+  async getLanguageStats(): Promise<Map<string, { count: number; repos: string[] }>> {
+    try {
+      const repos = await this.getUserRepositories('updated');
+
+      const languageMap = new Map<string, { count: number; repos: string[] }>();
+
+      repos.forEach((repo: GitHubRepo) => {
+        const language = repo.language;
+        if (!language) return;
+
+        const existing = languageMap.get(language) || { count: 0, repos: [] };
+        existing.count++;
+        existing.repos.push(repo.name);
+
+        languageMap.set(language, {
+          count: existing.count + 1,
+          repos: existing.repos
+        });
+      });
+
+      return languageMap;
+    } catch (error) {
+      console.error('Error fetching language stats:', error);
+      return new Map();
+    }
+  }
+
+  /**
+    * Get detailed GitHub events for a date range
+    */
   async getDetailedEvents(startDate: string, endDate: string): Promise<GitHubDayActivity[]> {
     try {
-      const response = await fetch(
-        `${this.baseUrl}/users/${this.username}/events?per_page=100`, // Fetch sufficient events
-        {
-          headers: this.getHeaders(),
-          next: { revalidate: 300 } // Cache for 5 mins
-        } as any
-      );
+      const allEvents: any[] = [];
 
-      if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      // Fetch up to 3 pages (300 events) to cover more history
+      // GitHub Events API supports up to 300 events / 90 days windows
+      for (let page = 1; page <= 3; page++) {
+        const response = await fetch(
+          `${this.baseUrl}/users/${this.username}/events?per_page=100&page=${page}`,
+          {
+            headers: this.getHeaders(),
+            next: { revalidate: 300 } // Cache for 5 mins
+          } as any
+        );
+
+        if (!response.ok) {
+          // If page 1 fails, throw. If later pages fail (e.g. 404 for empty), just stop.
+          if (page === 1) throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+          break;
+        }
+
+        const events = await response.json();
+        if (!Array.isArray(events) || events.length === 0) break;
+
+        allEvents.push(...events);
+
+        // Optimization: Stop if we've gone past the startDate (events are reverse chronological)
+        const lastEvent = events[events.length - 1];
+        const lastDate = new Date(lastEvent.created_at);
+        if (lastDate < new Date(startDate)) break;
       }
 
-      const events = await response.json();
       const activityMap = new Map<string, GitHubEventDetail[]>();
 
       const start = new Date(startDate);
@@ -414,7 +461,7 @@ class GitHubService {
       start.setHours(0, 0, 0, 0);
       end.setHours(23, 59, 59, 999);
 
-      for (const event of events) {
+      for (const event of allEvents) {
         const eventDate = new Date(event.created_at);
         if (eventDate < start || eventDate > end) continue;
 

@@ -1,16 +1,18 @@
 'use server'
 
 import { db, schema } from '../db/connection'
-import { eq, desc, and, gte, lte, sql } from 'drizzle-orm'
+import { eq, desc, and, gte, lte, sql, inArray } from 'drizzle-orm'
 import { githubService } from './github'
-
-const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID!
-const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET!
-const SPOTIFY_REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN!
+import { getSpotifyAccessToken, hasSpotifyCredentials } from './spotify-auth'
 
 // ============================================
 // Activity Sync Service
 // Syncs GitHub events and Spotify listening history
+// 
+// Performance optimizations:
+// - Batch existence checks (single query instead of N queries)
+// - Bulk inserts where possible
+// - Uses shared token cache for Spotify
 // ============================================
 
 export interface SyncResult {
@@ -22,7 +24,7 @@ export interface SyncResult {
 }
 
 // ============================================
-// GitHub Sync
+// GitHub Sync (Batch Optimized)
 // ============================================
 
 export async function syncGitHubActivities(): Promise<SyncResult> {
@@ -36,34 +38,50 @@ export async function syncGitHubActivities(): Promise<SyncResult> {
             now.toISOString().split('T')[0]
         )
 
+        // Flatten all events and collect their IDs
+        const allEvents = events.flatMap(day => day.events)
+
+        if (allEvents.length === 0) {
+            return {
+                service: 'github',
+                newItems: 0,
+                totalItems: 0,
+                lastSyncAt: now,
+            }
+        }
+
+        const allEventIds = allEvents.map(e => e.id)
+
+        // BATCH: Check which events already exist (single query instead of N)
+        const existingEvents = await db.query.githubActivities.findMany({
+            where: inArray(schema.githubActivities.eventId, allEventIds),
+            columns: { eventId: true }
+        })
+        const existingIds = new Set(existingEvents.map(e => e.eventId))
+
+        // Filter to only new events
+        const newEvents = allEvents.filter(e => !existingIds.has(e.id))
+
         let newItems = 0
 
-        for (const day of events) {
-            for (const event of day.events) {
-                try {
-                    // Check if event already exists (by unique GitHub event ID)
-                    const existing = await db.query.githubActivities.findFirst({
-                        where: eq(schema.githubActivities.eventId, event.id)
-                    })
-
-                    if (!existing) {
-                        await db.insert(schema.githubActivities).values({
-                            eventId: event.id,
-                            type: event.type,
-                            title: event.title,
-                            description: event.description,
-                            repository: event.repository,
-                            url: event.url,
-                            isPrivate: event.isPrivate,
-                            eventDate: new Date(event.timestamp),
-                            payload: event.payload ? JSON.stringify(event.payload) : null,
-                        })
-                        newItems++
-                    }
-                } catch (insertError) {
-                    // Skip duplicates (unique constraint violation)
-                    console.log(`Skipping duplicate event: ${event.id}`)
-                }
+        // Insert new events (could be further optimized with bulk insert)
+        for (const event of newEvents) {
+            try {
+                await db.insert(schema.githubActivities).values({
+                    eventId: event.id,
+                    type: event.type,
+                    title: event.title,
+                    description: event.description,
+                    repository: event.repository,
+                    url: event.url,
+                    isPrivate: event.isPrivate,
+                    eventDate: new Date(event.timestamp),
+                    payload: event.payload ? JSON.stringify(event.payload) : null,
+                })
+                newItems++
+            } catch (insertError) {
+                // Skip duplicates (unique constraint violation - race condition)
+                console.log(`Skipping duplicate event: ${event.id}`)
             }
         }
 
@@ -72,7 +90,7 @@ export async function syncGitHubActivities(): Promise<SyncResult> {
             .values({
                 service: 'github',
                 lastSyncAt: now,
-                lastEventId: events[0]?.events[0]?.id || null,
+                lastEventId: allEvents[allEvents.length - 1]?.id || null,
                 syncCount: 1,
             })
             .onConflictDoUpdate({
@@ -107,39 +125,8 @@ export async function syncGitHubActivities(): Promise<SyncResult> {
 }
 
 // ============================================
-// Spotify Sync
+// Spotify Sync (Batch Optimized + Token Cache)
 // ============================================
-
-async function getSpotifyAccessToken(): Promise<string | null> {
-    if (!SPOTIFY_REFRESH_TOKEN) {
-        console.warn('No Spotify refresh token configured')
-        return null
-    }
-
-    try {
-        const response = await fetch('https://accounts.spotify.com/api/token', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Basic ${Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64')}`,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                grant_type: 'refresh_token',
-                refresh_token: SPOTIFY_REFRESH_TOKEN,
-            }),
-        })
-
-        if (!response.ok) {
-            throw new Error(`Token refresh failed: ${response.status}`)
-        }
-
-        const data = await response.json()
-        return data.access_token
-    } catch (error) {
-        console.error('Failed to get Spotify access token:', error)
-        return null
-    }
-}
 
 interface SpotifyRecentlyPlayedItem {
     track: {
@@ -160,6 +147,7 @@ interface SpotifyRecentlyPlayedItem {
 
 export async function syncSpotifyListens(): Promise<SyncResult> {
     try {
+        // Use shared token cache (avoids redundant refresh)
         const accessToken = await getSpotifyAccessToken()
 
         if (!accessToken) {
@@ -168,7 +156,7 @@ export async function syncSpotifyListens(): Promise<SyncResult> {
                 newItems: 0,
                 totalItems: 0,
                 lastSyncAt: new Date(),
-                error: 'No access token available',
+                error: hasSpotifyCredentials() ? 'Token refresh failed' : 'No credentials configured',
             }
         }
 
@@ -186,46 +174,91 @@ export async function syncSpotifyListens(): Promise<SyncResult> {
         const data = await response.json()
         const items: SpotifyRecentlyPlayedItem[] = data.items || []
 
-        let newItems = 0
+        if (items.length === 0) {
+            return {
+                service: 'spotify',
+                newItems: 0,
+                totalItems: 0,
+                lastSyncAt: new Date(),
+            }
+        }
+
         const now = new Date()
 
-        for (const item of items) {
-            try {
-                const playedAt = new Date(item.played_at)
+        // Convert all played_at timestamps
+        const playedAtDates = items.map(item => new Date(item.played_at))
 
-                // Check if this listen already exists (by played_at timestamp - unique)
-                const existing = await db.query.spotifyListens.findFirst({
-                    where: eq(schema.spotifyListens.playedAt, playedAt)
+        // BATCH: Check which listens already exist (single query instead of N)
+        const existingListens = await db.query.spotifyListens.findMany({
+            where: inArray(schema.spotifyListens.playedAt, playedAtDates),
+            columns: { playedAt: true }
+        })
+        const existingTimestamps = new Set(
+            existingListens.map(e => e.playedAt.getTime())
+        )
+
+        // Filter to only new items
+        const newItems: { item: SpotifyRecentlyPlayedItem; playedAt: Date }[] = []
+        for (const item of items) {
+            const playedAt = new Date(item.played_at)
+            if (!existingTimestamps.has(playedAt.getTime())) {
+                newItems.push({ item, playedAt })
+            }
+        }
+
+        if (newItems.length === 0) {
+            // Get total count
+            const totalResult = await db.select({ count: sql<number>`count(*)` })
+                .from(schema.spotifyListens)
+
+            return {
+                service: 'spotify',
+                newItems: 0,
+                totalItems: Number(totalResult[0]?.count || 0),
+                lastSyncAt: now,
+            }
+        }
+
+        // Get date range for nearby activity lookup
+        const minDate = new Date(Math.min(...playedAtDates.map(d => d.getTime())) - 5 * 60 * 1000)
+        const maxDate = new Date(Math.max(...playedAtDates.map(d => d.getTime())) + 5 * 60 * 1000)
+
+        // BATCH: Get all potentially linked GitHub activities in one query
+        const nearbyActivities = await db.query.githubActivities.findMany({
+            where: and(
+                gte(schema.githubActivities.eventDate, minDate),
+                lte(schema.githubActivities.eventDate, maxDate)
+            ),
+            orderBy: desc(schema.githubActivities.eventDate),
+        })
+
+        let insertedCount = 0
+
+        for (const { item, playedAt } of newItems) {
+            try {
+                // Find nearest activity within 5 minutes
+                const fiveMinutesBefore = playedAt.getTime() - 5 * 60 * 1000
+                const fiveMinutesAfter = playedAt.getTime() + 5 * 60 * 1000
+
+                const linkedActivity = nearbyActivities.find(a => {
+                    const activityTime = a.eventDate.getTime()
+                    return activityTime >= fiveMinutesBefore && activityTime <= fiveMinutesAfter
                 })
 
-                if (!existing) {
-                    // Find a GitHub activity that happened within 5 minutes of this track
-                    const fiveMinutesBefore = new Date(playedAt.getTime() - 5 * 60 * 1000)
-                    const fiveMinutesAfter = new Date(playedAt.getTime() + 5 * 60 * 1000)
-
-                    const nearbyActivity = await db.query.githubActivities.findFirst({
-                        where: and(
-                            gte(schema.githubActivities.eventDate, fiveMinutesBefore),
-                            lte(schema.githubActivities.eventDate, fiveMinutesAfter)
-                        ),
-                        orderBy: desc(schema.githubActivities.eventDate),
-                    })
-
-                    await db.insert(schema.spotifyListens).values({
-                        trackId: item.track.id,
-                        trackName: item.track.name,
-                        artistName: item.track.artists.map(a => a.name).join(', '),
-                        albumName: item.track.album?.name,
-                        albumImage: item.track.album?.images?.[0]?.url,
-                        trackUrl: item.track.external_urls.spotify,
-                        durationMs: item.track.duration_ms,
-                        playedAt,
-                        linkedActivityId: nearbyActivity?.id || null,
-                    })
-                    newItems++
-                }
+                await db.insert(schema.spotifyListens).values({
+                    trackId: item.track.id,
+                    trackName: item.track.name,
+                    artistName: item.track.artists.map(a => a.name).join(', '),
+                    albumName: item.track.album?.name,
+                    albumImage: item.track.album?.images?.[0]?.url,
+                    trackUrl: item.track.external_urls.spotify,
+                    durationMs: item.track.duration_ms,
+                    playedAt,
+                    linkedActivityId: linkedActivity?.id || null,
+                })
+                insertedCount++
             } catch (insertError) {
-                // Skip duplicates
+                // Skip duplicates (race condition)
                 console.log(`Skipping duplicate track at: ${item.played_at}`)
             }
         }
@@ -254,7 +287,7 @@ export async function syncSpotifyListens(): Promise<SyncResult> {
 
         return {
             service: 'spotify',
-            newItems,
+            newItems: insertedCount,
             totalItems: Number(totalResult[0]?.count || 0),
             lastSyncAt: now,
         }

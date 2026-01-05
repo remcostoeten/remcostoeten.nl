@@ -1,11 +1,12 @@
 'use client';
 
-import { useMemo, useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { getLatestTracks, SpotifyTrack } from '@/server/services/spotify';
-import { useGitHubEventsByDate, GitHubEventDetail, useGitHubContributions } from '@/hooks/use-github';
-import { AnimatedNumber } from '../../ui/effects/animated-number';
+import { useCombinedActivity } from '@/hooks/use-combined-activity';
+import type { SpotifyTrack } from '@/server/services/spotify';
+import type { GitHubEventDetail } from '@/hooks/use-github';
+
 
 interface ActivityDay {
   date: string;
@@ -30,22 +31,89 @@ export function ActivityContributionGraph({
   showLegend = true,
   className = ""
 }: ActivityContributionGraphProps) {
-  const [tracks, setTracks] = useState<SpotifyTrack[]>([]);
   const [selectedDay, setSelectedDay] = useState<ActivityDay | null>(null);
   const [hoveredDay, setHoveredDay] = useState<ActivityDay | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+  // New state for loading details on demand
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
-  const { data: githubContributions = new Map(), isLoading: githubLoading } = useGitHubContributions(year);
+  // Fetch detailed events on demand if they are missing
+  useEffect(() => {
+    if (!selectedDay) return;
 
-  const [loading, setLoading] = useState(true);
-  const [isVisible, setIsVisible] = useState(false);
+    // If we have contributions but no details (or empty commits), fetch them on demand
+    // This handles the case where the global feed limit didn't catch older events
+    if (selectedDay.githubCount > 0 && (!selectedDay.details?.commits || selectedDay.details.commits.length === 0)) {
+      setLoadingDetails(true);
+      fetch(`/api/github/events?date=${selectedDay.date}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.events && Array.isArray(data.events)) {
+            const newCommits = data.events.map((event: any) => ({
+              message: event.title,
+              url: event.url,
+              projectName: event.repository
+            }));
 
-  // Use new hook for detailed events on demand or pre-fetch
-  const startDate = `${year}-01-01`;
-  const endDate = `${year}-12-31`;
-  const { data: detailedEvents } = useGitHubEventsByDate(startDate, endDate);
+            // Only update if we found something
+            if (newCommits.length > 0) {
+              setSelectedDay(prev => {
+                // Ensure we are still looking at the same day
+                if (!prev || prev.date !== selectedDay.date) return prev;
+                return {
+                  ...prev,
+                  details: {
+                    ...prev.details,
+                    // Preserve existing tracks
+                    tracks: prev.details?.tracks || [],
+                    commits: newCommits
+                  }
+                };
+              });
+            }
+          }
+        })
+        .catch(err => console.error('Failed to fetch stats:', err))
+        .finally(() => setLoadingDetails(false));
+    }
+  }, [selectedDay?.date, selectedDay?.githubCount]); // Depend on date and count
 
+  // For a rolling 12-month view
+  const currentYear = new Date().getFullYear();
+  const previousYear = currentYear - 1;
+
+  // *** PERFORMANCE OPTIMIZATION: Single combined API call instead of 4+ separate ones ***
+  // Increased limit from 5 to 20 for initial feed, though on-demand fetch handles the rest
+  const { data: combinedData, isLoading: loading } = useCombinedActivity(20, 10);
+
+  // Process contributions into a Map for lookup
+  const githubContributions = useMemo(() => {
+    const map = new Map<string, { date: string; contributionCount: number }>();
+    if (combinedData?.contributions) {
+      for (const item of combinedData.contributions) {
+        map.set(item.date, item);
+      }
+    }
+    return map;
+  }, [combinedData?.contributions]);
+
+  // Get tracks from combined data
+  const tracks = combinedData?.spotifyTracks || [];
+
+  // Get detailed events from recentActivity (limited to what we have from combined)
+  const detailedEvents = useMemo(() => {
+    if (!combinedData?.recentActivity) return [];
+    // Group by date for the calendar view
+    const byDate = new Map<string, GitHubEventDetail[]>();
+    for (const event of combinedData.recentActivity) {
+      const dateStr = new Date(event.timestamp).toISOString().split('T')[0];
+      const existing = byDate.get(dateStr) || [];
+      existing.push(event);
+      byDate.set(dateStr, existing);
+    }
+    return Array.from(byDate.entries()).map(([date, events]) => ({ date, events }));
+  }, [combinedData?.recentActivity]);
 
   const graphRef = useRef<HTMLDivElement>(null);
 
@@ -57,45 +125,12 @@ export function ActivityContributionGraph({
     }
   }, []);
 
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsReady(true), 4000); // Slightly longer delay than feed
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (!isReady) return;
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const spotifyTracks = await getLatestTracks();
-        setTracks(spotifyTracks);
-      } catch (error) {
-        console.error('Error fetching activity data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [year, isReady]);
-
-  useEffect(() => {
-    if (!loading && !githubLoading) {
-      setIsVisible(true);
-    }
-  }, [loading, githubLoading]);
-
-
-
-
   const activityData = useMemo(() => {
     const now = new Date();
-    const isCurrentYear = year === now.getFullYear();
 
-    const end = isCurrentYear ? now : new Date(year, 11, 31);
-    const start = new Date(year, 0, 1);
+    // Rolling 12-month view: start from Feb of previous year, end at current date
+    const end = now;
+    const start = new Date(previousYear, 1, 1); // February 1st of previous year
 
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -117,6 +152,7 @@ export function ActivityContributionGraph({
         details: { commits: [], tracks: [] }
       });
     }
+
 
     if (detailedEvents) {
       detailedEvents.forEach((day: { date: string, events: GitHubEventDetail[] }) => {
@@ -158,27 +194,22 @@ export function ActivityContributionGraph({
     });
 
     return Array.from(activityMap.values());
-  }, [githubContributions, tracks, year, loading, githubLoading, detailedEvents]);
+  }, [githubContributions, tracks, year, loading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
-    const darkColors = [
-      'bg-[#0d1117]',
-      'bg-brand-500/30',
-      'bg-brand-500/50',
-      'bg-brand-500/75',
-      'bg-brand-500'
-    ];
+    // Level 0 (empty)
+    if (level === 0) {
+      return 'bg-neutral-100 dark:bg-neutral-900/40';
+    }
 
-    const lightColors = [
-      'bg-neutral-800/60',
-      'bg-brand-500/30',
-      'bg-brand-500/50',
-      'bg-brand-500/75',
-      'bg-brand-500'
-    ];
-
-    const isDarkTheme = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
-    return isDarkTheme ? darkColors[level] : lightColors[level];
+    // Levels 1-4
+    switch (level) {
+      case 1: return 'bg-brand-500/30';
+      case 2: return 'bg-brand-500/50';
+      case 3: return 'bg-brand-500/75';
+      case 4: return 'bg-brand-500';
+      default: return 'bg-neutral-100 dark:bg-neutral-900/40';
+    }
   };
 
   const handleMouseEnter = (e: React.MouseEvent, day: ActivityDay) => {
@@ -192,68 +223,18 @@ export function ActivityContributionGraph({
     setHoveredDay(null);
   };
 
+
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  // Dynamic sizing state - start with reasonable default to prevent tiny skeleton
-  const [containerWidth, setContainerWidth] = useState(1000);
-
-  // "True Spiral" Animation Props
-  const getAnimationProps = (weekIndex: number, dayIndex: number, totalWeeks: number, totalDays: number = 7) => {
-    const centerX = totalWeeks / 2;
-    const centerY = totalDays / 2;
-    const dx = weekIndex - centerX;
-    const dy = dayIndex - centerY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    let angle = Math.atan2(dy, dx);
-    if (angle < 0) angle += 2 * Math.PI;
-
-    return {
-      delay: (dist * 0.03) + (angle * 0.08),
-      duration: 0.4,
-      type: "spring" as const,
-      stiffness: 200,
-      damping: 20
-    };
-  };
-
-  useLayoutEffect(() => {
-    if (graphRef.current) {
-      const updateDimensions = () => {
-        if (graphRef.current) {
-          setContainerWidth(graphRef.current.clientWidth);
-        }
-      };
-
-      updateDimensions();
-      window.addEventListener('resize', updateDimensions);
-      return () => window.removeEventListener('resize', updateDimensions);
-    }
-  }, []);
-
-  const totalWeeks = 53;
+  // Rolling 12-month view - ~48 weeks from Feb previous year to end of Jan current year
+  const totalWeeks = 48;
+  // Gap unused but kept for ref
   const gap = 3;
 
-  // Calculate dynamic size - NO TRANSITIONS to prevent layout shift
-  const squareSize = Math.max(2, (containerWidth - (totalWeeks - 1) * gap) / totalWeeks);
-
-  // STATIC skeleton structure - doesn't depend on activityData
-  const skeletonWeeks = useMemo(() => {
-    const weeksArray: ActivityDay[][] = [];
-    for (let i = 0; i < totalWeeks; i++) {
-      const week: ActivityDay[] = [];
-      for (let j = 0; j < 7; j++) {
-        week.push({ date: '', githubCount: 0, spotifyCount: 0, totalActivity: 0, level: 0 });
-      }
-      weeksArray.push(week);
-    }
-    return weeksArray;
-  }, [totalWeeks]);
-
-  // Data weeks - only for rendering actual data
+  // Data weeks - for rendering actual data, starting from Feb of previous year
   const weeks = useMemo(() => {
     const weeksArray: ActivityDay[][] = [];
-    const start = new Date(year, 0, 1);
+    const start = new Date(previousYear, 1, 1); // February 1st of previous year
 
     let currentDate = new Date(start);
     const dayOfWeek = currentDate.getDay();
@@ -271,30 +252,32 @@ export function ActivityContributionGraph({
     }
 
     return weeksArray;
-  }, [activityData, year, totalWeeks]);
+  }, [activityData, previousYear, totalWeeks]);
 
-  // STATIC month labels - calculate immediately, don't wait for data
+  // STATIC month labels - calculate for rolling 12-month view
   const monthLabels = useMemo(() => {
     const labels: { month: string; weekIndex: number }[] = [];
-    let lastMonth = -1;
-    const start = new Date(year, 0, 1);
+    let lastMonthKey = '';
+    const start = new Date(previousYear, 1, 1); // February 1st of previous year
     let currentDate = new Date(start);
     const dayOfWeek = currentDate.getDay();
     currentDate.setDate(currentDate.getDate() - dayOfWeek);
 
     for (let weekIndex = 0; weekIndex < totalWeeks; weekIndex++) {
-      if (currentDate.getFullYear() === year) {
-        const month = currentDate.getMonth();
-        if (month !== lastMonth) {
-          labels.push({ month: months[month], weekIndex });
-          lastMonth = month;
-        }
+      const month = currentDate.getMonth();
+      const year = currentDate.getFullYear();
+      const monthKey = `${year}-${month}`;
+
+      // Show month label at first week of each month
+      if (monthKey !== lastMonthKey && currentDate >= new Date(previousYear, 1, 1)) {
+        labels.push({ month: months[month], weekIndex });
+        lastMonthKey = monthKey;
       }
       currentDate.setDate(currentDate.getDate() + 7);
     }
 
     return labels;
-  }, [year, totalWeeks]);
+  }, [previousYear, totalWeeks]);
 
   const totalContributions = useMemo(() => {
     return activityData.reduce((sum, day) => sum + day.githubCount, 0);
@@ -312,15 +295,15 @@ export function ActivityContributionGraph({
         ref={graphRef}
         className="w-full overflow-hidden"
         role="img"
-        aria-label={`GitHub contribution graph for ${year}, showing ${totalContributions} total contributions`}
+        aria-label={`GitHub contribution graph from Feb ${previousYear} to Jan ${currentYear}, showing ${totalContributions} total contributions`}
       >
         <div className="flex flex-col w-full relative">
-          {/* Month labels row - STATIC, renders immediately */}
-          <div className="flex w-full mb-1 relative h-[15px]">
-            {skeletonWeeks.map((_, weekIndex) => {
+          {/* Month labels row - Using Grid to match columns exactly */}
+          <div className="grid w-full mb-1 relative h-[15px] gap-[3px]" style={{ gridTemplateColumns: `repeat(${totalWeeks}, 1fr)` }}>
+            {weeks.map((_, weekIndex) => {
               const label = monthLabels.find(l => l.weekIndex === weekIndex);
               return (
-                <div key={weekIndex} style={{ width: squareSize, marginRight: weekIndex === skeletonWeeks.length - 1 ? 0 : gap }} className="shrink-0 flex justify-start overflow-visible z-20 relative">
+                <div key={weekIndex} className="relative overflow-visible z-20">
                   {label && (
                     <span className="whitespace-nowrap absolute text-[10px] text-muted-foreground">
                       {label.month}
@@ -331,73 +314,34 @@ export function ActivityContributionGraph({
             })}
           </div>
 
-          <div className="flex flex-col relative w-full">
+          {/* Data Grid - column-based grid for rolling 12-month view */}
+          <div className="grid w-full gap-[3px]" style={{ gridTemplateColumns: `repeat(${totalWeeks}, 1fr)` }}>
+            {weeks.map((week, weekIndex) => (
+              <div
+                key={weekIndex}
+                className="flex flex-col gap-[3px]"
+              >
+                {week.map((day, dayIndex) => {
+                  const hasData = !!day.date;
+                  const showData = !loading;
+                  const delayMs = (weekIndex * 7 + dayIndex) * 2;
 
-            {/* Background Skeleton Grid - uses STATIC skeleton structure */}
-            <div
-              className={`flex w-full absolute inset-0 z-0 transition-opacity duration-500 ${isVisible ? 'opacity-0' : 'opacity-100'}`}
-              aria-hidden="true"
-            >
-              {skeletonWeeks.map((week, weekIndex) => (
-                <div
-                  key={`skel-${weekIndex}`}
-                  className="flex flex-col shrink-0"
-                  style={{
-                    width: squareSize,
-                    gap: gap,
-                    marginRight: weekIndex === skeletonWeeks.length - 1 ? 0 : gap
-                  }}
-                >
-                  {week.map((_, dayIndex) => (
+                  return (
                     <div
-                      key={`skel-day-${dayIndex}`}
-                      style={{ height: squareSize }}
-                      className="w-full rounded-[2px] bg-neutral-800/20 dark:bg-white/5 animate-pulse"
+                      key={dayIndex}
+                      className={`w-full aspect-square rounded-[2px] transition-all duration-300 ease-out ${hasData ? 'cursor-pointer' : ''
+                        } ${hasData ? getColorForLevel(day.level) : 'bg-secondary/40 border border-border/20'
+                        } ${!hasData ? 'opacity-0' : ''
+                        }`}
+                      style={{ transitionDelay: `${delayMs}ms` }}
+                      onMouseEnter={(e) => hasData && handleMouseEnter(e, day)}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={() => handleDayClick(day)}
                     />
-                  ))}
-                </div>
-              ))}
-            </div>
-
-            {/* Foreground Data Grid - Using CSS transitions instead of framer-motion for 371 cells */}
-            <div className="flex w-full relative z-10">
-              {weeks.map((week, weekIndex) => (
-                <div
-                  key={weekIndex}
-                  className="flex flex-col shrink-0"
-                  style={{
-                    width: squareSize,
-                    gap: gap,
-                    marginRight: weekIndex === weeks.length - 1 ? 0 : gap
-                  }}
-                >
-                  {week.map((day, dayIndex) => {
-                    const showData = !loading && !githubLoading && isVisible;
-                    const hasData = !!day.date;
-                    // Simple staggered delay based on position - much cheaper than spring physics
-                    const delayMs = (weekIndex * 7 + dayIndex) * 2;
-
-                    return (
-                      <div
-                        key={dayIndex}
-                        style={{
-                          height: squareSize,
-                          transitionDelay: `${delayMs}ms`
-                        }}
-                        className={`w-full rounded-[2px] transition-all duration-300 ease-out ${hasData ? 'cursor-pointer' : ''
-                          } ${hasData ? getColorForLevel(day.level) : 'bg-transparent'
-                          } ${!hasData ? 'opacity-0 scale-0' : ''
-                          } ${showData && hasData ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
-                          }`}
-                        onMouseEnter={(e) => hasData && handleMouseEnter(e, day)}
-                        onMouseLeave={handleMouseLeave}
-                        onClick={() => handleDayClick(day)}
-                      />
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -406,7 +350,7 @@ export function ActivityContributionGraph({
         <motion.div
           className="flex items-center justify-between text-[10px] text-muted-foreground px-0"
           initial={{ opacity: 0 }}
-          animate={isVisible ? { opacity: 1 } : {}}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0 }}
         >
           <div className="flex items-center gap-2">
@@ -417,13 +361,7 @@ export function ActivityContributionGraph({
             </div>
           </div>
           <span className="text-muted-foreground/80 pr-1">
-            {isVisible ? (
-              <>
-                <AnimatedNumber key={`contrib-${totalContributions}`} value={totalContributions.toLocaleString()} duration={2000} delay={0} animateOnMount className="text-foreground font-medium" /> contributions in <AnimatedNumber key={`year-${year}`} value={year} duration={1800} delay={200} animateOnMount />
-              </>
-            ) : (
-              <span className="opacity-0">0 contributions in {year}</span>
-            )}
+            {totalContributions.toLocaleString()} contributions (Feb {previousYear} - Jan {currentYear})
           </span>
 
         </motion.div>
@@ -482,6 +420,16 @@ export function ActivityContributionGraph({
                 {/* Group commits by project */}
                 {(() => {
                   const commits = selectedDay.details?.commits || [];
+
+                  // NEW: Loading state
+                  if (loadingDetails) {
+                    return (
+                      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-3">
+                        <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                        <p className="text-sm">Fetching detailed activity...</p>
+                      </div>
+                    );
+                  }
 
                   if (commits.length === 0) {
                     return (

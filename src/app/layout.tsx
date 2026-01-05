@@ -47,26 +47,27 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn(
         'scroll-smooth bg-white text-black antialiased dark:bg-black dark:text-white',
         `${GeistSans.variable} ${GeistMono.variable} font-sans`
       )}
     >
       <head>
+        {/* Preconnect for critical resources */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="//api.github.com" />
+        <link rel="dns-prefetch" href="//api.spotify.com" />
+        <link rel="dns-prefetch" href="//avatars.githubusercontent.com" />
+        <link rel="dns-prefetch" href="//i.scdn.co" />
+        <link rel="preconnect" href="https://avatars.githubusercontent.com" />
+        <link rel="preconnect" href="https://i.scdn.co" />
+
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme');
-                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (theme === 'dark' || (!theme && prefersDark)) {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                } catch (e) {}
-              })();
+              (function(){try{if(window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark')}catch(e){}})();
             `,
           }}
         />

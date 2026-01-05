@@ -306,7 +306,7 @@ export function AnimatedNumber({
   return (
     <span
       ref={useNewSystem ? stagger.ref as React.RefObject<HTMLSpanElement> : elementRef}
-      className={`inline-flex items-baseline whitespace-pre-wrap translate-y-0.5 ${className || ''}`}
+      className={`inline-flex items-baseline tabular-nums ${className || ''}`}
       aria-label={stringValue}
     >
       <span className="sr-only">{stringValue}</span>

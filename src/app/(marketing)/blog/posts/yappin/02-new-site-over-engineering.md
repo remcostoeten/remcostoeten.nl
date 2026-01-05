@@ -51,7 +51,7 @@ In the meanwhile I started building a Tauri desktop notes application. And a loc
 
 Hmm I query often, I always use `drizzle-orm`. I can't remember the syntax, ever. Why don't I build a simple abstraction for it that allows me to do this:
 
-```typescript
+```typescript title="drizzleasy-example.ts"
 import { read } from "@remcostoeten/drizzleasy";
 
 const renderPosts = read("posts");
