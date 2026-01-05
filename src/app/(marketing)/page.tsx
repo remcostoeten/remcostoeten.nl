@@ -35,6 +35,11 @@ const BlogPosts = nextDynamic(
   { loading: () => <BlogPostsSkeleton /> }
 )
 
+const FeaturedProjects = nextDynamic(
+  () => import('@/components/landing/featured-projects').then(m => ({ default: m.FeaturedProjects })),
+  { loading: () => <div className="h-64 animate-pulse bg-muted/20 rounded-lg" /> }
+)
+
 export const revalidate = 60
 
 export { homeMetadata as metadata }
@@ -46,8 +51,6 @@ export default function Page() {
         <Intro />
 
         <div className="space-y-4">
-          <ActivitySection />
-
           <Section title="Tech Stack" noHeaderMargin className='!mb-0 border-b-0'>
             <div className="pt-4 space-y-4">
               <p className="text-sm px-4 text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
@@ -57,11 +60,15 @@ export default function Page() {
             </div>
           </Section>
 
+          <WorkExperienceDemo />
+
+          <ActivitySection />
+
           <Section title="Learning Journey" noHeaderMargin>
             <LanguageStats />
           </Section>
 
-          <WorkExperienceDemo />
+          <FeaturedProjects />
 
           <BlogPosts />
         </div>

@@ -90,7 +90,7 @@ export async function syncGitHubActivities(): Promise<SyncResult> {
             .values({
                 service: 'github',
                 lastSyncAt: now,
-                lastEventId: allEvents[0]?.id || null,
+                lastEventId: allEvents[allEvents.length - 1]?.id || null,
                 syncCount: 1,
             })
             .onConflictDoUpdate({

@@ -16,6 +16,7 @@ import {
   NoticeRegular
 } from '../ui/notice'
 import remarkGfm from 'remark-gfm'
+import { rehypeExtractCodeMeta } from '@/lib/rehype-extract-code-meta'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -162,10 +163,18 @@ let components = {
     const language = className.replace('language-', '') || 'text';
     const metastring = codeElement?.props?.metastring || '';
 
+    console.log('CodeBlock props:', { className, language, metastring });
+
     // Support both single and double quotes for filename and title
     const fileNameMatch = metastring.match(/filename=["']([^"']+)["']/);
     const titleMatch = metastring.match(/title=["']([^"']+)["']/);
     const fileName = fileNameMatch ? fileNameMatch[1] : (titleMatch ? titleMatch[1] : undefined);
+
+    // Extract variant
+    const variantMatch = metastring.match(/variant=["']([^"']+)["']/);
+    const variant = variantMatch ? variantMatch[1] as "default" | "sharp" : undefined;
+
+    console.log('Parsed fileName:', fileName, 'variant:', variant);
 
     const highlightMatch = metastring.match(/\{([\d,-]+)\}/);
     const highlightLines = highlightMatch
@@ -184,6 +193,7 @@ let components = {
         language={language}
         fileName={fileName}
         highlightLines={highlightLines}
+        variant={variant}
         {...props}
       />
     );
@@ -199,7 +209,7 @@ export function CustomMDX(props) {
       options={{
         mdxOptions: {
           remarkPlugins: [remarkGfm],
-          rehypePlugins: [],
+          rehypePlugins: [rehypeExtractCodeMeta],
         },
       }}
     />

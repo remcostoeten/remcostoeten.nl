@@ -129,7 +129,7 @@ $ next start
  ✓ Ready in 385ms                                       
 ```
 Effectively what happened here without aliases is this:
-```bash
+```bash title="The manual (long) way"
 cd /home/$USER/development/active/skriuw
 cd apps/web
 rm -rf node_modules 
@@ -145,7 +145,7 @@ Removing all generated files and testing a fresh build.
 
 Another one which saves me quite some time is my [spellchecker](https://github.com/remcostoeten/dotfiles/blob/master/scripts/spellcheck) script. This lets me type `spellcheck` and on enter it prompts me to enter text, but passing text as an argument also works.
 
-```bash
+```bash title="Spellcheck command"
  spellcheck  "i m writing a blog ppooost about my person
 al dvlopment enviorment"
 → Spellchecking with claude profile done            
@@ -160,7 +160,7 @@ Applied 4 change(s).
 Under the hood it checks whether you have one of the most common AI CLI's installed (that take prompts via argument) and runs it with the text you passed to it. In this case it uses Claude (with Z.ai) but could've also used Codex, Cursor or Gemini.
 
 If curious you could test any of these scripts or the entire package by simply running my install script:
-```bash
+```bash title="Setup Script"
 git clone https://github.com/remcostoeten/dotfiles.git;
 cd dotfiles/setup;
 bun install;
@@ -169,6 +169,7 @@ bun run dev
 
 which prompts you with an interactive menu
 
+```text title="Interactive Menu"
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
 ║    🚀 Development Tools Setup                               ║
@@ -183,6 +184,7 @@ which prompts you with an interactive menu
 │ 2. 📦 Install Tools - Select categories and install
 │ 3. ⚙️  Toggle Dry Run - OFF
 │ 4. ❌ Exit - Quit the setup tool
-│```
+│
+```
 
 The scripts directory has loads more and are all standalone, so you can use them without the setup tool.

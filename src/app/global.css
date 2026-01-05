@@ -819,3 +819,14 @@
 	position: relative;
 	z-index: 1;
 }
+
+/* Tighter prose spacing */
+.prose :where(h2, h3) {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose :where(p) {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}

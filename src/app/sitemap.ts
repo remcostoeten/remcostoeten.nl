@@ -1,5 +1,4 @@
 import { getBlogPosts, getAllTags } from '@/utils/utils'
-import { getProjects } from './(marketing)/projects/utilities/project-registry'
 
 export const baseUrl = 'https://remcostoeten.nl'
 
@@ -14,15 +13,10 @@ export default async function sitemap() {
     lastModified: new Date().toISOString().split('T')[0],
   }))
 
-  let projectRoutes = getProjects().map((project) => ({
-    url: `${baseUrl}/projects/${project.slug}`,
-    lastModified: project.dates.updated,
-  }))
-
-  let routes = ['', '/blog', '/blog/tags', '/blog/topics', '/projects'].map((route) => ({
+  let routes = ['', '/blog', '/blog/tags', '/blog/topics'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString().split('T')[0],
   }))
 
-  return [...routes, ...blogs, ...tags, ...projectRoutes]
+  return [...routes, ...blogs, ...tags]
 }

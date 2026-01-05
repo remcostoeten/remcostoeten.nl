@@ -4,7 +4,7 @@ import { Music, GitCommit, GitPullRequest, Star, AlertCircle, Eye, Box, Copy, Pl
 import type { SpotifyTrack } from '@/server/services/spotify';
 import type { GitHubEventDetail } from '@/hooks/use-github';
 import { useCombinedActivity } from '@/hooks/use-combined-activity';
-import { ProjectHoverWrapper, ActivityHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers';
+import { ProjectHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers';
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback';
 import { ActivityStatusBar } from './activity-status-bar';
 
@@ -508,14 +508,12 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                     where I
                                 </motion.span>
                                 <motion.span variants={highlightVariants} className="inline-flex items-center gap-1 text-foreground font-medium">
-                                    <ActivityHoverWrapper activity={currentActivity}>
-                                        <span className="inline-flex items-center gap-1 cursor-pointer">
-                                            <span className="inline-flex items-center justify-center size-3.5 bg-muted/30 text-foreground/80 border border-border/20">
-                                                {getEventIcon(currentActivity.type)}
-                                            </span>
-                                            <span className="truncate max-w-[200px]">{currentActivity.title}</span>
+                                    <span className="inline-flex items-center gap-1">
+                                        <span className="inline-flex items-center justify-center size-3.5 bg-muted/30 text-foreground/80 border border-border/20">
+                                            {getEventIcon(currentActivity.type)}
                                         </span>
-                                    </ActivityHoverWrapper>
+                                        <span className="truncate max-w-[200px]">{currentActivity.title}</span>
+                                    </span>
                                 </motion.span>
                                 <motion.span variants={wordVariants} className="text-muted-foreground/50 text-[11px]">
                                     <time dateTime={currentActivity.timestamp}>
@@ -616,14 +614,12 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                     where I
                                 </motion.span>
                                 <motion.span variants={highlightVariants} className="inline-flex items-center gap-1 text-foreground font-medium">
-                                    <ActivityHoverWrapper activity={currentActivity}>
-                                        <span className="inline-flex items-center gap-1 cursor-pointer">
-                                            <span className="inline-flex items-center justify-center size-3.5 bg-muted/30 text-foreground/80 border border-border/20">
-                                                {getEventIcon(currentActivity.type)}
-                                            </span>
-                                            <span className="truncate max-w-[200px]">{currentActivity.title}</span>
+                                    <span className="inline-flex items-center gap-1">
+                                        <span className="inline-flex items-center justify-center size-3.5 bg-muted/30 text-foreground/80 border border-border/20">
+                                            {getEventIcon(currentActivity.type)}
                                         </span>
-                                    </ActivityHoverWrapper>
+                                        <span className="truncate max-w-[200px]">{currentActivity.title}</span>
+                                    </span>
                                 </motion.span>
                                 <motion.span variants={wordVariants} className="text-muted-foreground/50 text-[11px]">
                                     <time dateTime={currentActivity.timestamp}>

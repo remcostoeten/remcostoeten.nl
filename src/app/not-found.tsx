@@ -60,45 +60,6 @@ export default function NotFound() {
               Browse Blog
             </Link>
           </div>
-
-          {/* Helpful Suggestions */}
-          <div className="space-y-4 pt-6 border-t border-border/50">
-            <h3 className="font-medium text-foreground">Maybe you were looking for:</h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-              <Link href="/blog" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <ArrowLeft className="w-3.5 h-3.5" />
-                Latest blog posts
-              </Link>
-              <Link href="/blog/categories" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <ArrowLeft className="w-3.5 h-3.5" />
-                Browse by category
-              </Link>
-              <Link href="/blog/topics" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <ArrowLeft className="w-3.5 h-3.5" />
-                Popular topics
-              </Link>
-              <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                <ArrowLeft className="w-3.5 h-3.5" />
-                About me
-              </Link>
-            </div>
-          </div>
-
-          {/* Search Hint */}
-          <div className="pt-4">
-            <p className="text-sm text-muted-foreground">
-              <Search className="inline w-3.5 h-3.5 mr-1" />
-              Tip: Use the search bar to find specific content
-            </p>
-            <form action="/search" method="get" className="flex items-center gap-2 pt-2">
-              <input type="search" name="q" placeholder="Search..." className="py-1 pl-8 text-sm text-muted-foreground rounded-none AAAA bg-background border border-border focus:outline-none focus:ring-2 focus:ring-primary" />
-              <button type="submit" className="inline-flex items-center gap-2 px-4 py-2 rounded-none AAAA bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium">
-                <Search className="w-4 h-4" />
-                Search
-              </button>
-            </form>
-          </div>
         </div>
       </section>
     </>

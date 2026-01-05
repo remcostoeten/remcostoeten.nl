@@ -35,12 +35,57 @@ export function ActivityContributionGraph({
   const [hoveredDay, setHoveredDay] = useState<ActivityDay | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
+  // New state for loading details on demand
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  // Fetch detailed events on demand if they are missing
+  useEffect(() => {
+    if (!selectedDay) return;
+
+    // If we have contributions but no details (or empty commits), fetch them on demand
+    // This handles the case where the global feed limit didn't catch older events
+    if (selectedDay.githubCount > 0 && (!selectedDay.details?.commits || selectedDay.details.commits.length === 0)) {
+      setLoadingDetails(true);
+      fetch(`/api/github/events?date=${selectedDay.date}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.events && Array.isArray(data.events)) {
+            const newCommits = data.events.map((event: any) => ({
+              message: event.title,
+              url: event.url,
+              projectName: event.repository
+            }));
+
+            // Only update if we found something
+            if (newCommits.length > 0) {
+              setSelectedDay(prev => {
+                // Ensure we are still looking at the same day
+                if (!prev || prev.date !== selectedDay.date) return prev;
+                return {
+                  ...prev,
+                  details: {
+                    ...prev.details,
+                    // Preserve existing tracks
+                    tracks: prev.details?.tracks || [],
+                    commits: newCommits
+                  }
+                };
+              });
+            }
+          }
+        })
+        .catch(err => console.error('Failed to fetch stats:', err))
+        .finally(() => setLoadingDetails(false));
+    }
+  }, [selectedDay?.date, selectedDay?.githubCount]); // Depend on date and count
+
   // For a rolling 12-month view
   const currentYear = new Date().getFullYear();
   const previousYear = currentYear - 1;
 
   // *** PERFORMANCE OPTIMIZATION: Single combined API call instead of 4+ separate ones ***
-  const { data: combinedData, isLoading: loading } = useCombinedActivity(5, 10);
+  // Increased limit from 5 to 20 for initial feed, though on-demand fetch handles the rest
+  const { data: combinedData, isLoading: loading } = useCombinedActivity(20, 10);
 
   // Process contributions into a Map for lookup
   const githubContributions = useMemo(() => {
@@ -152,24 +197,19 @@ export function ActivityContributionGraph({
   }, [githubContributions, tracks, year, loading, detailedEvents]);
 
   const getColorForLevel = (level: number) => {
-    const darkColors = [
-      'bg-[#0d1117]',
-      'bg-brand-500/30',
-      'bg-brand-500/50',
-      'bg-brand-500/75',
-      'bg-brand-500'
-    ];
+    // Level 0 (empty)
+    if (level === 0) {
+      return 'bg-neutral-100 dark:bg-neutral-900/40';
+    }
 
-    const lightColors = [
-      'bg-neutral-800/60',
-      'bg-brand-500/30',
-      'bg-brand-500/50',
-      'bg-brand-500/75',
-      'bg-brand-500'
-    ];
-
-    const isDarkTheme = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
-    return isDarkTheme ? darkColors[level] : lightColors[level];
+    // Levels 1-4
+    switch (level) {
+      case 1: return 'bg-brand-500/30';
+      case 2: return 'bg-brand-500/50';
+      case 3: return 'bg-brand-500/75';
+      case 4: return 'bg-brand-500';
+      default: return 'bg-neutral-100 dark:bg-neutral-900/40';
+    }
   };
 
   const handleMouseEnter = (e: React.MouseEvent, day: ActivityDay) => {
@@ -188,6 +228,7 @@ export function ActivityContributionGraph({
 
   // Rolling 12-month view - ~48 weeks from Feb previous year to end of Jan current year
   const totalWeeks = 48;
+  // Gap unused but kept for ref
   const gap = 3;
 
   // Data weeks - for rendering actual data, starting from Feb of previous year
@@ -379,6 +420,16 @@ export function ActivityContributionGraph({
                 {/* Group commits by project */}
                 {(() => {
                   const commits = selectedDay.details?.commits || [];
+
+                  // NEW: Loading state
+                  if (loadingDetails) {
+                    return (
+                      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground gap-3">
+                        <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                        <p className="text-sm">Fetching detailed activity...</p>
+                      </div>
+                    );
+                  }
 
                   if (commits.length === 0) {
                     return (

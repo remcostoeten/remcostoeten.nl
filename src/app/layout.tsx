@@ -47,6 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={cn(
         'scroll-smooth bg-white text-black antialiased dark:bg-black dark:text-white',
         `${GeistSans.variable} ${GeistMono.variable} font-sans`
@@ -66,7 +67,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function(){try{var t=localStorage.getItem('theme');(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))&&document.documentElement.classList.add('dark')}catch(e){}})();
+              (function(){try{if(window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark')}catch(e){}})();
             `,
           }}
         />

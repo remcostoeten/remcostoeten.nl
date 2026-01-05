@@ -13,9 +13,10 @@ function getGitHubHeaders(): Record<string, string> {
         'Accept': 'application/vnd.github.v3+json',
         'Content-Type': 'application/json',
     }
-    const token = process.env.GITHUB_TOKEN
+    // Check both env vars to match the main GitHubService
+    const token = process.env.GITHUB_TOKEN || process.env.NEXT_PUBLIC_GITHUB_TOKEN
     if (token) {
-        headers['Authorization'] = `token ${token}`
+        headers['Authorization'] = `token ${token.trim()}`
     }
     return headers
 }

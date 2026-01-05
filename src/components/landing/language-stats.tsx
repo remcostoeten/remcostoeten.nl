@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { SiGo, SiPython, SiLua, SiRust, SiZig, SiTypescript, SiJavascript, SiNodedotjs } from 'react-icons/si'
+import { SiGo, SiPython, SiLua, SiRust, SiZig, SiTypescript, SiJavascript, SiNodedotjs, SiShell } from 'react-icons/si'
 import { githubService } from '@/server/services/github'
-import { cn } from '@/lib/utils'
+import { Github } from 'lucide-react'
 
 type Language = {
   name: string
@@ -21,6 +21,7 @@ const LANGUAGE_ICONS: Record<string, React.ComponentType<{ className?: string }>
   'TypeScript': SiTypescript,
   'JavaScript': SiJavascript,
   'Node.js': SiNodedotjs,
+  'Shell': SiShell,
 }
 
 const getLanguageIcon = (language: string): React.ComponentType<{ className?: string }> => {
@@ -42,6 +43,7 @@ export function LanguageStats() {
         const totalRepos = Array.from(languageMap.values()).reduce((sum, lang) => sum + lang.count, 0)
 
         const sortedLanguages = Array.from(languageMap.entries())
+          .filter(([name]) => name.toLowerCase() !== 'html')
           .map(([name, data]) => ({
             name,
             count: data.count,
@@ -49,7 +51,7 @@ export function LanguageStats() {
             percentage: Math.round((data.count / totalRepos) * 100)
           }))
           .sort((a, b) => b.count - a.count)
-          .slice(0, 6)
+          .slice(0, 10)
 
         setLanguages(sortedLanguages)
       } catch (error) {
@@ -64,11 +66,11 @@ export function LanguageStats() {
 
   if (loading) {
     return (
-      <div className="space-y-3 py-4">
-        <div className="h-4 w-16 bg-muted/20 rounded animate-pulse" />
-        <div className="flex flex-wrap gap-2">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-8 w-20 bg-muted/20 rounded-lg animate-pulse" />
+      <div className="space-y-4 pt-4 pb-8 px-4">
+        <div className="h-3 w-72 bg-muted/10 rounded animate-pulse" />
+        <div className="flex flex-wrap gap-3 pt-2">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-9 w-28 bg-muted/20 rounded-lg animate-pulse" />
           ))}
         </div>
       </div>
@@ -80,34 +82,50 @@ export function LanguageStats() {
   }
 
   return (
-    <div className="space-y-3 py-4">
-      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-        Languages
-      </h3>
+    <div className="space-y-4 pt-4 pb-8 px-4">
+      <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-xl">
+        Besides my professional stack, I like to tinker with various tooling and languages.
+        Here's what I've been using across my public repositories.
+      </p>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-3">
         {languages.map((lang) => {
           const Icon = getLanguageIcon(lang.name)
+          const repoList = lang.repos.slice(0, 5).map(r => r.split('/').pop()).join(', ')
+          const moreCount = lang.repos.length > 5 ? ` +${lang.repos.length - 5} more` : ''
 
           return (
-            <a
+            <div
               key={lang.name}
-              href={`https://github.com/${lang.repos[0]}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-2 px-3 py-1.5 bg-muted/50 hover:bg-muted rounded-lg transition-colors"
+              className="group relative flex items-center gap-2.5 px-3.5 py-2 bg-muted/40 hover:bg-muted/70 rounded-lg transition-colors cursor-default border border-transparent hover:border-border/50"
             >
-              <Icon className="w-4 h-4 text-foreground/70" />
-              <span className="text-xs font-medium text-foreground">
+              <Icon className="w-4 h-4 text-foreground/60 group-hover:text-foreground/80 transition-colors" />
+              <span className="text-sm font-medium text-foreground/90">
                 {lang.name}
               </span>
-              <span className="text-[10px] text-muted-foreground/60">
-                {lang.count}
+              <span className="text-xs text-muted-foreground/50 tabular-nums">
+                {lang.count} {lang.count === 1 ? 'repo' : 'repos'}
               </span>
-            </a>
+
+              {/* Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2.5 bg-popover border border-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 min-w-[200px] max-w-[300px]">
+                <p className="text-xs font-semibold text-foreground mb-1.5">
+                  {lang.name} repositories
+                </p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  {repoList}{moreCount}
+                </p>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-border" />
+              </div>
+            </div>
           )
         })}
       </div>
+
+      <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground/40 pt-4">
+        <Github className="w-3 h-3" />
+        <span>Pulled live from GitHub API</span>
+      </p>
     </div>
   )
 }
