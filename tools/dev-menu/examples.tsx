@@ -31,7 +31,7 @@ export function PublicSiteExample() {
       showRoutes={true}
       showSystemInfo={true}
       showSettings={true}
-
+      routes={['/', '/about', '/products', '/contact']}
     />
   )
 }
@@ -46,7 +46,7 @@ export function MinimalExample() {
       showRoutes={true}
       showSystemInfo={false}
       showSettings={false}
-
+      routes={['/', '/page1', '/page2', '/page3']}
     />
   )
 }
@@ -85,7 +85,12 @@ export function DashboardExample() {
       showSystemInfo={false}
       showSettings={true}
       isAdmin={true}
-
+      routes={[
+        '/dashboard',
+        '/dashboard/users',
+        '/dashboard/settings',
+        '/dashboard/analytics'
+      ]}
       customTitle="Admin Tools"
     />
   )

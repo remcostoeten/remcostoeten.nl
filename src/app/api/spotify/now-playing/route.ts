@@ -7,27 +7,6 @@ export const dynamic = 'force-dynamic';
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 
-async function fetchWithRetry(url: string, options: RequestInit, maxRetries = 3): Promise<Response> {
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-            const response = await fetch(url, options);
-            return response;
-        } catch (error: any) {
-            const isNetworkError = error?.code === 'ECONNRESET' ||
-                                  error?.code === 'ECONNREFUSED' ||
-                                  error?.code === 'ETIMEDOUT' ||
-                                  error?.cause?.code === 'ECONNRESET';
-
-            if (!isNetworkError || attempt === maxRetries - 1) {
-                throw error;
-            }
-
-            const delay = Math.pow(2, attempt) * 100;
-            await new Promise(resolve => setTimeout(resolve, delay));
-        }
-    }
-    throw new Error('Max retries exceeded');
-}
 
 export async function GET() {
     try {
@@ -41,14 +20,11 @@ export async function GET() {
             return NextResponse.json({ isPlaying: false, error: 'Failed to get access token' });
         }
 
-        const nowPlayingResponse = await fetchWithRetry(
-            `${SPOTIFY_API_BASE}/me/player/currently-playing`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-            }
-        );
+        const nowPlayingResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+            },
+        });
 
         // Handle 401 by invalidating cache and retrying once
         if (nowPlayingResponse.status === 401) {
@@ -58,14 +34,11 @@ export async function GET() {
                 return NextResponse.json({ isPlaying: false, error: 'Authentication failed' });
             }
 
-            const retryResponse = await fetchWithRetry(
-                `${SPOTIFY_API_BASE}/me/player/currently-playing`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${retryToken}`,
-                    },
-                }
-            );
+            const retryResponse = await fetch(`${SPOTIFY_API_BASE}/me/player/currently-playing`, {
+                headers: {
+                    'Authorization': `Bearer ${retryToken}`,
+                },
+            });
 
             return handleNowPlayingResponse(retryResponse);
         }

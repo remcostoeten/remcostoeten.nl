@@ -1,98 +1,74 @@
 'use client'
 
-import { Zap, Home, FileText, Code, Shield } from 'lucide-react'
+import { Route, Zap } from 'lucide-react'
 import Link from 'next/link'
-import { generateRoutes, getRoutesByCategory, RouteItem } from '../../utils/generate-routes'
 
 interface RoutesSectionProps {
+  routes: string[]
   pathname: string
 }
 
-const CATEGORY_CONFIG = {
-  core: { icon: Home, label: 'core' },
-  blog: { icon: FileText, label: 'blog' },
-  dev: { icon: Code, label: 'dev' },
-  legal: { icon: Shield, label: 'legal' },
-} as const
-
-function RouteLink({ route, pathname }: { route: RouteItem; pathname: string }) {
-  const isActive = pathname === route.path
-
-  if (route.isDynamic) {
-    return (
-      <div
-        className="text-[10px] px-2 py-1 text-[hsl(0,0%,40%)] flex items-center justify-between group/route"
-        title="Dynamic route"
-      >
-        <span>{route.label}</span>
-        <Zap className="w-2.5 h-2.5 opacity-0 group-hover/route:opacity-100 transition-opacity" />
-      </div>
-    )
-  }
-
-  return (
-    <Link
-      href={route.path}
-      className={`flex items-center justify-between text-[10px] px-2 py-1 transition-colors ${
-        isActive
-          ? 'bg-[hsl(167.8,53.25%,54.71%)]/10 text-[hsl(167.8,53.25%,65%)] border-l-2 border-[hsl(167.8,53.25%,54.71%)]'
-          : 'text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] hover:bg-[hsl(0,0%,18%)]'
-      }`}
-    >
-      <span>{route.label}</span>
-      {isActive && <div className="w-1 h-1 bg-[hsl(167.8,53.25%,54.71%)]" />}
-    </Link>
-  )
-}
-
-export function RoutesSection({ pathname }: RoutesSectionProps) {
-  const categorizedRoutes = getRoutesByCategory()
-
+export function RoutesSection({ routes, pathname }: RoutesSectionProps) {
   const handleJump = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const target = e.currentTarget.value.trim()
+      const target = e.currentTarget.value
       if (target.startsWith('/')) {
         window.location.href = target
-      } else if (target) {
-        window.location.href = `/${target}`
       }
     }
   }
 
   return (
-    <div className="p-2">
-      <input
-        type="text"
-        placeholder="go to /..."
-        className="w-full bg-[hsl(0,0%,12%)] border border-[hsl(0,0%,18%)] px-2 py-1.5 text-[10px] text-[hsl(0,0%,85%)] placeholder:text-[hsl(0,0%,40%)] focus:outline-none focus:border-[hsl(167.8,53.25%,54.71%)] transition-colors"
-        onKeyDown={handleJump}
-      />
-
-      <div className="text-[9px] text-[hsl(0,0%,40%)] px-2 py-1.5 mt-1 border-b border-[hsl(0,0%,18%)]">
-        <span className="text-[hsl(0,0%,55%)]">@</span> <span className="text-[hsl(167.8,53.25%,65%)]">{pathname}</span>
+    <div className="p-3">
+      <div className="flex items-center gap-2 mb-3 px-1 text-zinc-400">
+        <Route className="w-3.5 h-3.5" />
+        <span className="text-[11px] font-semibold uppercase tracking-wider">Routes ({routes.length})</span>
       </div>
 
-      <div className="space-y-1 max-h-[160px] overflow-y-auto scrollbar-hide mt-1">
-        {(Object.entries(categorizedRoutes) as [keyof typeof CATEGORY_CONFIG, RouteItem[]][]).map(
-          ([category, routes]) => {
-            if (routes.length === 0) return null
-            const { icon: Icon, label } = CATEGORY_CONFIG[category]
+      <div className="mb-4 group">
+        <input
+          type="text"
+          placeholder="Jump to route..."
+          className="w-full bg-white/5 border border-white/5 rounded-lg px-3 py-2 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:bg-white/10 transition-all"
+          onKeyDown={handleJump}
+        />
+      </div>
 
+      <div className="max-h-[200px] overflow-y-auto space-y-0.5 pr-1 custom-scrollbar">
+        <div className="text-[10px] text-zinc-500 px-2 py-1 mb-1 bg-white/5 rounded-md border border-white/5">
+          Current: <span className="text-blue-400 font-mono">{pathname}</span>
+        </div>
+        {routes.map((route) => {
+          const isDynamic = route.includes('[')
+          const isActive = pathname === route
+
+          if (isDynamic) {
             return (
-              <div key={category}>
-                <div className="flex items-center gap-1.5 px-2 py-1 text-[hsl(0,0%,40%)]">
-                  <Icon className="w-3 h-3" />
-                  <span className="text-[9px] uppercase tracking-wider">{label}</span>
-                </div>
-                <div>
-                  {routes.map(route => (
-                    <RouteLink key={route.path} route={route} pathname={pathname} />
-                  ))}
-                </div>
+              <div
+                key={route}
+                className="text-[11px] px-3 py-1.5 rounded-lg text-zinc-600 flex items-center justify-between group/route"
+                title="Dynamic route - requires parameters"
+              >
+                <code className="font-mono">{route}</code>
+                <Zap className="w-3 h-3 opacity-0 group-hover/route:opacity-100 transition-opacity" />
               </div>
             )
           }
-        )}
+
+          return (
+            <Link
+              key={route}
+              href={route}
+              className={`flex items-center justify-between text-[11px] px-3 py-1.5 rounded-lg transition-all ${isActive
+                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/20'
+                : 'text-zinc-400 hover:text-white hover:bg-white/5'
+                }`}
+            >
+              <code className="font-mono">{route}</code>
+              {isActive && <div className="w-1 h-1 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />}
+            </Link>
+          )
+        })}
       </div>
     </div>
   )

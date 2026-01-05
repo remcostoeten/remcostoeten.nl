@@ -1,18 +1,18 @@
 'use client';
 
-
+import { useState } from 'react';
 import { ActivityContributionGraph } from './contribution-graph';
 import { Section } from '../../ui/section';
 import { Heading } from '../../ui/heading';
 import { ActivityFeed } from './activity-feed';
 import { ProjectHoverWrapper } from './hover-wrappers';
 import Link from 'next/link';
-
-
+import { Button } from '../../ui/button';
+import { ChevronDown } from 'lucide-react';
 
 export function ActivitySection() {
   const year = new Date().getFullYear();
-
+  const [activityCount, setActivityCount] = useState(5);
 
   return (
     <Section noPadding contentPadding={true} className="mb-0">
@@ -40,7 +40,19 @@ export function ActivitySection() {
           <ActivityContributionGraph year={year} showLegend={true} />
         </div>
 
-        <ActivityFeed activityCount={5} rotationInterval={6000} />
+        <ActivityFeed activityCount={activityCount} rotationInterval={6000} />
+
+        <div className="flex justify-center pb-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setActivityCount(prev => prev + 25)}
+            className="text-muted-foreground hover:text-foreground text-xs gap-2"
+          >
+            Load more activity
+            <ChevronDown className="w-3 h-3" />
+          </Button>
+        </div>
       </div>
     </Section>
   );

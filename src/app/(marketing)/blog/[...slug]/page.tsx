@@ -150,7 +150,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
           totalViews={viewData?.totalViews || 0}
         />
 
-        <hr className="my-6 border-neutral-200 dark:border-neutral-800" />
+        <div className="screen-border mb-12" />
 
         <article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-3xl prose-code:before:content-none prose-code:after:content-none">
           <CustomMDX source={post.content} />

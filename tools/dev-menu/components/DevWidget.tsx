@@ -15,6 +15,15 @@ interface DevWidgetProps extends DevWidgetConfig {
   onSignOut?: () => void
 }
 
+const DEFAULT_ROUTES = [
+  '/',
+  '/',
+  '/blog',
+  '/blog/[...slug]',
+  '/projects',
+  '/api/example',
+]
+
 export function DevWidget({
   session,
   onSignOut,
@@ -22,6 +31,7 @@ export function DevWidget({
   showRoutes = true,
   showSystemInfo = true,
   showSettings = true,
+  routes = DEFAULT_ROUTES,
   customTitle,
   isAdmin = false,
 }: DevWidgetProps) {
@@ -61,12 +71,12 @@ export function DevWidget({
   if (isMinimized) {
     return (
       <div
-        className="fixed z-50 transition-all duration-200"
+        className="fixed z-50 transition-all duration-300 ease-in-out"
         style={currentPos}
       >
         <button
           onClick={() => setIsMinimized(false)}
-          className="bg-[hsl(0,0%,7%)] text-[hsl(167.8,53.25%,54.71%)] p-2 shadow-lg hover:bg-[hsl(0,0%,12%)] transition-colors border border-[hsl(0,0%,18%)]"
+          className="bg-black/80 text-white p-2 rounded-lg shadow-lg hover:bg-black/90 transition-colors backdrop-blur-sm border border-white/10"
           title="Dev Tools"
         >
           <Terminal className="w-4 h-4" />
@@ -88,39 +98,41 @@ export function DevWidget({
       )}
 
       <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed z-50 bg-[hsl(0,0%,7%)] text-[hsl(0,0%,85%)] shadow-2xl border border-[hsl(0,0%,18%)] min-w-[280px] max-h-[85vh] overflow-hidden flex flex-col font-mono"
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        className="fixed z-50 bg-zinc-950/80 text-white rounded-2xl shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-2xl border border-white/10 min-w-[300px] max-h-[85vh] overflow-hidden flex flex-col"
         style={currentPos}
       >
-        <div className="flex items-center justify-between px-3 py-2 border-b border-[hsl(0,0%,18%)] bg-[hsl(0,0%,8.6%)]">
-          <div className="flex items-center gap-2">
-            <Terminal className="w-3.5 h-3.5 text-[hsl(167.8,53.25%,54.71%)]" />
-            <span className="text-[11px] font-medium tracking-tight uppercase">
-              {customTitle || (isDev ? 'dev' : 'admin')}
+        <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/5">
+          <div className="flex items-center gap-2.5">
+            <div className="relative">
+              <Terminal className="w-4 h-4 text-yellow-500" />
+              <div className="absolute inset-0 bg-yellow-500/20 blur-sm rounded-full" />
+            </div>
+            <span className="text-sm font-semibold tracking-tight">
+              {customTitle || (isDev ? 'Dev Mode' : 'Admin Tools')}
             </span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {showSettings && (
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] transition-colors p-1"
+                className="text-white/60 hover:text-white transition-colors"
                 title="Settings"
               >
-                <Settings className="w-3.5 h-3.5" />
+                <Settings className="w-4 h-4" />
               </button>
             )}
             <button
               onClick={() => setIsMinimized(true)}
-              className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] transition-colors p-1"
+              className="text-white/60 hover:text-white transition-colors"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-1">
           {showAuth && session && (
             <AuthSection
               session={session}
@@ -129,7 +141,10 @@ export function DevWidget({
           )}
 
           {showRoutes && (
-            <RoutesSection pathname={pathname} />
+            <RoutesSection
+              routes={routes}
+              pathname={pathname}
+            />
           )}
 
           {showSystemInfo && (
@@ -140,12 +155,26 @@ export function DevWidget({
           )}
         </div>
 
-        <div className="px-3 py-1.5 border-t border-[hsl(0,0%,18%)] bg-[hsl(0,0%,8.6%)]">
-          <div className="flex items-center justify-between text-[9px] text-[hsl(0,0%,55%)]">
-            <span>press <kbd className="px-1 py-0.5 bg-[hsl(0,0%,18%)] text-[hsl(0,0%,70%)]">`</kbd> to toggle</span>
-          </div>
+        <div className="p-1 text-center border-t border-white/5 bg-zinc-950/50">
+          <div className="w-8 h-1 bg-white/10 rounded-full mx-auto my-1" />
         </div>
       </motion.div>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
+        }
+      `}</style>
     </>
   )
 }

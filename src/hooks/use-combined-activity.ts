@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { SpotifyTrack } from '@/server/services/spotify'
 import type { GitHubEventDetail } from './use-github'
 
@@ -40,6 +40,7 @@ export function useCombinedActivity(activityLimit = 5, tracksLimit = 10) {
         gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
         retry: 2,
         retryDelay: 1000,
+        placeholderData: keepPreviousData,
     })
 }
 

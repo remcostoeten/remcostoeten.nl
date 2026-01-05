@@ -70,7 +70,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               (function(){
                 try {
                   var savedTheme = localStorage.getItem('theme');
-                  if (savedTheme === 'dark' || !savedTheme) {
+                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
                     document.documentElement.classList.add('dark');
                   } else {
                     document.documentElement.classList.remove('dark');

@@ -79,18 +79,45 @@ const getGitHubContributions = unstable_cache(
 )
 
 // Cached GitHub activity fetch
+// Cached GitHub activity fetch
 const getGitHubActivity = unstable_cache(
     async (limit: number) => {
         try {
-            const response = await fetch(
-                `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=${limit}`,
-                { headers: getGitHubHeaders() }
-            )
+            // If limit is small, just do one request
+            if (limit <= 100) {
+                const response = await fetch(
+                    `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=${limit}`,
+                    { headers: getGitHubHeaders() }
+                )
+                if (!response.ok) return []
+                const events = await response.json()
+                return events.map((event: any) => parseGitHubEvent(event)).filter(Boolean)
+            }
 
-            if (!response.ok) return []
+            // For larger limits, fetch pages (max 3 pages = 300 events)
+            const pagesToFetch = Math.min(Math.ceil(limit / 100), 3)
+            const allEvents: any[] = []
 
-            const events = await response.json()
-            return events.map((event: any) => parseGitHubEvent(event)).filter(Boolean)
+            for (let page = 1; page <= pagesToFetch; page++) {
+                const response = await fetch(
+                    `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=100&page=${page}`,
+                    { headers: getGitHubHeaders() }
+                )
+                
+                if (!response.ok) break
+                
+                const events = await response.json()
+                if (!Array.isArray(events) || events.length === 0) break
+                
+                allEvents.push(...events)
+                
+                if (allEvents.length >= limit) break
+            }
+
+            return allEvents
+                .slice(0, limit)
+                .map((event: any) => parseGitHubEvent(event))
+                .filter(Boolean)
         } catch (error) {
             console.error('Error fetching GitHub activity:', error)
             return []
@@ -138,10 +165,18 @@ function parseGitHubEvent(event: any) {
             const action = event.payload?.action
             const prNumber = event.payload?.number
             const prTitle = event.payload?.pull_request?.title || ''
+
+            let verb = action
+            if (action === 'closed' && event.payload?.pull_request?.merged) {
+                verb = 'merged'
+            } else if (action === 'synchronize') {
+                verb = 'updated'
+            }
+
             return {
                 ...base,
                 type: 'pr',
-                title: `${action} PR #${prNumber}${prTitle ? `: ${prTitle}` : ''}`,
+                title: `${verb} PR #${prNumber}${prTitle ? `: ${prTitle}` : ''}`,
                 description: prTitle,
                 url: event.payload?.pull_request?.html_url || base.url,
             }

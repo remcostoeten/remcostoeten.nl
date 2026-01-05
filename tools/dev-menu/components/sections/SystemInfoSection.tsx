@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
+import { Settings } from 'lucide-react'
 
 interface SystemInfoSectionProps {
   isExpanded: boolean
@@ -11,13 +11,15 @@ interface SystemInfoSectionProps {
 export function SystemInfoSection({ isExpanded, onToggle }: SystemInfoSectionProps) {
   return (
     <>
-      <div className="px-2 pt-1">
+      <div className="px-3 pt-2 pb-1">
         <button
           onClick={onToggle}
-          className="w-full flex items-center justify-between px-2 py-1.5 text-[10px] text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] hover:bg-[hsl(0,0%,18%)] transition-colors group"
+          className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-medium text-zinc-500 hover:text-zinc-300 hover:bg-white/5 rounded-lg transition-all group"
         >
-          <span className="uppercase tracking-wider">system</span>
-          <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+          <span>SYSTEM INFO</span>
+          <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+            <Settings className="w-3 h-3" />
+          </div>
         </button>
       </div>
 
@@ -27,22 +29,21 @@ export function SystemInfoSection({ isExpanded, onToggle }: SystemInfoSectionPro
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-4 py-2 space-y-1.5 text-[10px]">
-              <div className="flex justify-between border-b border-[hsl(0,0%,18%)] pb-1">
-                <span className="text-[hsl(0,0%,40%)] uppercase">env</span>
-                <span className="text-[hsl(167.8,53.25%,65%)]">{process.env.NODE_ENV}</span>
+            <div className="px-6 py-3 space-y-2 text-[10px] text-zinc-500 font-mono">
+              <div className="flex justify-between border-b border-white/5 pb-1">
+                <span className="text-zinc-600 uppercase">Environment</span>
+                <span className="text-green-500/80">{process.env.NODE_ENV}</span>
               </div>
-              <div className="flex justify-between border-b border-[hsl(0,0%,18%)] pb-1">
-                <span className="text-[hsl(0,0%,40%)] uppercase">admin</span>
-                <span className="text-[hsl(0,0%,55%)] truncate max-w-[120px]">{process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'n/a'}</span>
+              <div className="flex justify-between border-b border-white/5 pb-1">
+                <span className="text-zinc-600 uppercase">Admin</span>
+                <span className="truncate max-w-[120px]">{process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'Not set'}</span>
               </div>
-              <div className="space-y-0.5">
-                <span className="text-[hsl(0,0%,40%)] uppercase block">ua</span>
-                <span className="block text-[9px] text-[hsl(0,0%,40%)] leading-relaxed break-all">
-                  {typeof window !== 'undefined' ? navigator.userAgent.slice(0, 80) + '...' : 'n/a'}
+              <div className="space-y-1">
+                <span className="text-zinc-600 uppercase block">User Agent</span>
+                <span className="block leading-relaxed opacity-60">
+                  {typeof window !== 'undefined' ? navigator.userAgent : 'N/A'}
                 </span>
               </div>
             </div>
