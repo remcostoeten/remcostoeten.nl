@@ -1,7 +1,7 @@
 ---
-title: 'My new site caused 3 npm packages and my best side project yet'
-publishedAt: '31-12-2025'
-summary: 'Scope creep and side projects are always a risk for personal projects. But I might have overdone it this time.'
+title: '02. New year, new site & over-engineering'
+publishedAt: '2025-12-31'
+summary: 'The story of how I decided to rebuild my site yet again, and why I chose the stack I did.'
 tags: ["Engineering", "Blog", "Personal"]
 ---
 
