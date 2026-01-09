@@ -1,0 +1,213 @@
+'use client'
+
+import { Btwfyi, type CategoryConfig } from 'btwfyi/react'
+import { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
+
+const demoCategories: CategoryConfig[] = [
+    {
+        id: 'today',
+        displayName: '🎯 Today',
+        items: [
+            { text: 'Finish blog post about task management #writing !high', action: 'add' },
+            { text: 'Update dotfiles with new shell aliases #personal', action: 'update' },
+        ],
+    },
+    {
+        id: 'this-week',
+        displayName: '📅 This Week',
+        items: [
+            { text: 'Ship new feature for personal site #development', action: 'add' },
+            { text: 'Learn about React Server Components #learning', action: 'research' },
+            { text: 'Optimize build performance #performance !medium', action: 'optimize' },
+            { text: 'Write README for btwfyi package #docs', action: 'update' },
+        ],
+    },
+    {
+        id: 'someday',
+        displayName: '� Someday',
+        items: [
+            { text: 'Experiment with Rust for CLI tools #learning', action: 'research' },
+            { text: 'Build GitHub automation scripts #side-project', action: 'add' },
+            { text: 'Refactor old projects to TypeScript #refactor', action: 'refactor' },
+            { text: 'Create video tutorial series #content', action: 'add' },
+        ],
+    },
+]
+
+export function BtwfyiDemo() {
+    const [enabled, setEnabled] = useState(true)
+    const [currentCategory, setCurrentCategory] = useState('today')
+
+    return (
+        <div className="not-prose my-8 space-y-6">
+            {/* Demo Controls */}
+            <div className="bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
+                            Live Demo
+                        </h3>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            Try the btwfyi overlay in action. Toggle visibility and switch categories.
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setEnabled(!enabled)}
+                        className="flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-neutral-100 text-neutral-100 dark:text-neutral-900 rounded-lg hover:opacity-90 transition-opacity font-medium"
+                    >
+                        {enabled ? (
+                            <>
+                                <EyeOff className="w-4 h-4" />
+                                Hide Overlay
+                            </>
+                        ) : (
+                            <>
+                                <Eye className="w-4 h-4" />
+                                Show Overlay
+                            </>
+                        )}
+                    </button>
+                </div>
+
+                {/* Category Selector */}
+                <div className="flex flex-wrap gap-2">
+                    {demoCategories.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setCurrentCategory(cat.id)}
+                            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${currentCategory === cat.id
+                                ? 'bg-neutral-900 dark:bg-neutral-100 text-neutral-100 dark:text-neutral-900'
+                                : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-300 dark:hover:bg-neutral-600'
+                                }`}
+                        >
+                            {cat.displayName}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Info Box */}
+                <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-md p-4">
+                    <p className="text-sm text-blue-900 dark:text-blue-100">
+                        <span className="font-semibold">💡 Pro Tip:</span> Press{' '}
+                        <kbd className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 rounded text-xs font-mono">
+                            Alt + K
+                        </kbd>{' '}
+                        to open the command palette and search across all tasks.
+                    </p>
+                </div>
+            </div>
+
+            {/* Demo Preview Area */}
+            <div className="relative border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-lg overflow-hidden min-h-[400px] bg-gradient-to-br from-white to-neutral-50 dark:from-neutral-950 dark:to-neutral-900">
+                {/* Mock Code Editor Background */}
+                <div className="absolute inset-0 p-6 font-mono text-sm text-neutral-400 dark:text-neutral-600 space-y-2">
+                    <div className="text-purple-600 dark:text-purple-400">
+                        <span className="text-neutral-500">{'//'}</span> Your development environment
+                    </div>
+                    <div>
+                        <span className="text-blue-600 dark:text-blue-400">const</span>{' '}
+                        <span className="text-yellow-600 dark:text-yellow-400">tasks</span> ={' '}
+                        <span className="text-green-600 dark:text-green-400">'always visible'</span>;
+                    </div>
+                    <div className="mt-8 text-neutral-400 dark:text-neutral-600">
+                        <span className="text-neutral-500">{'//'}</span> btwfyi keeps your tasks in view
+                    </div>
+                    <div>
+                        <span className="text-blue-600 dark:text-blue-400">function</span>{' '}
+                        <span className="text-yellow-600 dark:text-yellow-400">stayFocused</span>() {'{'}
+                    </div>
+                    <div className="pl-4">
+                        <span className="text-blue-600 dark:text-blue-400">return</span>{' '}
+                        <span className="text-green-600 dark:text-green-400">'No more context switching'</span>;
+                    </div>
+                    <div>{'}'}</div>
+                </div>
+
+                {/* btwfyi Overlay */}
+                {enabled && (
+                    <div className="relative z-10">
+                        <Btwfyi
+                            category={currentCategory}
+                            categories={demoCategories}
+                            enabled={enabled}
+                        />
+                    </div>
+                )}
+
+                {/* Overlay Disabled State */}
+                {!enabled && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/5 dark:bg-neutral-100/5 backdrop-blur-sm">
+                        <div className="text-center space-y-2">
+                            <EyeOff className="w-12 h-12 mx-auto text-neutral-400 dark:text-neutral-600" />
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                                Overlay is hidden. Click "Show Overlay" to see it in action.
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/30 dark:to-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+                    <h4 className="font-semibold text-purple-900 dark:text-purple-100 mb-2">
+                        🎨 Smart Syntax
+                    </h4>
+                    <p className="text-sm text-purple-700 dark:text-purple-200">
+                        Natural language parsing: #tags, !priorities, and date recognition
+                    </p>
+                </div>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                    <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                        🤖 AI Enhanced
+                    </h4>
+                    <p className="text-sm text-blue-700 dark:text-blue-200">
+                        Local AI via Chrome's Gemini Nano or cloud AI with Grok
+                    </p>
+                </div>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/30 dark:to-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                    <h4 className="font-semibold text-green-900 dark:text-green-100 mb-2">
+                        📦 Import/Export
+                    </h4>
+                    <p className="text-sm text-green-700 dark:text-green-200">
+                        Markdown, JSON, or Slack format. Your data, your way.
+                    </p>
+                </div>
+            </div>
+
+            {/* Installation Instructions */}
+            <div className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg p-6">
+                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
+                    Ready to try it?
+                </h4>
+                <div className="bg-neutral-900 dark:bg-neutral-950 rounded-md p-4 font-mono text-sm text-neutral-100 overflow-x-auto">
+                    <div className="text-green-400"># Install btwfyi</div>
+                    <div className="mt-2">npm install btwfyi</div>
+                    <div className="mt-1 text-neutral-500"># or</div>
+                    <div>pnpm add btwfyi</div>
+                </div>
+                <div className="mt-4 flex gap-3">
+                    <a
+                        href="https://github.com/remcostoeten/btwfyi"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-900 dark:bg-neutral-100 text-neutral-100 dark:text-neutral-900 rounded-lg hover:opacity-90 transition-opacity font-medium text-sm"
+                    >
+                        View on GitHub →
+                    </a>
+                    <a
+                        href="https://www.npmjs.com/package/btwfyi"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-200 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 rounded-lg hover:bg-neutral-300 dark:hover:bg-neutral-600 transition-colors font-medium text-sm"
+                    >
+                        npm Package →
+                    </a>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default BtwfyiDemo

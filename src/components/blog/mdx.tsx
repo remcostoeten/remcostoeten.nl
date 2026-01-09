@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
 import { CodeBlock } from '../ui/code-block'
 import { CollapsibleMedia } from './collapsible-media'
+import { BtwfyiDemo } from './btwfyi-demo'
 import {
   Notice,
   NoticeAlert,
@@ -109,6 +110,7 @@ let components = {
   h6: createHeading(6),
   Image: RoundedImage,
   CollapsibleMedia,
+  BtwfyiDemo,
   a: CustomLink,
   Notice,
   NoticeAlert,
