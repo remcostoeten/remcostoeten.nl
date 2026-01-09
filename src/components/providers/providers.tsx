@@ -11,6 +11,7 @@ import { PostHogProvider } from '@/components/providers/posthog-provider'
 import { DevWidget } from '../../../tools/dev-menu'
 import { useSession } from '@/lib/auth-client'
 import { signOut } from '@/lib/auth-client'
+import { ThemeSwitch } from '@/components/theme-switch'
 
 const Analytics = lazy(() => import('@vercel/analytics/react').then(m => ({ default: m.Analytics })))
 const SpeedInsights = lazy(() => import('@vercel/speed-insights/next').then(m => ({ default: m.SpeedInsights })))

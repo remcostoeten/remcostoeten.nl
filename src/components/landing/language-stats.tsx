@@ -8,15 +8,20 @@ import {
   SiLua,
   SiRust,
   SiZig,
-  SiGnubash,
+import {
+  SiGo,
+  SiPython,
+  SiLua,
+  SiRust,
+  SiZig,
   SiTypescript,
   SiJavascript,
-  SiNodedotjs
+  SiNodedotjs,
+  SiShell
 } from 'react-icons/si'
 import { githubService } from '@/server/services/github'
 import { Github, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { AnimatedNumber } from '../ui/effects/animated-number'
 
 type Language = {
   name: string
@@ -25,16 +30,16 @@ type Language = {
   percentage: number
 }
 
-const LANGUAGE_META: Record<string, { icon: any, color: string }> = {
-  "TypeScript": { icon: SiTypescript, color: "#3178c6" },
-  "JavaScript": { icon: SiJavascript, color: "#f1e05a" },
-  "Go": { icon: SiGo, color: "#00add8" },
-  "Python": { icon: SiPython, color: "#3572A5" },
-  "Lua": { icon: SiLua, color: "#000080" },
-  "Rust": { icon: SiRust, color: "#dea584" },
-  "Zig": { icon: SiZig, color: "#ec915c" },
-  "Node.js": { icon: SiNodedotjs, color: "#339933" },
-  "Shell": { icon: SiGnubash, color: "#89e051" },
+const LANGUAGE_META: Record<string, { icon: any; color: string }> = {
+  'TypeScript': { icon: SiTypescript, color: '#3178c6' },
+  'JavaScript': { icon: SiJavascript, color: '#f1e05a' },
+  'Go': { icon: SiGo, color: '#00add8' },
+  'Python': { icon: SiPython, color: '#3572A5' },
+  'Lua': { icon: SiLua, color: '#000080' },
+  'Rust': { icon: SiRust, color: '#dea584' },
+  'Zig': { icon: SiZig, color: '#ec915c' },
+  'Node.js': { icon: SiNodedotjs, color: '#339933' },
+  'Shell': { icon: SiShell, color: '#89e051' },
 }
 
 export function LanguageStats() {
@@ -88,14 +93,14 @@ export function LanguageStats() {
   return (
     <div className="space-y-6 pt-4 pb-8 px-4">
       <div className="space-y-2">
-        <p className="prose-sm text-muted-foreground/80 leading-relaxed max-w-xl">
+        <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-xl">
           Beyond my primary stack, I'm constantly exploring new paradigms and languages.
           This breakdown reflects my activity across <span className="text-foreground/90 font-medium">GitHub</span>, from production tools to experimental playgrounds.
         </p>
       </div>
 
       <div className="flex flex-wrap gap-2.5">
-        {languages.map((lang, index) => {
+        {languages.map((lang) => {
           const meta = LANGUAGE_META[lang.name] || { icon: SiTypescript, color: '#888' }
           const Icon = meta.icon
 
@@ -105,7 +110,7 @@ export function LanguageStats() {
               onMouseEnter={() => setHoveredLang(lang.name)}
               onMouseLeave={() => setHoveredLang(null)}
               className={cn(
-                "group relative flex items-center  gap-2.5 px-3 py-1.5 rounded-md transition-all duration-300",
+                "group relative flex items-center gap-2.5 px-3 py-1.5 rounded-md transition-all duration-300",
                 "bg-secondary/30 hover:bg-secondary/50 border border-transparent",
                 "cursor-default overflow-visible"
               )}
@@ -121,11 +126,7 @@ export function LanguageStats() {
                 {lang.name}
               </span>
               <span className="text-[10px] text-muted-foreground/40 tabular-nums">
-                <AnimatedNumber 
-                  value={lang.count} 
-                  duration={800 + (index * 150)} 
-                  initialProgress={0} 
-                />
+                {lang.count}
               </span>
 
               <AnimatePresence>

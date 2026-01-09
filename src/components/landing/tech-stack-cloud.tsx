@@ -11,12 +11,12 @@ import {
   SiNodedotjs,
   SiPostgresql,
   SiTailwindcss,
-  SiDocker,
-  SiGithubactions,
-  SiBun,
+  SiDrizzle,
+  SiGnubash,
   SiHono,
   SiTurso,
-  SiCss3,
+  SiSass,
+  SiStyledcomponents,
 } from 'react-icons/si'
 
 type TechItem = {
@@ -28,12 +28,12 @@ type TechItem = {
 const LOGOS: TechItem[] = [
   { name: 'react', label: 'React', Icon: SiReact },
   { name: 'next', label: 'Next.js', Icon: SiNextdotjs },
-  { name: 'bun', label: 'Bun', Icon: SiBun },
   { name: 'typescript', label: 'TypeScript', Icon: SiTypescript },
-  { name: 'styling', label: 'CSS / Tailwind', Icon: [SiCss3, SiTailwindcss] },
+  { name: 'bash', label: 'Bash', Icon: SiGnubash },
+  { name: 'styling', label: '(S)CSS / TW / Styled', Icon: [SiSass, SiTailwindcss, SiStyledcomponents] },
   { name: 'node-hono', label: 'Node.js / Hono', Icon: [SiNodedotjs, SiHono] },
   { name: 'postgres-libsql', label: 'Postgres / LibSQL', Icon: [SiPostgresql, SiTurso] },
-  { name: 'tools', label: 'Docker / CI/CD', Icon: [SiDocker, SiGithubactions] },
+  { name: 'drizzle', label: 'Drizzle ORM', Icon: SiDrizzle },
 ]
 
 const CARD_STYLES = [
@@ -146,26 +146,20 @@ function TechCard({
     offset: ['start end', 'end start'],
   })
 
-  const { scrollY } = useScroll()
-
+  // We rotate by 180 degrees for each icon skip.
   const rawRotation = useTransform(
-    [scrollYProgress, scrollY],
-    ([p, y]: number[]) => {
-      if (y < 50) return 0
-      
-      const range = 0.2
-      const start = 0.4
-      
-      const progress = Math.min(Math.max((p - start) / range, 0), 1)
-      return progress * (Icons.length - 1) * 180
-    }
+    scrollYProgress,
+    [0, 1],
+    [0, (Icons.length - 1) * 180]
   )
 
+  // Force rotation to snap to 180 degree increments
   const steppedRotation = useTransform(rawRotation, (v) => Math.round(v / 180) * 180)
 
-  const rotationX = useSpring(steppedRotation, { stiffness: 222, damping: 45 })
+  const rotationX = useSpring(steppedRotation, { stiffness: 300, damping: 35 })
 
   useMotionValueEvent(rotationX, "change", (latest) => {
+    // Snap to nearest icon index at the 90-degree points
     const newIndex = Math.floor((latest + 90) / 180) % Icons.length
     if (newIndex !== index) {
       setIndex(newIndex)

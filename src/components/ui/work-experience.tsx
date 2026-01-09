@@ -250,6 +250,7 @@ export function ExperiencePositionItem({
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} asChild>
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
+<<<<<<< HEAD
         <div className="flex items-center gap-2 text-sm text-muted-foreground/80 pl-10 mb-1">
           {position.employmentType && (
             <>
