@@ -67,7 +67,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              (function(){try{if(window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark')}catch(e){}})();
+              (function(){
+                try {
+                  var savedTheme = localStorage.getItem('theme');
+                  if (savedTheme === 'dark' || !savedTheme) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch(e) {}
+              })();
             `,
           }}
         />

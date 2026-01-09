@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Plus } from 'lucide-react'
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useMotionValueEvent } from 'framer-motion'
+import { useEffect, useState, useRef } from 'react'
 import {
   SiReact,
   SiTypescript,
@@ -11,24 +12,28 @@ import {
   SiPostgresql,
   SiTailwindcss,
   SiDrizzle,
-  SiDocker
+  SiGnubash,
+  SiHono,
+  SiTurso,
+  SiSass,
+  SiStyledcomponents,
 } from 'react-icons/si'
 
 type TechItem = {
   name: string
   label: string
-  Icon: React.ComponentType<{ className?: string }>
+  Icon: React.ComponentType<{ className?: string }> | React.ComponentType<{ className?: string }>[]
 }
 
 const LOGOS: TechItem[] = [
-  { name: 'next', label: 'Next.js', Icon: SiNextdotjs },
   { name: 'react', label: 'React', Icon: SiReact },
+  { name: 'next', label: 'Next.js', Icon: SiNextdotjs },
   { name: 'typescript', label: 'TypeScript', Icon: SiTypescript },
-  { name: 'tailwind', label: 'Tailwind CSS', Icon: SiTailwindcss },
-  { name: 'node', label: 'Node.js', Icon: SiNodedotjs },
-  { name: 'postgres', label: 'PostgreSQL', Icon: SiPostgresql },
+  { name: 'bash', label: 'Bash', Icon: SiGnubash },
+  { name: 'styling', label: '(S)CSS / TW / Styled', Icon: [SiSass, SiTailwindcss, SiStyledcomponents] },
+  { name: 'node-hono', label: 'Node.js / Hono', Icon: [SiNodedotjs, SiHono] },
+  { name: 'postgres-libsql', label: 'Postgres / LibSQL', Icon: [SiPostgresql, SiTurso] },
   { name: 'drizzle', label: 'Drizzle ORM', Icon: SiDrizzle },
-  { name: 'docker', label: 'Docker', Icon: SiDocker },
 ]
 
 const CARD_STYLES = [
@@ -132,48 +137,71 @@ function TechCard({
   children,
   ...props
 }: TechCardProps) {
-  const [showLabel, setShowLabel] = useState(false)
-  const Icon = logo.Icon
+  const Icons = Array.isArray(logo.Icon) ? logo.Icon : [logo.Icon]
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [index, setIndex] = useState(0)
 
-  const handleToggle = () => {
-    setShowLabel(prev => !prev)
-  }
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start end', 'end start'],
+  })
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault()
-      handleToggle()
+  // We rotate by 180 degrees for each icon skip.
+  const rawRotation = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [0, (Icons.length - 1) * 180]
+  )
+
+  // Force rotation to snap to 180 degree increments
+  const steppedRotation = useTransform(rawRotation, (v) => Math.round(v / 180) * 180)
+
+  const rotationX = useSpring(steppedRotation, { stiffness: 300, damping: 35 })
+
+  useMotionValueEvent(rotationX, "change", (latest) => {
+    // Snap to nearest icon index at the 90-degree points
+    const newIndex = Math.floor((latest + 90) / 180) % Icons.length
+    if (newIndex !== index) {
+      setIndex(newIndex)
     }
-  }
+  })
+
+  const ActiveIcon = Icons[index]
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         'flex items-center justify-center bg-background px-4 py-8 md:p-8 relative overflow-hidden group min-h-[120px]',
         className
       )}
+      style={{ perspective: '1000px' }}
       {...props}
     >
-      <div className="relative flex flex-col items-center gap-2">
-        <button
-          type="button"
-          onClick={handleToggle}
-          onKeyDown={handleKeyDown}
-          aria-label={`${logo.label}${showLabel ? ' - tap to hide name' : ' - tap to show name'}`}
-          aria-pressed={showLabel}
-          className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm p-1 -m-1"
-        >
-          <Icon
-            className="w-8 h-8 md:w-10 md:h-10 text-foreground/60 group-hover:text-foreground transition-colors duration-200"
-          />
-        </button>
+      <div className="relative flex flex-col items-center gap-2 h-16 justify-end">
+        <div className="rounded-sm p-1 -m-1 relative h-10 w-10 flex items-center justify-center mb-1">
+          <motion.div
+            style={{
+              rotateX: rotationX,
+              transformStyle: 'preserve-3d',
+            }}
+            className="w-full h-full flex items-center justify-center"
+          >
+            <div
+              className="w-full h-full relative"
+              style={{
+                backfaceVisibility: 'hidden',
+                transform: index % 2 === 1 ? 'rotateX(180deg)' : 'none'
+              }}
+            >
+              <ActiveIcon
+                className="w-8 h-8 md:w-10 md:h-10 text-foreground/60 group-hover:text-foreground transition-colors duration-200"
+              />
+            </div>
+          </motion.div>
+        </div>
 
-        <div
-          className={cn(
-            "text-[10px] font-medium text-muted-foreground whitespace-nowrap absolute -bottom-6 w-full text-center transition-all duration-200 ease-out",
-            showLabel ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
-          )}
-        >
+        <div className="text-[10px] font-medium text-muted-foreground whitespace-nowrap text-center h-4">
           {logo.label}
         </div>
       </div>

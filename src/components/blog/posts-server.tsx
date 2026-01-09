@@ -1,4 +1,4 @@
-'use server'
+
 
 import { getBlogPosts, getAllBlogPosts } from '@/utils/utils'
 import { isAdmin } from '@/utils/is-admin'

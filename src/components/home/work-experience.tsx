@@ -1,7 +1,6 @@
 import type { ExperienceItemType } from "@/components/ui/work-experience"
 import { WorkExperience } from "@/components/ui/work-experience"
 import { Section } from "@/components/ui/section"
-import { Briefcase } from "lucide-react"
 
 const WORK_EXPERIENCE: ExperienceItemType[] = [
   {
@@ -10,14 +9,15 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
     positions: [
       {
         id: "brainstud-frontend",
-        title: "Frontend Developer",
+        title: "Front End Developer",
         employmentPeriod: "2025 — present",
         employmentType: "Full-time",
         icon: "education",
-        description: `- Building modern learning platforms and educational tools
-- Developing scalable frontend architecture with React and Next.js
-- Collaborating with cross-functional teams to deliver user-centric solutions`,
-        skills: [],
+        description: `
+- Building a modern e-learning platform with Next.js, TypeScript and React Query.
+- Working under the Shape Up methodology delivering scoped and iterative features.
+- Collaborating with a Laravel backend team through a custom REST layer.`,
+        skills: ['Next.js', 'TypeScript', 'React Query', 'REST API', 'Shape Up'],
         isExpanded: true,
       },
     ],
@@ -29,14 +29,16 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
     positions: [
       {
         id: "pleio-frontend",
-        title: "Frontend Developer",
+        title: "Front End Developer",
         employmentPeriod: "2023 — 2025",
         employmentType: "Full-time",
         icon: "business",
-        description: `- Developed and maintained government-focused collaboration platforms
-- Built accessible and performant web applications
-- Implemented modern frontend practices and design systems`,
-        skills: [],
+        description: `
+- Developed fully open source government platforms using React, GraphQL and Django.
+- Rebuilt the FSV fraud detection platform in JavaScript, SCSS and Django.
+- Improved reliability and maintainability of a core intranet site builder used across government institutions.
+- Implemented WCAG AA compliance and accessibility standards for government applications.`,
+        skills: ['React', 'GraphQL', 'Django', 'SCSS', 'Vanilla JS', 'WCAG AA'],
       },
     ],
   },
@@ -46,14 +48,14 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
     positions: [
       {
         id: "lasaulec-frontend",
-        title: "Frontend Developer",
+        title: "Front End Developer",
         employmentPeriod: "2022 — 2023",
         employmentType: "Full-time",
         icon: "design",
-        description: `- Created custom web solutions for diverse clients
-- Worked on e-commerce and marketing websites
-- Collaborated with designers to implement pixel-perfect interfaces`,
-        skills: [],
+        description: `
+- Rebuilt the complete webshop front-end using Razor, SCSS and JavaScript.
+- Delivered production features autonomously for React-based internal applications.`,
+        skills: ['React', 'Razor', 'JavaScript', 'SCSS'],
       },
     ],
   },
@@ -63,14 +65,13 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
     positions: [
       {
         id: "tickles-developer",
-        title: "Web Developer",
+        title: "Front End Developer",
         employmentPeriod: "2016 — 2022",
         employmentType: "Full-time",
         icon: "code",
-        description: `- Started career as junior developer and grew to senior role
-- Built numerous websites and web applications for clients
-- Gained expertise in full-stack development and project delivery`,
-        skills: [],
+        description: `
+- Built custom Magento 2 webshops for B2B and B2C clients using PHTML, BEM SCSS and JavaScript.`,
+        skills: ['Magento 2', 'PHTML', 'BEM SCSS', 'JavaScript'],
       },
     ],
   },
@@ -80,12 +81,12 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
     positions: [
       {
         id: "education-graphic-design",
-        title: "Graphic design",
+        title: "Graphic Design - Web Development",
         employmentPeriod: "2012 — 2016",
         employmentType: "Education",
         icon: "education",
-        description: `Sneek`,
-        skills: [],
+        description: `Focused on the intersection of visual communication and technical implementation, covering everything from advanced UI/UX principles and accessibility to full-cycle web design and development.`,
+        skills: ['Photoshop', 'Illustrator', 'InDesign', 'After Effects', 'Web Design & Development', "Accessibility", "UI/UX"],
       },
     ],
   },
