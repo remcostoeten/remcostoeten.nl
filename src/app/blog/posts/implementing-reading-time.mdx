@@ -1,0 +1,205 @@
+---
+title: 'Implementing Reading Time in Your Blog'
+publishedAt: '2024-12-19'
+summary: 'A step-by-step guide to adding reading time estimation to your blog posts, enhancing user experience with clear content length indicators.'
+image: '/og?title=Implementing%20Reading%20Time'
+keywords: 'blog development, reading time, user experience, web development, Next.js'
+---
+
+Reading time estimation is a simple yet effective feature that helps users understand how long it will take to read an article. It sets expectations and improves user experience by providing a quick indicator of content length. In this post, we'll walk through implementing reading time functionality in a Next.js blog built with MDX.
+
+## Understanding Reading Time Calculation
+
+Reading time is typically calculated based on the average reading speed, which is approximately 200 words per minute for adults. The formula is straightforward:
+
+```
+Reading Time (minutes) = Total Words / Words Per Minute
+```
+
+However, when dealing with markdown content, we need to account for code blocks, markdown syntax, and other non-readable elements that shouldn't be counted in the word calculation.
+
+## Step 1: Create the Utility Function
+
+The first step is to create a utility function that calculates reading time from markdown content. This function should:
+
+- Remove code blocks (both inline and block-level)
+- Strip markdown syntax
+- Count actual words
+- Apply the reading speed formula
+
+```ts
+// src/modules/blog/utils/calculate-reading-time.ts
+
+/**
+ * @name calculateReadingTime
+ * @description Calculates estimated reading time in minutes based on content length.
+ * Uses average reading speed of 200 words per minute.
+ */
+export function calculateReadingTime(content: string): number {
+  // Remove markdown syntax and code blocks for accurate word count
+  const text = content
+    .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+    .replace(/`[^`]+`/g, '') // Remove inline code
+    .replace(/[#*\[\]()]/g, '') // Remove markdown syntax
+    .replace(/\s+/g, ' ') // Normalize whitespace
+    .trim()
+  
+  const words = text.split(/\s+/).filter(word => word.length > 0)
+  const wordsPerMinute = 200 // Average reading speed
+  const minutes = Math.ceil(words.length / wordsPerMinute)
+  
+  return Math.max(1, minutes) // At least 1 minute
+}
+```
+
+Key considerations in this implementation:
+
+- **Code block removal**: We use regex to remove both fenced code blocks (```) and inline code (`)
+- **Markdown cleanup**: We strip common markdown characters that don't contribute to reading time
+- **Word counting**: We split on whitespace and filter out empty strings
+- **Minimum time**: We ensure at least 1 minute is returned, even for very short posts
+
+## Step 2: Integrate with Query Functions
+
+Next, we need to calculate reading time when fetching blog posts. This can be done in two ways:
+
+### Option A: Calculate in Query Functions
+
+Modify your query functions to include reading time:
+
+```ts
+// src/modules/blog/queries/get-all-blog-posts.ts
+
+import { getMDXData } from '../utils/mdx-helpers'
+import { calculateReadingTime } from '../utils'
+
+const BLOG_POSTS_DIR = path.join(process.cwd(), 'src', 'app', 'blog', 'posts')
+
+export function getAllBlogPosts() {
+  const posts = getMDXData(BLOG_POSTS_DIR)
+  return posts.map(post => ({
+    ...post,
+    readingTime: calculateReadingTime(post.content)
+  }))
+}
+```
+
+### Option B: Calculate On-the-Fly
+
+Alternatively, calculate reading time directly in components when needed:
+
+```ts
+// In your component
+import { calculateReadingTime } from '@/modules/blog/utils'
+
+const readingTime = calculateReadingTime(post.content)
+```
+
+The first approach is more efficient if you're displaying reading time in multiple places, as it calculates once per post. The second approach is more flexible if reading time is only needed in specific contexts.
+
+## Step 3: Display Reading Time
+
+Once calculated, display reading time in your blog components. Here are two common places:
+
+### Blog Post Detail Page
+
+In the individual post page, add reading time next to the publication date:
+
+```tsx
+<div className="flex justify-between items-center mt-2 mb-8 text-sm">
+  <div className="flex items-center gap-4">
+    <p className="text-sm text-neutral-600 dark:text-neutral-400">
+      {formatDate(post.metadata.publishedAt)}
+    </p>
+    {post.readingTime && (
+      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        {post.readingTime} min read
+      </p>
+    )}
+  </div>
+</div>
+```
+
+### Blog Post Listing
+
+In the blog listing page, show reading time as a subtle indicator:
+
+```tsx
+<div className="w-full flex flex-col md:flex-row space-x-0 md:space-x-2">
+  <p className="text-neutral-600 dark:text-neutral-400 w-[100px] tabular-nums">
+    {formatDate(post.metadata.publishedAt, false)}
+  </p>
+  <div className="flex-1">
+    <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
+      {post.metadata.title}
+    </p>
+    {post.readingTime && (
+      <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">
+        {post.readingTime} min read
+      </p>
+    )}
+  </div>
+</div>
+```
+
+## Advanced Considerations
+
+### Adjustable Reading Speed
+
+You might want to make reading speed configurable for different content types or user preferences:
+
+```ts
+export function calculateReadingTime(
+  content: string, 
+  wordsPerMinute: number = 200
+): number {
+  // ... calculation logic
+  const minutes = Math.ceil(words.length / wordsPerMinute)
+  return Math.max(1, minutes)
+}
+```
+
+### Handling Different Content Types
+
+Technical content with lots of code might need different handling:
+
+```ts
+export function calculateReadingTime(
+  content: string,
+  options: { 
+    wordsPerMinute?: number
+    excludeCode?: boolean 
+  } = {}
+): number {
+  const { wordsPerMinute = 200, excludeCode = true } = options
+  
+  let text = content
+  if (excludeCode) {
+    text = text
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/`[^`]+`/g, '')
+  }
+  
+  // ... rest of calculation
+}
+```
+
+### Caching Considerations
+
+Since reading time is calculated from static content, it's safe to calculate at build time. With Next.js static generation, this happens during the build process, so there's no runtime performance impact.
+
+## Benefits of Reading Time
+
+Implementing reading time provides several benefits:
+
+1. **User Expectations**: Readers know upfront how long an article will take
+2. **Better UX**: Helps users decide whether to read now or save for later
+3. **Engagement**: Can increase engagement by setting clear expectations
+4. **Accessibility**: Provides context about content length
+
+## Conclusion
+
+Adding reading time to your blog is a straightforward enhancement that improves user experience. By creating a simple utility function and integrating it into your existing query and component structure, you can provide valuable information to your readers with minimal effort.
+
+The implementation follows clean architecture principles by keeping the calculation logic in a utility function, making it reusable and testable. Whether you calculate it in queries or on-the-fly in components depends on your specific needs, but both approaches work well with Next.js's static generation capabilities.
+
