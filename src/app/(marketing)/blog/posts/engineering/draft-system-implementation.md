@@ -1,6 +1,7 @@
+```
 ---
 title: 'Building a draft system for markdown files in Next.js'
-publishedAt: '16-12-2025'
+publishedAt: '2025-12-16'
 summary: 'Running a blog through filesystem is great, although accidental commits of unfinished posts are bound to happen sooner or later. Here's how I implemented a draft system using MDX frontmatter'
 tags: ["Engineering", "Next.js", "Guide", "Frontmatter"]
 draft: true

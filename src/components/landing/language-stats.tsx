@@ -1,9 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { SiGo, SiPython, SiLua, SiRust, SiZig, SiTypescript, SiJavascript, SiNodedotjs, SiShell } from 'react-icons/si'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  SiGo,
+  SiPython,
+  SiLua,
+  SiRust,
+  SiZig,
+  SiTypescript,
+  SiJavascript,
+  SiNodedotjs,
+  SiShell
+} from 'react-icons/si'
 import { githubService } from '@/server/services/github'
-import { Github } from 'lucide-react'
+import { Github, ExternalLink } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 type Language = {
   name: string
@@ -12,34 +24,27 @@ type Language = {
   percentage: number
 }
 
-const LANGUAGE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  'Go': SiGo,
-  'Python': SiPython,
-  'Lua': SiLua,
-  'Rust': SiRust,
-  'Zig': SiZig,
-  'TypeScript': SiTypescript,
-  'JavaScript': SiJavascript,
-  'Node.js': SiNodedotjs,
-  'Shell': SiShell,
-}
-
-const getLanguageIcon = (language: string): React.ComponentType<{ className?: string }> => {
-  const normalizedLang = language.toLowerCase()
-  const iconKey = Object.keys(LANGUAGE_ICONS).find(key => normalizedLang === key.toLowerCase())
-
-  return iconKey ? LANGUAGE_ICONS[iconKey] : SiTypescript
+const LANGUAGE_META: Record<string, { icon: any; color: string }> = {
+  'TypeScript': { icon: SiTypescript, color: '#3178c6' },
+  'JavaScript': { icon: SiJavascript, color: '#f1e05a' },
+  'Go': { icon: SiGo, color: '#00add8' },
+  'Python': { icon: SiPython, color: '#3572A5' },
+  'Lua': { icon: SiLua, color: '#000080' },
+  'Rust': { icon: SiRust, color: '#dea584' },
+  'Zig': { icon: SiZig, color: '#ec915c' },
+  'Node.js': { icon: SiNodedotjs, color: '#339933' },
+  'Shell': { icon: SiShell, color: '#89e051' },
 }
 
 export function LanguageStats() {
   const [languages, setLanguages] = useState<Language[]>([])
   const [loading, setLoading] = useState(true)
+  const [hoveredLang, setHoveredLang] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchLanguages = async () => {
       try {
         const languageMap = await githubService.getLanguageStats()
-
         const totalRepos = Array.from(languageMap.values()).reduce((sum, lang) => sum + lang.count, 0)
 
         const sortedLanguages = Array.from(languageMap.entries())
@@ -77,55 +82,111 @@ export function LanguageStats() {
     )
   }
 
-  if (languages.length === 0) {
-    return null
-  }
+  if (languages.length === 0) return null
 
   return (
-    <div className="space-y-4 pt-4 pb-8 px-4">
-      <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-xl">
-        Besides my professional stack, I like to tinker with various tooling and languages.
-        Here's what I've been using across my public repositories.
-      </p>
+    <div className="space-y-6 pt-4 pb-8 px-4">
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-xl">
+          Beyond my primary stack, I'm constantly exploring new paradigms and languages.
+          This breakdown reflects my activity across <span className="text-foreground/90 font-medium">GitHub</span>, from production tools to experimental playgrounds.
+        </p>
+      </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-2.5">
         {languages.map((lang) => {
-          const Icon = getLanguageIcon(lang.name)
-          const repoList = lang.repos.slice(0, 5).map(r => r.split('/').pop()).join(', ')
-          const moreCount = lang.repos.length > 5 ? ` +${lang.repos.length - 5} more` : ''
+          const meta = LANGUAGE_META[lang.name] || { icon: SiTypescript, color: '#888' }
+          const Icon = meta.icon
 
           return (
             <div
               key={lang.name}
-              className="group relative flex items-center gap-2.5 px-3.5 py-2 bg-muted/40 hover:bg-muted/70 rounded-lg transition-colors cursor-default border border-transparent hover:border-border/50"
+              onMouseEnter={() => setHoveredLang(lang.name)}
+              onMouseLeave={() => setHoveredLang(null)}
+              className={cn(
+                "group relative flex items-center gap-2.5 px-3 py-1.5 rounded-md transition-all duration-300",
+                "bg-secondary/30 hover:bg-secondary/50 border border-transparent",
+                "cursor-default overflow-visible"
+              )}
+              style={{
+                borderColor: hoveredLang === lang.name ? `${meta.color}40` : 'transparent',
+              }}
             >
-              <Icon className="w-4 h-4 text-foreground/60 group-hover:text-foreground/80 transition-colors" />
-              <span className="text-sm font-medium text-foreground/90">
+              <Icon
+                className="w-3.5 h-3.5 transition-colors duration-300"
+                style={{ color: hoveredLang === lang.name ? meta.color : undefined }}
+              />
+              <span className="text-xs font-medium text-foreground/80 group-hover:text-foreground">
                 {lang.name}
               </span>
-              <span className="text-xs text-muted-foreground/50 tabular-nums">
-                {lang.count} {lang.count === 1 ? 'repo' : 'repos'}
+              <span className="text-[10px] text-muted-foreground/40 tabular-nums">
+                {lang.count}
               </span>
 
-              {/* Tooltip */}
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2.5 bg-popover border border-border rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 min-w-[200px] max-w-[300px]">
-                <p className="text-xs font-semibold text-foreground mb-1.5">
-                  {lang.name} repositories
-                </p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  {repoList}{moreCount}
-                </p>
-                <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-border" />
-              </div>
+              <AnimatePresence>
+                {hoveredLang === lang.name && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="absolute bottom-full left-0 mb-3 z-50 pointer-events-auto"
+                  >
+                    <div className="bg-popover/95 backdrop-blur-md border border-border/50 rounded-lg shadow-2xl p-3 min-w-[220px] max-w-[280px]">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                          Top Projects
+                        </span>
+                        <div
+                          className="size-1.5 rounded-full"
+                          style={{ backgroundColor: meta.color }}
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        {lang.repos.slice(0, 5).map((repo) => {
+                          const name = repo.split('/').pop()
+                          return (
+                            <a
+                              key={repo}
+                              href={`https://github.com/${repo}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-between group/repo px-2 py-1.5 rounded-md hover:bg-foreground/5 transition-colors"
+                            >
+                              <span className="text-[11px] text-foreground/70 group-hover/repo:text-foreground truncate mr-2">
+                                {name}
+                              </span>
+                              <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover/repo:opacity-40 transition-opacity shrink-0" />
+                            </a>
+                          )
+                        })}
+                        {lang.repos.length > 5 && (
+                          <div className="px-2 pt-1">
+                            <span className="text-[10px] text-muted-foreground/40 italic">
+                              + {lang.repos.length - 5} more projects
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Arrow */}
+                      <div className="absolute top-[calc(100%-1px)] left-6 border-[6px] border-transparent border-t-popover/95" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )
         })}
       </div>
 
-      <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground/40 pt-4">
-        <Github className="w-3 h-3" />
-        <span>Pulled live from GitHub API</span>
-      </p>
+      <div className="flex items-center justify-between pt-2 border-t border-border/5">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground/30 font-mono">
+          <Github className="w-3 h-3" />
+          <span>Real-time GitHub Metrics</span>
+        </div>
+      </div>
     </div>
   )
 }

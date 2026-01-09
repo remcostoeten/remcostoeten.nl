@@ -69,7 +69,6 @@ export function WorkExperience({
 }) {
   const [showAll, setShowAll] = React.useState(false);
 
-  // Separate experiences into categories
   const currentJob = experiences.find(exp => exp.isCurrentEmployer);
   const education = experiences.find(exp => exp.id === 'education');
   const workHistory = experiences.filter(exp => !exp.isCurrentEmployer && exp.id !== 'education');
@@ -79,43 +78,30 @@ export function WorkExperience({
 
   return (
     <div className={cn("bg-background px-4", className)}>
-      {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} shouldExpandAll={showAll} />}
+      {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} shouldExpandAll={true} />}
 
-      <div className="relative">
-        {/* Preview state - shows first job with gradient overlay */}
-        <div
-          className="grid transition-all duration-500 ease-in-out"
-          style={{
-            gridTemplateRows: showAll ? '0fr' : '1fr',
-            opacity: showAll ? 0 : 1,
-          }}
-        >
-          <div className="overflow-hidden">
-            {previewJob && (
-              <div className="relative">
-                <ExperienceItem key={previewJob.id} experience={previewJob} shouldExpandAll={false} />
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="space-y-4">
+        {previewJob && (
+          <ExperienceItem key={previewJob.id} experience={previewJob} shouldExpandAll={showAll} />
+        )}
 
-        {/* Expanded state - shows all jobs */}
         <div
-          className="grid transition-all duration-500 ease-in-out"
+          className={cn(
+            "grid transition-all duration-500 ease-in-out",
+            showAll ? "opacity-100" : "opacity-0 pointer-events-none"
+          )}
           style={{
             gridTemplateRows: showAll ? '1fr' : '0fr',
-            opacity: showAll ? 1 : 0,
           }}
         >
-          <div className="overflow-hidden">
-            {workHistory.map((experience) => (
+          <div className="overflow-hidden space-y-4">
+            {remainingJobs.map((experience) => (
               <ExperienceItem key={experience.id} experience={experience} shouldExpandAll={true} />
             ))}
           </div>
         </div>
 
-        {workHistory.length > 0 && (
+        {remainingJobs.length > 0 && (
           <div className="flex justify-center py-4">
             <button
               onClick={() => setShowAll(!showAll)}
@@ -128,7 +114,7 @@ export function WorkExperience({
                 <ChevronsUpDownIcon className="size-4" />
               </span>
               <span className="transition-opacity duration-300">
-                {showAll ? 'Show Less' : `View All Experience (${workHistory.length} more)`}
+                {showAll ? 'Show Less' : `View All Experience (${remainingJobs.length} more)`}
               </span>
             </button>
           </div>
@@ -152,31 +138,24 @@ export function ExperienceItem({
   shouldExpandAll?: boolean
 }) {
   const initial = experience.companyName.charAt(0).toUpperCase();
-
   const firstPosition = experience.positions[0];
-  const location = firstPosition?.description && firstPosition.description.split('\n').length === 1
-    ? firstPosition.description
-    : null;
 
   return (
     <div className="space-y-4 py-4">
-      <div className="not-prose flex items-center gap-3">
-        <div className="flex size-6 shrink-0 items-center justify-center" aria-hidden>
+      <div className="not-prose flex items-start gap-4" style={{ marginBottom: '0' }}>
+        <div className="flex size-6 shrink-0 items-center justify-center mt-0.5" aria-hidden>
           <div className="flex size-6 shrink-0 items-center justify-center rounded-none AAAA bg-primary/10 text-primary border border-primary/20">
             <span className="text-xs font-semibold">{initial}</span>
           </div>
         </div>
 
-        <div className="flex flex-1 items-baseline gap-2 overflow-hidden">
-          <h3 className="text-lg leading-snug font-medium text-foreground truncate">
-            {experience.companyName}
+        <div className="flex-1">
+          <h3 className="text-base leading-snug font-medium text-foreground truncate">
+            {firstPosition.title}
           </h3>
-          {location && (
-            <span className="text-sm font-normal text-muted-foreground/60 whitespace-nowrap">
-              <span className="mx-1 opacity-40">·</span>
-              {location}
-            </span>
-          )}
+          <p className="text-sm text-muted-foreground truncate">
+            {experience.companyName}
+          </p>
         </div>
 
         {experience.isCurrentEmployer && (
@@ -208,34 +187,34 @@ export function ExperiencePositionItem({
   const isEducation = position.id.startsWith('education');
   const canCollapse = hasContent && !isEducation;
 
+  const Metadata = () => (
+    <div className="flex items-center gap-2 text-sm text-muted-foreground/80 pl-10 mb-1">
+      {position.employmentType && (
+        <>
+          <span>{position.employmentType}</span>
+          <Separator className="h-4" orientation="vertical" />
+        </>
+      )}
+      <div className="flex items-center">
+        {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
+          const year = Number.parseInt(part)
+          return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
+        })}
+      </div>
+    </div>
+  );
+
   if (!canCollapse) {
     return (
       <div className="relative">
-        <div className="relative z-1 flex flex-col pl-9">
-          <h4 className="text-base font-medium text-foreground tracking-tight">{position.title}</h4>
-
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 text-sm text-muted-foreground/80">
-            {position.employmentType && <span>{position.employmentType}</span>}
-
-            <Separator className="h-3 w-[1px] bg-border/50" orientation="vertical" />
-
-            <div className="flex items-center">
-              {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
-                const year = Number.parseInt(part)
-                return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
-              })}
-            </div>
-          </div>
-        </div>
-
-        {position.description && position.description.split('\n').length > 1 && (
-          <Prose className="pt-2 pl-9">
+        <Metadata />
+        {position.description && (
+          <Prose className="pt-2 pl-10">
             <ReactMarkdown>{position.description}</ReactMarkdown>
           </Prose>
         )}
-
         {Array.isArray(position.skills) && position.skills.length > 0 && (
-          <ul className="not-prose flex flex-wrap gap-1.5 pt-3 pl-9">
+          <ul className="not-prose flex flex-wrap gap-1.5 pt-3 pl-10">
             {position.skills.map((skill, index) => (
               <li key={index} className="flex">
                 <Skill>{skill}</Skill>
@@ -250,56 +229,30 @@ export function ExperiencePositionItem({
   return (
     <Collapsible defaultOpen={position.isExpanded || shouldExpandAll} asChild>
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
+        <Metadata />
         <CollapsibleTrigger
           className={cn(
             "group/experience not-prose block w-full text-left select-none accordion-smooth",
-            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-7 before:rounded-none AAAA before:accordion-smooth hover:before:bg-muted/50",
+            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-8 before:rounded-none AAAA before:accordion-smooth hover:before:bg-muted/50",
           )}
         >
-          <div className="relative z-1 mb-1 flex items-center gap-3">
-            <div className="size-6 shrink-0" aria-hidden />
-
-            <h4 className="flex-1 text-base font-medium text-balance text-foreground">{position.title}</h4>
-
-            <div className="shrink-0 text-muted-foreground smooth-transition [&_svg]:size-4" aria-hidden>
+          <div className="relative z-1 flex items-center justify-end pr-4">
+            <div className="shrink-0 text-muted-foreground/80 smooth-transition [&_svg]:size-4" aria-hidden>
               <ChevronsDownUpIcon className="hidden group-data-[state=open]/experience:block smooth-transition" />
               <ChevronsUpDownIcon className="hidden group-data-[state=closed]/experience:block smooth-transition" />
             </div>
-          </div>
-
-          <div className="relative z-1 flex items-center gap-2 pl-9 text-sm text-muted-foreground">
-            {position.employmentType && (
-              <>
-                <dl>
-                  <dt className="sr-only">Employment Type</dt>
-                  <dd>{position.employmentType}</dd>
-                </dl>
-
-                <Separator className="data-[orientation=vertical]:h-4" orientation="vertical" />
-              </>
-            )}
-
-            <dl>
-              <dt className="sr-only">Employment Period</dt>
-              <dd>
-                {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
-                  const year = Number.parseInt(part)
-                  return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
-                })}
-              </dd>
-            </dl>
           </div>
         </CollapsibleTrigger>
 
         <CollapsibleContent className="overflow-hidden accordion-smooth data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
           {position.description && (
-            <Prose className="pt-2 pl-9">
+            <Prose className="pt-2 pl-10">
               <ReactMarkdown>{position.description}</ReactMarkdown>
             </Prose>
           )}
 
           {Array.isArray(position.skills) && position.skills.length > 0 && (
-            <ul className="not-prose flex flex-wrap gap-1.5 pt-2 pl-9">
+            <ul className="not-prose flex flex-wrap gap-1.5 pt-2 pl-10">
               {position.skills.map((skill, index) => (
                 <li key={index} className="flex">
                   <Skill>{skill}</Skill>
@@ -317,7 +270,7 @@ function Prose({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "prose prose-sm max-w-none font-mono text-muted-foreground prose-zinc dark:prose-invert",
+        "prose prose-sm max-w-none font-mono text-muted-foreground prose-zinc dark:prose-invert prose-ul:pl-4 prose-li:pl-0",
         "prose-a:font-medium prose-a:wrap-break-word prose-a:text-foreground prose-a:underline prose-a:underline-offset-4",
         "prose-code:rounded-md prose-code:border prose-code:bg-muted/50 prose-code:px-[0.3rem] prose-code:py-[0.2rem] prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none",
         className,

@@ -1,7 +1,7 @@
 ---
-title: "Spotify OAuth2 Setup Tutorial: Working Redirects, Tokens, and Refresh Logic"
-publishedAt: "20-12-2025"
-summary: "A guide for setting up Spotify OAuth2 to obtain access and refresh tokens and API integration."
+title: 'The ultimate guide to Spotify OAuth'
+publishedAt: '2025-12-20'
+summary: 'Exhaustive guide on why Spoity OAuth is a pain in the ass and how I finally got it to work with Better Auth.'
 categories: ["Engineering", "Spotify API", "OAuth2", "Guide"]
 tags: ["Engineering", "Authentication", "OAuth2", "Guide", "Next.js"]
 slug: "spotify-oauth2-working-setup"

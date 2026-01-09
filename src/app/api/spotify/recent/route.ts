@@ -4,6 +4,7 @@ import { getSpotifyAccessToken, hasSpotifyCredentials, invalidateSpotifyTokenCac
 // Use ISR with 30 second revalidation for recent tracks
 // (Recently played doesn't change that frequently)
 export const revalidate = 30;
+export const dynamic = 'force-dynamic';
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 
