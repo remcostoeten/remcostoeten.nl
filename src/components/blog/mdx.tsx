@@ -4,7 +4,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import React from 'react'
 import { CodeBlock } from '../ui/code-block'
 import { CollapsibleMedia } from './collapsible-media'
-import { BtwfyiDemo } from './btwfyi-demo'
 import { SpotifyEnvGenerator } from './spotify-env-generator'
 import { SpotifyApiExplorer } from './spotify-api-explorer'
 import {

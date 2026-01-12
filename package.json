@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
+    "build:fast": "NEXT_TELEMETRY_DISABLED=1 FAST_BUILD=true next build --webpack",
     "ogbuild": "next build",
     "start": "next start",
     "db:generate": "drizzle-kit generate",

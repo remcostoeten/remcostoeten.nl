@@ -52,7 +52,25 @@ const nextConfig = {
         ]
     },
     compress: true,
-    swcMinify: true,
+    productionBrowserSourceMaps: false,
+    experimental: {
+        optimizePackageImports: [
+            'lucide-react',
+            'react-icons',
+            '@radix-ui/react-collapsible',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-tabs',
+            'framer-motion',
+        ],
+    },
+    eslint: {
+        ignoreDuringBuilds: process.env.FAST_BUILD === 'true',
+    },
+    typescript: {
+        ignoreBuildErrors: process.env.FAST_BUILD === 'true',
+    },
 }
 
 export default nextConfig
