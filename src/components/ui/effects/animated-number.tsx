@@ -154,10 +154,11 @@ function SlotDigit({
 
   return (
     <span
-      className={`relative inline-block overflow-hidden h-[1em] leading-none align-baseline ${className || ''}`}
+      className={`relative inline-flex justify-center overflow-hidden h-[1em] leading-none ${className || ''}`}
       style={{ width: '0.6em', minWidth: '0.6em' }}
     >
-      <span className="opacity-0 absolute" style={{ visibility: 'hidden' }}>{digit}</span>
+      {/* Ghost element determines baseline and width */}
+      <span className="invisible pointer-events-none">{digit}</span>
 
       <span
         className="absolute top-0 left-0 right-0 flex flex-col items-center will-change-transform"
@@ -248,7 +249,7 @@ export function AnimatedNumber({
   const { registerNumber, unregisterNumber, getStaggerDelay } = useAnimatedNumberContext();
 
   // Only enable view-based animations on client side
-  const isInView = useInView(elementRef, { once: true, margin: "0px" });
+  const isInView = useInView(elementRef, { once: true, margin: "100px" });
 
   useEffect(() => {
     setIsClient(true);
@@ -308,13 +309,14 @@ export function AnimatedNumber({
       ref={useNewSystem ? stagger.ref as React.RefObject<HTMLSpanElement> : elementRef}
       className={`inline-flex items-baseline tabular-nums ${className || ''}`}
       aria-label={stringValue}
+      title={stringValue}
     >
       <span className="sr-only">{stringValue}</span>
 
       <span className="inline-flex items-baseline" aria-hidden="true">
         {chars.map((char, i) => {
           if (/\d/.test(char)) {
-            const currentDigitDuration = Math.min(duration + (digitIndex * STAGGER_DELAY_MS), 1500);
+            const currentDigitDuration = Math.min(duration + (digitIndex * STAGGER_DELAY_MS), 4000);
 
 
             return (

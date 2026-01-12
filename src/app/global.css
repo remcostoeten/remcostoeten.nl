@@ -830,3 +830,73 @@
   margin-top: 0.75em;
   margin-bottom: 0.75em;
 }
+
+@keyframes demo-border-march {
+	0% {
+		background-position: 0 0, 100% 0, 0 100%, 0 0;
+	}
+	100% {
+		background-position: 20px 0, calc(100% - 20px) 0, 0 calc(100% + 20px), 0 -20px;
+	}
+}
+
+.demo-trigger {
+	position: relative;
+	padding: 0.125em 0.375em;
+	border-radius: 0.25em;
+	background: linear-gradient(
+		to right,
+		hsl(var(--brand-500) / 0.08),
+		hsl(var(--brand-400) / 0.12)
+	);
+	color: hsl(var(--brand-500));
+	font-weight: 500;
+	transition: all 0.2s ease;
+}
+
+.demo-trigger::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: 0.25em;
+	background-image:
+		repeating-linear-gradient(90deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px),
+		repeating-linear-gradient(90deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px),
+		repeating-linear-gradient(0deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px),
+		repeating-linear-gradient(0deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px);
+	background-size: 20px 1.5px, 20px 1.5px, 1.5px 20px, 1.5px 20px;
+	background-position: 0 0, 0 100%, 0 0, 100% 0;
+	background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+	opacity: 0.6;
+	animation: demo-border-march 1s linear infinite;
+	pointer-events: none;
+}
+
+.demo-trigger:hover {
+	background: linear-gradient(
+		to right,
+		hsl(var(--brand-500) / 0.15),
+		hsl(var(--brand-400) / 0.2)
+	);
+	color: hsl(var(--brand-400));
+}
+
+.demo-trigger:hover::before {
+	opacity: 1;
+}
+
+@keyframes demo-popover-enter {
+	0% {
+		opacity: 0;
+		transform: translateX(-50%) translateY(-8px) scale(0.95);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(-50%) translateY(0) scale(1);
+	}
+}
+
+.demo-popover {
+	animation: demo-popover-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	min-width: 320px;
+}

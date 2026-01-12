@@ -56,9 +56,9 @@ export function BlogPostClient({
   }, [slug])
 
   return (
-    <header className="mb-16">
+    <header>
       {/* Navigation Row */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-5">
         <nav className="flex items-center gap-1 text-sm text-muted-foreground">
           <Link
             href="/"
@@ -85,19 +85,12 @@ export function BlogPostClient({
       </div>
 
       {/* Title */}
-      <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-foreground leading-tight mb-4">
+      <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground leading-snug mb-3 text-balance">
         {title}
       </h1>
 
-      {/* Summary */}
-      {summary && (
-        <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed max-w-2xl mb-6">
-          {summary}
-        </p>
-      )}
-
       {/* Metadata Row */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400 mb-6">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400 mb-4">
         <time className="flex items-center gap-1 tabular-nums">
           <AnimatedNumber value={dateParts.day} duration={dateDuration} initialProgress={0} />
           <span>{dateParts.month}</span>

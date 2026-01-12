@@ -49,7 +49,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="en"
       suppressHydrationWarning
       className={cn(
-        'scroll-smooth bg-white text-black antialiased dark:bg-black dark:text-white',
+        'bg-white text-black antialiased dark:bg-black dark:text-white',
         `${GeistSans.variable} ${GeistMono.variable} font-sans`
       )}
     >

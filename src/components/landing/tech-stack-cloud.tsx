@@ -11,12 +11,13 @@ import {
   SiNodedotjs,
   SiPostgresql,
   SiTailwindcss,
-  SiDrizzle,
-  SiGnubash,
+  SiDocker,
+  SiGithubactions,
+  SiBun,
   SiHono,
   SiTurso,
   SiSass,
-  SiStyledcomponents,
+  SiCss3,
 } from 'react-icons/si'
 
 type TechItem = {
@@ -29,11 +30,11 @@ const LOGOS: TechItem[] = [
   { name: 'react', label: 'React', Icon: SiReact },
   { name: 'next', label: 'Next.js', Icon: SiNextdotjs },
   { name: 'typescript', label: 'TypeScript', Icon: SiTypescript },
-  { name: 'bash', label: 'Bash', Icon: SiGnubash },
-  { name: 'styling', label: '(S)CSS / TW / Styled', Icon: [SiSass, SiTailwindcss, SiStyledcomponents] },
+  { name: 'bun', label: 'Bun', Icon: SiBun },
+  { name: 'styling', label: 'CSS / Tailwind', Icon: [SiCss3, SiTailwindcss] },
   { name: 'node-hono', label: 'Node.js / Hono', Icon: [SiNodedotjs, SiHono] },
   { name: 'postgres-libsql', label: 'Postgres / LibSQL', Icon: [SiPostgresql, SiTurso] },
-  { name: 'drizzle', label: 'Drizzle ORM', Icon: SiDrizzle },
+  { name: 'tools', label: 'Docker / CI/CD', Icon: [SiDocker, SiGithubactions] },
 ]
 
 const CARD_STYLES = [

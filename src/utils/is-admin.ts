@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { env } from '@/server/env'
 
 const DEFAULT_ADMIN_EMAIL = 'remcostoeten@gmail.com'
+const SECONDARY_ADMIN_EMAIL = 'iremcostoeten@hotmail.com'
 const ADMIN_EMAIL = env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL
 
 /**
@@ -21,7 +22,8 @@ export async function isAdmin(): Promise<boolean> {
             return false
         }
 
-        const isEmailMatch = session.user.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()
+        const userEmail = session.user.email?.toLowerCase()
+        const isEmailMatch = userEmail === ADMIN_EMAIL.toLowerCase() || userEmail === SECONDARY_ADMIN_EMAIL.toLowerCase()
         const isRoleAdmin = session.user.role === 'admin'
 
         console.log(`[isAdmin] email: ${session.user.email}, isMatch: ${isEmailMatch}, role: ${session.user.role}, isRoleAdmin: ${isRoleAdmin}`)

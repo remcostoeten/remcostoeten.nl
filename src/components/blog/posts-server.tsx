@@ -21,6 +21,11 @@ export async function BlogPosts({ checkAdmin = true }: { checkAdmin?: boolean })
   const viewsMap = new Map(viewData.map(v => [v.slug, { total: v.views, unique: v.uniqueViews }]))
 
   const sortedBlogs = allBlogs.sort((a, b) => {
+    if (userIsAdmin) {
+      if (a.metadata.draft && !b.metadata.draft) return -1
+      if (!a.metadata.draft && b.metadata.draft) return 1
+    }
+
     if (new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)) {
       return -1
     }

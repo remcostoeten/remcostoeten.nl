@@ -1,11 +1,10 @@
 'use client'
 
-import { Btwfyi, type CategoryConfig } from 'btwfyi/react'
 import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 
-const demoCategories: CategoryConfig[] = [
-    {
+const demoCategories: BtwfyiCategory[] = [
+    {   
         id: 'today',
         displayName: '🎯 Today',
         items: [

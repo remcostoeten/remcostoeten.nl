@@ -7,6 +7,7 @@ import {
   CodeXmlIcon,
   DraftingCompassIcon,
   GraduationCapIcon,
+  TerminalIcon,
 } from "lucide-react"
 import React from "react"
 import ReactMarkdown from "react-markdown"
@@ -20,6 +21,9 @@ const iconMap = {
   design: DraftingCompassIcon,
   business: BriefcaseBusinessIcon,
   education: GraduationCapIcon,
+  shell: TerminalIcon,
+  bash: TerminalIcon,
+  unix: TerminalIcon,
 } as const
 
 /**
@@ -81,41 +85,49 @@ export function WorkExperience({
       {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} shouldExpandAll={true} />}
 
       <div className="space-y-4">
-        {previewJob && (
-          <ExperienceItem key={previewJob.id} experience={previewJob} shouldExpandAll={showAll} />
-        )}
-
-        <div
+        <div 
           className={cn(
-            "grid transition-all duration-500 ease-in-out",
-            showAll ? "opacity-100" : "opacity-0 pointer-events-none"
+            "relative transition-all duration-700 ease-in-out",
+            showAll ? "max-h-[2000px]" : "max-h-[200px] overflow-hidden"
           )}
-          style={{
-            gridTemplateRows: showAll ? '1fr' : '0fr',
-          }}
         >
-          <div className="overflow-hidden space-y-4">
+          {previewJob && (
+            <ExperienceItem key={previewJob.id} experience={previewJob} shouldExpandAll={true} />
+          )}
+
+          <div className={cn(
+            "space-y-4 transition-all duration-700",
+            showAll ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          )}>
             {remainingJobs.map((experience) => (
               <ExperienceItem key={experience.id} experience={experience} shouldExpandAll={true} />
             ))}
           </div>
-        </div>
 
-        {remainingJobs.length > 0 && (
-          <div className="flex justify-center py-4">
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none AAAA hover:bg-muted/50 transition-colors"
+          {!showAll && remainingJobs.length > 0 && (
+            <div 
+              className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/95 to-transparent z-30 flex items-end justify-center pb-4"
+              aria-hidden="true"
             >
-              <span
-                className="inline-flex transition-transform duration-300"
-                style={{ transform: showAll ? 'rotate(180deg)' : 'rotate(0deg)' }}
+              <button
+                onClick={() => setShowAll(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none AAAA hover:bg-muted/50 transition-colors pointer-events-auto"
               >
                 <ChevronsUpDownIcon className="size-4" />
-              </span>
-              <span className="transition-opacity duration-300">
-                {showAll ? 'Show Less' : `View All Experience (${remainingJobs.length} more)`}
-              </span>
+                <span>View All Experience ({remainingJobs.length} more)</span>
+              </button>
+            </div>
+          )}
+        </div>
+
+        {showAll && remainingJobs.length > 0 && (
+          <div className="flex justify-center py-2">
+            <button
+              onClick={() => setShowAll(false)}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none AAAA hover:bg-muted/50 transition-colors"
+            >
+              <ChevronsDownUpIcon className="size-4 rotate-180" />
+              <span>Show Less</span>
             </button>
           </div>
         )}
@@ -188,7 +200,7 @@ export function ExperiencePositionItem({
   const canCollapse = hasContent && !isEducation;
 
   const Metadata = () => (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground/80 pl-10 mb-1">
+    <div className="flex items-center gap-2 text-sm text-muted-foreground/80">
       {position.employmentType && (
         <>
           <span>{position.employmentType}</span>
@@ -206,15 +218,15 @@ export function ExperiencePositionItem({
 
   if (!canCollapse) {
     return (
-      <div className="relative">
+      <div className="relative pl-10">
         <Metadata />
         {position.description && (
-          <Prose className="pt-2 pl-10">
+          <Prose className="pt-2">
             <ReactMarkdown>{position.description}</ReactMarkdown>
           </Prose>
         )}
         {Array.isArray(position.skills) && position.skills.length > 0 && (
-          <ul className="not-prose flex flex-wrap gap-1.5 pt-3 pl-10">
+          <ul className="not-prose flex flex-wrap gap-1.5 pt-3">
             {position.skills.map((skill, index) => (
               <li key={index} className="flex">
                 <Skill>{skill}</Skill>
@@ -226,40 +238,50 @@ export function ExperiencePositionItem({
     );
   }
 
+  const [isOpen, setIsOpen] = React.useState(position.isExpanded || shouldExpandAll)
+  
+  React.useEffect(() => {
+    if (shouldExpandAll) {
+      setIsOpen(true)
+    }
+  }, [shouldExpandAll])
+
   return (
-    <Collapsible defaultOpen={position.isExpanded || shouldExpandAll} asChild>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} asChild>
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
-        <Metadata />
         <CollapsibleTrigger
           className={cn(
-            "group/experience not-prose block w-full text-left select-none accordion-smooth",
-            "relative before:absolute before:-top-1 before:-right-1 before:-bottom-1.5 before:left-8 before:rounded-none AAAA before:accordion-smooth hover:before:bg-muted/50",
+            "group/experience not-prose w-full text-left select-none",
+            "flex items-center justify-between pl-10 pr-4 py-0.5",
           )}
         >
-          <div className="relative z-1 flex items-center justify-end pr-4">
-            <div className="shrink-0 text-muted-foreground/80 smooth-transition [&_svg]:size-4" aria-hidden>
-              <ChevronsDownUpIcon className="hidden group-data-[state=open]/experience:block smooth-transition" />
-              <ChevronsUpDownIcon className="hidden group-data-[state=closed]/experience:block smooth-transition" />
-            </div>
+          <Metadata />
+          <div className="shrink-0 text-muted-foreground/60 hover:text-muted-foreground transition-colors [&_svg]:size-4" aria-hidden>
+            <ChevronsDownUpIcon className="hidden group-data-[state=open]/experience:block" />
+            <ChevronsUpDownIcon className="hidden group-data-[state=closed]/experience:block" />
           </div>
         </CollapsibleTrigger>
 
-        <CollapsibleContent className="overflow-hidden accordion-smooth data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-          {position.description && (
-            <Prose className="pt-2 pl-10">
-              <ReactMarkdown>{position.description}</ReactMarkdown>
-            </Prose>
-          )}
+        <CollapsibleContent className="grid transition-[grid-template-rows] duration-300 ease-out data-[state=closed]:grid-rows-[0fr] data-[state=open]:grid-rows-[1fr]">
+          <div className="overflow-hidden min-h-0">
+            <div className="pl-10 pr-4">
+            {position.description && (
+              <Prose className="pt-2">
+                <ReactMarkdown>{position.description}</ReactMarkdown>
+              </Prose>
+            )}
 
-          {Array.isArray(position.skills) && position.skills.length > 0 && (
-            <ul className="not-prose flex flex-wrap gap-1.5 pt-2 pl-10">
-              {position.skills.map((skill, index) => (
-                <li key={index} className="flex">
-                  <Skill>{skill}</Skill>
-                </li>
-              ))}
-            </ul>
-          )}
+            {Array.isArray(position.skills) && position.skills.length > 0 && (
+              <ul className="not-prose flex flex-wrap gap-1.5 pt-3">
+                {position.skills.map((skill, index) => (
+                  <li key={index} className="flex">
+                    <Skill>{skill}</Skill>
+                  </li>
+                ))}
+              </ul>
+            )}
+            </div>
+          </div>
         </CollapsibleContent>
       </div>
     </Collapsible>

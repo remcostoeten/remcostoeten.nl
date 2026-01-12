@@ -24,15 +24,7 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['Fira Code', 'JetBrains Mono', 'Consolas', 'monospace'],
       },
-      animation: {
-        'enter': 'enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards',
-        'blob-float': 'blob-float 20s infinite ease-in-out',
-        'blob-sway': 'blob-sway 15s infinite ease-in-out reverse',
-        'blob-pulse': 'blob-pulse 12s infinite ease-in-out',
-        'wiggle': 'wiggle 1s ease-in-out infinite',
-        'subtle-rotate': 'subtle-rotate 4s ease-in-out infinite',
-        'music-bar': 'music-bar 1s ease-in-out infinite',
-      },
+
       keyframes: {
         enter: {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
@@ -92,8 +84,27 @@ export default {
         'subtle-rotate': {
           '0%, 100%': { transform: 'rotate(-5deg)' },
           '50%': { transform: 'rotate(5deg)' },
-        }
-      }
+        },
+        'collapsible-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)' },
+        },
+        'collapsible-up': {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: '0' },
+        },
+      },
+      animation: {
+        'enter': 'enter 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards',
+        'blob-float': 'blob-float 20s infinite ease-in-out',
+        'blob-sway': 'blob-sway 15s infinite ease-in-out reverse',
+        'blob-pulse': 'blob-pulse 12s infinite ease-in-out',
+        'wiggle': 'wiggle 1s ease-in-out infinite',
+        'subtle-rotate': 'subtle-rotate 4s ease-in-out infinite',
+        'music-bar': 'music-bar 1s ease-in-out infinite',
+        'collapsible-down': 'collapsible-down 0.2s ease-out',
+        'collapsible-up': 'collapsible-up 0.2s ease-out',
+      },
     },
   },
   plugins: [],
