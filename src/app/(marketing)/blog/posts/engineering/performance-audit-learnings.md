@@ -5,7 +5,41 @@ description: "A deep dive into how I audited my portfolio's performance, what me
 tags: ["Engineering", "Next.js", "Performance"]
 ---
 
-Performance and accessibility are often overlooked. With my site 90% ready, I ran a final audit expecting minor tweaks. Instead, I found significant issues.
+The reason I'm writing this is because like most this part of front-end is often neglected and I wanted to dive into how blocking threads and certain code will affect loadtimes, or what metrics like LCP and TBT really mean. 
+
+There is a lot more to performance than a lighthouse score. And for me personally I find a good UX with a snappy feeling site more important than having a 100/100 score but losing some personallity traits that make the site feel mine. That being said, I managed to get rid of some huge blockers and bring the score 
+from 40~ to 90~/100. 
+
+In the entierty of the process I used this script which can be ran simply via `./scripts/measure-vitals.sh <url>c. If you're going to test locally make sure to run your production build e.g. `npm run build && bun run preview | preview --port 4200&& ./scripts/measure-vitals.sh http://localhost:3000` and then run the script.
+
+<details>
+<summary>measure-vitals.sh</summary>
+
+```bash
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <url>"
+    exit 1
+fi
+
+URL="$1"
+
+# Run Lighthouse
+lighthouse "$URL" --chrome-flags="--headless --disable-gpu" --output=json --output-path=lighthouse-report.json
+
+# Parse Lighthouse report
+LCP=$(jq -r '.audits.' "$lighthouse-report.json")
+
+# Print results
+echo "LCP: $LCP"
+echo "FCP: $FCP"
+echo "TBT: $TBT"
+echo "TTI: $TTI"
+echo "Score: $Score"
+```
+
+</details>
 
 ## The Baseline (Before Optimization)
 
@@ -23,7 +57,74 @@ I had a serious main-thread blocking issue.
 
 ## The Methodology
 
-I used the **PerformanceObserver API** to pinpoint bottlenecks.
+Throughout this process I used a simple shell script to measure Web Vitals via Lighthouse. Run it against your production build for accurate results:
+
+```bash title="measure-vitals.sh"
+#!/bin/bash
+set -e
+
+URL="${1:-http://localhost:3000}"
+
+spin() {
+  local pid=$1 msg=$2
+  local chars="⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
+  while kill -0 $pid 2>/dev/null; do
+    for (( i=0; i<${#chars}; i++ )); do
+      printf "\r  ${chars:$i:1} $msg"
+      sleep 0.1
+    done
+  done
+  printf "\r  ✓ $msg\n"
+}
+
+echo ""
+echo "📊 Measuring Web Vitals"
+echo "   $URL"
+echo ""
+
+printf "  ◦ Checking server..."
+curl -s -o /dev/null -w "%{http_code}" "$URL" | grep -q "200\|301\|302" || { printf "\r  ✗ Cannot reach server\n"; exit 1; }
+printf "\r  ✓ Server reachable\n"
+
+npx -y lighthouse "$URL" \
+  --only-categories=performance \
+  --output=json \
+  --output-path=/tmp/lighthouse-report.json \
+  --chrome-flags="--headless --no-sandbox" \
+  --quiet &
+spin $! "Running Lighthouse audit..."
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+node -e "
+const r = JSON.parse(require('fs').readFileSync('/tmp/lighthouse-report.json'));
+const a = r.audits;
+const fmt = (v, isTime) => isTime ? v.toFixed(2) + 's' : v.toFixed(3);
+const status = (v, good, bad) => v <= good ? '🟢' : v <= bad ? '🟡' : '🔴';
+
+const metrics = [
+  ['LCP', a['largest-contentful-paint']?.numericValue / 1000, true, 2.5, 4],
+  ['FCP', a['first-contentful-paint']?.numericValue / 1000, true, 1.8, 3],
+  ['TBT', a['total-blocking-time']?.numericValue / 1000, true, 0.2, 0.6],
+  ['CLS', a['cumulative-layout-shift']?.numericValue, false, 0.1, 0.25],
+];
+
+metrics.forEach(([name, val, isTime, good, bad]) => {
+  if (val !== undefined) console.log('  ' + status(val, good, bad) + ' ' + name.padEnd(4) + fmt(val, isTime));
+});
+
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+console.log('  Score: ' + Math.round(r.categories.performance.score * 100) + '/100');
+"
+
+rm -f /tmp/lighthouse-report.json
+echo ""
+```
+
+Usage: `./scripts/measure-vitals.sh https://yoursite.com` (test against prod build with `pnpm build && pnpm start`).
+
+I also used the **PerformanceObserver API** to pinpoint bottlenecks.
 
 LCP (2.36s) was triggered by text in the Tech Stack section. TTFB (1.79s) was high, likely due to eager SSR and API latency. TBT (8.42s locally / 23s prod) was the critical bottleneck, with heavy hydration and animations blocking user input.
 

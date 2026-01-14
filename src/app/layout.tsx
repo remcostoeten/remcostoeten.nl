@@ -5,7 +5,7 @@ import { GeistMono } from 'geist/font/mono'
 import { cn } from '@/lib/utils'
 import { WebsiteStructuredData, PersonStructuredData } from '@/components/seo/structured-data'
 import { AppProviders } from '@/components/providers/providers'
-import { WebVitalsReporter } from '@/components/dev/web-vitals-reporter'
+import { WebVitalsReporter } from '@/components/seo/web-vitals-reporter'
 import { baseUrl } from './sitemap'
 import './global.css'
 

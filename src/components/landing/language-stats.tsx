@@ -8,8 +8,6 @@ import {
   SiLua,
   SiRust,
   SiZig,
-  SiShell,
-  SiShelly,
   SiGnubash,
   SiTypescript,
   SiJavascript,
@@ -90,7 +88,7 @@ export function LanguageStats() {
   return (
     <div className="space-y-6 pt-4 pb-8 px-4">
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-xl">
+        <p className="prose-sm text-muted-foreground/80 leading-relaxed max-w-xl">
           Beyond my primary stack, I'm constantly exploring new paradigms and languages.
           This breakdown reflects my activity across <span className="text-foreground/90 font-medium">GitHub</span>, from production tools to experimental playgrounds.
         </p>

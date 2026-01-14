@@ -88,10 +88,10 @@ export function CommentSection({ slug }: Props) {
     }
 
     return (
-        <div className="mt-16 border-t border-zinc-800 pt-12">
+        <div className="mt-16 border-t border-border pt-12">
             <div className="flex items-center gap-2 mb-8">
-                <MessageSquare className="w-5 h-5 text-zinc-400" />
-                <h2 className="text-xl font-semibold text-white">
+                <MessageSquare className="w-5 h-5 text-muted-foreground" />
+                <h2 className="text-xl font-semibold text-foreground">
                     Comments {comments.length > 0 && `(${comments.length})`}
                 </h2>
             </div>
@@ -108,8 +108,8 @@ export function CommentSection({ slug }: Props) {
                                 className="w-10 h-10 rounded-full shrink-0"
                             />
                         ) : (
-                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                                <span className="text-sm font-medium text-zinc-400">
+                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                                <span className="text-sm font-medium text-muted-foreground">
                                     {session.user.name?.[0]?.toUpperCase() || '?'}
                                 </span>
                             </div>
@@ -121,23 +121,23 @@ export function CommentSection({ slug }: Props) {
                                 placeholder="Write a comment..."
                                 rows={3}
                                 maxLength={2000}
-                                className="w-full px-4 py-3 bg-zinc-900 border border-zinc-800 rounded-none AAAA
-                                    text-white placeholder-zinc-500 resize-none
-                                    focus:outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600
+                                className="w-full px-4 py-3 bg-background border border-border rounded-lg
+                                    text-foreground placeholder:text-muted-foreground resize-none
+                                    focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring
                                     transition-colors"
                             />
                             {error && (
                                 <p className="mt-2 text-sm text-destructive">{error}</p>
                             )}
                             <div className="flex justify-between items-center mt-3">
-                                <span className="text-xs text-zinc-500">
+                                <span className="text-xs text-muted-foreground">
                                     {newComment.length}/2000
                                 </span>
                                 <button
                                     type="submit"
                                     disabled={!newComment.trim() || isPending}
-                                    className="px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-900 
-                                        font-medium rounded-none AAAA transition-colors
+                                    className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground 
+                                        font-medium rounded-lg transition-colors
                                         disabled:opacity-50 disabled:cursor-not-allowed
                                         flex items-center gap-2"
                                 >
@@ -149,19 +149,19 @@ export function CommentSection({ slug }: Props) {
                     </div>
                 </form>
             ) : (
-                <div className="mb-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-none AAAA text-center">
-                    <p className="text-zinc-400 mb-4">Sign in to join the conversation</p>
+                <div className="mb-8 p-6 bg-muted/50 border border-border rounded-lg text-center">
+                    <p className="text-muted-foreground mb-4">Sign in to join the conversation</p>
                     <SignInButton />
                 </div>
             )}
 
             {isLoading ? (
                 <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+                    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                 </div>
             ) : comments.length === 0 ? (
                 <div className="text-center py-8">
-                    <p className="text-zinc-500">No comments yet. Be the first to share your thoughts!</p>
+                    <p className="text-muted-foreground">No comments yet. Be the first to share your thoughts!</p>
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -183,25 +183,25 @@ export function CommentSection({ slug }: Props) {
                                         className="w-10 h-10 rounded-full shrink-0"
                                     />
                                 ) : (
-                                    <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                                        <span className="text-sm font-medium text-zinc-400">
+                                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
+                                        <span className="text-sm font-medium text-muted-foreground">
                                             {comment.userName?.[0]?.toUpperCase() || '?'}
                                         </span>
                                     </div>
                                 )}
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 flex-wrap">
-                                        <span className="font-medium text-white">
+                                        <span className="font-medium text-foreground">
                                             {comment.userName || 'Anonymous'}
                                         </span>
-                                        <span className="text-xs text-zinc-500">
+                                        <span className="text-xs text-muted-foreground">
                                             {formatDistanceToNow(new Date(comment.createdAt))}
                                         </span>
                                         {comment.isEdited && (
-                                            <span className="text-xs text-zinc-600">(edited)</span>
+                                            <span className="text-xs text-muted-foreground/70">(edited)</span>
                                         )}
                                     </div>
-                                    <p className="mt-1 text-zinc-300 whitespace-pre-wrap wrap-break-word">
+                                    <p className="mt-1 text-foreground/80 whitespace-pre-wrap wrap-break-word">
                                         {comment.content}
                                     </p>
 
@@ -209,7 +209,7 @@ export function CommentSection({ slug }: Props) {
                                         <button
                                             onClick={() => handleDelete(comment.id)}
                                             disabled={isPending}
-                                            className="mt-2 text-xs text-zinc-500 hover:text-red-400 
+                                            className="mt-2 text-xs text-muted-foreground hover:text-destructive 
                                                 transition-colors flex items-center gap-1
                                                 disabled:opacity-50"
                                         >

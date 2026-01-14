@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, ChevronRight, Home, Eye } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Home, Eye } from 'lucide-react'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/actions/analytics'
 import { getDateParts, readMinutes } from '@/lib/blog-format'
+import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 type BlogPost = {
   metadata: {
@@ -59,28 +60,14 @@ export function BlogPostClient({
     <header>
       {/* Navigation Row */}
       <div className="flex items-center justify-between mb-5">
-        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
-          <Link
-            href="/"
-            className="hover:text-foreground transition-colors p-1 -ml-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
-          >
-            <Home className="w-4 h-4" />
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 opacity-40" />
-          <Link
-            href="/blog"
-            className="hover:text-foreground transition-colors px-1.5 py-1 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800/50"
-          >
-            Blog
-          </Link>
-        </nav>
-
+        <Breadcrumbs />
+        
         <button
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-all group"
+          className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
         >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
-          Back
+          <ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
+          back
         </button>
       </div>
 

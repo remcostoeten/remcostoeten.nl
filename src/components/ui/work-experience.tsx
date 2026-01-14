@@ -33,21 +33,14 @@ const iconMap = {
 export type ExperiencePositionIconType = keyof typeof iconMap
 
 export type ExperiencePositionItemType = {
-  /** Unique identifier for the position */
   id: string
-  /** The job title or position name */
   title: string
-  /** The period during which the position was held (e.g., "Jan 2020 - Dec 2021") */
   employmentPeriod: string
-  /** The type of employment (e.g., "Full-time", "Part-time", "Contract") */
   employmentType?: string
-  /** A brief description of the position or responsibilities */
+  location?: string
   description?: string
-  /** An icon representing the position */
   icon?: ExperiencePositionIconType
-  /** A list of skills associated with the position */
   skills?: string[]
-  /** Indicates if the position details are expanded in the UI */
   isExpanded?: boolean
 }
 
@@ -111,7 +104,7 @@ export function WorkExperience({
             >
               <button
                 onClick={() => setShowAll(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none AAAA hover:bg-muted/50 transition-colors pointer-events-auto"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors pointer-events-auto"
               >
                 <ChevronsUpDownIcon className="size-4" />
                 <span>View All Experience ({remainingJobs.length} more)</span>
@@ -124,7 +117,7 @@ export function WorkExperience({
           <div className="flex justify-center py-2">
             <button
               onClick={() => setShowAll(false)}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none AAAA hover:bg-muted/50 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
             >
               <ChevronsDownUpIcon className="size-4 rotate-180" />
               <span>Show Less</span>
@@ -156,22 +149,29 @@ export function ExperienceItem({
     <div className="space-y-4 py-4">
       <div className="not-prose flex items-start gap-4" style={{ marginBottom: '0' }}>
         <div className="flex size-6 shrink-0 items-center justify-center mt-0.5" aria-hidden>
-          <div className="flex size-6 shrink-0 items-center justify-center rounded-none AAAA bg-primary/10 text-primary border border-primary/20">
+          <div className="flex size-6 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary border border-primary/20">
             <span className="text-xs font-semibold">{initial}</span>
           </div>
         </div>
 
-        <div className="flex-1">
-          <h3 className="text-base leading-snug font-medium text-foreground truncate">
-            {firstPosition.title}
-          </h3>
-          <p className="text-sm text-muted-foreground truncate">
-            {experience.companyName}
-          </p>
+        <div className="flex-1 flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-base leading-snug font-medium text-foreground truncate">
+              {firstPosition.title}
+            </h3>
+            <p className="text-sm text-muted-foreground truncate">
+              {experience.companyName}
+            </p>
+          </div>
+          {firstPosition.location && (
+            <span className="text-sm text-muted-foreground/70 whitespace-nowrap">
+              {firstPosition.location}
+            </span>
+          )}
         </div>
 
         {experience.isCurrentEmployer && (
-          <span className="relative flex items-center justify-center">
+          <span className="relative flex items-center justify-center translate-y-1">
             <span className="absolute inline-flex size-3 animate-ping rounded-full bg-brand-500 opacity-50" />
             <span className="relative inline-flex size-2 rounded-full bg-brand-500" />
             <span className="sr-only">Current Employer</span>
@@ -306,7 +306,7 @@ function Skill({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-none AAAA border bg-muted/50 px-1.5 py-0.5 font-mono text-xs text-muted-foreground",
+        "inline-flex items-center rounded-none border bg-muted/50 px-1.5 py-0.5 font-mono text-xs text-muted-foreground",
         className,
       )}
       {...props}

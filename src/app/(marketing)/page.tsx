@@ -37,7 +37,12 @@ const BlogPosts = nextDynamic(
 
 const FeaturedProjects = nextDynamic(
   () => import('@/components/landing/featured-projects').then(m => ({ default: m.FeaturedProjects })),
-  { loading: () => <div className="h-64 animate-pulse bg-muted/20 rounded-lg" /> }
+  { loading: () => <div className="h-64 animate-pulse bg-muted/20" /> }
+)
+
+const Playground = nextDynamic(
+  () => import('@/components/landing/playground').then(m => ({ default: m.Playground })),
+  { loading: () => <div className="h-40 animate-pulse bg-muted/20" /> }
 )
 
 export const revalidate = 60
@@ -70,6 +75,8 @@ export default function Page() {
           </Section>
 
           <FeaturedProjects />
+
+          <Playground />
 
           <BlogPosts />
         </div>

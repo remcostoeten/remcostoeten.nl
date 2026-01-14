@@ -1,14 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { signOut, useSession } from '@/lib/auth-client';
 import { VimStatusBar } from '@/components/vim-status-bar';
 import { OAuthModal } from '@/components/auth/oauth-modal';
 import { useVimCommand } from '@/hooks/use-vim-command';
 import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow';
 
-const ALLOWED_GITHUB_USERNAME = 'remcostoeten';
+const ALLOWED_GITHUB_USERNAME = env.ALLOWED_GITHUB_USERNAME;
 
 type Props = {
     children: React.ReactNode;
