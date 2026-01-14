@@ -4,7 +4,6 @@ import { ReactNode, lazy, Suspense } from 'react'
 import { Toaster } from 'sonner'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
-import { Footer } from '@/components/layout/footer'
 
 import { StaggerProvider } from '@/components/ui/stagger-system'
 import { PostHogProvider } from '@/components/providers/posthog-provider'
@@ -31,42 +30,7 @@ function DevWidgetWrapper() {
             showRoutes={true}
             showSystemInfo={true}
             showSettings={true}
-            routes={[
-                '/',
-                '/admin',
-                '/blog',
-                '/blog/[...slug]',
-                '/blog/topics',
-                '/blog/topics/[topic]',
-                '/projects',
-                '/projects/[slug]',
-                '/auth/callback',
-                '/api/auth/[...all]',
-                '/api/auth/providers',
-                '/api/example',
-                '/api/github/activity',
-                '/api/github/commits',
-                '/api/github/contributions',
-                '/api/github/events',
-                '/api/github/repo',
-                '/api/spotify/auth-url',
-                '/api/spotify/callback',
-                '/api/spotify/now-playing',
-                '/api/spotify/recent',
-                '/api/spotify/token',
-                '/api/sync',
-                '/og',
-                '/privacy',
-                '/terms',
-                '/rss',
-                '/sitemap-pages.xml',
-                '/sitemap-posts.xml',
-                '/sitemap-tags.xml',
-                '/sitemap.xml',
-                '/robots.txt',
-                '/heading-showcase',
-                '/posthog-demo'
-            ]}
+
         />
     )
 }

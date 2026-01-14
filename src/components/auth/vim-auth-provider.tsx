@@ -6,8 +6,10 @@ import { VimStatusBar } from '@/components/vim-status-bar';
 import { OAuthModal } from '@/components/auth/oauth-modal';
 import { useVimCommand } from '@/hooks/use-vim-command';
 import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow';
+import { env } from '@/server/env';
 
 const ALLOWED_GITHUB_USERNAME = env.ALLOWED_GITHUB_USERNAME;
+const ALLOWED_EMAIL = env.ADMIN_EMAIL;
 
 type Props = {
     children: React.ReactNode;
@@ -29,7 +31,6 @@ export function VimAuthProvider({ children }: Props) {
         }
     };
 
-    // Handle commands from the background listener (:signin typed anywhere)
     useEffect(() => {
         if (backgroundCommand) {
             handleCommand(backgroundCommand);
@@ -37,14 +38,11 @@ export function VimAuthProvider({ children }: Props) {
         }
     }, [backgroundCommand, clearBackgroundCommand]);
 
-    // Check if logged-in user is allowed (only remcostoeten)
     useEffect(() => {
         if (session?.user) {
-            // Get GitHub username from the user data
-            // If the user's name/email doesn't match remcostoeten, sign them out
             const isAllowed =
                 session.user.name?.toLowerCase() === ALLOWED_GITHUB_USERNAME ||
-                session.user.email?.toLowerCase().includes(ALLOWED_GITHUB_USERNAME);
+                (ALLOWED_EMAIL && session.user.email?.toLowerCase().includes(ALLOWED_EMAIL));
 
             if (!isAllowed) {
                 console.warn('Unauthorized user attempted login, signing out...');
@@ -56,17 +54,14 @@ export function VimAuthProvider({ children }: Props) {
     return (
         <>
             {children}
-            {/* Vim status bar */}
             <VimStatusBar onCommand={handleCommand} />
 
-            {/* OAuth modal */}
             <OAuthModal
                 isOpen={showOAuthModal}
                 onClose={() => setShowOAuthModal(false)}
                 provider="github"
             />
 
-            {/* Auth indicator glow for logged-in users */}
             {session?.user && <OuterAuthGlow />}
         </>
     );

@@ -6,6 +6,12 @@ export const metadata: Metadata = {
     description: 'Code snippets, UI experiments, and package builds',
 }
 
+import { Suspense } from 'react'
+
 export default function PlaygroundPage() {
-    return <PlaygroundContent />
+    return (
+        <Suspense fallback={null}>
+            <PlaygroundContent />
+        </Suspense>
+    )
 }

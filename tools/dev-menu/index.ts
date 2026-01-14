@@ -1,5 +1,6 @@
 export { DevWidget } from './components/DevWidget'
 export * from './components/types'
+export * from './utils/generate-routes'
 export { AuthSection } from './components/sections/AuthSection'
 export { RoutesSection } from './components/sections/RoutesSection'
 export { SystemInfoSection } from './components/sections/SystemInfoSection'
