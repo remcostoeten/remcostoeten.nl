@@ -33,6 +33,10 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
         );
     }, [currentInput]);
 
+    const safeSelectedIndex = suggestions.length > 0 
+        ? Math.max(0, Math.min(selectedIndex, suggestions.length - 1))
+        : -1;
+
     const handleCommand = useCallback((cmd: string) => {
         const normalized = cmd.trim().toLowerCase().replace(/^:/, '').replace(/\s+/g, '');
 
@@ -80,7 +84,8 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                 if (e.key === 'Tab' && suggestions.length > 0) {
                     e.preventDefault();
                     e.stopPropagation();
-                    const suggestion = suggestions[selectedIndex];
+                    // Use safeSelectedIndex for lookup
+                    const suggestion = suggestions[safeSelectedIndex];
                     if (suggestion) {
                         setInput(':' + suggestion.cmd);
                     }
@@ -134,7 +139,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 
         window.addEventListener('keydown', handleKeyDown, true);
         return () => window.removeEventListener('keydown', handleKeyDown, true);
-    }, [isVisible, input, mode, handleCommand, suggestions, selectedIndex]);
+    }, [isVisible, input, mode, handleCommand, suggestions, selectedIndex, safeSelectedIndex]);
 
     const getStatusText = () => {
         if (session?.user) {
@@ -157,9 +162,9 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                         <div className="flex items-center gap-2 flex-1">
                             <span className="text-green-500">{input}</span>
                             <span className="w-2 h-4 bg-green-500 animate-pulse" />
-                            {suggestions.length > 0 && currentInput && (
+                            {suggestions.length > 0 && currentInput && safeSelectedIndex !== -1 && (
                                 <span className="text-zinc-600 ml-2">
-                                    {suggestions[selectedIndex]?.cmd.slice(currentInput.length)}
+                                    {suggestions[safeSelectedIndex]?.cmd.slice(currentInput.length)}
                                 </span>
                             )}
                         </div>
@@ -175,7 +180,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                                 {suggestions.slice(0, 5).map((s, i) => (
                                     <span 
                                         key={s.cmd}
-                                        className={`px-2 py-0.5 ${i === selectedIndex ? 'bg-green-500/20 text-green-400' : 'text-zinc-500'}`}
+                                        className={`px-2 py-0.5 ${i === safeSelectedIndex ? 'bg-green-500/20 text-green-400' : 'text-zinc-500'}`}
                                     >
                                         :{s.cmd}
                                     </span>
