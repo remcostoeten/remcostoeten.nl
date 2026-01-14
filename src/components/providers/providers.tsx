@@ -40,23 +40,23 @@ export function AppProviders({ children }: TProps) {
     return (
         <PostHogProvider>
             <CustomQueryClientProvider>
-                <VimAuthProvider>
-                    <BlogFilterProvider>
-                    <StaggerProvider config={{ baseDelay: 80, initialDelay: 0, strategy: 'mount-order' }}>
-                        <ThemeSwitch />
-                        {children}
-                        <Toaster />
+                <BlogFilterProvider>
+                    <VimAuthProvider>
+                        <StaggerProvider config={{ baseDelay: 80, initialDelay: 0, strategy: 'mount-order' }}>
+                            <ThemeSwitch />
+                            {children}
+                            <Toaster />
 
-                        <Suspense fallback={null}>
-                            <Analytics />
-                        </Suspense>
-                        <Suspense fallback={null}>
-                            <SpeedInsights />
-                        </Suspense>
-                        <DevWidgetWrapper />
-                    </StaggerProvider>
-                    </BlogFilterProvider>
-                </VimAuthProvider>
+                            <Suspense fallback={null}>
+                                <Analytics />
+                            </Suspense>
+                            <Suspense fallback={null}>
+                                <SpeedInsights />
+                            </Suspense>
+                            <DevWidgetWrapper />
+                        </StaggerProvider>
+                    </VimAuthProvider>
+                </BlogFilterProvider>
             </CustomQueryClientProvider>
         </PostHogProvider>
     )
