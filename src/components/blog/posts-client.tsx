@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ArrowUpRight, ArrowRight } from 'lucide-react'
+import { ArrowUpRight, ArrowRight, EyeOff } from 'lucide-react'
 
 import { getDateParts, readMinutes } from '@/lib/blog-format'
+import { useBlogFilter } from '@/hooks/use-blog-filter'
 
 export function PostCountHeader({ count }: { count: number }) {
   return (
@@ -196,18 +197,50 @@ function BlogCardSkeleton() {
 
 export function BlogPostsClient({ posts }: BlogPostsProps) {
   const [showAll, setShowAll] = useState(false)
-  const [isLoading] = useState(false)
+  const { filter, setFilter } = useBlogFilter()
 
-  const displayedBlogs = showAll ? posts : posts.slice(0, 3)
-  const hasMorePosts = posts.length > 3
+  const filteredPosts = posts.filter(post => {
+    if (filter === 'all') return true
+    if (filter === 'drafts') return post.metadata.draft === true
+    if (filter === 'published') return !post.metadata.draft
+    return true
+  })
+
+  const displayedBlogs = showAll ? filteredPosts : filteredPosts.slice(0, 3)
+  const hasMorePosts = filteredPosts.length > 3
 
   return (
     <div>
+      {filter !== 'all' && (
+        <div className="mb-4 flex items-center gap-2 px-2 py-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono">
+          <EyeOff className="w-3 h-3" />
+          <span>Filtering: showing {filter === 'drafts' ? 'drafts only' : 'published only'}</span>
+          <button
+            onClick={() => setFilter('all')}
+            className="ml-auto px-2 py-0.5 hover:bg-amber-500/20 transition-colors"
+          >
+            Clear (:show all)
+          </button>
+        </div>
+      )}
+
       <ul className="flex flex-col m-0 p-0 list-none" role="list">
         {displayedBlogs.map((post, index) => (
           <BlogCard key={post.slug} post={post} index={index} />
         ))}
       </ul>
+
+      {filteredPosts.length === 0 && (
+        <div className="py-12 text-center text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm">No posts match the current filter.</p>
+          <button
+            onClick={() => setFilter('all')}
+            className="mt-2 text-xs text-amber-400 hover:underline"
+          >
+            :show all
+          </button>
+        </div>
+      )}
 
       {hasMorePosts && (
         <div className="mt-8 flex justify-end">
