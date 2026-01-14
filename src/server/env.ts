@@ -38,7 +38,6 @@ export const env = createEnv({
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
             
         ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-        ALLOWED_GITHUB_USERNAME: process.env.ALLOWED_GITHUB_USERNAME,
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         RESEND_EMAIL_FROM: process.env.RESEND_EMAIL_FROM,
         CRON_SECRET: process.env.CRON_SECRET,

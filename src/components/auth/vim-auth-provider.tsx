@@ -6,10 +6,7 @@ import { VimStatusBar } from '@/components/vim-status-bar';
 import { OAuthModal } from '@/components/auth/oauth-modal';
 import { useVimCommand } from '@/hooks/use-vim-command';
 import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow';
-import { env } from '@/server/env';
-
-const ALLOWED_GITHUB_USERNAME = env.ALLOWED_GITHUB_USERNAME;
-const ALLOWED_EMAIL = env.ADMIN_EMAIL;
+const ALLOWED_GITHUB_USERNAME = 'remcostoeten';
 
 type Props = {
     children: React.ReactNode;
@@ -41,8 +38,7 @@ export function VimAuthProvider({ children }: Props) {
     useEffect(() => {
         if (session?.user) {
             const isAllowed =
-                session.user.name?.toLowerCase() === ALLOWED_GITHUB_USERNAME ||
-                (ALLOWED_EMAIL && session.user.email?.toLowerCase().includes(ALLOWED_EMAIL));
+                session.user.name?.toLowerCase() === ALLOWED_GITHUB_USERNAME;
 
             if (!isAllowed) {
                 console.warn('Unauthorized user attempted login, signing out...');

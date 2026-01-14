@@ -9,6 +9,7 @@ import {
   GraduationCapIcon,
   TerminalIcon,
 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import React from "react"
 import ReactMarkdown from "react-markdown"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -249,40 +250,60 @@ export function ExperiencePositionItem({
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} asChild>
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
-        <CollapsibleTrigger
-          className={cn(
-            "group/experience not-prose w-full text-left select-none",
-            "flex items-center justify-between pl-10 pr-4 py-0.5",
+        <div className="flex items-center gap-2 text-sm text-muted-foreground/80 pl-10 mb-1">
+          {position.employmentType && (
+            <>
+              <span>{position.employmentType}</span>
+              <Separator className="h-4" orientation="vertical" />
+            </>
           )}
-        >
-          <Metadata />
-          <div className="shrink-0 text-muted-foreground/60 hover:text-muted-foreground transition-colors [&_svg]:size-4" aria-hidden>
-            <ChevronsDownUpIcon className="hidden group-data-[state=open]/experience:block" />
-            <ChevronsUpDownIcon className="hidden group-data-[state=closed]/experience:block" />
+          <div className="flex items-center">
+            {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
+              const year = Number.parseInt(part)
+              return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
+            })}
           </div>
-        </CollapsibleTrigger>
-
-        <CollapsibleContent className="grid transition-[grid-template-rows] duration-300 ease-out data-[state=closed]:grid-rows-[0fr] data-[state=open]:grid-rows-[1fr]">
-          <div className="overflow-hidden min-h-0">
-            <div className="pl-10 pr-4">
-            {position.description && (
-              <Prose className="pt-2">
-                <ReactMarkdown>{position.description}</ReactMarkdown>
-              </Prose>
-            )}
-
-            {Array.isArray(position.skills) && position.skills.length > 0 && (
-              <ul className="not-prose flex flex-wrap gap-1.5 pt-3">
-                {position.skills.map((skill, index) => (
-                  <li key={index} className="flex">
-                    <Skill>{skill}</Skill>
-                  </li>
-                ))}
-              </ul>
-            )}
+          
+          <CollapsibleTrigger className="p-1 hover:bg-muted/50 rounded-sm transition-colors group/trigger focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+             <div className="shrink-0 text-muted-foreground/60 transition-transform duration-200 group-data-[state=open]/trigger:rotate-180">
+              <ChevronsDownUpIcon className="size-3.5 hidden group-data-[state=open]/trigger:block" />
+              <ChevronsUpDownIcon className="size-3.5 block group-data-[state=open]/trigger:hidden" />
             </div>
-          </div>
-        </CollapsibleContent>
+            <span className="sr-only">Toggle details</span>
+          </CollapsibleTrigger>
+        </div>
+
+
+
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="pl-10 pr-4 pb-2">
+                {position.description && (
+                  <Prose className="pt-2">
+                    <ReactMarkdown>{position.description}</ReactMarkdown>
+                  </Prose>
+                )}
+
+                {Array.isArray(position.skills) && position.skills.length > 0 && (
+                  <ul className="not-prose flex flex-wrap gap-1.5 pt-3">
+                    {position.skills.map((skill, index) => (
+                      <li key={index} className="flex">
+                        <Skill>{skill}</Skill>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </Collapsible>
   )
