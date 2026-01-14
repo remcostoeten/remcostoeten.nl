@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { signOut, useSession } from '@/lib/auth-client';
 import { VimStatusBar } from '@/components/vim-status-bar';
 import { OAuthModal } from '@/components/auth/oauth-modal';
 import { useVimCommand } from '@/hooks/use-vim-command';
 import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow';
+import { useBlogFilter } from '@/hooks/use-blog-filter';
 
 const ALLOWED_GITHUB_USERNAME = 'remcostoeten';
 
@@ -18,15 +18,21 @@ export function VimAuthProvider({ children }: Props) {
     const { data: session } = useSession();
     const [showOAuthModal, setShowOAuthModal] = useState(false);
     const { command: backgroundCommand, clearCommand: clearBackgroundCommand } = useVimCommand();
+    const { setFilter } = useBlogFilter();
 
     const handleCommand = async (command: string) => {
-        const cmd = command.toLowerCase().trim();
+        const cmd = command.toLowerCase().trim().replace(/\s+/g, '');
 
         if ((cmd === 'signin' || cmd === 'login') && !session) {
-            // Show the modal
             setShowOAuthModal(true);
         } else if ((cmd === 'signout' || cmd === 'logout') && session) {
             await signOut();
+        } else if (cmd === 'hidedrafts') {
+            setFilter('published');
+        } else if (cmd === 'hidepublished' || cmd === 'hidenondrafts') {
+            setFilter('drafts');
+        } else if (cmd === 'showall' || cmd === 'showallblogs') {
+            setFilter('all');
         }
     };
 
