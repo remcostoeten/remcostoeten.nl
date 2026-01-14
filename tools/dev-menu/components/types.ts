@@ -5,7 +5,6 @@ export interface DevWidgetConfig {
   showRoutes?: boolean
   showSystemInfo?: boolean
   showSettings?: boolean
-  routes?: string[]
   customTitle?: string
   isAdmin?: boolean
 }

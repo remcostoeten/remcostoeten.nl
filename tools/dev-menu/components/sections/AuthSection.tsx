@@ -12,14 +12,14 @@ export function AuthSection({ session, onSignOut }: AuthSectionProps) {
   if (!session) return null
 
   return (
-    <div className="p-3 m-2 rounded-xl bg-white/[0.03] border border-white/5">
+    <div className="p-2 m-2 bg-[hsl(0,0%,8.6%)] border border-[hsl(0,0%,18%)]">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm font-medium text-white">
-            {session?.user?.name || 'Not authenticated'}
+          <div className="text-[11px] font-medium text-[hsl(0,0%,85%)]">
+            {session?.user?.name || 'anonymous'}
           </div>
           {session?.user?.email && (
-            <div className="text-xs text-white/40">
+            <div className="text-[10px] text-[hsl(0,0%,40%)]">
               {session.user.email}
             </div>
           )}
@@ -27,11 +27,11 @@ export function AuthSection({ session, onSignOut }: AuthSectionProps) {
         {onSignOut && (
           <button
             onClick={onSignOut}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 border border-red-500/20 transition-all"
+            className="flex items-center gap-1 px-2 py-1 text-[10px] bg-[hsl(355,98%,75%)]/10 text-[hsl(355,98%,75%)] hover:bg-[hsl(355,98%,75%)]/20 border border-[hsl(355,98%,75%)]/20 transition-colors"
             title="Sign out"
           >
-            <LogOut className="w-3.5 h-3.5" />
-            <span>Logout</span>
+            <LogOut className="w-3 h-3" />
+            <span>logout</span>
           </button>
         )}
       </div>
