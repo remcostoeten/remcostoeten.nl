@@ -83,41 +83,20 @@ const getGitHubContributions = unstable_cache(
 const getGitHubActivity = unstable_cache(
     async (limit: number) => {
         try {
-            // If limit is small, just do one request
-            if (limit <= 100) {
-                const response = await fetch(
-                    `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=${limit}`,
-                    { headers: getGitHubHeaders() }
-                )
-                if (!response.ok) return []
-                const events = await response.json()
-                return events.map((event: any) => parseGitHubEvent(event)).filter(Boolean)
-            }
+            // Fetch more events than requested to account for filtered-out events
+            const fetchLimit = Math.min(limit * 3, 100);
+            const response = await fetch(
+                `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=${fetchLimit}`,
+                { headers: getGitHubHeaders() }
+            )
 
-            // For larger limits, fetch pages (max 3 pages = 300 events)
-            const pagesToFetch = Math.min(Math.ceil(limit / 100), 3)
-            const allEvents: any[] = []
+            if (!response.ok) return []
 
-            for (let page = 1; page <= pagesToFetch; page++) {
-                const response = await fetch(
-                    `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=100&page=${page}`,
-                    { headers: getGitHubHeaders() }
-                )
-                
-                if (!response.ok) break
-                
-                const events = await response.json()
-                if (!Array.isArray(events) || events.length === 0) break
-                
-                allEvents.push(...events)
-                
-                if (allEvents.length >= limit) break
-            }
+            const events = await response.json()
+            const parsed = events.map((event: any) => parseGitHubEvent(event)).filter(Boolean)
 
-            return allEvents
-                .slice(0, limit)
-                .map((event: any) => parseGitHubEvent(event))
-                .filter(Boolean)
+            // Return only the requested number of valid activities
+            return parsed.slice(0, limit)
         } catch (error) {
             console.error('Error fetching GitHub activity:', error)
             return []
@@ -164,33 +143,102 @@ function parseGitHubEvent(event: any) {
         case 'PullRequestEvent': {
             const action = event.payload?.action
             const prNumber = event.payload?.number
-            const prTitle = event.payload?.pull_request?.title || ''
+            const prTitle = event.payload?.pull_request?.title?.trim() || ''
+            const prBody = event.payload?.pull_request?.body?.split('\n')[0]?.trim() || ''
+            const branchName = event.payload?.pull_request?.head?.ref || ''
 
-            let verb = action
-            if (action === 'closed' && event.payload?.pull_request?.merged) {
-                verb = 'merged'
-            } else if (action === 'synchronize') {
-                verb = 'updated'
+            let verb = 'worked on'
+            if (action === 'opened') verb = 'opened'
+            else if (action === 'closed' && event.payload.pull_request?.merged) verb = 'merged'
+            else if (action === 'merged') verb = 'merged'
+            else if (action === 'closed') verb = 'closed'
+            else if (action === 'reopened') verb = 'reopened'
+            else if (action === 'synchronize') verb = 'updated'
+
+            if (prTitle) {
+                return {
+                    ...base,
+                    type: 'pr',
+                    title: `${verb} "${prTitle}"`,
+                    description: prBody || prTitle,
+                    url: event.payload?.pull_request?.html_url || base.url,
+                }
+            }
+
+            const branchLabel = branchName
+                .replace(/^(feat|feature|fix|chore|refactor|infra|docs|style|test|ci|build|perf)\//i, '')
+                .replace(/[-_]/g, ' ')
+                .trim()
+
+            if (branchLabel) {
+                return {
+                    ...base,
+                    type: 'pr',
+                    title: `${verb} "${branchLabel}"`,
+                    description: `PR #${prNumber} from ${branchName}`,
+                    url: event.payload?.pull_request?.html_url || base.url,
+                }
             }
 
             return {
                 ...base,
                 type: 'pr',
-                title: `${verb} PR #${prNumber}${prTitle ? `: ${prTitle}` : ''}`,
-                description: prTitle,
+                title: `${verb} PR #${prNumber}`,
+                description: prBody || `Pull request #${prNumber}`,
                 url: event.payload?.pull_request?.html_url || base.url,
             }
         }
         case 'IssuesEvent': {
             const action = event.payload?.action
             const issueNumber = event.payload?.issue?.number
-            const issueTitle = event.payload?.issue?.title || ''
+            const issueTitle = event.payload?.issue?.title?.trim() || ''
+            const issueBody = event.payload?.issue?.body?.split('\n')[0]?.trim() || ''
+
+            let verb = 'worked on'
+            if (action === 'opened') verb = 'opened'
+            else if (action === 'closed') verb = 'closed'
+            else if (action === 'reopened') verb = 'reopened'
+
+            if (issueTitle) {
+                return {
+                    ...base,
+                    type: 'issue',
+                    title: `${verb} "${issueTitle}"`,
+                    description: issueBody || issueTitle,
+                    url: event.payload?.issue?.html_url || base.url,
+                }
+            }
+
             return {
                 ...base,
                 type: 'issue',
-                title: `${action} issue #${issueNumber}${issueTitle ? `: ${issueTitle}` : ''}`,
-                description: issueTitle,
+                title: `${verb} issue #${issueNumber}`,
+                description: issueBody || `Issue #${issueNumber}`,
                 url: event.payload?.issue?.html_url || base.url,
+            }
+        }
+        case 'IssueCommentEvent': {
+            const issueNumber = event.payload?.issue?.number
+            const issueTitle = event.payload?.issue?.title?.trim() || ''
+            const commentBody = event.payload?.comment?.body?.split('\n')[0]?.trim() || ''
+            const isPR = !!event.payload?.issue?.pull_request
+
+            if (issueTitle) {
+                return {
+                    ...base,
+                    type: 'issue',
+                    title: `commented on "${issueTitle}"`,
+                    description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
+                    url: event.payload?.comment?.html_url || base.url,
+                }
+            }
+
+            return {
+                ...base,
+                type: 'issue',
+                title: `commented on ${isPR ? 'PR' : 'issue'} #${issueNumber}`,
+                description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
+                url: event.payload?.comment?.html_url || base.url,
             }
         }
         case 'WatchEvent':

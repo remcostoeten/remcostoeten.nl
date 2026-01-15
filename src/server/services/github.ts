@@ -594,12 +594,14 @@ class GitHubService {
       case 'PullRequestEvent': {
         const action = event.payload.action;
         const prNumber = event.payload.number;
-        const prTitle = event.payload.pull_request?.title || '';
-        const prBody = event.payload.pull_request?.body?.split('\n')[0] || '';
+        const prTitle = event.payload.pull_request?.title?.trim() || '';
+        const prBody = event.payload.pull_request?.body?.split('\n')[0]?.trim() || '';
+        const branchName = event.payload.pull_request?.head?.ref || '';
 
         let verb = 'worked on';
         if (action === 'opened') verb = 'opened';
         else if (action === 'closed' && event.payload.pull_request?.merged) verb = 'merged';
+        else if (action === 'merged') verb = 'merged';
         else if (action === 'closed') verb = 'closed';
         else if (action === 'reopened') verb = 'reopened';
         else if (action === 'synchronize') verb = 'updated';
@@ -607,15 +609,38 @@ class GitHubService {
         else if (action === 'review_requested') verb = 'requested review on';
         else if (action === 'ready_for_review') verb = 'marked ready';
 
-        // Always try to show context: title > body snippet > just number
-        const contextText = prTitle || (prBody ? prBody.substring(0, 50) : '');
-        const titleSuffix = contextText ? `: ${contextText}` : '';
+        if (prTitle) {
+          return {
+            ...base,
+            type: 'pr',
+            title: `${verb} "${prTitle}"`,
+            description: prBody || prTitle,
+            url: event.payload.pull_request?.html_url || base.url,
+            payload: event.payload
+          };
+        }
+
+        const branchLabel = branchName
+          .replace(/^(feat|feature|fix|chore|refactor|infra|docs|style|test|ci|build|perf)\//i, '')
+          .replace(/[-_]/g, ' ')
+          .trim();
+
+        if (branchLabel) {
+          return {
+            ...base,
+            type: 'pr',
+            title: `${verb} "${branchLabel}"`,
+            description: `PR #${prNumber} from ${branchName}`,
+            url: event.payload.pull_request?.html_url || base.url,
+            payload: event.payload
+          };
+        }
 
         return {
           ...base,
           type: 'pr',
-          title: `${verb} PR #${prNumber}${titleSuffix}`,
-          description: prTitle || prBody.substring(0, 100) || `Pull request #${prNumber}`,
+          title: `${verb} PR #${prNumber}`,
+          description: prBody || `Pull request #${prNumber}`,
           url: event.payload.pull_request?.html_url || base.url,
           payload: event.payload
         };
@@ -624,8 +649,8 @@ class GitHubService {
       case 'IssuesEvent': {
         const action = event.payload.action;
         const issueNumber = event.payload.issue?.number;
-        const issueTitle = event.payload.issue?.title || '';
-        const issueBody = event.payload.issue?.body?.split('\n')[0] || '';
+        const issueTitle = event.payload.issue?.title?.trim() || '';
+        const issueBody = event.payload.issue?.body?.split('\n')[0]?.trim() || '';
 
         let verb = 'worked on';
         if (action === 'opened') verb = 'opened';
@@ -637,15 +662,24 @@ class GitHubService {
         else if (action === 'milestoned') verb = 'milestoned';
         else if (action === 'pinned') verb = 'pinned';
 
-        // Always try to show context: title > body snippet > just number
-        const contextText = issueTitle || (issueBody ? issueBody.substring(0, 50) : '');
-        const titleSuffix = contextText ? `: ${contextText}` : '';
+        // Show the issue title directly, not just issue #N
+        if (issueTitle) {
+          return {
+            ...base,
+            type: 'issue',
+            title: `${verb} "${issueTitle}"`,
+            description: issueBody || issueTitle,
+            url: event.payload.issue?.html_url || base.url,
+            payload: event.payload
+          };
+        }
 
+        // Fallback if no title available
         return {
           ...base,
           type: 'issue',
-          title: `${verb} issue #${issueNumber}${titleSuffix}`,
-          description: issueTitle || issueBody.substring(0, 100) || `Issue #${issueNumber}`,
+          title: `${verb} issue #${issueNumber}`,
+          description: issueBody || `Issue #${issueNumber}`,
           url: event.payload.issue?.html_url || base.url,
           payload: event.payload
         };
@@ -668,9 +702,9 @@ class GitHubService {
 
       case 'PullRequestReviewEvent': {
         const prNumber = event.payload.pull_request?.number;
-        const prTitle = event.payload.pull_request?.title || '';
+        const prTitle = event.payload.pull_request?.title?.trim() || '';
         const reviewState = event.payload.review?.state;
-        const reviewBody = event.payload.review?.body?.split('\n')[0] || '';
+        const reviewBody = event.payload.review?.body?.split('\n')[0]?.trim() || '';
 
         let verb = 'reviewed';
         if (reviewState === 'approved') verb = 'approved';
@@ -678,14 +712,24 @@ class GitHubService {
         else if (reviewState === 'commented') verb = 'commented on';
         else if (reviewState === 'dismissed') verb = 'dismissed review on';
 
-        // Include PR title for context
-        const titleSuffix = prTitle ? `: ${prTitle}` : '';
+        // Show the PR title directly
+        if (prTitle) {
+          return {
+            ...base,
+            type: 'review',
+            title: `${verb} "${prTitle}"`,
+            description: reviewBody || prTitle,
+            url: event.payload.review?.html_url || event.payload.pull_request?.html_url || base.url,
+            payload: event.payload
+          };
+        }
 
+        // Fallback if no title available
         return {
           ...base,
           type: 'review',
-          title: `${verb} PR #${prNumber}${titleSuffix}`,
-          description: prTitle || reviewBody.substring(0, 100) || `Review on PR #${prNumber}`,
+          title: `${verb} PR #${prNumber}`,
+          description: reviewBody || `Review on PR #${prNumber}`,
           url: event.payload.review?.html_url || event.payload.pull_request?.html_url || base.url,
           payload: event.payload
         };
@@ -693,18 +737,37 @@ class GitHubService {
 
       case 'PullRequestReviewCommentEvent': {
         const prNumber = event.payload.pull_request?.number;
-        const prTitle = event.payload.pull_request?.title || '';
-        const commentBody = event.payload.comment?.body?.split('\n')[0] || '';
+        const prTitle = event.payload.pull_request?.title?.trim() || '';
+        const commentBody = event.payload.comment?.body?.split('\n')[0]?.trim() || '';
         const filePath = event.payload.comment?.path?.split('/').pop() || '';
 
-        // Show file being reviewed if available
-        const contextText = filePath ? `on ${filePath}` : (prTitle ? `: ${prTitle}` : '');
+        // Prefer showing what was reviewed (file or PR title) over just the number
+        if (filePath && prTitle) {
+          return {
+            ...base,
+            type: 'review',
+            title: `reviewed ${filePath} in "${prTitle}"`,
+            description: commentBody || prTitle,
+            url: event.payload.comment?.html_url || base.url,
+            payload: event.payload
+          };
+        } else if (prTitle) {
+          return {
+            ...base,
+            type: 'review',
+            title: `reviewed code in "${prTitle}"`,
+            description: commentBody || prTitle,
+            url: event.payload.comment?.html_url || base.url,
+            payload: event.payload
+          };
+        }
 
+        // Fallback
         return {
           ...base,
           type: 'review',
-          title: `reviewed code in PR #${prNumber}${contextText}`,
-          description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : '') || prTitle,
+          title: `reviewed code in PR #${prNumber}`,
+          description: commentBody || `Review on PR #${prNumber}`,
           url: event.payload.comment?.html_url || base.url,
           payload: event.payload
         };

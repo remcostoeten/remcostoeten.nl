@@ -4,7 +4,6 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { useCombinedActivity } from '@/hooks/use-combined-activity';
-import type { SpotifyTrack } from '@/server/services/spotify';
 import type { GitHubEventDetail } from '@/hooks/use-github';
 
 
@@ -130,7 +129,7 @@ export function ActivityContributionGraph({
 
     // Rolling 12-month view: start from Feb of previous year, end at current date
     const end = now;
-    const start = new Date(previousYear, 1, 1); // February 1st of previous year
+    const start = new Date(previousYear, 1, 10); // February 1st of previous year
 
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
 
@@ -199,7 +198,7 @@ export function ActivityContributionGraph({
   const getColorForLevel = (level: number) => {
     // Level 0 (empty)
     if (level === 0) {
-      return 'bg-neutral-100 dark:bg-neutral-900/40';
+      return 'bg-neutral-200 dark:bg-neutral-900/70';
     }
 
     // Levels 1-4
@@ -208,7 +207,7 @@ export function ActivityContributionGraph({
       case 2: return 'bg-brand-500/50';
       case 3: return 'bg-brand-500/75';
       case 4: return 'bg-brand-500';
-      default: return 'bg-neutral-100 dark:bg-neutral-900/40';
+      default: return 'bg-neutral-100 dark:bg-neutral-900/70';
     }
   };
 
@@ -226,15 +225,20 @@ export function ActivityContributionGraph({
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  // Rolling 12-month view - ~48 weeks from Feb previous year to end of Jan current year
-  const totalWeeks = 48;
-  // Gap unused but kept for ref
+  const totalWeeks = useMemo(() => {
+    const start = new Date(previousYear, 1, 10);
+    const now = new Date();
+    const diffMs = now.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    return Math.ceil(diffDays / 7) + 1;
+  }, [previousYear]);
+
   const gap = 3;
 
   // Data weeks - for rendering actual data, starting from Feb of previous year
   const weeks = useMemo(() => {
     const weeksArray: ActivityDay[][] = [];
-    const start = new Date(previousYear, 1, 1); // February 1st of previous year
+    const start = new Date(previousYear, 1, 10); // February 1st of previous year
 
     let currentDate = new Date(start);
     const dayOfWeek = currentDate.getDay();
@@ -258,7 +262,7 @@ export function ActivityContributionGraph({
   const monthLabels = useMemo(() => {
     const labels: { month: string; weekIndex: number }[] = [];
     let lastMonthKey = '';
-    const start = new Date(previousYear, 1, 1); // February 1st of previous year
+    const start = new Date(previousYear, 1, 10); // February 1st of previous year
     let currentDate = new Date(start);
     const dayOfWeek = currentDate.getDay();
     currentDate.setDate(currentDate.getDate() - dayOfWeek);
@@ -325,6 +329,7 @@ export function ActivityContributionGraph({
                   const hasData = !!day.date;
                   const showData = !loading;
                   const delayMs = (weekIndex * 7 + dayIndex) * 2;
+                  const isToday = day.date === new Date().toISOString().split('T')[0];
 
                   return (
                     <div
@@ -332,6 +337,7 @@ export function ActivityContributionGraph({
                       className={`w-full aspect-square rounded-[2px] transition-all duration-300 ease-out ${hasData ? 'cursor-pointer' : ''
                         } ${hasData ? getColorForLevel(day.level) : 'bg-secondary/40 border border-border/20'
                         } ${!hasData ? 'opacity-0' : ''
+                        } ${isToday ? 'ring-2 ring-brand-500 ring-offset-1 ring-offset-background' : ''
                         }`}
                       style={{ transitionDelay: `${delayMs}ms` }}
                       onMouseEnter={(e) => hasData && handleMouseEnter(e, day)}

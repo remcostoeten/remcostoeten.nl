@@ -131,25 +131,68 @@ function getEventIcon(type: GitHubEventDetail['type']) {
     }
 }
 
-function getProjectVerb(type: GitHubEventDetail['type']): string {
-    switch (type) {
-        case 'commit':
-        case 'pr':
-        case 'create':
-        case 'review':
-            return 'building';
-        case 'issue':
-            return 'contributing to';
-        case 'star':
-        case 'fork':
-            return 'exploring';
-        case 'release':
-            return 'shipping';
-        case 'delete':
-            return 'maintaining';
-        default:
-            return 'working on';
-    }
+type IntroPhrase = {
+    prefix: string;
+    connector: string;
+};
+
+const INTRO_PHRASES: Record<string, IntroPhrase[]> = {
+    commit: [
+        { prefix: 'Just pushed to', connector: '—' },
+        { prefix: 'Shipped some code to', connector: 'with' },
+        { prefix: 'Been hacking on', connector: '→' },
+        { prefix: 'Late night commits on', connector: ':' },
+        { prefix: 'Currently building', connector: '—' },
+    ],
+    pr: [
+        { prefix: 'Opened a PR on', connector: '—' },
+        { prefix: 'Contributing to', connector: 'via' },
+        { prefix: 'Just submitted to', connector: ':' },
+        { prefix: 'Working on a feature for', connector: '→' },
+    ],
+    create: [
+        { prefix: 'Just created', connector: '—' },
+        { prefix: 'Spinning up', connector: ':' },
+        { prefix: 'Started something new on', connector: '→' },
+    ],
+    review: [
+        { prefix: 'Reviewing code on', connector: '—' },
+        { prefix: 'CR session on', connector: ':' },
+        { prefix: 'Deep diving into', connector: '→' },
+    ],
+    issue: [
+        { prefix: 'Tracking an issue on', connector: '—' },
+        { prefix: 'Debugging something in', connector: ':' },
+        { prefix: 'Squashing bugs on', connector: '→' },
+    ],
+    star: [
+        { prefix: 'Discovered', connector: '—' },
+        { prefix: 'Bookmarked', connector: ':' },
+        { prefix: 'Found something cool:', connector: '' },
+    ],
+    fork: [
+        { prefix: 'Forked', connector: '—' },
+        { prefix: 'Cloned', connector: 'to tinker with' },
+    ],
+    release: [
+        { prefix: 'Just shipped', connector: '🚀' },
+        { prefix: 'Released', connector: '—' },
+        { prefix: 'Version bump on', connector: ':' },
+    ],
+    delete: [
+        { prefix: 'Cleaning up', connector: '—' },
+        { prefix: 'Pruned some branches on', connector: ':' },
+    ],
+    default: [
+        { prefix: 'Active on', connector: '—' },
+        { prefix: 'Working on', connector: ':' },
+        { prefix: 'Been busy with', connector: '→' },
+    ],
+};
+
+function getActivityIntro(type: GitHubEventDetail['type'], seed: number): IntroPhrase {
+    const phrases = INTRO_PHRASES[type] || INTRO_PHRASES.default;
+    return phrases[seed % phrases.length];
 }
 
 function getShortRepoName(fullName: string) {
@@ -290,32 +333,38 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     // No longer need separate Spotify fetch - it comes from combined data
     const isLoading = dataLoading || !isReady;
 
+    // Pair activities with tracks - use minimum of both to avoid index out of bounds
+    const pairedContent = useMemo(() => {
+        const minLength = Math.min(activities.length, tracks.length);
+        return Array.from({ length: minLength }, (_, i) => ({
+            activity: activities[i],
+            track: tracks[i]
+        }));
+    }, [activities, tracks]);
+
     const rotateActivity = useCallback(() => {
-        if (activities.length === 0 || isPaused) return;
+        if (pairedContent.length === 0 || isPaused) return;
         setTransitionType('auto');
         setDirection(1);
-        setCurrentIndex((prev) => (prev + 1) % activities.length);
+        setCurrentIndex((prev) => (prev + 1) % pairedContent.length);
         setElapsedTime(0);
-
-    }, [activities.length, isPaused]);
+    }, [pairedContent.length, isPaused]);
 
     const goToNextSlide = useCallback(() => {
-        if (activities.length === 0) return;
+        if (pairedContent.length === 0) return;
         setTransitionType('manual');
         setDirection(1);
-        setCurrentIndex((prev) => (prev + 1) % activities.length);
+        setCurrentIndex((prev) => (prev + 1) % pairedContent.length);
         setElapsedTime(0);
-
-    }, [activities.length]);
+    }, [pairedContent.length]);
 
     const goToPrevSlide = useCallback(() => {
-        if (activities.length === 0) return;
+        if (pairedContent.length === 0) return;
         setTransitionType('manual');
         setDirection(-1);
-        setCurrentIndex((prev) => (prev - 1 + activities.length) % activities.length);
+        setCurrentIndex((prev) => (prev - 1 + pairedContent.length) % pairedContent.length);
         setElapsedTime(0);
-
-    }, [activities.length]);
+    }, [pairedContent.length]);
 
     const handleDragEnd = (info: PanInfo) => {
         const offset = info.offset.x;
@@ -332,7 +381,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     };
 
     useEffect(() => {
-        if (activities.length === 0 || !isReady) return;
+        if (pairedContent.length === 0 || !isReady) return;
 
         const interval = setInterval(() => {
             if (!isPaused) {
@@ -348,34 +397,36 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
         }, 100);
 
         return () => clearInterval(interval);
-    }, [activities.length, isPaused, rotationInterval, rotateActivity, isReady]);
+    }, [pairedContent.length, isPaused, rotationInterval, rotateActivity, isReady]);
 
     useEffect(() => {
         setElapsedTime(0);
     }, [currentIndex]);
 
-    const currentActivity = useMemo(() => activities[currentIndex], [activities, currentIndex]);
+    const totalSlides = Math.max(1, pairedContent.length);
+
+    const currentContent = useMemo(() =>
+        pairedContent[currentIndex % totalSlides],
+        [pairedContent, currentIndex, totalSlides]
+    );
+
+    const currentActivity = currentContent?.activity;
+    const currentTrack = currentContent?.track;
+
     const isRealTimePlaying = useMemo(() => playbackState.isPlaying && playbackState.track, [playbackState.isPlaying, playbackState.track]);
 
-    const trackRotation = useMemo(() => {
-        const filteredTracks = isRealTimePlaying && playbackState.track
-            ? tracks.filter(t => t.name !== playbackState.track!.name || t.artist !== playbackState.track!.artist)
-            : tracks;
-        return isRealTimePlaying
-            ? [playbackState.track, ...filteredTracks.slice(0, 4)]
-            : tracks.slice(0, 5);
-    }, [isRealTimePlaying, tracks, playbackState.track]);
+    // If currently playing live, replace the current track with the live one
+    const displayTrack = useMemo(() => {
+        if (isRealTimePlaying && currentIndex % totalSlides === 0) {
+            return playbackState.track;
+        }
+        return currentTrack;
+    }, [isRealTimePlaying, playbackState.track, currentTrack, currentIndex, totalSlides]);
 
-    const currentTrack = useMemo(() =>
-        trackRotation[currentIndex % Math.max(trackRotation.length, 1)],
-        [trackRotation, currentIndex]
-    );
     const isCurrentTrackLive = useMemo(() =>
-        isRealTimePlaying && currentIndex % Math.max(trackRotation.length, 1) === 0,
-        [isRealTimePlaying, currentIndex, trackRotation.length]
+        isRealTimePlaying && currentIndex % totalSlides === 0,
+        [isRealTimePlaying, currentIndex, totalSlides]
     );
-
-    const totalSlides = Math.max(1, trackRotation.length);
 
     if (isLoading) {
         return (
@@ -427,7 +478,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
     }
 
     const repoName = getShortRepoName(currentActivity.repository);
-    const projectVerb = getProjectVerb(currentActivity.type);
+    const introPhrase = getActivityIntro(currentActivity.type, currentIndex);
     const isPrivate = currentActivity.isPrivate;
 
     return (
@@ -482,7 +533,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                         >
                             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 pr-8">
                                 <motion.span variants={wordVariants} className="text-muted-foreground/70">
-                                    Lately, I've been {projectVerb}
+                                    {introPhrase.prefix}
                                 </motion.span>
                                 <motion.span variants={highlightVariants}>
                                     <ProjectHoverWrapper repository={currentActivity.repository} isPrivate={isPrivate}>
@@ -504,9 +555,11 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                         )}
                                     </ProjectHoverWrapper>
                                 </motion.span>
-                                <motion.span variants={wordVariants} className="text-muted-foreground/70">
-                                    where I
-                                </motion.span>
+                                {introPhrase.connector && (
+                                    <motion.span variants={wordVariants} className="text-muted-foreground/50">
+                                        {introPhrase.connector}
+                                    </motion.span>
+                                )}
                                 <motion.span variants={highlightVariants} className="inline-flex items-center gap-1 text-foreground font-medium">
                                     <span className="inline-flex items-center gap-1">
                                         <span className="inline-flex items-center justify-center size-3.5 bg-muted/30 text-foreground/80 border border-border/20">
@@ -523,7 +576,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             </div>
 
                             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-2">
-                                {currentTrack ? (
+                                {displayTrack ? (
                                     <>
                                         <motion.span variants={wordVariants} className="text-muted-foreground/70">
                                             whilst
@@ -537,10 +590,10 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                 <span className="text-muted-foreground/70">listening to</span>
                                             </motion.span>
                                         ) : null}
-                                        <SpotifyHoverWrapper track={currentTrack} isPlaying={isCurrentTrackLive}>
+                                        <SpotifyHoverWrapper track={displayTrack} isPlaying={isCurrentTrackLive}>
                                             <motion.a
                                                 variants={highlightVariants}
-                                                href={currentTrack.url}
+                                                href={displayTrack.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className={`inline-flex items-center gap-1 px-1.5 py-0.5 font-medium hover:opacity-80 transition-opacity cursor-pointer text-xs max-w-[220px] ${isCurrentTrackLive
@@ -549,14 +602,14 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     }`}
                                             >
                                                 <Music className="size-2.5 shrink-0" />
-                                                <span className="truncate">{currentTrack.name}</span>
+                                                <span className="truncate">{displayTrack.name}</span>
                                             </motion.a>
                                         </SpotifyHoverWrapper>
                                         <motion.span variants={wordVariants} className="text-muted-foreground/70">
                                             by
                                         </motion.span>
                                         <motion.span variants={highlightVariants} className="text-foreground/90 font-medium truncate max-w-[140px]">
-                                            {currentTrack.artist}
+                                            {displayTrack.artist}
                                         </motion.span>
                                         {!isCurrentTrackLive && (
                                             <motion.span variants={wordVariants} className="text-muted-foreground/60">
@@ -588,7 +641,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                         >
                             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 pr-8">
                                 <motion.span variants={wordVariants} className="text-muted-foreground/70">
-                                    Lately, I've been {projectVerb}
+                                    {introPhrase.prefix}
                                 </motion.span>
                                 <motion.span variants={highlightVariants}>
                                     <ProjectHoverWrapper repository={currentActivity.repository} isPrivate={isPrivate}>
@@ -610,9 +663,11 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                         )}
                                     </ProjectHoverWrapper>
                                 </motion.span>
-                                <motion.span variants={wordVariants} className="text-muted-foreground/70">
-                                    where I
-                                </motion.span>
+                                {introPhrase.connector && (
+                                    <motion.span variants={wordVariants} className="text-muted-foreground/50">
+                                        {introPhrase.connector}
+                                    </motion.span>
+                                )}
                                 <motion.span variants={highlightVariants} className="inline-flex items-center gap-1 text-foreground font-medium">
                                     <span className="inline-flex items-center gap-1">
                                         <span className="inline-flex items-center justify-center size-3.5 bg-muted/30 text-foreground/80 border border-border/20">
@@ -629,7 +684,7 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                             </div>
 
                             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-2">
-                                {currentTrack ? (
+                                {displayTrack ? (
                                     <>
                                         <motion.span variants={wordVariants} className="text-muted-foreground/70">
                                             whilst
@@ -643,10 +698,10 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                 <span className="text-muted-foreground/70">listening to</span>
                                             </motion.span>
                                         ) : null}
-                                        <SpotifyHoverWrapper track={currentTrack} isPlaying={isCurrentTrackLive}>
+                                        <SpotifyHoverWrapper track={displayTrack} isPlaying={isCurrentTrackLive}>
                                             <motion.a
                                                 variants={highlightVariants}
-                                                href={currentTrack.url}
+                                                href={displayTrack.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className={`inline-flex items-center gap-1 px-1.5 py-0.5 font-medium hover:opacity-80 transition-opacity cursor-pointer text-xs max-w-[220px] ${isCurrentTrackLive
@@ -655,14 +710,14 @@ export function ActivityFeed({ activityCount = 5, rotationInterval = 6000 }: Act
                                                     }`}
                                             >
                                                 <Music className="size-2.5 shrink-0" />
-                                                <span className="truncate">{currentTrack.name}</span>
+                                                <span className="truncate">{displayTrack.name}</span>
                                             </motion.a>
                                         </SpotifyHoverWrapper>
                                         <motion.span variants={wordVariants} className="text-muted-foreground/70">
                                             by
                                         </motion.span>
                                         <motion.span variants={highlightVariants} className="text-foreground/90 font-medium truncate max-w-[140px]">
-                                            {currentTrack.artist}
+                                            {displayTrack.artist}
                                         </motion.span>
                                         {!isCurrentTrackLive && (
                                             <motion.span variants={wordVariants} className="text-muted-foreground/60">

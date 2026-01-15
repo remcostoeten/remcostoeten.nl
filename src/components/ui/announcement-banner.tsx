@@ -1,9 +1,9 @@
 "use client"
 
-import React, { createContext, useContext, useEffect, useLayoutEffect, useRef, useState } from "react"
+import React, { createContext, useContext, useEffect, useRef, useState } from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
-import { ArrowUpRightIcon, XIcon } from "lucide-react"
+import { XIcon } from "lucide-react"
 
 const badgeVariants = cva(
     "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
@@ -82,106 +82,99 @@ export function AnnouncementTitle({ className, ...props }: TAnnouncementTitlePro
 
 export function AnnouncementBanner() {
     const [isVisible, setIsVisible] = useState(false)
-    const [shouldAnimateIn, setShouldAnimateIn] = useState(false)
-    const [isDragging, setIsDragging] = useState(false)
-    const [dragY, setDragY] = useState(0)
-    const [startY, setStartY] = useState(0)
-    const [shouldHideByScroll, setShouldHideByScroll] = useState(false)
-    const [isClosing, setIsClosing] = useState(false)
+    const [isHidden, setIsHidden] = useState(false)
+    const [hasScrolledAway, setHasScrolledAway] = useState(false)
+    const [dragState, setDragState] = useState({ isDragging: false, startY: 0, currentY: 0 })
     const initialScrollYRef = useRef(0)
-    const lastScrollYRef = useRef(0)
     const wrapperRef = useRef<HTMLDivElement | null>(null)
-    const [bannerHeight, setBannerHeight] = useState(80)
-    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
     useEffect(() => {
-        const dismissed = typeof window !== "undefined" && window.localStorage.getItem("announcement-dismissed") === "true"
+        const dismissed = localStorage.getItem("announcement-dismissed") === "true"
         if (!dismissed) {
             setIsVisible(true)
-            setTimeout(() => setShouldAnimateIn(true), 100)
-            initialScrollYRef.current = window.scrollY || 0
+            initialScrollYRef.current = window.scrollY
         }
     }, [])
 
     useEffect(() => {
-        function onScroll() {
-            const currentY = window.scrollY || 0
-            const relativeScroll = Math.abs(currentY - initialScrollYRef.current)
+        if (!isVisible) return
 
-            if (scrollTimeoutRef.current) {
-                clearTimeout(scrollTimeoutRef.current)
+        let timeoutId: NodeJS.Timeout
+        let lastScrollY = window.scrollY
+
+        function onScroll() {
+            const currentScrollY = window.scrollY
+            const initialY = initialScrollYRef.current
+
+            // Track if scrolling away or back
+            if (Math.abs(currentScrollY - initialY) > Math.abs(lastScrollY - initialY)) {
+                setHasScrolledAway(true)
+            } else if (Math.abs(currentScrollY - initialY) < Math.abs(lastScrollY - initialY)) {
+                setHasScrolledAway(false)
             }
 
-            scrollTimeoutRef.current = setTimeout(() => {
-                // If user scrolls UP significantly from start (e.g. they started at bottom), we might want to still show it?
-                // But generally "scrolling away" means moving 750px from where they started.
-                if (relativeScroll > 750) {
-                    setShouldHideByScroll(true)
-                }
-                else {
-                    setShouldHideByScroll(false)
-                }
-            }, 16)
+            lastScrollY = currentScrollY
 
-            lastScrollYRef.current = currentY
+            // Hide after threshold
+            clearTimeout(timeoutId)
+            timeoutId = setTimeout(() => {
+                const scrolled = Math.abs(currentScrollY - initialY)
+                setIsHidden(scrolled > 750)
+            }, 16)
         }
 
         window.addEventListener("scroll", onScroll, { passive: true })
         return () => {
             window.removeEventListener("scroll", onScroll)
-            if (scrollTimeoutRef.current) {
-                clearTimeout(scrollTimeoutRef.current)
-            }
+            clearTimeout(timeoutId)
         }
-    }, [])
-
-    useLayoutEffect(() => {
-        if (!wrapperRef.current) return
-        const rect = wrapperRef.current.getBoundingClientRect()
-        setBannerHeight(rect.height + 24)
     }, [isVisible])
 
     function handleClose() {
-        setIsClosing(true)
-        setDragY(-200)
-        window.setTimeout(() => {
+        setIsHidden(true)
+        setTimeout(() => {
             setIsVisible(false)
-            window.localStorage.setItem("announcement-dismissed", "true")
+            localStorage.setItem("announcement-dismissed", "true")
         }, 300)
     }
 
     function handleDragStart(e: React.MouseEvent | React.TouchEvent) {
-        setIsDragging(true)
-        const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY
-        setStartY(clientY)
+        const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
+        setDragState({ isDragging: true, startY: clientY, currentY: 0 })
     }
 
     function handleDragMove(e: React.MouseEvent | React.TouchEvent) {
-        if (!isDragging) return
-        const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY
-        const diff = clientY - startY
-        if (diff < 0) setDragY(diff)
+        if (!dragState.isDragging) return
+        const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
+        const diff = clientY - dragState.startY
+        setDragState(prev => ({ ...prev, currentY: Math.min(0, diff) }))
     }
 
     function handleDragEnd() {
-        if (!isDragging) return
-        setIsDragging(false)
-        if (dragY < -50) handleClose()
-        setDragY(0)
+        if (!dragState.isDragging) return
+        if (dragState.currentY < -50) {
+            handleClose()
+        }
+        setDragState({ isDragging: false, startY: 0, currentY: 0 })
     }
 
     if (!isVisible) return null
 
+    const translateY = isHidden ? -200 : dragState.currentY
+
     return (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none" style={{ contain: 'paint' }}>
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none">
             <div
-                className="relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit pointer-events-auto overflow-visible"
-                style={{
-                    transform: `translateY(${(shouldAnimateIn && !shouldHideByScroll ? 0 : -bannerHeight - 20) + dragY}px)`,
-                    opacity: shouldAnimateIn && !shouldHideByScroll && !isClosing ? 1 : 0,
-                    transition: isDragging ? "none" : `transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease-out`,
-                }}
                 ref={wrapperRef}
+                className={cn(
+                    "relative mx-auto w-full max-w-[calc(100vw-2rem)] sm:max-w-fit pointer-events-auto transition-all duration-300 ease-out",
+                    hasScrolledAway && "scrolled-away"
+                )}
+                style={{
+                    transform: hasScrolledAway ? undefined : `translateY(${translateY}px)`,
+                    opacity: isHidden ? 0 : undefined,
+                    transition: dragState.isDragging ? "none" : undefined,
+                }}
                 onMouseDown={handleDragStart}
                 onMouseMove={handleDragMove}
                 onMouseUp={handleDragEnd}
@@ -192,12 +185,11 @@ export function AnnouncementBanner() {
             >
                 <Announcement
                     themed
-                    className="group border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground cursor-grab active:cursor-grabbing pr-10 shadow-sm shadow-accent/10 w-full overflow-hidden"
+                    className="group border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground cursor-grab active:cursor-grabbing pr-10 shadow-sm shadow-accent/10 w-full"
                 >
                     <AnnouncementTag className="-ml-1 bg-amber-500/15 text-amber-500 px-2 py-0.5 leading-none text-[10px] sm:text-xs">Beta</AnnouncementTag>
                     <AnnouncementTitle className="flex items-center gap-1 truncate py-1 min-w-0">
-                        <span className="truncate text-xs sm:text-sm">New site in beta — expect some rough edges!</span>
-                        <ArrowUpRightIcon size={14} className="shrink-0 text-muted-foreground/60 group-hover:text-foreground transition-colors" />
+                        <span className="truncate text-xs sm:text-sm">New site in beta · expect some rough edges!</span>
                     </AnnouncementTitle>
                 </Announcement>
                 <button

@@ -865,7 +865,6 @@
   font-style: italic;
   color: hsl(var(--muted-foreground));
 }
-
 /* Full-width header resets margin for h2 since it's wrapped in a div */
 .prose :where(.full-width-header) {
   margin: 0;
@@ -938,4 +937,24 @@
 .demo-popover {
 	animation: demo-popover-enter 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 	min-width: 320px;
+}
+
+.scrolled-away {
+	transform: scale(0.92);
+	opacity: 0.3;
+	filter: blur(1px);
+	pointer-events: auto;
+}
+
+.scrolled-away::before {
+	content: '';
+	position: absolute;
+	inset: -40px;
+	pointer-events: auto;
+}
+
+.scrolled-away:hover {
+	transform: scale(1);
+	opacity: 1;
+	filter: blur(0);
 }

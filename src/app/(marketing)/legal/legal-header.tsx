@@ -52,12 +52,7 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
     >
       <div className="flex items-center justify-between gap-4 px-4 py-3 md:px-6">
         <div className="flex flex-wrap items-center gap-3">
-          <Button asChild variant="ghost" size="sm" className="gap-2">
-            <Link href="/" aria-label="Back to home">
-              <Home className="h-4 w-4" aria-hidden="true" />
-              <span className="hidden sm:inline">Home</span>
-            </Link>
-          </Button>
+
           
           {/* Navigation between legal pages */}
           {pathname === '/terms' && (
