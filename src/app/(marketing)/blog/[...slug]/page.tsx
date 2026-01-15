@@ -8,7 +8,7 @@ import { TableOfContents } from '@/components/blog/table-of-contents'
 import { ReactionBar } from '@/components/blog/reaction-bar'
 import { CommentSection } from '@/components/blog/comment-section'
 import { checkAdminStatus } from '@/actions/auth'
-import { BlogPostStructuredData } from '@/components/seo/structured-data'
+import { BlogPostStructuredData, BreadcrumbStructuredData } from '@/components/seo/structured-data'
 import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
 import { eq } from 'drizzle-orm'
@@ -134,6 +134,13 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
         image={post.metadata.image}
         url={`${baseUrl}/blog/${post.slug}`}
         keywords={post.metadata.tags || []}
+      />
+      <BreadcrumbStructuredData
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Blog', url: '/blog' },
+          { name: post.metadata.title, url: `/blog/${post.slug}` },
+        ]}
       />
       <TableOfContents />
 

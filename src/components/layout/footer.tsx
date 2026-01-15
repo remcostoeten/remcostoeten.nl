@@ -120,6 +120,9 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">
           <p>© {new Date().getFullYear()} Remco Stoeten</p>
           <div className="flex items-center gap-4">
+            <Link href="/about" className="hover:text-foreground transition-colors">
+              About
+            </Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">
               Privacy
             </Link>

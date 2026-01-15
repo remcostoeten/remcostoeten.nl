@@ -1,8 +1,17 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
+import { generateRoutes } from '../../tools/dev-menu/utils/generate-routes';
+
+// Define COMMANDS constant as it's used in the new logic but not provided in the original snippet
+const COMMANDS = [
+    { cmd: 'signin', alias: ['login'], desc: 'Authenticate with GitHub' },
+    { cmd: 'signout', alias: ['logout'], desc: 'Sign out' },
+    { cmd: 'help', alias: ['?'], desc: 'Show available commands' },
+];
 
 interface VimStatusBarProps {
     onCommand?: (command: string) => void;
@@ -12,19 +21,63 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
     const [isVisible, setIsVisible] = useState(false);
     const [input, setInput] = useState('');
     const [mode, setMode] = useState<'normal' | 'command'>('normal');
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const { data: session } = useSession();
+    const router = useRouter();
+
+    const currentInput = input.slice(1).toLowerCase();
+    const isNavigation = input.startsWith('/');
+
+    const suggestions = useMemo(() => {
+        if (!currentInput) {
+            if (isNavigation) {
+                 // Return all static routes for navigation
+                 return generateRoutes()
+                    .filter(r => !r.isDynamic)
+                    .map(r => ({ cmd: r.path, alias: [r.label], desc: `Go to ${r.label}` }));
+            }
+            return COMMANDS;
+        }
+
+        if (isNavigation) {
+             const routes = generateRoutes().filter(r => !r.isDynamic);
+             return routes
+                .filter(r => r.path.toLowerCase().includes(currentInput) || r.label.toLowerCase().includes(currentInput))
+                .map(r => ({ cmd: r.path, alias: [r.label], desc: `Go to ${r.label}` }));
+        }
+
+        return COMMANDS.filter(c =>
+            c.cmd.startsWith(currentInput) ||
+            c.alias.some(a => a.startsWith(currentInput))
+        );
+    }, [currentInput, isNavigation]);
+
+    const safeSelectedIndex = suggestions.length > 0
+        ? Math.max(0, Math.min(selectedIndex, suggestions.length - 1))
+        : -1;
 
     const handleCommand = useCallback((cmd: string) => {
+        // If it starts with /, it's a navigation
+        if (cmd.startsWith('/')) {
+             setIsVisible(false);
+             setInput('');
+             setMode('normal');
+             setSelectedIndex(0);
+             router.push(cmd);
+             return;
+        }
+
         const normalized = cmd.trim().toLowerCase().replace(/^:/, '').replace(/\s+/g, '');
 
         setIsVisible(false);
         setInput('');
         setMode('normal');
+        setSelectedIndex(0);
 
         if (onCommand) {
             onCommand(normalized);
         }
-    }, [onCommand]);
+    }, [onCommand, router]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -36,12 +89,15 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                 return;
             }
 
-            if ((e.key === ';' || e.key === ':') && !isVisible) {
+            // Open command bar with :, ;, or /
+            if ((e.key === ';' || e.key === ':' || e.key === '/') && !isVisible) {
                 e.preventDefault();
                 e.stopPropagation();
                 setIsVisible(true);
                 setMode('command');
-                setInput(':');
+                // If / pressed, start with /
+                setInput(e.key === '/' ? '/' : ':');
+                setSelectedIndex(0);
                 return;
             }
 
@@ -51,15 +107,64 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                 setIsVisible(false);
                 setInput('');
                 setMode('normal');
+                setSelectedIndex(0);
                 return;
             }
 
             if (isVisible && mode === 'command') {
+                if (e.key === 'Tab' && suggestions.length > 0) {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     const suggestion = suggestions[safeSelectedIndex];
+                     if (suggestion) {
+                         // PRESERVE PREFIX (either : or /)
+                         // If navigation, the cmd itself starts with /, so we don't need double /?
+                         // suggestions for nav map cmd to '/admin'.
+                         // So if input is '/', and we select '/admin', we want '/admin'.
+                         // If we are in ':', and select 'signin', we want ':signin'.
+
+                         if (isNavigation) {
+                             setInput(suggestion.cmd); // suggestion.cmd already has leading /
+                         } else {
+                             setInput(':' + suggestion.cmd);
+                         }
+                     }
+                     return;
+                }
+
+                if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedIndex(prev => Math.max(0, prev - 1));
+                    return;
+                }
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedIndex(prev => Math.min(suggestions.length - 1, prev + 1));
+                    return;
+                }
+
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     e.stopPropagation();
                     if (input.length > 1) {
-                        handleCommand(input.slice(1));
+                         // Pass raw input if navigation, otherwise slice?
+                         // handleCommand logic handles it.
+                         // But if input is '/admin', slice(1) -> 'admin'.
+                         // If I just pass 'input', handleCommand can check startsWith('/').
+                        handleCommand(input);
+                    } else if (suggestions.length > 0 && safeSelectedIndex !== -1) {
+                        // If enter is pressed on an empty command but with suggestions, use the selected one
+                        const suggestion = suggestions[safeSelectedIndex];
+                        if (suggestion) {
+                            if (isNavigation) {
+                                handleCommand(suggestion.cmd);
+                            } else {
+                                handleCommand(':' + suggestion.cmd);
+                            }
+                        }
                     }
                     return;
                 }
@@ -69,10 +174,12 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                     e.stopPropagation();
                     if (input.length > 1) {
                         setInput(input.slice(0, -1));
+                        setSelectedIndex(0); // Reset selection on backspace
                     } else {
                         setIsVisible(false);
                         setInput('');
                         setMode('normal');
+                        setSelectedIndex(0);
                     }
                     return;
                 }
@@ -81,13 +188,14 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                     e.preventDefault();
                     e.stopPropagation();
                     setInput(input + e.key);
+                    setSelectedIndex(0); // Reset selection on new input
                 }
             }
         };
 
         window.addEventListener('keydown', handleKeyDown, true);
         return () => window.removeEventListener('keydown', handleKeyDown, true);
-    }, [isVisible, input, mode, handleCommand]);
+    }, [isVisible, input, mode, handleCommand, suggestions, safeSelectedIndex, isNavigation]);
 
     const getStatusText = () => {
         if (session?.user) {
@@ -116,13 +224,30 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
                             {getStatusText()}
                         </div>
                     </div>
-                    <div className="container mx-auto px-4 pb-2">
-                        <div className="text-xs text-zinc-600 font-mono flex gap-4">
-                            <span>:signin - Authenticate with GitHub</span>
-                            <span>:signout - Sign out</span>
-                            <span>ESC - Close</span>
+                    {suggestions.length > 0 && (
+                        <div className="container mx-auto px-4 pb-2">
+                            <div className="text-xs text-zinc-600 font-mono flex flex-col gap-1">
+                                {suggestions.map((s, index) => (
+                                    <div
+                                        key={s.cmd}
+                                        className={`flex gap-2 ${index === safeSelectedIndex ? 'text-green-400' : ''}`}
+                                    >
+                                        <span className="w-20 flex-shrink-0">{isNavigation ? s.cmd : `:${s.cmd}`}</span>
+                                        <span className="text-zinc-700">{s.desc}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
+                    {suggestions.length === 0 && (
+                        <div className="container mx-auto px-4 pb-2">
+                            <div className="text-xs text-zinc-600 font-mono flex gap-4">
+                                <span>:signin - Authenticate with GitHub</span>
+                                <span>:signout - Sign out</span>
+                                <span>ESC - Close</span>
+                            </div>
+                        </div>
+                    )}
                 </motion.div>
             )}
         </AnimatePresence>

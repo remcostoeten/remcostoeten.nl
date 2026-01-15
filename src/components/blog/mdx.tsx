@@ -62,7 +62,7 @@ function CustomLink(props) {
 }
 
 function RoundedImage(props) {
-  return <Image alt={props.alt} className="rounded-none AAAA" {...props} />
+  return <Image alt={props.alt} className="rounded-none" {...props} />
 }
 
 function Video({ src, ...props }: { src: string;[key: string]: any }) {
@@ -80,7 +80,7 @@ function Video({ src, ...props }: { src: string;[key: string]: any }) {
 }
 
 
-function slugify(str) {
+function slugify(str: unknown): string {
   if (!str || typeof str !== 'string') {
     return 'heading'
   }
@@ -94,8 +94,36 @@ function slugify(str) {
     .replace(/\-\-+/g, '-')
 }
 
-function createHeading(level) {
-  const Heading = ({ children }) => {
+/**
+ * Full-width section header for blog h2 headings
+ * Uses landing page section style but with blog-appropriate typography
+ */
+function BlogSectionHeading({ children }: { children: React.ReactNode }) {
+  if (!children) {
+    return <h2>Heading</h2>
+  }
+
+  const slug = slugify(children as string)
+
+  return (
+    <div className="full-width-header !mb-6 mt-12 first:mt-0">
+      <div className="header-content-container flex items-center">
+        <h2 id={slug} className="text-base font-medium text-foreground/90 flex items-center gap-2">
+          <a href={`#${slug}`} className="anchor" aria-hidden="true" />
+          {children}
+        </h2>
+      </div>
+    </div>
+  )
+}
+
+function createHeading(level: number) {
+  // h2 uses the full-width section header style
+  if (level === 2) {
+    return BlogSectionHeading
+  }
+
+  const Heading = ({ children }: { children: React.ReactNode }) => {
     if (!children) {
       return React.createElement(`h${level}`, {}, 'Heading')
     }
@@ -103,12 +131,13 @@ function createHeading(level) {
     let slug = slugify(children)
     return React.createElement(
       `h${level}`,
-      { id: slug },
+      { id: slug, className: level === 3 ? 'text-lg font-medium mt-8 mb-3' : undefined },
       [
         React.createElement('a', {
           href: `#${slug}`,
           key: `link-${slug}`,
           className: 'anchor',
+          'aria-hidden': true,
         }),
       ],
       children

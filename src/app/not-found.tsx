@@ -46,7 +46,7 @@ export default function NotFound() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-none AAAA bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-none bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium"
             >
               <Home className="w-4 h-4" />
               Back to Home
@@ -54,7 +54,7 @@ export default function NotFound() {
 
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-none AAAA border border-border bg-background hover:bg-muted/50 transition-colors font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-none border border-border bg-background hover:bg-muted/50 transition-colors font-medium"
             >
               <FileText className="w-4 h-4" />
               Browse Blog

@@ -378,7 +378,7 @@ export function ActivityContributionGraph({
           aria-labelledby="activity-dialog-title"
         >
           <motion.div
-            className="bg-card border border-border rounded-none AAAA w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
+            className="bg-card border border-border rounded-none w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}

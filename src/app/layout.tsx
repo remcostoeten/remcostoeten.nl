@@ -16,6 +16,25 @@ export const metadata: Metadata = {
     template: '%s | Remco Stoeten',
   },
   description: 'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
+  keywords: [
+    'Remco Stoeten',
+    'Frontend Engineer',
+    'Software Engineer',
+    'React Developer',
+    'Next.js Developer',
+    'TypeScript',
+    'Tailwind CSS',
+    'Web Development',
+    'Netherlands',
+  ],
+  authors: [{ name: 'Remco Stoeten', url: 'https://remcostoeten.nl' }],
+  creator: 'Remco Stoeten',
+  publisher: 'Remco Stoeten',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
     title: 'Remco Stoeten - Frontend Engineer',
     description: 'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
@@ -23,6 +42,21 @@ export const metadata: Metadata = {
     siteName: 'Remco Stoeten',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/og',
+        width: 1200,
+        height: 630,
+        alt: 'Remco Stoeten - Frontend Engineer',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Remco Stoeten - Frontend Engineer',
+    description: 'Dutch software engineer focused on front-end development.',
+    creator: '@remcostoeten',
+    images: ['/og'],
   },
   robots: {
     index: true,
@@ -37,7 +71,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
   },
+  manifest: '/manifest.webmanifest',
   other: {
     'dns-prefetch': ['//api.github.com', '//api.spotify.com'],
   },
@@ -54,7 +91,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       )}
     >
       <head>
-        {/* Preconnect for critical resources */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="//api.github.com" />

@@ -820,15 +820,55 @@
 	z-index: 1;
 }
 
-/* Tighter prose spacing */
-.prose :where(h2, h3) {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
+/* Blog prose typography */
+.prose :where(h3) {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: hsl(var(--foreground) / 0.95);
+}
+
+.prose :where(h4) {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .prose :where(p) {
-  margin-top: 0.75em;
-  margin-bottom: 0.75em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  line-height: 1.75;
+}
+
+.prose :where(ul, ol) {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.prose :where(li) {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.prose :where(strong) {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+
+.prose :where(blockquote) {
+  border-left: 2px solid hsl(var(--border));
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Full-width header resets margin for h2 since it's wrapped in a div */
+.prose :where(.full-width-header) {
+  margin: 0;
 }
 @keyframes demo-border-march {
 	0% {

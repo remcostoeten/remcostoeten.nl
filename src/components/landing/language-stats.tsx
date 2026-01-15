@@ -86,13 +86,11 @@ export function LanguageStats() {
   if (languages.length === 0) return null
 
   return (
-    <div className="space-y-6 pt-4 pb-8 px-4">
-      <div className="space-y-2">
-        <p className="prose-sm text-muted-foreground/80 leading-relaxed max-w-xl">
-          Beyond my primary stack, I'm constantly exploring new paradigms and languages.
-          This breakdown reflects my activity across <span className="text-foreground/90 font-medium">GitHub</span>, from production tools to experimental playgrounds.
-        </p>
-      </div>
+    <div className="space-y-5 pt-4 pb-6 px-4">
+      <p className="prose-sm text-muted-foreground/80 leading-relaxed max-w-xl">
+        Beyond my primary stack, I'm constantly exploring new paradigms and languages.
+        This breakdown reflects my activity across <span className="text-foreground/90 font-medium">GitHub</span>, from production tools to experimental playgrounds.
+      </p>
 
       <div className="flex flex-wrap gap-2.5">
         {languages.map((lang, index) => {
@@ -105,7 +103,7 @@ export function LanguageStats() {
               onMouseEnter={() => setHoveredLang(lang.name)}
               onMouseLeave={() => setHoveredLang(null)}
               className={cn(
-                "group relative flex items-center  gap-2.5 px-3 py-1.5 rounded-md transition-all duration-300",
+                "group relative flex items-center gap-2.5 px-3 py-1.5 rounded-md transition-all duration-300",
                 "bg-secondary/30 hover:bg-secondary/50 border border-transparent",
                 "cursor-default overflow-visible"
               )}
@@ -186,11 +184,9 @@ export function LanguageStats() {
         })}
       </div>
 
-      <div className="flex items-center justify-between pt-2 border-t border-border/5">
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground/30 font-mono">
-          <Github className="w-3 h-3" />
-          <span>Real-time GitHub Metrics</span>
-        </div>
+      <div className="flex items-center gap-2 pt-4 text-[10px] text-muted-foreground/30 font-mono">
+        <Github className="w-3 h-3" />
+        <span>Real-time GitHub Metrics</span>
       </div>
     </div>
   )

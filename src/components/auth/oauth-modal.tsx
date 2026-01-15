@@ -63,7 +63,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
                         transition={{ duration: 0.2, ease: 'easeOut' }}
                         className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[9999] w-full max-w-md"
                     >
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-none AAAA shadow-2xl overflow-hidden">
+                        <div className="bg-zinc-950 border border-zinc-800 rounded-none shadow-2xl overflow-hidden">
                             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
                                 <h2 className="text-lg font-semibold text-white">
                                     Sign in with {provider === 'github' ? 'GitHub' : 'Google'}
@@ -104,7 +104,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
                                     </div>
 
                                     {error && (
-                                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-none AAAA">
+                                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-none">
                                             <p className="text-sm text-red-400">{error}</p>
                                         </div>
                                     )}
@@ -112,7 +112,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
                                     <button
                                         onClick={handleSignIn}
                                         disabled={isLoading}
-                                        className="w-full px-6 py-3 bg-white hover:bg-zinc-200 text-zinc-900 font-medium rounded-none AAAA transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full px-6 py-3 bg-white hover:bg-zinc-200 text-zinc-900 font-medium rounded-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isLoading ? (
                                             <span className="flex items-center justify-center gap-2">

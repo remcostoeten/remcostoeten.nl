@@ -41,7 +41,7 @@ SPOTIFY_REFRESH_TOKEN="${refreshToken || 'your_refresh_token'}"`
         <div className="my-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 overflow-hidden">
             <div className="px-6 py-4 border-b border-zinc-800 bg-zinc-900 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-none AAAA bg-green-500/10 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-none bg-green-500/10 flex items-center justify-center">
                         <SpotifyIcon className="w-4 h-4 text-green-500" />
                     </div>
                     <div>
@@ -115,7 +115,7 @@ SPOTIFY_REFRESH_TOKEN="${refreshToken || 'your_refresh_token'}"`
                     <div className="absolute top-3 right-3 z-10">
                         <button
                             onClick={handleCopy}
-                            className={`px-3 py-1.5 rounded-none AAAA text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${copied
+                            className={`px-3 py-1.5 rounded-none text-[10px] font-bold uppercase flex items-center gap-1.5 transition-all ${copied
                                 ? 'bg-green-500 text-black'
                                 : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200'
                                 }`}

@@ -10,20 +10,8 @@ import type { CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 
-export const cn = (...inputs: ClassValue[]) => {
-  const classes = clsx(inputs).split(' ');
-  const merged = new Map<string, string>();
+import { cn } from "@/lib/utils";
 
-  for (const cls of classes) {
-    if (!cls) continue;
-    const baseClass = cls.replace(/^(sm|md|lg|xl|2xl|hover|focus|active|disabled):/, '');
-    const prefix = cls.match(/^(sm|md|lg|xl|2xl|hover|focus|active|disabled):/)?.[1] || '';
-    const key = prefix ? `${prefix}:${baseClass.split('-')[0]}` : baseClass.split('-')[0];
-    merged.set(key, cls);
-  }
-
-  return Array.from(merged.values()).join(' ');
-};
 
 
 

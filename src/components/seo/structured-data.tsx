@@ -88,7 +88,6 @@ export function PersonStructuredData() {
     sameAs: [
       'https://github.com/remcostoeten',
       'https://www.linkedin.com/in/remco-stoeten/',
-      // Add other social profiles here
     ],
     jobTitle: 'Frontend Engineer',
     worksFor: {
@@ -96,6 +95,35 @@ export function PersonStructuredData() {
       name: 'Brainstud',
     },
     description: 'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    />
+  )
+}
+
+type BreadcrumbItem = {
+  name: string
+  url: string
+}
+
+type BreadcrumbStructuredDataProps = {
+  items: BreadcrumbItem[]
+}
+
+export function BreadcrumbStructuredData({ items }: BreadcrumbStructuredDataProps) {
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url.startsWith('http') ? item.url : `${baseUrl}${item.url}`,
+    })),
   }
 
   return (
