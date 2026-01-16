@@ -150,7 +150,7 @@ export function ContactOverview({ data }: { data: ContactStats }) {
                         )}
                         </div>
 
-                </div>
+
             </CardContent>
         </Card>
     )
