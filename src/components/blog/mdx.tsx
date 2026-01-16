@@ -106,14 +106,13 @@ function BlogSectionHeading({ children }: { children: React.ReactNode }) {
   const slug = slugify(children as string)
 
   return (
-    <div className="full-width-header !mb-6 mt-12 first:mt-0">
-      <div className="header-content-container flex items-center">
-        <h2 id={slug} className="text-base font-medium text-foreground/90 flex items-center gap-2">
-          <a href={`#${slug}`} className="anchor" aria-hidden="true" />
-          {children}
-        </h2>
-      </div>
-    </div>
+    <h2 
+      id={slug} 
+      className="text-xl font-semibold text-foreground mt-10 mb-4 first:mt-0 pb-2 border-b border-border/50"
+    >
+      <a href={`#${slug}`} className="anchor" aria-hidden="true" />
+      {children}
+    </h2>
   )
 }
 
