@@ -149,15 +149,7 @@ export function ContactOverview({ data }: { data: ContactStats }) {
                             </div>
                         )}
                         </div>
-                    ) : (
-                        <ScrollArea className="h-[250px]">
-                            <div className="space-y-2 pr-2">
-                                {data.submissions.slice(0, 10).map((sub) => (
-                                    <SubmissionItem key={sub.id} sub={sub} />
-                                ))}
-                            </div>
-                        </ScrollArea>
-                    )}
+
                 </div>
             </CardContent>
         </Card>

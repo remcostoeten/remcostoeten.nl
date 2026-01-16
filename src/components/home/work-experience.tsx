@@ -16,7 +16,6 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         location: "Zwolle (Hybrid)",
         icon: "education",
         description: `
-        description: `
 - Building a modern e-learning platform for Dutch students in Next.js, TypeScript with a custom REST layer on TanStack Query.
 - Self driven development under Shape Up methodology collaboration with a Laravel backend team.
 - Implementing scoped and iterative features without a dedicated product owner.`,
@@ -38,14 +37,12 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         location: "Remote",
         icon: "business",
         description: `
-        description: `
 - Developed fully open source intranet builder using React, GraphQL and Styled Components.
 - Kanban flow with weekly releases in collaboration with backend (django) and devops (k8s, self-hosted).
 - Rebuilt the FSV fraud detection platform in JavaScript, SCSS for the Belastingdienst.
 - Implemented WCAG AA compliance and accessibility standards for government applications.
 - Operated exclusively for non profit & government institutions.
 - Continued developing for pdfchecker.nl which allows users to check PDF files for accessibility compliance.`,
-        skills: ['React', 'GraphQL', 'Django', 'SCSS', 'Vanilla JS', 'WCAG AA'],
         skills: ['React', 'GraphQL', 'Django', 'SCSS', 'Vanilla JS', 'WCAG AA'],
       },
     ],

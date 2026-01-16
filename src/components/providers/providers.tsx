@@ -11,7 +11,7 @@ import { PostHogProvider } from '@/components/providers/posthog-provider'
 import { DevWidget } from '../../../tools/dev-menu'
 import { useSession } from '@/lib/auth-client'
 import { signOut } from '@/lib/auth-client'
-import { ThemeSwitch } from '@/components/theme-switch'
+
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
 
 const Analytics = lazy(() => import('@vercel/analytics/react').then(m => ({ default: m.Analytics })))
