@@ -679,14 +679,9 @@
 }
 
 .full-width-header {
-	width: 100vw;
+	width: 100%;
 	position: relative;
-	left: 50%;
-	right: 50%;
-	margin-left: -50vw;
-	margin-right: -50vw;
 	border-top: 1px solid hsl(var(--border));
-	border-bottom: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
 	background-image: repeating-linear-gradient(-45deg,
 			transparent,
@@ -695,11 +690,9 @@
 			hsl(var(--foreground) / 0.03) 3px);
 	background-color: transparent;
 	height: 44px;
-	/* Fixed height as requested */
 	display: flex;
 	align-items: center;
 	margin-bottom: 1.25rem;
-	/* Space after the header */
 }
 
 @media (min-width: 640px) {
