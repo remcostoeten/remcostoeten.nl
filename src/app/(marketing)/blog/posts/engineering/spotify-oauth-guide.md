@@ -30,7 +30,7 @@ You will need a Spotify developer account to create an OAuth2 application. Navig
 - **Redirect URIs**: the callback endpoint in your project
 
 <NoticeWarning title="API Setup Required">
-If you don't have an API setup yet, I'll be showing how to [implement the API routes here](#routes).
+If you don't have an API setup yet, I'll be showing how to [implement the API routes here](#api-routes).
 </NoticeWarning>
 Most implementations use something like:
 
@@ -77,7 +77,7 @@ Use the interactive form below to build your environment variables. Paste your c
 *If your API calls for different variable names than these two, obviously change those.*
 Next we will configure the authorization code flow, exchanging the temporary code for both an access token and a refresh token.
 
-### API Routes {#routes}
+### API Routes
 
 Now you'll have to implement the API route which you registered in the developer dashboard. Like I mentioned this implementation is following Next.js but you should just register an api in your desired framework.
 
@@ -298,7 +298,7 @@ class SpotifyAPIService {
   private accessToken: string | null = null;
   private tokenExpiry: number = 0;
 
-  async getCurrentlyPlaying(refreshToken: string): Promise<any> {
+  async getCurrentlyPlaying(refreshToken: string): Promise<Record<string, unknown>> {
     const accessToken = await this.getAccessToken(refreshToken);
 
     const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -318,7 +318,7 @@ class SpotifyAPIService {
     return await response.json();
   }
 
-  private async getAccessToken(refreshToken: string): Promise<string> {
+  private async getAccessToken(refreshToken: string): Promise<string|null> {
     // Return cached token if still valid
     if (this.accessToken && Date.now() < this.tokenExpiry) {
       return this.accessToken;

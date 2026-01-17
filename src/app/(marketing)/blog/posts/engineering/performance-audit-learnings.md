@@ -90,7 +90,6 @@ echo "✅ Done!"
 ```
 
 </details>
->>>>>>> 3330f84 (refactor: Enhance activity feed with dynamic intro phrases and improved activity/track pairing while removing various unused scripts and components.)
 
 ## The Baseline (Before Optimization)
 

@@ -79,30 +79,43 @@ const getGitHubContributions = unstable_cache(
 )
 
 // Cached GitHub activity fetch
-// Cached GitHub activity fetch
 const getGitHubActivity = unstable_cache(
     async (limit: number) => {
         try {
-            // Fetch more events than requested to account for filtered-out events
-            const fetchLimit = Math.min(limit * 3, 100);
+            // Fetch 100 events to increase chance of finding distinct repos
             const response = await fetch(
-                `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=${fetchLimit}`,
+                `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=100`,
                 { headers: getGitHubHeaders() }
             )
 
             if (!response.ok) return []
 
             const events = await response.json()
-            const parsed = events.map((event: any) => parseGitHubEvent(event)).filter(Boolean)
+            
+            const uniqueRepoEvents: any[] = [];
+            const seenRepos = new Set<string>();
 
-            // Return only the requested number of valid activities
-            return parsed.slice(0, limit)
+            for (const event of events) {
+                 if (!event.repo?.name) continue;
+                 
+                 // If we haven't seen this repo yet, add it
+                 if (!seenRepos.has(event.repo.name)) {
+                     seenRepos.add(event.repo.name);
+                     uniqueRepoEvents.push(event);
+                 }
+                 
+                 if (uniqueRepoEvents.length >= limit) break;
+            }
+
+            const parsed = uniqueRepoEvents.map((event: any) => parseGitHubEvent(event)).filter(Boolean)
+
+            return parsed
         } catch (error) {
             console.error('Error fetching GitHub activity:', error)
             return []
         }
     },
-    ['github-activity'],
+    ['github-activity-distinct'],
     { revalidate: 60, tags: ['github'] }
 )
 
@@ -125,7 +138,7 @@ function parseGitHubEvent(event: any) {
             return {
                 ...base,
                 type: 'commit',
-                title: `pushed ${commitCount} commit${commitCount === 1 ? '' : 's'}${ref ? ` to ${ref}` : ''}`,
+                title: `${commitCount} commit${commitCount === 1 ? '' : 's'}${ref ? ` to ${ref}` : ''}`,
                 description: commitMsg,
                 url: `https://github.com/${event.repo?.name}/commits/${event.payload?.head}`,
             }
@@ -136,8 +149,29 @@ function parseGitHubEvent(event: any) {
             return {
                 ...base,
                 type: 'create',
-                title: refType === 'repository' ? `created repository ${repoName}` : `created ${refType} ${ref}`,
+                title: refType === 'repository' ? `repository ${repoName}` : `${refType} ${ref}`,
                 description: ref || repoName,
+            }
+        }
+        case 'DeleteEvent': {
+            const refType = event.payload?.ref_type || 'ref'
+            const ref = event.payload?.ref
+            return {
+                ...base,
+                type: 'delete',
+                title: `${refType} ${ref}`,
+                description: `${refType}: ${ref}`,
+                url: base.url,
+            }
+        }
+        case 'ReleaseEvent': {
+            const releaseName = event.payload?.release?.name || event.payload?.release?.tag_name || ''
+            return {
+                ...base,
+                type: 'release',
+                title: releaseName,
+                description: releaseName,
+                url: event.payload?.release?.html_url || base.url,
             }
         }
         case 'PullRequestEvent': {
@@ -147,19 +181,11 @@ function parseGitHubEvent(event: any) {
             const prBody = event.payload?.pull_request?.body?.split('\n')[0]?.trim() || ''
             const branchName = event.payload?.pull_request?.head?.ref || ''
 
-            let verb = 'worked on'
-            if (action === 'opened') verb = 'opened'
-            else if (action === 'closed' && event.payload.pull_request?.merged) verb = 'merged'
-            else if (action === 'merged') verb = 'merged'
-            else if (action === 'closed') verb = 'closed'
-            else if (action === 'reopened') verb = 'reopened'
-            else if (action === 'synchronize') verb = 'updated'
-
             if (prTitle) {
                 return {
                     ...base,
                     type: 'pr',
-                    title: `${verb} "${prTitle}"`,
+                    title: `"${prTitle}"`,
                     description: prBody || prTitle,
                     url: event.payload?.pull_request?.html_url || base.url,
                 }
@@ -174,7 +200,7 @@ function parseGitHubEvent(event: any) {
                 return {
                     ...base,
                     type: 'pr',
-                    title: `${verb} "${branchLabel}"`,
+                    title: `"${branchLabel}"`,
                     description: `PR #${prNumber} from ${branchName}`,
                     url: event.payload?.pull_request?.html_url || base.url,
                 }
@@ -183,7 +209,7 @@ function parseGitHubEvent(event: any) {
             return {
                 ...base,
                 type: 'pr',
-                title: `${verb} PR #${prNumber}`,
+                title: `PR #${prNumber}`,
                 description: prBody || `Pull request #${prNumber}`,
                 url: event.payload?.pull_request?.html_url || base.url,
             }
@@ -194,16 +220,11 @@ function parseGitHubEvent(event: any) {
             const issueTitle = event.payload?.issue?.title?.trim() || ''
             const issueBody = event.payload?.issue?.body?.split('\n')[0]?.trim() || ''
 
-            let verb = 'worked on'
-            if (action === 'opened') verb = 'opened'
-            else if (action === 'closed') verb = 'closed'
-            else if (action === 'reopened') verb = 'reopened'
-
             if (issueTitle) {
                 return {
                     ...base,
                     type: 'issue',
-                    title: `${verb} "${issueTitle}"`,
+                    title: `"${issueTitle}"`,
                     description: issueBody || issueTitle,
                     url: event.payload?.issue?.html_url || base.url,
                 }
@@ -212,7 +233,7 @@ function parseGitHubEvent(event: any) {
             return {
                 ...base,
                 type: 'issue',
-                title: `${verb} issue #${issueNumber}`,
+                title: `issue #${issueNumber}`,
                 description: issueBody || `Issue #${issueNumber}`,
                 url: event.payload?.issue?.html_url || base.url,
             }
@@ -227,7 +248,7 @@ function parseGitHubEvent(event: any) {
                 return {
                     ...base,
                     type: 'issue',
-                    title: `commented on "${issueTitle}"`,
+                    title: `"${issueTitle}"`,
                     description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
                     url: event.payload?.comment?.html_url || base.url,
                 }
@@ -236,15 +257,15 @@ function parseGitHubEvent(event: any) {
             return {
                 ...base,
                 type: 'issue',
-                title: `commented on ${isPR ? 'PR' : 'issue'} #${issueNumber}`,
+                title: `${isPR ? 'PR' : 'issue'} #${issueNumber}`,
                 description: commentBody.substring(0, 100) + (commentBody.length > 100 ? '...' : ''),
                 url: event.payload?.comment?.html_url || base.url,
             }
         }
         case 'WatchEvent':
-            return { ...base, type: 'star', title: 'starred it', description: repoName }
+            return { ...base, type: 'star', title: 'starred', description: repoName }
         case 'ForkEvent':
-            return { ...base, type: 'fork', title: 'forked it', description: repoName }
+            return { ...base, type: 'fork', title: 'forked', description: repoName }
         default:
             return {
                 ...base,

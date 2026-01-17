@@ -7,19 +7,10 @@ tags: ["playwright", "automation", "python", "github", "devops"]
 author: "Remco Stoeten"
 canonicalUrl: "https://remcostoeten.nl/blog/engineering/automatic-oauth-app-creation"
 slug: "automatic-oauth-app-creation"
-<<<<<<< HEAD
 draft: false
 ---
 
  **The GitHub REST API for creating OAuth apps was deprecated in 2020.**  ????? ragebait much.
-=======
-draft: true
----
-
-For some reason the GitHub REST API does not have, or deprecated the API for creating OAuth apps. Which might be the most hated task next to folding the laundry. 
-
-BLALBBLBL CHANGE
->>>>>>> 3330f84 (refactor: Enhance activity feed with dynamic intro phrases and improved activity/track pairing while removing various unused scripts and components.)
 I don't know about you, but I am actively working on 5-7 projects where most of them end up in the graveyard because I just came up with a new million-dollar idea that typically requires authentication. I've left my stubbornness aside and swapped my [own rolled auth](https://github.com/remcostoeten/nextjs-15-roll-your-own-authentication) for BetterAuth. Having full auth in my own database setup under five minutes is nice. But then comes the most annoying part. OAuth.
 
  I got sick of it, and I don't value my time, and I value yours, hence I made this tool that creates OAuth apps in a split second.

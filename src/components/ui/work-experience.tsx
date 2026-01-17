@@ -248,7 +248,7 @@ export function ExperiencePositionItem({
   }, [shouldExpandAll])
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} asChild>
+    <Collapsible open={isOpen} asChild>
       <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground/80 pl-10 mb-1">
@@ -265,13 +265,21 @@ export function ExperiencePositionItem({
             })}
           </div>
           
-          <CollapsibleTrigger className="p-1 hover:bg-muted/50 rounded-sm transition-colors group/trigger focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
-             <div className="shrink-0 text-muted-foreground/60 transition-transform duration-200 group-data-[state=open]/trigger:rotate-180">
-              <ChevronsDownUpIcon className="size-3.5 hidden group-data-[state=open]/trigger:block" />
-              <ChevronsUpDownIcon className="size-3.5 block group-data-[state=open]/trigger:hidden" />
+          <button
+            type="button"
+            onClick={() => setIsOpen(prev => !prev)}
+            className="p-1 hover:bg-muted/50 rounded-sm transition-colors group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            data-state={isOpen ? "open" : "closed"}
+          >
+            <div className="shrink-0 text-muted-foreground/60">
+              {isOpen ? (
+                <ChevronsDownUpIcon className="size-3.5" />
+              ) : (
+                <ChevronsUpDownIcon className="size-3.5" />
+              )}
             </div>
             <span className="sr-only">Toggle details</span>
-          </CollapsibleTrigger>
+          </button>
         </div>
 
 
