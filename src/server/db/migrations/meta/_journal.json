@@ -43,6 +43,13 @@
       "when": 1768430280138,
       "tag": "0005_bitter_squirrel_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1768714459292,
+      "tag": "0006_late_mother_askani",
+      "breakpoints": true
     }
   ]
 }

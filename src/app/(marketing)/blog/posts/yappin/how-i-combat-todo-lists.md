@@ -97,10 +97,23 @@ The script supports several commands for quick task management:
 
 When I start my shell, the script automatically shows the first 5 pending tasks, color-coded by urgency. Overdue tasks show in red, upcoming tasks in yellow, and the rest in a neutral color.
 
-### Why This Works
-
 The key insight is that the system integrates with my existing workflow rather than requiring me to switch contexts. I'm already in the terminal, so adding a task is just a quick command away. The visual feedback in my shell prompt and the system notifications ensure tasks stay top-of-mind without requiring me to constantly check a separate app.
 
-![07-30 60fps demo](../../../../public/07-30_60fps_cropped.gif)
+### The GUI Counterpart: btwfyi
 
-![07-30 demo](../../../../public/07-30_cropped.gif)
+While my CLI todo system works beautifully for terminal-based workflows, I found myself facing a new problem: **What about tasks that need to stay visible while I'm working in the browser or other GUI applications?**
+
+The terminal is great for quick capture, but when I'm deep in VS Code or designing in Figma, I'm not looking at my terminal. I needed something that would keep my tasks persistently visible, regardless of what application I'm using.
+
+That's when I built [**btwfyi**](https://github.com/remcostoeten/btwfyi) (pronounced "by the way, for your information"). It's a lightweight task awareness overlay designed specifically for development environments. Think of it as a persistent sticky note layer that sits on top of your interface, helping to prevent "out of sight, out of mind" amnesia.
+
+### Standout Features
+
+It's packed with features tailored for developers:
+
+*   **Smart Syntax**: Natural language parsing handling tasks like `Fix bug tomorrow #urgent !high` automatically.
+*   **AI Integration**: Leverages Chrome's built-in `window.ai` (Gemini Nano) for local intelligence or Grok for cloud enhancements.
+*   **Bulk Operations**: Paste markdown lists directly or export your tasks to JSON or Slack format.
+*   **Dev-First**: Designed to overlay your actual development environment, working where you work.
+
+<Video src="/fyidemo.webm" width="800" height="450" loop muted autoPlay className="my-8" />

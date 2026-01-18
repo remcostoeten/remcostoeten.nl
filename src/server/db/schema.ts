@@ -14,6 +14,8 @@ import {
     deviceType,
 } from './helpers'
 
+export * from './project-schema'
+
 export const blogPosts = pgTable('blog_posts', {
     slug: text('slug').primaryKey(),
     ...viewCounters,
