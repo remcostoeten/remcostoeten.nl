@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@/lib/db"
-import { projects, projectSettings } from "../../../server/db/project-schema"
+import { db } from "db"
+import { projects, projectSettings } from "schema"
 import { eq, gt, sql } from "drizzle-orm"
 import { revalidatePath } from "next/cache"
 import { isAdmin } from "@/lib/auth-guard"

@@ -1,5 +1,5 @@
-import { getProjects, getSettings } from "@/modules/projects/server/queries"
-import { ProjectsAdmin } from "@/modules/projects/admin/projects-admin"
+import { ProjectsAdmin } from "@/components/projects/admin/projects-admin"
+import { getProjects, getSettings } from "@/components/projects/server/queries"
 
 export default async function AdminProjectsPage() {
     const projects = await getProjects(true)

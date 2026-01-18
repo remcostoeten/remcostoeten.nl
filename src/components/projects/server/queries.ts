@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@/lib/db"
-import { projects, projectSettings } from "../../../server/db/project-schema"
+import { db } from "db"
+import { projects, projectSettings } from "schema"
 import { eq, asc } from "drizzle-orm"
 
 export async function getProjects(includeHidden = false) {
@@ -39,6 +39,6 @@ export async function getSettings() {
     return settings
   } catch (error) {
     console.error("[getSettings] Database error:", error)
-    return { id: "singleton", showN: 6 }
+    return { id: "singleton", showN: 6, updatedAt: new Date() }
   }
 }
