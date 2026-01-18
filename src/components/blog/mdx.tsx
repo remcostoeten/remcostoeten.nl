@@ -17,8 +17,7 @@ import {
 } from '../ui/notice'
 import remarkGfm from 'remark-gfm'
 import { rehypeExtractCodeMeta } from '@/lib/rehype-extract-code-meta'
-import { remarkDemoPlugin } from '@/lib/remark-demo-plugin'
-import { DemoPopover } from './demo-popover'
+
 // import BtwfyiDemo from './btwfyi-demo'
 
 function Table({ data }) {
@@ -130,7 +129,7 @@ let components = {
   Image: RoundedImage,
   Video,
   CollapsibleMedia,
-  DemoPopover,
+
   // BtwfyiDemo,
   a: CustomLink,
   Notice,
@@ -213,7 +212,7 @@ export function CustomMDX(props) {
       components={{ ...components, ...(props.components || {}) }}
       options={{
         mdxOptions: {
-          remarkPlugins: [remarkGfm, remarkDemoPlugin],
+          remarkPlugins: [remarkGfm],
           rehypePlugins: [rehypeExtractCodeMeta],
         },
       }}

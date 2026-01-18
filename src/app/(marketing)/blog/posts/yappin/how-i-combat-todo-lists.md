@@ -1,105 +1,114 @@
 ---
-title: 'How I keep track of my tasks since conventional methods do not work for me'
-publishedAt: '05-01-2026'
-summary: "Conventional methods for keeping track of your tasks don't work for me so I invented two systems which make it impossible to forget"
-tags: ["Engineering", "Blog", "Personal", "Productivity"]
+title: "How I keep track of tasks when todo apps do not work for me"
+publishedAt: "05-01-2026"
+summary: "Conventional todo apps assume you will open them. I do not, so I built systems that force tasks into my workflow instead."
+tags: ["Engineering", "Personal", "Productivity"]
 ---
-Todo lists. I've tried them all. My first five professional years caused real harm due to having to use Jira. Jobs after that had me use GitLab and Linear, which was a improvement but not suitable for everyday tasks.
+I have tried more than enough in all sizes and shapes and have finally accepted that traditional todo apps do not work for me. I start very excited configuring for hours and finally adding tasks. And right when that task is done, things break for me.
 
-I have tried them all. Building (And still am  
-Todo lists seem to hate me. I've tried everything—Jira (still recovering), Kanban, Linear—but they all add friction or feel bloated.
+My brain runs on a F1 car engine with a busdriver license. I want to do too much at once. There have been days where I have five IDE's open and at the same time writing out a spec for a new project. On those days I do A LOT, but too little of what I had planned. I like writing on physical paper, but I do not like reading it. Post-its fall off easily so I got to thinking and came up with methods that force me to keep getting reminded.
 
-I spend nearly 50% of my time in the shell using Neovim, and I'm obsessed with optimizing my [dotfiles](https://github.com/remcostoeten/dotfiles). So instead of forcing myself to use a GUI tool I hate, I decided to build a system that lives where I do: the CLI.
+**Since I spend half my day in the CLI tweaking dotfiles anyway, I realized that's the one place I can't ignore.** Why can't I render my tasks every time I load my shell? So I wrote a JS script that allowed me to simply do:
 
-The script is written in JavaScript/Bun and provides a simple but powerful interface for managing tasks. When you run it without arguments, you get a nice ASCII-art menu:
-
-```shell
-remcostoeten.nl on  blog [$] via 🥟 v1.3.3 
-❯ todo
-########    ######   ######     ######    ###### 
-   ##      ##    ##  ##   ##   ##    ##  ##      
-   ##      ##    ##  ##    ##  ##    ##   #####  
-   ##      ##    ##  ##    ##  ##    ##       ## 
-   ##      ##    ##  ##   ##   ##    ##  ##   ## 
-   ##       ######   ######     ######    #####  
-
- ▶ (1) Create todo 
-   (2) Delete todo
-   (3) Edit todo
-   (4) Search tasks
-   (5) View deleted
-   (6) Restore task
-   (7) Purge deleted
-   (8) Help
-   (9) Exit
-
- Use arrow keys or number keys (1-9) to navigate
+```bash title="/home/$USER/.config/dotfiles/scripts/todo.js"
+todo "Some text goes here"
 ```
 
-Every time I open a new shell, it shows me my tasks. I created three examples and this is how it looks upon opening a new shell (the ascii intro is not part of the script):
+And it would add a task to a JSON file written via FS.
+
+### Options
+
+This obviously is not a lot. Some more options regarding due dates, reminders, importance would be viable. It has grown to have quite some features.
+
+```bash title="/home/$USER/.config/dotfiles/scripts/todo.js"
+❯ todo --help
+
+┌──────────────────────────────────────────────────────────────┐
+│                          TODO MANAGER                        │
+└──────────────────────────────────────────────────────────────┘
+
+QUICK START
+────────────────────────────────────────────────────────────────
+  todo                                Show upcoming tasks
+  todo interactive                    Launch interactive menu
+  todo "Buy milk" 5pm                 Quick create task
+
+CREATE
+────────────────────────────────────────────────────────────────
+  todo <task> [time] [flags]          Create a new task
+
+  Flags:
+    !, --important                    Mark as important
+    --r <mins>                        Reminder offset in minutes
+
+  Examples:
+    todo "Meeting" tomorrow 10am      Standard task
+    todo !"Important" 5pm             Important task
+
+MANAGEMENT
+────────────────────────────────────────────────────────────────
+  todo list                           List pending tasks
+  todo list --overdue                 Show overdue tasks
+  todo list --upcoming                Show upcoming tasks
+  todo search <keyword>               Search tasks
+  todo done <id>                      Mark task as completed
+  todo edit <id> "new desc"           Edit description
+
+  Trash:
+    todo deleted [keyword]            List or search deleted tasks
+    todo restore <id>                 Restore deleted task
+    todo purge-deleted                Empty trash permanently
+
+  Cleanup:
+    todo delete <id>                  Delete specific task
+    todo delete --all                 Delete all except important
+    todo delete --overdue             Delete overdue tasks
+
+  Stats:
+    todo count                        Show pending task count
+
+TIME FORMATS
+────────────────────────────────────────────────────────────────
+  Relative        1h, 20m, 2d, in 3h
+  Clock           3pm, 15:30, 09:00
+  Date            2025-12-25 14:00
+  Keywords        tomorrow, this week
+  Reminders       --r 10,30            Minutes before due time
+
+Tip: run `todo interactive` for the full TUI experience.
+```
+
+As you can see it can be as simple as just typing `todo "Buy milk"` or as complex as `todo "Meeting with the team" 10am --r 15 !`. which effectively means "Meeting with the team" at 10am with a reminder 15 minutes before and mark it as important.
+
+If I launch my shell the first thing I see is:
 
 ```bash
- ██████╗ ███████╗███╗   ███╗ ██████╗ ██████╗
-  ██╔══██╗██╔════╝████╗ ████║██╔════╝██╔═══██╗
-  ██████╔╝█████╗  ██╔████╔██║██║     ██║   ██║
-  ██╔══██╗██╔══╝  ██║╚██╔╝██║██║     ██║   ██║
-  ██║  ██║███████╗██║ ╚═╝ ██║╚██████╗╚██████╔╝
-  ╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═════╝
+Tasks (2)
+[IMPORTANT] Meeting with the team  · 10:00 AM  · ⏰ 15m   (56ac0a60)
+Buy milk                                             (b2744f62)
+────────────────────────────────────────────────────────────────
+2 open tasks · 1 important
 
-  └─ updated 5 days ago ·26·01·07  │ launch[df] →dotfiles menu  │ 
-ð Tasks (3)
-  [IMPORTANT] This is  a task comming up - due in 58m (56ac0a60) (1/12/2026 12:33 AM)
-  Something for tomorrow - due in 23h 58m (31850611) (1/12/2026 12:33 AM)
-  A example todo (0fc11439) (1/12/2026 12:33 AM)
-
-dotfiles on  master [!?⇕] is 📦 v1.0.0 via 🥟 v1.3.
 ```
 
-The most simplest form of a task creation is simply typing `todo "Some text goes here". Some tasks do need due dates so I have a flexible argument as well. We could add onto it `todo "Some text goes here" 3pm` or `todo "Some text goes here" tomorrow` 
+Time passes, whether I interact with the system or not. And the tasks age with it.
 
-You can specify due times in whatever format feels natural - relative times like `1h` or `2d`, clock times like `3pm` or `15:30`, full date-time stamps like `2025-12-25 14:00`, or even keywords like `tomorrow` or `this week`. Add `--r 10,30` to set reminders at 10 and 30 minutes before the task is due.
-
-Tasks are stored in `~/.dotfiles/todo/tasks.json` as plain JSON, making them easy to backup, sync, or even edit manually if needed. `.dotfiles` is just a location where I personally store all temporary or cache data comming from scripts and tooling. I debated going for SQLite but figured JSON was easy, fast and good enough for this usecase.
-
-Check out this [[demo: example-project, title="CLI Demo Preview", trigger="hover"]] to see how it works in practice! 
-
-### Example Usage
-
-Let's create a task with different time formats:
+When something slips, it does not scream at me with notifications or badges. It simply becomes overdue.
 
 ```bash
-$ todo "Review pull request #347" 2h --r 10,30
-Task created: Review pull request #347
+Tasks (2)
+Tasks (2)
+[IMPORTANT][OVERDUE] Meeting with the team  · 10:00 AM  · due 3d ago   (56ac0a60)
+Buy milk                                                   (b2744f62)
+
+────────────────────────────────────────────────────────────────
+2 open tasks · 1 important · 1 overdue
 ```
 
-This creates a task due in 2 hours with reminders at 10 and 30 minutes before. When we list our tasks:
+**On the desktop, it's simple:** I get an OS notification with an optional sound.
 
-```bash
-$ todo list
-[IMPORTANT] This is a task coming up - due in 51m (56ac0a60)
-Review pull request #347 - due in 1h 59m (e53327a6)
-Something for tomorrow - due in 23h 51m (31850611)
-A example todo (0fc11439)
-create test (5e0ceea6)
-```
+**Mobile was trickier.** I needed a way to be reminded when I'm away from the keyboard. I successfully implemented a workaround using an iPhone app that subscribes to public channels, effectively pushing my CLI tasks to my phone. It works, but the 'public' aspect makes me nervous, so I'm still scouting for more private options.
 
-The tasks are color-coded by urgency (overdue in red, upcoming in yellow) and show the remaining time until they're due.
+If that wasn't enough, **I built a tool specifically for my frontend work.** It's an NPM package that renders a development overlay, drawing a literal flowchart line from a task to the specific UI element in the DOM it belongs to. It points right at the bug or feature I need to build, so I truly can't miss it.
 
-### CLI Commands
-
-The script supports several commands for quick task management:
-
-- `todo "Task" 3pm` - Create a task due at 3pm
-- `todo "Task" 3pm --r 10,30` - Create with reminders at 10 and 30 minutes before
-- `todo list` - List all pending tasks
-- `todo list --overdue` - Show only overdue tasks
-- `todo list --upcoming` - Show tasks due in less than 30 minutes
-- `todo done <id>` - Mark a task as completed
-- `todo edit <id> "New description"` - Edit a task
-- `todo count` - Show the number of pending tasks
-
-When I start my shell, the script automatically shows the first 5 pending tasks, color-coded by urgency. Overdue tasks show in red, upcoming tasks in yellow, and the rest in a neutral color.
-
-### Why This Works
-
-The key insight is that the system integrates with my existing workflow rather than requiring me to switch contexts. I'm already in the terminal, so adding a task is just a quick command away. The visual feedback in my shell prompt and the system notifications ensure tasks stay top-of-mind without requiring me to constantly check a separate app.
+Obviously it got way out of  hand with instead of some local storage I provide database adapters for teams who want to use it in a team setting. More on that in the future or check out the [Btwfyi](https://github.com/remcostoeten/btwfyi)
