@@ -10,6 +10,7 @@ export const projects = pgTable(
     title: text("title").notNull(),
     desc: text("desc").notNull(),
     featured: boolean("featured").default(false).notNull(),
+    additionalDesc: text("additional_desc"),
     showUpd: boolean("show_upd").default(true).notNull(),
     demoBox: text("demo_box"),
     showLive: boolean("show_live").default(false).notNull(),

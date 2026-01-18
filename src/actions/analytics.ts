@@ -18,7 +18,7 @@ export async function trackBlogView(slug: string) {
         const headersList = await headers()
         const userAgent = headersList.get('user-agent') || 'unknown'
 
-  
+
         const fingerprintInput = `${ip}|${userAgent}`
         const fingerprint = createHash('sha256').update(fingerprintInput).digest('hex')
 
@@ -28,7 +28,7 @@ export async function trackBlogView(slug: string) {
             .onConflictDoNothing()
             .execute()
 
-          const existingView = await db.query.blogViews.findFirst({
+        const existingView = await db.query.blogViews.findFirst({
             where: and(
                 eq(blogViews.slug, slug),
                 eq(blogViews.fingerprint, fingerprint)
@@ -36,18 +36,18 @@ export async function trackBlogView(slug: string) {
         })
 
         if (existingView) {
-    
-                      await db.update(blogPosts)
+
+            await db.update(blogPosts)
                 .set({ totalViews: sql`${blogPosts.totalViews} + 1` })
                 .where(eq(blogPosts.slug, slug))
 
             return { unique: false }
         }
 
-        
-                const geoInfo = await fetchGeoInfo(ip)
 
-                await db.insert(blogViews).values({
+        const geoInfo = await fetchGeoInfo(ip)
+
+        await db.insert(blogViews).values({
             slug,
             fingerprint,
             ipAddress: ip,
@@ -59,7 +59,7 @@ export async function trackBlogView(slug: string) {
             geoTimezone: geoInfo?.timezone,
         })
 
-                await db.update(blogPosts)
+        await db.update(blogPosts)
             .set({
                 uniqueViews: sql`${blogPosts.uniqueViews} + 1`,
                 totalViews: sql`${blogPosts.totalViews} + 1`

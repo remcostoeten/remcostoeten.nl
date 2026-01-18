@@ -6,7 +6,6 @@ import {
   ActivitySectionSkeleton,
   TechStackSkeleton,
   WorkExperienceSkeleton,
-  LanguageStatsSkeleton,
   BlogPostsSkeleton
 } from '@/components/ui/skeletons/section-skeletons'
 
@@ -20,10 +19,7 @@ const TechStackCloud = nextDynamic(
   { loading: () => <TechStackSkeleton /> }
 )
 
-const LanguageStats = nextDynamic(
-  () => import('@/components/landing/language-stats').then(m => ({ default: m.LanguageStats })),
-  { loading: () => <LanguageStatsSkeleton /> }
-)
+
 
 const WorkExperienceDemo = nextDynamic(
   () => import('@/components/home/work-experience'),
@@ -35,8 +31,8 @@ const BlogPosts = nextDynamic(
   { loading: () => <BlogPostsSkeleton /> }
 )
 
-const FeaturedProjects = nextDynamic(
-  () => import('@/components/landing/featured-projects').then(m => ({ default: m.FeaturedProjects })),
+const ProjectShowcase = nextDynamic(
+  () => import('@/components/projects').then(m => ({ default: m.ProjectShowcase })),
   { loading: () => <div className="h-64 animate-pulse bg-muted/20" /> }
 )
 
@@ -70,11 +66,9 @@ export default function Page() {
 
           <ActivitySection />
 
-          <Section title="Learning Journey" noHeaderMargin>
-            <LanguageStats />
+          <Section title="Projects" noHeaderMargin>
+            <ProjectShowcase />
           </Section>
-
-          <FeaturedProjects />
 
           <Playground />
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { memo, useState, lazy, Suspense } from "react"
-import { Github, ExternalLink, Eye } from "lucide-react"
+import { Github, ExternalLink, Eye, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { IProject, TPreview } from "../types"
 
@@ -22,8 +22,16 @@ function getExternalUrl(preview?: TPreview) {
 
 export const ProjectRow = memo(function ProjectRow({ project }: Props) {
   const [showPreview, setShowPreview] = useState(false)
+  const [showDesc, setShowDesc] = useState(false)
   const externalUrl = getExternalUrl(project.preview)
   const hasPreview = project.preview?.type === "iframe"
+  const hasDesc = !!project.additionalDescription
+  const isOpen = showPreview || showDesc
+
+  const toggle = () => {
+    if (hasPreview) setShowPreview(!showPreview)
+    else if (hasDesc) setShowDesc(!showDesc)
+  }
 
   return (
     <div className="flex flex-col border-b border-border">
@@ -54,16 +62,20 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
             ))}
           </div>
           <div className="flex items-center">
-            {hasPreview && (
+            {(hasPreview || hasDesc) && (
               <button
-                onClick={() => setShowPreview(!showPreview)}
+                onClick={toggle}
                 className={cn(
                   "p-1 transition-colors",
-                  showPreview ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  isOpen ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
-                aria-label={`Toggle ${project.name} preview`}
+                aria-label={hasPreview ? `Toggle ${project.name} preview` : `Toggle ${project.name} details`}
               >
-                <Eye className="h-3 w-3" />
+                {hasPreview ? (
+                  <Eye className="h-3 w-3" />
+                ) : (
+                  <ChevronDown className={cn("h-3 w-3 transition-transform duration-300", isOpen && "rotate-180")} />
+                )}
               </button>
             )}
             <a
@@ -90,29 +102,32 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
         </div>
       </div>
 
-      {hasPreview && (
-        <div
-          className="grid transition-all duration-500"
-          style={{
-            gridTemplateRows: showPreview ? "1fr" : "0fr",
-            transitionTimingFunction: EASE_OUT_EXPO,
-          }}
-        >
-          <div className="overflow-hidden">
-            {showPreview && (
-              <Suspense
-                fallback={
-                  <div className="h-[150px] flex items-center justify-center text-xs text-muted-foreground">
-                    Loading...
-                  </div>
-                }
-              >
-                <ProjectPreviewRenderer preview={project.preview} name={project.name} isVisible={showPreview} />
-              </Suspense>
-            )}
-          </div>
+      <div
+        className="grid transition-all duration-500"
+        style={{
+          gridTemplateRows: isOpen ? "1fr" : "0fr",
+          transitionTimingFunction: EASE_OUT_EXPO,
+        }}
+      >
+        <div className="overflow-hidden">
+          {showPreview && (
+            <Suspense
+              fallback={
+                <div className="h-[150px] flex items-center justify-center text-xs text-muted-foreground">
+                  Loading...
+                </div>
+              }
+            >
+              <ProjectPreviewRenderer preview={project.preview} name={project.name} isVisible={showPreview} />
+            </Suspense>
+          )}
+          {showDesc && !showPreview && (
+            <div className="px-3 py-3 text-xs text-muted-foreground/80 leading-relaxed border-t border-border bg-muted/20">
+              {project.additionalDescription}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 })

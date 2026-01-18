@@ -1,17 +1,16 @@
 import { Metadata } from 'next'
-import { PlaygroundContent } from './content'
+import { Suspense } from 'react'
+import { PlaygroundView } from '@/views/playground-view'
 
 export const metadata: Metadata = {
     title: 'Playground',
-    description: 'Code snippets, UI experiments, and package builds',
+    description: 'Components, utilities, and experiments. Small artifacts that do not warrant their own repositories.',
 }
-
-import { Suspense } from 'react'
 
 export default function PlaygroundPage() {
     return (
         <Suspense fallback={null}>
-            <PlaygroundContent />
+            <PlaygroundView />
         </Suspense>
     )
 }

@@ -19,6 +19,10 @@ export default {
         destructive: 'hsl(var(--destructive))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        brand: {
+          400: 'hsl(var(--brand-400))',
+          500: 'hsl(var(--brand-500))',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, memo, useMemo, lazy, Suspense } from "react"
+import { useState, memo, useMemo, lazy, Suspense, useRef, useEffect } from "react"
 import type { IProject } from "../types"
 import { ProjectCard } from "./project-card"
 
@@ -17,6 +17,27 @@ const ROW_HEIGHT = 40
 
 export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({ visibleRowCount, featured, other }: Props) {
   const [showAll, setShowAll] = useState(false)
+  const [activeFeaturedIndex, setActiveFeaturedIndex] = useState(0)
+  const [hasSwitched, setHasSwitched] = useState(false)
+  const firstCardRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (hasSwitched || !firstCardRef.current) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Trigger when scrolling down and element is 60% past the top
+        if (entry.intersectionRatio < 0.4 && entry.boundingClientRect.top < 0) {
+          setActiveFeaturedIndex(1)
+          setHasSwitched(true)
+        }
+      },
+      { threshold: [0.4] },
+    )
+
+    observer.observe(firstCardRef.current)
+    return () => observer.disconnect()
+  }, [hasSwitched])
 
   const collapsedHeight = useMemo(() => visibleRowCount * ROW_HEIGHT, [visibleRowCount])
   const expandedHeight = useMemo(() => other.length * ROW_HEIGHT, [other.length])
@@ -26,8 +47,8 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({ visib
     <section className="w-full max-w-3xl px-3 sm:px-0">
       <div className="flex flex-col border-l border-r border-t border-border">
         {featured.map((project, index) => (
-          <div key={project.name} className="border-b border-border">
-            <ProjectCard project={project} forceShowPreview={index === 0} />
+          <div key={project.name} className="border-b border-border" ref={index === 0 ? firstCardRef : null}>
+            <ProjectCard project={project} forceShowPreview={index === activeFeaturedIndex} />
           </div>
         ))}
       </div>
