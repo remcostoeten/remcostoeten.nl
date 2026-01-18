@@ -1,25 +1,22 @@
-import Link from 'next/link'
-import Image from 'next/image'
+import { rehypeExtractCodeMeta } from '@/lib/rehype-extract-code-meta'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import Image from 'next/image'
+import Link from 'next/link'
 import React from 'react'
+import remarkGfm from 'remark-gfm'
 import { CodeBlock } from '../ui/code-block'
-import { CollapsibleMedia } from './collapsible-media'
-import { SpotifyEnvGenerator } from './spotify-env-generator'
-import { SpotifyApiExplorer } from './spotify-api-explorer'
 import {
   Notice,
   NoticeAlert,
-  NoticeWarning,
-  NoticeSuccess,
   NoticeInfo,
   NoticeNeutral,
-  NoticeRegular
+  NoticeRegular,
+  NoticeSuccess,
+  NoticeWarning
 } from '../ui/notice'
-import remarkGfm from 'remark-gfm'
-import { rehypeExtractCodeMeta } from '@/lib/rehype-extract-code-meta'
-import { remarkDemoPlugin } from '@/lib/remark-demo-plugin'
-import { DemoPopover } from './demo-popover'
-// import BtwfyiDemo from './btwfyi-demo'
+import { CollapsibleMedia } from './collapsible-media'
+import { SpotifyApiExplorer } from './spotify-api-explorer'
+import { SpotifyEnvGenerator } from './spotify-env-generator'
 
 function Table({ data }) {
   let headers = data.headers.map((header, index) => (
@@ -106,8 +103,8 @@ function BlogSectionHeading({ children }: { children: React.ReactNode }) {
   const slug = slugify(children as string)
 
   return (
-    <h2 
-      id={slug} 
+    <h2
+      id={slug}
       className="text-xl font-semibold text-foreground mt-10 mb-4 first:mt-0 pb-2 border-b border-border/50"
     >
       <a href={`#${slug}`} className="anchor" aria-hidden="true" />
@@ -158,7 +155,7 @@ let components = {
   Image: RoundedImage,
   Video,
   CollapsibleMedia,
-  DemoPopover,
+
   // BtwfyiDemo,
   a: CustomLink,
   Notice,
@@ -241,7 +238,7 @@ export function CustomMDX(props) {
       components={{ ...components, ...(props.components || {}) }}
       options={{
         mdxOptions: {
-          remarkPlugins: [remarkGfm, remarkDemoPlugin],
+          remarkPlugins: [remarkGfm],
           rehypePlugins: [rehypeExtractCodeMeta],
         },
       }}

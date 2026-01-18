@@ -2,9 +2,9 @@
 
 import { Zap, Home, FileText, Code, Shield } from 'lucide-react'
 import Link from 'next/link'
-import { generateRoutes, getRoutesByCategory, RouteItem } from '../../utils/generate-routes'
+import { getRoutesByCategory, RouteItem } from '../../utils/generate-routes'
 
-interface RoutesSectionProps {
+type Props = {
   pathname: string
 }
 
@@ -15,7 +15,7 @@ const CATEGORY_CONFIG = {
   legal: { icon: Shield, label: 'legal' },
 } as const
 
-function RouteLink({ route, pathname }: { route: RouteItem; pathname: string }) {
+function RouteLink({ route, pathname }: Props & { route: RouteItem }) {
   const isActive = pathname === route.path
 
   if (route.isDynamic) {
@@ -29,15 +29,14 @@ function RouteLink({ route, pathname }: { route: RouteItem; pathname: string }) 
       </div>
     )
   }
-
+  ``
   return (
     <Link
       href={route.path}
-      className={`flex items-center justify-between text-[10px] px-2 py-1 transition-colors ${
-        isActive
-          ? 'bg-[hsl(167.8,53.25%,54.71%)]/10 text-[hsl(167.8,53.25%,65%)] border-l-2 border-[hsl(167.8,53.25%,54.71%)]'
-          : 'text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] hover:bg-[hsl(0,0%,18%)]'
-      }`}
+      className={`flex items-center justify-between text-[10px] px-2 py-1 transition-colors ${isActive
+        ? 'bg-[hsl(167.8,53.25%,54.71%)]/10 text-[hsl(167.8,53.25%,65%)] border-l-2 border-[hsl(167.8,53.25%,54.71%)]'
+        : 'text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] hover:bg-[hsl(0,0%,18%)]'
+        }`}
     >
       <span>{route.label}</span>
       {isActive && <div className="w-1 h-1 bg-[hsl(167.8,53.25%,54.71%)]" />}
@@ -45,7 +44,7 @@ function RouteLink({ route, pathname }: { route: RouteItem; pathname: string }) 
   )
 }
 
-export function RoutesSection({ pathname }: RoutesSectionProps) {
+export function RoutesSection({ pathname }: Props) {
   const categorizedRoutes = getRoutesByCategory()
 
   const handleJump = (e: React.KeyboardEvent<HTMLInputElement>) => {

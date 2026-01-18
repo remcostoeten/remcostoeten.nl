@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Code2, Palette, Package, Terminal, Copy, Check, ExternalLink, Github, ArrowLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -86,6 +86,38 @@ const demoItems: PlaygroundItem[] = [
         preview: <GradientBorderDemo />,
     },
     {
+        id: 'loading-skeleton',
+        title: 'Loading Skeleton',
+        description: 'Animated shimmer skeleton for loading states',
+        category: 'ui',
+        language: 'tsx',
+        tags: ['React', 'CSS', 'Loading'],
+        code: `function Skeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "animate-pulse bg-muted/50 rounded",
+        className
+      )}
+    />
+  )
+}
+
+function CardSkeleton() {
+  return (
+    <div className="space-y-3 p-4">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-3 w-1/2" />
+      <div className="flex gap-2 mt-4">
+        <Skeleton className="h-6 w-16" />
+        <Skeleton className="h-6 w-12" />
+      </div>
+    </div>
+  )
+}`,
+        preview: <SkeletonDemo />,
+    },
+    {
         id: 'use-debounce',
         title: 'useDebounce Hook',
         description: 'Debounce any value with a custom delay',
@@ -106,6 +138,200 @@ const demoItems: PlaygroundItem[] = [
   return debouncedValue
 }`,
         preview: <DebounceDemo />,
+    },
+    {
+        id: 'use-local-storage',
+        title: 'useLocalStorage Hook',
+        description: 'Persist React state to localStorage with SSR support',
+        category: 'snippets',
+        language: 'ts',
+        tags: ['React', 'Hook', 'Storage'],
+        code: `function useLocalStorage<T>(key: string, initialValue: T) {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === 'undefined') return initialValue
+    try {
+      const item = window.localStorage.getItem(key)
+      return item ? JSON.parse(item) : initialValue
+    } catch { return initialValue }
+  })
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    const valueToStore = value instanceof Function 
+      ? value(storedValue) 
+      : value
+    setStoredValue(valueToStore)
+    window.localStorage.setItem(key, JSON.stringify(valueToStore))
+  }
+
+  return [storedValue, setValue] as const
+}`,
+        preview: <LocalStorageDemo />,
+    },
+    {
+        id: 'use-copy-to-clipboard',
+        title: 'useCopyToClipboard Hook',
+        description: 'Copy text with automatic reset and error handling',
+        category: 'snippets',
+        language: 'ts',
+        tags: ['React', 'Hook', 'Clipboard'],
+        code: `function useCopyToClipboard(resetDelay = 2000) {
+  const [state, setState] = useState<{
+    value?: string
+    error?: Error
+    copied: boolean
+  }>({ copied: false })
+
+  const copy = useCallback(async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setState({ value: text, copied: true })
+      setTimeout(() => setState(s => ({ ...s, copied: false })), resetDelay)
+    } catch (error) {
+      setState({ error: error as Error, copied: false })
+    }
+  }, [resetDelay])
+
+  return { ...state, copy }
+}`,
+        preview: <CopyToClipboardDemo />,
+    },
+    {
+        id: 'ts-log-utils',
+        title: 'ts-log-utils',
+        description: 'Type-safe colored console logging with prefixes',
+        category: 'packages',
+        language: 'ts',
+        tags: ['TypeScript', 'Logging', 'Utils'],
+        github: 'https://github.com/remcostoeten/ts-log-utils',
+        code: `type LogLevel = 'info' | 'warn' | 'error' | 'debug' | 'success'
+
+const colors: Record<LogLevel, string> = {
+  info: '\\x1b[36m',
+  warn: '\\x1b[33m', 
+  error: '\\x1b[31m',
+  debug: '\\x1b[90m',
+  success: '\\x1b[32m'
+}
+
+function createLogger(prefix: string) {
+  return Object.fromEntries(
+    (Object.keys(colors) as LogLevel[]).map(level => [
+      level,
+      (...args: unknown[]) => 
+        console.log(\`\${colors[level]}[\${prefix}]\`, ...args, '\\x1b[0m')
+    ])
+  ) as Record<LogLevel, (...args: unknown[]) => void>
+}
+
+export const log = createLogger('app')
+// log.info('Server started')
+// log.error('Failed to connect')`,
+        preview: <LogUtilsDemo />,
+    },
+    {
+        id: 'drizzle-helpers',
+        title: 'drizzle-helpers',
+        description: 'Common Drizzle ORM schema patterns and utilities',
+        category: 'packages',
+        language: 'ts',
+        tags: ['Drizzle', 'Database', 'ORM'],
+        github: 'https://github.com/remcostoeten/drizzle-helpers',
+        code: `import { sql } from 'drizzle-orm'
+import { text, integer, sqliteTable } from 'drizzle-orm/sqlite-core'
+import { createId } from '@paralleldrive/cuid2'
+
+export const timestamps = {
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql\`(unixepoch())\`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql\`(unixepoch())\`)
+}
+
+export const withId = {
+  id: text('id').primaryKey().$defaultFn(() => createId())
+}
+
+export const users = sqliteTable('users', {
+  ...withId,
+  email: text('email').notNull().unique(),
+  name: text('name'),
+  ...timestamps
+})`,
+        preview: <DrizzleHelpersDemo />,
+    },
+    {
+        id: 'env-generator',
+        title: 'env-generator',
+        description: 'Generate .env files from .env.example with prompts',
+        category: 'cli',
+        language: 'bash',
+        tags: ['CLI', 'DevOps', 'Automation'],
+        github: 'https://github.com/remcostoeten/env-generator',
+        code: `#!/usr/bin/env node
+import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { createInterface } from 'readline'
+
+const rl = createInterface({ input: process.stdin, output: process.stdout })
+const prompt = (q: string) => new Promise<string>(r => rl.question(q, r))
+
+async function generateEnv() {
+  if (!existsSync('.env.example')) {
+    console.log('No .env.example found')
+    process.exit(1)
+  }
+  
+  const template = readFileSync('.env.example', 'utf-8')
+  const lines = template.split('\\n')
+  const result: string[] = []
+  
+  for (const line of lines) {
+    if (!line.includes('=') || line.startsWith('#')) {
+      result.push(line)
+      continue
+    }
+    const [key] = line.split('=')
+    const value = await prompt(\`\${key}: \`)
+    result.push(\`\${key}=\${value}\`)
+  }
+  
+  writeFileSync('.env', result.join('\\n'))
+  console.log('✓ .env generated')
+  rl.close()
+}`,
+        preview: <EnvGeneratorDemo />,
+    },
+    {
+        id: 'port-killer',
+        title: 'port-killer',
+        description: 'Kill processes running on specified ports',
+        category: 'cli',
+        language: 'bash',
+        tags: ['CLI', 'DevOps', 'Utility'],
+        github: 'https://github.com/remcostoeten/port-killer',
+        code: `#!/usr/bin/env node
+import { execSync } from 'child_process'
+
+const ports = process.argv.slice(2).map(Number).filter(Boolean)
+
+if (ports.length === 0) {
+  console.log('Usage: port-killer <port> [port2] [port3]...')
+  process.exit(1)
+}
+
+for (const port of ports) {
+  try {
+    const pid = execSync(\`lsof -ti:\${port}\`).toString().trim()
+    if (pid) {
+      execSync(\`kill -9 \${pid}\`)
+      console.log(\`✓ Killed process \${pid} on port \${port}\`)
+    }
+  } catch {
+    console.log(\`○ No process on port \${port}\`)
+  }
+}`,
+        preview: <PortKillerDemo />,
     },
 ]
 
@@ -210,6 +436,191 @@ function DebounceDemo() {
     )
 }
 
+function SkeletonDemo() {
+    return (
+        <div className="p-6 space-y-3">
+            <div className="animate-pulse bg-muted/50 h-4 w-3/4 rounded" />
+            <div className="animate-pulse bg-muted/50 h-3 w-1/2 rounded" />
+            <div className="flex gap-2 mt-4">
+                <div className="animate-pulse bg-muted/50 h-6 w-16 rounded" />
+                <div className="animate-pulse bg-muted/50 h-6 w-12 rounded" />
+            </div>
+        </div>
+    )
+}
+
+function LocalStorageDemo() {
+    const [count, setCount] = useState(0)
+    const [hydrated, setHydrated] = useState(false)
+
+    useEffect(() => {
+        const stored = localStorage.getItem('demo-count')
+        if (stored) setCount(parseInt(stored, 10))
+        setHydrated(true)
+    }, [])
+
+    const increment = () => {
+        const newCount = count + 1
+        setCount(newCount)
+        localStorage.setItem('demo-count', String(newCount))
+    }
+
+    const reset = () => {
+        setCount(0)
+        localStorage.removeItem('demo-count')
+    }
+
+    if (!hydrated) return <div className="p-6 h-[88px]" />
+
+    return (
+        <div className="p-6 space-y-3">
+            <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Persisted count:</span>
+                <span className="font-mono text-foreground">{count}</span>
+            </div>
+            <div className="flex gap-2">
+                <button
+                    onClick={increment}
+                    className="px-3 py-1.5 text-xs border border-border/50 hover:bg-muted/30 transition-colors"
+                >
+                    Increment
+                </button>
+                <button
+                    onClick={reset}
+                    className="px-3 py-1.5 text-xs border border-border/50 hover:bg-muted/30 transition-colors text-muted-foreground"
+                >
+                    Reset
+                </button>
+            </div>
+        </div>
+    )
+}
+
+function CopyToClipboardDemo() {
+    const [copied, setCopied] = useState(false)
+    const textToCopy = "npm install my-awesome-package"
+
+    const handleCopy = async () => {
+        await navigator.clipboard.writeText(textToCopy)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+    }
+
+    return (
+        <div className="p-6 space-y-3">
+            <div className="flex items-center gap-2 px-3 py-2 border border-border/50 bg-muted/20">
+                <code className="text-xs text-muted-foreground flex-1 font-mono">{textToCopy}</code>
+                <button
+                    onClick={handleCopy}
+                    className="text-muted-foreground/60 hover:text-foreground transition-colors"
+                >
+                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+            </div>
+            <p className="text-[10px] text-muted-foreground/40">Click to copy • Auto-resets after 2s</p>
+        </div>
+    )
+}
+
+function LogUtilsDemo() {
+    const logs = [
+        { level: 'info', color: '#22d3ee', message: 'Server started on port 3000' },
+        { level: 'success', color: '#4ade80', message: 'Database connected' },
+        { level: 'warn', color: '#fbbf24', message: 'Cache miss for user:123' },
+        { level: 'error', color: '#f87171', message: 'Failed to fetch /api/data' },
+    ]
+
+    return (
+        <div className="p-4 font-mono text-xs space-y-1 bg-zinc-950/50">
+            {logs.map((log, i) => (
+                <div key={i} className="flex items-center gap-2">
+                    <span style={{ color: log.color }}>[app]</span>
+                    <span className="text-muted-foreground/70">{log.message}</span>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+function DrizzleHelpersDemo() {
+    return (
+        <div className="p-4">
+            <div className="text-[10px] uppercase tracking-wider text-muted-foreground/40 mb-2">Schema Preview</div>
+            <div className="font-mono text-xs space-y-1">
+                <div className="flex items-center gap-2">
+                    <span className="text-purple-400">users</span>
+                    <span className="text-muted-foreground/40">→</span>
+                    <span className="text-muted-foreground/60">id, email, name, created_at, updated_at</span>
+                </div>
+                <div className="mt-3 p-2 bg-muted/20 border border-border/30">
+                    <div className="text-emerald-400/80 text-[10px] mb-1">Includes:</div>
+                    <div className="text-muted-foreground/60 text-[10px]">• CUID2 auto-generated IDs</div>
+                    <div className="text-muted-foreground/60 text-[10px]">• Unix timestamp columns</div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function EnvGeneratorDemo() {
+    const [step, setStep] = useState(0)
+    const steps = [
+        { prompt: 'DATABASE_URL:', value: 'postgresql://...' },
+        { prompt: 'API_KEY:', value: 'sk_live_xxx' },
+        { prompt: 'NODE_ENV:', value: 'production' },
+    ]
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setStep(s => (s + 1) % (steps.length + 1))
+        }, 1500)
+        return () => clearInterval(timer)
+    }, [])
+
+    return (
+        <div className="p-4 font-mono text-xs bg-zinc-950/50 space-y-1">
+            <div className="text-muted-foreground/40">$ npx env-generator</div>
+            {steps.slice(0, step).map((s, i) => (
+                <div key={i} className="flex gap-2">
+                    <span className="text-cyan-400">{s.prompt}</span>
+                    <span className="text-muted-foreground/60">{s.value}</span>
+                </div>
+            ))}
+            {step === steps.length && (
+                <div className="text-emerald-400 mt-2">✓ .env generated</div>
+            )}
+        </div>
+    )
+}
+
+function PortKillerDemo() {
+    const [killed, setKilled] = useState<number[]>([])
+
+    useEffect(() => {
+        const ports = [3000, 5173, 8080]
+        let i = 0
+        const timer = setInterval(() => {
+            if (i < ports.length) {
+                setKilled(k => [...k, ports[i]])
+                i++
+            } else {
+                setKilled([])
+                i = 0
+            }
+        }, 800)
+        return () => clearInterval(timer)
+    }, [])
+
+    return (
+        <div className="p-4 font-mono text-xs bg-zinc-950/50 space-y-1">
+            <div className="text-muted-foreground/40">$ npx port-killer 3000 5173 8080</div>
+            {killed.map(port => (
+                <div key={port} className="text-emerald-400">✓ Killed process on port {port}</div>
+            ))}
+        </div>
+    )
+}
+
 function PlaygroundCard({ item, onClick }: { item: PlaygroundItem; onClick: () => void }) {
     const config = categoryConfig[item.category as keyof typeof categoryConfig]
     const Icon = config?.icon || Code2
@@ -220,7 +631,7 @@ function PlaygroundCard({ item, onClick }: { item: PlaygroundItem; onClick: () =
             initial={{ y: 20 }}
             animate={{ y: 0 }}
             exit={{ y: 20, scale: 0.95 }}
-            transition={{ 
+            transition={{
                 duration: 0.4,
                 ease: bezier
             }}
@@ -287,8 +698,8 @@ function FilterTab({
             <span className="relative z-10 flex items-center gap-1.5">
                 <kbd className={cn(
                     "hidden sm:inline-flex items-center justify-center w-4 h-4 text-[9px] font-mono border",
-                    isActive 
-                        ? "border-foreground/20 text-foreground/60" 
+                    isActive
+                        ? "border-foreground/20 text-foreground/60"
                         : "border-border/40 text-muted-foreground/30"
                 )}>
                     {index + 1}
@@ -326,17 +737,17 @@ export function PlaygroundContent() {
 
     useEffect(() => {
         const categories: PlaygroundCategory[] = ['all', 'snippets', 'ui', 'packages', 'cli']
-        
+
         function handleKeyDown(e: KeyboardEvent) {
             if (selectedItem) return
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
-            
+
             const key = parseInt(e.key)
             if (key >= 1 && key <= categories.length) {
                 setActiveCategory(categories[key - 1])
             }
         }
-        
+
         window.addEventListener('keydown', handleKeyDown)
         return () => window.removeEventListener('keydown', handleKeyDown)
     }, [selectedItem])
