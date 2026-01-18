@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { getSession } from "@/lib/auth-guard"
-import { getProjects, getSettings } from "@/modules/projects/server/queries"
+import { getProjects, getSettings } from "@/components/projects/server/queries"
 
 export default async function AdminPage() {
     const session = await getSession()

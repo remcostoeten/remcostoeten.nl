@@ -79,7 +79,7 @@ export function WorkExperience({
       {currentJob && <ExperienceItem key={currentJob.id} experience={currentJob} shouldExpandAll={true} />}
 
       <div className="space-y-4">
-        <div 
+        <div
           className={cn(
             "relative transition-all duration-700 ease-in-out",
             showAll ? "max-h-[2000px]" : "max-h-[200px] overflow-hidden"
@@ -99,7 +99,7 @@ export function WorkExperience({
           </div>
 
           {!showAll && remainingJobs.length > 0 && (
-            <div 
+            <div
               className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/95 to-transparent z-30 flex items-end justify-center pb-4"
               aria-hidden="true"
             >
@@ -143,46 +143,48 @@ export function ExperienceItem({
   experience: ExperienceItemType
   shouldExpandAll?: boolean
 }) {
-  const initial = experience.companyName.charAt(0).toUpperCase();
-  const firstPosition = experience.positions[0];
+  const initial = experience.companyName.charAt(0).toUpperCase()
 
   return (
-    <div className="space-y-4 py-4">
-      <div className="not-prose flex items-start gap-4" style={{ marginBottom: '0' }}>
-        <div className="flex size-6 shrink-0 items-center justify-center mt-0.5" aria-hidden>
-          <div className="flex size-6 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary border border-primary/20">
-            <span className="text-xs font-semibold">{initial}</span>
-          </div>
-        </div>
+    <div className="relative pb-8 last:pb-0">
+      {/* Vertical Timeline Line */}
+      <div
+        className="absolute left-[15px] top-6 bottom-0 w-px bg-border/40"
+        aria-hidden="true"
+      />
 
-        <div className="flex-1 flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-base leading-snug font-medium text-foreground truncate">
-              {firstPosition.title}
-            </h3>
-            <p className="text-sm text-muted-foreground truncate">
-              {experience.companyName}
-            </p>
-          </div>
-          {firstPosition.location && (
-            <span className="text-sm text-muted-foreground/70 whitespace-nowrap">
-              {firstPosition.location}
-            </span>
+      {/* Company Header Node */}
+      <div className="relative flex items-center gap-4 mb-6 group">
+        <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground shadow-sm transition-colors group-hover:border-foreground/20 group-hover:text-foreground">
+          <span className="text-sm font-semibold">{initial}</span>
+          {experience.isCurrentEmployer && (
+            <span className="absolute -right-1 -top-1 size-2.5 rounded-full border-2 border-background bg-blue-500" />
           )}
         </div>
 
-        {experience.isCurrentEmployer && (
-          <span className="relative flex items-center justify-center translate-y-1">
-            <span className="absolute inline-flex size-3 animate-ping rounded-full bg-brand-500 opacity-50" />
-            <span className="relative inline-flex size-2 rounded-full bg-brand-500" />
-            <span className="sr-only">Current Employer</span>
-          </span>
-        )}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-foreground tracking-tight">
+              {experience.companyName}
+            </h3>
+            {experience.isCurrentEmployer && (
+              <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-medium text-blue-500">
+                Current
+              </span>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="relative space-y-4 before:absolute before:left-3 before:top-0 before:h-full before:w-px before:bg-border">
-        {experience.positions.map((position) => (
-          <ExperiencePositionItem key={position.id} position={position} shouldExpandAll={shouldExpandAll} />
+      {/* Positions List */}
+      <div className="space-y-8">
+        {experience.positions.map((position, index) => (
+          <ExperiencePositionItem
+            key={position.id}
+            position={position}
+            shouldExpandAll={shouldExpandAll}
+            isLast={index === experience.positions.length - 1}
+          />
         ))}
       </div>
     </div>
@@ -192,143 +194,117 @@ export function ExperienceItem({
 export function ExperiencePositionItem({
   position,
   shouldExpandAll = false,
+  isLast,
 }: {
   position: ExperiencePositionItemType
   shouldExpandAll?: boolean
+  isLast?: boolean
 }) {
   const hasContent = (position.description && position.description.trim().length > 0) || (Array.isArray(position.skills) && position.skills.length > 0);
   const isEducation = position.id.startsWith('education');
   const canCollapse = hasContent && !isEducation;
 
-  const Metadata = () => (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground/80">
-      {position.employmentType && (
-        <>
-          <span>{position.employmentType}</span>
-          <Separator className="h-4" orientation="vertical" />
-        </>
-      )}
-      <div className="flex items-center">
-        {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
-          const year = Number.parseInt(part)
-          return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
-        })}
-      </div>
-    </div>
-  );
-
-  if (!canCollapse) {
-    return (
-      <div className="relative pl-10">
-        <Metadata />
-        {position.description && (
-          <Prose className="pt-2">
-            <ReactMarkdown>{position.description}</ReactMarkdown>
-          </Prose>
-        )}
-        {Array.isArray(position.skills) && position.skills.length > 0 && (
-          <ul className="not-prose flex flex-wrap gap-1.5 pt-3">
-            {position.skills.map((skill, index) => (
-              <li key={index} className="flex">
-                <Skill>{skill}</Skill>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
-  }
-
   const [isOpen, setIsOpen] = React.useState(position.isExpanded || shouldExpandAll)
-  
+  const Icon = position.icon ? iconMap[position.icon] : CodeXmlIcon;
+
   React.useEffect(() => {
     if (shouldExpandAll) {
       setIsOpen(true)
     }
   }, [shouldExpandAll])
 
-  return (
-    <Collapsible open={isOpen} asChild>
-      <div className="relative last:before:absolute last:before:h-full last:before:w-4 last:before:bg-background">
+  const Metadata = () => (
+    <div className="flex items-center gap-2 text-xs text-muted-foreground/60 mb-2 font-mono">
+      {position.employmentType && (
+        <>
+          <span>{position.employmentType}</span>
+          <span>·</span>
+        </>
+      )}
+      <div className="flex items-center">
+        {position.employmentPeriod}
+      </div>
+    </div>
+  );
 
-        <div className="flex items-center gap-2 text-sm text-muted-foreground/80 pl-10 mb-1">
-          {position.employmentType && (
-            <>
-              <span>{position.employmentType}</span>
-              <Separator className="h-4" orientation="vertical" />
-            </>
-          )}
-          <div className="flex items-center">
-            {position.employmentPeriod.split(/(\d{4})/).map((part, i) => {
-              const year = Number.parseInt(part)
-              return isNaN(year) ? part : <AnimatedNumber key={i} value={year} initialProgress={0} />
-            })}
+  return (
+    <div className={cn("relative pl-12", isLast && "bg-background")}>
+      {/* Position Icon on Timeline */}
+      <div className="absolute left-[3.5px] top-0 z-10 box-border flex size-6 items-center justify-center rounded-full border border-border bg-muted/30 text-muted-foreground shadow-sm">
+        <Icon className="size-3" />
+      </div>
+
+      <div className="flex flex-col">
+        <div className="flex items-start justify-between group/header cursor-pointer select-none" onClick={() => canCollapse && setIsOpen(!isOpen)}>
+          <div>
+            <h4 className="text-sm font-medium text-foreground/90 group-hover/header:text-foreground transition-colors">
+              {position.title}
+            </h4>
+            <Metadata />
           </div>
-          
-          <button
-            type="button"
-            onClick={() => setIsOpen(prev => !prev)}
-            className="p-1 hover:bg-muted/50 rounded-sm transition-colors group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-            data-state={isOpen ? "open" : "closed"}
-          >
-            <div className="shrink-0 text-muted-foreground/60">
+
+          {canCollapse && (
+            <button
+              type="button"
+              className="text-muted-foreground/40 hover:text-foreground transition-colors"
+              aria-label={isOpen ? "Collapse" : "Expand"}
+            >
               {isOpen ? (
                 <ChevronsDownUpIcon className="size-3.5" />
               ) : (
                 <ChevronsUpDownIcon className="size-3.5" />
               )}
-            </div>
-            <span className="sr-only">Toggle details</span>
-          </button>
+            </button>
+          )}
         </div>
 
-
-
         <AnimatePresence initial={false}>
-          {isOpen && (
+          {(isOpen || !canCollapse) && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="pl-10 pr-4 pb-2">
+              <div className="pt-2 pb-1">
                 {position.description && (
-                  <Prose className="pt-2">
+                  <Prose>
                     <ReactMarkdown>{position.description}</ReactMarkdown>
                   </Prose>
                 )}
 
                 {Array.isArray(position.skills) && position.skills.length > 0 && (
-                  <ul className="not-prose flex flex-wrap gap-1.5 pt-3">
+                  <div className="flex flex-wrap gap-1.5 pt-3">
                     {position.skills.map((skill, index) => (
-                      <li key={index} className="flex">
-                        <Skill>{skill}</Skill>
-                      </li>
+                      <Skill key={index}>{skill}</Skill>
                     ))}
-                  </ul>
+                  </div>
                 )}
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-    </Collapsible>
+    </div>
   )
 }
 
-function Prose({ className, ...props }: React.ComponentProps<"div">) {
+function Prose({ className, children, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       className={cn(
-        "prose prose-sm max-w-none font-mono text-muted-foreground prose-zinc dark:prose-invert prose-ul:pl-4 prose-li:pl-0",
-        "prose-a:font-medium prose-a:wrap-break-word prose-a:text-foreground prose-a:underline prose-a:underline-offset-4",
-        "prose-code:rounded-md prose-code:border prose-code:bg-muted/50 prose-code:px-[0.3rem] prose-code:py-[0.2rem] prose-code:text-sm prose-code:font-normal prose-code:before:content-none prose-code:after:content-none",
+        "prose prose-sm max-w-none text-muted-foreground prose-zinc dark:prose-invert",
+        "prose-p:leading-normal prose-p:my-0",
+        "prose-ul:my-2 prose-ul:pl-0 prose-ul:list-none prose-ul:m-0 prose-ul:p-0",
+        "prose-li:pl-0 prose-li:relative prose-li:pl-4 prose-li:m-0 prose-li:p-0 prose-li:before:content-['·'] prose-li:before:absolute prose-li:before:left-0 prose-li:before:text-muted-foreground/40 prose-li:before:font-black",
+        "prose-a:font-medium prose-a:text-foreground prose-a:underline prose-a:underline-offset-4",
         className,
       )}
       {...props}
-    />
+    >
+      {children}
+    </div>
   )
 }
 
@@ -336,7 +312,7 @@ function Skill({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-none border bg-muted/50 px-1.5 py-0.5 font-mono text-xs text-muted-foreground",
+        "inline-flex items-center rounded-md border border-border/50 bg-secondary/50 px-2 py-0.5 text-[10px] font-medium text-secondary-foreground shadow-sm transition-colors hover:bg-secondary hover:text-secondary-foreground",
         className,
       )}
       {...props}

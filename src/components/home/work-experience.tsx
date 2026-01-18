@@ -102,7 +102,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
 
 export default function WorkExperienceDemo() {
   return (
-    <Section title="Experience">
+    <Section title="Professional Experience">
       <WorkExperience experiences={WORK_EXPERIENCE} />
     </Section>
   )

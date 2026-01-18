@@ -1,9 +1,9 @@
 "use client"
 
-import React, { createContext, useContext, useEffect, useRef, useState } from "react"
-import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
+import { cva, type VariantProps } from "class-variance-authority"
 import { XIcon } from "lucide-react"
+import React, { createContext, useContext, useEffect, useRef, useState } from "react"
 
 const badgeVariants = cva(
     "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
@@ -147,12 +147,12 @@ export function AnnouncementBanner() {
         if (!dragState.isDragging) return
         const clientY = "touches" in e ? e.touches[0].clientY : e.clientY
         const diff = clientY - dragState.startY
-        setDragState(prev => ({ ...prev, currentY: Math.min(0, diff) }))
+        setDragState(prev => ({ ...prev, currentY: Math.max(0, diff) }))
     }
 
     function handleDragEnd() {
         if (!dragState.isDragging) return
-        if (dragState.currentY < -50) {
+        if (dragState.currentY > 50) {
             handleClose()
         }
         setDragState({ isDragging: false, startY: 0, currentY: 0 })
@@ -160,10 +160,10 @@ export function AnnouncementBanner() {
 
     if (!isVisible) return null
 
-    const translateY = isHidden ? -200 : dragState.currentY
+    const translateY = isHidden ? 200 : dragState.currentY
 
     return (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none">
             <div
                 ref={wrapperRef}
                 className={cn(
