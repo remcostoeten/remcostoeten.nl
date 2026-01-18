@@ -235,9 +235,15 @@ export function ExperiencePositionItem({
       </div>
 
       <div className="flex flex-col">
-        <div className="flex items-start justify-between group/header cursor-pointer select-none" onClick={() => canCollapse && setIsOpen(!isOpen)}>
+        <div className={cn(
+          "flex items-start justify-between select-none",
+          canCollapse && "group/header cursor-pointer"
+        )} onClick={() => canCollapse && setIsOpen(!isOpen)}>
           <div>
-            <h4 className="text-sm font-medium text-foreground/90 group-hover/header:text-foreground transition-colors">
+            <h4 className={cn(
+              "text-sm font-medium text-foreground/90 transition-colors",
+              canCollapse && "group-hover/header:text-foreground"
+            )}>
               {position.title}
             </h4>
             <Metadata />
