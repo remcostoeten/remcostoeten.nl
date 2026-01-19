@@ -21,8 +21,8 @@ const TechStackCloud = nextDynamic(
 
 
 
-const WorkExperienceDemo = nextDynamic(
-  () => import('@/components/home/work-experience'),
+const WorkExperienceSection = nextDynamic(
+  () => import('@/components/home/work-experience-section').then(m => ({ default: m.WorkExperienceSection })),
   { loading: () => <WorkExperienceSkeleton /> }
 )
 
@@ -62,7 +62,7 @@ export default function Page() {
             </div>
           </Section>
 
-          <WorkExperienceDemo />
+          <WorkExperienceSection />
 
           <ActivitySection />
 

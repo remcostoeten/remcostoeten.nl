@@ -964,3 +964,8 @@
 	opacity: 1;
 	filter: blur(0);
 }
+
+
+#work-experience ul {
+	padding-left: 0 !important;
+}

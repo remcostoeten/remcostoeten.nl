@@ -38,6 +38,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         icon: "business",
         description: `
 - Developed fully open source intranet builder using React, GraphQL and Styled Components.
+- Kanban flow with weekly releases in collaboration with backend (django) and devops (k8s, self-hosted).
 - Rebuilt the FSV fraud detection platform in JavaScript, SCSS for the Belastingdienst.
 - Implemented WCAG AA compliance and accessibility standards for government applications.
 - Operated exclusively for non profit & government institutions.
@@ -99,7 +100,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
   },
 ]
 
-export default function WorkExperienceDemo() {
+export function WorkExperienceSection() {
   return (
     <Section title="Professional Experience">
       <WorkExperience experiences={WORK_EXPERIENCE} />

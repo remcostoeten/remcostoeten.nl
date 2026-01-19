@@ -10,8 +10,8 @@ I spend nearly 50% of my time in the shell using Neovim, and I'm obsessed with o
 
 The script is written in JavaScript/Bun and provides a simple but powerful interface for managing tasks. When you run it without arguments, you get a nice ASCII-art menu:
 
-```shell
-remcostoeten.nl on  blog [$] via 🥟 v1.3.3 
+```shell:terminal
+remcostoeten.nl on  blog [$] via 🥟 v1.3.3 
 ❯ todo
 ########    ######   ######     ######    ###### 
    ##      ##    ##  ##   ##   ##    ##  ##      
@@ -35,21 +35,19 @@ remcostoeten.nl on  blog [$] via 🥟 v1.3.3
 
 Every time I open a new shell, it shows me my tasks. I created three examples and this is how it looks upon opening a new shell (the ascii intro is not part of the script):
 
-```bash
+```bash:terminal
  ██████╗ ███████╗███╗   ███╗ ██████╗ ██████╗
   ██╔══██╗██╔════╝████╗ ████║██╔════╝██╔═══██╗
   ██████╔╝█████╗  ██╔████╔██║██║     ██║   ██║
   ██╔══██╗██╔══╝  ██║╚██╔╝██║██║     ██║   ██║
   ██║  ██║███████╗██║ ╚═╝ ██║╚██████╗╚██████╔╝
   ╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═════╝
-
-  └─ updated 5 days ago ·26·01·07  │ launch[df] →dotfiles menu  │ 
-ð Tasks (3)
-  [IMPORTANT] This is  a task comming up - due in 58m (56ac0a60) (1/12/2026 12:33 AM)
+Tasks (3)
+  [IMPORTANT] This is  a task coming up - due in 58m (56ac0a60) (1/12/2026 12:33 AM)
   Something for tomorrow - due in 23h 58m (31850611) (1/12/2026 12:33 AM)
-  A example todo (0fc11439) (1/12/2026 12:33 AM)
+  An example todo (0fc11439) (1/12/2026 12:33 AM)
 
-dotfiles on  master [!?⇕] is 📦 v1.0.0 via 🥟 v1.3.
+dotfiles on  master [!?⇕] is 📦 v1.0.0 via 🥟 v1.3.
 ```
 
 The simplest form of a task creation is simply typing `todo "Some text goes here"`. Some tasks do need due dates so I have a flexible argument as well. We could add onto it `todo "Some text goes here" 3pm` or `todo "Some text goes here" tomorrow` 
@@ -64,14 +62,14 @@ Check out this [[demo: example-project, title="CLI Demo Preview", trigger="hover
 
 Let's create a task with different time formats:
 
-```bash
+```bash:terminal
 $ todo "Review pull request #347" 2h --r 10,30
 Task created: Review pull request #347
 ```
 
 This creates a task due in 2 hours with reminders at 10 and 30 minutes before. When we list our tasks:
 
-```bash
+```bash:terminal
 $ todo list
 [IMPORTANT] This is a task coming up - due in 51m (56ac0a60)
 Review pull request #347 - due in 1h 59m (e53327a6)
@@ -97,23 +95,19 @@ The script supports several commands for quick task management:
 
 When I start my shell, the script automatically shows the first 5 pending tasks, color-coded by urgency. Overdue tasks show in red, upcoming tasks in yellow, and the rest in a neutral color.
 
-The key insight is that the system integrates with my existing workflow rather than requiring me to switch contexts. I'm already in the terminal, so adding a task is just a quick command away. The visual feedback in my shell prompt and the system notifications ensure tasks stay top-of-mind without requiring me to constantly check a separate app.
+The key insight is that the system integrates with my existing workflow rather than requiring me to constantly check a separate app. I'm already in the terminal, so adding a task is just a quick command away. The visual feedback in my shell prompt and the system notifications ensure tasks stay top-of-mind without requiring me to constantly check a separate app.
 
 ### The GUI Counterpart: btwfyi
 
-While my CLI todo system works beautifully for terminal-based workflows, I found myself facing a new problem: **What about tasks that need to stay visible while I'm working in the browser or other GUI applications?**
+While my CLI todo system works beautifully for terminal-based workflows, I found myself asking how to make it even more obvious. Right, in your face on the frontend. As that is where I spend a lot of my time. Now I can't miss a task!
 
-The terminal is great for quick capture, but when I'm deep in VS Code or designing in Figma, I'm not looking at my terminal. I needed something that would keep my tasks persistently visible, regardless of what application I'm using.
+That's when I built [**btwfyi**](https://github.com/remcostoeten/btwfyi). It's a lightweight task awareness overlay designed specifically for development environments. Think of it as a persistent sticky note layer that sits on top of your interface, helping to prevent "out of sight, out of mind" amnesia.
 
-That's when I built [**btwfyi**](https://github.com/remcostoeten/btwfyi) (pronounced "by the way, for your information"). It's a lightweight task awareness overlay designed specifically for development environments. Think of it as a persistent sticky note layer that sits on top of your interface, helping to prevent "out of sight, out of mind" amnesia.
+Whilst by default only renders in dev, I have built a database adapter allowing it to integrate in any database sharing tasks, and state position of where the user left off with team members.
 
-### Standout Features
+The idea is simple, you call the <Btwfyi /> and pass an array of tasks to it. It will render the element with tasks. It has options on the frontend to minimize, hide and change all UI behavior. You can freeroam drag and drop the element to your liking. If right click is pressed, it will attach a connector line to your cursor, allowing you to drag and drop the element to your liking which then will create a connector line between the task and the element. Handy for if you have visual cues. This also works perfectly with moving tasks to other positions.
 
-It's packed with features tailored for developers:
+Furthermore there is a detail view and cmd + k. And loads more. I've provided a llm.txt file in the package so your AI will one shot it and get up to speed. `bun install btwfyi` and view the docs and repository here: [btwfyi](https://github.com/remcostoeten/btwfyi)
 
-*   **Smart Syntax**: Natural language parsing handling tasks like `Fix bug tomorrow #urgent !high` automatically.
-*   **AI Integration**: Leverages Chrome's built-in `window.ai` (Gemini Nano) for local intelligence or Grok for cloud enhancements.
-*   **Bulk Operations**: Paste markdown lists directly or export your tasks to JSON or Slack format.
-*   **Dev-First**: Designed to overlay your actual development environment, working where you work.
 
-<Video src="/fyidemo.webm" width="800" height="450" loop muted autoPlay className="my-8" />
+<Video src="/fyidemo.webm"  height="450" loop muted autoPlay className="my-8" />
