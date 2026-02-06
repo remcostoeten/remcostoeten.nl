@@ -216,6 +216,15 @@
 	}
 }
 
+/* Maybe, not sure */
+/* Initial fix which was needed for sure was
+.prose :where(ul, ol) { text-wrap: balance; }
+*/
+.prose {
+	text-wrap: balance;
+}
+
+
 .animate-enter {
 	animation: enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 	will-change: opacity, transform;
@@ -679,8 +688,12 @@
 }
 
 .full-width-header {
-	width: 100%;
 	position: relative;
+	width: 100vw;
+	left: 50%;
+	right: 50%;
+	margin-left: -50vw;
+	margin-right: -50vw;
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
 	background-image: repeating-linear-gradient(-45deg,
@@ -815,57 +828,60 @@
 
 /* Blog prose typography */
 .prose :where(h3) {
-  font-size: 1.125rem;
-  font-weight: 500;
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
-  color: hsl(var(--foreground) / 0.95);
+	font-size: 1.125rem;
+	font-weight: 500;
+	margin-top: 2rem;
+	margin-bottom: 0.75rem;
+	color: hsl(var(--foreground) / 0.95);
 }
 
 .prose :where(h4) {
-  font-size: 1rem;
-  font-weight: 500;
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
+	font-size: 1rem;
+	font-weight: 500;
+	margin-top: 1.5rem;
+	margin-bottom: 0.5rem;
 }
 
 .prose :where(p) {
-  margin-top: 1em;
-  margin-bottom: 1em;
-  line-height: 1.75;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	line-height: 1.75;
 }
 
 .prose :where(ul, ol) {
-  margin-top: 1em;
-  margin-bottom: 1em;
-  padding-left: 1.5em;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	padding-left: 1.5em;
 }
 
 .prose :where(li) {
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
 }
 
 .prose :where(strong) {
-  font-weight: 600;
-  color: hsl(var(--foreground));
+	font-weight: 600;
+	color: hsl(var(--foreground));
 }
 
 .prose :where(blockquote) {
-  border-left: 2px solid hsl(var(--border));
-  padding-left: 1rem;
-  margin: 1.5rem 0;
-  font-style: italic;
-  color: hsl(var(--muted-foreground));
+	border-left: 2px solid hsl(var(--border));
+	padding-left: 1rem;
+	margin: 1.5rem 0;
+	font-style: italic;
+	color: hsl(var(--muted-foreground));
 }
+
 /* Full-width header resets margin for h2 since it's wrapped in a div */
 .prose :where(.full-width-header) {
-  margin: 0;
+	margin: 0;
 }
+
 @keyframes demo-border-march {
 	0% {
 		background-position: 0 0, 100% 0, 0 100%, 0 0;
 	}
+
 	100% {
 		background-position: 20px 0, calc(100% - 20px) 0, 0 calc(100% + 20px), 0 -20px;
 	}
@@ -875,11 +891,9 @@
 	position: relative;
 	padding: 0.125em 0.375em;
 	border-radius: 0.25em;
-	background: linear-gradient(
-		to right,
-		hsl(var(--brand-500) / 0.08),
-		hsl(var(--brand-400) / 0.12)
-	);
+	background: linear-gradient(to right,
+			hsl(var(--brand-500) / 0.08),
+			hsl(var(--brand-400) / 0.12));
 	color: hsl(var(--brand-500));
 	font-weight: 500;
 	transition: all 0.2s ease;
@@ -904,11 +918,9 @@
 }
 
 .demo-trigger:hover {
-	background: linear-gradient(
-		to right,
-		hsl(var(--brand-500) / 0.15),
-		hsl(var(--brand-400) / 0.2)
-	);
+	background: linear-gradient(to right,
+			hsl(var(--brand-500) / 0.15),
+			hsl(var(--brand-400) / 0.2));
 	color: hsl(var(--brand-400));
 }
 
@@ -921,6 +933,7 @@
 		opacity: 0;
 		transform: translateX(-50%) translateY(-8px) scale(0.95);
 	}
+
 	100% {
 		opacity: 1;
 		transform: translateX(-50%) translateY(0) scale(1);
@@ -950,4 +963,9 @@
 	transform: scale(1);
 	opacity: 1;
 	filter: blur(0);
+}
+
+
+#work-experience ul {
+	padding-left: 0 !important;
 }

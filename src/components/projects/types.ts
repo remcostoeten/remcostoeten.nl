@@ -40,6 +40,7 @@ export interface IGitMetrics {
 export interface IProject {
   name: string
   description: string
+  additionalDescription?: string
   type: TProject
   status: TStatus
   github: string

@@ -105,7 +105,7 @@ export function Playground() {
             }
         >
             <p className="px-4 py-3 text-sm text-muted-foreground/70 leading-relaxed font-mono tracking-tight border-b border-border/40">
-                ...
+                A collection of experiments, utilities, and tools I've built—some practical, some just for fun.
             </p>
             <div>
                 {playgroundItems.map((item) => (

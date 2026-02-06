@@ -16,9 +16,8 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         location: "Zwolle (Hybrid)",
         icon: "education",
         description: `
-- Building a modern e-learning platform for Dutch students in Next.js, TypeScript with a custom REST layer on TanStack Query.
-- Self driven development under Shape Up methodology collaboration with a Laravel backend team.
-- Implementing scoped and iterative features without a dedicated product owner.`,
+- Building a modern e-learning platform in Next.js, TypeScript & React Query.
+- Self-driven development using Shape Up methodology in a hybrid team.`,
         skills: ['Next.js', 'TypeScript', 'React Query', 'REST API', 'Shape Up', 'CSS modules'],
         isExpanded: true,
       },
@@ -37,11 +36,9 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         location: "Remote",
         icon: "business",
         description: `
-- Developed fully open source intranet builder using React, GraphQL and Styled Components.
-- Rebuilt the FSV fraud detection platform in JavaScript, SCSS for the Belastingdienst.
-- Implemented WCAG AA compliance and accessibility standards for government applications.
-- Operated exclusively for non profit & government institutions.
-- Continued developing for pdfchecker.nl which allows users to check PDF files for accessibility compliance.`,
+- Developed an open-source intranet builder (React/GraphQL) and rebuilt the FSV fraud detection platform.
+- Implemented rigid WCAG AA accessibility standards for government applications.
+- Collaborated in a Kanban flow with backend/devops on weekly releases.`,
         skills: ['React', 'GraphQL', 'Django', 'SCSS', 'Vanilla JS', 'WCAG AA'],
       },
     ],
@@ -59,6 +56,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         icon: "design",
         description: `
 - Rebuilt the complete webshop front-end using Razor, SCSS and JavaScript.
+- Co-architected and built features for a SaaS inspection & compliance platform.
 - Delivered production features autonomously for React-based internal applications.`,
         skills: ['React', 'Razor', 'JavaScript', 'SCSS'],
       },
@@ -76,8 +74,9 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         location: "Lemmer / Joure (Office)",
         icon: "code",
         description: `
-- Built custom Magento 2 webshops for B2B and B2C clients using PHTML, BEM SCSS and JavaScript.`,
-        skills: ['Magento 2', 'PHTML', 'BEM SCSS', 'JavaScript'],
+- Built 30+ custom Magento 2 webshops for B2B and B2C clients (equestrian, fashion, industrial).
+- Developed with PHTML, BEM SCSS, and JavaScript (Vanilla, jQuery, Knockout.js).`,
+        skills: ['Magento 2', 'PHTML', 'BEM SCSS', 'JavaScript', 'jQuery', 'Knockout.js'],
       },
     ],
   },
@@ -99,7 +98,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
   },
 ]
 
-export default function WorkExperienceDemo() {
+export function WorkExperienceSection() {
   return (
     <Section title="Professional Experience">
       <WorkExperience experiences={WORK_EXPERIENCE} />

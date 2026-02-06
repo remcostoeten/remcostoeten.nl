@@ -1,6 +1,7 @@
 import { Suspense } from "react"
-import type { IProject } from "../types"
-import { featuredProjects, otherProjects } from "../data"
+import type { IProject, TPreview } from "../types"
+import type { Project } from "@/server/db/project-schema"
+import { getProjects } from "../server/queries"
 import { enrichProjectsWithGitData } from "../server/github"
 import { ProjectShowcaseClient } from "./project-showcase-client"
 import { ProjectCardSkeleton } from "./project-card-skeleton"
@@ -8,8 +9,30 @@ import { ProjectRowSkeleton } from "./project-row-skeleton"
 
 type Props = {
   visibleRowCount?: number
-  featured?: IProject[]
-  other?: IProject[]
+}
+
+function mapDbProjectToIProject(dbProject: Project): IProject {
+  const preview: TPreview = dbProject.demoUrl
+    ? {
+      type: "iframe",
+      url: dbProject.demoUrl,
+      embedUrl: dbProject.demoBox ?? undefined,
+    }
+    : { type: "none" }
+
+  return {
+    name: dbProject.title,
+    description: dbProject.desc,
+    additionalDescription: dbProject.additionalDesc ?? undefined,
+    type: dbProject.native ? "desktop" : "utility",
+    status: "active",
+    github: dbProject.gitUrl ?? "",
+    tech: dbProject.labels,
+    preview,
+    spotlight: dbProject.featured,
+    defaultOpen: dbProject.defaultOpen,
+    showIndicatorOnScroll: dbProject.showIndicator,
+  }
 }
 
 function ShowcaseSkeleton({ featuredCount = 2, rowCount = 6 }: { featuredCount?: number; rowCount?: number }) {
@@ -35,15 +58,13 @@ function ShowcaseSkeleton({ featuredCount = 2, rowCount = 6 }: { featuredCount?:
   )
 }
 
-async function ProjectShowcaseAsync({
-  visibleRowCount,
-  featured,
-  other,
-}: {
-  visibleRowCount: number
-  featured: IProject[]
-  other: IProject[]
-}) {
+async function ProjectShowcaseAsync({ visibleRowCount }: { visibleRowCount: number }) {
+  const dbProjects = await getProjects()
+
+  const allProjects = dbProjects.map(mapDbProjectToIProject)
+  const featured = allProjects.filter((p) => p.spotlight)
+  const other = allProjects.filter((p) => !p.spotlight)
+
   let enrichedFeatured = featured
   let enrichedOther = other
 
@@ -55,20 +76,16 @@ async function ProjectShowcaseAsync({
     enrichedFeatured = gitFeatured
     enrichedOther = gitOther
   } catch (error) {
-    console.error("[v0] Git enrichment failed, using static data:", error)
+    console.error("[ProjectShowcase] Git enrichment failed, using static data:", error)
   }
 
   return <ProjectShowcaseClient visibleRowCount={visibleRowCount} featured={enrichedFeatured} other={enrichedOther} />
 }
 
-export function ProjectShowcase({
-  visibleRowCount = 6,
-  featured = featuredProjects,
-  other = otherProjects,
-}: Props) {
+export function ProjectShowcase({ visibleRowCount = 6 }: Props) {
   return (
-    <Suspense fallback={<ShowcaseSkeleton featuredCount={featured.length} rowCount={visibleRowCount} />}>
-      <ProjectShowcaseAsync visibleRowCount={visibleRowCount} featured={featured} other={other} />
+    <Suspense fallback={<ShowcaseSkeleton featuredCount={2} rowCount={visibleRowCount} />}>
+      <ProjectShowcaseAsync visibleRowCount={visibleRowCount} />
     </Suspense>
   )
 }
