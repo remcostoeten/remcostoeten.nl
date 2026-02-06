@@ -205,7 +205,6 @@
 }
 
 @keyframes wiggle {
-
 	0%,
 	100% {
 		transform: rotate(-12deg);
@@ -223,7 +222,6 @@
 .prose {
 	text-wrap: balance;
 }
-
 
 .animate-enter {
 	animation: enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
@@ -246,7 +244,6 @@
 }
 
 @keyframes music-bar {
-
 	0%,
 	100% {
 		height: 25%;
@@ -262,7 +259,6 @@
 }
 
 @keyframes music-bar {
-
 	0%,
 	100% {
 		height: 25%;
@@ -470,7 +466,8 @@
 }
 
 .codeblock-search-toggle {
-	animation: codeblock-search-toggle 0.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+	animation: codeblock-search-toggle 0.2s cubic-bezier(0.2, 0.9, 0.3, 1)
+		forwards;
 	will-change: max-width, opacity;
 }
 
@@ -480,7 +477,8 @@
 }
 
 .codeblock-chevron-rotate {
-	animation: codeblock-chevron-rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: codeblock-chevron-rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1)
+		forwards;
 	will-change: transform;
 }
 
@@ -594,10 +592,12 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(90deg,
-			transparent,
-			rgba(255, 255, 255, 0.1),
-			transparent);
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.1),
+		transparent
+	);
 	animation: tech-shimmer 2s infinite;
 }
 
@@ -658,7 +658,10 @@
 /* Replicating chanhdai.com styles */
 .bg-pattern {
 	background-color: hsl(var(--background));
-	background-image: radial-gradient(hsl(var(--foreground) / 0.07) 1px, transparent 1px);
+	background-image: radial-gradient(
+		hsl(var(--foreground) / 0.07) 1px,
+		transparent 1px
+	);
 	background-size: 16px 16px;
 }
 
@@ -678,11 +681,13 @@
 	transform: translate(-50%, -50%);
 	width: 100vw;
 	height: 12px;
-	background-image: repeating-linear-gradient(-45deg,
-			transparent,
-			transparent 2px,
-			hsl(var(--foreground) / 0.05) 2px,
-			hsl(var(--foreground) / 0.05) 3px);
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent,
+		transparent 2px,
+		hsl(var(--foreground) / 0.05) 2px,
+		hsl(var(--foreground) / 0.05) 3px
+	);
 	pointer-events: none;
 	z-index: -1;
 }
@@ -696,11 +701,13 @@
 	margin-right: -50vw;
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
-	background-image: repeating-linear-gradient(-45deg,
-			transparent,
-			transparent 2px,
-			hsl(var(--foreground) / 0.03) 2px,
-			hsl(var(--foreground) / 0.03) 3px);
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent,
+		transparent 2px,
+		hsl(var(--foreground) / 0.03) 2px,
+		hsl(var(--foreground) / 0.03) 3px
+	);
 	background-color: transparent;
 	height: 44px;
 	display: flex;
@@ -811,10 +818,12 @@
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(90deg,
-			hsl(var(--brand-500) / 0.1),
-			hsl(var(--primary) / 0.1),
-			hsl(var(--brand-500) / 0.1));
+	background: linear-gradient(
+		90deg,
+		hsl(var(--brand-500) / 0.1),
+		hsl(var(--primary) / 0.1),
+		hsl(var(--brand-500) / 0.1)
+	);
 	background-size: 200% 100%;
 	animation: tech-shimmer 8s linear infinite;
 	pointer-events: none;
@@ -879,11 +888,19 @@
 
 @keyframes demo-border-march {
 	0% {
-		background-position: 0 0, 100% 0, 0 100%, 0 0;
+		background-position:
+			0 0,
+			100% 0,
+			0 100%,
+			0 0;
 	}
 
 	100% {
-		background-position: 20px 0, calc(100% - 20px) 0, 0 calc(100% + 20px), 0 -20px;
+		background-position:
+			20px 0,
+			calc(100% - 20px) 0,
+			0 calc(100% + 20px),
+			0 -20px;
 	}
 }
 
@@ -891,9 +908,11 @@
 	position: relative;
 	padding: 0.125em 0.375em;
 	border-radius: 0.25em;
-	background: linear-gradient(to right,
-			hsl(var(--brand-500) / 0.08),
-			hsl(var(--brand-400) / 0.12));
+	background: linear-gradient(
+		to right,
+		hsl(var(--brand-500) / 0.08),
+		hsl(var(--brand-400) / 0.12)
+	);
 	color: hsl(var(--brand-500));
 	font-weight: 500;
 	transition: all 0.2s ease;
@@ -905,12 +924,44 @@
 	inset: 0;
 	border-radius: 0.25em;
 	background-image:
-		repeating-linear-gradient(90deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px),
-		repeating-linear-gradient(90deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px),
-		repeating-linear-gradient(0deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px),
-		repeating-linear-gradient(0deg, hsl(var(--brand-500)) 0, hsl(var(--brand-500)) 4px, transparent 4px, transparent 8px);
-	background-size: 20px 1.5px, 20px 1.5px, 1.5px 20px, 1.5px 20px;
-	background-position: 0 0, 0 100%, 0 0, 100% 0;
+		repeating-linear-gradient(
+			90deg,
+			hsl(var(--brand-500)) 0,
+			hsl(var(--brand-500)) 4px,
+			transparent 4px,
+			transparent 8px
+		),
+		repeating-linear-gradient(
+			90deg,
+			hsl(var(--brand-500)) 0,
+			hsl(var(--brand-500)) 4px,
+			transparent 4px,
+			transparent 8px
+		),
+		repeating-linear-gradient(
+			0deg,
+			hsl(var(--brand-500)) 0,
+			hsl(var(--brand-500)) 4px,
+			transparent 4px,
+			transparent 8px
+		),
+		repeating-linear-gradient(
+			0deg,
+			hsl(var(--brand-500)) 0,
+			hsl(var(--brand-500)) 4px,
+			transparent 4px,
+			transparent 8px
+		);
+	background-size:
+		20px 1.5px,
+		20px 1.5px,
+		1.5px 20px,
+		1.5px 20px;
+	background-position:
+		0 0,
+		0 100%,
+		0 0,
+		100% 0;
 	background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
 	opacity: 0.6;
 	animation: demo-border-march 1s linear infinite;
@@ -918,9 +969,11 @@
 }
 
 .demo-trigger:hover {
-	background: linear-gradient(to right,
-			hsl(var(--brand-500) / 0.15),
-			hsl(var(--brand-400) / 0.2));
+	background: linear-gradient(
+		to right,
+		hsl(var(--brand-500) / 0.15),
+		hsl(var(--brand-400) / 0.2)
+	);
 	color: hsl(var(--brand-400));
 }
 
@@ -964,7 +1017,6 @@
 	opacity: 1;
 	filter: blur(0);
 }
-
 
 #work-experience ul {
 	padding-left: 0 !important;

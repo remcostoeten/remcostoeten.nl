@@ -2,8 +2,9 @@
 title: 'How I keep track of my tasks since conventional methods do not work for me'
 publishedAt: '05-01-2026'
 summary: "Conventional methods for keeping track of your tasks don't work for me so I invented a system which makes it impossible to forget"
-tags: ["Engineering", "Blog", "Personal", "Productivity"]
+tags: ['Engineering', 'Blog', 'Personal', 'Productivity']
 ---
+
 Todo lists seem to hate me. I've tried everything—Jira (still recovering from that), GitLab, Linear, Kanban—but they all add friction or feel bloated. My first five professional years caused real harm due to having to use Jira. I needed something that actually worked with how I operate.
 
 I spend nearly 50% of my time in the shell using Neovim, and I'm obsessed with optimizing my [dotfiles](https://github.com/remcostoeten/dotfiles). So instead of forcing myself to use a GUI tool I hate, I decided to build a system that lives where I do: the CLI.
@@ -11,16 +12,16 @@ I spend nearly 50% of my time in the shell using Neovim, and I'm obsessed with o
 The script is written in JavaScript/Bun and provides a simple but powerful interface for managing tasks. When you run it without arguments, you get a nice ASCII-art menu:
 
 ```shell:terminal
-remcostoeten.nl on  blog [$] via 🥟 v1.3.3 
+remcostoeten.nl on  blog [$] via 🥟 v1.3.3
 ❯ todo
-########    ######   ######     ######    ###### 
-   ##      ##    ##  ##   ##   ##    ##  ##      
-   ##      ##    ##  ##    ##  ##    ##   #####  
-   ##      ##    ##  ##    ##  ##    ##       ## 
-   ##      ##    ##  ##   ##   ##    ##  ##   ## 
-   ##       ######   ######     ######    #####  
+########    ######   ######     ######    ######
+   ##      ##    ##  ##   ##   ##    ##  ##
+   ##      ##    ##  ##    ##  ##    ##   #####
+   ##      ##    ##  ##    ##  ##    ##       ##
+   ##      ##    ##  ##   ##   ##    ##  ##   ##
+   ##       ######   ######     ######    #####
 
- ▶ (1) Create todo 
+ ▶ (1) Create todo
    (2) Delete todo
    (3) Edit todo
    (4) Search tasks
@@ -50,13 +51,13 @@ Tasks (3)
 dotfiles on  master [!?⇕] is 📦 v1.0.0 via 🥟 v1.3.
 ```
 
-The simplest form of a task creation is simply typing `todo "Some text goes here"`. Some tasks do need due dates so I have a flexible argument as well. We could add onto it `todo "Some text goes here" 3pm` or `todo "Some text goes here" tomorrow` 
+The simplest form of a task creation is simply typing `todo "Some text goes here"`. Some tasks do need due dates so I have a flexible argument as well. We could add onto it `todo "Some text goes here" 3pm` or `todo "Some text goes here" tomorrow`
 
 You can specify due times in whatever format feels natural - relative times like `1h` or `2d`, clock times like `3pm` or `15:30`, full date-time stamps like `2025-12-25 14:00`, or even keywords like `tomorrow` or `this week`. Add `--r 10,30` to set reminders at 10 and 30 minutes before the task is due.
 
 Tasks are stored in `~/.dotfiles/todo/tasks.json` as plain JSON, making them easy to backup, sync, or even edit manually if needed. `.dotfiles` is just a location where I personally store all temporary or cache data coming from scripts and tooling. I debated going for SQLite but figured JSON was easy, fast and good enough for this usecase.
 
-Check out this [[demo: example-project, title="CLI Demo Preview", trigger="hover"]] to see how it works in practice! 
+Check out this [[demo: example-project, title="CLI Demo Preview", trigger="hover"]] to see how it works in practice!
 
 ### Example Usage
 
@@ -84,14 +85,14 @@ The tasks are color-coded by urgency (overdue in red, upcoming in yellow) and sh
 
 The script supports several commands for quick task management:
 
-* `todo "Task" 3pm` - Create a task due at 3pm
-* `todo "Task" 3pm --r 10,30` - Create with reminders at 10 and 30 minutes before
-* `todo list` - List all pending tasks
-* `todo list --overdue` - Show only overdue tasks
-* `todo list --upcoming` - Show tasks due in less than 30 minutes
-* `todo done <id>` - Mark a task as completed
-* `todo edit <id> "New description"` - Edit a task
-* `todo count` - Show the number of pending tasks
+- `todo "Task" 3pm` - Create a task due at 3pm
+- `todo "Task" 3pm --r 10,30` - Create with reminders at 10 and 30 minutes before
+- `todo list` - List all pending tasks
+- `todo list --overdue` - Show only overdue tasks
+- `todo list --upcoming` - Show tasks due in less than 30 minutes
+- `todo done <id>` - Mark a task as completed
+- `todo edit <id> "New description"` - Edit a task
+- `todo count` - Show the number of pending tasks
 
 When I start my shell, the script automatically shows the first 5 pending tasks, color-coded by urgency. Overdue tasks show in red, upcoming tasks in yellow, and the rest in a neutral color.
 
@@ -108,6 +109,5 @@ Whilst by default only renders in dev, I have built a database adapter allowing 
 The idea is simple, you call the <Btwfyi /> and pass an array of tasks to it. It will render the element with tasks. It has options on the frontend to minimize, hide and change all UI behavior. You can freeroam drag and drop the element to your liking. If right click is pressed, it will attach a connector line to your cursor, allowing you to drag and drop the element to your liking which then will create a connector line between the task and the element. Handy for if you have visual cues. This also works perfectly with moving tasks to other positions.
 
 Furthermore there is a detail view and cmd + k. And loads more. I've provided a llm.txt file in the package so your AI will one shot it and get up to speed. `bun install btwfyi` and view the docs and repository here: [btwfyi](https://github.com/remcostoeten/btwfyi)
-
 
 <Video src="/fyidemo.webm"  height="450" loop muted autoPlay className="my-8" />

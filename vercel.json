@@ -1,9 +1,9 @@
 {
-"bunVersion": "1.x",
-    "crons": [
-        {
-            "path": "/api/sync",
-            "schedule": "0 3 * * *"
-        }
-    ]
+	"bunVersion": "1.x",
+	"crons": [
+		{
+			"path": "/api/sync",
+			"schedule": "0 3 * * *"
+		}
+	]
 }

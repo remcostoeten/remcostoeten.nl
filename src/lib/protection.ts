@@ -4,13 +4,13 @@ import { headers } from 'next/headers'
 import { PgTable, PgColumn } from 'drizzle-orm/pg-core'
 
 export const getClientIp = async () => {
-    const headersList = await headers()
-    // x-forwarded-for can be comma separated, take the first one
-    const forwardedFor = headersList.get('x-forwarded-for')
-    if (forwardedFor) {
-        return forwardedFor.split(',')[0].trim()
-    }
-    return headersList.get('x-real-ip') || 'unknown'
+	const headersList = await headers()
+	// x-forwarded-for can be comma separated, take the first one
+	const forwardedFor = headersList.get('x-forwarded-for')
+	if (forwardedFor) {
+		return forwardedFor.split(',')[0].trim()
+	}
+	return headersList.get('x-real-ip') || 'unknown'
 }
 
 /**
@@ -19,12 +19,12 @@ export const getClientIp = async () => {
  * @returns true if the honeypot is filled (spam), false otherwise.
  */
 export const checkHoneypot = (honeyPotValue?: string | null) => {
-    return !!honeyPotValue
+	return !!honeyPotValue
 }
 
 interface RateLimitConfig {
-    limit: number
-    windowMs: number
+	limit: number
+	windowMs: number
 }
 
 /**
@@ -37,36 +37,31 @@ interface RateLimitConfig {
  * @returns Object indicating if allowed and optional message.
  */
 export async function checkRateLimit(
-    table: any,
-    ipColumn: any,
-    timeColumn: any,
-    ip: string,
-    config: RateLimitConfig
+	table: any,
+	ipColumn: any,
+	timeColumn: any,
+	ip: string,
+	config: RateLimitConfig
 ): Promise<{ allowed: boolean; message?: string }> {
-    const limitWindow = new Date(Date.now() - config.windowMs)
+	const limitWindow = new Date(Date.now() - config.windowMs)
 
-    try {
-        const result = await db
-            .select({ count: count() })
-            .from(table)
-            .where(
-                and(
-                    eq(ipColumn, ip),
-                    gt(timeColumn, limitWindow)
-                )
-            )
+	try {
+		const result = await db
+			.select({ count: count() })
+			.from(table)
+			.where(and(eq(ipColumn, ip), gt(timeColumn, limitWindow)))
 
-        if (result[0].count >= config.limit) {
-            return {
-                allowed: false,
-                message: 'Too many requests. Please try again later.'
-            }
-        }
+		if (result[0].count >= config.limit) {
+			return {
+				allowed: false,
+				message: 'Too many requests. Please try again later.'
+			}
+		}
 
-        return { allowed: true }
-    } catch (error) {
-        console.error('Rate limit check failed:', error)
-        // Fail open to avoid blocking legitimate users on DB errors
-        return { allowed: true }
-    }
+		return { allowed: true }
+	} catch (error) {
+		console.error('Rate limit check failed:', error)
+		// Fail open to avoid blocking legitimate users on DB errors
+		return { allowed: true }
+	}
 }

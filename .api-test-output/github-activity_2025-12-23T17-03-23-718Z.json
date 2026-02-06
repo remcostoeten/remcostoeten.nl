@@ -1,485 +1,485 @@
 {
-  "endpoint": {
-    "name": "GitHub Activity",
-    "method": "GET",
-    "path": "/api/github/activity",
-    "url": "http://localhost:3000/api/github/activity"
-  },
-  "metadata": {
-    "status": 200,
-    "duration": 11,
-    "size": 15232,
-    "timestamp": "2025-12-23T17:03:23.717Z"
-  },
-  "response": [
-    {
-      "id": "6951291471",
-      "timestamp": "2025-12-23T16:40:38Z",
-      "repository": "remcostoeten/remcostoeten.nl",
-      "url": "https://github.com/remcostoeten/remcostoeten.nl",
-      "isPrivate": false,
-      "type": "create",
-      "title": "deleted a branch",
-      "description": "branch: codex/update-terms-and-privacy-content-dd4c81",
-      "payload": {
-        "ref": "codex/update-terms-and-privacy-content-dd4c81",
-        "ref_type": "branch",
-        "full_ref": "refs/heads/codex/update-terms-and-privacy-content-dd4c81",
-        "pusher_type": "user"
-      }
-    },
-    {
-      "id": "5472404561",
-      "timestamp": "2025-12-23T08:49:40Z",
-      "repository": "remcostoeten/remcostoeten.nl",
-      "url": "https://github.com/remcostoeten/remcostoeten.nl",
-      "isPrivate": false,
-      "type": "pr",
-      "title": "closed PR #41",
-      "description": "",
-      "payload": {
-        "action": "closed",
-        "number": 41,
-        "pull_request": {
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/41",
-          "id": 3125401074,
-          "number": 41,
-          "head": {
-            "ref": "codex/update-terms-and-privacy-content-dd4c81",
-            "sha": "d4c9e41aa833ac5b479a680fafa58de6a62a1bfe",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          },
-          "base": {
-            "ref": "master",
-            "sha": "7a345e238865f31708e69c3851f06d25945ea4e3",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          }
-        }
-      }
-    },
-    {
-      "id": "5469758520",
-      "timestamp": "2025-12-23T14:09:53Z",
-      "repository": "remcostoeten/remcostoeten.nl",
-      "url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43#issuecomment-3686782829",
-      "isPrivate": false,
-      "type": "issue",
-      "title": "commented on PR #43",
-      "description": "#### 📝 Changed routes:",
-      "payload": {
-        "action": "created",
-        "issue": {
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43",
-          "repository_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-          "labels_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/labels{/name}",
-          "comments_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/comments",
-          "events_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/events",
-          "html_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43",
-          "id": 3757497687,
-          "node_id": "PR_kwDOPKeNcM66VgL9",
-          "number": 43,
-          "title": "Add SSR projects showcase",
-          "user": {
-            "login": "remcostoeten",
-            "id": 57683378,
-            "node_id": "MDQ6VXNlcjU3NjgzMzc4",
-            "avatar_url": "https://avatars.githubusercontent.com/u/57683378?v=4",
-            "gravatar_id": "",
-            "url": "https://api.github.com/users/remcostoeten",
-            "html_url": "https://github.com/remcostoeten",
-            "followers_url": "https://api.github.com/users/remcostoeten/followers",
-            "following_url": "https://api.github.com/users/remcostoeten/following{/other_user}",
-            "gists_url": "https://api.github.com/users/remcostoeten/gists{/gist_id}",
-            "starred_url": "https://api.github.com/users/remcostoeten/starred{/owner}{/repo}",
-            "subscriptions_url": "https://api.github.com/users/remcostoeten/subscriptions",
-            "organizations_url": "https://api.github.com/users/remcostoeten/orgs",
-            "repos_url": "https://api.github.com/users/remcostoeten/repos",
-            "events_url": "https://api.github.com/users/remcostoeten/events{/privacy}",
-            "received_events_url": "https://api.github.com/users/remcostoeten/received_events",
-            "type": "User",
-            "user_view_type": "public",
-            "site_admin": false
-          },
-          "labels": [
-            {
-              "id": 9875953871,
-              "node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
-              "name": "codex",
-              "color": "ededed",
-              "default": false,
-              "description": null
-            }
-          ],
-          "state": "open",
-          "locked": false,
-          "assignee": null,
-          "assignees": [],
-          "milestone": null,
-          "comments": 3,
-          "created_at": "2025-12-23T14:06:44Z",
-          "updated_at": "2025-12-23T14:10:57Z",
-          "closed_at": null,
-          "active_lock_reason": null,
-          "draft": false,
-          "pull_request": {
-            "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/43",
-            "html_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43",
-            "diff_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43.diff",
-            "patch_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43.patch",
-            "merged_at": null
-          },
-          "body": "## Summary\n- add SSR-first projects overview and detail routes with premium dark UI, filtering, and framer-motion transitions\n- centralize project registry, metadata, and GitHub query utility with sandbox-ready media frames and structured data\n- expand sitemap entries and harden sign-in button provider guards\n\n## Testing\n- `DATABASE_URL=postgres://local/local@localhost:5432/local BETTER_AUTH_URL=http://localhost:3000 BETTER_AUTH_SECRET=12345678901234567890123456789012 npm run build`\n\n\n------\n[Codex Task](https://chatgpt.com/codex/tasks/task_e_694a562aaf90832799cbd778a3b7a492)\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n## Summary by CodeRabbit\n\n* **New Features**\n  * Added a Projects section with searchable project showcase pages featuring detailed project views, navigation between projects, and GitHub repository metadata display.\n  * Added project filtering capabilities by category, status, year, and sorting options.\n  * Added media preview support for projects (images and videos).\n  * Added interactive sandbox preview panels for eligible projects.\n  * Added project pages to the site sitemap.\n\n* **Bug Fixes**\n  * Improved provider validation checks in the sign-in button component.\n\n<sub>✏️ Tip: You can customize this high-level summary in your review settings.</sub>\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
-          "reactions": {
-            "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/reactions",
-            "total_count": 0,
-            "+1": 0,
-            "-1": 0,
-            "laugh": 0,
-            "hooray": 0,
-            "confused": 0,
-            "heart": 0,
-            "rocket": 0,
-            "eyes": 0
-          },
-          "timeline_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/timeline",
-          "performed_via_github_app": null,
-          "state_reason": null
-        },
-        "comment": {
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/comments/3686782829",
-          "html_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43#issuecomment-3686782829",
-          "issue_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43",
-          "id": 3686782829,
-          "node_id": "IC_kwDOPKeNcM7bv9dt",
-          "user": {
-            "login": "remcostoeten",
-            "id": 57683378,
-            "node_id": "MDQ6VXNlcjU3NjgzMzc4",
-            "avatar_url": "https://avatars.githubusercontent.com/u/57683378?v=4",
-            "gravatar_id": "",
-            "url": "https://api.github.com/users/remcostoeten",
-            "html_url": "https://github.com/remcostoeten",
-            "followers_url": "https://api.github.com/users/remcostoeten/followers",
-            "following_url": "https://api.github.com/users/remcostoeten/following{/other_user}",
-            "gists_url": "https://api.github.com/users/remcostoeten/gists{/gist_id}",
-            "starred_url": "https://api.github.com/users/remcostoeten/starred{/owner}{/repo}",
-            "subscriptions_url": "https://api.github.com/users/remcostoeten/subscriptions",
-            "organizations_url": "https://api.github.com/users/remcostoeten/orgs",
-            "repos_url": "https://api.github.com/users/remcostoeten/repos",
-            "events_url": "https://api.github.com/users/remcostoeten/events{/privacy}",
-            "received_events_url": "https://api.github.com/users/remcostoeten/received_events",
-            "type": "User",
-            "user_view_type": "public",
-            "site_admin": false
-          },
-          "created_at": "2025-12-23T14:09:53Z",
-          "updated_at": "2025-12-23T14:09:53Z",
-          "body": "#### 📝 Changed routes:\n\n\n| [**/projects/\\[slug\\]**](https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects/[slug]) | [**/projects**](https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects) |\n|:-:|:-:|\n|<a href=\"https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects/[slug]\"><img src=\"https://images.weserv.nl?url=https://sjc.microlink.io/9lm88pwG3hCqrJl4_8f4bo17U2uNBg1DDKxrStnh9OS29t2MfjzwC_g6_lhFsZvPyqd59J-HkZmFbGutr78vlA.png&w=600\" alt=\"Screenshot of /projects/[slug]\" width=\"300\"></a><br /><sup><a href=\"https://images.weserv.nl?url=https://sjc.microlink.io/wUJocuUW6mFVMtF0RSvr5aTpy_c74XkoML0Znmxkto03n3vHb2SMB7ZHBuc2CkPOVQ2T_V6lmE_0mDl2KQWsSw.png\">(view full size)</a> |<a href=\"https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects\"><img src=\"https://images.weserv.nl?url=https://sjc.microlink.io/yPUB2jDPE5QiFS4toESica605_EYO3VZaceO97FLNc8HtoTqHSMciVZYiIaSnz0m37a5jttbHz-BUK3khmsAdA.png&w=600\" alt=\"Screenshot of /projects\" width=\"300\"></a><br /><sup><a href=\"https://images.weserv.nl?url=https://sjc.microlink.io/OnBewiOdJQ3Z-V-YUn-ix5tO4ZamA2PWaIxzM_I96cy1OmO9_iWhZ3UJ7-8MJwuu-rPdTp3ykJORsoC3mZiJBw.png\">(view full size)</a> |\n\n\n\n\n\n\n\nCommit 715ce3110ec0222fb525228d5e1e3f216bcc29ac (https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app).",
-          "reactions": {
-            "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/comments/3686782829/reactions",
-            "total_count": 0,
-            "+1": 0,
-            "-1": 0,
-            "laugh": 0,
-            "hooray": 0,
-            "confused": 0,
-            "heart": 0,
-            "rocket": 0,
-            "eyes": 0
-          },
-          "performed_via_github_app": null
-        }
-      }
-    },
-    {
-      "id": "5469700121",
-      "timestamp": "2025-12-23T14:06:44Z",
-      "repository": "remcostoeten/remcostoeten.nl",
-      "url": "https://github.com/remcostoeten/remcostoeten.nl",
-      "isPrivate": false,
-      "type": "pr",
-      "title": "worked on PR #43",
-      "description": "",
-      "payload": {
-        "action": "labeled",
-        "number": 43,
-        "pull_request": {
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/43",
-          "id": 3126199037,
-          "number": 43,
-          "head": {
-            "ref": "codex/implement-projects-showcase-system",
-            "sha": "715ce3110ec0222fb525228d5e1e3f216bcc29ac",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          },
-          "base": {
-            "ref": "master",
-            "sha": "56b28479d7ced5cbd4bea71f999e74328f955881",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          }
-        },
-        "label": {
-          "id": 9875953871,
-          "node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
-          "name": "codex",
-          "color": "ededed",
-          "default": false,
-          "description": null
-        },
-        "labels": [
-          {
-            "id": 9875953871,
-            "node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
-            "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
-            "name": "codex",
-            "color": "ededed",
-            "default": false,
-            "description": null
-          }
-        ]
-      }
-    },
-    {
-      "id": "5469699292",
-      "timestamp": "2025-12-23T14:06:44Z",
-      "repository": "remcostoeten/remcostoeten.nl",
-      "url": "https://github.com/remcostoeten/remcostoeten.nl",
-      "isPrivate": false,
-      "type": "pr",
-      "title": "opened PR #43",
-      "description": "",
-      "payload": {
-        "action": "opened",
-        "number": 43,
-        "pull_request": {
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/43",
-          "id": 3126199037,
-          "number": 43,
-          "head": {
-            "ref": "codex/implement-projects-showcase-system",
-            "sha": "715ce3110ec0222fb525228d5e1e3f216bcc29ac",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          },
-          "base": {
-            "ref": "master",
-            "sha": "56b28479d7ced5cbd4bea71f999e74328f955881",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          }
-        }
-      }
-    },
-    {
-      "id": "6947901523",
-      "timestamp": "2025-12-23T14:06:42Z",
-      "repository": "remcostoeten/remcostoeten.nl",
-      "url": "https://github.com/remcostoeten/remcostoeten.nl/tree/codex/implement-projects-showcase-system",
-      "isPrivate": false,
-      "type": "create",
-      "title": "created a branch",
-      "description": "Branch: codex/implement-projects-showcase-system",
-      "payload": {
-        "ref": "codex/implement-projects-showcase-system",
-        "ref_type": "branch",
-        "full_ref": "refs/heads/codex/implement-projects-showcase-system",
-        "master_branch": "master",
-        "description": "Currently rebuilding @ v2. v1 (monorepo + design) can be found at the branch `v1` and is still the current site at remcostoeten.nl",
-        "pusher_type": "user"
-      }
-    },
-    {
-      "id": "5469695784",
-      "timestamp": "2025-12-23T14:06:32Z",
-      "repository": "remcostoeten/skriuw",
-      "url": "https://github.com/remcostoeten/skriuw",
-      "isPrivate": false,
-      "type": "pr",
-      "title": "worked on PR #62",
-      "description": "",
-      "payload": {
-        "action": "labeled",
-        "number": 62,
-        "pull_request": {
-          "url": "https://api.github.com/repos/remcostoeten/skriuw/pulls/62",
-          "id": 3126198313,
-          "number": 62,
-          "head": {
-            "ref": "codex/add-public/private-notes-feature",
-            "sha": "2a17f02d288ea86eff65abf718b02e4ece9d484e",
-            "repo": {
-              "id": 1086615687,
-              "url": "https://api.github.com/repos/remcostoeten/skriuw",
-              "name": "skriuw"
-            }
-          },
-          "base": {
-            "ref": "daddy",
-            "sha": "8549892965a8e9da1a5321bc4c60d7f338f13c8d",
-            "repo": {
-              "id": 1086615687,
-              "url": "https://api.github.com/repos/remcostoeten/skriuw",
-              "name": "skriuw"
-            }
-          }
-        },
-        "label": {
-          "id": 9606472625,
-          "node_id": "LA_kwDOQMRwh88AAAACPJcjsQ",
-          "url": "https://api.github.com/repos/remcostoeten/skriuw/labels/codex",
-          "name": "codex",
-          "color": "ededed",
-          "default": false,
-          "description": null
-        },
-        "labels": [
-          {
-            "id": 9606472625,
-            "node_id": "LA_kwDOQMRwh88AAAACPJcjsQ",
-            "url": "https://api.github.com/repos/remcostoeten/skriuw/labels/codex",
-            "name": "codex",
-            "color": "ededed",
-            "default": false,
-            "description": null
-          }
-        ]
-      }
-    },
-    {
-      "id": "5469695527",
-      "timestamp": "2025-12-23T14:06:32Z",
-      "repository": "remcostoeten/skriuw",
-      "url": "https://github.com/remcostoeten/skriuw",
-      "isPrivate": false,
-      "type": "pr",
-      "title": "opened PR #62",
-      "description": "",
-      "payload": {
-        "action": "opened",
-        "number": 62,
-        "pull_request": {
-          "url": "https://api.github.com/repos/remcostoeten/skriuw/pulls/62",
-          "id": 3126198313,
-          "number": 62,
-          "head": {
-            "ref": "codex/add-public/private-notes-feature",
-            "sha": "2a17f02d288ea86eff65abf718b02e4ece9d484e",
-            "repo": {
-              "id": 1086615687,
-              "url": "https://api.github.com/repos/remcostoeten/skriuw",
-              "name": "skriuw"
-            }
-          },
-          "base": {
-            "ref": "daddy",
-            "sha": "8549892965a8e9da1a5321bc4c60d7f338f13c8d",
-            "repo": {
-              "id": 1086615687,
-              "url": "https://api.github.com/repos/remcostoeten/skriuw",
-              "name": "skriuw"
-            }
-          }
-        }
-      }
-    },
-    {
-      "id": "6947896942",
-      "timestamp": "2025-12-23T14:06:30Z",
-      "repository": "remcostoeten/skriuw",
-      "url": "https://github.com/remcostoeten/skriuw/tree/codex/add-public/private-notes-feature",
-      "isPrivate": false,
-      "type": "create",
-      "title": "created a branch",
-      "description": "Branch: codex/add-public/private-notes-feature",
-      "payload": {
-        "ref": "codex/add-public/private-notes-feature",
-        "ref_type": "branch",
-        "full_ref": "refs/heads/codex/add-public/private-notes-feature",
-        "master_branch": "daddy",
-        "description": "110,120,130!! 🔥 Blazingly fast note & todo manager for Web, Linux, OSX and Windows. Minimalism at base, maximalism at... when you opt in. Cloud, or local, managed AI or BYOK.",
-        "pusher_type": "user"
-      }
-    },
-    {
-      "id": "5464412485",
-      "timestamp": "2025-12-23T08:59:27Z",
-      "repository": "remcostoeten/remcostoeten.nl",
-      "url": "https://github.com/remcostoeten/remcostoeten.nl",
-      "isPrivate": false,
-      "type": "pr",
-      "title": "worked on PR #42",
-      "description": "",
-      "payload": {
-        "action": "labeled",
-        "number": 42,
-        "pull_request": {
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/42",
-          "id": 3125429488,
-          "number": 42,
-          "head": {
-            "ref": "codex/add-animated-number-component-to-homepage",
-            "sha": "c899ec8778dd3921691848675dd716bb5cb5ef7f",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          },
-          "base": {
-            "ref": "master",
-            "sha": "56b28479d7ced5cbd4bea71f999e74328f955881",
-            "repo": {
-              "id": 1017613680,
-              "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
-              "name": "remcostoeten.nl"
-            }
-          }
-        },
-        "label": {
-          "id": 9875953871,
-          "node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
-          "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
-          "name": "codex",
-          "color": "ededed",
-          "default": false,
-          "description": null
-        },
-        "labels": [
-          {
-            "id": 9875953871,
-            "node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
-            "url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
-            "name": "codex",
-            "color": "ededed",
-            "default": false,
-            "description": null
-          }
-        ]
-      }
-    }
-  ]
+	"endpoint": {
+		"name": "GitHub Activity",
+		"method": "GET",
+		"path": "/api/github/activity",
+		"url": "http://localhost:3000/api/github/activity"
+	},
+	"metadata": {
+		"status": 200,
+		"duration": 11,
+		"size": 15232,
+		"timestamp": "2025-12-23T17:03:23.717Z"
+	},
+	"response": [
+		{
+			"id": "6951291471",
+			"timestamp": "2025-12-23T16:40:38Z",
+			"repository": "remcostoeten/remcostoeten.nl",
+			"url": "https://github.com/remcostoeten/remcostoeten.nl",
+			"isPrivate": false,
+			"type": "create",
+			"title": "deleted a branch",
+			"description": "branch: codex/update-terms-and-privacy-content-dd4c81",
+			"payload": {
+				"ref": "codex/update-terms-and-privacy-content-dd4c81",
+				"ref_type": "branch",
+				"full_ref": "refs/heads/codex/update-terms-and-privacy-content-dd4c81",
+				"pusher_type": "user"
+			}
+		},
+		{
+			"id": "5472404561",
+			"timestamp": "2025-12-23T08:49:40Z",
+			"repository": "remcostoeten/remcostoeten.nl",
+			"url": "https://github.com/remcostoeten/remcostoeten.nl",
+			"isPrivate": false,
+			"type": "pr",
+			"title": "closed PR #41",
+			"description": "",
+			"payload": {
+				"action": "closed",
+				"number": 41,
+				"pull_request": {
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/41",
+					"id": 3125401074,
+					"number": 41,
+					"head": {
+						"ref": "codex/update-terms-and-privacy-content-dd4c81",
+						"sha": "d4c9e41aa833ac5b479a680fafa58de6a62a1bfe",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					},
+					"base": {
+						"ref": "master",
+						"sha": "7a345e238865f31708e69c3851f06d25945ea4e3",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					}
+				}
+			}
+		},
+		{
+			"id": "5469758520",
+			"timestamp": "2025-12-23T14:09:53Z",
+			"repository": "remcostoeten/remcostoeten.nl",
+			"url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43#issuecomment-3686782829",
+			"isPrivate": false,
+			"type": "issue",
+			"title": "commented on PR #43",
+			"description": "#### 📝 Changed routes:",
+			"payload": {
+				"action": "created",
+				"issue": {
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43",
+					"repository_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+					"labels_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/labels{/name}",
+					"comments_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/comments",
+					"events_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/events",
+					"html_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43",
+					"id": 3757497687,
+					"node_id": "PR_kwDOPKeNcM66VgL9",
+					"number": 43,
+					"title": "Add SSR projects showcase",
+					"user": {
+						"login": "remcostoeten",
+						"id": 57683378,
+						"node_id": "MDQ6VXNlcjU3NjgzMzc4",
+						"avatar_url": "https://avatars.githubusercontent.com/u/57683378?v=4",
+						"gravatar_id": "",
+						"url": "https://api.github.com/users/remcostoeten",
+						"html_url": "https://github.com/remcostoeten",
+						"followers_url": "https://api.github.com/users/remcostoeten/followers",
+						"following_url": "https://api.github.com/users/remcostoeten/following{/other_user}",
+						"gists_url": "https://api.github.com/users/remcostoeten/gists{/gist_id}",
+						"starred_url": "https://api.github.com/users/remcostoeten/starred{/owner}{/repo}",
+						"subscriptions_url": "https://api.github.com/users/remcostoeten/subscriptions",
+						"organizations_url": "https://api.github.com/users/remcostoeten/orgs",
+						"repos_url": "https://api.github.com/users/remcostoeten/repos",
+						"events_url": "https://api.github.com/users/remcostoeten/events{/privacy}",
+						"received_events_url": "https://api.github.com/users/remcostoeten/received_events",
+						"type": "User",
+						"user_view_type": "public",
+						"site_admin": false
+					},
+					"labels": [
+						{
+							"id": 9875953871,
+							"node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
+							"name": "codex",
+							"color": "ededed",
+							"default": false,
+							"description": null
+						}
+					],
+					"state": "open",
+					"locked": false,
+					"assignee": null,
+					"assignees": [],
+					"milestone": null,
+					"comments": 3,
+					"created_at": "2025-12-23T14:06:44Z",
+					"updated_at": "2025-12-23T14:10:57Z",
+					"closed_at": null,
+					"active_lock_reason": null,
+					"draft": false,
+					"pull_request": {
+						"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/43",
+						"html_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43",
+						"diff_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43.diff",
+						"patch_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43.patch",
+						"merged_at": null
+					},
+					"body": "## Summary\n- add SSR-first projects overview and detail routes with premium dark UI, filtering, and framer-motion transitions\n- centralize project registry, metadata, and GitHub query utility with sandbox-ready media frames and structured data\n- expand sitemap entries and harden sign-in button provider guards\n\n## Testing\n- `DATABASE_URL=postgres://local/local@localhost:5432/local BETTER_AUTH_URL=http://localhost:3000 BETTER_AUTH_SECRET=12345678901234567890123456789012 npm run build`\n\n\n------\n[Codex Task](https://chatgpt.com/codex/tasks/task_e_694a562aaf90832799cbd778a3b7a492)\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n\n## Summary by CodeRabbit\n\n* **New Features**\n  * Added a Projects section with searchable project showcase pages featuring detailed project views, navigation between projects, and GitHub repository metadata display.\n  * Added project filtering capabilities by category, status, year, and sorting options.\n  * Added media preview support for projects (images and videos).\n  * Added interactive sandbox preview panels for eligible projects.\n  * Added project pages to the site sitemap.\n\n* **Bug Fixes**\n  * Improved provider validation checks in the sign-in button component.\n\n<sub>✏️ Tip: You can customize this high-level summary in your review settings.</sub>\n\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+					"reactions": {
+						"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/reactions",
+						"total_count": 0,
+						"+1": 0,
+						"-1": 0,
+						"laugh": 0,
+						"hooray": 0,
+						"confused": 0,
+						"heart": 0,
+						"rocket": 0,
+						"eyes": 0
+					},
+					"timeline_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43/timeline",
+					"performed_via_github_app": null,
+					"state_reason": null
+				},
+				"comment": {
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/comments/3686782829",
+					"html_url": "https://github.com/remcostoeten/remcostoeten.nl/pull/43#issuecomment-3686782829",
+					"issue_url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/43",
+					"id": 3686782829,
+					"node_id": "IC_kwDOPKeNcM7bv9dt",
+					"user": {
+						"login": "remcostoeten",
+						"id": 57683378,
+						"node_id": "MDQ6VXNlcjU3NjgzMzc4",
+						"avatar_url": "https://avatars.githubusercontent.com/u/57683378?v=4",
+						"gravatar_id": "",
+						"url": "https://api.github.com/users/remcostoeten",
+						"html_url": "https://github.com/remcostoeten",
+						"followers_url": "https://api.github.com/users/remcostoeten/followers",
+						"following_url": "https://api.github.com/users/remcostoeten/following{/other_user}",
+						"gists_url": "https://api.github.com/users/remcostoeten/gists{/gist_id}",
+						"starred_url": "https://api.github.com/users/remcostoeten/starred{/owner}{/repo}",
+						"subscriptions_url": "https://api.github.com/users/remcostoeten/subscriptions",
+						"organizations_url": "https://api.github.com/users/remcostoeten/orgs",
+						"repos_url": "https://api.github.com/users/remcostoeten/repos",
+						"events_url": "https://api.github.com/users/remcostoeten/events{/privacy}",
+						"received_events_url": "https://api.github.com/users/remcostoeten/received_events",
+						"type": "User",
+						"user_view_type": "public",
+						"site_admin": false
+					},
+					"created_at": "2025-12-23T14:09:53Z",
+					"updated_at": "2025-12-23T14:09:53Z",
+					"body": "#### 📝 Changed routes:\n\n\n| [**/projects/\\[slug\\]**](https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects/[slug]) | [**/projects**](https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects) |\n|:-:|:-:|\n|<a href=\"https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects/[slug]\"><img src=\"https://images.weserv.nl?url=https://sjc.microlink.io/9lm88pwG3hCqrJl4_8f4bo17U2uNBg1DDKxrStnh9OS29t2MfjzwC_g6_lhFsZvPyqd59J-HkZmFbGutr78vlA.png&w=600\" alt=\"Screenshot of /projects/[slug]\" width=\"300\"></a><br /><sup><a href=\"https://images.weserv.nl?url=https://sjc.microlink.io/wUJocuUW6mFVMtF0RSvr5aTpy_c74XkoML0Znmxkto03n3vHb2SMB7ZHBuc2CkPOVQ2T_V6lmE_0mDl2KQWsSw.png\">(view full size)</a> |<a href=\"https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app/projects\"><img src=\"https://images.weserv.nl?url=https://sjc.microlink.io/yPUB2jDPE5QiFS4toESica605_EYO3VZaceO97FLNc8HtoTqHSMciVZYiIaSnz0m37a5jttbHz-BUK3khmsAdA.png&w=600\" alt=\"Screenshot of /projects\" width=\"300\"></a><br /><sup><a href=\"https://images.weserv.nl?url=https://sjc.microlink.io/OnBewiOdJQ3Z-V-YUn-ix5tO4ZamA2PWaIxzM_I96cy1OmO9_iWhZ3UJ7-8MJwuu-rPdTp3ykJORsoC3mZiJBw.png\">(view full size)</a> |\n\n\n\n\n\n\n\nCommit 715ce3110ec0222fb525228d5e1e3f216bcc29ac (https://remcostoeten-4dtrw8t6t-remcostoetens-projects.vercel.app).",
+					"reactions": {
+						"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/issues/comments/3686782829/reactions",
+						"total_count": 0,
+						"+1": 0,
+						"-1": 0,
+						"laugh": 0,
+						"hooray": 0,
+						"confused": 0,
+						"heart": 0,
+						"rocket": 0,
+						"eyes": 0
+					},
+					"performed_via_github_app": null
+				}
+			}
+		},
+		{
+			"id": "5469700121",
+			"timestamp": "2025-12-23T14:06:44Z",
+			"repository": "remcostoeten/remcostoeten.nl",
+			"url": "https://github.com/remcostoeten/remcostoeten.nl",
+			"isPrivate": false,
+			"type": "pr",
+			"title": "worked on PR #43",
+			"description": "",
+			"payload": {
+				"action": "labeled",
+				"number": 43,
+				"pull_request": {
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/43",
+					"id": 3126199037,
+					"number": 43,
+					"head": {
+						"ref": "codex/implement-projects-showcase-system",
+						"sha": "715ce3110ec0222fb525228d5e1e3f216bcc29ac",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					},
+					"base": {
+						"ref": "master",
+						"sha": "56b28479d7ced5cbd4bea71f999e74328f955881",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					}
+				},
+				"label": {
+					"id": 9875953871,
+					"node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
+					"name": "codex",
+					"color": "ededed",
+					"default": false,
+					"description": null
+				},
+				"labels": [
+					{
+						"id": 9875953871,
+						"node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
+						"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
+						"name": "codex",
+						"color": "ededed",
+						"default": false,
+						"description": null
+					}
+				]
+			}
+		},
+		{
+			"id": "5469699292",
+			"timestamp": "2025-12-23T14:06:44Z",
+			"repository": "remcostoeten/remcostoeten.nl",
+			"url": "https://github.com/remcostoeten/remcostoeten.nl",
+			"isPrivate": false,
+			"type": "pr",
+			"title": "opened PR #43",
+			"description": "",
+			"payload": {
+				"action": "opened",
+				"number": 43,
+				"pull_request": {
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/43",
+					"id": 3126199037,
+					"number": 43,
+					"head": {
+						"ref": "codex/implement-projects-showcase-system",
+						"sha": "715ce3110ec0222fb525228d5e1e3f216bcc29ac",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					},
+					"base": {
+						"ref": "master",
+						"sha": "56b28479d7ced5cbd4bea71f999e74328f955881",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					}
+				}
+			}
+		},
+		{
+			"id": "6947901523",
+			"timestamp": "2025-12-23T14:06:42Z",
+			"repository": "remcostoeten/remcostoeten.nl",
+			"url": "https://github.com/remcostoeten/remcostoeten.nl/tree/codex/implement-projects-showcase-system",
+			"isPrivate": false,
+			"type": "create",
+			"title": "created a branch",
+			"description": "Branch: codex/implement-projects-showcase-system",
+			"payload": {
+				"ref": "codex/implement-projects-showcase-system",
+				"ref_type": "branch",
+				"full_ref": "refs/heads/codex/implement-projects-showcase-system",
+				"master_branch": "master",
+				"description": "Currently rebuilding @ v2. v1 (monorepo + design) can be found at the branch `v1` and is still the current site at remcostoeten.nl",
+				"pusher_type": "user"
+			}
+		},
+		{
+			"id": "5469695784",
+			"timestamp": "2025-12-23T14:06:32Z",
+			"repository": "remcostoeten/skriuw",
+			"url": "https://github.com/remcostoeten/skriuw",
+			"isPrivate": false,
+			"type": "pr",
+			"title": "worked on PR #62",
+			"description": "",
+			"payload": {
+				"action": "labeled",
+				"number": 62,
+				"pull_request": {
+					"url": "https://api.github.com/repos/remcostoeten/skriuw/pulls/62",
+					"id": 3126198313,
+					"number": 62,
+					"head": {
+						"ref": "codex/add-public/private-notes-feature",
+						"sha": "2a17f02d288ea86eff65abf718b02e4ece9d484e",
+						"repo": {
+							"id": 1086615687,
+							"url": "https://api.github.com/repos/remcostoeten/skriuw",
+							"name": "skriuw"
+						}
+					},
+					"base": {
+						"ref": "daddy",
+						"sha": "8549892965a8e9da1a5321bc4c60d7f338f13c8d",
+						"repo": {
+							"id": 1086615687,
+							"url": "https://api.github.com/repos/remcostoeten/skriuw",
+							"name": "skriuw"
+						}
+					}
+				},
+				"label": {
+					"id": 9606472625,
+					"node_id": "LA_kwDOQMRwh88AAAACPJcjsQ",
+					"url": "https://api.github.com/repos/remcostoeten/skriuw/labels/codex",
+					"name": "codex",
+					"color": "ededed",
+					"default": false,
+					"description": null
+				},
+				"labels": [
+					{
+						"id": 9606472625,
+						"node_id": "LA_kwDOQMRwh88AAAACPJcjsQ",
+						"url": "https://api.github.com/repos/remcostoeten/skriuw/labels/codex",
+						"name": "codex",
+						"color": "ededed",
+						"default": false,
+						"description": null
+					}
+				]
+			}
+		},
+		{
+			"id": "5469695527",
+			"timestamp": "2025-12-23T14:06:32Z",
+			"repository": "remcostoeten/skriuw",
+			"url": "https://github.com/remcostoeten/skriuw",
+			"isPrivate": false,
+			"type": "pr",
+			"title": "opened PR #62",
+			"description": "",
+			"payload": {
+				"action": "opened",
+				"number": 62,
+				"pull_request": {
+					"url": "https://api.github.com/repos/remcostoeten/skriuw/pulls/62",
+					"id": 3126198313,
+					"number": 62,
+					"head": {
+						"ref": "codex/add-public/private-notes-feature",
+						"sha": "2a17f02d288ea86eff65abf718b02e4ece9d484e",
+						"repo": {
+							"id": 1086615687,
+							"url": "https://api.github.com/repos/remcostoeten/skriuw",
+							"name": "skriuw"
+						}
+					},
+					"base": {
+						"ref": "daddy",
+						"sha": "8549892965a8e9da1a5321bc4c60d7f338f13c8d",
+						"repo": {
+							"id": 1086615687,
+							"url": "https://api.github.com/repos/remcostoeten/skriuw",
+							"name": "skriuw"
+						}
+					}
+				}
+			}
+		},
+		{
+			"id": "6947896942",
+			"timestamp": "2025-12-23T14:06:30Z",
+			"repository": "remcostoeten/skriuw",
+			"url": "https://github.com/remcostoeten/skriuw/tree/codex/add-public/private-notes-feature",
+			"isPrivate": false,
+			"type": "create",
+			"title": "created a branch",
+			"description": "Branch: codex/add-public/private-notes-feature",
+			"payload": {
+				"ref": "codex/add-public/private-notes-feature",
+				"ref_type": "branch",
+				"full_ref": "refs/heads/codex/add-public/private-notes-feature",
+				"master_branch": "daddy",
+				"description": "110,120,130!! 🔥 Blazingly fast note & todo manager for Web, Linux, OSX and Windows. Minimalism at base, maximalism at... when you opt in. Cloud, or local, managed AI or BYOK.",
+				"pusher_type": "user"
+			}
+		},
+		{
+			"id": "5464412485",
+			"timestamp": "2025-12-23T08:59:27Z",
+			"repository": "remcostoeten/remcostoeten.nl",
+			"url": "https://github.com/remcostoeten/remcostoeten.nl",
+			"isPrivate": false,
+			"type": "pr",
+			"title": "worked on PR #42",
+			"description": "",
+			"payload": {
+				"action": "labeled",
+				"number": 42,
+				"pull_request": {
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/pulls/42",
+					"id": 3125429488,
+					"number": 42,
+					"head": {
+						"ref": "codex/add-animated-number-component-to-homepage",
+						"sha": "c899ec8778dd3921691848675dd716bb5cb5ef7f",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					},
+					"base": {
+						"ref": "master",
+						"sha": "56b28479d7ced5cbd4bea71f999e74328f955881",
+						"repo": {
+							"id": 1017613680,
+							"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl",
+							"name": "remcostoeten.nl"
+						}
+					}
+				},
+				"label": {
+					"id": 9875953871,
+					"node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
+					"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
+					"name": "codex",
+					"color": "ededed",
+					"default": false,
+					"description": null
+				},
+				"labels": [
+					{
+						"id": 9875953871,
+						"node_id": "LA_kwDOPKeNcM8AAAACTKcYzw",
+						"url": "https://api.github.com/repos/remcostoeten/remcostoeten.nl/labels/codex",
+						"name": "codex",
+						"color": "ededed",
+						"default": false,
+						"description": null
+					}
+				]
+			}
+		}
+	]
 }

@@ -12,38 +12,42 @@ const ADMIN_EMAIL = env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL
  * Can be used in Server Components and Server Actions
  */
 export async function isAdmin(): Promise<boolean> {
-    try {
-        const session = await auth.api.getSession({
-            headers: await headers(),
-        })
+	try {
+		const session = await auth.api.getSession({
+			headers: await headers()
+		})
 
-        if (!session?.user) {
-            console.log('[isAdmin] No session user found')
-            return false
-        }
+		if (!session?.user) {
+			console.log('[isAdmin] No session user found')
+			return false
+		}
 
-        const userEmail = session.user.email?.toLowerCase()
-        const isEmailMatch = userEmail === ADMIN_EMAIL.toLowerCase() || userEmail === SECONDARY_ADMIN_EMAIL.toLowerCase()
-        const isRoleAdmin = session.user.role === 'admin'
+		const userEmail = session.user.email?.toLowerCase()
+		const isEmailMatch =
+			userEmail === ADMIN_EMAIL.toLowerCase() ||
+			userEmail === SECONDARY_ADMIN_EMAIL.toLowerCase()
+		const isRoleAdmin = session.user.role === 'admin'
 
-        console.log(`[isAdmin] email: ${session.user.email}, isMatch: ${isEmailMatch}, role: ${session.user.role}, isRoleAdmin: ${isRoleAdmin}`)
+		console.log(
+			`[isAdmin] email: ${session.user.email}, isMatch: ${isEmailMatch}, role: ${session.user.role}, isRoleAdmin: ${isRoleAdmin}`
+		)
 
-        return isRoleAdmin || isEmailMatch
-    } catch (error) {
-        console.error('[isAdmin] Error:', error)
-        return false
-    }
+		return isRoleAdmin || isEmailMatch
+	} catch (error) {
+		console.error('[isAdmin] Error:', error)
+		return false
+	}
 }
 
 /**
  * Get the current session (server-side)
  */
 export async function getServerSession() {
-    try {
-        return await auth.api.getSession({
-            headers: await headers(),
-        })
-    } catch {
-        return null
-    }
+	try {
+		return await auth.api.getSession({
+			headers: await headers()
+		})
+	} catch {
+		return null
+	}
 }

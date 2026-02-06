@@ -1,55 +1,55 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1766197615131,
-      "tag": "0000_jazzy_meggan",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1766199403542,
-      "tag": "0001_famous_shockwave",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1766280078986,
-      "tag": "0002_fair_invaders",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1766282520135,
-      "tag": "0003_productive_overlord",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1766289353042,
-      "tag": "0004_stale_bullseye",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1768430280138,
-      "tag": "0005_bitter_squirrel_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1768714459292,
-      "tag": "0006_late_mother_askani",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1766197615131,
+			"tag": "0000_jazzy_meggan",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1766199403542,
+			"tag": "0001_famous_shockwave",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1766280078986,
+			"tag": "0002_fair_invaders",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1766282520135,
+			"tag": "0003_productive_overlord",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1766289353042,
+			"tag": "0004_stale_bullseye",
+			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "7",
+			"when": 1768430280138,
+			"tag": "0005_bitter_squirrel_girl",
+			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "7",
+			"when": 1768714459292,
+			"tag": "0006_late_mother_askani",
+			"breakpoints": true
+		}
+	]
 }

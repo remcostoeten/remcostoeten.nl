@@ -2,219 +2,223 @@ import fs from 'fs'
 import path from 'path'
 
 type Metadata = {
-  title: string
-  publishedAt: string
-  summary: string
-  image?: string
-  tags?: string[]
-  readTime?: string
-  draft?: boolean
-  slug?: string
-  updatedAt?: string
-  canonicalUrl?: string
-  author?: string
+	title: string
+	publishedAt: string
+	summary: string
+	image?: string
+	tags?: string[]
+	readTime?: string
+	draft?: boolean
+	slug?: string
+	updatedAt?: string
+	canonicalUrl?: string
+	author?: string
 }
 
 function parseFrontmatter(fileContent: string) {
-  let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
-  let match = frontmatterRegex.exec(fileContent)
-  let frontMatterBlock = match![1]
-  let content = fileContent.replace(frontmatterRegex, '').trim()
-  let frontMatterLines = frontMatterBlock.trim().split('\n')
-  let metadata: Partial<Metadata> = {}
+	let frontmatterRegex = /---\s*([\s\S]*?)\s*---/
+	let match = frontmatterRegex.exec(fileContent)
+	let frontMatterBlock = match![1]
+	let content = fileContent.replace(frontmatterRegex, '').trim()
+	let frontMatterLines = frontMatterBlock.trim().split('\n')
+	let metadata: Partial<Metadata> = {}
 
-  frontMatterLines.forEach((line) => {
-    let [key, ...valueArr] = line.split(': ')
-    let value = valueArr.join(': ').trim()
-    value = value.replace(/^['"](.*)['"]$/, '$1') // Remove quotes
-    const trimmedKey = key.trim()
+	frontMatterLines.forEach(line => {
+		let [key, ...valueArr] = line.split(': ')
+		let value = valueArr.join(': ').trim()
+		value = value.replace(/^['"](.*)['"]$/, '$1') // Remove quotes
+		const trimmedKey = key.trim()
 
-    if (value.startsWith('[') && value.endsWith(']')) {
-      const arrayValue = value.slice(1, -1)
-        .split(',')
-        .map(item => item.trim().replace(/['"]/g, ''))
-        .filter(Boolean)
-      if (trimmedKey === 'tags') {
-        metadata.tags = arrayValue
-      }
-    } else {
-      switch (trimmedKey) {
-        case 'title':
-          metadata.title = value
-          break
-        case 'publishedAt':
-          metadata.publishedAt = value
-          break
-        case 'summary':
-          metadata.summary = value
-          break
-        case 'image':
-          metadata.image = value
-          break
-        case 'readTime':
-          metadata.readTime = value
-          break
-        case 'draft':
-          metadata.draft = value.toLowerCase() === 'true'
-          break
-        case 'slug':
-          metadata.slug = value
-          break
-        case 'updatedAt':
-          metadata.updatedAt = value
-          break
-        case 'canonicalUrl':
-          metadata.canonicalUrl = value
-          break
-        case 'author':
-          metadata.author = value
-          break
-      }
-    }
-  })
+		if (value.startsWith('[') && value.endsWith(']')) {
+			const arrayValue = value
+				.slice(1, -1)
+				.split(',')
+				.map(item => item.trim().replace(/['"]/g, ''))
+				.filter(Boolean)
+			if (trimmedKey === 'tags') {
+				metadata.tags = arrayValue
+			}
+		} else {
+			switch (trimmedKey) {
+				case 'title':
+					metadata.title = value
+					break
+				case 'publishedAt':
+					metadata.publishedAt = value
+					break
+				case 'summary':
+					metadata.summary = value
+					break
+				case 'image':
+					metadata.image = value
+					break
+				case 'readTime':
+					metadata.readTime = value
+					break
+				case 'draft':
+					metadata.draft = value.toLowerCase() === 'true'
+					break
+				case 'slug':
+					metadata.slug = value
+					break
+				case 'updatedAt':
+					metadata.updatedAt = value
+					break
+				case 'canonicalUrl':
+					metadata.canonicalUrl = value
+					break
+				case 'author':
+					metadata.author = value
+					break
+			}
+		}
+	})
 
-  return { metadata: metadata as Metadata, content }
+	return { metadata: metadata as Metadata, content }
 }
 
 function getMDXFiles(dir) {
-  const files: string[] = []
+	const files: string[] = []
 
-  function scanDirectory(currentDir: string) {
-    const items = fs.readdirSync(currentDir)
+	function scanDirectory(currentDir: string) {
+		const items = fs.readdirSync(currentDir)
 
-    for (const item of items) {
-      const fullPath = path.join(currentDir, item)
-      const stat = fs.statSync(fullPath)
+		for (const item of items) {
+			const fullPath = path.join(currentDir, item)
+			const stat = fs.statSync(fullPath)
 
-      if (stat.isDirectory()) {
-        scanDirectory(fullPath)
-      } else if (path.extname(item) === '.mdx' || path.extname(item) === '.md') {
-        const relativePath = path.relative(dir, fullPath)
-        files.push(relativePath)
-      }
-    }
-  }
+			if (stat.isDirectory()) {
+				scanDirectory(fullPath)
+			} else if (
+				path.extname(item) === '.mdx' ||
+				path.extname(item) === '.md'
+			) {
+				const relativePath = path.relative(dir, fullPath)
+				files.push(relativePath)
+			}
+		}
+	}
 
-  scanDirectory(dir)
-  return files
+	scanDirectory(dir)
+	return files
 }
 
 function readMDXFile(filePath) {
-  let rawContent = fs.readFileSync(filePath, 'utf-8')
-  return parseFrontmatter(rawContent)
+	let rawContent = fs.readFileSync(filePath, 'utf-8')
+	return parseFrontmatter(rawContent)
 }
 
 function getMDXData(dir) {
-  let mdxFiles = getMDXFiles(dir)
-  return mdxFiles.map((file) => {
-    try {
-      let { metadata, content } = readMDXFile(path.join(dir, file))
-      let slug = metadata.slug || file.replace(/\.(mdx|md)$/, '')
+	let mdxFiles = getMDXFiles(dir)
+	return mdxFiles.map(file => {
+		try {
+			let { metadata, content } = readMDXFile(path.join(dir, file))
+			let slug = metadata.slug || file.replace(/\.(mdx|md)$/, '')
 
-      return {
-        slug,
-        content,
-        metadata: {
-          ...metadata,
-          readTime: metadata.readTime || calculateReadTime(content)
-        }
-      }
-    } catch (error) {
-      console.error(`Error parsing MDX file ${file}:`, error)
-      return {
-        metadata: {
-          title: 'Error',
-          publishedAt: '',
-          summary: 'Error parsing file',
-          readTime: '0 min'
-        } as Metadata,
-        slug: file.replace(/\.(mdx|md)$/, ''),
-        content: '',
-      }
-    }
-  })
+			return {
+				slug,
+				content,
+				metadata: {
+					...metadata,
+					readTime: metadata.readTime || calculateReadTime(content)
+				}
+			}
+		} catch (error) {
+			console.error(`Error parsing MDX file ${file}:`, error)
+			return {
+				metadata: {
+					title: 'Error',
+					publishedAt: '',
+					summary: 'Error parsing file',
+					readTime: '0 min'
+				} as Metadata,
+				slug: file.replace(/\.(mdx|md)$/, ''),
+				content: ''
+			}
+		}
+	})
 }
 
 /**
  * Get all blog posts including drafts (for admin use)
  */
 export function getAllBlogPosts() {
-  return getMDXData(path.join(process.cwd(), 'src', 'app', '(marketing)', 'blog', 'posts')).filter(
-    post => post && post.slug && post.metadata && post.metadata.title
-  )
+	return getMDXData(
+		path.join(process.cwd(), 'src', 'app', '(marketing)', 'blog', 'posts')
+	).filter(post => post && post.slug && post.metadata && post.metadata.title)
 }
 
 /**
  * Get published blog posts only (drafts filtered out)
  */
 export function getBlogPosts() {
-  return getAllBlogPosts().filter(post => !post.metadata.draft)
+	return getAllBlogPosts().filter(post => !post.metadata.draft)
 }
 
 export function formatDate(date: string, includeRelative = false) {
-  let currentDate = new Date()
-  if (!date.includes('T')) {
-    date = `${date}T00:00:00`
-  }
-  let targetDate = new Date(date)
+	let currentDate = new Date()
+	if (!date.includes('T')) {
+		date = `${date}T00:00:00`
+	}
+	let targetDate = new Date(date)
 
-  let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear()
-  let monthsAgo = currentDate.getMonth() - targetDate.getMonth()
-  let daysAgo = currentDate.getDate() - targetDate.getDate()
+	let yearsAgo = currentDate.getFullYear() - targetDate.getFullYear()
+	let monthsAgo = currentDate.getMonth() - targetDate.getMonth()
+	let daysAgo = currentDate.getDate() - targetDate.getDate()
 
-  let formattedDate = ''
+	let formattedDate = ''
 
-  if (yearsAgo > 0) {
-    formattedDate = `${yearsAgo}y ago`
-  } else if (monthsAgo > 0) {
-    formattedDate = `${monthsAgo}mo ago`
-  } else if (daysAgo > 0) {
-    formattedDate = `${daysAgo}d ago`
-  } else {
-    formattedDate = 'Today'
-  }
+	if (yearsAgo > 0) {
+		formattedDate = `${yearsAgo}y ago`
+	} else if (monthsAgo > 0) {
+		formattedDate = `${monthsAgo}mo ago`
+	} else if (daysAgo > 0) {
+		formattedDate = `${daysAgo}d ago`
+	} else {
+		formattedDate = 'Today'
+	}
 
-  let fullDate = targetDate.toLocaleString('en-us', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
-  })
+	let fullDate = targetDate.toLocaleString('en-us', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric'
+	})
 
-  if (!includeRelative) {
-    return fullDate
-  }
+	if (!includeRelative) {
+		return fullDate
+	}
 
-  return `${fullDate} (${formattedDate})`
+	return `${fullDate} (${formattedDate})`
 }
 
 export function getAllTags() {
-  const posts = getBlogPosts()
-  const tagMap = new Map<string, number>()
+	const posts = getBlogPosts()
+	const tagMap = new Map<string, number>()
 
-  posts.forEach(post => {
-    const tags = post.metadata.tags || []
-    tags.forEach(tag => {
-      tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
-    })
-  })
+	posts.forEach(post => {
+		const tags = post.metadata.tags || []
+		tags.forEach(tag => {
+			tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
+		})
+	})
 
-  return Array.from(tagMap.entries())
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count)
+	return Array.from(tagMap.entries())
+		.map(([name, count]) => ({ name, count }))
+		.sort((a, b) => b.count - a.count)
 }
 
 export function getBlogPostsByTag(tag: string) {
-  const posts = getBlogPosts()
-  return posts.filter(post =>
-    (post.metadata.tags || []).some(
-      postTag => postTag.toLowerCase() === tag.toLowerCase()
-    )
-  )
+	const posts = getBlogPosts()
+	return posts.filter(post =>
+		(post.metadata.tags || []).some(
+			postTag => postTag.toLowerCase() === tag.toLowerCase()
+		)
+	)
 }
 
 export function calculateReadTime(content: string): string {
-  const wordsPerMinute = 200
-  const words = content.trim().split(/\s+/).length
-  const minutes = Math.ceil(words / wordsPerMinute)
-  return `${minutes} min`
+	const wordsPerMinute = 200
+	const words = content.trim().split(/\s+/).length
+	const minutes = Math.ceil(words / wordsPerMinute)
+	return `${minutes} min`
 }
