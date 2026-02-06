@@ -1,10 +1,7 @@
 export type {
     PlaygroundCategory,
     BaseEntry,
-    SnippetEntry,
     UiEntry,
-    PackageEntry,
-    CliEntry,
     RegistryEntry,
     CategoryMeta,
 } from './types'

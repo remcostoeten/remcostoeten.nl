@@ -5,6 +5,7 @@ export type PlaygroundConfig = {
 export const PLAYGROUND_CONFIG: PlaygroundConfig = {
     enabled: {
         'copy-button': true,
+        'gooey-switch': true,
     },
 }
 

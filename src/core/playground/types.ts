@@ -1,7 +1,7 @@
-import type { ReactNode, ComponentType } from 'react'
+import type { ComponentType } from 'react'
 import type { LucideIcon } from 'lucide-react'
 
-export type PlaygroundCategory = 'snippet' | 'ui' | 'package' | 'cli'
+export type PlaygroundCategory = 'ui'
 
 export type BaseEntry = {
     id: string
@@ -15,26 +15,13 @@ export type BaseEntry = {
     demo?: string
 }
 
-export type SnippetEntry = BaseEntry & {
-    category: 'snippet'
-}
-
 export type UiEntry = BaseEntry & {
     category: 'ui'
     preview?: ComponentType
+    component?: ComponentType
 }
 
-export type PackageEntry = BaseEntry & {
-    category: 'package'
-    preview?: ComponentType
-}
-
-export type CliEntry = BaseEntry & {
-    category: 'cli'
-    preview?: ComponentType
-}
-
-export type RegistryEntry = SnippetEntry | UiEntry | PackageEntry | CliEntry
+export type RegistryEntry = UiEntry
 
 export type CategoryMeta = {
     label: string

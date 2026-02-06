@@ -1,13 +1,10 @@
 import type { RegistryEntry, PlaygroundCategory, CategoryMeta } from './types'
-import { Code2, Palette, Package, Terminal } from 'lucide-react'
+import { Palette } from 'lucide-react'
 
 const entries: RegistryEntry[] = []
 
 export const CATEGORY_META: Record<PlaygroundCategory, CategoryMeta> = {
-    snippet: { label: 'Snippets', icon: Code2 },
     ui: { label: 'UI', icon: Palette },
-    package: { label: 'Packages', icon: Package },
-    cli: { label: 'CLI', icon: Terminal },
 }
 
 export function register(entry: RegistryEntry): void {
@@ -45,9 +42,6 @@ export function getEnabled(enabledIds: Record<string, boolean>): RegistryEntry[]
 export function getCounts(): Record<PlaygroundCategory | 'all', number> {
     return {
         all: entries.length,
-        snippet: getByCategory('snippet').length,
         ui: getByCategory('ui').length,
-        package: getByCategory('package').length,
-        cli: getByCategory('cli').length,
     }
 }

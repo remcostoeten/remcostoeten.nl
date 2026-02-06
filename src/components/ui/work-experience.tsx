@@ -170,14 +170,14 @@ export function ExperienceItem({
     const initial = experience.companyName.charAt(0).toUpperCase()
 
     return (
-        <div className="relative pb-8 last:pb-0">
+        <div className="relative pb-6 last:pb-0">
             {/* Timeline line - centered on the 32px icon (left-4 = 16px center) */}
             <div
                 className="absolute left-4 top-0 bottom-0 w-px bg-border/50 -translate-x-[0.5px]"
                 aria-hidden="true"
             />
 
-            <div className="relative flex items-center gap-6 mb-6 group">
+            <div className="relative flex items-center gap-4 mb-2 group">
                 <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground shadow-sm transition-colors group-hover:border-foreground/20 group-hover:text-foreground">
                     <span className="text-sm font-semibold">{initial}</span>
                     {experience.isCurrentEmployer && (
@@ -191,7 +191,7 @@ export function ExperienceItem({
                             {experience.companyName}
                         </h3>
                         {experience.isCurrentEmployer && (
-                            <span className="inline-flex items-center rounded-full border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[10px] uppercase tracking-wide font-medium text-teal-600 dark:text-teal-400 shadow-sm">
+                            <span className="inline-flex items-center border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[10px] uppercase tracking-wide font-medium text-teal-600 dark:text-teal-400 shadow-sm">
                                 Current
                             </span>
                         )}
@@ -199,7 +199,7 @@ export function ExperienceItem({
                 </div>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-4">
                 {experience.positions.map((position, index) => (
                     <ExperiencePositionItem
                         key={position.id}
@@ -240,7 +240,7 @@ export function ExperiencePositionItem({
     }, [shouldExpandAll])
 
     const Metadata = () => (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mb-2 font-mono tracking-tight">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground/80 mt-0.5 font-mono tracking-tight">
             {position.employmentType && (
                 <>
                     <span>{position.employmentType}</span>
@@ -252,22 +252,16 @@ export function ExperiencePositionItem({
     )
 
     return (
-        <div className="relative pl-12">
-            {/* Icon centered on the timeline line (left-4 = 16px). Icon is size-6 (24px).
-                To center 24px icon on 16px line:
-                Line center is at 16.5px (due to w-px).
-                Icon center needs to be at 16.5px.
-                Icon is 24px wide.
-                Left should be 16.5 - 12 = 4.5px.
-             */}
-            <div className="absolute left-[4.5px] top-0 z-10 box-border flex size-6 items-center justify-center rounded-full border border-border bg-muted/30 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-border/80 hover:bg-muted/50 hover:text-foreground">
+        <div className="relative pl-10">
+            {/* Icon centered on the timeline line */}
+            <div className="absolute left-[4.5px] top-[3px] z-10 box-border flex size-6 items-center justify-center rounded-full border border-border bg-muted/30 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-border/80 hover:bg-muted/50 hover:text-foreground">
                 <Icon className="size-3" />
             </div>
 
             <div className="flex flex-col">
                 <div
                     className={cn(
-                        "flex items-start justify-between select-none py-0.5",
+                        "flex items-start justify-between select-none",
                         canCollapse && "group/header cursor-pointer"
                     )} tabIndex={-1}
                     onClick={() => canCollapse && setIsOpen(!isOpen)}
@@ -310,28 +304,26 @@ export function ExperiencePositionItem({
                             transition={{ duration: 0.2, ease: "easeInOut" }}
                             className="overflow-hidden"
                         >
-                            <div className="pt-3 pb-1">
-                                {position.description && (
-                                    <Prose>
-                                        <ReactMarkdown>
-                                            {position.description}
-                                        </ReactMarkdown>
-                                    </Prose>
-                                )}
+                            {position.description && (
+                                <Prose>
+                                    <ReactMarkdown>
+                                        {position.description}
+                                    </ReactMarkdown>
+                                </Prose>
+                            )}
 
-                                {Array.isArray(position.skills) &&
-                                    position.skills.length > 0 && (
-                                        <div className="flex flex-wrap gap-1.5 pt-4">
-                                            {position.skills.map(
-                                                (skill, index) => (
-                                                    <Skill key={index}>
-                                                        {skill}
-                                                    </Skill>
-                                                )
-                                            )}
-                                        </div>
-                                    )}
-                            </div>
+                            {Array.isArray(position.skills) &&
+                                position.skills.length > 0 && (
+                                    <div className="flex flex-wrap gap-1.5 pt-2">
+                                        {position.skills.map(
+                                            (skill, index) => (
+                                                <Skill key={index}>
+                                                    {skill}
+                                                </Skill>
+                                            )
+                                        )}
+                                    </div>
+                                )}
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -346,9 +338,9 @@ function Prose({ className, children, ...props }: React.ComponentProps<"div">) {
             className={cn(
                 "prose prose-sm max-w-none text-muted-foreground prose-zinc dark:prose-invert",
                 // Relaxed line height for better readability
-                "prose-p:leading-7 prose-p:my-1.5",
-                "prose-ul:my-2 prose-ul:list-none !prose-ul:pl-0 prose-ul:pl-0 prose-ul:m-0",
-                "prose-li:relative prose-li:pl-0 prose-li:my-1.5 prose-li:leading-7 prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-2 prose-li:before:size-1 prose-li:before:rounded-full prose-li:before:bg-muted-foreground/40 prose-li:before:content-['']",
+                "prose-p:leading-6 prose-p:my-1.5",
+                "prose-ul:m-0 prose-ul:p-0 prose-ul:list-none",
+                "prose-li:relative prose-li:pl-4 prose-li:my-0 prose-li:leading-6 prose-li:before:absolute prose-li:before:left-0 prose-li:before:top-[9px] prose-li:before:text-[9px] prose-li:before:leading-none prose-li:before:font-mono prose-li:before:text-muted-foreground/40 prose-li:before:content-['+']",
                 "prose-a:font-medium prose-a:text-foreground prose-a:underline prose-a:underline-offset-4",
                 className
             )}
@@ -363,9 +355,12 @@ function Skill({ className, ...props }: React.ComponentProps<"span">) {
     return (
         <span
             className={cn(
-                "inline-flex items-center rounded-md border border-border/40 bg-secondary/30 px-2 py-1 text-[11px] font-medium text-secondary-foreground shadow-xs transition-all hover:bg-secondary/60 hover:text-secondary-foreground hover:border-border/60",
+                "inline-flex items-center border border-foreground/10 px-2.5 py-0.5 text-xs font-medium text-foreground/80 transition-all hover:border-foreground/20 hover:text-foreground",
                 className
             )}
+            style={{
+                backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 2px, hsl(var(--foreground) / 0.05) 2px, hsl(var(--foreground) / 0.05) 3px)`
+            }}
             {...props}
         />
     )
