@@ -403,12 +403,12 @@ class GitHubService {
         if (!language) return;
 
         const existing = languageMap.get(language) || { count: 0, repos: [] };
-        existing.count++;
-        existing.repos.push(repo.name);
+        const reposList = [...existing.repos, repo.full_name];
+        const nextCount = existing.count + 1;
 
         languageMap.set(language, {
-          count: existing.count + 1,
-          repos: existing.repos
+          count: nextCount,
+          repos: reposList
         });
       });
 
