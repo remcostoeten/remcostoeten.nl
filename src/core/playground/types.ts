@@ -4,26 +4,26 @@ import type { LucideIcon } from 'lucide-react'
 export type PlaygroundCategory = 'ui'
 
 export type BaseEntry = {
-	id: string
-	title: string
-	description: string
-	category: PlaygroundCategory
-	tags: string[]
-	language?: string
-	code?: string
-	github?: string
-	demo?: string
+    id: string
+    title: string
+    description: string
+    category: PlaygroundCategory
+    tags: string[]
+    language?: string
+    code?: string
+    github?: string
+    demo?: string
 }
 
 export type UiEntry = BaseEntry & {
-	category: 'ui'
-	preview?: ComponentType
-	component?: ComponentType
+    category: 'ui'
+    preview?: ComponentType
+    component?: ComponentType
 }
 
 export type RegistryEntry = UiEntry
 
 export type CategoryMeta = {
-	label: string
-	icon: LucideIcon
+    label: string
+    icon: LucideIcon
 }

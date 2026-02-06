@@ -3,33 +3,29 @@ import { CopyButtonDemo } from '@/components/playground/demos/copy-button'
 import { GradientBorderDemo } from '@/components/playground/demos/gradient-border'
 import { SkeletonDemo } from '@/components/playground/demos/skeleton'
 
-import {
-	GooeySwitchDemo,
-	GooeySwitchFullDemo
-} from '@/components/playground/demos/gooey-switch'
+import { GooeySwitchDemo, GooeySwitchFullDemo } from '@/components/playground/demos/gooey-switch'
 
 export const uiEntries: UiEntry[] = [
-	{
-		id: 'gooey-switch',
-		title: 'Gooey Switch',
-		description:
-			'A fluid, organic switch component with gooey toggle animation using Framer Motion',
-		category: 'ui',
-		language: 'tsx',
-		tags: ['React', 'Framer Motion', 'Animation', 'SVG Filter'],
-		preview: GooeySwitchDemo,
-		component: GooeySwitchFullDemo,
-		code: `// Full source in components/playground/demos/gooey-switch.tsx`
-	},
-	{
-		id: 'copy-button',
-		title: 'Animated Copy Button',
-		description: 'A sleek copy-to-clipboard button with state transitions',
-		category: 'ui',
-		language: 'tsx',
-		tags: ['React', 'Animation', 'Component'],
-		preview: CopyButtonDemo,
-		code: `function CopyButton({ text }: { text: string }) {
+  {
+    id: 'gooey-switch',
+    title: 'Gooey Switch',
+    description: 'A fluid, organic switch component with gooey toggle animation using Framer Motion',
+    category: 'ui',
+    language: 'tsx',
+    tags: ['React', 'Framer Motion', 'Animation', 'SVG Filter'],
+    preview: GooeySwitchDemo,
+    component: GooeySwitchFullDemo,
+    code: `// Full source in components/playground/demos/gooey-switch.tsx`,
+  },
+  {
+    id: 'copy-button',
+    title: 'Animated Copy Button',
+    description: 'A sleek copy-to-clipboard button with state transitions',
+    category: 'ui',
+    language: 'tsx',
+    tags: ['React', 'Animation', 'Component'],
+    preview: CopyButtonDemo,
+    code: `function CopyButton({ text }: { text: string }) {
     const [copied, setCopied] = useState(false)
 
     const copy = async () => {
@@ -44,17 +40,17 @@ export const uiEntries: UiEntry[] = [
   }
   </button>
   )
-}`
-	},
-	{
-		id: 'gradient-border',
-		title: 'Gradient Border Card',
-		description: 'CSS-only animated gradient border effect',
-		category: 'ui',
-		language: 'css',
-		tags: ['CSS', 'Animation', 'Effect'],
-		preview: GradientBorderDemo,
-		code: `.gradient - border {
+}`,
+  },
+  {
+    id: 'gradient-border',
+    title: 'Gradient Border Card',
+    description: 'CSS-only animated gradient border effect',
+    category: 'ui',
+    language: 'css',
+    tags: ['CSS', 'Animation', 'Effect'],
+    preview: GradientBorderDemo,
+    code: `.gradient - border {
   position: relative;
   background: var(--background);
 }
@@ -73,17 +69,17 @@ export const uiEntries: UiEntry[] = [
   mask: linear - gradient(#fff 0 0) content - box,
     linear - gradient(#fff 0 0);
   mask - composite: exclude;
-} `
-	},
-	{
-		id: 'loading-skeleton',
-		title: 'Loading Skeleton',
-		description: 'Animated shimmer skeleton for loading states',
-		category: 'ui',
-		language: 'tsx',
-		tags: ['React', 'CSS', 'Loading'],
-		preview: SkeletonDemo,
-		code: `function Skeleton({ className }: { className?: string }) {
+} `,
+  },
+  {
+    id: 'loading-skeleton',
+    title: 'Loading Skeleton',
+    description: 'Animated shimmer skeleton for loading states',
+    category: 'ui',
+    language: 'tsx',
+    tags: ['React', 'CSS', 'Loading'],
+    preview: SkeletonDemo,
+    code: `function Skeleton({ className }: { className?: string }) {
   return (
     <div
       className= {
@@ -107,6 +103,6 @@ function CardSkeleton() {
               </div>
               </div>
   )
-} `
-	}
+} `,
+  },
 ]
