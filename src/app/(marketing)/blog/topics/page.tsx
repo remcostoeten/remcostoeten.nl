@@ -9,41 +9,44 @@ export const revalidate = 60
 export { topicsMetadata as metadata }
 
 export default function TopicsPage() {
-  const tags = getAllTags()
+	const tags = getAllTags()
 
-  return (
-    <section>
-      <h1 className="font-semibold text-2xl mb-8 tracking-tighter">Topics</h1>
+	return (
+		<section>
+			<h1 className="font-semibold text-2xl mb-8 tracking-tighter">
+				Topics
+			</h1>
 
-      <ul className="flex flex-col m-0 p-0 list-none" role="list">
-        {tags.map((tag, index) => (
-          <li key={tag.name} className="block p-0 m-0">
-            <Link
-              href={`/blog/topics/${tag.name.toLowerCase()}`}
-              className="group relative block animate-stagger overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                aria-hidden="true"
-              />
+			<ul className="flex flex-col m-0 p-0 list-none" role="list">
+				{tags.map((tag, index) => (
+					<li key={tag.name} className="block p-0 m-0">
+						<Link
+							href={`/blog/topics/${tag.name.toLowerCase()}`}
+							className="group relative block animate-stagger overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+							style={{ animationDelay: `${index * 50}ms` }}
+						>
+							<div
+								className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+								aria-hidden="true"
+							/>
 
-              <article className="relative flex items-center justify-between gap-4 py-6 px-4 border-b border-neutral-800/60 z-10">
-                <div className="flex items-center gap-3">
-                  <Hash className="w-4 h-4 text-neutral-600 group-hover:text-lime-400 transition-colors" />
-                  <span className="font-medium text-neutral-100 group-hover:text-lime-400 transition-colors">
-                    {tag.name}
-                  </span>
-                </div>
+							<article className="relative flex items-center justify-between gap-4 py-6 px-4 border-b border-neutral-800/60 z-10">
+								<div className="flex items-center gap-3">
+									<Hash className="w-4 h-4 text-neutral-600 group-hover:text-lime-400 transition-colors" />
+									<span className="font-medium text-neutral-100 group-hover:text-lime-400 transition-colors">
+										{tag.name}
+									</span>
+								</div>
 
-                <span className="text-sm text-neutral-500 tabular-nums">
-                  {tag.count} {tag.count === 1 ? 'post' : 'posts'}
-                </span>
-              </article>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
+								<span className="text-sm text-neutral-500 tabular-nums">
+									{tag.count}{' '}
+									{tag.count === 1 ? 'post' : 'posts'}
+								</span>
+							</article>
+						</Link>
+					</li>
+				))}
+			</ul>
+		</section>
+	)
 }

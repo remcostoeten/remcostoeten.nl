@@ -1,4 +1,4 @@
-```
+````
 ---
 title: 'Building a draft system for markdown files in Next.js'
 publishedAt: '2025-12-16'
@@ -25,21 +25,26 @@ The first step was updating my MDX parser to recognize a `draft` field.
 case 'draft':
   metadata.draft = value.toLowerCase() === 'true'
   break
-```
+````
 
 I also split my blog fetching logic into `getBlogPosts()` (public) and `getAllBlogPosts()` (admin/internal).
 
 ## Step 2: The Security Layer
+
 I created a simple server-only utility to check for admin status. Since I'm using the `better-auth` admin plugin, it's as simple as:
 
 ```typescript title="src/lib/auth.ts"
 export async function isAdmin() {
-    const session = await auth.api.getSession({ headers: await headers() })
-    return session?.user?.role === 'admin' || session?.user?.email === process.env.MY_EMAIL
+	const session = await auth.api.getSession({ headers: await headers() })
+	return (
+		session?.user?.role === 'admin' ||
+		session?.user?.email === process.env.MY_EMAIL
+	)
 }
 ```
 
 ## Step 3: Protecting the Routes
+
 In my dynamic blog route `[...slug]`, I added a check before rendering. If the post is a draft and the user isn't an admin, they get a `404`.
 
 I define the admin variable `const isAdmin = await isAdmin()` and use that to simply conditionally fetch either all posts or only public posts.
@@ -47,26 +52,31 @@ I define the admin variable `const isAdmin = await isAdmin()` and use that to si
 ```typescript title="src/app/blog/[slug]/page.tsx"
 let allPosts
 if (isAdmin) {
-  allPosts = getAllBlogPosts()
+	allPosts = getAllBlogPosts()
 } else {
-  allPosts = getBlogPosts()
+	allPosts = getBlogPosts()
 }
 ```
+
 Or if you prefer the ternary operator:
+
 ```typescript title="src/app/blog/[slug]/page.tsx"
 const allPosts = isAdmin ? getAllBlogPosts() : getBlogPosts()
 ```
+
 And then it's simply a matter of checking if the post exists and if it's a draft.
+
 ```typescript title="src/app/blog/[slug]/page.tsx"
-const post = allPosts.find((p) => p.slug === slug)
+const post = allPosts.find(p => p.slug === slug)
 
 if (!post || (post.metadata.draft && !isAdmin)) {
-  notFound()
+	notFound()
 }
 ```
 
 ### End result
-Added [a banner](https://github.com/remcostoeten/remcostoeten.nl/blob/master/src/components/blog/posts-client.tsx) indicating the post is a draft and a "DRAFT" badge in the listing which only shows up when logged in. 
+
+Added [a banner](https://github.com/remcostoeten/remcostoeten.nl/blob/master/src/components/blog/posts-client.tsx) indicating the post is a draft and a "DRAFT" badge in the listing which only shows up when logged in.
 
 ![Draft system implementation](/images/draft.webp)
 

@@ -10,107 +10,126 @@ import { getDateParts, readMinutes } from '@/lib/blog-format'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 
 type BlogPost = {
-  metadata: {
-    title: string
-    publishedAt: string
-    summary: string
-    categories?: string[]
-    tags?: string[]
-    topics?: string[]
-  }
-  slug: string
+	metadata: {
+		title: string
+		publishedAt: string
+		summary: string
+		categories?: string[]
+		tags?: string[]
+		topics?: string[]
+	}
+	slug: string
 }
 
 type Props = {
-  publishedAt: string
-  tags?: string[]
-  title: string
-  summary: string
-  readTime: string
-  slug: string
-  uniqueViews?: number
-  totalViews?: number
+	publishedAt: string
+	tags?: string[]
+	title: string
+	summary: string
+	readTime: string
+	slug: string
+	uniqueViews?: number
+	totalViews?: number
 }
 
 export function BlogPostClient({
-  publishedAt,
-  tags,
-  title,
-  summary,
-  readTime,
-  slug,
-  uniqueViews = 0,
-  totalViews = 0
+	publishedAt,
+	tags,
+	title,
+	summary,
+	readTime,
+	slug,
+	uniqueViews = 0,
+	totalViews = 0
 }: Props) {
-  const router = useRouter()
+	const router = useRouter()
 
-  const dateParts = getDateParts(publishedAt)
-  const readTimeMinutes = readMinutes(readTime)
-  const dateDuration = 500
+	const dateParts = getDateParts(publishedAt)
+	const readTimeMinutes = readMinutes(readTime)
+	const dateDuration = 500
 
-  const allTags = tags || []
+	const allTags = tags || []
 
-  useEffect(() => {
-    if (slug) {
-      trackBlogView(slug)
-    }
-  }, [slug])
+	useEffect(() => {
+		if (slug) {
+			trackBlogView(slug)
+		}
+	}, [slug])
 
-  return (
-    <header>
-      {/* Navigation Row */}
-      <div className="flex items-center justify-between mb-5">
-        <Breadcrumbs />
-        
-        <button
-          onClick={() => router.back()}
-          className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
-        >
-          <ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
-          back
-        </button>
-      </div>
+	return (
+		<header>
+			{/* Navigation Row */}
+			<div className="flex items-center justify-between mb-5">
+				<Breadcrumbs />
 
-      {/* Title */}
-      <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground leading-snug mb-3 text-balance">
-        {title}
-      </h1>
+				<button
+					onClick={() => router.back()}
+					className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
+				>
+					<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
+					back
+				</button>
+			</div>
 
-      {/* Metadata Row */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400 mb-4">
-        <time className="flex items-center gap-1 tabular-nums">
-          <AnimatedNumber value={dateParts.day} duration={dateDuration} initialProgress={0} />
-          <span>{dateParts.month}</span>
-          <AnimatedNumber value={dateParts.year} duration={dateDuration} initialProgress={0} />
-        </time>
+			{/* Title */}
+			<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground leading-snug mb-3 text-balance">
+				{title}
+			</h1>
 
-        <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+			{/* Metadata Row */}
+			<div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+				<time className="flex items-center gap-1 tabular-nums">
+					<AnimatedNumber
+						value={dateParts.day}
+						duration={dateDuration}
+						initialProgress={0}
+					/>
+					<span>{dateParts.month}</span>
+					<AnimatedNumber
+						value={dateParts.year}
+						duration={dateDuration}
+						initialProgress={0}
+					/>
+				</time>
 
-        <span className="flex items-center gap-1">
-          <AnimatedNumber value={readTimeMinutes} duration={dateDuration} initialProgress={0} />
-          <span>min read</span>
-        </span>
+				<span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
 
-        {uniqueViews > 0 && (
-          <>
-            <span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
-            <span className="flex items-center gap-1.5" title={`${totalViews} total views`}>
-              <Eye className="w-3.5 h-3.5" />
-              <AnimatedNumber value={uniqueViews} duration={500} initialProgress={0} />
-              <span>views</span>
-            </span>
-          </>
-        )}
-      </div>
+				<span className="flex items-center gap-1">
+					<AnimatedNumber
+						value={readTimeMinutes}
+						duration={dateDuration}
+						initialProgress={0}
+					/>
+					<span>min read</span>
+				</span>
 
-      {/* Tags */}
-      {allTags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {allTags.map((tag) => (
-            <Link
-              key={tag}
-              href={`/blog/tags/${tag.toLowerCase()}`}
-              className="inline-flex items-center px-3 py-1.5 text-xs font-medium
+				{uniqueViews > 0 && (
+					<>
+						<span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+						<span
+							className="flex items-center gap-1.5"
+							title={`${totalViews} total views`}
+						>
+							<Eye className="w-3.5 h-3.5" />
+							<AnimatedNumber
+								value={uniqueViews}
+								duration={500}
+								initialProgress={0}
+							/>
+							<span>views</span>
+						</span>
+					</>
+				)}
+			</div>
+
+			{/* Tags */}
+			{allTags.length > 0 && (
+				<div className="flex flex-wrap gap-2">
+					{allTags.map(tag => (
+						<Link
+							key={tag}
+							href={`/blog/tags/${tag.toLowerCase()}`}
+							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
                 bg-neutral-50 dark:bg-neutral-900/60
                 text-neutral-600 dark:text-neutral-400
                 border border-neutral-200 dark:border-neutral-800
@@ -118,71 +137,71 @@ export function BlogPostClient({
                 hover:border-neutral-300 dark:hover:border-neutral-700
                 hover:text-neutral-900 dark:hover:text-neutral-200
                 rounded-md transition-all duration-200"
-            >
-              {tag}
-            </Link>
-          ))}
-        </div>
-      )}
-    </header>
-  )
+						>
+							{tag}
+						</Link>
+					))}
+				</div>
+			)}
+		</header>
+	)
 }
 
 interface PostNavigationProps {
-  prevPost: BlogPost | null
-  nextPost: BlogPost | null
+	prevPost: BlogPost | null
+	nextPost: BlogPost | null
 }
 
 export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
-  if (!prevPost && !nextPost) return null
+	if (!prevPost && !nextPost) return null
 
-  return (
-    <nav className="mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {prevPost ? (
-          <Link
-            href={`/blog/${prevPost.slug}`}
-            className="group flex flex-col p-4 rounded-xl 
+	return (
+		<nav className="mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800">
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				{prevPost ? (
+					<Link
+						href={`/blog/${prevPost.slug}`}
+						className="group flex flex-col p-4 rounded-xl 
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800
               hover:border-neutral-300 dark:hover:border-neutral-700
               hover:bg-neutral-100 dark:hover:bg-neutral-800/50
               transition-all duration-200"
-          >
-            <span className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
-              <ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
-              Previous
-            </span>
-            <span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
-              {prevPost.metadata.title}
-            </span>
-          </Link>
-        ) : (
-          <div />
-        )}
+					>
+						<span className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+							<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
+							Previous
+						</span>
+						<span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
+							{prevPost.metadata.title}
+						</span>
+					</Link>
+				) : (
+					<div />
+				)}
 
-        {nextPost ? (
-          <Link
-            href={`/blog/${nextPost.slug}`}
-            className="group flex flex-col p-4 rounded-xl text-right
+				{nextPost ? (
+					<Link
+						href={`/blog/${nextPost.slug}`}
+						className="group flex flex-col p-4 rounded-xl text-right
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800
               hover:border-neutral-300 dark:hover:border-neutral-700
               hover:bg-neutral-100 dark:hover:bg-neutral-800/50
               transition-all duration-200"
-          >
-            <span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground mb-2">
-              Next
-              <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
-            </span>
-            <span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
-              {nextPost.metadata.title}
-            </span>
-          </Link>
-        ) : (
-          <div />
-        )}
-      </div>
-    </nav>
-  )
+					>
+						<span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground mb-2">
+							Next
+							<ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+						</span>
+						<span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
+							{nextPost.metadata.title}
+						</span>
+					</Link>
+				) : (
+					<div />
+				)}
+			</div>
+		</nav>
+	)
 }

@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+build
+dist
+.cache
+.vercel
+.turbo
+*.lock
+package-lock.json
+bun.lock
+yarn.lock
+pnpm-lock.yaml

@@ -25,14 +25,9 @@ import { DevWidget } from '@/tools/dev-menu'
 import { useSession } from '@/lib/auth-client'
 
 function MyComponent() {
-  const { data: session } = useSession()
+	const { data: session } = useSession()
 
-  return (
-    <DevWidget
-      session={session}
-      onSignOut={signOut}
-    />
-  )
+	return <DevWidget session={session} onSignOut={signOut} />
 }
 ```
 
@@ -42,13 +37,13 @@ function MyComponent() {
 import { DevWidget } from '@/tools/dev-menu'
 
 function MyComponent() {
-  return (
-    <DevWidget
-      showAuth={false}
-      showSystemInfo={false}
-      routes={['/', '/about', '/contact']}
-    />
-  )
+	return (
+		<DevWidget
+			showAuth={false}
+			showSystemInfo={false}
+			routes={['/', '/about', '/contact']}
+		/>
+	)
 }
 ```
 
@@ -56,11 +51,11 @@ function MyComponent() {
 
 ```tsx
 <DevWidget
-  showAuth={false}
-  showRoutes={true}
-  showSystemInfo={false}
-  showSettings={false}
-  routes={['/page1', '/page2', '/page3']}
+	showAuth={false}
+	showRoutes={true}
+	showSystemInfo={false}
+	showSettings={false}
+	routes={['/page1', '/page2', '/page3']}
 />
 ```
 
@@ -68,48 +63,47 @@ function MyComponent() {
 
 ```typescript
 interface DevWidgetProps {
-  session?: Session | null      // Auth session (optional)
-  onSignOut?: () => void       // Sign out handler (optional)
-  showAuth?: boolean           // Show auth section (default: true)
-  showRoutes?: boolean          // Show routes section (default: true)
-  showSystemInfo?: boolean      // Show system info (default: true)
-  showSettings?: boolean        // Show settings popover (default: true)
-  routes?: string[]           // List of routes to display
-  customTitle?: string        // Custom widget title
-  isAdmin?: boolean          // Force admin mode (default: false)
+	session?: Session | null // Auth session (optional)
+	onSignOut?: () => void // Sign out handler (optional)
+	showAuth?: boolean // Show auth section (default: true)
+	showRoutes?: boolean // Show routes section (default: true)
+	showSystemInfo?: boolean // Show system info (default: true)
+	showSettings?: boolean // Show settings popover (default: true)
+	routes?: string[] // List of routes to display
+	customTitle?: string // Custom widget title
+	isAdmin?: boolean // Force admin mode (default: false)
 }
 ```
 
 ## Section Visibility Examples
 
 ### Project with Auth
+
 ```tsx
 <DevWidget
-  session={session}
-  onSignOut={signOut}
-  showAuth={true}
-  showRoutes={true}
-  showSystemInfo={true}
+	session={session}
+	onSignOut={signOut}
+	showAuth={true}
+	showRoutes={true}
+	showSystemInfo={true}
 />
 ```
 
 ### Project without Auth (e.g., public site)
+
 ```tsx
-<DevWidget
-  showAuth={false}
-  showRoutes={true}
-  showSystemInfo={true}
-/>
+<DevWidget showAuth={false} showRoutes={true} showSystemInfo={true} />
 ```
 
 ### Minimal (only routes)
+
 ```tsx
 <DevWidget
-  showAuth={false}
-  showRoutes={true}
-  showSystemInfo={false}
-  showSettings={false}
-  routes={['/', '/about', '/contact']}
+	showAuth={false}
+	showRoutes={true}
+	showSystemInfo={false}
+	showSettings={false}
+	routes={['/', '/about', '/contact']}
 />
 ```
 
@@ -171,6 +165,7 @@ Each section can be toggled independently:
 ## Styling
 
 The widget uses:
+
 - Tailwind CSS classes
 - Framer Motion for animations
 - Custom scrollbar styling (included in component)

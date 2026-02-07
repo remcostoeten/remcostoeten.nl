@@ -1,14 +1,14 @@
 ---
-title: "Auditing Performance: Lessons from a Production Build"
-date: "2025-12-31"
+title: 'Auditing Performance: Lessons from a Production Build'
+date: '2025-12-31'
 description: "A deep dive into how I audited my portfolio's performance, what metrics like LCP and TBT really mean, and the trade-offs of building a rich, personal site."
-tags: ["Engineering", "Next.js", "Performance"]
+tags: ['Engineering', 'Next.js', 'Performance']
 ---
 
-The reason I am writing this is because like most, this part of front-end is often neglected. I wanted to dive into how blocking threads and certain code will affect loadtimes, and what metrics like LCP and TBT really mean. 
+The reason I am writing this is because like most, this part of front-end is often neglected. I wanted to dive into how blocking threads and certain code will affect loadtimes, and what metrics like LCP and TBT really mean.
 
-There is a lot more to performance than a lighthouse score. And for me personally I find a good UX with a snappy feeling site more important than having a 100/100 score but losing some personallity traits that make the site feel mine. That being said, I managed to get rid of some huge blockers and bring the score 
-from 40~ to 90~/100. 
+There is a lot more to performance than a lighthouse score. And for me personally I find a good UX with a snappy feeling site more important than having a 100/100 score but losing some personallity traits that make the site feel mine. That being said, I managed to get rid of some huge blockers and bring the score
+from 40~ to 90~/100.
 
 In the entierty of the process I used this script which can be ran simply via `./scripts/measure-vitals.sh <url>`. If you're going to test locally make sure to run your production build e.g. `npm run build && bun run preview | preview *new tab* ./scripts/measure-vitals.sh http://localhost:$$$$` and then run the script.
 
@@ -105,14 +105,14 @@ My local build looked fine, but the production deployment on Vercel told a diffe
 
 But the **deployed production build** on Vercel told a different story:
 
-| Metric | Measured Value | Status |
-| :--- | :--- | :--- |
-| **LCP** (Largest Contentful Paint) | 3.95s | Needs Improvement |
-| **FCP** (First Contentful Paint) | 2.85s | Needs Improvement |
-| **TBT** (Total Blocking Time) | 23.19s | Critical |
-| **CLS** (Cumulative Layout Shift) | 0.015 | Good |
-| **TTI** (Time to Interactive) | 33.42s | Critical |
-| **Speed Index** | 14.03s | Critical |
+| Metric                             | Measured Value | Status            |
+| :--------------------------------- | :------------- | :---------------- |
+| **LCP** (Largest Contentful Paint) | 3.95s          | Needs Improvement |
+| **FCP** (First Contentful Paint)   | 2.85s          | Needs Improvement |
+| **TBT** (Total Blocking Time)      | 23.19s         | Critical          |
+| **CLS** (Cumulative Layout Shift)  | 0.015          | Good              |
+| **TTI** (Time to Interactive)      | 33.42s         | Critical          |
+| **Speed Index**                    | 14.03s         | Critical          |
 
 **Performance Score: 43/100.** I had a serious main-thread blocking issue.
 
@@ -212,25 +212,28 @@ The `ActivitySection` was massive, containing over 700 lines with heavy `framer-
 
 ```tsx title="dynamic-import.tsx"
 const ActivitySection = nextDynamic(
-  () => import('@/components/landing/activity/section').then(m => ({ default: m.ActivitySection })),
-  { loading: () => <ActivitySkeleton /> }
-);
+	() =>
+		import('@/components/landing/activity/section').then(m => ({
+			default: m.ActivitySection
+		})),
+	{ loading: () => <ActivitySkeleton /> }
+)
 ```
 
 ### 2. Unblocking the Main Thread (Deferred Execution)
 
-The 23s TBT was caused by a `useEffect` hook that started polling the Spotify API *immediately* on hydration, plus a 200ms progress bar interval.
+The 23s TBT was caused by a `useEffect` hook that started polling the Spotify API _immediately_ on hydration, plus a 200ms progress bar interval.
 
 **The Fix:** Wrap the start logic in a 3-second timeout, giving the browser time to finish hydration first.
 
 ```typescript title="deferred-execution.ts"
 useEffect(() => {
-  // Wait 3s to let hydration finish
-  const timer = setTimeout(() => {
-    startHeavyPolling();
-  }, 3000);
-  return () => clearTimeout(timer);
-}, []);
+	// Wait 3s to let hydration finish
+	const timer = setTimeout(() => {
+		startHeavyPolling()
+	}, 3000)
+	return () => clearTimeout(timer)
+}, [])
 ```
 
 ### 3. Caching Strategy (ISR)
@@ -247,14 +250,14 @@ export const revalidate = 60 // regenerate at most once per minute
 
 Optimizations often have trade-offs.
 
-| Metric  | Post-Fix Value | Status                    |
-| :------ | :------------- | :------------------------ |
-| **TBT** | 14.13s         | Improved                  |
+| Metric  | Post-Fix Value | Status                     |
+| :------ | :------------- | :------------------------- |
+| **TBT** | 14.13s         | Improved                   |
 | **CLS** | **0.632**      | **CRITICAL REGRESSION** 🔴 |
 
 We traded one problem for another. Lazy loading components with `loading: () => null` caused massive layout shifts (CLS) when content loaded.
 
-**The Fix:** Precise skeletons. I built skeletons that matched the *exact* dimensions of the loaded components (e.g., specific graph heights and card grids). Precision is key to avoiding CLS.
+**The Fix:** Precise skeletons. I built skeletons that matched the _exact_ dimensions of the loaded components (e.g., specific graph heights and card grids). Precision is key to avoiding CLS.
 
 ## Final Results
 
@@ -263,9 +266,9 @@ After refining skeletons and further deferring non-essential scripts:
 | Metric          | Value     | Status                     |
 | :-------------- | :-------- | :------------------------- |
 | **LCP**         | 4.57s     | Acceptable                 |
-| **CLS**         | **0.065** | **Fixed** 🟢                |
+| **CLS**         | **0.065** | **Fixed** 🟢               |
 | **TBT**         | **1.71s** | **Massive Win** (from 23s) |
-| **Speed Index** | 3.26s     | **Good** 🟢                 |
+| **Speed Index** | 3.26s     | **Good** 🟢                |
 
 **Performance Score: 41/100.** This low score is misleading.
 

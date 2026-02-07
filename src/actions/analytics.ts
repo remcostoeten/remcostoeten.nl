@@ -13,63 +13,64 @@ import { createHash } from 'crypto'
  * Uses a fingerprint of (IP + UserAgent + DailySalt) to detect uniqueness across Incognito.
  */
 export async function trackBlogView(slug: string) {
-    try {
-        const ip = await getClientIp()
-        const headersList = await headers()
-        const userAgent = headersList.get('user-agent') || 'unknown'
+	try {
+		const ip = await getClientIp()
+		const headersList = await headers()
+		const userAgent = headersList.get('user-agent') || 'unknown'
 
+		const fingerprintInput = `${ip}|${userAgent}`
+		const fingerprint = createHash('sha256')
+			.update(fingerprintInput)
+			.digest('hex')
 
-        const fingerprintInput = `${ip}|${userAgent}`
-        const fingerprint = createHash('sha256').update(fingerprintInput).digest('hex')
+		// Ensure the blog post exists in the database
+		await db
+			.insert(blogPosts)
+			.values({ slug })
+			.onConflictDoNothing()
+			.execute()
 
-        // Ensure the blog post exists in the database
-        await db.insert(blogPosts)
-            .values({ slug })
-            .onConflictDoNothing()
-            .execute()
+		const existingView = await db.query.blogViews.findFirst({
+			where: and(
+				eq(blogViews.slug, slug),
+				eq(blogViews.fingerprint, fingerprint)
+			)
+		})
 
-        const existingView = await db.query.blogViews.findFirst({
-            where: and(
-                eq(blogViews.slug, slug),
-                eq(blogViews.fingerprint, fingerprint)
-            ),
-        })
+		if (existingView) {
+			await db
+				.update(blogPosts)
+				.set({ totalViews: sql`${blogPosts.totalViews} + 1` })
+				.where(eq(blogPosts.slug, slug))
 
-        if (existingView) {
+			return { unique: false }
+		}
 
-            await db.update(blogPosts)
-                .set({ totalViews: sql`${blogPosts.totalViews} + 1` })
-                .where(eq(blogPosts.slug, slug))
+		const geoInfo = await fetchGeoInfo(ip)
 
-            return { unique: false }
-        }
+		await db.insert(blogViews).values({
+			slug,
+			fingerprint,
+			ipAddress: ip,
+			geoCountry: geoInfo?.country,
+			geoCity: geoInfo?.city,
+			geoRegion: geoInfo?.region,
+			geoLoc: geoInfo?.loc,
+			geoOrg: geoInfo?.org,
+			geoTimezone: geoInfo?.timezone
+		})
 
+		await db
+			.update(blogPosts)
+			.set({
+				uniqueViews: sql`${blogPosts.uniqueViews} + 1`,
+				totalViews: sql`${blogPosts.totalViews} + 1`
+			})
+			.where(eq(blogPosts.slug, slug))
 
-        const geoInfo = await fetchGeoInfo(ip)
-
-        await db.insert(blogViews).values({
-            slug,
-            fingerprint,
-            ipAddress: ip,
-            geoCountry: geoInfo?.country,
-            geoCity: geoInfo?.city,
-            geoRegion: geoInfo?.region,
-            geoLoc: geoInfo?.loc,
-            geoOrg: geoInfo?.org,
-            geoTimezone: geoInfo?.timezone,
-        })
-
-        await db.update(blogPosts)
-            .set({
-                uniqueViews: sql`${blogPosts.uniqueViews} + 1`,
-                totalViews: sql`${blogPosts.totalViews} + 1`
-            })
-            .where(eq(blogPosts.slug, slug))
-
-        return { unique: true }
-
-    } catch (error) {
-        console.error('Failed to track blog view:', error)
-        return { success: false }
-    }
+		return { unique: true }
+	} catch (error) {
+		console.error('Failed to track blog view:', error)
+		return { success: false }
+	}
 }
