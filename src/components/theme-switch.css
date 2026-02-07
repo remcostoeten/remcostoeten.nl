@@ -74,7 +74,7 @@
 }
 
 .theme-switch__container::before {
-	content: "";
+	content: '';
 	position: absolute;
 	z-index: 1;
 	inset: 0;
@@ -239,8 +239,8 @@
 	+ .theme-switch__container
 	.theme-switch__circle-container:hover {
 	left: calc(
-		100% - var(--circle-container-offset) - var(--circle-container-diameter) -
-			0.187em
+		100% - var(--circle-container-offset) -
+			var(--circle-container-diameter) - 0.187em
 	);
 }
 
@@ -270,7 +270,7 @@
 }
 
 .theme-switch__sun-moon-container::after {
-	content: "";
+	content: '';
 	position: absolute;
 	inset: -5px;
 	background: radial-gradient(

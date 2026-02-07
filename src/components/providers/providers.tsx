@@ -14,50 +14,62 @@ import { signOut } from '@/lib/auth-client'
 
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
 
-const Analytics = lazy(() => import('@vercel/analytics/react').then(m => ({ default: m.Analytics })))
-const SpeedInsights = lazy(() => import('@vercel/speed-insights/next').then(m => ({ default: m.SpeedInsights })))
+const Analytics = lazy(() =>
+	import('@vercel/analytics/react').then(m => ({ default: m.Analytics }))
+)
+const SpeedInsights = lazy(() =>
+	import('@vercel/speed-insights/next').then(m => ({
+		default: m.SpeedInsights
+	}))
+)
 
 type TProps = {
-    children: ReactNode
+	children: ReactNode
 }
 
 function DevWidgetWrapper() {
-    const { data: session } = useSession()
+	const { data: session } = useSession()
 
-    return (
-        <DevWidget
-            session={session}
-            onSignOut={signOut}
-            showAuth={true}
-            showRoutes={true}
-            showSystemInfo={true}
-            showSettings={true}
-        />
-    )
+	return (
+		<DevWidget
+			session={session}
+			onSignOut={signOut}
+			showAuth={true}
+			showRoutes={true}
+			showSystemInfo={true}
+			showSettings={true}
+		/>
+	)
 }
 
 export function AppProviders({ children }: TProps) {
-    return (
-        <PostHogProvider>
-            <CustomQueryClientProvider>
-                <BlogFilterProvider>
-                    <VimAuthProvider>
-                        <StaggerProvider config={{ baseDelay: 80, initialDelay: 0, strategy: 'mount-order' }}>
-                            <ThemeSwitch />
-                            {children}
-                            <Toaster />
+	return (
+		<PostHogProvider>
+			<CustomQueryClientProvider>
+				<BlogFilterProvider>
+					<VimAuthProvider>
+						<StaggerProvider
+							config={{
+								baseDelay: 80,
+								initialDelay: 0,
+								strategy: 'mount-order'
+							}}
+						>
+							<ThemeSwitch />
+							{children}
+							<Toaster />
 
-                            <Suspense fallback={null}>
-                                <Analytics />
-                            </Suspense>
-                            <Suspense fallback={null}>
-                                <SpeedInsights />
-                            </Suspense>
-                            <DevWidgetWrapper />
-                        </StaggerProvider>
-                    </VimAuthProvider>
-                </BlogFilterProvider>
-            </CustomQueryClientProvider>
-        </PostHogProvider>
-    )
+							<Suspense fallback={null}>
+								<Analytics />
+							</Suspense>
+							<Suspense fallback={null}>
+								<SpeedInsights />
+							</Suspense>
+							<DevWidgetWrapper />
+						</StaggerProvider>
+					</VimAuthProvider>
+				</BlogFilterProvider>
+			</CustomQueryClientProvider>
+		</PostHogProvider>
+	)
 }

@@ -1,8 +1,8 @@
-'use client';
+'use client'
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react'
 
-type VimCommand = 'signin' | 'signout' | null;
+type VimCommand = 'signin' | 'signout' | null
 
 /**
  * Hook that listens for Vim-style commands typed anywhere on the page.
@@ -11,89 +11,103 @@ type VimCommand = 'signin' | 'signout' | null;
  * - :signout, :sign out, : sign out (triggers sign-out)
  */
 export function useVimCommand() {
-    const [command, setCommand] = useState<VimCommand>(null);
-    const [buffer, setBuffer] = useState('');
+	const [command, setCommand] = useState<VimCommand>(null)
+	const [buffer, setBuffer] = useState('')
 
-    const clearCommand = useCallback(() => {
-        setCommand(null);
-    }, []);
+	const clearCommand = useCallback(() => {
+		setCommand(null)
+	}, [])
 
-    useEffect(() => {
-        let timeout: NodeJS.Timeout;
+	useEffect(() => {
+		let timeout: NodeJS.Timeout
 
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (
-                e.target instanceof HTMLInputElement ||
-                e.target instanceof HTMLTextAreaElement ||
-                (e.target as HTMLElement)?.isContentEditable
-            ) {
-                return;
-            }
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (
+				e.target instanceof HTMLInputElement ||
+				e.target instanceof HTMLTextAreaElement ||
+				(e.target as HTMLElement)?.isContentEditable
+			) {
+				return
+			}
 
-            if (e.key === 'Escape') {
-                if (buffer) {
-                    console.log('[vim-cmd] Buffer cleared (Escape pressed)');
-                    setBuffer('');
-                }
-                return;
-            }
+			if (e.key === 'Escape') {
+				if (buffer) {
+					console.log('[vim-cmd] Buffer cleared (Escape pressed)')
+					setBuffer('')
+				}
+				return
+			}
 
-            if (!buffer && e.key !== ':') {
-                return;
-            }
+			if (!buffer && e.key !== ':') {
+				return
+			}
 
-            if (e.key.length > 1 && e.key !== 'Escape' && e.key !== 'Backspace') {
-                return;
-            }
+			if (
+				e.key.length > 1 &&
+				e.key !== 'Escape' &&
+				e.key !== 'Backspace'
+			) {
+				return
+			}
 
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                if (buffer) {
-                    console.log('[vim-cmd] Buffer cleared (timeout)');
-                    setBuffer('');
-                }
-            }, 2000);
+			clearTimeout(timeout)
+			timeout = setTimeout(() => {
+				if (buffer) {
+					console.log('[vim-cmd] Buffer cleared (timeout)')
+					setBuffer('')
+				}
+			}, 2000)
 
-            // Build buffer
-            const char = e.key.toLowerCase();
-            const newBuffer = buffer + char;
-            setBuffer(newBuffer);
+			// Build buffer
+			const char = e.key.toLowerCase()
+			const newBuffer = buffer + char
+			setBuffer(newBuffer)
 
-            // ONLY log if we're in command mode (buffer exists)
-            console.log(`[vim-cmd] Sequence: "${newBuffer}"`);
+			// ONLY log if we're in command mode (buffer exists)
+			console.log(`[vim-cmd] Sequence: "${newBuffer}"`)
 
-            // Normalize: remove spaces for matching
-            const normalized = newBuffer.replace(/\s+/g, '');
+			// Normalize: remove spaces for matching
+			const normalized = newBuffer.replace(/\s+/g, '')
 
-            // Check for sign-in patterns: :signin, :sign in, :login
-            if (normalized.includes(':signin') || normalized.includes(':login')) {
-                console.log('[vim-cmd] ✓ SUCCESS: :signin/:login command detected');
-                setCommand('signin');
-                setBuffer('');
-                return;
-            }
+			// Check for sign-in patterns: :signin, :sign in, :login
+			if (
+				normalized.includes(':signin') ||
+				normalized.includes(':login')
+			) {
+				console.log(
+					'[vim-cmd] ✓ SUCCESS: :signin/:login command detected'
+				)
+				setCommand('signin')
+				setBuffer('')
+				return
+			}
 
-            // Check for sign-out patterns: :signout, :sign out, :logout
-            if (normalized.includes(':signout') || normalized.includes(':logout')) {
-                console.log('[vim-cmd] ✓ SUCCESS: :signout/:logout command detected');
-                setCommand('signout');
-                setBuffer('');
-                return;
-            }
+			// Check for sign-out patterns: :signout, :sign out, :logout
+			if (
+				normalized.includes(':signout') ||
+				normalized.includes(':logout')
+			) {
+				console.log(
+					'[vim-cmd] ✓ SUCCESS: :signout/:logout command detected'
+				)
+				setCommand('signout')
+				setBuffer('')
+				return
+			}
 
-            // Limit buffer size - if it gets too long without a match, it's likely not a command
-            if (newBuffer.length > 20) {
-                console.log('[vim-cmd] Buffer cleared (no match)');
-                setBuffer('');
-            }
-        };
+			// Limit buffer size - if it gets too long without a match, it's likely not a command
+			if (newBuffer.length > 20) {
+				console.log('[vim-cmd] Buffer cleared (no match)')
+				setBuffer('')
+			}
+		}
 
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            clearTimeout(timeout);
-        };
-    }, [buffer]);
+		window.addEventListener('keydown', handleKeyDown)
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown)
+			clearTimeout(timeout)
+		}
+	}, [buffer])
 
-    return { command, clearCommand };
+	return { command, clearCommand }
 }

@@ -2,7 +2,7 @@
 title: '02. New year, new site & over-engineering'
 publishedAt: '2025-12-31'
 summary: 'The story of how I decided to rebuild my site yet again, and why I chose the stack I did.'
-tags: ["Engineering", "Blog", "Personal"]
+tags: ['Engineering', 'Blog', 'Personal']
 ---
 
 I've had dozens of portfolio sites. Some quite [cool](https://minimal-graphql-portfolio-git-master-remcostoeten.vercel.app/) (desktop only). [Some](https://remco-tools-git-dev-remcostoeten.vercel.app/)... not so much. Although that was my first ever. The goal was to build a minimal, dark site with the ability to share content so I can sunset my [snippets](https://snippets-remcostoeten.vercel.app/) site some day. No scope creep this time!
@@ -31,7 +31,7 @@ So I scrapped the CMS. The only reason I built it anyway was to show off, not to
 
 So I got the rough design out of the way. Took some Vercel boilerplate for markdown parsing because ain't nobody got time for that. Call it skill issue all you want.
 
-Built the design, picked an aesthetic color scheme, built myself an aesthetic codeblock and *et voila*.
+Built the design, picked an aesthetic color scheme, built myself an aesthetic codeblock and _et voila_.
 
 ## Sike
 
@@ -52,9 +52,9 @@ In the meanwhile I started building a Tauri desktop notes application. And a loc
 Hmm I query often, I always use `drizzle-orm`. I can't remember the syntax, ever. Why don't I build a simple abstraction for it that allows me to do this:
 
 ```typescript title="drizzleasy-example.ts"
-import { read } from "@remcostoeten/drizzleasy";
+import { read } from '@remcostoeten/drizzleasy'
 
-const renderPosts = read("posts");
+const renderPosts = read('posts')
 ```
 
 And so, **[drizzleasy](https://drizzleasy.vercel.app/docs)** was born.

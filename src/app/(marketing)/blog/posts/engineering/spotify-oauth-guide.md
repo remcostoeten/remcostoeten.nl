@@ -2,19 +2,20 @@
 title: 'The ultimate guide to Spotify OAuth'
 publishedAt: '2025-12-20'
 summary: 'Exhaustive guide on why Spoity OAuth is a pain in the ass and how I finally got it to work with Better Auth.'
-categories: ["Engineering", "Spotify API", "OAuth2", "Guide"]
-tags: ["Engineering", "Authentication", "OAuth2", "Guide", "Next.js"]
-slug: "spotify-oauth2-working-setup"
+categories: ['Engineering', 'Spotify API', 'OAuth2', 'Guide']
+tags: ['Engineering', 'Authentication', 'OAuth2', 'Guide', 'Next.js']
+slug: 'spotify-oauth2-working-setup'
 ---
+
 Accessing the Spotify API requires configuring OAuth2. It is not overly complex, although Spotify adds a few extra steps compared to providers like GitHub or Google. These differences cost me hours of debugging due to browser caching and redirect quirks, so I’m documenting the full workflow to save you time.
 
 ### In this guide we will
 
-- create a Spotify developer application  
-- configure redirect and callback URLs  
-- obtain the client ID and client secret  
-- implement refresh token generation  
-- use the access token to make authenticated API calls  
+- create a Spotify developer application
+- configure redirect and callback URLs
+- obtain the client ID and client secret
+- implement refresh token generation
+- use the access token to make authenticated API calls
 
 The examples use Next.js for convenience, though the concepts translate cleanly to Node.js or any backend framework. You only need minimal familiarity with Next.js to follow along.
 
@@ -24,9 +25,9 @@ The examples use Next.js for convenience, though the concepts translate cleanly 
 
 You will need a Spotify developer account to create an OAuth2 application. Navigate to the developer dashboard and click “Create app”, then fill in the fields:
 
-- **Name**: any label for your integration  
-- **Description**: a short explanation  
-- **Website**: optional for development  
+- **Name**: any label for your integration
+- **Description**: a short explanation
+- **Website**: optional for development
 - **Redirect URIs**: the callback endpoint in your project
 
 <NoticeWarning title="API Setup Required">
@@ -48,7 +49,7 @@ Instead register the loopback IP from:
 http://127.0.0.1:3000/api/spotify/callback
 ```
 
-*Both map to your machine, but Spotify validates them differently. `localhost` is a hostname that depends on DNS resolution. `127.0.0.1` is an explicit IP address and always resolves to the local interface, which is why Spotify accepts it. Make sure your OAuth redirect in your code matches exactly what you register in the developer dashboard.*
+_Both map to your machine, but Spotify validates them differently. `localhost` is a hostname that depends on DNS resolution. `127.0.0.1` is an explicit IP address and always resolves to the local interface, which is why Spotify accepts it. Make sure your OAuth redirect in your code matches exactly what you register in the developer dashboard._
 
 Last question is: Which API/SDKs are you planning to use? Fill in your use case (most likely web) and click "Save". After having pressed save you'll see your client ID, and secret if you press "View client secret". Copy these, and add to your `.env`or `.env.local` file like so:
 
@@ -74,7 +75,7 @@ Use the interactive form below to build your environment variables. Paste your c
 
 ---
 
-*If your API calls for different variable names than these two, obviously change those.*
+_If your API calls for different variable names than these two, obviously change those._
 Next we will configure the authorization code flow, exchanging the temporary code for both an access token and a refresh token.
 
 ### API Routes
@@ -82,10 +83,12 @@ Next we will configure the authorization code flow, exchanging the temporary cod
 Now you'll have to implement the API route which you registered in the developer dashboard. Like I mentioned this implementation is following Next.js but you should just register an api in your desired framework.
 
 Create the api route
+
 ```bash title="Terminal"
 touch src/app/api/spotify/callback/route.ts
 ## or app/api/spotify/callback/route.ts if no src dir
 ```
+
 And insert your improved GET request handler:
 
 <NoticeInfo title="Improvements made">
@@ -103,10 +106,10 @@ export const dynamic = 'force-dynamic';
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com';
 
 export async function GET(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const code = searchParams.get('code');
-    const error = searchParams.get('error');
+try {
+const { searchParams } = new URL(request.url);
+const code = searchParams.get('code');
+const error = searchParams.get('error');
 
     if (error) {
       return NextResponse.redirect(new URL('/?error=' + error, request.url));
@@ -153,12 +156,14 @@ export async function GET(request: NextRequest) {
     redirectUrl.searchParams.set('access_token', tokenData.access_token);
 
     return NextResponse.redirect(redirectUrl);
-  } catch (error) {
-    console.error('Error in Spotify callback:', error);
-    return NextResponse.redirect(new URL('/?error=unknown_error', request.url));
-  }
+
+} catch (error) {
+console.error('Error in Spotify callback:', error);
+return NextResponse.redirect(new URL('/?error=unknown_error', request.url));
 }
-```
+}
+
+````
 
 ---
 
@@ -190,7 +195,7 @@ async function fetchSpotifyData(accessToken: string) {
 
   return await response.json();
 }
-```
+````
 
 ### Refreshing the Access Token
 
@@ -198,55 +203,66 @@ Access tokens expire after 1 hour, so you'll need to refresh them using the refr
 
 ```typescript title="src/app/api/spotify/refresh/route.ts"
 export async function POST(request: NextRequest) {
-  try {
-    const { refresh_token } = await request.json();
+	try {
+		const { refresh_token } = await request.json()
 
-    if (!refresh_token) {
-      return NextResponse.json({ error: 'Refresh token required' }, { status: 400 });
-    }
+		if (!refresh_token) {
+			return NextResponse.json(
+				{ error: 'Refresh token required' },
+				{ status: 400 }
+			)
+		}
 
-    const clientId = process.env.SPOTIFY_CLIENT_ID;
-    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+		const clientId = process.env.SPOTIFY_CLIENT_ID
+		const clientSecret = process.env.SPOTIFY_CLIENT_SECRET
 
-    if (!clientId || !clientSecret) {
-      return NextResponse.json({ error: 'Missing credentials' }, { status: 500 });
-    }
+		if (!clientId || !clientSecret) {
+			return NextResponse.json(
+				{ error: 'Missing credentials' },
+				{ status: 500 }
+			)
+		}
 
-    const authString = `${clientId}:${clientSecret}`;
-    const base64Auth = Buffer.from(authString).toString('base64');
+		const authString = `${clientId}:${clientSecret}`
+		const base64Auth = Buffer.from(authString).toString('base64')
 
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': `Basic ${base64Auth}`
-      },
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        refresh_token
-      })
-    });
+		const response = await fetch('https://accounts.spotify.com/api/token', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				Authorization: `Basic ${base64Auth}`
+			},
+			body: new URLSearchParams({
+				grant_type: 'refresh_token',
+				refresh_token
+			})
+		})
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      return NextResponse.json({
-        error: 'Token refresh failed',
-        details: errorData.error_description || errorData.error
-      }, { status: 400 });
-    }
+		if (!response.ok) {
+			const errorData = await response.json()
+			return NextResponse.json(
+				{
+					error: 'Token refresh failed',
+					details: errorData.error_description || errorData.error
+				},
+				{ status: 400 }
+			)
+		}
 
-    const data = await response.json();
+		const data = await response.json()
 
-    return NextResponse.json({
-      access_token: data.access_token,
-      expires_in: data.expires_in,
-      refresh_token: data.refresh_token || refresh_token // Spotify may return a new refresh token
-    });
-
-  } catch (error) {
-    console.error('Error refreshing token:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-  }
+		return NextResponse.json({
+			access_token: data.access_token,
+			expires_in: data.expires_in,
+			refresh_token: data.refresh_token || refresh_token // Spotify may return a new refresh token
+		})
+	} catch (error) {
+		console.error('Error refreshing token:', error)
+		return NextResponse.json(
+			{ error: 'Internal server error' },
+			{ status: 500 }
+		)
+	}
 }
 ```
 
@@ -295,52 +311,59 @@ Here's a complete example of a Spotify API service:
 
 ```typescript title="src/services/spotify.ts"
 class SpotifyAPIService {
-  private accessToken: string | null = null;
-  private tokenExpiry: number = 0;
+	private accessToken: string | null = null
+	private tokenExpiry: number = 0
 
-  async getCurrentlyPlaying(refreshToken: string): Promise<Record<string, unknown>> {
-    const accessToken = await this.getAccessToken(refreshToken);
+	async getCurrentlyPlaying(
+		refreshToken: string
+	): Promise<Record<string, unknown>> {
+		const accessToken = await this.getAccessToken(refreshToken)
 
-    const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    });
+		const response = await fetch(
+			'https://api.spotify.com/v1/me/player/currently-playing',
+			{
+				headers: {
+					Authorization: `Bearer ${accessToken}`
+				}
+			}
+		)
 
-    if (response.status === 204) {
-      return null; // No track currently playing
-    }
+		if (response.status === 204) {
+			return null // No track currently playing
+		}
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch currently playing: ${response.status}`);
-    }
+		if (!response.ok) {
+			throw new Error(
+				`Failed to fetch currently playing: ${response.status}`
+			)
+		}
 
-    return await response.json();
-  }
+		return await response.json()
+	}
 
-  private async getAccessToken(refreshToken: string): Promise<string|null> {
-    // Return cached token if still valid
-    if (this.accessToken && Date.now() < this.tokenExpiry) {
-      return this.accessToken;
-    }
+	private async getAccessToken(refreshToken: string): Promise<string | null> {
+		// Return cached token if still valid
+		if (this.accessToken && Date.now() < this.tokenExpiry) {
+			return this.accessToken
+		}
 
-    // Refresh the token
-    const response = await fetch('/api/spotify/refresh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh_token: refreshToken })
-    });
+		// Refresh the token
+		const response = await fetch('/api/spotify/refresh', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ refresh_token: refreshToken })
+		})
 
-    if (!response.ok) {
-      throw new Error('Failed to refresh access token');
-    }
+		if (!response.ok) {
+			throw new Error('Failed to refresh access token')
+		}
 
-    const data = await response.json();
-    this.accessToken = data.access_token;
-    this.tokenExpiry = Date.now() + (data.expires_in * 1000);
+		const data = await response.json()
+		this.accessToken = data.access_token
+		this.tokenExpiry = Date.now() + data.expires_in * 1000
 
-    return this.accessToken;
-  }
+		return this.accessToken
+	}
 }
 ```
 

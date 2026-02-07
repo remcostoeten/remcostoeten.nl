@@ -1,11 +1,10 @@
-
-import { GitHubEventDetail } from '@/hooks/use-github';
+import { GitHubEventDetail } from '@/hooks/use-github'
 
 type ActivityStatusBarProps = {
-  activity: GitHubEventDetail;
-};
+	activity: GitHubEventDetail
+}
 
 export function ActivityStatusBar() {
-  // TODO: Implement status bar component
-  return null;
+	// TODO: Implement status bar component
+	return null
 }

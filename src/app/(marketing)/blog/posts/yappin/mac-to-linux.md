@@ -1,13 +1,12 @@
-
 ---
-title: "Linux is the goat, my personal dotfiles"
+title: 'Linux is the goat, my personal dotfiles'
 publishedAt: '2025-12-18'
-summary: "I switched to Linux on my work machine and personal computer and have increased my productivity by a lot."
+summary: 'I switched to Linux on my work machine and personal computer and have increased my productivity by a lot.'
 categories: [Developer Experience, Engineering, Productivity]
-tags: ["Productivity", "Personal", "Engineering"]
+tags: ['Productivity', 'Personal', 'Engineering']
 ---
 
-At all my jobs, I've always been an Apple user. I've owned a **2009 MacBook**, a **2017 Pro**, an **M2 Pro**, a fully spec'd **M3 Pro**, and an **M3 Air**. The displays, battery life, and build quality are undeniable—but eventually, macOS started feeling... *sluggish*.
+At all my jobs, I've always been an Apple user. I've owned a **2009 MacBook**, a **2017 Pro**, an **M2 Pro**, a fully spec'd **M3 Pro**, and an **M3 Air**. The displays, battery life, and build quality are undeniable—but eventually, macOS started feeling... _sluggish_.
 
 Taming macOS animations, dealing with Mission Control quirks, and the lack of a proper tiling window manager made me crave something faster. The switch to Linux unlocked a level of control and immediacy I didn't know I was missing.
 
@@ -38,6 +37,7 @@ The more you use it, the smarter it becomes. It turns directory navigation into 
 </NoticeSuccess>
 
 ### How it works
+
 For example, my Skriuw project lives at:
 `/home/remco-stoeten/development/active/skriuw`
 
@@ -52,19 +52,18 @@ z sk w
 
 Boom. Zoxide narrows the match and jumps straight into `/home/remco-stoeten/development/active/skriuw/apps/web`. Even deeper paths like `packages/db/migrations` resolve instantly.
 
-
 ## Aliases and Command Chaining
 
 I am a big fan of aliases. Why type four commands when you can type one?
 
 Here are a few of my favorites:
 
-| Alias | Command | Description |
-| :--- | :--- | :--- |
+| Alias   | Command                     | Description                            |
+| :------ | :-------------------------- | :------------------------------------- |
 | `rmall` | `rm -rf node_modules .next` | Nukes dependencies and build artifacts |
-| `i` | `bun install` | Fast installs with Bun |
-| `b` | `bun build` | Production build |
-| `rs` | `next start` | Preview the production build |
+| `i`     | `bun install`               | Fast installs with Bun                 |
+| `b`     | `bun build`                 | Production build                       |
+| `rs`    | `next start`                | Preview the production build           |
 
 I often chain these together to clean, install, build, and start my app in one go:
 
@@ -78,7 +77,7 @@ Here is what that looks like in action:
 ❯ pwd
 /home/remco-stoeten/.config/dotfiles
 
-dotfiles on  master 
+dotfiles on  master
 ❯ z .nl ; rmall ; i ; b ; rs
 
 🧹 Starting cleanup...
@@ -106,10 +105,10 @@ $ next build
 
    Creating an optimized production build ...
  ✓ Compiled successfully in 8.2s
- ✓ Finished TypeScript in 7.7s    
- ✓ Collecting page data using 15 workers in 1833.0ms    
+ ✓ Finished TypeScript in 7.7s
+ ✓ Collecting page data using 15 workers in 1833.0ms
  ✓ Generating static pages using 15 workers (50/50) in 4.3s
- ✓ Finalizing page optimization in 33.2ms    
+ ✓ Finalizing page optimization in 33.2ms
 Route (app)                                                  Revalidate  Expire
 ┌ ○ /
 ├ ○ /_not-found
@@ -126,19 +125,22 @@ $ next start
    - Network:       http://192.168.1.238:3000
 
  ✓ Starting...
- ✓ Ready in 385ms                                       
+ ✓ Ready in 385ms
 ```
+
 Effectively what happened here without aliases is this:
+
 ```bash title="The manual (long) way"
 cd /home/$USER/development/active/skriuw
 cd apps/web
-rm -rf node_modules 
+rm -rf node_modules
 rm -rf .next
 *logic for checking if there is a dist or vite folder*
 bun install
 bun build
 bun run start
 ```
+
 Removing all generated files and testing a fresh build.
 
 ### Spellchecker
@@ -148,7 +150,7 @@ Another one which saves me quite some time is my [spellchecker](https://github.c
 ```bash title="Spellcheck command"
  spellcheck  "i m writing a blog ppooost about my person
 al dvlopment enviorment"
-→ Spellchecking with claude profile done            
+→ Spellchecking with claude profile done
 → Done.
 
 Corrected text:
@@ -157,9 +159,11 @@ I'm writing a blog post about my personal development environment.
 Result copied to clipboard.
 Applied 4 change(s).
 ```
+
 Under the hood it checks whether you have one of the most common AI CLI's installed (that take prompts via argument) and runs it with the text you passed to it. In this case it uses Claude (with Z.ai) but could've also used Codex, Cursor or Gemini.
 
 If curious you could test any of these scripts or the entire package by simply running my install script:
+
 ```bash title="Setup Script"
 git clone https://github.com/remcostoeten/dotfiles.git;
 cd dotfiles/setup;
