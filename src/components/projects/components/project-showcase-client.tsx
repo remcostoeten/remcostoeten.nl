@@ -74,13 +74,15 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({ visib
         />
       </div>
 
-      <button
-        onClick={() => setShowAll(!showAll)}
-        className="mt-2 text-xs text-muted-foreground transition-all duration-300 hover:text-foreground"
-        style={{ transitionTimingFunction: EASE_OUT_EXPO }}
-      >
-        {showAll ? "Show less" : `View all (${totalCount})`}
-      </button>
+      <div className="border-l border-r border-border">
+        <button
+          onClick={() => setShowAll(!showAll)}
+          className="flex w-full px-2 py-2 text-xs text-muted-foreground transition-all duration-300 hover:text-foreground sm:px-3"
+          style={{ transitionTimingFunction: EASE_OUT_EXPO }}
+        >
+          {showAll ? "Show less" : `View all (${totalCount})`}
+        </button>
+      </div>
     </section>
   )
 })
