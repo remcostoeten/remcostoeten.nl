@@ -1,120 +1,104 @@
-import { Suspense } from 'react'
-import type { IProject, TPreview } from '../types'
-import type { Project } from '@/server/db/project-schema'
-import { getProjects } from '../server/queries'
-import { enrichProjectsWithGitData } from '../server/github'
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import type { IProject, IGitMetrics } from '../types'
 import { ProjectShowcaseClient } from './project-showcase-client'
-import { ProjectCardSkeleton } from './project-card-skeleton'
-import { ProjectRowSkeleton } from './project-row-skeleton'
+import { ProjectShowcaseSkeleton } from './project-showcase-skeleton'
 
 type Props = {
 	visibleRowCount?: number
 }
 
-function mapDbProjectToIProject(dbProject: Project): IProject {
-	const preview: TPreview = dbProject.demoUrl
-		? {
-				type: 'iframe',
-				url: dbProject.demoUrl,
-				embedUrl: dbProject.demoBox ?? undefined
-			}
-		: { type: 'none' }
+type ProjectShowcaseData = {
+	featured: IProject[]
+	other: IProject[]
+}
 
-	return {
-		name: dbProject.title,
-		description: dbProject.desc,
-		additionalDescription: dbProject.additionalDesc ?? undefined,
-		type: dbProject.native ? 'desktop' : 'utility',
-		status: 'active',
-		github: dbProject.gitUrl ?? '',
-		tech: dbProject.labels,
-		preview,
-		spotlight: dbProject.featured,
-		defaultOpen: dbProject.defaultOpen,
-		showIndicatorOnScroll: dbProject.showIndicator
+type ProjectGitMetricsMap = Record<string, IGitMetrics>
+
+async function fetchProjectShowcaseData(): Promise<ProjectShowcaseData> {
+	const response = await fetch('/api/projects/showcase')
+	if (!response.ok) {
+		throw new Error('Failed to load project showcase')
 	}
+	return response.json()
 }
 
-function ShowcaseSkeleton({
-	featuredCount = 2,
-	rowCount = 6
-}: {
-	featuredCount?: number
-	rowCount?: number
-}) {
-	return (
-		<section className="w-full max-w-3xl px-3 sm:px-0">
-			<div className="flex flex-col border-l border-r border-t border-border">
-				{Array.from({ length: featuredCount }).map((_, i) => (
-					<div key={i} className="border-b border-border">
-						<ProjectCardSkeleton />
-					</div>
-				))}
-			</div>
-			<div className="relative border-l border-r border-border">
-				<div
-					className="flex flex-col bg-card overflow-hidden"
-					style={{ maxHeight: `${rowCount * 40}px` }}
-				>
-					{Array.from({ length: rowCount }).map((_, i) => (
-						<ProjectRowSkeleton key={i} />
-					))}
-				</div>
-				<div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 bg-gradient-to-t from-background to-transparent" />
-			</div>
-			<div className="mt-2 h-4 w-20 bg-muted/40 rounded animate-pulse" />
-		</section>
+async function fetchProjectGitMetrics(): Promise<ProjectGitMetricsMap> {
+	const response = await fetch('/api/projects/git-metrics')
+	if (!response.ok) {
+		throw new Error('Failed to load project git metrics')
+	}
+	return response.json()
+}
+
+export function ProjectShowcase({ visibleRowCount = 6 }: Props) {
+	const { data, isLoading } = useQuery({
+		queryKey: ['project-showcase'],
+		queryFn: fetchProjectShowcaseData,
+		staleTime: 5 * 60 * 1000,
+		gcTime: 30 * 60 * 1000,
+		retry: 1,
+		refetchOnWindowFocus: false
+	})
+
+	const [shouldLoadMetrics, setShouldLoadMetrics] = useState(false)
+
+	useEffect(() => {
+		if (!data) return
+
+		const requestIdle = window.requestIdleCallback
+		const cancelIdle = window.cancelIdleCallback
+
+		if (typeof requestIdle === 'function') {
+			const idleId = requestIdle(() => setShouldLoadMetrics(true), {
+				timeout: 2000
+			})
+			return () => cancelIdle?.(idleId)
+		}
+
+		const timeoutId = setTimeout(() => setShouldLoadMetrics(true), 300)
+		return () => clearTimeout(timeoutId)
+	}, [data])
+
+	const { data: gitMetrics } = useQuery({
+		queryKey: ['project-git-metrics'],
+		queryFn: fetchProjectGitMetrics,
+		enabled: shouldLoadMetrics,
+		staleTime: 60 * 60 * 1000,
+		gcTime: 2 * 60 * 60 * 1000,
+		retry: 0,
+		refetchOnWindowFocus: false
+	})
+
+	const featured = useMemo(
+		() =>
+			(data?.featured ?? []).map(project => ({
+				...project,
+				git: gitMetrics?.[project.name] ?? project.git
+			})),
+		[data?.featured, gitMetrics]
 	)
-}
 
-async function ProjectShowcaseAsync({
-	visibleRowCount
-}: {
-	visibleRowCount: number
-}) {
-	const dbProjects = await getProjects()
+	const other = useMemo(
+		() =>
+			(data?.other ?? []).map(project => ({
+				...project,
+				git: gitMetrics?.[project.name] ?? project.git
+			})),
+		[data?.other, gitMetrics]
+	)
 
-	const allProjects = dbProjects.map(mapDbProjectToIProject)
-	const featured = allProjects.filter(p => p.spotlight)
-	const other = allProjects.filter(p => !p.spotlight)
-
-	let enrichedFeatured = featured
-	let enrichedOther = other
-
-	try {
-		const [gitFeatured, gitOther] = await Promise.all([
-			enrichProjectsWithGitData(featured),
-			enrichProjectsWithGitData(other)
-		])
-		enrichedFeatured = gitFeatured
-		enrichedOther = gitOther
-	} catch (error) {
-		console.error(
-			'[ProjectShowcase] Git enrichment failed, using static data:',
-			error
-		)
+	if (isLoading || !data) {
+		return <ProjectShowcaseSkeleton visibleRowCount={visibleRowCount} />
 	}
 
 	return (
 		<ProjectShowcaseClient
 			visibleRowCount={visibleRowCount}
-			featured={enrichedFeatured}
-			other={enrichedOther}
+			featured={featured}
+			other={other}
 		/>
-	)
-}
-
-export function ProjectShowcase({ visibleRowCount = 6 }: Props) {
-	return (
-		<Suspense
-			fallback={
-				<ShowcaseSkeleton
-					featuredCount={2}
-					rowCount={visibleRowCount}
-				/>
-			}
-		>
-			<ProjectShowcaseAsync visibleRowCount={visibleRowCount} />
-		</Suspense>
 	)
 }

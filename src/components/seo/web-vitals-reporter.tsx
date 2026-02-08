@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import { onCLS, onFCP, onLCP, onTTFB } from 'web-vitals'
 
 type Metric = {
 	name: string
@@ -28,24 +27,42 @@ const getEmoji = (rating: string): string => {
 }
 
 export function WebVitalsReporter() {
+	if (process.env.NODE_ENV !== 'development') {
+		return null
+	}
+
 	useEffect(() => {
-		const logMetric = (metric: Metric) => {
-			console.log(
-				`%c${metric.name}%c ${formatValue(metric.name, metric.value)} ${getEmoji(metric.rating)}`,
-				'font-weight: bold; color: #10b981',
-				'color: inherit'
+		let cancelled = false
+
+		const setup = async () => {
+			const { onCLS, onFCP, onLCP, onTTFB } = await import(
+				'web-vitals'
 			)
+			if (cancelled) return
+
+			const logMetric = (metric: Metric) => {
+				console.log(
+					`%c${metric.name}%c ${formatValue(metric.name, metric.value)} ${getEmoji(metric.rating)}`,
+					'font-weight: bold; color: #10b981',
+					'color: inherit'
+				)
+			}
+
+			console.log(
+				'%c📊 Web Vitals Reporter Active',
+				'font-size: 14px; font-weight: bold'
+			)
+
+			onLCP(logMetric)
+			onFCP(logMetric)
+			onCLS(logMetric)
+			onTTFB(logMetric)
 		}
 
-		console.log(
-			'%c📊 Web Vitals Reporter Active',
-			'font-size: 14px; font-weight: bold'
-		)
-
-		onLCP(logMetric)
-		onFCP(logMetric)
-		onCLS(logMetric)
-		onTTFB(logMetric)
+		void setup()
+		return () => {
+			cancelled = true
+		}
 	}, [])
 
 	return null

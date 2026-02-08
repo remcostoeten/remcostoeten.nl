@@ -2,7 +2,13 @@
 
 import { memo } from 'react'
 
-export const ProjectCardSkeleton = memo(function ProjectCardSkeleton() {
+type ProjectCardSkeletonProps = {
+	withPreview?: boolean
+}
+
+export const ProjectCardSkeleton = memo(function ProjectCardSkeleton({
+	withPreview = false
+}: ProjectCardSkeletonProps) {
 	return (
 		<div className="bg-card animate-pulse">
 			<div className="flex flex-col">
@@ -28,6 +34,12 @@ export const ProjectCardSkeleton = memo(function ProjectCardSkeleton() {
 						<div className="h-4 w-4 bg-muted/40 rounded" />
 					</div>
 				</div>
+
+				{withPreview && (
+					<div className="relative h-[180px] sm:h-[240px] w-full overflow-hidden border-t border-border bg-black/50">
+						<div className="absolute inset-0 animate-pulse bg-muted/20" />
+					</div>
+				)}
 			</div>
 		</div>
 	)

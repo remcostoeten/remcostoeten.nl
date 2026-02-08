@@ -2,6 +2,8 @@ import { Intro } from '@/components/home/hero'
 import { Section } from '@/components/ui/section'
 import { homeMetadata } from '@/core/metadata'
 import nextDynamic from 'next/dynamic'
+import { DeferredRender } from '@/components/ui/deferred-render'
+import { ProjectShowcaseSkeleton } from '@/components/projects/components/project-showcase-skeleton'
 import {
 	ActivitySectionSkeleton,
 	TechStackSkeleton,
@@ -14,7 +16,7 @@ const ActivitySection = nextDynamic(
 		import('@/components/landing/activity/section').then(m => ({
 			default: m.ActivitySection
 		})),
-	{ loading: () => <ActivitySectionSkeleton /> }
+	{ loading: () => <ActivitySectionSkeleton />, ssr: false }
 )
 
 const TechStackCloud = nextDynamic(
@@ -44,7 +46,10 @@ const ProjectShowcase = nextDynamic(
 		import('@/components/projects').then(m => ({
 			default: m.ProjectShowcase
 		})),
-	{ loading: () => <div className="h-64 animate-pulse bg-muted/20" /> }
+	{
+		loading: () => <ProjectShowcaseSkeleton visibleRowCount={6} />,
+		ssr: false
+	}
 )
 
 const Playground = nextDynamic(
@@ -52,11 +57,10 @@ const Playground = nextDynamic(
 		import('@/components/landing/playground').then(m => ({
 			default: m.Playground
 		})),
-	{ loading: () => <div className="h-40 animate-pulse bg-muted/20" /> }
+	{ loading: () => <div className="h-40 animate-pulse bg-muted/20" />, ssr: false }
 )
 
 export const revalidate = 60
-export const dynamic = 'force-dynamic'
 
 export { homeMetadata as metadata }
 
@@ -85,15 +89,36 @@ export default function Page() {
 
 					<WorkExperienceSection />
 
-					<ActivitySection />
+					<DeferredRender
+						rootMargin="500px 0px"
+						fallback={<ActivitySectionSkeleton />}
+					>
+						<ActivitySection />
+					</DeferredRender>
 
-					<Section title="Projects" noHeaderMargin>
-						<ProjectShowcase />
-					</Section>
+					<DeferredRender
+						rootMargin="500px 0px"
+						fallback={
+							<Section title="Projects" noHeaderMargin>
+								<ProjectShowcaseSkeleton visibleRowCount={6} />
+							</Section>
+						}
+					>
+						<Section title="Projects" noHeaderMargin>
+							<ProjectShowcase />
+						</Section>
+					</DeferredRender>
 
-					<Playground />
+					<DeferredRender
+						rootMargin="400px 0px"
+						fallback={
+							<div className="h-40 animate-pulse bg-muted/20" />
+						}
+					>
+						<Playground />
+					</DeferredRender>
 
-					<BlogPosts />
+					<BlogPosts checkAdmin={false} />
 				</div>
 			</div>
 		</>

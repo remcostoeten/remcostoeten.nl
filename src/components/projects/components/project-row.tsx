@@ -1,15 +1,10 @@
 'use client'
 
-import { memo, useState, lazy, Suspense } from 'react'
+import { memo, useState } from 'react'
 import { Github, ExternalLink, Eye, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { IProject, TPreview } from '../types'
-
-const ProjectPreviewRenderer = lazy(() =>
-	import('./project-preview').then(m => ({
-		default: m.ProjectPreviewRenderer
-	}))
-)
+import { ProjectPreviewRenderer } from './project-preview'
 
 type Props = {
 	project: IProject
@@ -51,16 +46,23 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 				</div>
 
 				<div className="flex items-center gap-1 sm:gap-2 shrink-0">
-					{project.git?.lastUpdated && (
-						<span className="hidden text-[10px] text-muted-foreground lg:inline">
-							{new Date(
-								project.git.lastUpdated
-							).toLocaleDateString('en-US', {
-								month: 'short',
-								day: 'numeric'
-							})}
-						</span>
-					)}
+					<span
+						className={cn(
+							'hidden text-[10px] text-muted-foreground lg:inline min-w-[48px] text-right',
+							!project.git?.lastUpdated && 'invisible'
+						)}
+						aria-hidden={!project.git?.lastUpdated}
+					>
+						{project.git?.lastUpdated
+							? new Date(project.git.lastUpdated).toLocaleDateString(
+									'en-US',
+									{
+										month: 'short',
+										day: 'numeric'
+									}
+								)
+							: 'Jan 00'}
+					</span>
 					<div className="flex gap-1 overflow-x-auto scrollbar-hide max-w-[120px] sm:max-w-none">
 						{project.tech.map(tech => (
 							<span
@@ -132,19 +134,11 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 			>
 				<div className="overflow-hidden">
 					{showPreview && (
-						<Suspense
-							fallback={
-								<div className="h-[150px] flex items-center justify-center text-xs text-muted-foreground">
-									Loading...
-								</div>
-							}
-						>
-							<ProjectPreviewRenderer
-								preview={project.preview}
-								name={project.name}
-								isVisible={showPreview}
-							/>
-						</Suspense>
+						<ProjectPreviewRenderer
+							preview={project.preview}
+							name={project.name}
+							isVisible={showPreview}
+						/>
 					)}
 					{showDesc && !showPreview && (
 						<div className="px-3 py-3 text-xs text-muted-foreground/80 leading-relaxed border-t border-border bg-muted/20">

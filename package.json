@@ -1,9 +1,9 @@
 {
 	"private": true,
 	"scripts": {
-		"dev": "next dev",
-		"build": "next build --webpack",
-		"build:fast": "NEXT_TELEMETRY_DISABLED=1 FAST_BUILD=true next build --webpack",
+		"dev": "next --bun dev",
+		"build": "next --bun build",
+		"build:fast": "NEXT_TELEMETRY_DISABLED=1 FAST_BUILD=true next build",
 		"ogbuild": "next build",
 		"start": "next start",
 		"db:generate": "drizzle-kit generate",
@@ -42,7 +42,7 @@
 		"clsx": "^2.1.1",
 		"drizzle-orm": "^0.45.1",
 		"framer-motion": "^12.23.25",
-		"geist": "1.2.2",
+		"geist": "^1.7.0",
 		"lucide-react": "^0.562.0",
 		"next": "16",
 		"next-mdx-remote": "^5.0.0",
