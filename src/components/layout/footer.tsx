@@ -8,6 +8,7 @@ import { useLatestCommit } from '@/hooks/use-github'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { ContactPopover } from '@/components/contact/contact-popover'
 import { ResumeDrawer } from '../resume-drawer'
+import { useVimAuth } from '@/components/auth/vim-auth-provider'
 
 export function Footer() {
 	const [copied, setCopied] = useState(false)
@@ -55,6 +56,24 @@ export function Footer() {
 		},
 		{ name: 'X', href: 'https://x.com/remcostoeten', icon: Twitter }
 	]
+
+	// Add secret auth trigger
+	const [clickCount, setClickCount] = useState(0)
+	const { openAuthModal } = useVimAuth()
+
+	const handleSecretAuth = () => {
+		const newCount = clickCount + 1
+		setClickCount(newCount)
+
+		if (newCount === 5) {
+			toast.success('Secret auth triggered!')
+			openAuthModal()
+			setClickCount(0)
+		}
+
+		// Reset count if no click within 1 second
+		setTimeout(() => setClickCount(0), 1000)
+	}
 
 	return (
 		<footer className="border-t border-border/50 bg-background">
@@ -138,7 +157,12 @@ export function Footer() {
 				</div>
 
 				<div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">
-					<p>© {new Date().getFullYear()} Remco Stoeten</p>
+					<p
+						onClick={handleSecretAuth}
+						className="cursor-default select-none active:scale-95 transition-transform"
+					>
+						© {new Date().getFullYear()} Remco Stoeten
+					</p>
 					<div className="flex items-center gap-4">
 						<Link
 							href="/about"

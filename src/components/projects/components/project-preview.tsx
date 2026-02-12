@@ -33,6 +33,7 @@ export const ProjectPreviewRenderer = memo(function ProjectPreviewRenderer({
 
 			{isLoading && (
 				<div className="absolute inset-0 z-10 flex items-center justify-center">
+					<div className="absolute inset-0 animate-pulse bg-muted/20" />
 					<Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
 				</div>
 			)}
@@ -66,7 +67,7 @@ export const ProjectPreviewRenderer = memo(function ProjectPreviewRenderer({
 				<iframe
 					src={preview.embedUrl || preview.url}
 					title={name}
-					loading="lazy"
+					loading={isVisible ? 'eager' : 'lazy'}
 					sandbox="allow-scripts allow-same-origin"
 					className="h-[360px] sm:h-[480px] w-[200%] origin-top-left"
 					style={{ transform: `scale(${preview.scale || 0.5})` }}

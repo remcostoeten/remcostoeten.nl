@@ -1,20 +1,9 @@
 'use client'
 
-import {
-	useState,
-	memo,
-	useMemo,
-	lazy,
-	Suspense,
-	useRef,
-	useEffect
-} from 'react'
+import { useState, memo, useMemo, useRef, useEffect } from 'react'
 import type { IProject } from '../types'
 import { ProjectCard } from './project-card'
-
-const ProjectRow = lazy(() =>
-	import('./project-row').then(m => ({ default: m.ProjectRow }))
-)
+import { ProjectRow } from './project-row'
 
 type Props = {
 	visibleRowCount: number
@@ -96,11 +85,9 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 						transitionTimingFunction: EASE_OUT_EXPO
 					}}
 				>
-					<Suspense fallback={null}>
-						{other.map(project => (
-							<ProjectRow key={project.name} project={project} />
-						))}
-					</Suspense>
+					{other.map(project => (
+						<ProjectRow key={project.name} project={project} />
+					))}
 				</div>
 
 				<div

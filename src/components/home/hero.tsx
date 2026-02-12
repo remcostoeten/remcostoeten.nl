@@ -7,9 +7,8 @@ export function Intro() {
 				<Image
 					src="/images/remco-stoeten.webp"
 					alt="Remco Stoeten - Frontend Engineer"
-					width={224}
-					height={224}
-					sizes="56px"
+					width={56}
+					height={56}
 					priority
 					quality={85}
 					className="w-14 h-14 rounded-full border-2 border-border/50 shadow-sm shrink-0"

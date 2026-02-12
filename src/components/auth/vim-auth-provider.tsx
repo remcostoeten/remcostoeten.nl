@@ -1,6 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import {
+	useEffect,
+	useState,
+	createContext,
+	useContext,
+	useCallback
+} from 'react'
 import { signOut, useSession } from '@/lib/auth-client'
 import { VimStatusBar } from '@/components/vim-status-bar'
 import { OAuthModal } from '@/components/auth/oauth-modal'
@@ -9,8 +15,24 @@ import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow'
 import { useBlogFilter } from '@/hooks/use-blog-filter'
 const ALLOWED_GITHUB_USERNAME = 'remcostoeten'
 
+type VimAuthContextType = {
+	openAuthModal: () => void
+}
+
 type Props = {
 	children: React.ReactNode
+}
+
+export const VimAuthContext = createContext<VimAuthContextType | undefined>(
+	undefined
+)
+
+export function useVimAuth() {
+	const context = useContext(VimAuthContext)
+	if (context === undefined) {
+		throw new Error('useVimAuth must be used within a VimAuthProvider')
+	}
+	return context
 }
 
 export function VimAuthProvider({ children }: Props) {
@@ -19,23 +41,28 @@ export function VimAuthProvider({ children }: Props) {
 	const { command: backgroundCommand, clearCommand: clearBackgroundCommand } =
 		useVimCommand()
 
-	const handleCommand = async (command: string) => {
-		const cmd = command.toLowerCase().trim()
+	const openAuthModal = useCallback(() => setShowOAuthModal(true), [])
 
-		if ((cmd === 'signin' || cmd === 'login') && !session) {
-			// Show the modal
-			setShowOAuthModal(true)
-		} else if ((cmd === 'signout' || cmd === 'logout') && session) {
-			await signOut()
-		}
-	}
+	const handleCommand = useCallback(
+		async (command: string) => {
+			const cmd = command.toLowerCase().trim()
+
+			if ((cmd === 'signin' || cmd === 'login') && !session) {
+				// Show the modal
+				setShowOAuthModal(true)
+			} else if ((cmd === 'signout' || cmd === 'logout') && session) {
+				await signOut()
+			}
+		},
+		[session]
+	)
 
 	useEffect(() => {
 		if (backgroundCommand) {
 			handleCommand(backgroundCommand)
 			clearBackgroundCommand()
 		}
-	}, [backgroundCommand, clearBackgroundCommand])
+	}, [backgroundCommand, clearBackgroundCommand, handleCommand])
 
 	useEffect(() => {
 		if (session?.user) {
@@ -52,7 +79,7 @@ export function VimAuthProvider({ children }: Props) {
 	}, [session])
 
 	return (
-		<>
+		<VimAuthContext.Provider value={{ openAuthModal }}>
 			{children}
 			<VimStatusBar onCommand={handleCommand} />
 
@@ -63,6 +90,6 @@ export function VimAuthProvider({ children }: Props) {
 			/>
 
 			{session?.user && <OuterAuthGlow />}
-		</>
+		</VimAuthContext.Provider>
 	)
 }

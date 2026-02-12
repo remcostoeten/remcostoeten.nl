@@ -1,17 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef, memo, lazy, Suspense } from 'react'
+import { useState, useEffect, useRef, memo } from 'react'
 import { Github, ExternalLink, Eye, Play, ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatRelativeDate } from '@/lib/date'
 import type { IProject, TPreview } from '../types'
 import { GitInfo } from './git-info'
-
-const ProjectPreviewRenderer = lazy(() =>
-	import('./project-preview').then(m => ({
-		default: m.ProjectPreviewRenderer
-	}))
-)
+import { ProjectPreviewRenderer } from './project-preview'
 
 type Props = {
 	project: IProject
@@ -126,16 +121,24 @@ export const ProjectCard = memo(function ProjectCard({
 										live demo
 									</span>
 								)}
-							{project.git?.lastUpdated && (
-								<span className="text-[8px] sm:text-[9px] text-muted-foreground/40">
+							<span className="text-[8px] sm:text-[9px] text-muted-foreground/40 inline-flex min-w-[56px] md:min-w-[120px]">
+								<span
+									className={cn(
+										!project.git?.lastUpdated &&
+											'invisible'
+									)}
+									aria-hidden={!project.git?.lastUpdated}
+								>
 									<span className="hidden md:inline">
 										last updated{' '}
 									</span>
-									{formatRelativeDate(
-										project.git.lastUpdated
-									)}
+									{project.git?.lastUpdated
+										? formatRelativeDate(
+												project.git.lastUpdated
+											)
+										: '00 days ago'}
 								</span>
-							)}
+							</span>
 						</div>
 						<p className="mt-0.5 text-[10px] sm:text-[11px] leading-relaxed text-muted-foreground line-clamp-2">
 							{project.description}
@@ -235,19 +238,11 @@ export const ProjectCard = memo(function ProjectCard({
 					>
 						<div className="overflow-hidden">
 							{isPreviewVisible && (
-								<Suspense
-									fallback={
-										<div className="h-[150px] sm:h-[200px] flex items-center justify-center text-xs text-muted-foreground">
-											Loading...
-										</div>
-									}
-								>
-									<ProjectPreviewRenderer
-										preview={project.preview}
-										name={project.name}
-										isVisible={isPreviewVisible}
-									/>
-								</Suspense>
+								<ProjectPreviewRenderer
+									preview={project.preview}
+									name={project.name}
+									isVisible={isPreviewVisible}
+								/>
 							)}
 							{project.git && isPreviewVisible && (
 								<div className="px-2 sm:px-3 py-2 border-t border-border">
