@@ -1,9 +1,9 @@
 import { createBaseMetadata } from './base'
 
 export const homeMetadata = createBaseMetadata({
-	title: 'Home - Personal Blog & Portfolio',
+	title: 'Remco Stoeten - Frontend Engineer',
 	description:
-		'Personal blog and portfolio showcasing thoughts on engineering, design, and web development. Explore articles on React, TypeScript, CSS, and modern development practices.',
+		'Remco Stoeten — frontend engineer from the Netherlands. 8 years building React & TypeScript apps. Occasional thoughts on code, design, and overengineering side projects.',
 	keywords: [
 		'personal blog',
 		'portfolio',
