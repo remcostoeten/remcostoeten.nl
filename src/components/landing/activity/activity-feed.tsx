@@ -585,8 +585,8 @@ export function ActivityFeed({
 							className="text-[13px] leading-relaxed"
 						>
 							{/* GITHUB ROW */}
-							<div className="flex items-center justify-between gap-4">
-								<div className="flex items-center gap-2 min-w-0">
+							<div className="relative">
+								<div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pr-20 sm:pr-0">
 									<motion.span
 										variants={wordVariants}
 										className="text-muted-foreground/70 shrink-0"
@@ -633,12 +633,12 @@ export function ActivityFeed({
 
 									<motion.span
 										variants={highlightVariants}
-										className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px]"
+										className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] max-w-full overflow-hidden"
 									>
-										<span className="opacity-60">
+										<span className="opacity-60 shrink-0">
 											{getEventIcon(currentActivity.type)}
 										</span>
-										<span className="font-medium text-[12px] text-foreground/80">
+										<span className="font-medium text-[12px] text-foreground/80 truncate">
 											{currentActivity.title}
 										</span>
 									</motion.span>
@@ -655,7 +655,7 @@ export function ActivityFeed({
 								</div>
 
 								{/* NAVIGATION ARROWS */}
-								<div className="flex items-center gap-1 text-muted-foreground/40 shrink-0">
+								<div className="absolute right-0 top-0 sm:relative sm:right-auto sm:top-auto flex items-center gap-1 text-muted-foreground/40 shrink-0">
 									<button
 										onClick={goToPrevSlide}
 										className="p-1 hover:text-foreground transition-colors"
@@ -702,7 +702,7 @@ export function ActivityFeed({
 							</div>
 
 							{/* SPOTIFY ROW */}
-							<div className="flex items-center gap-2 mt-4 pt-4 border-t border-border/30">
+							<div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mt-4 pt-4 border-t border-border/30">
 								<motion.span
 									variants={wordVariants}
 									className="flex items-center gap-2 text-muted-foreground/60 text-[12px]"
@@ -722,7 +722,7 @@ export function ActivityFeed({
 												href={displayTrack.url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] font-medium text-[12px] transition-colors cursor-pointer ${
+												className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] font-medium text-[12px] transition-colors cursor-pointer max-w-[200px] sm:max-w-none ${
 													isCurrentTrackLive
 														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20'
 														: 'bg-muted/40 text-foreground/80 border border-border/40'
@@ -731,7 +731,7 @@ export function ActivityFeed({
 												{isCurrentTrackLive && (
 													<Equalizer />
 												)}
-												<span className="font-semibold">
+												<span className="font-semibold truncate">
 													{displayTrack.name}
 												</span>
 											</motion.a>
@@ -746,7 +746,7 @@ export function ActivityFeed({
 
 										<motion.span
 											variants={highlightVariants}
-											className="text-foreground/70 font-medium text-[12px]"
+											className="text-foreground/70 font-medium text-[12px] truncate max-w-[150px] sm:max-w-none"
 										>
 											{displayTrack.artist}
 										</motion.span>
