@@ -4,6 +4,9 @@ import { ReactNode } from 'react'
 import { RefreshCw, Home } from 'lucide-react'
 import Link from 'next/link'
 
+// Admin routes are dynamic due to cookie-based authentication
+export const dynamic = 'force-dynamic'
+
 export default async function AdminLayout({
 	children
 }: {
