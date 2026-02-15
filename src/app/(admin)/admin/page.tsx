@@ -109,19 +109,19 @@ export default async function AdminPage() {
 
 			<Tabs defaultValue="overview" className="w-full">
 				<TabsList className="grid w-full grid-cols-4 md:w-auto md:inline-flex">
-					<TabsTrigger value="overview" className="gap-2">
+					<TabsTrigger value="overview" className="gap-2" aria-label="Dashboard Overview">
 						<LayoutDashboard className="w-4 h-4 hidden md:block" />
 						Overview
 					</TabsTrigger>
-					<TabsTrigger value="blogs" className="gap-2">
+					<TabsTrigger value="blogs" className="gap-2" aria-label="Manage Blogs">
 						<FileText className="w-4 h-4 hidden md:block" />
 						Blogs
 					</TabsTrigger>
-					<TabsTrigger value="contact" className="gap-2">
+					<TabsTrigger value="contact" className="gap-2" aria-label="Contact Messages">
 						<Mail className="w-4 h-4 hidden md:block" />
 						Contact
 					</TabsTrigger>
-					<TabsTrigger value="analytics" className="gap-2">
+					<TabsTrigger value="analytics" className="gap-2" aria-label="Site Analytics">
 						<BarChart3 className="w-4 h-4 hidden md:block" />
 						Analytics
 					</TabsTrigger>
