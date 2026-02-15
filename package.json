@@ -40,7 +40,7 @@
 		"geist": "1.2.2",
 		"lucide-react": "^0.562.0",
 		"next": "16",
-		"next-mdx-remote": "^5.0.0",
+		"next-mdx-remote": "^6.0.0",
 		"postcss": "^8.4.35",
 		"posthog-js": "^1.310.1",
 		"posthog-node": "^5.17.4",
