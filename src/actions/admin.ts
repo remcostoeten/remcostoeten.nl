@@ -111,7 +111,8 @@ export async function toggleBlogDraft(slug: string): Promise<{ success: boolean;
 	const frontmatter = frontmatterMatch[1]
 	const body = raw.slice(frontmatterMatch[0].length)
 
-	const currentDraft = /^draft:\s*true\s*$/m.test(frontmatter)
+	const draftMatch = /^draft:\s*(.+?)\s*$/m.exec(frontmatter)
+	const currentDraft = draftMatch ? draftMatch[1].toLowerCase() === 'true' : false
 	const newDraft = !currentDraft
 
 	let updatedFrontmatter: string
