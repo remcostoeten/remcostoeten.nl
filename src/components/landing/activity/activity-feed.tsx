@@ -582,7 +582,7 @@ export function ActivityFeed({
 							initial="initial"
 							animate="animate"
 							exit="exit"
-							className="text-[13px] leading-relaxed"
+							className="text-[13px] leading-relaxed space-y-2"
 						>
 							{/* GITHUB ROW */}
 							<div className="relative">
@@ -594,42 +594,42 @@ export function ActivityFeed({
 										{introPhrase.prefix}
 									</motion.span>
 
-									<motion.span variants={highlightVariants}>
-										<ProjectHoverWrapper
-											repository={
-												currentActivity.repository
-											}
-											isPrivate={isPrivate}
-										>
-											{isPrivate ? (
-												<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/5 text-amber-500 border border-amber-500/20 rounded-[4px] cursor-pointer transition-colors group">
-													<Lock className="size-3 opacity-70" />
-													<span className="font-medium text-[12px]">
-														{repoName}
-													</span>
-												</span>
-											) : (
-												<a
-													href={currentActivity.url}
-													target="_blank"
-													rel="noopener noreferrer"
-													className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary border border-primary/20 rounded-[4px] transition-colors cursor-pointer group"
-												>
-													<GitBranch className="size-3 opacity-70" />
-													<span className="font-medium text-[12px]">
-														{repoName}
-													</span>
-												</a>
-											)}
-										</ProjectHoverWrapper>
-									</motion.span>
-
-									<motion.span
-										variants={wordVariants}
-										className="text-muted-foreground/50 shrink-0"
+								<motion.span variants={highlightVariants} className="shrink-0">
+									<ProjectHoverWrapper
+										repository={
+											currentActivity.repository
+										}
+										isPrivate={isPrivate}
 									>
-										on
-									</motion.span>
+										{isPrivate ? (
+											<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/5 text-amber-500 border border-amber-500/20 rounded-[4px] cursor-pointer transition-colors group shrink-0">
+												<Lock className="size-3 opacity-70 shrink-0" />
+												<span className="font-medium text-[12px] truncate">
+													{repoName}
+												</span>
+											</span>
+										) : (
+											<a
+												href={currentActivity.url}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary border border-primary/20 rounded-[4px] transition-colors cursor-pointer group shrink-0"
+											>
+												<GitBranch className="size-3 opacity-70 shrink-0" />
+												<span className="font-medium text-[12px] truncate">
+													{repoName}
+												</span>
+											</a>
+										)}
+									</ProjectHoverWrapper>
+								</motion.span>
+
+								<motion.span
+									variants={wordVariants}
+									className="text-muted-foreground/50 shrink-0"
+								>
+									on
+								</motion.span>
 
 									<motion.span
 										variants={highlightVariants}
@@ -643,16 +643,15 @@ export function ActivityFeed({
 										</span>
 									</motion.span>
 
-									<motion.span
-										variants={wordVariants}
-										className="text-muted-foreground/40 text-[11px] shrink-0"
-									>
-										·{' '}
-										{formatRelativeTime(
-											currentActivity.timestamp
-										)}
-									</motion.span>
-								</div>
+								<motion.span
+									variants={wordVariants}
+									className="text-muted-foreground/40 text-[11px] shrink-0"
+								>
+									·{' '}
+									{formatRelativeTime(
+										currentActivity.timestamp
+									)}
+								</motion.span>
 
 								{/* NAVIGATION ARROWS */}
 								<div className="absolute right-0 top-0 sm:relative sm:right-auto sm:top-auto flex items-center gap-1 text-muted-foreground/40 shrink-0">
@@ -705,10 +704,10 @@ export function ActivityFeed({
 							<div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mt-4 pt-4 border-t border-border/30">
 								<motion.span
 									variants={wordVariants}
-									className="flex items-center gap-2 text-muted-foreground/60 text-[12px]"
+									className="flex items-center gap-1 text-muted-foreground/60 text-[12px] shrink-0 whitespace-nowrap"
 								>
-									<Music className="size-4" />
-									While listening to
+									<Music className="size-4 shrink-0" />
+									Listening to
 								</motion.span>
 
 								{displayTrack ? (
@@ -739,7 +738,7 @@ export function ActivityFeed({
 
 										<motion.span
 											variants={wordVariants}
-											className="text-muted-foreground/50"
+											className="text-muted-foreground/50 shrink-0 whitespace-nowrap"
 										>
 											by
 										</motion.span>
@@ -774,10 +773,11 @@ export function ActivityFeed({
 							dragConstraints={{ left: 0, right: 0 }}
 							dragElastic={0.2}
 							onDragEnd={(_, info) => handleDragEnd(info)}
-							className="text-[13px] leading-relaxed md:leading-loose"
+							className="text-[13px] leading-relaxed space-y-2"
 						>
-							<div className="flex flex-wrap items-baseline gap-x-2 gap-y-1.5 pr-8">
-								<span className="text-muted-foreground/80 font-normal">
+							{/* Single-line GitHub activity - no wrapping */}
+							<div className="flex items-center gap-1.5 min-w-0 pr-8">
+								<span className="text-muted-foreground/80 font-normal shrink-0">
 									{introPhrase.prefix}
 								</span>
 
@@ -786,9 +786,9 @@ export function ActivityFeed({
 									isPrivate={isPrivate}
 								>
 									{isPrivate ? (
-										<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/5 text-amber-500 font-medium border border-amber-500/20 rounded-[4px] text-[12px]">
-											<Lock className="size-3" />
-											<span className="truncate max-w-[140px]">
+										<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/5 text-amber-500 font-medium border border-amber-500/20 rounded-[4px] text-[12px] shrink-0">
+											<Lock className="size-3 shrink-0" />
+											<span className="truncate">
 												{repoName}
 											</span>
 										</span>
@@ -797,10 +797,10 @@ export function ActivityFeed({
 											href={currentActivity.url}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary font-medium border border-primary/20 rounded-[4px] text-[12px]"
+											className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary font-medium border border-primary/20 rounded-[4px] text-[12px] shrink-0"
 										>
-											<Globe className="size-3" />
-											<span className="truncate max-w-[140px]">
+											<Globe className="size-3 shrink-0" />
+											<span className="truncate">
 												{repoName}
 											</span>
 										</a>
@@ -809,21 +809,21 @@ export function ActivityFeed({
 
 								{introPhrase.connector &&
 									introPhrase.connector !== '—' && (
-										<span className="text-muted-foreground/60 font-light italic text-[12px]">
+										<span className="text-muted-foreground/60 font-light italic text-[12px] shrink-0">
 											{introPhrase.connector}
 										</span>
 									)}
 
-								<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] text-foreground/90 font-medium">
-									<span className="opacity-70">
+								<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] text-foreground/90 font-medium min-w-0 shrink">
+									<span className="opacity-70 shrink-0">
 										{getEventIcon(currentActivity.type)}
 									</span>
-									<span className="truncate max-w-[180px] text-[12px]">
+									<span className="truncate text-[12px]">
 										{currentActivity.title}
 									</span>
 								</span>
 
-								<span className="inline-flex items-center gap-1 text-muted-foreground/40 text-[11px] ml-1">
+								<span className="inline-flex items-center gap-1 text-muted-foreground/40 text-[11px] shrink-0">
 									<span className="w-0.5 h-0.5 rounded-full bg-current" />
 									<time dateTime={currentActivity.timestamp}>
 										{formatRelativeTime(
@@ -833,24 +833,14 @@ export function ActivityFeed({
 								</span>
 							</div>
 
-							<div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mt-3 pt-3 border-t border-border/40">
+							{/* Single-line Spotify activity - no wrapping */}
+							<div className="flex items-center gap-1.5 min-w-0 border-t border-border/40 pt-2">
 								{displayTrack ? (
 									<>
-										<span className="flex items-center gap-2 text-muted-foreground/70 text-[12px]">
-											<span className="flex items-center justify-center size-5 rounded-full bg-muted/30 text-muted-foreground/60">
-												<Music className="size-3" />
-											</span>
-											While listening to
+										<span className="flex items-center gap-1 text-muted-foreground/70 text-[12px] shrink-0 whitespace-nowrap">
+											<Music className="size-3.5 shrink-0" />
+											Listening to
 										</span>
-
-										{isCurrentTrackLive && (
-											<span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-brand-500/10 border border-brand-500/20 rounded xs">
-												<span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
-												<span className="text-[9px] font-bold text-brand-500 tracking-wider">
-													LIVE
-												</span>
-											</span>
-										)}
 
 										<SpotifyHoverWrapper
 											track={displayTrack}
@@ -860,31 +850,35 @@ export function ActivityFeed({
 												href={displayTrack.url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] font-medium text-[12px] max-w-[320px] overflow-hidden ${
+												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] min-w-0 shrink ${
 													isCurrentTrackLive
 														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20'
 														: 'bg-muted/40 text-foreground/80 border border-border/40'
 												}`}
 											>
-												<span className="truncate font-semibold min-w-0 shrink">
+												{isCurrentTrackLive && (
+													<span className="inline-flex items-center gap-1 px-1 py-0 bg-brand-500/10 border border-brand-500/20 rounded-[2px] ml-0">
+														<span className="w-1 h-1 rounded-full bg-brand-500 animate-pulse" />
+														<span className="text-[10px] font-bold text-brand-500 whitespace-nowrap">
+															LIVE
+														</span>
+													</span>
+												)}
+												<span className="truncate font-semibold min-w-0">
 													{displayTrack.name}
 												</span>
-												<span className="text-muted-foreground/40 font-light mx-0.5 shrink-0 whitespace-nowrap">
+												<span className="text-muted-foreground/40 font-light shrink-0 whitespace-nowrap">
 													by
 												</span>
-												<span
-													className={`${isCurrentTrackLive ? 'text-brand-400' : 'text-foreground/70'} truncate min-w-0 shrink`}
-												>
+												<span className={`truncate min-w-0 ${isCurrentTrackLive ? 'text-brand-400' : 'text-foreground/70'}`}>
 													{displayTrack.artist}
 												</span>
 											</a>
 										</SpotifyHoverWrapper>
 									</>
 								) : (
-									<span className="flex items-center gap-2 text-muted-foreground/50 italic text-[12px]">
-										<span className="flex items-center justify-center size-5 rounded-full bg-muted/20">
-											<Music className="size-3 opacity-50" />
-										</span>
+									<span className="flex items-center gap-1 text-muted-foreground/50 italic text-[12px] shrink-0 whitespace-nowrap">
+										<Music className="size-3.5 shrink-0" />
 										Coding in silence
 									</span>
 								)}
