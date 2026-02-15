@@ -1,5 +1,8 @@
 'use server'
 
+import fs from 'fs'
+import path from 'path'
+import { revalidatePath } from 'next/cache'
 import { db } from '@/server/db/connection'
 import {
 	blogPosts,
@@ -9,6 +12,7 @@ import {
 	contactAbandonments
 } from '@/server/db/schema'
 import { desc, count, sql, eq } from 'drizzle-orm'
+import { isAdmin } from '@/utils/is-admin'
 
 export async function getAdminMetrics() {
 	const [
@@ -79,4 +83,81 @@ export async function getAdminMetrics() {
 		abandonments,
 		postStats: postStats // Returns array of { slug, totalViews, uniqueViews }
 	}
+}
+
+/**
+ * Toggle the draft status of a blog post by modifying its frontmatter.
+ */
+export async function toggleBlogDraft(slug: string): Promise<{ success: boolean; draft: boolean }> {
+	const admin = await isAdmin()
+	if (!admin) {
+		throw new Error('Unauthorized')
+	}
+
+	const postsDir = path.join(process.cwd(), 'src', 'app', '(marketing)', 'blog', 'posts')
+	const filePath = findPostFile(postsDir, slug)
+
+	if (!filePath) {
+		throw new Error(`Post not found for slug: ${slug}`)
+	}
+
+	const raw = fs.readFileSync(filePath, 'utf-8')
+	const frontmatterMatch = /^---\s*\n([\s\S]*?)\n---/.exec(raw)
+
+	if (!frontmatterMatch) {
+		throw new Error('Could not parse frontmatter')
+	}
+
+	const frontmatter = frontmatterMatch[1]
+	const body = raw.slice(frontmatterMatch[0].length)
+
+	const currentDraft = /^draft:\s*true\s*$/m.test(frontmatter)
+	const newDraft = !currentDraft
+
+	let updatedFrontmatter: string
+	if (/^draft:\s*/m.test(frontmatter)) {
+		updatedFrontmatter = frontmatter.replace(
+			/^draft:\s*.+$/m,
+			`draft: ${newDraft}`
+		)
+	} else {
+		updatedFrontmatter = frontmatter.trimEnd() + `\ndraft: ${newDraft}`
+	}
+
+	fs.writeFileSync(filePath, `---\n${updatedFrontmatter}\n---${body}`, 'utf-8')
+
+	revalidatePath('/admin')
+	revalidatePath('/blog')
+
+	return { success: true, draft: newDraft }
+}
+
+function findPostFile(dir: string, targetSlug: string): string | null {
+	const items = fs.readdirSync(dir)
+
+	for (const item of items) {
+		const fullPath = path.join(dir, item)
+		const stat = fs.statSync(fullPath)
+
+		if (stat.isDirectory()) {
+			const found = findPostFile(fullPath, targetSlug)
+			if (found) return found
+		} else if (item.endsWith('.md') || item.endsWith('.mdx')) {
+			const raw = fs.readFileSync(fullPath, 'utf-8')
+			const match = /^---\s*\n([\s\S]*?)\n---/.exec(raw)
+			if (!match) continue
+
+			const frontmatter = match[1]
+			const slugMatch = /^slug:\s*['"]?(.+?)['"]?\s*$/m.exec(frontmatter)
+			const fileSlug = slugMatch
+				? slugMatch[1]
+				: path.relative(dir, fullPath).replace(/\.(mdx|md)$/, '')
+
+			if (fileSlug === targetSlug) {
+				return fullPath
+			}
+		}
+	}
+
+	return null
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useTransition } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -15,8 +15,10 @@ import {
 	ArrowUp,
 	ArrowDown,
 	FileText,
-	TrendingUp
+	TrendingUp,
+	Loader2
 } from 'lucide-react'
+import { toggleBlogDraft } from '@/actions/admin'
 
 type BlogPost = {
 	slug: string
@@ -34,9 +36,19 @@ type SortField = 'title' | 'date' | 'views'
 type SortDirection = 'asc' | 'desc'
 
 function BlogCard({ post }: { post: BlogPost }) {
+	const [isDraft, setIsDraft] = useState(post.metadata.draft ?? false)
+	const [isPending, startTransition] = useTransition()
+
 	const isNew =
 		new Date(post.metadata.publishedAt) >
 		new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+
+	function handleToggleDraft() {
+		startTransition(async () => {
+			const result = await toggleBlogDraft(post.slug)
+			setIsDraft(result.draft)
+		})
+	}
 
 	return (
 		<Card className="group hover:border-primary/30 transition-colors">
@@ -44,17 +56,22 @@ function BlogCard({ post }: { post: BlogPost }) {
 				<div className="flex items-start justify-between gap-3">
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center gap-2 mb-1">
-							<Badge
-								variant={
-									post.metadata.draft
-										? 'secondary'
-										: 'default'
-								}
-								className="text-[10px]"
+							<button
+								onClick={handleToggleDraft}
+								disabled={isPending}
+								title={isDraft ? 'Click to publish' : 'Click to unpublish'}
 							>
-								{post.metadata.draft ? 'Draft' : 'Published'}
-							</Badge>
-							{isNew && !post.metadata.draft && (
+								<Badge
+									variant={isDraft ? 'secondary' : 'default'}
+									className={`text-[10px] cursor-pointer transition-opacity ${isPending ? 'opacity-50' : 'hover:opacity-80'}`}
+								>
+									{isPending ? (
+										<Loader2 className="w-3 h-3 animate-spin mr-1" />
+									) : null}
+									{isDraft ? 'Draft' : 'Published'}
+								</Badge>
+							</button>
+							{isNew && !isDraft && (
 								<Badge
 									variant="outline"
 									className="text-[10px] border-green-500 text-green-600"
