@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Home, Eye } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Eye } from 'lucide-react'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/actions/analytics'
@@ -36,7 +36,7 @@ export function BlogPostClient({
 	publishedAt,
 	tags,
 	title,
-	summary,
+	summary: _summary,
 	readTime,
 	slug,
 	uniqueViews = 0,
@@ -128,7 +128,7 @@ export function BlogPostClient({
 					{allTags.map(tag => (
 						<Link
 							key={tag}
-							href={`/blog/tags/${tag.toLowerCase()}`}
+							href={`/blog/topics/${tag.toLowerCase()}`}
 							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
                 bg-neutral-50 dark:bg-neutral-900/60
                 text-neutral-600 dark:text-neutral-400

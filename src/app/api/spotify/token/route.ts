@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server'
+import { requireDevToolsAccess } from '@/lib/dev-access'
 
 export const dynamic = 'force-dynamic'
 
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com'
 
 export async function POST(request: Request) {
+	const denied = await requireDevToolsAccess()
+	if (denied) return denied
+
 	try {
 		const { code } = await request.json()
 

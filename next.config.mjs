@@ -31,12 +31,12 @@ const nextConfig = {
 		return [
 			{
 				source: '/categories',
-				destination: '/blog/categories',
+				destination: '/blog/topics',
 				permanent: true
 			},
 			{
 				source: '/categories/:slug*',
-				destination: '/blog/categories/:slug*',
+				destination: '/blog/topics/:slug*',
 				permanent: true
 			},
 			{

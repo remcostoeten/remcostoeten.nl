@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
+import { requireDevToolsAccess } from '@/lib/dev-access'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
+	const denied = await requireDevToolsAccess()
+	if (denied) return denied
+
 	try {
 		const { refresh_token } = await request.json()
 

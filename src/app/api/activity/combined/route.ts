@@ -13,9 +13,7 @@ function getGitHubHeaders(): Record<string, string> {
 		Accept: 'application/vnd.github.v3+json',
 		'Content-Type': 'application/json'
 	}
-	// Check both env vars to match the main GitHubService
-	const token =
-		process.env.GITHUB_TOKEN || process.env.NEXT_PUBLIC_GITHUB_TOKEN
+	const token = process.env.GITHUB_TOKEN
 	if (token) {
 		headers['Authorization'] = `token ${token.trim()}`
 	}
@@ -189,7 +187,6 @@ function parseGitHubEvent(event: any) {
 			}
 		}
 		case 'PullRequestEvent': {
-			const action = event.payload?.action
 			const prNumber = event.payload?.number
 			const prTitle = event.payload?.pull_request?.title?.trim() || ''
 			const prBody =
@@ -233,7 +230,6 @@ function parseGitHubEvent(event: any) {
 			}
 		}
 		case 'IssuesEvent': {
-			const action = event.payload?.action
 			const issueNumber = event.payload?.issue?.number
 			const issueTitle = event.payload?.issue?.title?.trim() || ''
 			const issueBody =

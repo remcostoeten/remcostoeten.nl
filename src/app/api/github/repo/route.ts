@@ -34,8 +34,7 @@ function getHeaders(): Record<string, string> {
 		'User-Agent': 'remcostoeten-portfolio-activity'
 	}
 
-	const token =
-		process.env.GITHUB_TOKEN || process.env.NEXT_PUBLIC_GITHUB_TOKEN
+	const token = process.env.GITHUB_TOKEN
 	if (token) {
 		headers['Authorization'] = `token ${token}`
 	}

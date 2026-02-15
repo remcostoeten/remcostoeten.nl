@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
+import { requireDevToolsAccess } from '@/lib/dev-access'
 
 export const dynamic = 'force-dynamic'
 
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com'
 
 export async function GET(request: NextRequest) {
+	const denied = await requireDevToolsAccess()
+	if (denied) return denied
+
 	try {
 		const { searchParams } = new URL(request.url)
 		const code = searchParams.get('code')
@@ -65,13 +69,38 @@ export async function GET(request: NextRequest) {
 		}
 
 		const tokenData = await tokenResponse.json()
+		const refreshToken = tokenData.refresh_token
+		const accessToken = tokenData.access_token
+
+		if (!refreshToken) {
+			return NextResponse.redirect(
+				new URL('/dev/spotify?error=missing_refresh_token', request.url)
+			)
+		}
 
 		const redirectUrl = new URL('/dev/spotify', request.url)
 		redirectUrl.searchParams.set('success', 'true')
-		redirectUrl.searchParams.set('refresh_token', tokenData.refresh_token)
-		redirectUrl.searchParams.set('access_token', tokenData.access_token)
+		const response = NextResponse.redirect(redirectUrl)
 
-		return NextResponse.redirect(redirectUrl)
+		response.cookies.set('spotify_dev_refresh_token', refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			sameSite: 'lax',
+			path: '/',
+			maxAge: 60 * 5
+		})
+
+		if (accessToken) {
+			response.cookies.set('spotify_dev_access_token', accessToken, {
+				httpOnly: true,
+				secure: process.env.NODE_ENV === 'production',
+				sameSite: 'lax',
+				path: '/',
+				maxAge: 60 * 5
+			})
+		}
+
+		return response
 	} catch (error) {
 		console.error('Error in Spotify callback:', error)
 		return NextResponse.redirect(

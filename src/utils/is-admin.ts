@@ -1,11 +1,26 @@
 import { auth } from '@/server/auth'
 import { headers } from 'next/headers'
-
 import { env } from '@/server/env'
 
-const DEFAULT_ADMIN_EMAIL = 'remcostoeten@gmail.com'
-const SECONDARY_ADMIN_EMAIL = 'iremcostoeten@hotmail.com'
-const ADMIN_EMAIL = env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL
+const FALLBACK_ADMIN_EMAILS = [
+	'remcostoeten@gmail.com',
+	'remcostoeten@hotmail.com'
+]
+
+function getAdminEmails() {
+	const configured = (env.ADMIN_EMAIL || '')
+		.split(',')
+		.map(email => email.trim().toLowerCase())
+		.filter(Boolean)
+
+	return configured.length > 0 ? configured : FALLBACK_ADMIN_EMAILS
+}
+
+function isAdminEmail(email?: string | null): boolean {
+	if (!email) return false
+	const normalizedEmail = email.toLowerCase()
+	return getAdminEmails().includes(normalizedEmail)
+}
 
 /**
  * Server-side utility to check if the current user is admin
@@ -17,24 +32,13 @@ export async function isAdmin(): Promise<boolean> {
 			headers: await headers()
 		})
 
-		if (!session?.user) {
-			console.log('[isAdmin] No session user found')
-			return false
-		}
+		if (!session?.user) return false
 
-		const userEmail = session.user.email?.toLowerCase()
-		const isEmailMatch =
-			userEmail === ADMIN_EMAIL.toLowerCase() ||
-			userEmail === SECONDARY_ADMIN_EMAIL.toLowerCase()
+		const isEmailMatch = isAdminEmail(session.user.email)
 		const isRoleAdmin = session.user.role === 'admin'
 
-		console.log(
-			`[isAdmin] email: ${session.user.email}, isMatch: ${isEmailMatch}, role: ${session.user.role}, isRoleAdmin: ${isRoleAdmin}`
-		)
-
 		return isRoleAdmin || isEmailMatch
-	} catch (error) {
-		console.error('[isAdmin] Error:', error)
+	} catch {
 		return false
 	}
 }

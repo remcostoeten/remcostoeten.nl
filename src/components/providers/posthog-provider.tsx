@@ -1,6 +1,6 @@
 'use client'
 
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect, Suspense } from 'react'
 import { usePostHog } from 'posthog-js/react'
 
@@ -9,21 +9,16 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react'
 
 function PostHogPageView() {
 	const pathname = usePathname()
-	const searchParams = useSearchParams()
 	const posthog = usePostHog()
 
 	useEffect(() => {
-		// Track pageview on route change
 		if (pathname && posthog) {
-			let url = window.origin + pathname
-			if (searchParams.toString()) {
-				url = url + `?${searchParams.toString()}`
-			}
+			const url = window.origin + pathname
 			posthog.capture('$pageview', {
 				$current_url: url
 			})
 		}
-	}, [pathname, searchParams, posthog])
+	}, [pathname, posthog])
 
 	return null
 }
