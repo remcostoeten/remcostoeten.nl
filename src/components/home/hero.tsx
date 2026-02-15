@@ -32,10 +32,12 @@ export function Intro() {
 
 			<div className="prose prose-sm dark:prose-invert text-muted-foreground">
 				<p>
-					Dutch software engineer focused on front-end development
-					with a degree in <em>graphic design</em>.{' '}
-					<strong>8 years</strong> of experience across e-commerce,{' '}
-					SaaS, government, and e-learning projects.
+					Dutch software engineer with a graphic design background and{' '}
+					<strong>8 years</strong> of experience delivering web
+					applications across e-commerce, SaaS, government, and
+					e-learning, actively transitioning toward full-stack
+					development. Building high-quality products with a strong
+					focus on UX, performance, and maintainable systems.
 				</p>
 			</div>
 		</header>

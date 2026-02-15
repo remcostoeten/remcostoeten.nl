@@ -25,13 +25,19 @@ function PostHogPageView() {
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
 	useEffect(() => {
-		posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY as string, {
+		const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY
+		if (!posthogKey) return
+
+		posthog.init(posthogKey, {
 			api_host:
 				process.env.NEXT_PUBLIC_POSTHOG_HOST ||
 				'https://us.i.posthog.com',
-			person_profiles: 'identified_only', // or 'always' to create profiles for anonymous users as well
+			person_profiles: 'identified_only',
 			defaults: '2025-11-30',
-			capture_pageview: false // Disable auto capture to prevent duplicate events on first load + verify SPA tracking
+			capture_pageview: false,
+			autocapture: false,
+			capture_pageleave: false,
+			disable_session_recording: true
 		})
 	}, [])
 
