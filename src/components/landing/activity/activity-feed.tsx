@@ -584,14 +584,15 @@ export function ActivityFeed({
 							exit="exit"
 							className="text-[13px] leading-relaxed space-y-2"
 						>
-							{/* GITHUB ROW - Single line, no wrapping */}
-							<div className="relative flex items-center gap-1.5 min-w-0 pr-24">
-								<motion.span
-									variants={wordVariants}
-									className="text-muted-foreground/70 shrink-0"
-								>
-									{introPhrase.prefix}
-								</motion.span>
+							{/* GITHUB ROW */}
+							<div className="relative">
+								<div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pr-20 sm:pr-0">
+									<motion.span
+										variants={wordVariants}
+										className="text-muted-foreground/70 shrink-0"
+									>
+										{introPhrase.prefix}
+									</motion.span>
 
 								<motion.span variants={highlightVariants} className="shrink-0">
 									<ProjectHoverWrapper
@@ -630,17 +631,17 @@ export function ActivityFeed({
 									on
 								</motion.span>
 
-								<motion.span
-									variants={highlightVariants}
-									className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] min-w-0 shrink"
-								>
-									<span className="opacity-60 shrink-0">
-										{getEventIcon(currentActivity.type)}
-									</span>
-									<span className="font-medium text-[12px] text-foreground/80 truncate">
-										{currentActivity.title}
-									</span>
-								</motion.span>
+									<motion.span
+										variants={highlightVariants}
+										className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] max-w-full overflow-hidden"
+									>
+										<span className="opacity-60 shrink-0">
+											{getEventIcon(currentActivity.type)}
+										</span>
+										<span className="font-medium text-[12px] text-foreground/80 truncate">
+											{currentActivity.title}
+										</span>
+									</motion.span>
 
 								<motion.span
 									variants={wordVariants}
@@ -652,8 +653,8 @@ export function ActivityFeed({
 									)}
 								</motion.span>
 
-								{/* NAVIGATION ARROWS - Positioned absolutely for desktop, inline for mobile */}
-								<div className="absolute right-0 top-0 sm:relative sm:right-auto sm:top-auto flex items-center gap-1 text-muted-foreground/40 shrink-0 ml-auto">
+								{/* NAVIGATION ARROWS */}
+								<div className="absolute right-0 top-0 sm:relative sm:right-auto sm:top-auto flex items-center gap-1 text-muted-foreground/40 shrink-0">
 									<button
 										onClick={goToPrevSlide}
 										className="p-1 hover:text-foreground transition-colors"
@@ -699,8 +700,8 @@ export function ActivityFeed({
 								</div>
 							</div>
 
-							{/* SPOTIFY ROW - Single line, no wrapping */}
-							<div className="flex items-center gap-1.5 min-w-0 border-t border-border/30 pt-2">
+							{/* SPOTIFY ROW */}
+							<div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mt-4 pt-4 border-t border-border/30">
 								<motion.span
 									variants={wordVariants}
 									className="flex items-center gap-1 text-muted-foreground/60 text-[12px] shrink-0 whitespace-nowrap"
@@ -720,7 +721,7 @@ export function ActivityFeed({
 												href={displayTrack.url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] transition-colors cursor-pointer min-w-0 shrink ${
+												className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] font-medium text-[12px] transition-colors cursor-pointer max-w-[200px] sm:max-w-none ${
 													isCurrentTrackLive
 														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20'
 														: 'bg-muted/40 text-foreground/80 border border-border/40'
@@ -744,7 +745,7 @@ export function ActivityFeed({
 
 										<motion.span
 											variants={highlightVariants}
-											className="text-foreground/70 font-medium text-[12px] truncate min-w-0"
+											className="text-foreground/70 font-medium text-[12px] truncate max-w-[150px] sm:max-w-none"
 										>
 											{displayTrack.artist}
 										</motion.span>

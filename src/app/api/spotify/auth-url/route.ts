@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
+import { requireDevToolsAccess } from '@/lib/dev-access'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
+	const denied = await requireDevToolsAccess()
+	if (denied) return denied
+
 	try {
 		const clientId = process.env.SPOTIFY_CLIENT_ID
 		const redirectUri = process.env.SPOTIFY_REDIRECT_URI

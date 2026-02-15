@@ -21,15 +21,7 @@ export const ProjectPreviewRenderer = memo(function ProjectPreviewRenderer({
 
 	return (
 		<div className="relative h-[180px] sm:h-[240px] w-full overflow-hidden border-t border-border bg-black/50">
-			{preview.type === 'iframe' && !isLoading && (
-				<div className="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-2 py-1 bg-black/70 backdrop-blur-sm border border-border text-[10px] text-muted-foreground">
-					<span className="relative flex h-1.5 w-1.5">
-						<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
-						<span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
-					</span>
-					live
-				</div>
-			)}
+			{preview.type === 'iframe' && !isLoading && null}
 
 			{isLoading && (
 				<div className="absolute inset-0 z-10 flex items-center justify-center">
