@@ -44,10 +44,17 @@ function BlogCard({ post }: { post: BlogPost }) {
 		new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 
 	function handleToggleDraft() {
+	function handleToggleDraft() {
 		startTransition(async () => {
-			const result = await toggleBlogDraft(post.slug)
-			setIsDraft(result.draft)
+			try {
+				const result = await toggleBlogDraft(post.slug)
+				setIsDraft(result.draft)
+			} catch (error) {
+				console.error('Failed to toggle draft:', error)
+				// Consider adding user-visible error feedback (e.g., toast notification)
+			}
 		})
+	}
 	}
 
 	return (
