@@ -92,7 +92,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
         location: "Sneek",
         icon: "education",
         description: "Studied the intersection of visual communication and technical implementation, with a strong focus on UI/UX, human-centered design, art history, and filmmaking. The final two years and internships were dedicated full time to interactive web design.",
-        skills: ['Photoshop', 'Illustrator', 'InDesign', 'After Effects', 'Web Design & Development', "Accessibility", "UI/UX", "Photography", "Art History",],
+        skills: ['UI/UX', 'Web Design & Development', 'Accessibility', 'After Effects', 'Photoshop'],
       },
     ],
   },
