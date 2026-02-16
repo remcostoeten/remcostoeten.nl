@@ -12,8 +12,8 @@
 		"api:test": "node scripts/api-test.mjs",
 		"lint": "oxlint",
 		"lint:fix": "oxlint --fix",
-		"format": "prettier --check .",
-		"format:fix": "prettier --write ."
+		"format": "oxfmt --check",
+		"format:fix": "oxfmt"
 	},
 	"engines": {
 		"node": "24.x"
@@ -67,7 +67,7 @@
 		"@types/react-dom": "19",
 		"@types/react-syntax-highlighter": "^15.5.13",
 		"drizzle-kit": "^0.31.8",
-		"oxlint": "^1.43.0",
-		"prettier": "^3.8.1"
+		"oxfmt": "^0.33.0",
+		"oxlint": "^1.43.0"
 	}
 }

@@ -53,16 +53,22 @@ export function VimAuthProvider({ children }: Props) {
 
 	return (
 		<>
-			{children}
-			<VimStatusBar onCommand={handleCommand} />
+			<div
+				// @ts-expect-error - inert is not yet in React types
+				inert={showOAuthModal ? '' : undefined}
+				// aria-hidden is also good practice when inert is used for accessibility
+				aria-hidden={showOAuthModal}
+			>
+				{children}
+				<VimStatusBar onCommand={handleCommand} />
+				{session?.user && <OuterAuthGlow />}
+			</div>
 
 			<OAuthModal
 				isOpen={showOAuthModal}
 				onClose={() => setShowOAuthModal(false)}
 				provider="github"
 			/>
-
-			{session?.user && <OuterAuthGlow />}
 		</>
 	)
 }

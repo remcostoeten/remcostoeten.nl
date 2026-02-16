@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { signIn } from '@/lib/auth-client'
+import { signInWithPopup } from '@/lib/auth-client'
 import posthog from 'posthog-js'
 
 interface OAuthModalProps {
@@ -15,6 +15,56 @@ interface OAuthModalProps {
 export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const modalRef = React.useRef<HTMLDivElement>(null)
+	const previousFocusRef = React.useRef<HTMLElement | null>(null)
+
+	// Focus trap implementation
+	React.useEffect(() => {
+		if (isOpen) {
+			previousFocusRef.current = document.activeElement as HTMLElement
+			const focusableElements = modalRef.current?.querySelectorAll(
+				'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+			)
+			const firstElement = focusableElements?.[0] as HTMLElement
+			if (firstElement) {
+				firstElement.focus()
+			}
+
+			const handleTabKey = (e: KeyboardEvent) => {
+				const focusableElements =
+					modalRef.current?.querySelectorAll(
+						'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+					)
+				const firstElement = focusableElements?.[0] as HTMLElement
+				const lastElement = focusableElements?.[
+					focusableElements.length - 1
+				] as HTMLElement
+
+				if (e.key === 'Tab') {
+					if (e.shiftKey) {
+						if (document.activeElement === firstElement) {
+							lastElement.focus()
+							e.preventDefault()
+						}
+					} else {
+						if (document.activeElement === lastElement) {
+							firstElement.focus()
+							e.preventDefault()
+						}
+					}
+				}
+				if (e.key === 'Escape') {
+					onClose()
+				}
+			}
+
+			document.addEventListener('keydown', handleTabKey)
+			return () => {
+				document.removeEventListener('keydown', handleTabKey)
+				previousFocusRef.current?.focus()
+			}
+		}
+	}, [isOpen, onClose])
 
 	const handleSignIn = async () => {
 		setIsLoading(true)
@@ -27,10 +77,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 		})
 
 		try {
-			await signIn.social({
-				provider,
-				callbackURL: `${window.location.origin}`
-			})
+			await signInWithPopup(provider)
 
 			onClose()
 		} catch (err) {
@@ -57,9 +104,14 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 						exit={{ opacity: 0 }}
 						onClick={onClose}
 						className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9998]"
+						aria-hidden="true"
 					/>
 
 					<motion.div
+						ref={modalRef}
+						role="dialog"
+						aria-modal="true"
+						aria-labelledby="modal-title"
 						initial={{ opacity: 0, scale: 0.95, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -68,7 +120,10 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 					>
 						<div className="bg-zinc-950 border border-zinc-800 rounded-none shadow-2xl overflow-hidden">
 							<div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
-								<h2 className="text-lg font-semibold text-white">
+								<h2
+									id="modal-title"
+									className="text-lg font-semibold text-white"
+								>
 									Sign in with{' '}
 									{provider === 'github'
 										? 'GitHub'
