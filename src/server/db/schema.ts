@@ -7,8 +7,6 @@ import {
 	boolean,
 	integer
 } from 'drizzle-orm/pg-core'
-import { user } from './auth-schema'
-export * from './auth-schema'
 
 import {
 	primaryId,
@@ -114,9 +112,7 @@ export const blogReactions = pgTable(
 		...blogSlug,
 		emoji: text('emoji').$type<EmojiType>().notNull(),
 		...visitorId,
-		userId: text('user_id').references(() => user.id, {
-			onDelete: 'cascade'
-		}), // Optional: for authenticated users
+		userId: text('user_id'),
 		...createdTimestamp
 	},
 	t => [
@@ -126,36 +122,10 @@ export const blogReactions = pgTable(
 	]
 )
 
-// Blog comments - authenticated users only
-export const blogComments = pgTable(
-	'blog_comments',
-	{
-		id: text('id')
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
-		slug: text('slug').notNull(),
-		userId: text('user_id')
-			.notNull()
-			.references(() => user.id, { onDelete: 'cascade' }),
-		parentId: text('parent_id'), // For future threaded replies
-		content: text('content').notNull(),
-		isEdited: boolean('is_edited').default(false).notNull(),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
-		updatedAt: timestamp('updated_at').defaultNow().notNull()
-	},
-	t => [
-		index('blog_comments_slug_idx').on(t.slug),
-		index('blog_comments_user_idx').on(t.userId),
-		index('blog_comments_parent_idx').on(t.parentId)
-	]
-)
-
 export type BlogPost = typeof blogPosts.$inferSelect
 export type BlogSession = typeof blogSessions.$inferSelect
 export type BlogLinkClick = typeof blogLinkClicks.$inferSelect
 export type BlogReaction = typeof blogReactions.$inferSelect
-export type BlogComment = typeof blogComments.$inferSelect
-export type NewBlogComment = typeof blogComments.$inferInsert
 
 // ============================================
 // GitHub Activity Tracking

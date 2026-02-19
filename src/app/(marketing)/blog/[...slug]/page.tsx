@@ -6,8 +6,6 @@ import { CustomMDX } from '@/components/blog/mdx'
 import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
 import { TableOfContents } from '@/components/blog/table-of-contents'
 import { ReactionBar } from '@/components/blog/reaction-bar'
-import { CommentSection } from '@/components/blog/comment-section'
-import { checkAdminStatus } from '@/actions/auth'
 import {
 	BlogPostStructuredData,
 	BreadcrumbStructuredData
@@ -16,9 +14,6 @@ import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
 import { eq } from 'drizzle-orm'
 
-// Force dynamic rendering due to auth requirements
-// Must be dynamic due to auth (cookies/headers) usage
-export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
 	let posts = getBlogPosts()
@@ -105,8 +100,6 @@ export default async function Blog({
 		notFound()
 	}
 
-	// Get all posts including drafts for now
-	// We'll filter client-side based on admin status
 	const allPosts = getAllBlogPosts()
 	const post = allPosts.find(p => p.slug === slug)
 
@@ -114,10 +107,7 @@ export default async function Blog({
 		notFound()
 	}
 
-	// Check if user is admin on the server side for initial render
-	const isAdminUser = await checkAdminStatus()
-
-	if (post.metadata.draft && !isAdminUser) {
+	if (post.metadata.draft) {
 		notFound()
 	}
 
@@ -176,7 +166,6 @@ export default async function Blog({
 
 				<div className="max-w-3xl">
 					<ReactionBar slug={post.slug} />
-					<CommentSection slug={post.slug} />
 				</div>
 
 				<PostNavigation prevPost={prevPost} nextPost={nextPost} />

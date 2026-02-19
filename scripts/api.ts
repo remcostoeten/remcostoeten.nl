@@ -2,7 +2,6 @@
 import readline from 'readline'
 import { exec } from 'child_process'
 import { db } from '../src/server/db/connection'
-import * as authSchema from '../src/server/db/auth-schema'
 import { sql } from 'drizzle-orm'
 
 /**
@@ -44,8 +43,7 @@ function showMenu() {
 	console.clear()
 	console.log('\x1b[36m%s\x1b[0m', '=== remcostoeten.nl Unified CLI ===')
 	console.log('\x1b[32m%s\x1b[0m', '--- Database Operations ---')
-	console.log('\x1b[33m1\x1b[0m: List Users (Debug)')
-	console.log('\x1b[33m2\x1b[0m: Check Sync Status')
+	console.log('\x1b[33m1\x1b[0m: Check Sync Status')
 
 	console.log('\n\x1b[32m%s\x1b[0m', '--- API Endpoint Testing ---')
 	endpoints.forEach((ep, i) => {
@@ -69,11 +67,9 @@ async function handleInput(input: string) {
 	const index = parseInt(input)
 
 	if (index === 1) {
-		await listUsers()
-	} else if (index === 2) {
 		await checkSyncStatus()
-	} else if (index >= 3 && index < endpoints.length + 3) {
-		await testEndpoint(endpoints[index - 3])
+	} else if (index >= 2 && index < endpoints.length + 2) {
+		await testEndpoint(endpoints[index - 2])
 	} else {
 		console.log('\n\x1b[31mInvalid selection. Try again.\x1b[0m')
 		setTimeout(showMenu, 800)
@@ -88,20 +84,6 @@ async function handleInput(input: string) {
 	})
 }
 
-async function listUsers() {
-	console.log('\n\x1b[36mQuerying users...\x1b[0m')
-	try {
-		const users = await db.select().from(authSchema.user)
-		console.log(`\x1b[32mUsers found:\x1b[0m ${users.length}\n`)
-		users.forEach(u => {
-			console.log(
-				`- \x1b[1m${u.email}\x1b[0m (Name: ${u.name}, Role: ${u.role})`
-			)
-		})
-	} catch (e) {
-		console.error('\n\x1b[31mError querying users:\x1b[0m', e)
-	}
-}
 
 async function checkSyncStatus() {
 	console.log('\n\x1b[36mChecking sync status...\x1b[0m')

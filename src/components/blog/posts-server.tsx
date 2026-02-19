@@ -1,18 +1,11 @@
-import { getBlogPosts, getAllBlogPosts } from '@/utils/utils'
-import { isAdmin } from '@/utils/is-admin'
+import { getBlogPosts } from '@/utils/utils'
 import { BlogPostsClient, PostCountHeader } from './posts-client'
 import { Section } from '../ui/section'
 import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
 
-export async function BlogPosts({
-	checkAdmin = true
-}: {
-	checkAdmin?: boolean
-}) {
-	const userIsAdmin = checkAdmin ? await isAdmin() : false
-
-	const allBlogs = userIsAdmin ? getAllBlogPosts() : getBlogPosts()
+export async function BlogPosts() {
+	const allBlogs = getBlogPosts()
 
 	const viewData = await db
 		.select({
@@ -28,11 +21,6 @@ export async function BlogPosts({
 
 	const sortedBlogs = allBlogs
 		.sort((a, b) => {
-			if (userIsAdmin) {
-				if (a.metadata.draft && !b.metadata.draft) return -1
-				if (!a.metadata.draft && b.metadata.draft) return 1
-			}
-
 			if (
 				new Date(a.metadata.publishedAt) >
 				new Date(b.metadata.publishedAt)

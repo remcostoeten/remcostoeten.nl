@@ -2,16 +2,9 @@
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSession } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 import { generateRoutes } from '../../tools/dev-menu/utils/generate-routes'
 import { Terminal } from 'lucide-react'
-
-const COMMANDS = [
-	{ cmd: 'signin', alias: ['login'], desc: 'Authenticate with GitHub' },
-	{ cmd: 'signout', alias: ['logout'], desc: 'Sign out' },
-	{ cmd: 'help', alias: ['?'], desc: 'Show available commands' }
-]
 
 interface VimStatusBarProps {
 	onCommand?: (command: string) => void
@@ -21,7 +14,6 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 	const [isVisible, setIsVisible] = useState(false)
 	const [input, setInput] = useState('')
 	const [selectedIndex, setSelectedIndex] = useState(0)
-	const { data: session } = useSession()
 	const router = useRouter()
 	const inputRef = useRef<HTMLInputElement>(null)
 
@@ -31,7 +23,6 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 	// Focus input when visible
 	useEffect(() => {
 		if (isVisible) {
-			// Small timeout to ensure DOM is ready
 			const timer = setTimeout(() => {
 				inputRef.current?.focus()
 			}, 50)
@@ -50,7 +41,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 						desc: `Go to ${r.label}`
 					}))
 			}
-			return COMMANDS
+			return []
 		}
 
 		if (isNavigation) {
@@ -68,11 +59,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 				}))
 		}
 
-		return COMMANDS.filter(
-			c =>
-				c.cmd.startsWith(currentInput) ||
-				c.alias.some(a => a.startsWith(currentInput))
-		)
+		return []
 	}, [currentInput, isNavigation])
 
 	const safeSelectedIndex =
@@ -90,18 +77,12 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 				return
 			}
 
-			const normalized = cmd
-				.trim()
-				.toLowerCase()
-				.replace(/^:/, '')
-				.replace(/\s+/g, '')
-
 			setIsVisible(false)
 			setInput('')
 			setSelectedIndex(0)
 
 			if (onCommand) {
-				onCommand(normalized)
+				onCommand(cmd.trim().toLowerCase().replace(/^:/, '').replace(/\s+/g, ''))
 			}
 		},
 		[onCommand, router]
@@ -120,11 +101,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 			e.preventDefault()
 			const suggestion = suggestions[safeSelectedIndex]
 			if (suggestion) {
-				if (isNavigation) {
-					setInput(suggestion.cmd)
-				} else {
-					setInput(':' + suggestion.cmd)
-				}
+				setInput(suggestion.cmd)
 			}
 			return
 		}
@@ -150,11 +127,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 			} else if (suggestions.length > 0 && safeSelectedIndex !== -1) {
 				const suggestion = suggestions[safeSelectedIndex]
 				if (suggestion) {
-					if (isNavigation) {
-						handleCommand(suggestion.cmd)
-					} else {
-						handleCommand(':' + suggestion.cmd)
-					}
+					handleCommand(suggestion.cmd)
 				}
 			}
 		}
@@ -183,20 +156,13 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 		return () => window.removeEventListener('keydown', handleGlobalKeyDown)
 	}, [isVisible])
 
-	const getStatusText = () => {
-		if (session?.user) {
-			return `-- AUTHENTICATED -- ${session.user.name || session.user.email}`
-		}
-		return '-- NORMAL --'
-	}
-
 	return (
 		<>
 			{/* Mobile Trigger Button */}
 			<motion.button
 				onClick={() => {
 					setIsVisible(true)
-					setInput(':')
+					setInput('/')
 				}}
 				className="fixed bottom-4 right-4 z-[9990] w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white shadow-lg md:hidden"
 				whileTap={{ scale: 0.95 }}
@@ -233,12 +199,10 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 									autoCorrect="off"
 									spellCheck="false"
 								/>
-								{/* Blinking cursor visual if needed, though native cursor is usually fine. 
-                                    Let's rely on native cursor for now for better mobile XP */}
 							</div>
 
-							<div className="text-zinc-500 text-xs whitespace-nowrap ml-4">
-								{getStatusText()}
+							<div className="text-xs whitespace-nowrap ml-4 flex items-center gap-1.5 text-zinc-500">
+								-- NORMAL --
 							</div>
 						</div>
 						{suggestions.length > 0 && (
@@ -248,22 +212,10 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 										<div
 											key={s.cmd}
 											className={`flex gap-2 p-1 ${index === safeSelectedIndex ? 'bg-zinc-800 text-green-400' : ''}`}
-											onClick={() => {
-												if (isNavigation) {
-													handleCommand(s.cmd)
-												} else {
-													handleCommand(':' + s.cmd)
-												}
-											}}
+											onClick={() => handleCommand(s.cmd)}
 										>
-											<span className="w-20 flex-shrink-0">
-												{isNavigation
-													? s.cmd
-													: `:${s.cmd}`}
-											</span>
-											<span className="text-zinc-500">
-												{s.desc}
-											</span>
+											<span className="w-20 flex-shrink-0">{s.cmd}</span>
+											<span className="text-zinc-500">{s.desc}</span>
 										</div>
 									))}
 								</div>
@@ -272,8 +224,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 						{suggestions.length === 0 && (
 							<div className="container mx-auto px-4 pb-2">
 								<div className="text-xs text-zinc-600 font-mono flex flex-wrap gap-4">
-									<span>:signin - Authenticate</span>
-									<span>:signout - Sign out</span>
+									<span>/path - Navigate to route</span>
 									<span>ESC - Close</span>
 								</div>
 							</div>

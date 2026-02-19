@@ -4,17 +4,9 @@ import { db } from 'db'
 import { projects, projectSettings } from 'schema'
 import { eq, gt, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { isAdmin } from '@/lib/auth-guard'
-
 type MutationResult<T = void> =
 	| { success: true; data?: T }
 	| { success: false; error: string }
-
-async function guardAdmin(): Promise<MutationResult> {
-	const admin = await isAdmin()
-	if (!admin) return { success: false, error: 'Unauthorized' }
-	return { success: true }
-}
 
 export async function createProject(data: {
 	title: string
@@ -34,8 +26,6 @@ export async function createProject(data: {
 	defaultOpen?: boolean
 	showIndicator?: boolean
 }): Promise<MutationResult<{ id: string }>> {
-	const guard = await guardAdmin()
-	if (!guard.success) return guard
 
 	if (!data.title?.trim())
 		return { success: false, error: 'Title is required' }
@@ -83,8 +73,6 @@ export async function updateProject(
 		showIndicator: boolean
 	}>
 ): Promise<MutationResult> {
-	const guard = await guardAdmin()
-	if (!guard.success) return guard
 
 	await db
 		.update(projects)
@@ -98,8 +86,6 @@ export async function updateProject(
 }
 
 export async function deleteProject(id: string): Promise<MutationResult> {
-	const guard = await guardAdmin()
-	if (!guard.success) return guard
 
 	const [deleted] = await db
 		.delete(projects)
@@ -123,8 +109,6 @@ export async function reorderProject(
 	id: string,
 	newIdx: number
 ): Promise<MutationResult> {
-	const guard = await guardAdmin()
-	if (!guard.success) return guard
 
 	const [project] = await db
 		.select()
@@ -166,8 +150,6 @@ export async function moveProject(
 	id: string,
 	direction: 'up' | 'down'
 ): Promise<MutationResult> {
-	const guard = await guardAdmin()
-	if (!guard.success) return guard
 
 	const [project] = await db
 		.select()
@@ -201,8 +183,6 @@ export async function moveProject(
 }
 
 export async function updateSettings(showN: number): Promise<MutationResult> {
-	const guard = await guardAdmin()
-	if (!guard.success) return guard
 
 	if (showN < 1 || showN > 50)
 		return { success: false, error: 'showN must be between 1 and 50' }

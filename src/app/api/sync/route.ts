@@ -5,7 +5,6 @@ import {
 	syncSpotifyListens,
 	getSyncStatus
 } from '@/server/services/activity-sync'
-import { isAdmin } from '@/utils/is-admin'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
@@ -40,13 +39,10 @@ export async function POST(request: NextRequest) {
 		const isVercelCron = request.headers.get('x-vercel-cron') === '1'
 
 		if (!isCronRequest && !isVercelCron) {
-			const userIsAdmin = await isAdmin()
-			if (!userIsAdmin) {
-				return NextResponse.json(
-					{ error: 'Unauthorized' },
-					{ status: 401 }
-				)
-			}
+			return NextResponse.json(
+				{ error: 'Access denied: Only cron requests are allowed.' },
+				{ status: 401 }
+			)
 		}
 
 		const service = request.nextUrl.searchParams.get('service')

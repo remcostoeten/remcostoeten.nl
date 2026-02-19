@@ -1,11 +1,10 @@
 'use server'
 
-import { headers, cookies } from 'next/headers'
+import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { eq, and, sql } from 'drizzle-orm'
 import { db } from 'db'
 import { blogReactions, EMOJI_TYPES, type EmojiType } from '@/server/db/schema'
-import { auth } from '@/server/auth'
 
 /**
  * Get or generate a visitor ID for anonymous reactions
@@ -24,19 +23,6 @@ async function getVisitorId(): Promise<string> {
 }
 
 /**
- * Get the current user session
- */
-async function getSession() {
-	try {
-		return await auth.api.getSession({
-			headers: await headers()
-		})
-	} catch {
-		return null
-	}
-}
-
-/**
  * Toggle a reaction on a blog post
  * For authenticated users, uses userId
  * For anonymous users, uses visitorId
@@ -47,7 +33,6 @@ export async function toggleReaction(slug: string, emoji: EmojiType) {
 	}
 
 	try {
-		const session = await getSession()
 		const visitorId = await getVisitorId()
 
 		// Check if reaction already exists
@@ -83,7 +68,7 @@ export async function toggleReaction(slug: string, emoji: EmojiType) {
 				slug,
 				emoji,
 				visitorId,
-				userId: session?.user?.id || null
+				userId: null
 			})
 
 			revalidatePath(`/blog/${slug}`)
