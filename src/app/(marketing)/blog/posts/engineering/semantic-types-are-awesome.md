@@ -34,8 +34,6 @@ You define explicit semantics:
 ```ts
 export type ID = string // or whatever your back-end uses
 export type Time = string // ISO-8601 string, for example
-export type HTML = string // Content that is safe to render as HTML
-export type Markdown = string // Content that needs parsing
 ```
 
 In an attempt to keep the codebase clean and not have to redefine shapes over and over again, I'll create a `base.types.ts` file which will contain the base types.
@@ -58,7 +56,6 @@ This ensures consistency. We're almost certain that every persisted object will 
 This might seem like over-engineering, but it greatly reduces onboarding time and discrepancies. It prevents the "Wait, is usage time in milliseconds (number) or an ISO string?" questions months down the line.
 
 ## A Full Domain Example
-
 This is the front-end part of the implementation. For the back-end I use a similair strategy which you can read in [Part two - Scalable Drizzle ORM setup](/blog/engineering/scalable-drizzle-orm-setup).
 
 I'll be showcasing the code I have running in production for [Skriuw](https://skriuw.vercel.app).
