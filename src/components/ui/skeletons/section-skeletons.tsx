@@ -1,5 +1,5 @@
 import { Skeleton } from './skeleton'
-import { ActivitySkeleton } from './activity-skeleton'
+
 import { Plus } from 'lucide-react'
 
 export function TechStackSkeleton() {
@@ -368,19 +368,24 @@ export function BlogPostsSkeleton() {
 				{Array.from({ length: 3 }).map((_, i) => (
 					<div
 						key={i}
-						className="flex gap-4 py-3 border-b border-border/30 last:border-0"
+						className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 justify-between py-3 border-b border-border/30 last:border-0"
 					>
-						<Skeleton className="h-8 w-8 shrink-0" />
-						<div className="flex-1 space-y-2">
-							<div className="flex items-center justify-between">
-								<Skeleton className="h-4 w-48" />
-								<Skeleton className="h-3 w-16" />
+						<div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4 min-w-0 flex-1">
+							{/* Date placeholder */}
+							<Skeleton className="h-4 w-24 shrink-0" />
+							
+							<div className="min-w-0 flex-1 space-y-2">
+								{/* Title */}
+								<Skeleton className="h-5 w-48" />
+								{/* Summary */}
+								<Skeleton className="h-4 w-full max-w-md hidden sm:block" />
 							</div>
-							<Skeleton className="h-3 w-full max-w-xl" />
-							<div className="flex gap-2 pt-1">
-								<Skeleton className="h-5 w-16 rounded-full" />
-								<Skeleton className="h-5 w-20 rounded-full" />
-							</div>
+						</div>
+
+						{/* Right side stats */}
+						<div className="hidden sm:flex items-center gap-4">
+							<Skeleton className="h-3 w-16" />
+							<Skeleton className="h-3 w-12" />
 						</div>
 					</div>
 				))}

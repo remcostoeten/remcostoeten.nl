@@ -65,8 +65,15 @@ export default async function AdminPage() {
 
 	const postsWithStats = allPosts.map(post => {
 		const stats = statsMap.get(post.slug)
+		// Prioritize DB draft status if available, fallback to file metadata
+		const isDraft = stats?.isDraft ?? post.metadata.draft ?? false
+		
 		return {
 			...post,
+			metadata: {
+				...post.metadata,
+				draft: isDraft
+			},
 			totalViews: stats?.totalViews || 0,
 			uniqueViews: stats?.uniqueViews || 0
 		}

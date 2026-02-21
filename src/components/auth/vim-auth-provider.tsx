@@ -6,7 +6,7 @@ import { VimStatusBar } from '@/components/vim-status-bar'
 import { OAuthModal } from '@/components/auth/oauth-modal'
 import { useVimCommand } from '@/hooks/use-vim-command'
 import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow'
-import { useBlogFilter } from '@/hooks/use-blog-filter'
+
 const ALLOWED_GITHUB_USERNAME = 'remcostoeten'
 
 type Props = {
@@ -54,8 +54,7 @@ export function VimAuthProvider({ children }: Props) {
 	return (
 		<>
 			<div
-				// @ts-expect-error - inert is not yet in React types
-				inert={showOAuthModal ? '' : undefined}
+				inert={showOAuthModal ? true : undefined}
 				// aria-hidden is also good practice when inert is used for accessibility
 				aria-hidden={showOAuthModal}
 			>

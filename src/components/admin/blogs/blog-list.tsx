@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useTransition } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
@@ -43,7 +44,7 @@ function BlogCard({ post }: { post: BlogPost }) {
 		new Date(post.metadata.publishedAt) >
 		new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 
-	function handleToggleDraft() {
+
 	function handleToggleDraft() {
 		startTransition(async () => {
 			try {
@@ -55,7 +56,6 @@ function BlogCard({ post }: { post: BlogPost }) {
 			}
 		})
 	}
-	}
 
 	return (
 		<Card className="group hover:border-primary/30 transition-colors">
@@ -63,21 +63,23 @@ function BlogCard({ post }: { post: BlogPost }) {
 				<div className="flex items-start justify-between gap-3">
 					<div className="flex-1 min-w-0">
 						<div className="flex items-center gap-2 mb-1">
-							<button
-								onClick={handleToggleDraft}
-								disabled={isPending}
-								title={isDraft ? 'Click to publish' : 'Click to unpublish'}
-							>
-								<Badge
-									variant={isDraft ? 'secondary' : 'default'}
-									className={`text-[10px] cursor-pointer transition-opacity ${isPending ? 'opacity-50' : 'hover:opacity-80'}`}
-								>
+							<div className="flex items-center gap-2">
+								<Switch
+									checked={!isDraft}
+									onCheckedChange={handleToggleDraft}
+									disabled={isPending}
+									className="scale-75 data-[state=checked]:bg-green-500"
+								/>
+								<span className="text-xs text-muted-foreground min-w-[60px]">
 									{isPending ? (
-										<Loader2 className="w-3 h-3 animate-spin mr-1" />
-									) : null}
-									{isDraft ? 'Draft' : 'Published'}
-								</Badge>
-							</button>
+										<Loader2 className="w-3 h-3 animate-spin inline mr-1" />
+									) : isDraft ? (
+										'Draft'
+									) : (
+										'Published'
+									)}
+								</span>
+							</div>
 							{isNew && !isDraft && (
 								<Badge
 									variant="outline"
