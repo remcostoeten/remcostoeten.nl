@@ -17,6 +17,8 @@ import {
 import { CollapsibleMedia } from './collapsible-media'
 import { SpotifyApiExplorer } from './spotify-api-explorer'
 import { SpotifyEnvGenerator } from './spotify-env-generator'
+import { UseShortcutDemo } from './use-shortcut-demo'
+import { UseShortcutSyntaxLab } from './use-shortcut-syntax-lab'
 
 function Table({ data }) {
 	let headers = data.headers.map((header, index) => (
@@ -170,6 +172,8 @@ let components = {
 	NoticeRegular,
 	SpotifyEnvGenerator,
 	SpotifyApiExplorer,
+	UseShortcutDemo,
+	UseShortcutSyntaxLab,
 	code: ({ children, ...props }) => {
 		// Check if this is inline code (not inside a pre block)
 		const isInline = !props.className?.includes('language-')
