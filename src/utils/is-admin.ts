@@ -1,5 +1,5 @@
 import { auth } from '@/server/auth'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
 
 import { env } from '@/server/env'
 
@@ -13,8 +13,16 @@ const ADMIN_EMAIL = env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL
  */
 export async function isAdmin(): Promise<boolean> {
 	try {
+		const cookieStore = await cookies()
+		const cookieHeader = cookieStore
+			.getAll()
+			.map(cookie => `${cookie.name}=${cookie.value}`)
+			.join('; ')
+
 		const session = await auth.api.getSession({
-			headers: await headers()
+			headers: {
+				cookie: cookieHeader
+			}
 		})
 
 		if (!session?.user) {

@@ -143,9 +143,16 @@ function getMDXData(dir) {
  * Get all blog posts including drafts (for admin use)
  */
 export function getAllBlogPosts() {
-	return getMDXData(
+	const posts = getMDXData(
 		path.join(process.cwd(), 'src', 'app', '(marketing)', 'blog', 'posts')
 	).filter(post => post && post.slug && post.metadata && post.metadata.title)
+
+	// Deduplicate by slug
+	const uniquePosts = Array.from(
+		new Map(posts.map(post => [post.slug, post])).values()
+	)
+
+	return uniquePosts
 }
 
 /**

@@ -57,7 +57,12 @@ export const auth = betterAuth({
 		provider: 'pg',
 		schema: authSchema
 	}),
-	trustedOrigins: [env.BETTER_AUTH_URL, 'http://localhost:3000'],
+	trustedOrigins: [
+		env.BETTER_AUTH_URL,
+		'http://localhost:3000',
+		'http://localhost:3001',
+		'http://localhost:3002'
+	],
 	socialProviders,
 	plugins: [admin()]
 })

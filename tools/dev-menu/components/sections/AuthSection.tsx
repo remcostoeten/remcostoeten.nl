@@ -2,6 +2,7 @@
 
 import { LogOut } from 'lucide-react'
 import { Session } from '../types'
+import { useState, useEffect } from 'react'
 
 interface AuthSectionProps {
 	session?: Session | null
@@ -9,7 +10,13 @@ interface AuthSectionProps {
 }
 
 export function AuthSection({ session, onSignOut }: AuthSectionProps) {
-	if (!session) return null
+	const [mounted, setMounted] = useState(false)
+	
+	useEffect(() => {
+		setMounted(true)
+	}, [])
+
+	if (!session || !mounted) return null
 
 	return (
 		<div className="p-2 m-2 bg-[hsl(0,0%,8.6%)] border border-[hsl(0,0%,18%)]">
