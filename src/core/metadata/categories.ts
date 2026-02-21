@@ -15,6 +15,6 @@ export const categoriesMetadata = createBaseMetadata({
 		'web development',
 		'programming'
 	],
-	canonical: '/blog/categories',
+	canonical: '/blog/topics',
 	siteName: 'Blog'
 })

@@ -52,6 +52,9 @@ export async function BlogPosts({
 			title="Recent Posts"
 			headerAction={<PostCountHeader count={sortedBlogs.length} />}
 		>
+			<p className="text-sm px-4 text-muted-foreground/80 leading-relaxed font-mono tracking-tight pt-4 pb-2">
+				Writings on frontend engineering, tooling rabbit holes, and the occasional mass over-engineering of simple ideas.
+			</p>
 			<BlogPostsClient posts={sortedBlogs} />
 		</Section>
 	)

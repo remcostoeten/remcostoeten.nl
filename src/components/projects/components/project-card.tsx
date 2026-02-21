@@ -120,12 +120,15 @@ export const ProjectCard = memo(function ProjectCard({
 									featured
 								</span>
 							)}
-							{!project.spotlight &&
-								project.preview?.type === 'iframe' && (
-									<span className="text-[8px] sm:text-[9px] px-1 py-px bg-foreground/5 text-muted-foreground whitespace-nowrap shrink-0">
-										live demo
+							{project.preview?.type === 'iframe' && (
+								<span className="flex items-center gap-1.5 text-[9px] font-medium tracking-wider uppercase px-1.5 py-0.5 bg-emerald-500/5 text-emerald-500 border border-emerald-500/20 rounded-md shadow-[0_0_8px_-4px_rgba(16,185,129,0.4)] whitespace-nowrap shrink-0">
+									<span className="relative flex h-1.5 w-1.5">
+										<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
+										<span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
 									</span>
-								)}
+									Live
+								</span>
+							)}
 							{project.git?.lastUpdated && (
 								<span className="text-[8px] sm:text-[9px] text-muted-foreground/40">
 									<span className="hidden md:inline">
@@ -181,8 +184,8 @@ export const ProjectCard = memo(function ProjectCard({
 										? 'text-foreground'
 										: 'text-muted-foreground hover:text-foreground',
 									highlightPreview &&
-										!isPreviewVisible &&
-										'text-foreground'
+									!isPreviewVisible &&
+									'text-foreground'
 								)}
 								style={{
 									transitionTimingFunction: EASE_OUT_EXPO

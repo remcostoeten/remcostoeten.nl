@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Terminal, X, Settings } from 'lucide-react'
+import { Terminal, X, Settings, Home } from 'lucide-react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { DevWidgetConfig, Corner, Session } from './types'
 import { AuthSection } from './sections/AuthSection'
@@ -15,14 +16,6 @@ interface DevWidgetProps extends DevWidgetConfig {
 	onSignOut?: () => void
 }
 
-const DEFAULT_ROUTES = [
-	'/',
-	'/',
-	'/blog',
-	'/blog/[...slug]',
-	'/projects',
-	'/api/example'
-]
 export function DevWidget({
 	session,
 	onSignOut,
@@ -134,6 +127,13 @@ export function DevWidget({
 						</span>
 					</div>
 					<div className="flex items-center gap-1">
+						<Link
+							href="/"
+							className="text-muted-foreground hover:text-foreground transition-colors p-1"
+							title="Go Home"
+						>
+							<Home className="w-3.5 h-3.5" />
+						</Link>
 						{showSettings && (
 							<button
 								onClick={() =>

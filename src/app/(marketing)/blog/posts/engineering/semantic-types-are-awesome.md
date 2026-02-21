@@ -170,7 +170,7 @@ In the app I'm using as an example (Skriuw), I have a core CRUD layer consisting
 
 This does the heavy lifting for the entire application. Instead of writing a specific function to create a Note, and another to create a Tag, I possess a single generic `create` function.
 
-This is where the power of semantic typing truly shines. By using a generic constraint like `<T extends BaseEntity>`, I can tell TypeScript: "I don't care what specific object this is—whether it's a Note, a User, or a settings config—as long as it adheres to my Base Entity semantics."
+This is where the power of semantic typing truly shines. By using a generic constraint like `T extends BaseEntity`, I can tell TypeScript: "I don't care what specific object this is—whether it's a Note, a User, or a settings config—as long as it adheres to my Base Entity semantics."
 
 ```ts
 // packages/crud/src/operations/create.ts
@@ -178,7 +178,7 @@ export async function create<T extends BaseEntity>(
 	storageKey: string,
 	data: CreateInput<T>,
 	options?: CreateOptions<T>
-): Promise<CrudResult<T>> {
+): Promise<CrudResult<T>> {	
 	// ... logic that safely accesses .id, .createdAt because it KNOWS T has them
 }
 ```
