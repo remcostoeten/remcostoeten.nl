@@ -154,56 +154,66 @@ function getEventIcon(type: GitHubEventDetail['type']) {
 	}
 }
 
-type IntroPhrase = {
+type ActivityGrammar = {
 	prefix: string
-	connector: string
+	repoToEventConnector?: string
+	showEventBadge: boolean
 }
 
-const INTRO_PHRASES: Record<string, IntroPhrase[]> = {
+const ACTIVITY_GRAMMAR: Record<string, ActivityGrammar[]> = {
 	commit: [
-		{ prefix: 'Just pushed to', connector: 'with' },
-		{ prefix: 'Shipped code to', connector: 'for' },
-		{ prefix: 'Working in', connector: 'with' },
-		{ prefix: 'Committed in', connector: 'with' }
+		{ prefix: 'Just pushed to', repoToEventConnector: 'with', showEventBadge: true },
+		{ prefix: 'Shipped code in', repoToEventConnector: 'with', showEventBadge: true },
+		{ prefix: 'Working in', repoToEventConnector: 'with', showEventBadge: true }
 	],
 	pr: [
-		{ prefix: 'Opened a PR in', connector: 'for' },
-		{ prefix: 'Submitted changes in', connector: 'for' },
-		{ prefix: 'Contributed in', connector: 'with' }
+		{ prefix: 'Opened a PR in', repoToEventConnector: 'for', showEventBadge: true },
+		{ prefix: 'Submitted changes in', repoToEventConnector: 'for', showEventBadge: true }
 	],
 	create: [
-		{ prefix: 'Just created', connector: 'named' },
-		{ prefix: 'Started', connector: 'called' },
-		{ prefix: 'Spun up', connector: 'named' }
+		{ prefix: 'Created in', repoToEventConnector: 'as', showEventBadge: true },
+		{ prefix: 'Started in', repoToEventConnector: 'as', showEventBadge: true }
 	],
 	review: [
-		{ prefix: 'Reviewed', connector: 'for' },
-		{ prefix: 'Left review feedback in', connector: 'for' }
+		{ prefix: 'Reviewed in', repoToEventConnector: 'for', showEventBadge: true },
+		{ prefix: 'Left review feedback in', repoToEventConnector: 'for', showEventBadge: true }
 	],
 	issue: [
-		{ prefix: 'Opened an issue in', connector: 'about' },
-		{ prefix: 'Debugging in', connector: 'around' }
+		{ prefix: 'Opened an issue in', repoToEventConnector: 'about', showEventBadge: true },
+		{ prefix: 'Debugging in', repoToEventConnector: 'around', showEventBadge: true }
 	],
 	star: [
-		{ prefix: 'Starred', connector: '' },
-		{ prefix: 'Bookmarked', connector: '' }
+		{ prefix: 'Starred', showEventBadge: false },
+		{ prefix: 'Bookmarked', showEventBadge: false }
 	],
-	fork: [{ prefix: 'Forked', connector: 'from' }],
+	fork: [
+		{ prefix: 'Forked', showEventBadge: false }
+	],
 	release: [
-		{ prefix: 'Released', connector: 'as' },
-		{ prefix: 'Shipped', connector: 'as' }
+		{ prefix: 'Released in', repoToEventConnector: 'as', showEventBadge: true },
+		{ prefix: 'Shipped in', repoToEventConnector: 'as', showEventBadge: true }
+	],
+	delete: [
+		{ prefix: 'Removed in', repoToEventConnector: 'as', showEventBadge: true }
 	],
 	default: [
-		{ prefix: 'Active in', connector: 'with' },
-		{ prefix: 'Working in', connector: 'on' }
+		{ prefix: 'Active in', repoToEventConnector: 'with', showEventBadge: true },
+		{ prefix: 'Working in', repoToEventConnector: 'on', showEventBadge: true }
 	]
 }
 
-function getActivityIntro(
+function getActivityGrammar(
 	type: GitHubEventDetail['type'],
-	seed: number
-): IntroPhrase {
-	const phrases = INTRO_PHRASES[type] || INTRO_PHRASES.default
+	seed: number,
+	title: string
+): ActivityGrammar {
+	const phrases = ACTIVITY_GRAMMAR[type] || ACTIVITY_GRAMMAR.default
+	if (type === 'star' || type === 'fork') {
+		return { ...phrases[seed % phrases.length], showEventBadge: false }
+	}
+	if (!title || title.trim().length === 0) {
+		return { ...phrases[seed % phrases.length], showEventBadge: false }
+	}
 	return phrases[seed % phrases.length]
 }
 
@@ -551,7 +561,11 @@ export function ActivityFeed({
 	}
 
 	const repoName = getShortRepoName(currentActivity.repository)
-	const introPhrase = getActivityIntro(currentActivity.type, currentIndex)
+	const grammar = getActivityGrammar(
+		currentActivity.type,
+		currentIndex,
+		currentActivity.title
+	)
 	const isPrivate = currentActivity.isPrivate
 
 	return (
@@ -601,7 +615,7 @@ export function ActivityFeed({
 									variants={wordVariants}
 									className="text-muted-foreground/70 shrink-0"
 								>
-									{introPhrase.prefix}
+									{grammar.prefix}
 								</motion.span>
 
 								<motion.span variants={highlightVariants} className="shrink-0">
@@ -634,27 +648,28 @@ export function ActivityFeed({
 									</ProjectHoverWrapper>
 								</motion.span>
 
-								{introPhrase.connector &&
-									introPhrase.connector !== '—' && (
+								{grammar.repoToEventConnector && grammar.showEventBadge && (
 										<motion.span
 											variants={wordVariants}
 											className="text-muted-foreground/50 shrink-0"
 										>
-											{introPhrase.connector}
+											{grammar.repoToEventConnector}
 										</motion.span>
 									)}
 
-								<motion.span
-									variants={highlightVariants}
-									className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] min-w-0 shrink"
-								>
-									<span className="opacity-60 shrink-0">
-										{getEventIcon(currentActivity.type)}
-									</span>
-									<span className="font-medium text-[12px] text-foreground/80 truncate">
-										{currentActivity.title}
-									</span>
-								</motion.span>
+								{grammar.showEventBadge && (
+									<motion.span
+										variants={highlightVariants}
+										className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] min-w-0 shrink"
+									>
+										<span className="opacity-60 shrink-0">
+											{getEventIcon(currentActivity.type)}
+										</span>
+										<span className="font-medium text-[12px] text-foreground/80 truncate">
+											{currentActivity.title}
+										</span>
+									</motion.span>
+								)}
 
 								<motion.span
 									variants={wordVariants}
@@ -791,7 +806,7 @@ export function ActivityFeed({
 							{/* Single-line GitHub activity - no wrapping */}
 							<div className="flex items-center gap-1.5 min-w-0 pr-8">
 								<span className="text-muted-foreground/80 font-normal shrink-0">
-									{introPhrase.prefix}
+									{grammar.prefix}
 								</span>
 
 								<ProjectHoverWrapper
@@ -820,21 +835,23 @@ export function ActivityFeed({
 									)}
 								</ProjectHoverWrapper>
 
-								{introPhrase.connector &&
-									introPhrase.connector !== '—' && (
+								{grammar.repoToEventConnector &&
+									grammar.showEventBadge && (
 										<span className="text-muted-foreground/60 font-light italic text-[12px] shrink-0">
-											{introPhrase.connector}
+											{grammar.repoToEventConnector}
 										</span>
 									)}
 
-								<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] text-foreground/90 font-medium min-w-0 shrink">
-									<span className="opacity-70 shrink-0">
-										{getEventIcon(currentActivity.type)}
+								{grammar.showEventBadge && (
+									<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] text-foreground/90 font-medium min-w-0 shrink">
+										<span className="opacity-70 shrink-0">
+											{getEventIcon(currentActivity.type)}
+										</span>
+										<span className="truncate text-[12px]">
+											{currentActivity.title}
+										</span>
 									</span>
-									<span className="truncate text-[12px]">
-										{currentActivity.title}
-									</span>
-								</span>
+								)}
 
 								<span className="inline-flex items-center gap-1 text-muted-foreground/40 text-[11px] shrink-0">
 									<span className="w-0.5 h-0.5 rounded-full bg-current" />
