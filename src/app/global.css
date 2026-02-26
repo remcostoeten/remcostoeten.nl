@@ -715,6 +715,39 @@
 	margin-bottom: 1.25rem;
 }
 
+/* In /blog, make section headers span the full bordered container, not the padded content box */
+.blog-layout .full-width-header {
+	width: calc(100% + (var(--spacing) * 6));
+	left: auto;
+	right: auto;
+	margin-left: calc(var(--spacing) * -3);
+	margin-right: calc(var(--spacing) * -3);
+}
+
+@media (min-width: 640px) {
+	.blog-layout .full-width-header {
+		width: calc(100% + (var(--spacing) * 8));
+		margin-left: calc(var(--spacing) * -4);
+		margin-right: calc(var(--spacing) * -4);
+	}
+}
+
+@media (min-width: 768px) {
+	.blog-layout .full-width-header {
+		width: calc(100% + (var(--spacing) * 12));
+		margin-left: calc(var(--spacing) * -6);
+		margin-right: calc(var(--spacing) * -6);
+	}
+}
+
+@media (min-width: 1024px) {
+	.blog-layout .full-width-header {
+		width: calc(100% + (var(--spacing) * 16));
+		margin-left: calc(var(--spacing) * -8);
+		margin-right: calc(var(--spacing) * -8);
+	}
+}
+
 @media (min-width: 640px) {
 	.full-width-header {
 		height: 48px;
@@ -761,6 +794,62 @@
 	.header-content-container {
 		padding-left: 0;
 		padding-right: 0;
+	}
+}
+
+.admin-glass-card {
+	background: hsl(var(--card) / 0.6);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid hsl(var(--border) / 0.5);
+	transition: border-color 0.2s ease;
+}
+
+.admin-glass-card:hover {
+	border-color: hsl(var(--brand-400) / 0.2);
+}
+
+.admin-nav-item {
+	transition: all 0.15s ease;
+}
+
+.admin-table-row {
+	transition: background-color 0.15s ease;
+}
+
+.admin-table-row:hover {
+	background-color: hsl(var(--muted) / 0.3);
+}
+
+.admin-table-row:hover .opacity-0 {
+	opacity: 1;
+}
+
+.admin-header-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 6px;
+	color: hsl(var(--muted-foreground));
+	transition: all 0.15s ease;
+}
+
+.admin-header-btn:hover {
+	color: hsl(var(--foreground));
+	background-color: hsl(var(--muted));
+}
+
+.admin-sidebar {
+	position: sticky;
+	top: 3.5rem;
+	height: calc(100vh - 3.5rem);
+	z-index: 20;
+}
+
+@media (min-width: 768px) {
+	.admin-sidebar {
+		top: 4rem;
+		height: calc(100vh - 4rem);
 	}
 }
 

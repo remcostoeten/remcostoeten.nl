@@ -1,5 +1,5 @@
 import { auth } from '@/server/auth'
-import { headers, cookies } from 'next/headers'
+import { headers } from 'next/headers'
 
 import { env } from '@/server/env'
 
@@ -29,25 +29,24 @@ function isAdminEmail(email?: string | null): boolean {
  */
 export async function isAdmin(): Promise<boolean> {
 	try {
-		const cookieStore = await cookies()
-		const cookieHeader = cookieStore
-			.getAll()
-			.map(cookie => `${cookie.name}=${cookie.value}`)
-			.join('; ')
+		const session = await getServerSession()
 
-		const session = await auth.api.getSession({
-			headers: {
-				cookie: cookieHeader
-			}
-		})
-
-		if (!session?.user) return false
+		if (!session?.user) {
+			console.log('[isAdmin] No user session found')
+			return false
+		}
 
 		const isEmailMatch = isAdminEmail(session.user.email)
 		const isRoleAdmin = session.user.role === 'admin'
 
-		return isRoleAdmin || isEmailMatch
-	} catch {
+		if (!isRoleAdmin && !isEmailMatch) {
+			console.log(`[isAdmin] User ${session.user.email} is not an admin`)
+			return false
+		}
+
+		return true
+	} catch (e) {
+		console.error('[isAdmin] Error checking admin status:', e)
 		return false
 	}
 }

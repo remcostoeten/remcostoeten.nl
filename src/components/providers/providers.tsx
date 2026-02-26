@@ -11,6 +11,7 @@ import { PostHogProvider } from '@/components/providers/posthog-provider'
 import { DevWidget } from '../../../tools/dev-menu'
 import { useSession } from '@/lib/auth-client'
 import { signOut } from '@/lib/auth-client'
+import { Analytics as RemcoAnalytics } from '@remcostoeten/analytics'
 
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
 
@@ -61,6 +62,7 @@ export function AppProviders({ children }: TProps) {
 
 							<Suspense fallback={null}>
 								<Analytics />
+								<RemcoAnalytics />
 							</Suspense>
 							<Suspense fallback={null}>
 								<SpeedInsights />

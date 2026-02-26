@@ -49,6 +49,11 @@ export const auth = betterAuth({
 		'http://localhost:3001',
 		'http://localhost:3002'
 	],
+	session: {
+		// Keep sessions persistent across browser/tab restarts for admin workflows.
+		expiresIn: 60 * 60 * 24 * 30,
+		updateAge: 60 * 60 * 24
+	},
 	socialProviders,
 	plugins: [admin()]
 })

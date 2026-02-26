@@ -5,9 +5,8 @@ import { signOut, useSession } from '@/lib/auth-client'
 import { VimStatusBar } from '@/components/vim-status-bar'
 import { OAuthModal } from '@/components/auth/oauth-modal'
 import { useVimCommand } from '@/hooks/use-vim-command'
+import { useBlogFilter } from '@/hooks/use-blog-filter'
 import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow'
-
-const ALLOWED_GITHUB_USERNAME = 'remcostoeten'
 
 type Props = {
 	children: React.ReactNode
@@ -16,6 +15,7 @@ type Props = {
 export function VimAuthProvider({ children }: Props) {
 	const { data: session } = useSession()
 	const [showOAuthModal, setShowOAuthModal] = useState(false)
+	const { setFilter } = useBlogFilter()
 	const { command: backgroundCommand, clearCommand: clearBackgroundCommand } =
 		useVimCommand()
 
@@ -27,6 +27,12 @@ export function VimAuthProvider({ children }: Props) {
 			setShowOAuthModal(true)
 		} else if ((cmd === 'signout' || cmd === 'logout') && session) {
 			await signOut()
+		} else if (cmd === 'showdrafts' || cmd === 'show drafts') {
+			setFilter('drafts')
+		} else if (cmd === 'showpublished' || cmd === 'show published') {
+			setFilter('published')
+		} else if (cmd === 'showall' || cmd === 'show all') {
+			setFilter('all')
 		}
 	}
 
@@ -36,20 +42,6 @@ export function VimAuthProvider({ children }: Props) {
 			clearBackgroundCommand()
 		}
 	}, [backgroundCommand, clearBackgroundCommand])
-
-	useEffect(() => {
-		if (session?.user) {
-			const isAllowed =
-				session.user.name?.toLowerCase() === ALLOWED_GITHUB_USERNAME
-
-			if (!isAllowed) {
-				console.warn(
-					'Unauthorized user attempted login, signing out...'
-				)
-				signOut()
-			}
-		}
-	}, [session])
 
 	return (
 		<>

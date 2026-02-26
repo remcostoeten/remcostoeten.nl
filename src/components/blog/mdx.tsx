@@ -235,6 +235,7 @@ let components = {
 				code={code}
 				language={language}
 				fileName={fileName}
+				disableTopBar={!fileName}
 				highlightLines={highlightLines}
 				variant={variant}
 				{...props}

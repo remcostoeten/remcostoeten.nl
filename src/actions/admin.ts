@@ -88,100 +88,53 @@ export async function getAdminMetrics() {
 	}
 }
 
-/**
- * Toggle the draft status of a blog post by updating the database.
- * This overrides the file-system based draft status.
- */
 export async function toggleBlogDraft(
 	slug: string
-): Promise<{ success: boolean; draft: boolean }> {
-	const admin = await isAdmin()
-	if (!admin) {
-		throw new Error('Unauthorized')
+): Promise<{ success: boolean; draft: boolean; error?: string }> {
+	try {
+		const admin = await isAdmin()
+		if (!admin) {
+			return { success: false, draft: false, error: 'Unauthorized' }
+		}
+
+		const existingPost = await db.query.blogPosts.findFirst({
+			where: eq(blogPosts.slug, slug)
+		})
+
+		let newDraftStatus: boolean
+
+		if (existingPost) {
+			newDraftStatus = !existingPost.isDraft
+			await db
+				.update(blogPosts)
+				.set({ isDraft: newDraftStatus })
+				.where(eq(blogPosts.slug, slug))
+		} else {
+			newDraftStatus = true
+			await db
+				.insert(blogPosts)
+				.values({
+					slug,
+					isDraft: newDraftStatus
+				})
+				.onConflictDoUpdate({
+					target: blogPosts.slug,
+					set: { isDraft: newDraftStatus }
+				})
+		}
+
+		revalidatePath('/admin')
+		revalidatePath('/blog')
+
+		return { success: true, draft: newDraftStatus }
+	} catch (e) {
+		console.error('[toggleBlogDraft] Failed:', e)
+		return {
+			success: false,
+			draft: false,
+			error: e instanceof Error ? e.message : 'Unknown error'
+		}
 	}
-
-	// First checks if the record exists
-	const existingPost = await db.query.blogPosts.findFirst({
-		where: eq(blogPosts.slug, slug)
-	})
-
-	let newDraftStatus = true
-
-	if (existingPost) {
-		// Toggle existing status
-		newDraftStatus = !existingPost.isDraft
-		await db
-			.update(blogPosts)
-			.set({ isDraft: newDraftStatus })
-			.where(eq(blogPosts.slug, slug))
-	} else {
-		// If no record exists, creating one means we are setting a property on it.
-		// If we are "toggling", we probably want to toggle away from the default.
-		// However, without a record, we assume the file system is the source of truth.
-		// To properly toggle, we should first know what the file system says, OR
-		// we just assume that if the user clicks "toggle draft", they want to change whatever it currently is.
-		// But simpler: if it's not in DB, it's effectively "published" (or whatever the file says).
-		// Let's assume we want to explicitely set it to DRAFT if it doesn't exist?
-		// Actually, let's insert it with isDraft=true if we clicked toggle.
-		// Default behavior:
-		// If file says draft=false (published), and we toggle -> we want draft=true.
-		// If file says draft=true (draft), and we toggle -> we want draft=false.
-
-		// IMPROVED STRATEGY:
-		// We can't know the file state easily here without reading it.
-		// But generally, the UI shows the current state.
-		// If the UI shows "Published", we want to set "Draft".
-		// If the UI whows "Draft", we want to set "Published".
-		// The safe bet for a new DB record is to toggle based on what the UI *likely* saw.
-		// BUT, to be robust: let's just Upsert.
-		// If we don't have a record, let's assume valid "default" behavior for the DB is "false" (published)
-		// implying that if we are toggling, we probably want to make it a draft (true).
-		// OR we can read the file info?
-		// Let's keep it simple: insert as true (Draft) if it doesn't exist.
-		// Why? Because usually you toggle a published post to draft.
-		// If it's already a draft in file, it stays draft.
-		// Wait, if it's draft in file, `getAllBlogPosts` filters it out unless admin.
-		// If we want to publish a file-system draft, we need to set isDraft=false in DB.
-
-		// Let's try to find the current state from the file system to be smart?
-		// No, that re-introduces FS dependency we might want to avoid or keep minimal.
-
-		// DECISION:
-		// If record missing, we insert with `isDraft: true`.
-		// Motivation: If it's missing, it's likely complying with file state.
-		// If we toggle, we usually want to hide it (make draft).
-		// If we want to publish a draft, we'd hope a record exists?
-		// Actually, if it's a file-draft, it's hidden. Toggling it means we want to show it.
-		// If we insert `isDraft: true`, it stays hidden. That's bad.
-
-		// Let's use the UI payload? No, security.
-		// Let's just default to TRUE (Draft) on first insert,
-		// UNLESS we can verify otherwise.
-		// Better approach: Check if it's currently considered a draft by the system?
-		// We can reuse the `getAllBlogPosts` logic but that is heavy.
-
-		// Alternative: just Upsert with a default.
-		// Let's stick to: Insert as Draft (true).
-		// If the user meant to Publish, they can toggle again.
-		// It's safer to accidentally Draft than accidentally Publish.
-
-		newDraftStatus = true
-		await db
-			.insert(blogPosts)
-			.values({
-				slug,
-				isDraft: newDraftStatus
-			})
-			.onConflictDoUpdate({
-				target: blogPosts.slug,
-				set: { isDraft: newDraftStatus }
-			})
-	}
-
-	revalidatePath('/admin')
-	revalidatePath('/blog')
-
-	return { success: true, draft: newDraftStatus }
 }
 
 

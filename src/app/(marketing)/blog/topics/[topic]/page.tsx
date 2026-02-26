@@ -3,6 +3,7 @@ import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
+import { PageHeader } from '@/components/ui/page-header'
 
 // Must be dynamic due to auth (headers) usage
 export const dynamic = 'force-dynamic'
@@ -54,18 +55,12 @@ export default async function TopicPage({
 				Back to topics
 			</Link>
 
-			<div className="mb-12">
-				<div className="flex items-center gap-3 mb-4">
-					<Hash className="w-6 h-6 text-lime-400" />
-					<h1 className="font-semibold text-3xl tracking-tighter text-foreground">
-						{topicName}
-					</h1>
-				</div>
-				<p className="text-muted-foreground">
-					{posts.length} {posts.length === 1 ? 'post' : 'posts'} about
-					this topic
-				</p>
-			</div>
+			<PageHeader
+					title={topicName}
+					icon={<Hash className="w-6 h-6 text-lime-400" />}
+					description={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} about this topic`}
+					className="mb-12"
+				/>
 
 			<ul className="flex flex-col m-0 p-0 list-none">
 				{posts
