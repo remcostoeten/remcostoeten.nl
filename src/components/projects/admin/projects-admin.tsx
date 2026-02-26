@@ -51,7 +51,7 @@ export function ProjectsAdmin({ initialProjects, initialSettings }: Props) {
 				<button
 					onClick={handleCreate}
 					disabled={isPending}
-					className="px-4 py-2 text-sm bg-zinc-100 text-zinc-900 hover:bg-zinc-200 disabled:opacity-50"
+					className="h-11 px-6 text-sm font-medium bg-zinc-100 text-zinc-900 hover:bg-zinc-200 disabled:opacity-50 transition-colors"
 				>
 					{isPending ? 'Creating...' : 'Add Project'}
 				</button>
@@ -59,7 +59,7 @@ export function ProjectsAdmin({ initialProjects, initialSettings }: Props) {
 
 			<SettingsPanel settings={settings} onUpdate={setSettings} />
 
-			<div className="grid gap-6 lg:grid-cols-[1fr,400px]">
+			<div className="grid gap-6 grid-cols-1 lg:grid-cols-[1fr,400px]">
 				<ProjectList
 					projects={projects}
 					selectedId={selectedId}

@@ -12,6 +12,6 @@ export const { signIn, signOut, useSession } = authClient
 export const signInWithPopup = async (provider: 'github' | 'google'): Promise<void> => {
 	await authClient.signIn.social({
 		provider,
-		callbackURL: '/admin' // Redirect to admin or stay on page
+		callbackURL: '/admin'
 	})
 }

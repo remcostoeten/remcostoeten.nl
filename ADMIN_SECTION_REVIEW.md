@@ -300,9 +300,9 @@ className="p-2.5 text-zinc-500 hover:text-zinc-300 disabled:opacity-30"
 - `/src/components/projects/admin/project-editor.tsx` - Project editor form
 
 **Auth Files:**
-- `/src/actions/auth.ts` - Cookie-based auth check (redundant)
-- `/src/lib/auth-guard.ts` - Alternative auth check (redundant)
-- `/src/utils/is-admin.ts` - Server utility auth check (active?)
+- `/src/actions/auth.ts` - Cookie-based auth check (active)
+- `/src/lib/auth-guard.ts` - Alternative auth check (active)
+- `/src/utils/is-admin.ts` - Server utility auth check (active)
 
 ---
 

@@ -2,6 +2,7 @@ import { getAllTags } from '@/utils/utils'
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { topicsMetadata } from '@/core/metadata'
+import { PageHeader } from '@/components/ui/page-header'
 
 // Enable ISR - revalidate every 60 seconds
 export const revalidate = 60
@@ -12,37 +13,36 @@ export default function TopicsPage() {
 	const tags = getAllTags()
 
 	return (
-		<section>
-			<h1 className="font-semibold text-2xl mb-8 tracking-tighter">
-				Topics
-			</h1>
+		<section className="space-y-6 sm:space-y-8">
+			<PageHeader
+				title="Topics"
+				description="Browse writing by topic and jump straight into posts."
+				className="pt-1 sm:pt-2 md:pt-4"
+			/>
 
-			<ul className="flex flex-col m-0 p-0 list-none" role="list">
+			<ul
+				className="m-0 mt-4 flex list-none flex-col border-t border-border/40 p-0"
+				role="list"
+			>
 				{tags.map((tag, index) => (
 					<li key={tag.name} className="block p-0 m-0">
 						<Link
 							href={`/blog/topics/${tag.name.toLowerCase()}`}
-							className="group relative block animate-stagger overflow-hidden first:rounded-t-2xl last:rounded-b-2xl [&:last-child>article]:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
+							className="group relative flex items-center justify-between gap-3 border-b border-border/40 px-1 py-4 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
 							style={{ animationDelay: `${index * 50}ms` }}
 						>
-							<div
-								className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-								aria-hidden="true"
-							/>
-
-							<article className="relative flex items-center justify-between gap-4 py-6 px-4 border-b border-neutral-800/60 z-10">
-								<div className="flex items-center gap-3">
-									<Hash className="w-4 h-4 text-neutral-600 group-hover:text-lime-400 transition-colors" />
-									<span className="font-medium text-neutral-100 group-hover:text-lime-400 transition-colors">
-										{tag.name}
-									</span>
-								</div>
-
-								<span className="text-sm text-neutral-500 tabular-nums">
-									{tag.count}{' '}
-									{tag.count === 1 ? 'post' : 'posts'}
+							<div className="flex items-center gap-3 min-w-0">
+								<span className="flex size-7 items-center justify-center bg-secondary/40 text-muted-foreground transition-colors group-hover:text-primary">
+									<Hash className="size-3.5" />
 								</span>
-							</article>
+								<span className="font-medium text-foreground transition-colors group-hover:text-primary truncate">
+										{tag.name}
+								</span>
+							</div>
+
+							<span className="text-xs sm:text-sm text-muted-foreground/70 tabular-nums whitespace-nowrap">
+								{tag.count} {tag.count === 1 ? 'post' : 'posts'}
+							</span>
 						</Link>
 					</li>
 				))}

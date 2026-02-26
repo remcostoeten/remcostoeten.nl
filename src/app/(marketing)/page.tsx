@@ -50,7 +50,7 @@ export default function Page() {
         <div className="space-y-4">
           <Section title="Tech Stack" noHeaderMargin className='!mb-0 border-b-0'>
             <div className="pt-4 space-y-4">
-              <p className="text-sm px-4 text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
+              <p className="text-sm text-muted-foreground/80 leading-relaxed font-mono px-4 md:px-5tracking-tight">
                 These technologies are my daily drivers but certainly not exclusive. Aspiring full stack I've been exploring lower level languages like Rust for native development, golang for cli's and cutting-edge back-end frameworks like ElysiaJs.
               </p>
               <TechStackCloud />

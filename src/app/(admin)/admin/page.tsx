@@ -1,26 +1,21 @@
 import { getAdminMetrics } from '@/actions/admin'
 import { getAllBlogPosts } from '@/utils/utils'
-import { BlogList } from '@/components/admin/blogs/blog-list'
+import { BlogTable } from '@/components/admin/blogs/blog-table'
 import { UserMetrics } from '@/components/admin/metrics/user-metrics'
 import { ContactOverview } from '@/components/admin/contact/contact-overview'
 import { getAllCommentsAdmin } from '@/actions/comments'
-import { AdminComments } from '@/components/admin/comments/admin-comments'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent } from '@/components/ui/card'
+import { ActivityFeed } from '@/components/admin/activity/activity-feed'
 import {
-	LayoutDashboard,
-	FileText,
-	Mail,
-	BarChart3,
 	Eye,
 	Users,
 	MessageSquare,
+	Mail,
 	TrendingUp
 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
-function QuickStat({
+function GlassStatCard({
 	icon: Icon,
 	label,
 	value,
@@ -32,27 +27,25 @@ function QuickStat({
 	trend?: string
 }) {
 	return (
-		<Card>
-			<CardContent className="p-4 flex items-center gap-4">
-				<div className="p-3 rounded-xl bg-primary/10">
-					<Icon className="w-5 h-5 text-primary" />
-				</div>
-				<div className="flex-1">
-					<p className="text-sm text-muted-foreground">{label}</p>
-					<div className="flex items-baseline gap-2">
-						<span className="text-2xl font-bold">
-							{value.toLocaleString()}
+		<div className="admin-glass-card p-4 flex items-center gap-4 group">
+			<div className="p-2.5 bg-[hsl(var(--brand-500)/0.1)] border border-[hsl(var(--brand-400)/0.15)] transition-colors group-hover:border-[hsl(var(--brand-400)/0.3)]">
+				<Icon className="w-4 h-4 text-[hsl(var(--brand-400))]" />
+			</div>
+			<div className="flex-1 min-w-0">
+				<p className="text-xs text-muted-foreground">{label}</p>
+				<div className="flex items-baseline gap-2 mt-0.5">
+					<span className="text-2xl font-bold tracking-tight">
+						{value.toLocaleString()}
+					</span>
+					{trend && (
+						<span className="text-[10px] text-emerald-400 flex items-center gap-0.5 font-medium">
+							<TrendingUp className="w-3 h-3" />
+							{trend}
 						</span>
-						{trend && (
-							<span className="text-xs text-green-600 flex items-center gap-0.5">
-								<TrendingUp className="w-3 h-3" />
-								{trend}
-							</span>
-						)}
-					</div>
+					)}
 				</div>
-			</CardContent>
-		</Card>
+			</div>
+		</div>
 	)
 }
 
@@ -65,9 +58,8 @@ export default async function AdminPage() {
 
 	const postsWithStats = allPosts.map(post => {
 		const stats = statsMap.get(post.slug)
-		// Prioritize DB draft status if available, fallback to file metadata
-		const isDraft = stats?.isDraft ?? post.metadata.draft ?? false
-		
+		const isDraft = (post.metadata.draft ?? false) || (stats?.isDraft ?? false)
+
 		return {
 			...post,
 			metadata: {
@@ -85,24 +77,24 @@ export default async function AdminPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-				<QuickStat
+			<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+				<GlassStatCard
 					icon={Eye}
 					label="Total Views"
 					value={metrics.totalViews}
 				/>
-				<QuickStat
+				<GlassStatCard
 					icon={Users}
 					label="Unique Visitors"
 					value={metrics.uniqueVisitors}
 				/>
-				<QuickStat
+				<GlassStatCard
 					icon={MessageSquare}
 					label="Comments"
 					value={comments.length}
 					trend={recentCount > 0 ? `+${recentCount} new` : undefined}
 				/>
-				<QuickStat
+				<GlassStatCard
 					icon={Mail}
 					label="Messages"
 					value={metrics.contactStats.length}
@@ -114,56 +106,11 @@ export default async function AdminPage() {
 				/>
 			</div>
 
-			<Tabs defaultValue="overview" className="w-full">
-				<TabsList className="grid w-full grid-cols-4 md:w-auto md:inline-flex">
-					<TabsTrigger value="overview" className="gap-2">
-						<LayoutDashboard className="w-4 h-4 hidden md:block" />
-						Overview
-					</TabsTrigger>
-					<TabsTrigger value="blogs" className="gap-2">
-						<FileText className="w-4 h-4 hidden md:block" />
-						Blogs
-					</TabsTrigger>
-					<TabsTrigger value="contact" className="gap-2">
-						<Mail className="w-4 h-4 hidden md:block" />
-						Contact
-					</TabsTrigger>
-					<TabsTrigger value="analytics" className="gap-2">
-						<BarChart3 className="w-4 h-4 hidden md:block" />
-						Analytics
-					</TabsTrigger>
-				</TabsList>
+			<div className="grid gap-6 lg:grid-cols-[1fr_340px]">
+				<div className="space-y-6" id="blogs">
+					<BlogTable posts={postsWithStats} />
 
-				<TabsContent value="overview" className="mt-6">
-					<div className="grid gap-6 lg:grid-cols-3">
-						<div className="lg:col-span-2 space-y-6">
-							<BlogList posts={postsWithStats} />
-						</div>
-						<div className="space-y-6">
-							<ContactOverview
-								data={{
-									submissions: metrics.contactStats,
-									interactions: metrics.interactions,
-									abandonments: metrics.abandonments
-								}}
-							/>
-							<AdminComments
-								comments={comments.map(comment => ({
-									...comment,
-									createdAt: comment.createdAt.toISOString()
-								}))}
-								recentCount={recentCount}
-							/>
-						</div>
-					</div>
-				</TabsContent>
-
-				<TabsContent value="blogs" className="mt-6">
-					<BlogList posts={postsWithStats} />
-				</TabsContent>
-
-				<TabsContent value="contact" className="mt-6">
-					<div className="max-w-2xl">
+					<div id="messages">
 						<ContactOverview
 							data={{
 								submissions: metrics.contactStats,
@@ -172,21 +119,22 @@ export default async function AdminPage() {
 							}}
 						/>
 					</div>
-				</TabsContent>
 
-				<TabsContent value="analytics" className="mt-6">
-					<div className="grid gap-6 lg:grid-cols-2">
+					<div id="analytics">
 						<UserMetrics data={metrics} />
-						<AdminComments
-							comments={comments.map(comment => ({
-								...comment,
-								createdAt: comment.createdAt.toISOString()
-							}))}
-							recentCount={recentCount}
-						/>
 					</div>
-				</TabsContent>
-			</Tabs>
+				</div>
+
+				<aside className="space-y-4">
+					<ActivityFeed
+						comments={comments.map(comment => ({
+							...comment,
+							createdAt: comment.createdAt.toISOString()
+						}))}
+						submissions={metrics.contactStats}
+					/>
+				</aside>
+			</div>
 		</div>
 	)
 }

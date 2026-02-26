@@ -19,11 +19,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.9
 		},
 		{
-			url: '/blog/categories',
-			changeFrequency: 'weekly',
-			priority: 0.8
-		},
-		{
 			url: '/blog/topics',
 			changeFrequency: 'weekly',
 			priority: 0.8
@@ -34,9 +29,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.9
 		},
 		{
-			url: '/contact',
+			url: '/privacy',
 			changeFrequency: 'monthly',
 			priority: 0.6
+		},
+		{
+			url: '/terms',
+			changeFrequency: 'monthly',
+			priority: 0.6
+		},
+		{
+			url: '/playground',
+			changeFrequency: 'monthly',
+			priority: 0.5
+		},
+		{
+			url: '/rss',
+			changeFrequency: 'daily',
+			priority: 0.4
 		}
 	] as const
 
@@ -53,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	})
 
 	const tagRoutes = tags.map(tag => ({
-		url: `${baseUrl}/blog/tags/${tag.name.toLowerCase()}`,
+		url: `${baseUrl}/blog/topics/${tag.name.toLowerCase()}`,
 		lastModified: new Date(),
 		changeFrequency: 'weekly' as const,
 		priority: 0.7

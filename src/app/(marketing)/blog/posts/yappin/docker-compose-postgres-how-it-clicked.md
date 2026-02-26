@@ -6,7 +6,7 @@ summary: 'I have used Docker on and off for years without fully understanding it
 tags: ['Docker', 'PostgreSQL', 'Drizzle', 'Engineering', 'Guide']
 author: 'Remco Stoeten'
 slug: 'docker-compose-postgres-how-it-clicked'
-draft: true
+draft: fa
 ---
 
 I use Docker here and there, but I never really understood it. Most of the time things worked after trial and error. The moment something broke, ports were in use, passwords would not change, or databases refused to reset, I was lost again.

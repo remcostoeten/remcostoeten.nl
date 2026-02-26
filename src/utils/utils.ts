@@ -113,6 +113,9 @@ function getMDXData(dir) {
 	return mdxFiles.map(file => {
 		try {
 			let { metadata, content } = readMDXFile(path.join(dir, file))
+			const isInDraftDirectory = file
+				.split(path.sep)
+				.some(segment => segment.toLowerCase() === 'drafts')
 			let slug = metadata.slug || file.replace(/\.(mdx|md)$/, '')
 
 			return {
@@ -120,6 +123,8 @@ function getMDXData(dir) {
 				content,
 				metadata: {
 					...metadata,
+					// Files in a drafts directory are always treated as drafts.
+					draft: metadata.draft === true || isInDraftDirectory,
 					readTime: metadata.readTime || calculateReadTime(content)
 				}
 			}

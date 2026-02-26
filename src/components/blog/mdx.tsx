@@ -201,8 +201,6 @@ let components = {
 		const language = className.replace('language-', '') || 'text'
 		const metastring = codeElement?.props?.metastring || ''
 
-		console.log('CodeBlock props:', { className, language, metastring })
-
 		// Support both single and double quotes for filename and title
 		const fileNameMatch = metastring.match(/filename=["']([^"']+)["']/)
 		const titleMatch = metastring.match(/title=["']([^"']+)["']/)
@@ -217,8 +215,6 @@ let components = {
 		const variant = variantMatch
 			? (variantMatch[1] as 'default' | 'sharp')
 			: undefined
-
-		console.log('Parsed fileName:', fileName, 'variant:', variant)
 
 		const highlightMatch = metastring.match(/\{([\d,-]+)\}/)
 		const highlightLines = highlightMatch
@@ -239,6 +235,7 @@ let components = {
 				code={code}
 				language={language}
 				fileName={fileName}
+				disableTopBar={!fileName}
 				highlightLines={highlightLines}
 				variant={variant}
 				{...props}

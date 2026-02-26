@@ -105,8 +105,6 @@ export default async function Blog({
 		notFound()
 	}
 
-	// Get all posts including drafts for now
-	// We'll filter client-side based on admin status
 	const allPosts = getAllBlogPosts()
 	const post = allPosts.find(p => p.slug === slug)
 
@@ -114,21 +112,22 @@ export default async function Blog({
 		notFound()
 	}
 
-	// Check if user is admin on the server side for initial render
 	const isAdminUser = await checkAdminStatus()
 
-	if (post.metadata.draft && !isAdminUser) {
-		notFound()
-	}
-
-	// Fetch view counts
-	const viewData = await db.query.blogPosts.findFirst({
+	const dbData = await db.query.blogPosts.findFirst({
 		where: eq(blogPosts.slug, slug),
 		columns: {
 			uniqueViews: true,
-			totalViews: true
+			totalViews: true,
+			isDraft: true
 		}
 	})
+
+	const isDraft = dbData?.isDraft || post.metadata.draft || false
+
+	if (isDraft && !isAdminUser) {
+		notFound()
+	}
 
 	const currentIndex = allPosts.findIndex(p => p.slug === slug)
 	const prevPost =
@@ -164,8 +163,8 @@ export default async function Blog({
 					summary={post.metadata.summary}
 					readTime={calculateReadTime(post.content)}
 					slug={post.slug}
-					uniqueViews={viewData?.uniqueViews || 0}
-					totalViews={viewData?.totalViews || 0}
+					uniqueViews={dbData?.uniqueViews || 0}
+					totalViews={dbData?.totalViews || 0}
 				/>
 
 				<div className="screen-border mb-12" />

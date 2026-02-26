@@ -1,55 +1,37 @@
 ---
 title: '02. New year, new site & over-engineering'
 publishedAt: '2025-12-31'
-summary: 'The story of how I decided to rebuild my site yet again, and why I chose the stack I did.'
+summary: 'What was supposed to be a minimal dark blog turned into two npm packages, a custom backend, a scrapped CMS, and a existential crisis.'
 tags: ['Engineering', 'Blog', 'Personal']
 ---
 
-I've had dozens of portfolio sites. Some quite [cool](https://minimal-graphql-portfolio-git-master-remcostoeten.vercel.app/) (desktop only). [Some](https://remco-tools-git-dev-remcostoeten.vercel.app/)... not so much. Although that was my first ever. The goal was to build a minimal, dark site with the ability to share content so I can sunset my [snippets](https://snippets-remcostoeten.vercel.app/) site some day. No scope creep this time!
+Nearly the 20th iteration of my personal site. Some were [decent](https://minimal-graphql-portfolio-git-master-remcostoeten.vercel.app/) (desktop only), some were [rough](https://remco-tools-git-dev-remcostoeten.vercel.app/). The goal this time: minimal, dark, markdown blog. Sunset the old [snippets site](https://snippets-remcostoeten.vercel.app/). No scope creep.
 
-You know that feeling when you start a simple project and somehow end up with a distributed microservices architecture for a to-do list? That's exactly what happened with my personal site.
+## The Plan
 
-Started off with getting design inspiration which took me days. Or well... This is, without joking, nearly the 20th iteration of my personal site. Some well over 100 commits. Never, ever am I happy with my designs. Although this one was quite cool. This one, although I ended up using it for a dashboard, is probably the sickest design I've built.
+No personal site for a year. Lately into anti-Awwwards minimalism. Dark theme, markdown rendering, done.
 
-## Initial Plan
+## Immediately Off Track
 
-Haven't had a personal site for a year. Lately loving the minimalist design, to the point and anti-Awwwards. Built a personal site with a minimalist look, dark, and a system to render markdown files as a blog.
+Markdown files are the obvious approach. Instead I built a custom CMS, only to realize serverless doesn't support writing to the filesystem. Had most of it working too: widgets, re-ordering, data layer. Considered switching to a database with a rich text editor but I'm already building [skriu](https://skriuw.vercel.app/) for that. Scrapped it.
 
-## Off Track
+## Rolling My Own Analytics
 
-Suddenly I get the urge to build something complex. I always hop around 3 projects because of self-induced neuron deficiency. How cool would it be to build a CMS that allows you to write blogs via a [Tiptap](https://tiptap.dev/) editor that writes to the filesystem as `.mdx`. Yeah cool. But not doable in a serverless environment. And also F rich text editors man. Working with editors is such a pain.
+PostHog was already integrated but felt like cheating. Built my own view counter in Hono.js with barely any backend experience. Hono was surprisingly straightforward.
 
-Moving on. Let's just do content editing. Installed `drizzle-orm`, added a PostgreSQL database. Created some endpoints and was able to mutate and query. But this feels too static.
+This also meant a monorepo. Deployed to Fly.io. Fought CORS for days. It ran. Mostly.
 
-## Flexibility
+## Activity Feeds
 
-That's it! So I made a widget system with full composability in positioning, prop usage, theming, and content. Obviously spent way too long on the design with half-baked features. Ended up scrapping this.
+GitHub API for the homepage activity feed was trivial. Spotify's OAuth token flow was not. Got it working eventually.
 
-## Back on Track?
+Then I decided I never wanted to deal with that again, so I built **[fync](https://github.com/remcostoeten/fync)**: a unified, chainable API client for Spotify, GitHub, NPM, GitLab, Linear, Vercel, Notion. Package releases introduced dozens of bugs. Not ideal when you're trying to ship a blog.
 
-So I scrapped the CMS. The only reason I built it anyway was to show off, not to use it. I was debating on scrapping but insisted on finishing this project for once.
+Somewhere in this period I also started a Tauri desktop notes app and a local-first Linear clone. Both scrapped.
 
-So I got the rough design out of the way. Took some Vercel boilerplate for markdown parsing because ain't nobody got time for that. Call it skill issue all you want.
+## Abstracting Drizzle
 
-Built the design, picked an aesthetic color scheme, built myself an aesthetic codeblock and _et voila_.
-
-## Sike
-
-A blog actually needs view counting right? I've integrated PostHog earlier, but that's not cool. So I insisted on rolling my own. In Hono.js. With close to no back-end skills except for what we do in Next.js. Hono turned out relatively easy though.
-
-Suddenly we went to a monorepo. Deployment is a pain, but I managed on Fly.io. Struggled with CORS for a couple of days on and off but it ran. And worked, I think. At least, some features do.
-
-## Activity
-
-I wanted some GitHub activity on my homepage. GitHub API is dead simple so there's that. Wanted Spotify activity too. That API has you crying with their token retrieval. But I got it working.
-
-But I never want to do that again. So I built **`fync`** ([`remcostoeten/fync`](https://github.com/remcostoeten/fync)), an npm package that allows working with data from various APIs in a unified, chainable syntax. Not only for Spotify and GitHub. But NPM, GitLab, Linear, Vercel, Notion and probably more... With package releases comes dozens of bugs. Not the most fun experience when you just want to build a quick blog site. But I'm proud of it.
-
-In the meanwhile I started building a Tauri desktop notes application. And a local-first, near instantaneous code-linear clone. Both are scrapped.
-
-## Query Data
-
-Hmm I query often, I always use `drizzle-orm`. I can't remember the syntax, ever. Why don't I build a simple abstraction for it that allows me to do this:
+I use `drizzle-orm` everywhere but can never remember the syntax. So naturally I built an abstraction:
 
 ```typescript title="drizzleasy-example.ts"
 import { read } from '@remcostoeten/drizzleasy'
@@ -57,28 +39,22 @@ import { read } from '@remcostoeten/drizzleasy'
 const renderPosts = read('posts')
 ```
 
-And so, **[drizzleasy](https://drizzleasy.vercel.app/docs)** was born.
+**[drizzleasy](https://drizzleasy.vercel.app/docs)** started as a thin wrapper. Then I added `create()`, `update()`, `destroy()`, automatic connection pooling, optimistic update hooks, filtering, chainable methods. A simple GET request was all I needed.
 
-This fetches all the posts from the `posts` table. Obviously also built `create()`, `update()`, and `destroy()`. I wanted to keep it simple but over time I added more features. Automatic database pooling, connection, hooks for optimistic updates, filtering, couple of chainable methods. You know, just a simple GET request was needed right?
+## The Damage Report
 
-Which is a simple CLI to fetch and sync data from various sources. It's a bit rough around the edges but it works. And I'm proud of it.
+What started as "render some markdown" became:
 
-## TL;DR
+- Two npm packages ([fync](https://github.com/remcostoeten/fync), [drizzleasy](https://drizzleasy.vercel.app/docs))
+- A scrapped CMS (twice, simple and widget-based)
+- A custom syntax-highlighted codeblock component in its own repo
+- A Hono.js analytics backend
+- Failed attempts at local-first project management: Replicache/Zerosync (contributed, then deprecated), pglite (Postgres in the browser), Turso's offline store
 
-Did we count? That's from a simple way to render markdown to:
+## The Punchline
 
-- An NPM package to query all famous APIs
-- A scrapped simple CMS
-- A scrapped advanced widget CMS
-- A custom syntax highlighted codeblock component, separate repository
-- A Hono.js backend for blog views
-- An npm package for working with drizzle in a simple way
-- And an honorable mention to my attempts in building a local first project management tool in order to manage this chaos. Tried Rocicorp and their Zerosync, even contributed. Moved to pglite (Postgres running in the browser!), tinkered around with Turso's offline store and lastly got Zerosync predecessor to work, only to find out it's deprecated. I just gave up.
+I shipped without `drizzleasy` or `fync`. Managing version bumps and fixing package bugs while trying to maintain energy for my actual job was not sustainable. Plain REST API it is.
 
-## Fin
-
-And you know what's the real joke? Eventually I ended up not using `drizzleasy` nor `fync` because I wanted to ship using managing version bumps, fixing bugs whilst trying to ship this and maintain some energy for my real job was not the move so I ended up just using the plain REST API.
-
-They are implemented in other projects though and work fine.
+Both packages work fine in other projects though.
 
 Remco

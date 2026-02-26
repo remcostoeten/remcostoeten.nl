@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ArrowRight, EyeOff } from 'lucide-react'
+import { EyeOff, ArrowUpRight } from 'lucide-react'
 
 import { getDateParts, readMinutes } from '@/lib/blog-format'
 import { useBlogFilter } from '@/hooks/use-blog-filter'
@@ -37,51 +37,85 @@ type Props = {
 	index: number
 }
 
-function MinimalPostRow({ post }: Props) {
+function BlogCard({ post }: Props) {
 	const dateParts = getDateParts(post.metadata.publishedAt)
-	const viewCount = post.uniqueViews || 0
+	const readTimeMinutes = readMinutes(post.metadata.readTime || '')
+
+	const allTags = [
+		...(post.metadata.categories || []),
+		...(post.metadata.tags || []),
+		...(post.metadata.topics || [])
+	]
 
 	return (
-		<li className="group py-3 first:pt-0 last:pb-0">
-			<Link
-				href={`/blog/${post.slug}`}
-				className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-6 justify-between group-hover:bg-muted/50 -mx-4 px-4 py-2 rounded-md transition-colors"
-			>
-				<div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4 min-w-0 flex-1">
-					<span className="shrink-0 font-mono text-xs text-muted-foreground w-24 tabular-nums">
-						{dateParts.year}-{dateParts.month}-{dateParts.day}
-					</span>
-					
-					<div className="min-w-0 flex-1">
-						<h3 className="font-medium text-foreground truncate group-hover:text-primary transition-colors flex items-center gap-2">
-							{post.metadata.title}
+		<Link
+			href={`/blog/${post.slug}`}
+			className="group flex items-center justify-between gap-2 sm:gap-4 py-3 border-b border-border/40 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+		>
+			<div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0 flex-1">
+				<div className="min-w-0 flex-1">
+					<div className="flex flex-col gap-1 min-w-0 overflow-hidden">
+						<div className="flex items-center gap-2">
 							{post.metadata.draft && (
-								<span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-500/10 text-amber-500 border border-amber-500/20">
-									DRAFT
+								<span className="text-[8px] sm:text-[9px] uppercase tracking-wider font-bold px-1 py-px bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0 mt-0.5">
+									Draft
 								</span>
 							)}
-						</h3>
-						{(post.metadata.summary) && (
-							<p className="text-sm text-muted-foreground line-clamp-1 mt-0.5 hidden sm:block">
+							<span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors shrink-0 max-w-full truncate">
+								{post.metadata.title}
+							</span>
+						</div>
+						{post.metadata.summary && (
+							<span className="text-sm text-muted-foreground min-w-0 line-clamp-2">
 								{post.metadata.summary}
-							</p>
+							</span>
+						)}
+					</div>
+
+					<div className="flex items-center gap-2 mt-1 sm:mt-0.5">
+						<span className="text-[10px] text-muted-foreground/40 font-mono tabular-nums whitespace-nowrap">
+							{dateParts.day} {dateParts.month.slice(0, 3)} {dateParts.year}
+						</span>
+
+						{readTimeMinutes > 0 && (
+							<>
+								<span className="text-muted-foreground/20">·</span>
+								<span className="text-[10px] text-muted-foreground/40 whitespace-nowrap">
+									{readTimeMinutes} min
+								</span>
+							</>
+						)}
+
+						{typeof post.uniqueViews === 'number' && post.uniqueViews > 0 && (
+							<>
+								<span className="text-muted-foreground/20">·</span>
+								<span
+									className="text-[10px] text-muted-foreground/40 whitespace-nowrap"
+									title={`${post.views} total views`}
+								>
+									{post.uniqueViews} views
+								</span>
+							</>
+						)}
+
+						{allTags.length > 0 && (
+							<div className="hidden sm:flex gap-1 ml-1">
+								{allTags.slice(0, 3).map(tag => (
+									<span
+										key={tag}
+										className="bg-secondary px-1 py-0.5 text-[9px] text-muted-foreground whitespace-nowrap shrink-0"
+									>
+										{tag}
+									</span>
+								))}
+							</div>
 						)}
 					</div>
 				</div>
+			</div>
 
-				<div className="shrink-0 flex items-center gap-4 text-xs text-muted-foreground font-mono">
-					<span className="hidden sm:inline-block">
-						{readMinutes(post.metadata.readTime || '')}m read
-					</span>
-					{viewCount > 0 && (
-						<span className="hidden sm:inline-block tabular-nums w-12 text-right">
-							{viewCount.toLocaleString()}
-						</span>
-					)}
-					<ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" />
-				</div>
-			</Link>
-		</li>
+			<ArrowUpRight className="w-3 h-3 text-muted-foreground/30 group-hover:text-foreground transition-colors shrink-0" />
+		</Link>
 	)
 }
 
@@ -90,6 +124,25 @@ function MinimalPostRow({ post }: Props) {
 type BlogPostsProps = {
 	posts: BlogPost[]
 }
+
+function BlogCardSkeleton() {
+	return (
+		<div className="flex items-center justify-between gap-4 px-4 py-3 border-b border-border/40">
+			<div className="flex-1 min-w-0 space-y-1.5">
+				<div className="flex items-center gap-2">
+					<div className="h-3.5 w-40 bg-muted/20 animate-pulse" />
+					<div className="hidden md:block h-3.5 w-48 bg-muted/10 animate-pulse" />
+				</div>
+				<div className="flex items-center gap-2">
+					<div className="h-3 w-20 bg-muted/15 animate-pulse" />
+					<div className="h-3 w-12 bg-muted/15 animate-pulse" />
+				</div>
+			</div>
+			<div className="h-3 w-3 bg-muted/10 animate-pulse" />
+		</div>
+	)
+}
+
 
 export function BlogPostsClient({ posts }: BlogPostsProps) {
 	const [showAll, setShowAll] = useState(false)
@@ -108,7 +161,7 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 	return (
 		<div>
 			{filter !== 'all' && (
-				<div className="mb-4 flex items-center gap-2 px-2 py-2 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-mono">
+				<div className="mb-0 flex items-center gap-2 px-2 py-2 bg-amber-500/10 border border-amber-500/20 border-b-0 text-amber-400 text-xs font-mono">
 					<EyeOff className="w-3 h-3" />
 					<span>
 						Filtering: showing{' '}
@@ -123,15 +176,15 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 				</div>
 			)}
 
-			<ul className="flex flex-col m-0 p-0 list-none" role="list">
+			<div className="flex flex-col border-t border-border/40 mt-4">
 				{displayedBlogs.map((post, index) => (
 					<MinimalPostRow key={post.slug} post={post} index={index} />
 				))}
-			</ul>
+			</div>
 
 			{filteredPosts.length === 0 && (
-				<div className="py-12 text-center text-neutral-500 dark:text-neutral-400">
-					<p className="text-sm">
+				<div className="py-8 text-center text-muted-foreground border border-border">
+					<p className="text-xs">
 						No posts match the current filter.
 					</p>
 					<button
@@ -144,16 +197,17 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 			)}
 
 			{hasMorePosts && (
-				<div className="mt-8 flex justify-end">
+				<div className="border-b border-border/40">
 					<button
 						onClick={() => setShowAll(!showAll)}
-						className="group flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+						className="flex w-full py-3 justify-center text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:bg-muted/10"
 					>
-						{showAll ? 'Show less posts' : 'View all posts'}
-						<ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+						{showAll ? 'Show less' : `View all (${filteredPosts.length})`}
 					</button>
 				</div>
 			)}
 		</div>
 	)
 }
+
+export { BlogCardSkeleton }

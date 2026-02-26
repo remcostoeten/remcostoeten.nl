@@ -58,7 +58,7 @@ class GitHubService {
   }
 
   private getGitHubToken(): string {
-    const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN || '';
+    const token = process.env.GITHUB_TOKEN || '';
     if (token) {
       // console.log('GitHub token loaded:', token.substring(0, 4) + '...');
       return token.trim();

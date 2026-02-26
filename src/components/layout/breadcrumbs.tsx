@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Fragment } from 'react'
+import { Home } from 'lucide-react'
 
 interface BreadcrumbItem {
 	label: string
@@ -65,14 +66,15 @@ export function Breadcrumbs({ params }: BreadcrumbProps) {
 	}
 
 	return (
-		<nav aria-label="Breadcrumb" className="mb-4">
+		<nav aria-label="Breadcrumb">
 			<ol className="flex items-center gap-1 text-xs font-mono text-muted-foreground/50">
 				<li>
 					<Link
 						href={buildHref('/', params)}
-						className="hover:text-foreground transition-colors"
+						className="hover:text-foreground transition-colors flex items-center"
+						title="Home"
 					>
-						~
+						<Home className="w-3.5 h-3.5" />
 					</Link>
 				</li>
 

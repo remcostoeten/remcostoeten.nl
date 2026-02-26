@@ -40,3 +40,5 @@ setup-posthog.md
 
 .env.production
 env.production
+.lh-tmp/*
+    

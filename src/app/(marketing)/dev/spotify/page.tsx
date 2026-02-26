@@ -15,20 +15,56 @@ function SpotifyDevContent() {
 	const [copied, setCopied] = useState<string | null>(null)
 
 	useEffect(() => {
-		const refreshToken = searchParams.get('refresh_token')
-		const accessToken = searchParams.get('access_token')
 		const urlError = searchParams.get('error')
 		const details = searchParams.get('details')
+		const authSuccess = searchParams.get('success') === 'true'
 
 		if (urlError) {
 			setError(`${urlError}${details ? `: ${details}` : ''}`)
 		}
 
-		if (refreshToken || accessToken) {
-			setTokens({
-				refresh_token: refreshToken,
-				access_token: accessToken
-			})
+		if (!authSuccess) {
+			return
+		}
+
+		let isActive = true
+
+		const loadTokens = async () => {
+			try {
+				const response = await fetch('/api/spotify/dev-token', {
+					cache: 'no-store'
+				})
+
+				if (!response.ok) {
+					throw new Error('Failed to read OAuth tokens')
+				}
+
+				const data = await response.json()
+				if (!isActive) return
+
+				if (!data.refresh_token && !data.access_token) {
+					setError(
+						'No token found. Please retry the authorization flow.'
+					)
+					return
+				}
+
+				setTokens({
+					refresh_token: data.refresh_token ?? null,
+					access_token: data.access_token ?? null
+				})
+
+				window.history.replaceState({}, '', '/dev/spotify')
+			} catch {
+				if (!isActive) return
+				setError('Failed to load generated tokens')
+			}
+		}
+
+		loadTokens()
+
+		return () => {
+			isActive = false
 		}
 	}, [searchParams])
 
@@ -45,7 +81,7 @@ function SpotifyDevContent() {
 			}
 
 			setAuthUrl(data.authUrl)
-		} catch (err) {
+		} catch {
 			setError('Failed to get authorization URL')
 		} finally {
 			setLoading(false)
@@ -236,8 +272,8 @@ function SpotifyDevContent() {
 							- Should be{' '}
 							<code className="text-zinc-400">
 								{typeof window !== 'undefined'
-									? `${window.location.origin}/dev/spotify`
-									: 'http://localhost:3000/dev/spotify'}
+									? `${window.location.origin}/api/spotify/callback`
+									: 'http://localhost:3000/api/spotify/callback'}
 							</code>
 						</li>
 					</ul>

@@ -15,32 +15,18 @@ type ProviderConfig = {
 function buildProviders(): Partial<Record<ProviderKey, ProviderConfig>> {
 	const providers: Partial<Record<ProviderKey, ProviderConfig>> = {}
 
-	console.log('[Auth] Building providers...')
-
 	if (env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET) {
-		console.log('[Auth] GitHub provider configured')
 		providers.github = {
 			clientId: env.GITHUB_CLIENT_ID,
 			clientSecret: env.GITHUB_CLIENT_SECRET
 		}
-	} else {
-		console.log('[Auth] GitHub provider configuration MISSING', {
-			hasClientId: !!env.GITHUB_CLIENT_ID,
-			hasClientSecret: !!env.GITHUB_CLIENT_SECRET
-		})
 	}
 
 	if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
-		console.log('[Auth] Google provider configured')
 		providers.google = {
 			clientId: env.GOOGLE_CLIENT_ID,
 			clientSecret: env.GOOGLE_CLIENT_SECRET
 		}
-	} else {
-		console.log('[Auth] Google provider configuration MISSING', {
-			hasClientId: !!env.GOOGLE_CLIENT_ID,
-			hasClientSecret: !!env.GOOGLE_CLIENT_SECRET
-		})
 	}
 
 	return providers
@@ -63,6 +49,11 @@ export const auth = betterAuth({
 		'http://localhost:3001',
 		'http://localhost:3002'
 	],
+	session: {
+		// Keep sessions persistent across browser/tab restarts for admin workflows.
+		expiresIn: 60 * 60 * 24 * 30,
+		updateAge: 60 * 60 * 24
+	},
 	socialProviders,
 	plugins: [admin()]
 })

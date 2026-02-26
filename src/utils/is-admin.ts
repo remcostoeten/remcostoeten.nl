@@ -3,9 +3,25 @@ import { headers, cookies } from 'next/headers'
 
 import { env } from '@/server/env'
 
-const DEFAULT_ADMIN_EMAIL = 'remcostoeten@gmail.com'
-const SECONDARY_ADMIN_EMAIL = 'iremcostoeten@hotmail.com'
-const ADMIN_EMAIL = env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL
+const FALLBACK_ADMIN_EMAILS = [
+	'remcostoeten@gmail.com',
+	'remcostoeten@hotmail.com'
+]
+
+function getAdminEmails() {
+	const configured = (env.ADMIN_EMAIL || '')
+		.split(',')
+		.map(email => email.trim().toLowerCase())
+		.filter(Boolean)
+
+	return configured.length > 0 ? configured : FALLBACK_ADMIN_EMAILS
+}
+
+function isAdminEmail(email?: string | null): boolean {
+	if (!email) return false
+	const normalizedEmail = email.toLowerCase()
+	return getAdminEmails().includes(normalizedEmail)
+}
 
 /**
  * Server-side utility to check if the current user is admin
@@ -13,36 +29,24 @@ const ADMIN_EMAIL = env.ADMIN_EMAIL || DEFAULT_ADMIN_EMAIL
  */
 export async function isAdmin(): Promise<boolean> {
 	try {
-		const cookieStore = await cookies()
-		const cookieHeader = cookieStore
-			.getAll()
-			.map(cookie => `${cookie.name}=${cookie.value}`)
-			.join('; ')
-
-		const session = await auth.api.getSession({
-			headers: {
-				cookie: cookieHeader
-			}
-		})
+		const session = await getServerSession()
 
 		if (!session?.user) {
-			console.log('[isAdmin] No session user found')
+			console.log('[isAdmin] No user session found')
 			return false
 		}
 
-		const userEmail = session.user.email?.toLowerCase()
-		const isEmailMatch =
-			userEmail === ADMIN_EMAIL.toLowerCase() ||
-			userEmail === SECONDARY_ADMIN_EMAIL.toLowerCase()
+		const isEmailMatch = isAdminEmail(session.user.email)
 		const isRoleAdmin = session.user.role === 'admin'
 
-		console.log(
-			`[isAdmin] email: ${session.user.email}, isMatch: ${isEmailMatch}, role: ${session.user.role}, isRoleAdmin: ${isRoleAdmin}`
-		)
+		if (!isRoleAdmin && !isEmailMatch) {
+			console.log(`[isAdmin] User ${session.user.email} is not an admin`)
+			return false
+		}
 
-		return isRoleAdmin || isEmailMatch
-	} catch (error) {
-		console.error('[isAdmin] Error:', error)
+		return true
+	} catch (e) {
+		console.error('[isAdmin] Error checking admin status:', e)
 		return false
 	}
 }

@@ -2,13 +2,20 @@
 
 import { useEffect, useState, useCallback } from 'react'
 
-type VimCommand = 'signin' | 'signout' | null
+type VimCommand =
+	| 'signin'
+	| 'signout'
+	| 'showdrafts'
+	| 'showpublished'
+	| 'showall'
+	| null
 
 /**
  * Hook that listens for Vim-style commands typed anywhere on the page.
  * Supports:
  * - :signin, :sign in, : sign in (triggers sign-in)
  * - :signout, :sign out, : sign out (triggers sign-out)
+ * - :show drafts, :show published, :show all (sets blog filters)
  */
 export function useVimCommand() {
 	const [command, setCommand] = useState<VimCommand>(null)
@@ -91,6 +98,29 @@ export function useVimCommand() {
 					'[vim-cmd] ✓ SUCCESS: :signout/:logout command detected'
 				)
 				setCommand('signout')
+				setBuffer('')
+				return
+			}
+
+			if (normalized.includes(':showdrafts')) {
+				console.log('[vim-cmd] ✓ SUCCESS: :show drafts command detected')
+				setCommand('showdrafts')
+				setBuffer('')
+				return
+			}
+
+			if (normalized.includes(':showpublished')) {
+				console.log(
+					'[vim-cmd] ✓ SUCCESS: :show published command detected'
+				)
+				setCommand('showpublished')
+				setBuffer('')
+				return
+			}
+
+			if (normalized.includes(':showall')) {
+				console.log('[vim-cmd] ✓ SUCCESS: :show all command detected')
+				setCommand('showall')
 				setBuffer('')
 				return
 			}

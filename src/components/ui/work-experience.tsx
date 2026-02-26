@@ -252,7 +252,7 @@ export function ExperiencePositionItem({
     )
 
     return (
-        <div className="relative pl-10">
+        <div className="relative pl-12">
             {/* Icon centered on the timeline line */}
             <div className="absolute left-[4.5px] top-[3px] z-10 box-border flex size-6 items-center justify-center rounded-full border border-border bg-muted/30 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-border/80 hover:bg-muted/50 hover:text-foreground">
                 <Icon className="size-3" />
@@ -312,21 +312,40 @@ export function ExperiencePositionItem({
                                 </Prose>
                             )}
 
-                            {Array.isArray(position.skills) &&
-                                position.skills.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5 pt-2">
-                                        {position.skills.map(
-                                            (skill, index) => (
-                                                <Skill key={index}>
-                                                    {skill}
-                                                </Skill>
-                                            )
-                                        )}
-                                    </div>
-                                )}
+                            {Array.isArray(position.skills) && position.skills.length > 0 && (
+                                <SkillsList skills={position.skills} />
+                            )}
                         </motion.div>
                     )}
                 </AnimatePresence>
+            </div>
+        </div>
+    )
+}
+
+function SkillsList({ skills }: { skills: string[] }) {
+    const [showAll, setShowAll] = React.useState(false)
+    const THRESHOLD = 6
+    const hasMore = skills.length > THRESHOLD
+    const displayedSkills = showAll ? skills : skills.slice(0, THRESHOLD)
+
+    return (
+        <div className="pt-2">
+            <div className="flex flex-wrap gap-1.5">
+                {displayedSkills.map((skill, index) => (
+                    <Skill key={index}>{skill}</Skill>
+                ))}
+                {hasMore && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            setShowAll(!showAll)
+                        }}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 rounded-sm transition-all"
+                    >
+                        {showAll ? "Less" : `+${skills.length - THRESHOLD} more`}
+                    </button>
+                )}
             </div>
         </div>
     )

@@ -10,6 +10,21 @@ import { Terminal } from 'lucide-react'
 const COMMANDS = [
 	{ cmd: 'signin', alias: ['login'], desc: 'Authenticate with GitHub' },
 	{ cmd: 'signout', alias: ['logout'], desc: 'Sign out' },
+	{
+		cmd: 'show drafts',
+		alias: ['drafts'],
+		desc: 'Filter blog list to drafts only'
+	},
+	{
+		cmd: 'show published',
+		alias: ['published'],
+		desc: 'Filter blog list to published only'
+	},
+	{
+		cmd: 'show all',
+		alias: ['all'],
+		desc: 'Clear blog post filter'
+	},
 	{ cmd: 'help', alias: ['?'], desc: 'Show available commands' }
 ]
 

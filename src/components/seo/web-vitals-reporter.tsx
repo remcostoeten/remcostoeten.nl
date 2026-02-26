@@ -29,6 +29,10 @@ const getEmoji = (rating: string): string => {
 
 export function WebVitalsReporter() {
 	useEffect(() => {
+		if (process.env.NODE_ENV === 'production') {
+			return
+		}
+
 		const logMetric = (metric: Metric) => {
 			console.log(
 				`%c${metric.name}%c ${formatValue(metric.name, metric.value)} ${getEmoji(metric.rating)}`,

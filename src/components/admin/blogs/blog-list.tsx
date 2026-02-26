@@ -49,10 +49,13 @@ function BlogCard({ post }: { post: BlogPost }) {
 		startTransition(async () => {
 			try {
 				const result = await toggleBlogDraft(post.slug)
-				setIsDraft(result.draft)
+				if (result.success) {
+					setIsDraft(result.draft)
+				} else {
+					console.error('Failed to toggle draft:', result.error)
+				}
 			} catch (error) {
 				console.error('Failed to toggle draft:', error)
-				// Consider adding user-visible error feedback (e.g., toast notification)
 			}
 		})
 	}
@@ -223,6 +226,7 @@ export function BlogList({ posts }: { posts: BlogPost[] }) {
 
 	const totalViews = posts.reduce((sum, p) => sum + p.totalViews, 0)
 	const publishedCount = posts.filter(p => !p.metadata.draft).length
+	const draftCount = posts.filter(p => p.metadata.draft).length
 
 	return (
 		<Card>
@@ -235,7 +239,7 @@ export function BlogList({ posts }: { posts: BlogPost[] }) {
 								Blog Posts
 							</CardTitle>
 							<p className="text-xs text-muted-foreground mt-0.5">
-								{publishedCount} published ·{' '}
+								{publishedCount} published · {draftCount} drafts ·{' '}
 								{totalViews.toLocaleString()} total views
 							</p>
 						</div>

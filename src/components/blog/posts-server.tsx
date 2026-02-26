@@ -12,8 +12,12 @@ export async function BlogPosts({
 }) {
 	const userIsAdmin = checkAdmin ? await isAdmin() : false
 
-	// Always get all posts from file system first
 	const filePosts = getAllBlogPosts()
+
+	console.log('[BlogPosts] userIsAdmin:', userIsAdmin, 'total file posts:', filePosts.length)
+	filePosts.forEach(p => {
+		if (p.metadata.draft) console.log('[BlogPosts] Draft post found:', p.slug, 'draft:', p.metadata.draft)
+	})
 
 	// Fetch data from DB including draft status
 	const dbPosts = await db
@@ -40,7 +44,7 @@ export async function BlogPosts({
 	const processedPosts = filePosts
 		.map(post => {
 			const dbData = dbMap.get(post.slug)
-			const isDraft = dbData?.isDraft ?? post.metadata.draft ?? false
+			const isDraft = dbData?.isDraft || post.metadata.draft || false
 
 			return {
 				...post,
@@ -76,7 +80,11 @@ export async function BlogPosts({
 			title="Recent Posts"
 			headerAction={<PostCountHeader count={sortedBlogs.length} />}
 		>
-			<BlogPostsClient posts={sortedBlogs} />
+			<div className="px-4 md:px-5">
+				<p className="text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
+			I don't expect anyone to read this nor care. I dump thoughts and wrapups because I enjoy writing and it helps me understand things better. A retro you could say. 		</p>
+				<BlogPostsClient posts={sortedBlogs} />
+			</div>
 		</Section>
 	)
 }
