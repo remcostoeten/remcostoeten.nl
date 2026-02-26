@@ -9,7 +9,7 @@ import { useBlogFilter } from '@/hooks/use-blog-filter'
 
 export function PostCountHeader({ count }: { count: number }) {
 	return (
-		<span className="text-muted-foreground/60 inline-flex items-baseline gap-1">
+		<span className="text-xs text-muted-foreground/60 inline-flex items-baseline gap-1">
 			{count}
 			<span>posts</span>
 		</span>

@@ -39,10 +39,10 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 		<div className="flex flex-col border-b border-border">
 			<div className="flex items-center justify-between bg-card px-2 sm:px-3 py-2">
 				<div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-					<span className="text-xs font-medium text-foreground truncate max-w-[80px] sm:max-w-[120px] md:max-w-none">
+					<span className="text-sm font-medium text-foreground truncate max-w-[80px] sm:max-w-[120px] md:max-w-none">
 						{project.name}
 					</span>
-					<span className="hidden text-xs text-muted-foreground md:inline truncate max-w-[200px] lg:max-w-none">
+					<span className="hidden text-sm text-muted-foreground md:inline truncate max-w-[200px] lg:max-w-none">
 						—{' '}
 						{project.description.length > 50
 							? `${project.description.slice(0, 50)}...`

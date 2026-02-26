@@ -20,7 +20,7 @@ export function ActivitySection() {
 				headerAction={
 					<time
 						dateTime={`${year}`}
-						className="text-muted-foreground/60 inline-flex items-baseline"
+						className="text-xs text-muted-foreground/60 inline-flex items-baseline"
 					>
 						{year}
 					</time>

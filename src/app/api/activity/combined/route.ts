@@ -82,7 +82,7 @@ const getGitHubContributions = unstable_cache(
 const getGitHubActivity = unstable_cache(
 	async (limit: number) => {
 		try {
-			// Fetch 100 events to increase chance of finding distinct repos
+			// Fetch 100 events, then keep the latest parsed activities in order
 			const response = await fetch(
 				`${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=100`,
 				{ headers: getGitHubHeaders() }
@@ -92,24 +92,13 @@ const getGitHubActivity = unstable_cache(
 
 			const events = await response.json()
 
-			const uniqueRepoEvents: any[] = []
-			const seenRepos = new Set<string>()
-
+			const parsed: any[] = []
 			for (const event of events) {
-				if (!event.repo?.name) continue
-
-				// If we haven't seen this repo yet, add it
-				if (!seenRepos.has(event.repo.name)) {
-					seenRepos.add(event.repo.name)
-					uniqueRepoEvents.push(event)
-				}
-
-				if (uniqueRepoEvents.length >= limit) break
+				const activity = parseGitHubEvent(event)
+				if (!activity) continue
+				parsed.push(activity)
+				if (parsed.length >= limit) break
 			}
-
-			const parsed = uniqueRepoEvents
-				.map((event: any) => parseGitHubEvent(event))
-				.filter(Boolean)
 
 			return parsed
 		} catch (error) {

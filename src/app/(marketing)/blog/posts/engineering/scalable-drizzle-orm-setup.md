@@ -1,9 +1,9 @@
 ---
-title: 'Scalable Drizzle ORM Setup'
+title: 'Scalability #2: Scalable Drizzle ORM Setup'
 publishedAt: '2026-02-16'
 updatedAt: '2026-02-16'
 summary: 'Learn how to integrate semantic types with Drizzle ORM for better type safety and developer experience.'
-tags: ['TypeScript', 'Drizzle ORM', 'Engineering']
+tags: ['TypeScript', 'Architecture', 'Engineering']
 author: 'Remco Stoeten'
 canonicalUrl: 'https://remcostoeten.nl/blog/engineering/scalable-drizzle-orm-setup'
 slug: 'scalable-drizzle-orm-setup'
@@ -176,4 +176,3 @@ export async function createPostAction(formData: FormData) {
 This pattern keeps your database logic pure and separation of concerns intact. Your API layer handles the data access, and your Server Actions handle the validation and client communication.
 
 By establishing these semantic foundations early, you build a system that is robust, self-documenting, and easy to scale.
-

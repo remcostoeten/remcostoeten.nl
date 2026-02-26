@@ -154,56 +154,66 @@ function getEventIcon(type: GitHubEventDetail['type']) {
 	}
 }
 
-type IntroPhrase = {
+type ActivityGrammar = {
 	prefix: string
-	connector: string
+	repoToEventConnector?: string
+	showEventBadge: boolean
 }
 
-const INTRO_PHRASES: Record<string, IntroPhrase[]> = {
+const ACTIVITY_GRAMMAR: Record<string, ActivityGrammar[]> = {
 	commit: [
-		{ prefix: 'Just pushed to', connector: 'via' },
-		{ prefix: 'Shipped code to', connector: 'in' },
-		{ prefix: 'Hacking on', connector: 'with' },
-		{ prefix: 'Commits on', connector: 'for' }
+		{ prefix: 'Just pushed to', repoToEventConnector: 'with', showEventBadge: true },
+		{ prefix: 'Shipped code in', repoToEventConnector: 'with', showEventBadge: true },
+		{ prefix: 'Working in', repoToEventConnector: 'with', showEventBadge: true }
 	],
 	pr: [
-		{ prefix: 'Opened a PR on', connector: 'for' },
-		{ prefix: 'Contributing to', connector: 'via' },
-		{ prefix: 'Submitted to', connector: 'on' }
+		{ prefix: 'Opened a PR in', repoToEventConnector: 'for', showEventBadge: true },
+		{ prefix: 'Submitted changes in', repoToEventConnector: 'for', showEventBadge: true }
 	],
 	create: [
-		{ prefix: 'Just created', connector: 'called' },
-		{ prefix: 'Spinning up', connector: 'named' },
-		{ prefix: 'Started', connector: 'for' }
+		{ prefix: 'Created in', repoToEventConnector: 'as', showEventBadge: true },
+		{ prefix: 'Started in', repoToEventConnector: 'as', showEventBadge: true }
 	],
 	review: [
-		{ prefix: 'Reviewed', connector: 'on' },
-		{ prefix: 'Code review on', connector: 'for' }
+		{ prefix: 'Reviewed in', repoToEventConnector: 'for', showEventBadge: true },
+		{ prefix: 'Left review feedback in', repoToEventConnector: 'for', showEventBadge: true }
 	],
 	issue: [
-		{ prefix: 'Opened issue on', connector: 'about' },
-		{ prefix: 'Debugging', connector: 'in' }
+		{ prefix: 'Opened an issue in', repoToEventConnector: 'about', showEventBadge: true },
+		{ prefix: 'Debugging in', repoToEventConnector: 'around', showEventBadge: true }
 	],
 	star: [
-		{ prefix: 'Starred', connector: '—' },
-		{ prefix: 'Bookmarked', connector: '—' }
+		{ prefix: 'Starred', showEventBadge: false },
+		{ prefix: 'Bookmarked', showEventBadge: false }
 	],
-	fork: [{ prefix: 'Forked', connector: 'from' }],
+	fork: [
+		{ prefix: 'Forked', showEventBadge: false }
+	],
 	release: [
-		{ prefix: 'Released', connector: 'tag' },
-		{ prefix: 'Shipped', connector: 'version' }
+		{ prefix: 'Released in', repoToEventConnector: 'as', showEventBadge: true },
+		{ prefix: 'Shipped in', repoToEventConnector: 'as', showEventBadge: true }
+	],
+	delete: [
+		{ prefix: 'Removed in', repoToEventConnector: 'as', showEventBadge: true }
 	],
 	default: [
-		{ prefix: 'Active on', connector: 'via' },
-		{ prefix: 'Working on', connector: 'in' }
+		{ prefix: 'Active in', repoToEventConnector: 'with', showEventBadge: true },
+		{ prefix: 'Working in', repoToEventConnector: 'on', showEventBadge: true }
 	]
 }
 
-function getActivityIntro(
+function getActivityGrammar(
 	type: GitHubEventDetail['type'],
-	seed: number
-): IntroPhrase {
-	const phrases = INTRO_PHRASES[type] || INTRO_PHRASES.default
+	seed: number,
+	title: string
+): ActivityGrammar {
+	const phrases = ACTIVITY_GRAMMAR[type] || ACTIVITY_GRAMMAR.default
+	if (type === 'star' || type === 'fork') {
+		return { ...phrases[seed % phrases.length], showEventBadge: false }
+	}
+	if (!title || title.trim().length === 0) {
+		return { ...phrases[seed % phrases.length], showEventBadge: false }
+	}
 	return phrases[seed % phrases.length]
 }
 
@@ -340,7 +350,7 @@ export function ActivityFeed({
 	// This reuses the same cached data as contribution-graph instead of making another 2 API calls
 	const { data: combinedData, isLoading: dataLoading } = useCombinedActivity(
 		activityCount,
-		10
+		5
 	)
 	const activities = combinedData?.recentActivity || []
 	const tracks = combinedData?.spotifyTracks || []
@@ -361,14 +371,35 @@ export function ActivityFeed({
 	// No longer need separate Spotify fetch - it comes from combined data
 	const isLoading = dataLoading || !isReady
 
-	// Pair activities with tracks - use minimum of both to avoid index out of bounds
-	const pairedContent = useMemo(() => {
-		const minLength = Math.min(activities.length, tracks.length)
-		return Array.from({ length: minLength }, (_, i) => ({
-			activity: activities[i],
-			track: tracks[i]
-		}))
-	}, [activities, tracks])
+	const isRealTimePlaying = useMemo(
+		() => playbackState.isPlaying && playbackState.track,
+		[playbackState.isPlaying, playbackState.track]
+	)
+
+	// Keep a deterministic 5-track rotation:
+	// - if live: [now playing, ...last 4 recent tracks] (deduped)
+	// - otherwise: last 5 recent tracks
+	const rotatingTracks = useMemo(() => {
+		const recent = tracks.slice(0, activityCount)
+		if (!isRealTimePlaying || !playbackState.track) return recent
+
+		const live = playbackState.track
+		const dedupedRecent = recent.filter(track => track.id !== live.id)
+		return [live, ...dedupedRecent].slice(0, activityCount)
+	}, [tracks, activityCount, isRealTimePlaying, playbackState.track])
+
+	// Pair each activity with exactly one track (when available).
+	const pairedContent = useMemo(
+		() =>
+			activities.slice(0, activityCount).map((activity, index) => ({
+				activity,
+				track:
+					rotatingTracks.length > 0
+						? rotatingTracks[index % rotatingTracks.length]
+						: undefined
+			})),
+		[activities, rotatingTracks, activityCount]
+	)
 
 	const rotateActivity = useCallback(() => {
 		if (pairedContent.length === 0 || isPaused) return
@@ -439,38 +470,28 @@ export function ActivityFeed({
 		setElapsedTime(0)
 	}, [currentIndex])
 
-	const totalSlides = Math.max(1, pairedContent.length)
+	const totalSlides = pairedContent.length
 
 	const currentContent = useMemo(
-		() => pairedContent[currentIndex % totalSlides],
+		() =>
+			totalSlides > 0
+				? pairedContent[currentIndex % totalSlides]
+				: undefined,
 		[pairedContent, currentIndex, totalSlides]
 	)
 
 	const currentActivity = currentContent?.activity
 	const currentTrack = currentContent?.track
 
-	const isRealTimePlaying = useMemo(
-		() => playbackState.isPlaying && playbackState.track,
-		[playbackState.isPlaying, playbackState.track]
-	)
-
-	// If currently playing live, replace the current track with the live one
-	const displayTrack = useMemo(() => {
-		if (isRealTimePlaying && currentIndex % totalSlides === 0) {
-			return playbackState.track
-		}
-		return currentTrack
-	}, [
-		isRealTimePlaying,
-		playbackState.track,
-		currentTrack,
-		currentIndex,
-		totalSlides
-	])
+	const displayTrack = currentTrack
 
 	const isCurrentTrackLive = useMemo(
-		() => isRealTimePlaying && currentIndex % totalSlides === 0,
-		[isRealTimePlaying, currentIndex, totalSlides]
+		() =>
+			!!displayTrack &&
+			!!playbackState.track &&
+			isRealTimePlaying &&
+			displayTrack.id === playbackState.track.id,
+		[displayTrack, playbackState.track, isRealTimePlaying]
 	)
 
 	if (isLoading) {
@@ -540,7 +561,11 @@ export function ActivityFeed({
 	}
 
 	const repoName = getShortRepoName(currentActivity.repository)
-	const introPhrase = getActivityIntro(currentActivity.type, currentIndex)
+	const grammar = getActivityGrammar(
+		currentActivity.type,
+		currentIndex,
+		currentActivity.title
+	)
 	const isPrivate = currentActivity.isPrivate
 
 	return (
@@ -590,7 +615,7 @@ export function ActivityFeed({
 									variants={wordVariants}
 									className="text-muted-foreground/70 shrink-0"
 								>
-									{introPhrase.prefix}
+									{grammar.prefix}
 								</motion.span>
 
 								<motion.span variants={highlightVariants} className="shrink-0">
@@ -623,24 +648,28 @@ export function ActivityFeed({
 									</ProjectHoverWrapper>
 								</motion.span>
 
-								<motion.span
-									variants={wordVariants}
-									className="text-muted-foreground/50 shrink-0"
-								>
-									on
-								</motion.span>
+								{grammar.repoToEventConnector && grammar.showEventBadge && (
+										<motion.span
+											variants={wordVariants}
+											className="text-muted-foreground/50 shrink-0"
+										>
+											{grammar.repoToEventConnector}
+										</motion.span>
+									)}
 
-								<motion.span
-									variants={highlightVariants}
-									className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] min-w-0 shrink"
-								>
-									<span className="opacity-60 shrink-0">
-										{getEventIcon(currentActivity.type)}
-									</span>
-									<span className="font-medium text-[12px] text-foreground/80 truncate">
-										{currentActivity.title}
-									</span>
-								</motion.span>
+								{grammar.showEventBadge && (
+									<motion.span
+										variants={highlightVariants}
+										className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] min-w-0 shrink"
+									>
+										<span className="opacity-60 shrink-0">
+											{getEventIcon(currentActivity.type)}
+										</span>
+										<span className="font-medium text-[12px] text-foreground/80 truncate">
+											{currentActivity.title}
+										</span>
+									</motion.span>
+								)}
 
 								<motion.span
 									variants={wordVariants}
@@ -777,7 +806,7 @@ export function ActivityFeed({
 							{/* Single-line GitHub activity - no wrapping */}
 							<div className="flex items-center gap-1.5 min-w-0 pr-8">
 								<span className="text-muted-foreground/80 font-normal shrink-0">
-									{introPhrase.prefix}
+									{grammar.prefix}
 								</span>
 
 								<ProjectHoverWrapper
@@ -806,21 +835,23 @@ export function ActivityFeed({
 									)}
 								</ProjectHoverWrapper>
 
-								{introPhrase.connector &&
-									introPhrase.connector !== '—' && (
+								{grammar.repoToEventConnector &&
+									grammar.showEventBadge && (
 										<span className="text-muted-foreground/60 font-light italic text-[12px] shrink-0">
-											{introPhrase.connector}
+											{grammar.repoToEventConnector}
 										</span>
 									)}
 
-								<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] text-foreground/90 font-medium min-w-0 shrink">
-									<span className="opacity-70 shrink-0">
-										{getEventIcon(currentActivity.type)}
+								{grammar.showEventBadge && (
+									<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] text-foreground/90 font-medium min-w-0 shrink">
+										<span className="opacity-70 shrink-0">
+											{getEventIcon(currentActivity.type)}
+										</span>
+										<span className="truncate text-[12px]">
+											{currentActivity.title}
+										</span>
 									</span>
-									<span className="truncate text-[12px]">
-										{currentActivity.title}
-									</span>
-								</span>
+								)}
 
 								<span className="inline-flex items-center gap-1 text-muted-foreground/40 text-[11px] shrink-0">
 									<span className="w-0.5 h-0.5 rounded-full bg-current" />
