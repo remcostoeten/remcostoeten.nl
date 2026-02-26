@@ -34,8 +34,8 @@ export function Intro() {
        * I'm sorry for the trauma.
        */}
 
-      <div className="prose prose-sm dark:prose-invert text-muted-foreground">
-        <p>
+      <div className="max-w-none">
+        <p className="text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
           Dutch software engineer focused on front-end development with a degree in <em>graphic design</em>. <strong>8 years</strong> of experience{' '}
           across{' '}
           e-commerce,{' '}

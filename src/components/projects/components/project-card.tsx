@@ -112,7 +112,7 @@ export const ProjectCard = memo(function ProjectCard({
 				<div className="flex items-start justify-between gap-2 sm:gap-4 p-2 sm:p-3">
 					<div className="min-w-0 flex-1">
 						<div className="flex flex-wrap items-center gap-1 sm:gap-2">
-							<h3 className="text-xs font-medium text-foreground">
+							<h3 className="text-sm font-medium text-foreground">
 								{project.name}
 							</h3>
 							{project.spotlight && (
@@ -140,7 +140,7 @@ export const ProjectCard = memo(function ProjectCard({
 								</span>
 							)}
 						</div>
-						<p className="mt-0.5 text-[10px] sm:text-[11px] leading-relaxed text-muted-foreground line-clamp-2">
+						<p className="mt-0.5 text-xs sm:text-sm leading-relaxed text-muted-foreground line-clamp-2">
 							{project.description}
 						</p>
 						<div className="mt-2 flex gap-1 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0 sm:flex-wrap">
