@@ -161,41 +161,41 @@ type IntroPhrase = {
 
 const INTRO_PHRASES: Record<string, IntroPhrase[]> = {
 	commit: [
-		{ prefix: 'Just pushed to', connector: 'via' },
-		{ prefix: 'Shipped code to', connector: 'in' },
-		{ prefix: 'Hacking on', connector: 'with' },
-		{ prefix: 'Commits on', connector: 'for' }
+		{ prefix: 'Just pushed to', connector: 'with' },
+		{ prefix: 'Shipped code to', connector: 'for' },
+		{ prefix: 'Working in', connector: 'with' },
+		{ prefix: 'Committed in', connector: 'with' }
 	],
 	pr: [
-		{ prefix: 'Opened a PR on', connector: 'for' },
-		{ prefix: 'Contributing to', connector: 'via' },
-		{ prefix: 'Submitted to', connector: 'on' }
+		{ prefix: 'Opened a PR in', connector: 'for' },
+		{ prefix: 'Submitted changes in', connector: 'for' },
+		{ prefix: 'Contributed in', connector: 'with' }
 	],
 	create: [
-		{ prefix: 'Just created', connector: 'called' },
-		{ prefix: 'Spinning up', connector: 'named' },
-		{ prefix: 'Started', connector: 'for' }
+		{ prefix: 'Just created', connector: 'named' },
+		{ prefix: 'Started', connector: 'called' },
+		{ prefix: 'Spun up', connector: 'named' }
 	],
 	review: [
-		{ prefix: 'Reviewed', connector: 'on' },
-		{ prefix: 'Code review on', connector: 'for' }
+		{ prefix: 'Reviewed', connector: 'for' },
+		{ prefix: 'Left review feedback in', connector: 'for' }
 	],
 	issue: [
-		{ prefix: 'Opened issue on', connector: 'about' },
-		{ prefix: 'Debugging', connector: 'in' }
+		{ prefix: 'Opened an issue in', connector: 'about' },
+		{ prefix: 'Debugging in', connector: 'around' }
 	],
 	star: [
-		{ prefix: 'Starred', connector: '—' },
-		{ prefix: 'Bookmarked', connector: '—' }
+		{ prefix: 'Starred', connector: '' },
+		{ prefix: 'Bookmarked', connector: '' }
 	],
 	fork: [{ prefix: 'Forked', connector: 'from' }],
 	release: [
-		{ prefix: 'Released', connector: 'tag' },
-		{ prefix: 'Shipped', connector: 'version' }
+		{ prefix: 'Released', connector: 'as' },
+		{ prefix: 'Shipped', connector: 'as' }
 	],
 	default: [
-		{ prefix: 'Active on', connector: 'via' },
-		{ prefix: 'Working on', connector: 'in' }
+		{ prefix: 'Active in', connector: 'with' },
+		{ prefix: 'Working in', connector: 'on' }
 	]
 }
 
