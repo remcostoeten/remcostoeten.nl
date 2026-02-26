@@ -340,7 +340,7 @@ export function ActivityFeed({
 	// This reuses the same cached data as contribution-graph instead of making another 2 API calls
 	const { data: combinedData, isLoading: dataLoading } = useCombinedActivity(
 		activityCount,
-		10
+		5
 	)
 	const activities = combinedData?.recentActivity || []
 	const tracks = combinedData?.spotifyTracks || []
@@ -361,14 +361,35 @@ export function ActivityFeed({
 	// No longer need separate Spotify fetch - it comes from combined data
 	const isLoading = dataLoading || !isReady
 
-	// Pair activities with tracks - use minimum of both to avoid index out of bounds
-	const pairedContent = useMemo(() => {
-		const minLength = Math.min(activities.length, tracks.length)
-		return Array.from({ length: minLength }, (_, i) => ({
-			activity: activities[i],
-			track: tracks[i]
-		}))
-	}, [activities, tracks])
+	const isRealTimePlaying = useMemo(
+		() => playbackState.isPlaying && playbackState.track,
+		[playbackState.isPlaying, playbackState.track]
+	)
+
+	// Keep a deterministic 5-track rotation:
+	// - if live: [now playing, ...last 4 recent tracks] (deduped)
+	// - otherwise: last 5 recent tracks
+	const rotatingTracks = useMemo(() => {
+		const recent = tracks.slice(0, activityCount)
+		if (!isRealTimePlaying || !playbackState.track) return recent
+
+		const live = playbackState.track
+		const dedupedRecent = recent.filter(track => track.id !== live.id)
+		return [live, ...dedupedRecent].slice(0, activityCount)
+	}, [tracks, activityCount, isRealTimePlaying, playbackState.track])
+
+	// Pair each activity with exactly one track (when available).
+	const pairedContent = useMemo(
+		() =>
+			activities.slice(0, activityCount).map((activity, index) => ({
+				activity,
+				track:
+					rotatingTracks.length > 0
+						? rotatingTracks[index % rotatingTracks.length]
+						: undefined
+			})),
+		[activities, rotatingTracks, activityCount]
+	)
 
 	const rotateActivity = useCallback(() => {
 		if (pairedContent.length === 0 || isPaused) return
@@ -439,38 +460,28 @@ export function ActivityFeed({
 		setElapsedTime(0)
 	}, [currentIndex])
 
-	const totalSlides = Math.max(1, pairedContent.length)
+	const totalSlides = pairedContent.length
 
 	const currentContent = useMemo(
-		() => pairedContent[currentIndex % totalSlides],
+		() =>
+			totalSlides > 0
+				? pairedContent[currentIndex % totalSlides]
+				: undefined,
 		[pairedContent, currentIndex, totalSlides]
 	)
 
 	const currentActivity = currentContent?.activity
 	const currentTrack = currentContent?.track
 
-	const isRealTimePlaying = useMemo(
-		() => playbackState.isPlaying && playbackState.track,
-		[playbackState.isPlaying, playbackState.track]
-	)
-
-	// If currently playing live, replace the current track with the live one
-	const displayTrack = useMemo(() => {
-		if (isRealTimePlaying && currentIndex % totalSlides === 0) {
-			return playbackState.track
-		}
-		return currentTrack
-	}, [
-		isRealTimePlaying,
-		playbackState.track,
-		currentTrack,
-		currentIndex,
-		totalSlides
-	])
+	const displayTrack = currentTrack
 
 	const isCurrentTrackLive = useMemo(
-		() => isRealTimePlaying && currentIndex % totalSlides === 0,
-		[isRealTimePlaying, currentIndex, totalSlides]
+		() =>
+			!!displayTrack &&
+			!!playbackState.track &&
+			isRealTimePlaying &&
+			displayTrack.id === playbackState.track.id,
+		[displayTrack, playbackState.track, isRealTimePlaying]
 	)
 
 	if (isLoading) {
@@ -623,12 +634,15 @@ export function ActivityFeed({
 									</ProjectHoverWrapper>
 								</motion.span>
 
-								<motion.span
-									variants={wordVariants}
-									className="text-muted-foreground/50 shrink-0"
-								>
-									on
-								</motion.span>
+								{introPhrase.connector &&
+									introPhrase.connector !== '—' && (
+										<motion.span
+											variants={wordVariants}
+											className="text-muted-foreground/50 shrink-0"
+										>
+											{introPhrase.connector}
+										</motion.span>
+									)}
 
 								<motion.span
 									variants={highlightVariants}
