@@ -1,12 +1,12 @@
 ---
 title: 'Building a draft system for markdown files in Next.js'
-publishedAt: '2025-12-16'
-summary: 'Running a blog through filesystem is great, although accidental commits of unfinished posts are bound to happen sooner or later. Here's how I implemented a draft system using MDX frontmatter'
+publishedAt: '2025/12/16'
+summary: "Running a blog through filesystem is great, although accidental commits of unfinished posts are bound to happen sooner or later. Here's how I implemented a draft system using MDX frontmatter"
 tags: ["Engineering", "Next.js", "Guide", "Frontmatter"]
-draft: true	
+draft: false
 ---
 
-As I am building a [Notion-like app called Skriuw](https://skriuw.vercel.app) that has rich text editing capabilities I opted for Markdown files in my [repository](https://github.com/remcostoeten/remcostoeten.nl) so to change things up.
+As I am building a [Notion like app called Skriuw](https://skriuw.vercel.app) that has rich text editing capabilities I opted for Markdown files in my [repository](https://github.com/remcostoeten/remcostoeten.nl) so to change things up.
 
 Works wonderfully, only downside being if you are neurodivergent you'll end up with dozens of unfinished posts in your repository which you don't want to lose nor want to publish so I decided to implement a draft system.
 
@@ -33,7 +33,7 @@ I also split my blog fetching logic into `getBlogPosts()` (public) and `getAllBl
 
 ## Step 2: The Security Layer
 
-I created a simple server-only utility to check for admin status. Since I'm using the `better-auth` admin plugin, it's as simple as:
+I created a simple server only utility to check for admin status. Since I'm using the `better-auth` admin plugin, it's as simple as:
 
 ```typescript title="src/lib/auth.ts"
 export async function isAdmin() {

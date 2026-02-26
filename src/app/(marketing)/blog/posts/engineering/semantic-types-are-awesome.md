@@ -1,9 +1,9 @@
 ---
-title: 'Semantic types are awesome'
-publishedAt: '11-02-2026'
-updatedAt: '11-02-2026'
+title: 'Scalability #1: Semantic types are awesome'
+publishedAt: '11/02/2026'
+updatedAt: '11/02/2026'
 summary: 'A beautiful way of writing types for maintainable code.'
-tags: ['TypeScript', 'Engineering']
+tags: ['Architecture','TypeScript', 'Engineering']
 author: 'Remco Stoeten'
 canonicalUrl: 'https://remcostoeten.nl/blog/engineering/semantic-types-are-awesome'
 slug: 'semantic-types-are-awesome'
@@ -52,11 +52,11 @@ export type Entity = {
 
 This ensures consistency. We're almost certain that every persisted object will (or should) have an `id`, `createdAt`, and `updatedAt`.
 
-This might seem like over-engineering, but it greatly reduces onboarding time and discrepancies. It prevents the "Wait, is usage time in milliseconds (number) or an ISO string?" questions months down the line.
+This might seem like overengineering, but it greatly reduces onboarding time and discrepancies. It prevents the "Wait, is usage time in milliseconds (number) or an ISO string?" questions months down the line.
 
 ## A Full Domain Example
 
-This is the front-end part of the implementation. For the back-end I use a similar strategy which you can read in [Part two - Scalable Drizzle ORM setup](/blog/engineering/scalable-drizzle-orm-setup).
+This is the frontend part of the implementation. For the backend I use a similar strategy which you can read in [Part two: Scalable Drizzle ORM setup](/blog/engineering/scalable-drizzle-orm-setup).
 
 I'll be showcasing the code I have running in production for [Skriuw](https://skriuw.vercel.app). The source for [semantics](https://github.com/remcostoeten/skriuw/blob/daddy/packages/shared/src/types/semantics.ts) and [base](https://github.com/remcostoeten/skriuw/blob/daddy/packages/shared/src/types/base.ts) types lives in the shared package.
 
@@ -82,7 +82,7 @@ export type Note = BaseEntity & {
 
 TypeScript ensures the `Note` type automatically inherits `id`, `createdAt`, and `updatedAt` via the intersection.
 
-Building on this, domain models become self-documenting:
+Building on this, domain models become self documenting:
 
 ```ts
 import { Entity } from './base'
@@ -116,9 +116,9 @@ export type Comment = Entity & {
 
 ### Why is this better?
 
-1. **Refactoring is trivial**: If you decide to switch your IDs from `string` UUIDs to `number` auto-increments, you change it in **one place** (`types/semantics.ts`), and it propagates everywhere.
+1. **Refactoring is trivial**: If you decide to switch your IDs from `string` UUIDs to `number` auto increments, you change it in **one place** (`types/semantics.ts`), and it propagates everywhere.
 2. **Intent is clear**: When you see `content: Markdown` versus `content: string`, you immediately know you shouldn't render it directly without sanitization or parsing.
-3. **Cross-referencing**: `authorId: ID` tells you exactly what kind of value is expected there, matching the `id` field of the `User` entity.
+3. **Cross referencing**: `authorId: ID` tells you exactly what kind of value is expected there, matching the `id` field of the `User` entity.
 
 You can even go a step further with **Branded Types** (or "Opaque Types") if you want to ensure you never accidentally pass a `PostId` into a function expecting a `UserId`.
 
@@ -138,6 +138,6 @@ export async function create<T extends BaseEntity>(
 }
 ```
 
-This ensures that your data layer is practically self-documenting and foolproof. It is impossible to accidentally pass an object that doesn't have an ID or timestamp to your database layer. The compiler simply won't allow it.
+This ensures that your data layer is practically self documenting and foolproof. It is impossible to accidentally pass an object that doesn't have an ID or timestamp to your database layer. The compiler simply won't allow it.
 
 By defining your semantics upfront—what an ID is, what a timestamp is, and what an Entity must look like—you stop writing defensive code to check if properties exist, and start writing domain logic that just works.

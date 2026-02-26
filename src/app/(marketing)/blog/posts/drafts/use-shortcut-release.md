@@ -1,7 +1,7 @@
 ---
 title: 'I shipped the perfect keyboard shortcut hook'
-publishedAt: '2024-12-24'
-updatedAt: '2026-02-21'
+publishedAt: '2024/12/24'
+updatedAt: '2026/02/21'
 summary: 'Keyboard shortcuts should read like intent, not config. I built @remcostoeten/use-shortcut to make that happen with a fluent, chainable, type-safe API.'
 tags: ['Engineering', 'Open Source', 'React', 'DX']
 author: 'Remco Stoeten'
@@ -10,7 +10,7 @@ slug: 'use-shortcut-release'
 draft: false
 ---
 
-I am a keyboard-centered user, and in pretty much every project I build I rely on shortcuts to move faster.
+I am a keyboard centered user, and in pretty much every project I build I rely on shortcuts to move faster.
 
 Writing shortcut logic is not hard. Writing shortcut logic that stays readable after a few months is the hard part.
 
@@ -64,7 +64,7 @@ $.cmd.key('k').on(toggleSearch)
 
 It is explicit about modifiers and key, and TypeScript guides you through each step.
 
-### 2) cross-platform `.mod`
+### 2) cross platform `.mod`
 
 `Command` on Mac vs `Control` on Windows/Linux is always a pain.
 
@@ -88,7 +88,7 @@ Global shortcuts are great until users are typing in an input.
 $.key('/').except('typing').on(focusSearch)
 ```
 
-Built-in presets:
+Built in presets:
 
 - `'input'` for `input`, `textarea`, `select`
 - `'editable'` for `contentEditable`
