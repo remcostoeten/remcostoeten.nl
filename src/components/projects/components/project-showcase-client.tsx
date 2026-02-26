@@ -71,7 +71,7 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 
 	return (
 		<section className="w-full max-w-3xl px-3 sm:px-0">
-			<div className="flex flex-col border-l border-r border-t border-border">
+			<div className="flex flex-col border-l border-r border-border">
 				{featured.map((project, index) => (
 					<div
 						key={project.name}

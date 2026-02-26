@@ -44,7 +44,7 @@ function ShowcaseSkeleton({
 }) {
 	return (
 		<section className="w-full max-w-3xl px-3 sm:px-0">
-			<div className="flex flex-col border-l border-r border-t border-border">
+			<div className="flex flex-col border-l border-r border-border">
 				{Array.from({ length: featuredCount }).map((_, i) => (
 					<div key={i} className="border-b border-border">
 						<ProjectCardSkeleton />

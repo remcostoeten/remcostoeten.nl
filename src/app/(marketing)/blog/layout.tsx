@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import './codeblock.css'
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
 	return (

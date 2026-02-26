@@ -4,13 +4,12 @@ import { cn } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import {
 	motion,
-	AnimatePresence,
 	useScroll,
 	useTransform,
 	useSpring,
 	useMotionValueEvent
 } from 'framer-motion'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import {
 	SiReact,
 	SiTypescript,
@@ -121,15 +120,25 @@ const CARD_STYLES = [
 type TechStackCloudProps = React.ComponentProps<'div'>
 
 export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
+	const containerRef = useRef<HTMLDivElement>(null)
+	
+	const { scrollYProgress } = useScroll({
+		target: containerRef,
+		offset: ['start end', 'end start']
+	})
+	const { scrollY } = useScroll()
+
 	return (
 		<div
+			ref={containerRef}
 			className={cn(
 				'relative grid grid-cols-2 border-x md:grid-cols-4',
 				className
 			)}
 			{...props}
 		>
-			<div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t" />
+
+
 
 			{LOGOS.map(function (logo, i) {
 				const style = CARD_STYLES[i] || {
@@ -141,6 +150,8 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
 						key={logo.name}
 						logo={logo}
 						className={style.className}
+						scrollY={scrollY}
+						scrollYProgress={scrollYProgress}
 					>
 						{style.decorators}
 					</TechCard>
@@ -154,19 +165,13 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
 
 type TechCardProps = React.ComponentProps<'div'> & {
 	logo: TechItem
+	scrollY: any
+	scrollYProgress: any
 }
 
-function TechCard({ logo, className, children, ...props }: TechCardProps) {
+function TechCard({ logo, className, scrollY, scrollYProgress, children, ...props }: TechCardProps) {
 	const Icons = Array.isArray(logo.Icon) ? logo.Icon : [logo.Icon]
-	const containerRef = useRef<HTMLDivElement>(null)
 	const [index, setIndex] = useState(0)
-
-	const { scrollYProgress } = useScroll({
-		target: containerRef,
-		offset: ['start end', 'end start']
-	})
-
-	const { scrollY } = useScroll()
 
 	const rawRotation = useTransform(
 		[scrollYProgress, scrollY],
@@ -202,7 +207,6 @@ function TechCard({ logo, className, children, ...props }: TechCardProps) {
 
 	return (
 		<div
-			ref={containerRef}
 			className={cn(
 				'flex items-center justify-center bg-background px-4 py-8 md:p-8 relative overflow-hidden group min-h-[120px]',
 				className

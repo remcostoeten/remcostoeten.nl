@@ -37,7 +37,6 @@ const ProjectShowcase = nextDynamic(
 )
 
 export const revalidate = 60
-export const dynamic = 'force-dynamic'
 
 export { homeMetadata as metadata }
 

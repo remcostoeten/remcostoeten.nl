@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import ReactDOM from 'react-dom'
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
@@ -87,6 +88,11 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+	ReactDOM.preconnect('https://avatars.githubusercontent.com', { crossOrigin: 'anonymous' })
+	ReactDOM.preconnect('https://i.scdn.co', { crossOrigin: 'anonymous' })
+	ReactDOM.prefetchDNS('//api.github.com')
+	ReactDOM.prefetchDNS('//api.spotify.com')
+
 	return (
 		<html
 			lang="en"
@@ -97,25 +103,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			)}
 		>
 			<head>
-				<link rel="preconnect" href="https://fonts.googleapis.com" />
-				<link
-					rel="preconnect"
-					href="https://fonts.gstatic.com"
-					crossOrigin="anonymous"
-				/>
-				<link rel="dns-prefetch" href="//api.github.com" />
-				<link rel="dns-prefetch" href="//api.spotify.com" />
-				<link
-					rel="dns-prefetch"
-					href="//avatars.githubusercontent.com"
-				/>
-				<link rel="dns-prefetch" href="//i.scdn.co" />
-				<link
-					rel="preconnect"
-					href="https://avatars.githubusercontent.com"
-				/>
-				<link rel="preconnect" href="https://i.scdn.co" />
-
 				<script
 					dangerouslySetInnerHTML={{
 						__html: `

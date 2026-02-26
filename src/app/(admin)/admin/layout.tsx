@@ -5,6 +5,7 @@ import { RefreshCw, Home } from "lucide-react"
 import Link from "next/link"
 import { AdminSessionStatus } from "@/components/admin/admin-session-status"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
+import "../admin.css"
 
 export const dynamic = "force-dynamic"
 

@@ -67,7 +67,7 @@ export function AppProviders({ children }: TProps) {
 							<Suspense fallback={null}>
 								<SpeedInsights />
 							</Suspense>
-							<DevWidgetWrapper />
+							{process.env.NODE_ENV === 'development' && <DevWidgetWrapper />}
 						</StaggerProvider>
 					</VimAuthProvider>
 				</BlogFilterProvider>

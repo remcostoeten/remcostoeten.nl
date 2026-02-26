@@ -14,10 +14,8 @@ export async function BlogPosts({
 
 	const filePosts = getAllBlogPosts()
 
-	console.log('[BlogPosts] userIsAdmin:', userIsAdmin, 'total file posts:', filePosts.length)
-	filePosts.forEach(p => {
-		if (p.metadata.draft) console.log('[BlogPosts] Draft post found:', p.slug, 'draft:', p.metadata.draft)
-	})
+
+
 
 	// Fetch data from DB including draft status
 	const dbPosts = await db
