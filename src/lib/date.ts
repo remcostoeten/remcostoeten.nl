@@ -1,3 +1,16 @@
+const SHORT_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+	month: 'short',
+	day: 'numeric',
+	timeZone: 'UTC'
+})
+
+const LONG_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+	month: 'short',
+	day: 'numeric',
+	year: 'numeric',
+	timeZone: 'UTC'
+})
+
 export function formatRelativeDate(dateString: string): string {
 	const date = new Date(dateString)
 	const now = new Date()
@@ -12,10 +25,10 @@ export function formatRelativeDate(dateString: string): string {
 	return `${Math.floor(diffDays / 365)}y ago`
 }
 
+export function formatShortDate(dateString: string): string {
+	return SHORT_DATE_FORMATTER.format(new Date(dateString))
+}
+
 export function formatDate(dateString: string): string {
-	return new Date(dateString).toLocaleDateString('en-US', {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric'
-	})
+	return LONG_DATE_FORMATTER.format(new Date(dateString))
 }
