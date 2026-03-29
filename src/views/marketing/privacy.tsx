@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import PrivacyContent from './privacy-content'
+import PrivacyContent from '@/app/(marketing)/privacy/privacy-content'
 
 export function PrivacyView() {
 	return (

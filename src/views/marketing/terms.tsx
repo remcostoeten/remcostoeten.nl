@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import TermsContent from './terms-content'
+import TermsContent from '@/app/(marketing)/terms/terms-content'
 
 export function TermsView() {
 	return (

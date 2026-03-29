@@ -12,8 +12,7 @@ import {
 	MapPinIcon,
 	BriefcaseIcon,
 	GraduationCapIcon,
-	CodeIcon,
-	ArrowLeft
+	CodeIcon
 } from 'lucide-react'
 
 const skills = [
@@ -60,15 +59,8 @@ export function AboutView() {
 			/>
 			<PersonStructuredData />
 
-		<div className="space-y-6">
-			<Link
-				href="/"
-				className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors ml-4 md:ml-5 mt-4"
-			>
-				<ArrowLeft className="size-4" />
-				Back to Home
-			</Link>
-			<header className="px-4 md:px-5">
+			<div className="space-y-6">
+				<header className="px-4 md:px-5">
 					<div className="flex items-start gap-4 mb-6">
 						<Image
 							src="/images/remco-stoeten.webp"
