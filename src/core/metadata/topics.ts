@@ -1,6 +1,6 @@
-import { createBaseMetadata } from './base'
+import { createPageMetadata } from './base'
 
-export const topicsMetadata = createBaseMetadata({
+export const topicsMetadata = createPageMetadata({
 	title: 'Topics - Blog Sections',
 	description:
 		'Browse blog posts by three high-level topics: Engineering, Guides, and Personal.',
@@ -11,6 +11,5 @@ export const topicsMetadata = createBaseMetadata({
 		'personal writing',
 		'software engineering'
 	],
-	canonical: '/blog/topics',
-	siteName: 'Blog'
+	canonical: '/blog/topics'
 })

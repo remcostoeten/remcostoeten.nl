@@ -1,16 +1,13 @@
-import { Suspense } from 'react'
-import TermsContent from './terms-content'
+import { createPageMetadata } from '@/core/metadata/base'
+import { TermsView } from './view'
 
-export const metadata = {
+export const metadata = createPageMetadata({
 	title: 'Terms of Service',
 	description:
-		'Terms of service for remcostoeten.nl - Rules and guidelines for using this website.'
-}
+		'Terms of service for remcostoeten.nl - Rules and guidelines for using this website.',
+	canonical: '/terms'
+})
 
-export default function TermsPage() {
-	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<TermsContent />
-		</Suspense>
-	)
+export default function Page() {
+	return <TermsView />
 }

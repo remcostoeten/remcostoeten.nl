@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server'
-import { isAdmin } from '@/utils/is-admin'
 
 export async function canAccessDevTools(): Promise<boolean> {
-	if (process.env.NODE_ENV === 'development') {
-		return true
-	}
-
-	return isAdmin()
+	return process.env.NODE_ENV === 'development'
 }
 
 export async function requireDevToolsAccess() {

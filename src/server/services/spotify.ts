@@ -40,7 +40,9 @@ const FALLBACK_TRACKS: SpotifyTrack[] = [
 
 export async function getLatestTracks(limit = 10): Promise<SpotifyTrack[]> {
 	try {
-		console.log('🎵 Fetching Spotify tracks from API...')
+		if (process.env.NODE_ENV === 'development') {
+			console.log('🎵 Fetching Spotify tracks from API...')
+		}
 
 		const response = await fetch(`/api/spotify/recent?limit=${limit}`)
 
@@ -52,23 +54,29 @@ export async function getLatestTracks(limit = 10): Promise<SpotifyTrack[]> {
 			)
 
 			if (errorData.error === 'No refresh token configured') {
-				console.log('🎵 No Spotify token, trying mock data...')
+				if (process.env.NODE_ENV === 'development') {
+					console.log('🎵 No Spotify token, trying mock data...')
+				}
 				try {
 					const mockResponse = await fetch('/api/spotify.json')
 					if (mockResponse.ok) {
 						const mockData = await mockResponse.json()
 						if (mockData.tracks && mockData.tracks.length > 0) {
-							console.log(
-								'✅ Using mock Spotify tracks:',
-								mockData.tracks.length
-							)
+							if (process.env.NODE_ENV === 'development') {
+								console.log(
+									'✅ Using mock Spotify tracks:',
+									mockData.tracks.length
+								)
+							}
 							return mockData.tracks
 						}
 					}
 				} catch {
-					console.log(
-						'🎵 Mock data not available, using hardcoded fallback'
-					)
+					if (process.env.NODE_ENV === 'development') {
+						console.log(
+							'🎵 Mock data not available, using hardcoded fallback'
+						)
+					}
 				}
 			}
 
@@ -78,35 +86,45 @@ export async function getLatestTracks(limit = 10): Promise<SpotifyTrack[]> {
 		const data = await response.json()
 
 		if (data.tracks && data.tracks.length > 0) {
-			console.log(
-				'✅ Successfully fetched real Spotify tracks:',
-				data.tracks.length
-			)
+			if (process.env.NODE_ENV === 'development') {
+				console.log(
+					'✅ Successfully fetched real Spotify tracks:',
+					data.tracks.length
+				)
+			}
 			return data.tracks
 		}
 
-		console.log('No recent tracks found, using fallback')
+		if (process.env.NODE_ENV === 'development') {
+			console.log('No recent tracks found, using fallback')
+		}
 		return FALLBACK_TRACKS
 	} catch (error) {
 		console.error('🎵 Error fetching Spotify tracks:', error)
 
 		try {
-			console.log('🎵 Network error, trying mock data...')
+			if (process.env.NODE_ENV === 'development') {
+				console.log('🎵 Network error, trying mock data...')
+			}
 			const mockResponse = await fetch('/api/spotify.json')
 			if (mockResponse.ok) {
 				const mockData = await mockResponse.json()
 				if (mockData.tracks && mockData.tracks.length > 0) {
-					console.log(
-						'✅ Using mock Spotify tracks:',
-						mockData.tracks.length
-					)
+					if (process.env.NODE_ENV === 'development') {
+						console.log(
+							'✅ Using mock Spotify tracks:',
+							mockData.tracks.length
+						)
+					}
 					return mockData.tracks
 				}
 			}
 		} catch {
-			console.log(
-				'🎵 Mock data not available either, using hardcoded fallback'
-			)
+			if (process.env.NODE_ENV === 'development') {
+				console.log(
+					'🎵 Mock data not available either, using hardcoded fallback'
+				)
+			}
 		}
 
 		return FALLBACK_TRACKS

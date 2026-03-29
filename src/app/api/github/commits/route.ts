@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
+import { isAllowedGitHubRepo } from '@/lib/github-route-access'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,14 +25,21 @@ export async function GET(request: NextRequest) {
 		const owner = searchParams.get('owner')
 		const repo = searchParams.get('repo')
 
-		if (!owner || !repo) {
-			return NextResponse.json(
-				{ error: 'Missing owner or repo parameter' },
-				{ status: 400 }
-			)
-		}
+			if (!owner || !repo) {
+				return NextResponse.json(
+					{ error: 'Missing owner or repo parameter' },
+					{ status: 400 }
+				)
+			}
 
-		const token = process.env.GITHUB_TOKEN
+			if (!isAllowedGitHubRepo(owner, repo)) {
+				return NextResponse.json(
+					{ error: 'Repository not allowed' },
+					{ status: 403 }
+				)
+			}
+
+			const token = process.env.GITHUB_TOKEN
 
 		const headers: Record<string, string> = {
 			Accept: 'application/vnd.github.v3+json',

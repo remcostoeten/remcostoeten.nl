@@ -71,7 +71,7 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 
 	return (
 		<section className="w-full max-w-3xl px-3 sm:px-0">
-			<div className="flex flex-col border-l border-r border-t border-border">
+			<div className="flex flex-col border-t border-border">
 				{featured.map((project, index) => (
 					<div
 						key={project.name}
@@ -86,7 +86,7 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 				))}
 			</div>
 
-			<div className="relative border-l border-r border-border">
+			<div className="relative">
 				<div
 					className="flex flex-col bg-card overflow-hidden transition-all duration-500"
 					style={{
@@ -112,7 +112,7 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 				/>
 			</div>
 
-			<div className="border-l border-r border-border">
+			<div>
 				<button
 					onClick={() => setShowAll(!showAll)}
 					className="flex w-full px-2 py-2 text-xs text-muted-foreground transition-all duration-300 hover:text-foreground sm:px-3"

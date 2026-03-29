@@ -51,7 +51,9 @@ export async function POST(request: NextRequest) {
 
 		const service = request.nextUrl.searchParams.get('service')
 
-		console.log(`[Sync] Starting sync... (service: ${service || 'all'})`)
+		if (process.env.NODE_ENV === 'development') {
+			console.log(`[Sync] Starting sync... (service: ${service || 'all'})`)
+		}
 		const startTime = Date.now()
 
 		let result
@@ -64,7 +66,9 @@ export async function POST(request: NextRequest) {
 		}
 
 		const duration = Date.now() - startTime
-		console.log(`[Sync] Completed in ${duration}ms`, result)
+		if (process.env.NODE_ENV === 'development') {
+			console.log(`[Sync] Completed in ${duration}ms`, result)
+		}
 
 		return NextResponse.json({
 			success: true,

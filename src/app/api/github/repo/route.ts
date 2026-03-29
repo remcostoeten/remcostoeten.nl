@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isAllowedGitHubRepo } from '@/lib/github-route-access'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 
@@ -52,6 +53,10 @@ export async function GET(request: NextRequest) {
 			{ error: 'Missing owner or repo parameter' },
 			{ status: 400 }
 		)
+	}
+
+	if (!isAllowedGitHubRepo(owner, repo)) {
+		return NextResponse.json({ error: 'Repository not allowed' }, { status: 403 })
 	}
 
 	try {

@@ -1,16 +1,13 @@
-import { Suspense } from 'react'
-import PrivacyContent from './privacy-content'
+import { createPageMetadata } from '@/core/metadata/base'
+import { PrivacyView } from './view'
 
-export const metadata = {
+export const metadata = createPageMetadata({
 	title: 'Privacy Policy',
 	description:
-		'Privacy policy for remcostoeten.nl - How we collect, use, and protect your data.'
-}
+		'Privacy policy for remcostoeten.nl - How we collect, use, and protect your data.',
+	canonical: '/privacy'
+})
 
-export default function PrivacyPage() {
-	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<PrivacyContent />
-		</Suspense>
-	)
+export default function Page() {
+	return <PrivacyView />
 }
