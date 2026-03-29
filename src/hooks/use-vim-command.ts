@@ -39,7 +39,6 @@ export function useVimCommand() {
 
 			if (e.key === 'Escape') {
 				if (buffer) {
-					console.log('[vim-cmd] Buffer cleared (Escape pressed)')
 					setBuffer('')
 				}
 				return
@@ -60,7 +59,6 @@ export function useVimCommand() {
 			clearTimeout(timeout)
 			timeout = setTimeout(() => {
 				if (buffer) {
-					console.log('[vim-cmd] Buffer cleared (timeout)')
 					setBuffer('')
 				}
 			}, 2000)
@@ -70,9 +68,6 @@ export function useVimCommand() {
 			const newBuffer = buffer + char
 			setBuffer(newBuffer)
 
-			// ONLY log if we're in command mode (buffer exists)
-			console.log(`[vim-cmd] Sequence: "${newBuffer}"`)
-
 			// Normalize: remove spaces for matching
 			const normalized = newBuffer.replace(/\s+/g, '')
 
@@ -81,9 +76,6 @@ export function useVimCommand() {
 				normalized.includes(':signin') ||
 				normalized.includes(':login')
 			) {
-				console.log(
-					'[vim-cmd] ✓ SUCCESS: :signin/:login command detected'
-				)
 				setCommand('signin')
 				setBuffer('')
 				return
@@ -94,32 +86,24 @@ export function useVimCommand() {
 				normalized.includes(':signout') ||
 				normalized.includes(':logout')
 			) {
-				console.log(
-					'[vim-cmd] ✓ SUCCESS: :signout/:logout command detected'
-				)
 				setCommand('signout')
 				setBuffer('')
 				return
 			}
 
 			if (normalized.includes(':showdrafts')) {
-				console.log('[vim-cmd] ✓ SUCCESS: :show drafts command detected')
 				setCommand('showdrafts')
 				setBuffer('')
 				return
 			}
 
 			if (normalized.includes(':showpublished')) {
-				console.log(
-					'[vim-cmd] ✓ SUCCESS: :show published command detected'
-				)
 				setCommand('showpublished')
 				setBuffer('')
 				return
 			}
 
 			if (normalized.includes(':showall')) {
-				console.log('[vim-cmd] ✓ SUCCESS: :show all command detected')
 				setCommand('showall')
 				setBuffer('')
 				return
@@ -127,7 +111,6 @@ export function useVimCommand() {
 
 			// Limit buffer size - if it gets too long without a match, it's likely not a command
 			if (newBuffer.length > 20) {
-				console.log('[vim-cmd] Buffer cleared (no match)')
 				setBuffer('')
 			}
 		}

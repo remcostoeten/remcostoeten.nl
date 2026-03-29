@@ -9,7 +9,9 @@ export const authClient = createAuthClient({
 export const { signIn, signOut, useSession } = authClient
 
 // Custom signIn function for popup-based OAuth
-export const signInWithPopup = async (provider: 'github' | 'google'): Promise<void> => {
+export const signInWithPopup = async (
+	provider: 'github' | 'google'
+): Promise<void> => {
 	await authClient.signIn.social({
 		provider,
 		callbackURL: '/admin'

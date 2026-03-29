@@ -1,8 +1,8 @@
 ---
-title: "How I keep track of tasks when todo apps do not work for me"
-publishedAt: "05-01-2026"
-summary: "Conventional todo apps assume you will open them. I do not, so I built systems that force tasks into my workflow instead."
-tags: ["Engineering", "Blog", "Personal", "Productivity"]
+title: 'How I keep track of tasks when todo apps do not work for me'
+publishedAt: '05-01-2026'
+summary: 'Conventional todo apps assume you will open them. I do not, so I built systems that force tasks into my workflow instead.'
+tags: ['Engineering', 'Blog', 'Personal', 'Productivity']
 ---
 
 Todo lists seem to hate me. I've tried everything: Jira (still recovering from that), GitLab, Linear, and Kanban boards. They either add friction or feel bloated. I needed something that actually worked with how I operate.

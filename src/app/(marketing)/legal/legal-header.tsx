@@ -46,22 +46,27 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 
 	return (
 		<div
-			className={`sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur transition-transform duration-200 ${isHidden
-				? '-translate-y-full md:translate-y-0'
-				: 'translate-y-0'
-				}`}
+			className={`sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur transition-transform duration-200 ${
+				isHidden
+					? '-translate-y-full md:translate-y-0'
+					: 'translate-y-0'
+			}`}
 		>
 			<div className="flex items-center justify-between gap-4 px-4 py-3 md:px-5">
 				<div className="flex flex-wrap items-center gap-3">
 					{/* Navigation between legal pages */}
-
 
 					<Breadcrumbs />
 				</div>
 				<div className="flex items-center gap-2">
 					{/* Navigation between legal pages */}
 					{pathname === '/terms' && (
-						<Button asChild variant="ghost" size="sm" className="h-7 text-xs">
+						<Button
+							asChild
+							variant="ghost"
+							size="sm"
+							className="h-7 text-xs"
+						>
 							<Link
 								href={`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
 							>
@@ -70,7 +75,12 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 						</Button>
 					)}
 					{pathname === '/privacy' && (
-						<Button asChild variant="ghost" size="sm" className="h-7 text-xs">
+						<Button
+							asChild
+							variant="ghost"
+							size="sm"
+							className="h-7 text-xs"
+						>
 							<Link
 								href={`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
 							>
@@ -127,10 +137,11 @@ function LanguageToggle({ label, isActive, onClick }: ToggleProps) {
 			type="button"
 			onClick={onClick}
 			aria-pressed={isActive}
-			className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors ${isActive
-				? 'border-primary/70 bg-primary text-primary-foreground shadow-sm'
-				: 'border-border/70 bg-background hover:border-primary/50 hover:text-foreground'
-				}`}
+			className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors ${
+				isActive
+					? 'border-primary/70 bg-primary text-primary-foreground shadow-sm'
+					: 'border-border/70 bg-background hover:border-primary/50 hover:text-foreground'
+			}`}
 		>
 			{label}
 		</button>

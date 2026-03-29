@@ -11,8 +11,6 @@ import { PostHogProvider } from '@/components/providers/posthog-provider'
 import { DevWidget } from '../../../tools/dev-menu'
 import { useSession } from '@/lib/auth-client'
 import { signOut } from '@/lib/auth-client'
-import { Analytics as RemcoAnalytics } from '@remcostoeten/analytics'
-
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
 
 const Analytics = lazy(() =>
@@ -21,6 +19,11 @@ const Analytics = lazy(() =>
 const SpeedInsights = lazy(() =>
 	import('@vercel/speed-insights/next').then(m => ({
 		default: m.SpeedInsights
+	}))
+)
+const RemcoAnalytics = lazy(() =>
+	import('@remcostoeten/analytics').then(m => ({
+		default: m.Analytics
 	}))
 )
 

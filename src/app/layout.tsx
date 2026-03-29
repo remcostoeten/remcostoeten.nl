@@ -8,7 +8,6 @@ import {
 	PersonStructuredData
 } from '@/components/seo/structured-data'
 import { AppProviders } from '@/components/providers/providers'
-import { WebVitalsReporter } from '@/components/seo/web-vitals-reporter'
 import { baseUrl } from './sitemap'
 import './global.css'
 
@@ -97,12 +96,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			)}
 		>
 			<head>
-				<link rel="preconnect" href="https://fonts.googleapis.com" />
-				<link
-					rel="preconnect"
-					href="https://fonts.gstatic.com"
-					crossOrigin="anonymous"
-				/>
 				<link rel="dns-prefetch" href="//api.github.com" />
 				<link rel="dns-prefetch" href="//api.spotify.com" />
 				<link
@@ -140,7 +133,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				className="antialiased bg-background text-foreground"
 				suppressHydrationWarning
 			>
-				<WebVitalsReporter />
 				<AppProviders>{children}</AppProviders>
 			</body>
 		</html>

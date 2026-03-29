@@ -19,7 +19,6 @@ import type { GitHubEventDetail } from '@/hooks/use-github'
 import { useCombinedActivity } from '@/hooks/use-combined-activity'
 import { ProjectHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers'
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback'
-import { ActivityStatusBar } from './activity-status-bar'
 
 const SPRING_CONFIG = {
 	type: 'spring' as const,
@@ -162,43 +161,105 @@ type ActivityGrammar = {
 
 const ACTIVITY_GRAMMAR: Record<string, ActivityGrammar[]> = {
 	commit: [
-		{ prefix: 'Just pushed to', repoToEventConnector: 'with', showEventBadge: true },
-		{ prefix: 'Shipped code in', repoToEventConnector: 'with', showEventBadge: true },
-		{ prefix: 'Working in', repoToEventConnector: 'with', showEventBadge: true }
+		{
+			prefix: 'Just pushed to',
+			repoToEventConnector: 'with',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Shipped code in',
+			repoToEventConnector: 'with',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Working in',
+			repoToEventConnector: 'with',
+			showEventBadge: true
+		}
 	],
 	pr: [
-		{ prefix: 'Opened a PR in', repoToEventConnector: 'for', showEventBadge: true },
-		{ prefix: 'Submitted changes in', repoToEventConnector: 'for', showEventBadge: true }
+		{
+			prefix: 'Opened a PR in',
+			repoToEventConnector: 'for',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Submitted changes in',
+			repoToEventConnector: 'for',
+			showEventBadge: true
+		}
 	],
 	create: [
-		{ prefix: 'Created in', repoToEventConnector: 'as', showEventBadge: true },
-		{ prefix: 'Started in', repoToEventConnector: 'as', showEventBadge: true }
+		{
+			prefix: 'Created in',
+			repoToEventConnector: 'as',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Started in',
+			repoToEventConnector: 'as',
+			showEventBadge: true
+		}
 	],
 	review: [
-		{ prefix: 'Reviewed in', repoToEventConnector: 'for', showEventBadge: true },
-		{ prefix: 'Left review feedback in', repoToEventConnector: 'for', showEventBadge: true }
+		{
+			prefix: 'Reviewed in',
+			repoToEventConnector: 'for',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Left review feedback in',
+			repoToEventConnector: 'for',
+			showEventBadge: true
+		}
 	],
 	issue: [
-		{ prefix: 'Opened an issue in', repoToEventConnector: 'about', showEventBadge: true },
-		{ prefix: 'Debugging in', repoToEventConnector: 'around', showEventBadge: true }
+		{
+			prefix: 'Opened an issue in',
+			repoToEventConnector: 'about',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Debugging in',
+			repoToEventConnector: 'around',
+			showEventBadge: true
+		}
 	],
 	star: [
 		{ prefix: 'Starred', showEventBadge: false },
 		{ prefix: 'Bookmarked', showEventBadge: false }
 	],
-	fork: [
-		{ prefix: 'Forked', showEventBadge: false }
-	],
+	fork: [{ prefix: 'Forked', showEventBadge: false }],
 	release: [
-		{ prefix: 'Released in', repoToEventConnector: 'as', showEventBadge: true },
-		{ prefix: 'Shipped in', repoToEventConnector: 'as', showEventBadge: true }
+		{
+			prefix: 'Released in',
+			repoToEventConnector: 'as',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Shipped in',
+			repoToEventConnector: 'as',
+			showEventBadge: true
+		}
 	],
 	delete: [
-		{ prefix: 'Removed in', repoToEventConnector: 'as', showEventBadge: true }
+		{
+			prefix: 'Removed in',
+			repoToEventConnector: 'as',
+			showEventBadge: true
+		}
 	],
 	default: [
-		{ prefix: 'Active in', repoToEventConnector: 'with', showEventBadge: true },
-		{ prefix: 'Working in', repoToEventConnector: 'on', showEventBadge: true }
+		{
+			prefix: 'Active in',
+			repoToEventConnector: 'with',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Working in',
+			repoToEventConnector: 'on',
+			showEventBadge: true
+		}
 	]
 }
 
@@ -360,16 +421,8 @@ export function ActivityFeed({
 	// Motion values for drag and velocity
 	// Removed velocity-based blur for performance - was causing heavy per-frame calculations
 
-	const [isReady, setIsReady] = useState(false)
-
-	// Delay everything to unblock initial TBT (reduced from 3500ms since we're not making separate fetches)
-	useEffect(() => {
-		const timer = setTimeout(() => setIsReady(true), 500)
-		return () => clearTimeout(timer)
-	}, [])
-
 	// No longer need separate Spotify fetch - it comes from combined data
-	const isLoading = dataLoading || !isReady
+	const isLoading = dataLoading
 
 	const isRealTimePlaying = useMemo(
 		() => playbackState.isPlaying && playbackState.track,
@@ -442,7 +495,7 @@ export function ActivityFeed({
 	}
 
 	useEffect(() => {
-		if (pairedContent.length === 0 || !isReady) return
+		if (pairedContent.length === 0) return
 
 		const interval = setInterval(() => {
 			if (!isPaused) {
@@ -462,8 +515,7 @@ export function ActivityFeed({
 		pairedContent.length,
 		isPaused,
 		rotationInterval,
-		rotateActivity,
-		isReady
+		rotateActivity
 	])
 
 	useEffect(() => {
@@ -618,11 +670,12 @@ export function ActivityFeed({
 									{grammar.prefix}
 								</motion.span>
 
-								<motion.span variants={highlightVariants} className="shrink-0">
+								<motion.span
+									variants={highlightVariants}
+									className="shrink-0"
+								>
 									<ProjectHoverWrapper
-										repository={
-											currentActivity.repository
-										}
+										repository={currentActivity.repository}
 										isPrivate={isPrivate}
 									>
 										{isPrivate ? (
@@ -648,7 +701,8 @@ export function ActivityFeed({
 									</ProjectHoverWrapper>
 								</motion.span>
 
-								{grammar.repoToEventConnector && grammar.showEventBadge && (
+								{grammar.repoToEventConnector &&
+									grammar.showEventBadge && (
 										<motion.span
 											variants={wordVariants}
 											className="text-muted-foreground/50 shrink-0"
@@ -900,7 +954,9 @@ export function ActivityFeed({
 												<span className="text-muted-foreground/40 font-light shrink-0 whitespace-nowrap">
 													by
 												</span>
-												<span className={`truncate min-w-0 ${isCurrentTrackLive ? 'text-brand-400' : 'text-foreground/70'}`}>
+												<span
+													className={`truncate min-w-0 ${isCurrentTrackLive ? 'text-brand-400' : 'text-foreground/70'}`}
+												>
 													{displayTrack.artist}
 												</span>
 											</a>
@@ -915,22 +971,6 @@ export function ActivityFeed({
 							</div>
 						</motion.div>
 					)}
-				</AnimatePresence>
-			</div>
-
-			{/* --- METRIC BAR --- */}
-			<div className="h-6 flex items-center px-0 pb-1">
-				<AnimatePresence mode="wait">
-					<motion.div
-						key={`metric-${currentIndex}`}
-						initial={{ opacity: 0, y: 5 }}
-						animate={{ opacity: 1, y: 0 }}
-						exit={{ opacity: 0, y: -5 }}
-						transition={{ delay: 0.4, duration: 0.3 }}
-						className="w-full"
-					>
-						<ActivityStatusBar />
-					</motion.div>
 				</AnimatePresence>
 			</div>
 

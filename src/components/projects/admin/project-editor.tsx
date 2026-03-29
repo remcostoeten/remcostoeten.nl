@@ -58,7 +58,9 @@ export function ProjectEditor({ project, onUpdate, onDelete, onClose }: Props) {
 					</span>
 					<div className="flex items-center gap-2">
 						{hasChanges && (
-							<span className="text-xs text-amber-500">Unsaved</span>
+							<span className="text-xs text-amber-500">
+								Unsaved
+							</span>
 						)}
 						<button
 							onClick={onClose}
@@ -75,7 +77,9 @@ export function ProjectEditor({ project, onUpdate, onDelete, onClose }: Props) {
 						<input
 							type="text"
 							value={form.title}
-							onChange={e => handleChange('title', e.target.value)}
+							onChange={e =>
+								handleChange('title', e.target.value)
+							}
 							className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 text-sm text-zinc-100 focus:outline-none focus:border-zinc-700"
 						/>
 					</Field>

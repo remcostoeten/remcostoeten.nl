@@ -32,7 +32,7 @@ Your post's metadata is the first thing search engines see. With the recent upda
 
 Here is the actual frontmatter used for this post:
 
-```yaml title="Frontmatter Configuration"
+```yaml filename="Frontmatter Configuration"
 ---
 title: 'The Perfect SEO Blog Post: A Comprehensive Guide to Ranking in 2025'
 publishedAt: '2024-12-24'

@@ -7,7 +7,7 @@ tags: ['TypeScript', 'Architecture', 'Engineering']
 author: 'Remco Stoeten'
 canonicalUrl: 'https://remcostoeten.nl/blog/engineering/scalable-drizzle-orm-setup'
 slug: 'scalable-drizzle-orm-setup'
-draft: false, 
+draft: false,
 ---
 
 In my previous article regarding [Semantic Types](/blog/engineering/semantic-types-are-awesome), I discussed the power of semantic types for improved code clarity and maintenance. Now, let's explore how to apply this pattern to your database layer using Drizzle ORM.
@@ -38,7 +38,7 @@ The beauty of this approach is its simplicity. We're not creating complex type h
 Every database record typically needs an ID and timestamps. Instead of repeating this pattern everywhere, we can create reusable base types:
 
 ```ts
-import type { Time, UUID } from "./base"
+import type { Time, UUID } from './base'
 
 export type Timestamps = {
 	createdAt: Time
@@ -72,23 +72,27 @@ Instead of manually defining the same timestamp and ID fields in every table, we
 First, let's create a helper for timestamps. This handles `createdAt`, `updatedAt`, and optionally `deletedAt` for soft deletes. We also ensure they are properly typed as our semantic `Time` type:
 
 ```ts
-import { timestamp } from "drizzle-orm/pg-core"
-import type { Time } from "@/api/types/base"
+import { timestamp } from 'drizzle-orm/pg-core'
+import type { Time } from '@/api/types/base'
 
 export function timestampsSchema(opts?: { withDeleted?: boolean }) {
 	return {
-		createdAt: timestamp("created_at", { withTimezone: true })
+		createdAt: timestamp('created_at', { withTimezone: true })
 			.notNull()
 			.defaultNow()
 			.$type<Time>(),
-		updatedAt: timestamp("updated_at", { withTimezone: true })
+		updatedAt: timestamp('updated_at', { withTimezone: true })
 			.notNull()
 			.defaultNow()
 			.$type<Time>(),
 		// Dynamically add deletedAt only if withDeleted is true
 		...(opts?.withDeleted
-			? { deletedAt: timestamp("deleted_at", { withTimezone: true }).$type<Time>() }
-			: {}),
+			? {
+					deletedAt: timestamp('deleted_at', {
+						withTimezone: true
+					}).$type<Time>()
+				}
+			: {})
 	}
 }
 ```
@@ -103,28 +107,27 @@ This allows us to opt-in to soft deletes on a per-table basis without rewriting 
 Now we can combine this with a UUID primary key to create our `baseEntitySchema`. This ensures every table using this schema has a consistent ID and timestamp structure:
 
 ```ts
-import { uuid } from "drizzle-orm/pg-core"
-import type { UUID } from "@/api/types/base"
+import { uuid } from 'drizzle-orm/pg-core'
+import type { UUID } from '@/api/types/base'
 
 export function baseEntitySchema(opts?: { withDeleted?: boolean }) {
 	return {
-		id: uuid("id").primaryKey().defaultRandom().$type<UUID>(),
-		...timestampsSchema(opts),
+		id: uuid('id').primaryKey().defaultRandom().$type<UUID>(),
+		...timestampsSchema(opts)
 	}
 }
-    
 ```
 
 Use them in your table definitions:
-  
-```ts
-import { pgTable, text, boolean } from "drizzle-orm/pg-core"
-import { baseEntitySchema } from "./schema-helpers/base"
 
-export const posts = pgTable("posts", {
+```ts
+import { pgTable, text, boolean } from 'drizzle-orm/pg-core'
+import { baseEntitySchema } from './schema-helpers/base'
+
+export const posts = pgTable('posts', {
 	...baseEntitySchema({ withDeleted: true }),
-	content: text("content").notNull(),
-	published: boolean("published").notNull().default(false),
+	content: text('content').notNull(),
+	published: boolean('published').notNull().default(false)
 })
 ```
 
@@ -146,10 +149,10 @@ export async function getPostsByAuthor(authorId: UUID): Promise<Post[]> {
 Pure functions done for handling database access. Now time for the client. Creating a server function and validating it with Zod.
 
 ```ts
-"use server"
+'use server'
 
-import { z } from "zod"
-import { createPost } from "@/api/posts" // The pure function we just wrote
+import { z } from 'zod'
+import { createPost } from '@/api/posts' // The pure function we just wrote
 
 const createPostSchema = z.object({
 	title: z.string().min(1),
@@ -159,13 +162,13 @@ const createPostSchema = z.object({
 
 export async function createPostAction(formData: FormData) {
 	const parsed = createPostSchema.safeParse({
-		title: formData.get("title"),
-		content: formData.get("content"),
-		authorId: formData.get("authorId")
+		title: formData.get('title'),
+		content: formData.get('content'),
+		authorId: formData.get('authorId')
 	})
 
 	if (!parsed.success) {
-		return { error: "Invalid input" }
+		return { error: 'Invalid input' }
 	}
 
 	await createPost(parsed.data)

@@ -31,14 +31,17 @@ export function UseShortcutDemo() {
 			{ disabled: paused, preventDefault: true }
 		)
 
-		const search = $.mod.key('k').except('typing').on(
-			() => {
-				setSearchCount(prev => prev + 1)
-				searchRef.current?.focus()
-				addLog('Search focus action fired')
-			},
-			{ disabled: paused, preventDefault: true }
-		)
+		const search = $.mod
+			.key('k')
+			.except('typing')
+			.on(
+				() => {
+					setSearchCount(prev => prev + 1)
+					searchRef.current?.focus()
+					addLog('Search focus action fired')
+				},
+				{ disabled: paused, preventDefault: true }
+			)
 
 		const help = $.shift.key('/').on(
 			() => {
@@ -70,12 +73,18 @@ export function UseShortcutDemo() {
 			</p>
 
 			<div className="mt-3 flex flex-wrap gap-2 text-xs">
-				<span className="rounded-md border border-border px-2 py-1">mod+s</span>
-				<span className="rounded-md border border-border px-2 py-1">mod+k</span>
+				<span className="rounded-md border border-border px-2 py-1">
+					mod+s
+				</span>
+				<span className="rounded-md border border-border px-2 py-1">
+					mod+k
+				</span>
 				<span className="rounded-md border border-border px-2 py-1">
 					shift+/
 				</span>
-				<span className="rounded-md border border-border px-2 py-1">mod+p</span>
+				<span className="rounded-md border border-border px-2 py-1">
+					mod+p
+				</span>
 			</div>
 
 			<div className="mt-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
@@ -104,7 +113,9 @@ export function UseShortcutDemo() {
 
 			<div className="mt-4 text-sm">
 				Status:{' '}
-				<strong>{paused ? 'Paused (except mod+p)' : 'Active shortcuts'}</strong>
+				<strong>
+					{paused ? 'Paused (except mod+p)' : 'Active shortcuts'}
+				</strong>
 			</div>
 
 			<div className="mt-3 space-y-1 text-xs text-muted-foreground">

@@ -9,13 +9,13 @@ slug: 'stop-using-arrow-functions'
 draft: false
 ---
 
-Arrow functions are shorter right, return implicitely, and bind `this` automatically. 
+Arrow functions are shorter right, return implicitely, and bind `this` automatically.
 
 True, but how often is that actually what you want? The amount of time I see this pattern makes my eyes bleed
 
 ```js
 export const Foo = () => {
-  return <Bar />
+	return <Bar />
 }
 ```
 
@@ -31,38 +31,14 @@ export const Foo = () => {
 -
 -
 -
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Reveal
 
-Now for the big  reveal, going to be shocking
+Now for the big reveal, going to be shocking
 
 ```js
 export const Foo = () => {}
-export function Foo() {}  
+export function Foo() {}
 ```
-I know, crazy right? Aesthetic functions are shorter. 
+
+I know, crazy right? Aesthetic functions are shorter.

@@ -60,14 +60,17 @@ export function UseShortcutSyntaxLab() {
 			{ disabled: paused, preventDefault: true }
 		)
 
-		const search = $.mod.key('k').except('typing').on(
-			() => {
-				setSearchCount(v => v + 1)
-				inputRef.current?.focus()
-				addLog("search fired (except('typing') active)")
-			},
-			{ disabled: paused, preventDefault: true }
-		)
+		const search = $.mod
+			.key('k')
+			.except('typing')
+			.on(
+				() => {
+					setSearchCount(v => v + 1)
+					inputRef.current?.focus()
+					addLog("search fired (except('typing') active)")
+				},
+				{ disabled: paused, preventDefault: true }
+			)
 
 		const help = $.shift.key('/').on(
 			() => {
@@ -126,7 +129,9 @@ export function UseShortcutSyntaxLab() {
 						<span className="rounded-md border border-border px-2 py-1">
 							{platformLabel}+k
 						</span>
-						<span className="rounded-md border border-border px-2 py-1">shift+/</span>
+						<span className="rounded-md border border-border px-2 py-1">
+							shift+/
+						</span>
 						<span className="rounded-md border border-border px-2 py-1">
 							{platformLabel}+p
 						</span>
@@ -142,7 +147,8 @@ export function UseShortcutSyntaxLab() {
 					</div>
 
 					<label className="mt-3 block text-sm">
-						Type here (`{platformLabel}+k` is blocked via `.except('typing')`)
+						Type here (`{platformLabel}+k` is blocked via
+						`.except('typing')`)
 						<input
 							ref={inputRef}
 							placeholder="Try typing, then hit shortcuts"
@@ -152,12 +158,17 @@ export function UseShortcutSyntaxLab() {
 
 					<div className="mt-3 text-sm">
 						Status:{' '}
-						<strong>{paused ? 'paused (except mod+p)' : 'active shortcuts'}</strong>
+						<strong>
+							{paused
+								? 'paused (except mod+p)'
+								: 'active shortcuts'}
+						</strong>
 					</div>
 
 					{helpOpen ? (
 						<div className="mt-3 rounded-md border border-border/60 bg-muted/25 p-2 text-sm">
-							Help is open. Press <code>shift+/</code> again to close.
+							Help is open. Press <code>shift+/</code> again to
+							close.
 						</div>
 					) : null}
 

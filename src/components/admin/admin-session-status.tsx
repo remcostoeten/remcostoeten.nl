@@ -10,7 +10,8 @@ export function AdminSessionStatus() {
 	const { data: session, isPending } = useSession()
 	const [isSigningOut, setIsSigningOut] = useState(false)
 
-	const userLabel = session?.user?.email || session?.user?.name || 'Unknown user'
+	const userLabel =
+		session?.user?.email || session?.user?.name || 'Unknown user'
 
 	async function handleSignOut() {
 		setIsSigningOut(true)
@@ -34,7 +35,9 @@ export function AdminSessionStatus() {
 					aria-hidden="true"
 				/>
 				<span className="hidden md:inline">
-					{isPending ? 'Checking session...' : `Session active: ${userLabel}`}
+					{isPending
+						? 'Checking session...'
+						: `Session active: ${userLabel}`}
 				</span>
 				<span className="md:hidden">
 					{isPending ? 'Checking...' : 'Session active'}

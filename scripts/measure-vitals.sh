@@ -8,7 +8,7 @@
 
 set -e
 
-URL="${1:-http://localhost:3000}"
+# URL="${1:-http://localhost:3000}"
 
 echo "📊 Measuring Web Vitals for: $URL"
 echo ""

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import { getBlogPosts, getAllBlogPosts, calculateReadTime } from '@/utils/utils'
+import { getBlogPosts, getAllBlogPosts, calculateReadTime } from '@/lib/blog'
 import { baseUrl } from '@/app/sitemap'
 import { CustomMDX } from '@/components/blog/mdx'
 import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'

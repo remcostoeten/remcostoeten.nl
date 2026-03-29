@@ -44,7 +44,6 @@ function BlogCard({ post }: { post: BlogPost }) {
 		new Date(post.metadata.publishedAt) >
 		new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
 
-
 	function handleToggleDraft() {
 		startTransition(async () => {
 			try {
@@ -239,8 +238,8 @@ export function BlogList({ posts }: { posts: BlogPost[] }) {
 								Blog Posts
 							</CardTitle>
 							<p className="text-xs text-muted-foreground mt-0.5">
-								{publishedCount} published · {draftCount} drafts ·{' '}
-								{totalViews.toLocaleString()} total views
+								{publishedCount} published · {draftCount} drafts
+								· {totalViews.toLocaleString()} total views
 							</p>
 						</div>
 					</div>

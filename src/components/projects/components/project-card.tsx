@@ -184,8 +184,8 @@ export const ProjectCard = memo(function ProjectCard({
 										? 'text-foreground'
 										: 'text-muted-foreground hover:text-foreground',
 									highlightPreview &&
-									!isPreviewVisible &&
-									'text-foreground'
+										!isPreviewVisible &&
+										'text-foreground'
 								)}
 								style={{
 									transitionTimingFunction: EASE_OUT_EXPO

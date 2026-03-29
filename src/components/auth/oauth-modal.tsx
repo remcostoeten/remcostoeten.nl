@@ -31,10 +31,9 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 			}
 
 			const handleTabKey = (e: KeyboardEvent) => {
-				const focusableElements =
-					modalRef.current?.querySelectorAll(
-						'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-					)
+				const focusableElements = modalRef.current?.querySelectorAll(
+					'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+				)
 				const firstElement = focusableElements?.[0] as HTMLElement
 				const lastElement = focusableElements?.[
 					focusableElements.length - 1

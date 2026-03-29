@@ -1,17 +1,11 @@
 import { getAdminMetrics } from '@/actions/admin'
-import { getAllBlogPosts } from '@/utils/utils'
+import { getAllBlogPosts } from '@/lib/blog'
 import { BlogTable } from '@/components/admin/blogs/blog-table'
 import { UserMetrics } from '@/components/admin/metrics/user-metrics'
 import { ContactOverview } from '@/components/admin/contact/contact-overview'
 import { getAllCommentsAdmin } from '@/actions/comments'
 import { ActivityFeed } from '@/components/admin/activity/activity-feed'
-import {
-	Eye,
-	Users,
-	MessageSquare,
-	Mail,
-	TrendingUp
-} from 'lucide-react'
+import { Eye, Users, MessageSquare, Mail, TrendingUp } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,7 +52,8 @@ export default async function AdminPage() {
 
 	const postsWithStats = allPosts.map(post => {
 		const stats = statsMap.get(post.slug)
-		const isDraft = (post.metadata.draft ?? false) || (stats?.isDraft ?? false)
+		const isDraft =
+			(post.metadata.draft ?? false) || (stats?.isDraft ?? false)
 
 		return {
 			...post,

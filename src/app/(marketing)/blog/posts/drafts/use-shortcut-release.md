@@ -100,7 +100,9 @@ You can also pass multiple presets or a custom predicate:
 
 ```tsx
 $.key('/').except(['input', 'modal']).on(handler)
-$.key('k').except(e => e.target?.classList?.contains('no-shortcuts') === true).on(handler)
+$.key('k')
+	.except(e => e.target?.classList?.contains('no-shortcuts') === true)
+	.on(handler)
 ```
 
 ## syntax reference

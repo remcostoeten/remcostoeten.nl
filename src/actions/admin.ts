@@ -136,5 +136,3 @@ export async function toggleBlogDraft(
 		}
 	}
 }
-
-

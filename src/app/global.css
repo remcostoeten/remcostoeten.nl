@@ -397,24 +397,12 @@
 
 	50% {
 		opacity: 1;
-		transform: scale(1.1);
+		transform: scale(1.05);
 	}
 
 	100% {
 		opacity: 1;
 		transform: scale(1);
-	}
-}
-
-@keyframes codeblock-search-toggle {
-	0% {
-		max-width: 0;
-		opacity: 0;
-	}
-
-	100% {
-		max-width: 320px;
-		opacity: 1;
 	}
 }
 
@@ -677,9 +665,9 @@
 	content: '';
 	position: absolute;
 	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 100vw;
+	left: 0;
+	transform: translateY(-50%);
+	width: 100%;
 	height: 12px;
 	background-image: repeating-linear-gradient(
 		-45deg,
@@ -1109,4 +1097,8 @@
 
 #work-experience ul {
 	padding-left: 0 !important;
+}
+
+.small-title {
+	margin-top: -11px;
 }

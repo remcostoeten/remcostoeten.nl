@@ -152,9 +152,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 
 		if (e.key === 'ArrowDown') {
 			e.preventDefault()
-			setSelectedIndex(prev =>
-				Math.min(suggestions.length - 1, prev + 1)
-			)
+			setSelectedIndex(prev => Math.min(suggestions.length - 1, prev + 1))
 			return
 		}
 
@@ -186,7 +184,10 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 				return
 			}
 
-			if ((e.key === ';' || e.key === ':' || e.key === '/') && !isVisible) {
+			if (
+				(e.key === ';' || e.key === ':' || e.key === '/') &&
+				!isVisible
+			) {
 				e.preventDefault()
 				setIsVisible(true)
 				setInput(e.key === '/' ? '/' : ':')
@@ -248,7 +249,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 									autoCorrect="off"
 									spellCheck="false"
 								/>
-								{/* Blinking cursor visual if needed, though native cursor is usually fine. 
+								{/* Blinking cursor visual if needed, though native cursor is usually fine.
                                     Let's rely on native cursor for now for better mobile XP */}
 							</div>
 

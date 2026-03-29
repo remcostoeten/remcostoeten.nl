@@ -37,7 +37,7 @@ Once I accepted this boundary, Docker stopped feeling unpredictable.
 
 This is a valid and working Postgres setup:
 
-```yaml:docker-compose.yml
+```yaml filename="docker-compose.yml"
 services:
   postgres:
     image: postgres:16
@@ -115,7 +115,7 @@ If a volume exists:
 
 Named volume example:
 
-```yaml:docker-compose.yml
+```yaml filename="docker-compose.yml"
 volumes:
   - pg-data:/var/lib/postgresql/data
 ```
@@ -130,7 +130,7 @@ docker compose down -v
 
 Deleting the volume deletes reality.
 
-## POSTGRES\_\* Variables Explained
+## POSTGRES Variables Explained
 
 `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB` are not conventions. They are part of the official Postgres Docker image API.
 
@@ -163,7 +163,7 @@ DATABASE_URL=postgresql://app:app@localhost:55432/app
 
 Compose file:
 
-```yaml:docker-compose.yml
+```yaml filename="docker-compose.yml"
 services:
   postgres:
     image: postgres:16
@@ -211,7 +211,7 @@ Without migration tracking, state is unmanaged. That is acceptable for prototype
 
 The clearest setup for dev and test is multiple containers.
 
-```yaml:docker-compose.yml
+```yaml filename="docker-compose.yml"
 services:
   postgres_dev:
     image: postgres:16

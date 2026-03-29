@@ -11,7 +11,7 @@ interface AuthSectionProps {
 
 export function AuthSection({ session, onSignOut }: AuthSectionProps) {
 	const [mounted, setMounted] = useState(false)
-	
+
 	useEffect(() => {
 		setMounted(true)
 	}, [])

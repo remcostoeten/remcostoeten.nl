@@ -1,6 +1,14 @@
 'use client'
 
-import { Zap, Home, FileText, Code, Shield, Loader2, RefreshCw } from 'lucide-react'
+import {
+	Zap,
+	Home,
+	FileText,
+	Code,
+	Shield,
+	Loader2,
+	RefreshCw
+} from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
@@ -19,10 +27,28 @@ type RouteResponse = {
 }
 
 const CATEGORY_CONFIG = {
-	core: { icon: Home, label: 'core', matcher: (path: string) => ['/', '/dashboard', '/playground'].includes(path) },
-	blog: { icon: FileText, label: 'blog', matcher: (path: string) => path.startsWith('/blog') },
-	dev: { icon: Code, label: 'dev', matcher: (path: string) => path.startsWith('/dev') || path.startsWith('/admin') },
-	legal: { icon: Shield, label: 'legal', matcher: (path: string) => ['/privacy', '/terms'].includes(path) },
+	core: {
+		icon: Home,
+		label: 'core',
+		matcher: (path: string) =>
+			['/', '/dashboard', '/playground'].includes(path)
+	},
+	blog: {
+		icon: FileText,
+		label: 'blog',
+		matcher: (path: string) => path.startsWith('/blog')
+	},
+	dev: {
+		icon: Code,
+		label: 'dev',
+		matcher: (path: string) =>
+			path.startsWith('/dev') || path.startsWith('/admin')
+	},
+	legal: {
+		icon: Shield,
+		label: 'legal',
+		matcher: (path: string) => ['/privacy', '/terms'].includes(path)
+	},
 	other: { icon: Zap, label: 'other', matcher: () => true } // Fallback
 } as const
 
@@ -44,15 +70,14 @@ function RouteLink({ route, pathname }: Props & { route: RouteItem }) {
 	return (
 		<Link
 			href={route.path}
-			className={`flex items-center justify-between text-[10px] px-2 py-1 transition-colors rounded-sm mx-1 ${isActive
+			className={`flex items-center justify-between text-[10px] px-2 py-1 transition-colors rounded-sm mx-1 ${
+				isActive
 					? 'bg-primary/10 text-primary font-medium'
 					: 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-				}`}
+			}`}
 		>
 			<span className="truncate">{route.label}</span>
-			{isActive && (
-				<div className="w-1 h-1 rounded-full bg-primary" />
-			)}
+			{isActive && <div className="w-1 h-1 rounded-full bg-primary" />}
 		</Link>
 	)
 }
@@ -103,10 +128,14 @@ export function RoutesSection({ pathname }: Props) {
 	}
 
 	routes.forEach(route => {
-		if (CATEGORY_CONFIG.core.matcher(route.path)) categorized.core.push(route)
-		else if (CATEGORY_CONFIG.blog.matcher(route.path)) categorized.blog.push(route)
-		else if (CATEGORY_CONFIG.dev.matcher(route.path)) categorized.dev.push(route)
-		else if (CATEGORY_CONFIG.legal.matcher(route.path)) categorized.legal.push(route)
+		if (CATEGORY_CONFIG.core.matcher(route.path))
+			categorized.core.push(route)
+		else if (CATEGORY_CONFIG.blog.matcher(route.path))
+			categorized.blog.push(route)
+		else if (CATEGORY_CONFIG.dev.matcher(route.path))
+			categorized.dev.push(route)
+		else if (CATEGORY_CONFIG.legal.matcher(route.path))
+			categorized.legal.push(route)
 		else categorized.other.push(route)
 	})
 
@@ -124,12 +153,16 @@ export function RoutesSection({ pathname }: Props) {
 					className="p-1 hover:bg-muted/20 rounded text-muted-foreground hover:text-foreground transition-colors"
 					title="Refresh Routes"
 				>
-					<RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+					<RefreshCw
+						className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`}
+					/>
 				</button>
 			</div>
 
 			<div className="text-[9px] text-muted-foreground px-2 py-1 mb-1 border-b border-border/20 flex items-center justify-between">
-				<span className="font-mono text-primary/80 truncate max-w-[150px]">{pathname}</span>
+				<span className="font-mono text-primary/80 truncate max-w-[150px]">
+					{pathname}
+				</span>
 			</div>
 
 			{loading && routes.length === 0 ? (
@@ -142,7 +175,12 @@ export function RoutesSection({ pathname }: Props) {
 				</div>
 			) : (
 				<div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-hide mt-1 pb-4">
-					{(Object.entries(categorized) as [keyof typeof CATEGORY_CONFIG, RouteItem[]][]).map(([key, items]) => {
+					{(
+						Object.entries(categorized) as [
+							keyof typeof CATEGORY_CONFIG,
+							RouteItem[]
+						][]
+					).map(([key, items]) => {
 						if (items.length === 0) return null
 						const { icon: Icon, label } = CATEGORY_CONFIG[key]
 

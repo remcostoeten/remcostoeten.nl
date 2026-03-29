@@ -1,4 +1,4 @@
-import { getBlogPostsByTag, getAllTags } from '@/utils/utils'
+import { getBlogPostsByTag, getAllTags } from '@/lib/blog'
 import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -56,11 +56,11 @@ export default async function TopicPage({
 			</Link>
 
 			<PageHeader
-					title={topicName}
-					icon={<Hash className="w-6 h-6 text-lime-400" />}
-					description={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} about this topic`}
-					className="mb-12"
-				/>
+				title={topicName}
+				icon={<Hash className="w-6 h-6 text-lime-400" />}
+				description={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} about this topic`}
+				className="mb-12"
+			/>
 
 			<ul className="flex flex-col m-0 p-0 list-none">
 				{posts

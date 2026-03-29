@@ -1,4 +1,4 @@
-import { getBlogPosts, getAllTags } from '@/utils/utils'
+import { getBlogPosts, getAllTags } from '@/lib/blog'
 import { MetadataRoute } from 'next'
 
 export const baseUrl = 'https://remcostoeten.nl'

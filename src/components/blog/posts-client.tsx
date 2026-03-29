@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { EyeOff, ArrowUpRight } from 'lucide-react'
-
 import { getDateParts, readMinutes } from '@/lib/blog-format'
 import { useBlogFilter } from '@/hooks/use-blog-filter'
 
@@ -34,7 +33,6 @@ type BlogPost = {
 
 type Props = {
 	post: BlogPost
-	index: number
 }
 
 function BlogCard({ post }: Props) {
@@ -50,60 +48,68 @@ function BlogCard({ post }: Props) {
 	return (
 		<Link
 			href={`/blog/${post.slug}`}
-			className="group flex items-center justify-between gap-2 sm:gap-4 py-3 border-b border-border/40 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+			className="group -mx-4 flex items-start justify-between gap-4 border-b border-border/40 px-4 py-4 transition-colors hover:bg-muted/20 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary md:-mx-5 md:px-5"
 		>
-			<div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0 flex-1">
-				<div className="min-w-0 flex-1">
-					<div className="flex flex-col gap-1 min-w-0 overflow-hidden">
-						<div className="flex items-center gap-2">
-							{post.metadata.draft && (
-								<span className="text-[8px] sm:text-[9px] uppercase tracking-wider font-bold px-1 py-px bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0 mt-0.5">
-									Draft
+			<div className="min-w-0 flex-1">
+				<div className="flex flex-col gap-2 min-w-0">
+					<div className="flex items-start gap-2 min-w-0">
+						<div className="min-w-0 flex-1">
+							<div className="flex items-center gap-2 min-w-0">
+								{post.metadata.draft && (
+									<span className="mt-0.5 shrink-0 border border-amber-500/20 bg-amber-500/10 px-1 py-px text-[8px] font-bold uppercase tracking-wider text-amber-500">
+										Draft
+									</span>
+								)}
+								<span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary sm:text-[15px]">
+									{post.metadata.title}
 								</span>
+							</div>
+							{post.metadata.summary && (
+								<p className="mt-1 line-clamp-2 max-w-2xl text-sm leading-relaxed text-muted-foreground/85">
+									{post.metadata.summary}
+								</p>
 							)}
-							<span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors shrink-0 max-w-full truncate">
-								{post.metadata.title}
-							</span>
 						</div>
-						{post.metadata.summary && (
-							<span className="text-sm text-muted-foreground min-w-0 line-clamp-2">
-								{post.metadata.summary}
-							</span>
-						)}
 					</div>
 
-					<div className="flex items-center gap-2 mt-1 sm:mt-0.5">
-						<span className="text-[10px] text-muted-foreground/40 font-mono tabular-nums whitespace-nowrap">
-							{dateParts.day} {dateParts.month.slice(0, 3)} {dateParts.year}
+					<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground/50">
+						<span className="font-mono tabular-nums whitespace-nowrap">
+							{dateParts.day} {dateParts.month.slice(0, 3)}{' '}
+							{dateParts.year}
 						</span>
 
 						{readTimeMinutes > 0 && (
 							<>
-								<span className="text-muted-foreground/20">·</span>
-								<span className="text-[10px] text-muted-foreground/40 whitespace-nowrap">
-									{readTimeMinutes} min
+								<span className="text-muted-foreground/20">
+									·
+								</span>
+								<span className="whitespace-nowrap">
+									{readTimeMinutes} min read
 								</span>
 							</>
 						)}
 
-						{typeof post.uniqueViews === 'number' && post.uniqueViews > 0 && (
-							<>
-								<span className="text-muted-foreground/20">·</span>
-								<span
-									className="text-[10px] text-muted-foreground/40 whitespace-nowrap"
-									title={`${post.views} total views`}
-								>
-									{post.uniqueViews} views
-								</span>
-							</>
-						)}
+						{typeof post.uniqueViews === 'number' &&
+							post.uniqueViews > 0 && (
+								<>
+									<span className="text-muted-foreground/20">
+										·
+									</span>
+									<span
+										className="whitespace-nowrap"
+										title={`${post.views} total views`}
+									>
+										{post.uniqueViews} views
+									</span>
+								</>
+							)}
 
 						{allTags.length > 0 && (
-							<div className="hidden sm:flex gap-1 ml-1">
+							<div className="flex flex-wrap gap-1.5 sm:ml-1">
 								{allTags.slice(0, 3).map(tag => (
 									<span
 										key={tag}
-										className="bg-secondary px-1 py-0.5 text-[9px] text-muted-foreground whitespace-nowrap shrink-0"
+										className="border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-foreground/70"
 									>
 										{tag}
 									</span>
@@ -114,12 +120,12 @@ function BlogCard({ post }: Props) {
 				</div>
 			</div>
 
-			<ArrowUpRight className="w-3 h-3 text-muted-foreground/30 group-hover:text-foreground transition-colors shrink-0" />
+			<div className="pt-1">
+				<ArrowUpRight className="blog-card-icon h-3 w-3 shrink-0 text-muted-foreground/30 transition-transform transition-colors duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground group-focus-visible:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:text-foreground motion-reduce:transform-none" />
+			</div>
 		</Link>
 	)
 }
-
-
 
 type BlogPostsProps = {
 	posts: BlogPost[]
@@ -142,7 +148,6 @@ function BlogCardSkeleton() {
 		</div>
 	)
 }
-
 
 export function BlogPostsClient({ posts }: BlogPostsProps) {
 	const [showAll, setShowAll] = useState(false)
@@ -176,11 +181,9 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 				</div>
 			)}
 
-			<div className="flex flex-col border-t border-border/40 mt-4">
-				{displayedBlogs.map((post, index) => (
-					<MinimalPostRow key={post.slug} post={post} index={index} />
-				))}
-			</div>
+			{displayedBlogs.map(post => (
+				<BlogCard key={post.slug} post={post} />
+			))}
 
 			{filteredPosts.length === 0 && (
 				<div className="py-8 text-center text-muted-foreground border border-border">
@@ -197,12 +200,14 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 			)}
 
 			{hasMorePosts && (
-				<div className="border-b border-border/40">
+				<div>
 					<button
 						onClick={() => setShowAll(!showAll)}
-						className="flex w-full py-3 justify-center text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:bg-muted/10"
+						className="mb-[-1rem] flex w-full -mx-4 items-center justify-center px-4 py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-primary md:mb-[-1.25rem] md:-mx-5 md:px-5"
 					>
-						{showAll ? 'Show less' : `View all (${filteredPosts.length})`}
+						{showAll
+							? 'Show less'
+							: `View all (${filteredPosts.length})`}
 					</button>
 				</div>
 			)}

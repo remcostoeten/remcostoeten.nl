@@ -3,7 +3,7 @@ title: 'Scalability #1: Semantic types are awesome'
 publishedAt: '11/02/2026'
 updatedAt: '11/02/2026'
 summary: 'A beautiful way of writing types for maintainable code.'
-tags: ['Architecture','TypeScript', 'Engineering']
+tags: ['Architecture', 'TypeScript', 'Engineering']
 author: 'Remco Stoeten'
 canonicalUrl: 'https://remcostoeten.nl/blog/engineering/semantic-types-are-awesome'
 slug: 'semantic-types-are-awesome'
@@ -18,10 +18,10 @@ Instead of having generic types like so:
 
 ```ts
 type Post = {
- id: string | number
- content: string
- createdAt: number | string
- updatedAt: number | string
+	id: string | number
+	content: string
+	createdAt: number | string
+	updatedAt: number | string
 }
 ```
 
@@ -41,12 +41,12 @@ Then create a `base.types.ts` to avoid redefining shapes over and over:
 import { ID, Time } from './semantics'
 
 export type Timestamps = {
- createdAt: Time
- updatedAt: Time
+	createdAt: Time
+	updatedAt: Time
 }
 
 export type Entity = {
- id: ID
+	id: ID
 } & Timestamps
 ```
 
@@ -64,19 +64,19 @@ In my domain logic for creating notes, utilizing the base types yields this:
 
 ```ts
 export type Note = BaseEntity & {
- name: string
- content: NoteContent
- icon?: string
- coverImage?: string
- tags?: string[]
- parentFolderId?: UUID
- pinned?: boolean
- pinnedAt?: Timestamp
- favorite?: boolean
- isPublic?: boolean
- publicId?: string | null
- userId?: UUID
- type: 'note'
+	name: string
+	content: NoteContent
+	icon?: string
+	coverImage?: string
+	tags?: string[]
+	parentFolderId?: UUID
+	pinned?: boolean
+	pinnedAt?: Timestamp
+	favorite?: boolean
+	isPublic?: boolean
+	publicId?: string | null
+	userId?: UUID
+	type: 'note'
 }
 ```
 
@@ -89,28 +89,28 @@ import { Entity } from './base'
 import { ID, Email, URL, Markdown, Time } from './semantics'
 
 export type User = Entity & {
- username: string
- email: Email
- avatarUrl?: URL
- bio?: string
- role: 'admin' | 'author' | 'reader'
+	username: string
+	email: Email
+	avatarUrl?: URL
+	bio?: string
+	role: 'admin' | 'author' | 'reader'
 }
 
 export type Post = Entity & {
- authorId: ID
- title: string
- slug: string
- content: Markdown
- published: boolean
- publishedAt?: Time
- tags: string[]
+	authorId: ID
+	title: string
+	slug: string
+	content: Markdown
+	published: boolean
+	publishedAt?: Time
+	tags: string[]
 }
 
 export type Comment = Entity & {
- postId: ID
- authorId: ID
- content: string
- parentId?: ID
+	postId: ID
+	authorId: ID
+	content: string
+	parentId?: ID
 }
 ```
 
@@ -130,11 +130,11 @@ By using a generic constraint like `T extends BaseEntity`, you tell TypeScript: 
 
 ```ts
 export async function create<T extends BaseEntity>(
- storageKey: string,
- data: CreateInput<T>,
- options?: CreateOptions<T>
+	storageKey: string,
+	data: CreateInput<T>,
+	options?: CreateOptions<T>
 ): Promise<CrudResult<T>> {
- // logic that safely accesses .id, .createdAt because it KNOWS T has them
+	// logic that safely accesses .id, .createdAt because it KNOWS T has them
 }
 ```
 

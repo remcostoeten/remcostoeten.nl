@@ -1,4 +1,4 @@
-import { getAllTags } from '@/utils/utils'
+import { getAllTags } from '@/lib/blog'
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { topicsMetadata } from '@/core/metadata'
@@ -36,7 +36,7 @@ export default function TopicsPage() {
 									<Hash className="size-3.5" />
 								</span>
 								<span className="font-medium text-foreground transition-colors group-hover:text-primary truncate">
-										{tag.name}
+									{tag.name}
 								</span>
 							</div>
 

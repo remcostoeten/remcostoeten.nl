@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
-import { getAllTags } from '@/utils/utils'
+import { getAllTags } from '@/lib/blog'
 
 export function TopicsSidebar() {
 	const tags = getAllTags()
