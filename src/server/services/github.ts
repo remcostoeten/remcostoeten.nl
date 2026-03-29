@@ -219,9 +219,15 @@ class GitHubService {
 		startDate.setDate(endDate.getDate() - days)
 
 		const recentDays: GitHubContributionDay[] = []
-		const currentDate = new Date(startDate)
+		const totalDays =
+			Math.ceil(
+				(endDate.getTime() - startDate.getTime()) /
+					(1000 * 60 * 60 * 24)
+			) + 1
 
-		while (currentDate <= endDate) {
+		for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
+			const currentDate = new Date(startDate)
+			currentDate.setDate(startDate.getDate() + dayOffset)
 			const dateStr = currentDate.toISOString().split('T')[0]
 			const dayData = dailyContributions.get(dateStr)
 			recentDays.push(
@@ -230,7 +236,6 @@ class GitHubService {
 					contributionCount: 0
 				}
 			)
-			currentDate.setDate(currentDate.getDate() + 1)
 		}
 
 		return recentDays
@@ -257,8 +262,14 @@ class GitHubService {
 		let maxCount = 0
 		let maxDate = ''
 
-		const currentDate = new Date(start)
-		while (currentDate <= end) {
+		const totalDays =
+			Math.ceil(
+				(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+			) + 1
+
+		for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
+			const currentDate = new Date(start)
+			currentDate.setDate(start.getDate() + dayOffset)
 			const dateStr = currentDate.toISOString().split('T')[0]
 			const dayData = dailyContributions.get(dateStr)
 			const count = dayData?.contributionCount || 0
@@ -270,14 +281,7 @@ class GitHubService {
 				maxCount = count
 				maxDate = dateStr
 			}
-
-			currentDate.setDate(currentDate.getDate() + 1)
 		}
-
-		const totalDays =
-			Math.ceil(
-				(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
-			) + 1
 
 		return {
 			totalContributions,
@@ -380,9 +384,6 @@ class GitHubService {
 		let longestStreak = 0
 		let tempStreak = 0
 		let startDate: string | undefined
-
-		const today = new Date()
-		const todayStr = today.toISOString().split('T')[0]
 
 		for (let i = dates.length - 1; i >= 0; i--) {
 			const date = dates[i]
@@ -514,16 +515,22 @@ class GitHubService {
 
 			// Fill in all days in range
 			const result: GitHubDayActivity[] = []
-			const current = new Date(start)
-			while (current <= end) {
-				const dateStr = current.toISOString().split('T')[0]
-				const dayEvents = activityMap.get(dateStr) || []
-				result.push({
-					date: dateStr,
+			const totalDays =
+				Math.ceil(
+					(end.getTime() - start.getTime()) /
+						(1000 * 60 * 60 * 24)
+				) + 1
+
+				for (let dayOffset = 0; dayOffset < totalDays; dayOffset++) {
+					const currentDate = new Date(start)
+					currentDate.setDate(start.getDate() + dayOffset)
+					const dateStr = currentDate.toISOString().split('T')[0]
+					const dayEvents = activityMap.get(dateStr) || []
+					result.push({
+						date: dateStr,
 					events: dayEvents,
 					totalCount: dayEvents.length
 				})
-				current.setDate(current.getDate() + 1)
 			}
 
 			return result

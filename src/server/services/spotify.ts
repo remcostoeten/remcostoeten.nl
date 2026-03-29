@@ -65,7 +65,7 @@ export async function getLatestTracks(limit = 10): Promise<SpotifyTrack[]> {
 							return mockData.tracks
 						}
 					}
-				} catch (mockError) {
+				} catch {
 					console.log(
 						'🎵 Mock data not available, using hardcoded fallback'
 					)
@@ -103,7 +103,7 @@ export async function getLatestTracks(limit = 10): Promise<SpotifyTrack[]> {
 					return mockData.tracks
 				}
 			}
-		} catch (mockError) {
+		} catch {
 			console.log(
 				'🎵 Mock data not available either, using hardcoded fallback'
 			)

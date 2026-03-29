@@ -22,32 +22,34 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 	React.useEffect(() => {
 		if (isOpen) {
 			previousFocusRef.current = document.activeElement as HTMLElement
-			const focusableElements = modalRef.current?.querySelectorAll(
+			const initialFocusableElements = modalRef.current?.querySelectorAll(
 				'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 			)
-			const firstElement = focusableElements?.[0] as HTMLElement
-			if (firstElement) {
-				firstElement.focus()
+			const initialFirstElement =
+				initialFocusableElements?.[0] as HTMLElement
+			if (initialFirstElement) {
+				initialFirstElement.focus()
 			}
 
 			const handleTabKey = (e: KeyboardEvent) => {
-				const focusableElements = modalRef.current?.querySelectorAll(
+				const modalFocusableElements = modalRef.current?.querySelectorAll(
 					'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 				)
-				const firstElement = focusableElements?.[0] as HTMLElement
-				const lastElement = focusableElements?.[
-					focusableElements.length - 1
+				const modalFirstElement =
+					modalFocusableElements?.[0] as HTMLElement
+				const modalLastElement = modalFocusableElements?.[
+					modalFocusableElements.length - 1
 				] as HTMLElement
 
 				if (e.key === 'Tab') {
 					if (e.shiftKey) {
-						if (document.activeElement === firstElement) {
-							lastElement.focus()
+						if (document.activeElement === modalFirstElement) {
+							modalLastElement.focus()
 							e.preventDefault()
 						}
 					} else {
-						if (document.activeElement === lastElement) {
-							firstElement.focus()
+						if (document.activeElement === modalLastElement) {
+							modalFirstElement.focus()
 							e.preventDefault()
 						}
 					}

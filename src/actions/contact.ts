@@ -8,7 +8,7 @@ import {
 } from '@/server/db/schema'
 import { z } from 'zod'
 import { headers } from 'next/headers'
-import { gt, and, eq, count, desc } from 'drizzle-orm'
+import { eq, count } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { v4 as uuidv4 } from 'uuid'
 import { getClientIp, checkHoneypot, checkRateLimit } from '@/lib/protection'
