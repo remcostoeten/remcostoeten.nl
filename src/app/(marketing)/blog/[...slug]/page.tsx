@@ -36,6 +36,7 @@ export async function generateMetadata({
 }: {
 	params: Promise<{ slug: string | string[] }>
 }) {
+	const isAdminUser = await checkAdminStatus()
 	const resolvedParams = await params
 	let slug = Array.isArray(resolvedParams.slug)
 		? resolvedParams.slug.join('/')
@@ -45,8 +46,12 @@ export async function generateMetadata({
 		return {}
 	}
 
-	let post = getBlogPosts().find(post => post.slug === slug)
+	let post = (await getResolvedBlogPosts()).find(candidate => candidate.slug === slug)
 	if (!post) {
+		return {}
+	}
+
+	if (post.metadata.draft && !isAdminUser) {
 		return {}
 	}
 

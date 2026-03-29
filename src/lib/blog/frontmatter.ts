@@ -1,69 +1,49 @@
-import type { BlogPostMetadata } from './types'
+import matter from 'gray-matter'
+import { z } from 'zod'
+import { BLOG_TOPICS, type BlogPostMetadata } from './types'
+
+const rawFrontmatterSchema = z
+	.object({
+		title: z.string().trim().min(1),
+		publishedAt: z.string().trim().min(1).optional(),
+		date: z.string().trim().min(1).optional(),
+		summary: z.string().trim().min(1).optional(),
+		description: z.string().trim().min(1).optional(),
+		image: z.string().trim().min(1).optional(),
+		tags: z.array(z.string().trim().min(1)).optional(),
+		readTime: z.string().trim().min(1).optional(),
+		topic: z.enum(BLOG_TOPICS).optional(),
+		draft: z.boolean().optional(),
+		slug: z.string().trim().min(1).optional(),
+		updatedAt: z.string().trim().min(1).optional(),
+		canonicalUrl: z.string().trim().min(1).optional(),
+		author: z.string().trim().min(1).optional()
+	})
+	.passthrough()
+
+const normalizedFrontmatterSchema = z.object({
+	title: z.string(),
+	publishedAt: z.string(),
+	summary: z.string(),
+	image: z.string().optional(),
+	tags: z.array(z.string()).optional(),
+	readTime: z.string().optional(),
+	topic: z.enum(BLOG_TOPICS).optional(),
+	draft: z.boolean().optional(),
+	slug: z.string().optional(),
+	updatedAt: z.string().optional(),
+	canonicalUrl: z.string().optional(),
+	author: z.string().optional()
+})
 
 export function parseFrontmatter(fileContent: string) {
-	const frontmatterRegex = /---\s*([\s\S]*?)\s*---/
-	const match = frontmatterRegex.exec(fileContent)
-	const frontMatterBlock = match![1]
-	const content = fileContent.replace(frontmatterRegex, '').trim()
-	const frontMatterLines = frontMatterBlock.trim().split('\n')
-	const metadata: Partial<BlogPostMetadata> = {}
-
-	frontMatterLines.forEach(line => {
-		const [key, ...valueArr] = line.split(': ')
-		let value = valueArr.join(': ').trim()
-		value = value.replace(/^['"](.*)['"]$/, '$1')
-		const trimmedKey = key.trim()
-
-		if (value.startsWith('[') && value.endsWith(']')) {
-			const arrayValue = value
-				.slice(1, -1)
-				.split(',')
-				.map(item => item.trim().replace(/['"]/g, ''))
-				.filter(Boolean)
-
-			if (trimmedKey === 'tags') {
-				metadata.tags = arrayValue
-			}
-
-			return
-		}
-
-		switch (trimmedKey) {
-			case 'title':
-				metadata.title = value
-				break
-			case 'publishedAt':
-				metadata.publishedAt = value
-				break
-			case 'summary':
-				metadata.summary = value
-				break
-			case 'image':
-				metadata.image = value
-				break
-			case 'readTime':
-				metadata.readTime = value
-				break
-			case 'topic':
-				metadata.topic = value as BlogPostMetadata['topic']
-				break
-			case 'draft':
-				metadata.draft = value.toLowerCase() === 'true'
-				break
-			case 'slug':
-				metadata.slug = value
-				break
-			case 'updatedAt':
-				metadata.updatedAt = value
-				break
-			case 'canonicalUrl':
-				metadata.canonicalUrl = value
-				break
-			case 'author':
-				metadata.author = value
-				break
-		}
+	const { data, content } = matter(fileContent)
+	const parsed = rawFrontmatterSchema.parse(data)
+	const normalized = normalizedFrontmatterSchema.parse({
+		...parsed,
+		publishedAt: parsed.publishedAt ?? parsed.date,
+		summary: parsed.summary ?? parsed.description
 	})
 
-	return { metadata: metadata as BlogPostMetadata, content }
+	return { metadata: normalized as BlogPostMetadata, content: content.trim() }
 }
