@@ -1,4 +1,4 @@
-import { getVisibleBlogPosts } from '@/lib/blog/visibility'
+import { getVisibleBlogPosts } from '@/lib/blog'
 import { isAdmin } from '@/utils/is-admin'
 import { BlogPostsClient, PostCountHeader } from './posts-client'
 import { Section } from '../ui/section'
@@ -9,21 +9,7 @@ export async function BlogPosts({
 	checkAdmin?: boolean
 }) {
 	const userIsAdmin = checkAdmin ? await isAdmin() : false
-	const processedPosts = await getVisibleBlogPosts(userIsAdmin)
-
-	const sortedBlogs = processedPosts.sort((a, b) => {
-		if (userIsAdmin) {
-			if (a.metadata.draft && !b.metadata.draft) return -1
-			if (!a.metadata.draft && b.metadata.draft) return 1
-		}
-
-		if (
-			new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
-		) {
-			return -1
-		}
-		return 1
-	})
+	const sortedBlogs = await getVisibleBlogPosts(userIsAdmin)
 
 	return (
 		<Section

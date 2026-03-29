@@ -9,7 +9,7 @@ interface SearchResult {
 	slug: string
 	title: string
 	summary?: string
-	categories?: string[]
+	topic?: string
 	tags?: string[]
 }
 
@@ -57,14 +57,13 @@ export function SearchBar({
 				const searchTerm = query.toLowerCase()
 				const title = post.title.toLowerCase()
 				const summary = post.summary?.toLowerCase() || ''
-				const categories =
-					post.categories?.join(' ').toLowerCase() || ''
+				const topic = post.topic?.toLowerCase() || ''
 				const tags = post.tags?.join(' ').toLowerCase() || ''
 
 				return (
 					title.includes(searchTerm) ||
 					summary.includes(searchTerm) ||
-					categories.includes(searchTerm) ||
+					topic.includes(searchTerm) ||
 					tags.includes(searchTerm)
 				)
 			})

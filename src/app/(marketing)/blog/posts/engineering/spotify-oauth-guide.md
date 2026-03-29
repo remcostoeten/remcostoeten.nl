@@ -2,7 +2,7 @@
 title: 'The ultimate guide to Spotify OAuth'
 publishedAt: '2025-12-20'
 summary: 'Exhaustive guide on why Spoity OAuth is a pain in the ass and how I finally got it to work with Better Auth.'
-categories: ['Engineering', 'Spotify API', 'OAuth2', 'Guide']
+topic: 'Guides'
 tags: ['Engineering', 'Authentication', 'OAuth2', 'Guide', 'Next.js']
 slug: 'spotify-oauth2-working-setup'
 ---

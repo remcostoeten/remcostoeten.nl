@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { topicsMetadata } from '@/core/metadata'
 import { PageHeader } from '@/components/ui/page-header'
-import { getVisibleTopics } from '@/lib/blog/visibility'
+import { getVisibleTopics } from '@/lib/blog'
 
 // Enable ISR - revalidate every 60 seconds
 export const revalidate = 60

@@ -41,4 +41,5 @@ setup-posthog.md
 .env.production
 env.production
 .lh-tmp/*
+www.remcostoeten.nl-*.json
     

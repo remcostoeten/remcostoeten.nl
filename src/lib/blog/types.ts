@@ -22,3 +22,14 @@ export type BlogPost = {
 	content: string
 	metadata: BlogPostMetadata
 }
+
+export type ResolvedBlogPost = BlogPost & {
+	views: number
+	uniqueViews: number
+}
+
+export type BlogTopicSummary = {
+	name: BlogTopic
+	slug: string
+	count: number
+}

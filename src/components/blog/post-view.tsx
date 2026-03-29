@@ -14,9 +14,7 @@ type BlogPost = {
 		title: string
 		publishedAt: string
 		summary: string
-		categories?: string[]
 		tags?: string[]
-		topics?: string[]
 	}
 	slug: string
 }

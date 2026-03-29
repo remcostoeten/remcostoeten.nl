@@ -1,5 +1,4 @@
-import { getAllTopics, getTopicBySlug, slugifyTopic } from '@/lib/blog'
-import { getVisibleBlogPosts } from '@/lib/blog/visibility'
+import { getAllTopics, getTopicArchive } from '@/lib/blog'
 import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -23,16 +22,15 @@ export async function generateMetadata({
 	params: Promise<{ topic: string }>
 }) {
 	const { topic } = await params
-	const decodedTopic = decodeURIComponent(topic)
-	const canonicalTopic = getTopicBySlug(decodedTopic)
+	const archive = await getTopicArchive(decodeURIComponent(topic))
 
-	if (!canonicalTopic) {
+	if (!archive) {
 		return {}
 	}
 
 	return {
-		title: `${canonicalTopic} Posts`,
-		description: `Browse all posts filed under ${canonicalTopic.toLowerCase()}.`
+		title: `${archive.topic} Posts`,
+		description: `Browse all posts filed under ${archive.topic.toLowerCase()}.`
 	}
 }
 
@@ -43,18 +41,9 @@ export default async function TopicPage({
 }) {
 	const userIsAdmin = await isAdmin()
 	const { topic } = await params
-	const decodedTopic = decodeURIComponent(topic)
-	const canonicalTopic = getTopicBySlug(decodedTopic)
+	const archive = await getTopicArchive(decodeURIComponent(topic), userIsAdmin)
 
-	if (!canonicalTopic) {
-		notFound()
-	}
-
-	const posts = (await getVisibleBlogPosts(userIsAdmin)).filter(
-		post => slugifyTopic(post.metadata.topic || '') === slugifyTopic(canonicalTopic)
-	)
-
-	if (posts.length === 0) {
+	if (!archive) {
 		notFound()
 	}
 
@@ -69,24 +58,14 @@ export default async function TopicPage({
 			</Link>
 
 			<PageHeader
-				title={canonicalTopic}
+				title={archive.topic}
 				icon={<Hash className="w-6 h-6 text-lime-400" />}
-				description={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} about this topic`}
+				description={`${archive.posts.length} ${archive.posts.length === 1 ? 'post' : 'posts'} about this topic`}
 				className="mb-12"
 			/>
 
 			<ul className="flex flex-col m-0 p-0 list-none">
-				{posts
-					.sort((a, b) => {
-						if (
-							new Date(a.metadata.publishedAt) >
-							new Date(b.metadata.publishedAt)
-						) {
-							return -1
-						}
-						return 1
-					})
-					.map((post, index) => (
+				{archive.posts.map((post, index) => (
 						<li key={post.slug} className="block p-0 m-0">
 							<Link
 								href={`/blog/${post.slug}`}
