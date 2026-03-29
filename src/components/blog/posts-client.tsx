@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { EyeOff, ArrowUpRight } from 'lucide-react'
-import { getDateParts, readMinutes } from '@/lib/blog-format'
+import { getDateParts, readMinutes } from '@/features/blog/lib/format'
 import { useBlogFilter } from '@/hooks/use-blog-filter'
 
 export function PostCountHeader({ count }: { count: number }) {
@@ -46,7 +46,7 @@ function BlogCard({ post }: Props) {
 	return (
 		<Link
 			href={`/blog/${post.slug}`}
-			className="group -mx-4 flex items-start justify-between gap-4 border-b border-border/40 px-4 py-4 transition-colors hover:bg-muted/20 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary md:-mx-5 md:px-5"
+			className="group -mx-4 flex items-start justify-between gap-4 border-b border-border/40 px-4 py-5 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary last:border-b-0 md:-mx-5 md:px-5"
 		>
 			<div className="min-w-0 flex-1">
 				<div className="flex flex-col gap-2 min-w-0">
@@ -164,7 +164,7 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 	return (
 		<div>
 			{filter !== 'all' && (
-				<div className="mb-0 flex items-center gap-2 px-2 py-2 bg-amber-500/10 border border-amber-500/20 border-b-0 text-amber-400 text-xs font-mono">
+				<div className="mb-3 flex items-center gap-2 border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-mono text-amber-400">
 					<EyeOff className="w-3 h-3" />
 					<span>
 						Filtering: showing{' '}
@@ -179,12 +179,14 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 				</div>
 			)}
 
-			{displayedBlogs.map(post => (
-				<BlogCard key={post.slug} post={post} />
-			))}
+			<div className="border-b border-border/40">
+				{displayedBlogs.map(post => (
+					<BlogCard key={post.slug} post={post} />
+				))}
+			</div>
 
 			{filteredPosts.length === 0 && (
-				<div className="py-8 text-center text-muted-foreground border border-border">
+				<div className="border border-border/40 py-8 text-center text-muted-foreground">
 					<p className="text-xs">
 						No posts match the current filter.
 					</p>
@@ -201,7 +203,7 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 				<div>
 					<button
 						onClick={() => setShowAll(!showAll)}
-						className="mb-[-1rem] flex w-full -mx-4 items-center justify-center px-4 py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-primary md:mb-[-1.25rem] md:-mx-5 md:px-5"
+						className="flex w-full items-center justify-center py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
 					>
 						{showAll
 							? 'Show less'

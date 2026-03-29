@@ -4,7 +4,7 @@ import {
 	calculateReadTime,
 	getAdjacentBlogPosts,
 	getResolvedBlogPostBySlug
-} from '@/lib/blog'
+} from '@/features/blog'
 import { baseUrl } from '@/app/sitemap'
 import { CustomMDX } from '@/components/blog/mdx'
 import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
@@ -20,7 +20,7 @@ import {
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
-	const { getBlogPosts } = await import('@/lib/blog')
+	const { getBlogPosts } = await import('@/features/blog')
 	let posts = getBlogPosts()
 
 	return posts

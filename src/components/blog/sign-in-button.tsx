@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Github } from 'lucide-react'
 import posthog from 'posthog-js'
-import { signIn } from '@/lib/auth-client'
+import { signIn } from '@/features/auth/client'
 
 type Provider = 'github' | 'google'
 

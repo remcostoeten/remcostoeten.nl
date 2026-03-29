@@ -1,7 +1,7 @@
 import { readdir } from 'fs/promises'
 import { NextResponse } from 'next/server'
 import path from 'path'
-import { requireDevToolsAccess } from '@/lib/dev-access'
+import { requireDevToolsAccess } from '@/server/lib/dev-access'
 
 export const dynamic = 'force-dynamic' // Ensure this route is dynamic
 

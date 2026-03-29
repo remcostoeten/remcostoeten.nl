@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
-import { isAllowedGitHubRepo } from '@/lib/github-route-access'
+import { isAllowedGitHubRepo } from '@/server/lib/github-route-access'
+import { getGitHubToken } from '@/server/lib/github-token'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,7 +40,7 @@ export async function GET(request: NextRequest) {
 				)
 			}
 
-			const token = process.env.GITHUB_TOKEN
+			const token = getGitHubToken()
 
 		const headers: Record<string, string> = {
 			Accept: 'application/vnd.github.v3+json',

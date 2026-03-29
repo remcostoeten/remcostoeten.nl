@@ -1,3 +1,5 @@
+import { getGitHubToken } from '@/server/lib/github-token'
+
 interface GitHubContributionDay {
   date: string;
   contributionCount: number;
@@ -60,7 +62,7 @@ class GitHubService {
   }
 
   private getGitHubToken(): string {
-    const token = process.env.GITHUB_TOKEN || "";
+    const token = getGitHubToken();
     if (token) {
       // console.log('GitHub token loaded:', token.substring(0, 4) + '...');
       return token.trim();

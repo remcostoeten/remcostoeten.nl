@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/cn'
 import {
 	WebsiteStructuredData,
 	PersonStructuredData

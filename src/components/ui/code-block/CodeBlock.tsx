@@ -8,7 +8,7 @@ import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
 import type { CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/cn";
 
 type TCustomTheme = { [key: string]: CSSProperties };
 

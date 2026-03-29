@@ -1,4 +1,5 @@
 import type { IGitMetrics } from '../types'
+import { getGitHubToken } from '@/server/lib/github-token'
 
 const GITHUB_API = 'https://api.github.com'
 
@@ -47,10 +48,11 @@ export async function fetchGitMetrics(
 	if (!parsed) return null
 
 	const { owner, repo } = parsed
+	const token = getGitHubToken()
 	const headers: HeadersInit = {
 		Accept: 'application/vnd.github.v3+json',
-		...(process.env.GITHUB_TOKEN && {
-			Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+		...(token && {
+			Authorization: `Bearer ${token}`
 		})
 	}
 

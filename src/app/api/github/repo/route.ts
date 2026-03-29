@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { isAllowedGitHubRepo } from '@/lib/github-route-access'
+import { isAllowedGitHubRepo } from '@/server/lib/github-route-access'
+import { getGitHubToken } from '@/server/lib/github-token'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 
@@ -35,7 +36,7 @@ function getHeaders(): Record<string, string> {
 		'User-Agent': 'remcostoeten-portfolio-activity'
 	}
 
-	const token = process.env.GITHUB_TOKEN
+	const token = getGitHubToken()
 	if (token) {
 		headers['Authorization'] = `token ${token}`
 	}

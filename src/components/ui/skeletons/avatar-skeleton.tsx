@@ -1,5 +1,5 @@
 import { Skeleton } from './skeleton'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/cn'
 
 interface AvatarSkeletonProps {
 	size?: 'sm' | 'md' | 'lg' | 'xl'

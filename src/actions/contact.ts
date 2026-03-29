@@ -11,8 +11,8 @@ import { headers } from 'next/headers'
 import { eq, count } from 'drizzle-orm'
 import { cookies } from 'next/headers'
 import { v4 as uuidv4 } from 'uuid'
-import { getClientIp, checkHoneypot, checkRateLimit } from '@/lib/protection'
-import { fetchGeoInfo } from '@/lib/geo'
+import { getClientIp, checkHoneypot, checkRateLimit } from '@/server/lib/protection'
+import { fetchGeoInfo } from '@/server/lib/geo'
 
 const validation = z.object({
 	name: z.string().min(2, 'Name must be at least 2 characters'),

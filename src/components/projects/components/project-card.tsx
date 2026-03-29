@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef, memo, lazy, Suspense } from 'react'
 import { Github, ExternalLink, Eye, Play, ImageIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { formatShortDate } from '@/lib/date'
+import { cn } from '@/shared/lib/cn'
+import { formatShortDate } from '@/shared/lib/date'
 import type { IProject, TPreview } from '../types'
 import { GitInfo } from './git-info'
 

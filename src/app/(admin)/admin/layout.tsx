@@ -48,11 +48,21 @@ export default async function AdminLayout({
 								<Link
 									href="/admin"
 									className="admin-header-btn"
+									aria-label="Refresh admin dashboard"
+									title="Refresh admin dashboard"
 								>
 									<RefreshCw className="w-3.5 h-3.5" />
 								</Link>
-								<Link href="/" className="admin-header-btn">
+								<Link
+									href="/"
+									className="admin-header-btn gap-1.5 px-2.5"
+									aria-label="Back to home"
+									title="Back to home"
+								>
 									<Home className="w-3.5 h-3.5" />
+									<span className="hidden sm:inline text-xs font-medium">
+										Home
+									</span>
 								</Link>
 							</div>
 						</div>

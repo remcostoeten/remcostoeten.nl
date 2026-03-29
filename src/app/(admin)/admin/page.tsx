@@ -1,5 +1,5 @@
 import { getAdminMetrics } from '@/actions/admin'
-import { getAllBlogPosts } from '@/lib/blog'
+import { getAllBlogPosts } from '@/features/blog'
 import { BlogTable } from '@/components/admin/blogs/blog-table'
 import { UserMetrics } from '@/components/admin/metrics/user-metrics'
 import { ContactOverview } from '@/components/admin/contact/contact-overview'

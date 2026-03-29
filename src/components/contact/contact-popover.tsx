@@ -6,7 +6,7 @@ import { X, Send, Mail, User, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { submitContactForm } from '@/actions/contact'
 import { EmailAutocomplete } from './email-autocomplete'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/cn'
 
 export function ContactPopover() {
 	const [isOpen, setIsOpen] = useState(false)

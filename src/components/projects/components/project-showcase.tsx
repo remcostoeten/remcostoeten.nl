@@ -11,12 +11,28 @@ type Props = {
 	visibleRowCount?: number
 }
 
+function withQueryParam(url: string, key: string, value: string) {
+	try {
+		const parsed = new URL(url)
+		parsed.searchParams.set(key, value)
+		return parsed.toString()
+	} catch {
+		return url
+	}
+}
+
 function mapDbProjectToIProject(dbProject: Project): IProject {
+	const embedUrl = dbProject.demoBox ?? undefined
+	const themedEmbedUrl =
+		dbProject.title === 'Dora' && embedUrl
+			? withQueryParam(embedUrl, 'theme', 'claude-dark')
+			: embedUrl
+
 	const preview: TPreview = dbProject.demoUrl
 		? {
 				type: 'iframe',
 				url: dbProject.demoUrl,
-				embedUrl: dbProject.demoBox ?? undefined
+				embedUrl: themedEmbedUrl
 			}
 		: { type: 'none' }
 

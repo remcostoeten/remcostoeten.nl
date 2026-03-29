@@ -1,4 +1,4 @@
-import { getAllTopics, getTopicArchive } from '@/lib/blog'
+import { getAllTopics, getTopicArchive } from '@/features/blog'
 import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'

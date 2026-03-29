@@ -8,8 +8,8 @@ import { ThemeSwitch } from '@/components/theme-switch'
 
 import { StaggerProvider } from '@/components/ui/stagger-system'
 import { PostHogProvider } from '@/components/providers/posthog-provider'
-import { useSession } from '@/lib/auth-client'
-import { signOut } from '@/lib/auth-client'
+import { useSession } from '@/features/auth/client'
+import { signOut } from '@/features/auth/client'
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
 
 const Analytics = lazy(() =>

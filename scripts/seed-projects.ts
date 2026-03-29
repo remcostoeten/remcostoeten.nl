@@ -50,10 +50,11 @@ const projectsData = [
 	},
 	{
 		idx: 5,
-		title: 'Instagram Tracker',
-		desc: 'Dashboard for tracking Instagram followers with detailed snapshot reports',
+		title: 'Zentjes',
+		desc: 'Expense splitting app for tracking and settling shared costs.',
 		featured: false,
-		gitUrl: 'https://github.com/remcostoeten/instagram-unfollow-tracker-dashboard',
+		gitUrl: 'https://github.com/remcostoeten/zentjes',
+		demoUrl: 'https://zentjes.vercel.app',
 		labels: ['Next.js', 'TypeScript'],
 		native: false
 	},

@@ -6,9 +6,8 @@ import { ArrowLeft, ArrowRight, Eye } from 'lucide-react'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/actions/analytics'
-import { getDateParts, readMinutes } from '@/lib/blog-format'
-import { Breadcrumbs } from '@/components/layout/breadcrumbs'
-import { slugifyTopic } from '@/lib/blog/topic-slug'
+import { getDateParts, readMinutes } from '@/features/blog/lib/format'
+import { slugifyTopic } from '@/features/blog/lib/topic-slug'
 
 type BlogPost = {
 	metadata: {
@@ -60,12 +59,10 @@ export function BlogPostClient({
 	return (
 		<header>
 			{/* Navigation Row */}
-			<div className="flex items-center justify-between mb-5">
-				<Breadcrumbs />
-
+			<div className="mb-3">
 				<button
 					onClick={() => router.back()}
-					className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
+					className="inline-flex items-center gap-2 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
 				>
 					<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
 					back

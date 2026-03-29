@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
-import { getVisibleTopics } from '@/lib/blog'
+import { getVisibleTopics } from '@/features/blog'
 
 export async function TopicsView() {
 	const topics = await getVisibleTopics()

@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { getResolvedBlogPostBySlug } from '@/lib/blog'
+import { getResolvedBlogPostBySlug } from '@/features/blog'
 import { createArticleMetadata, extendMetadata, baseUrl } from '@/core/metadata/base'
 import { BlogPostView } from '@/views/marketing/blog/post'
 import { checkAdminStatus } from '@/actions/auth'
@@ -7,7 +7,7 @@ import { checkAdminStatus } from '@/actions/auth'
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
-	const { getBlogPosts } = await import('@/lib/blog')
+	const { getBlogPosts } = await import('@/features/blog')
 	let posts = getBlogPosts()
 
 	return posts

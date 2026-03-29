@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { requireDevToolsAccess } from '@/lib/dev-access'
+import { requireDevToolsAccess } from '@/server/lib/dev-access'
 
 export const dynamic = 'force-dynamic'
 

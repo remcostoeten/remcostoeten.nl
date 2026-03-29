@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 import { unstable_cache } from 'next/cache'
+import { desc } from 'drizzle-orm'
+import { getGitHubToken } from '@/server/lib/github-token'
+import { db, schema } from '@/server/db/connection'
 
 // Aggressive caching - 5 minutes for combined activity data
 export const revalidate = 300
@@ -13,7 +16,7 @@ function getGitHubHeaders(): Record<string, string> {
 		Accept: 'application/vnd.github.v3+json',
 		'Content-Type': 'application/json'
 	}
-	const token = process.env.GITHUB_TOKEN
+	const token = getGitHubToken()
 	if (token) {
 		headers['Authorization'] = `token ${token.trim()}`
 	}
@@ -298,6 +301,32 @@ function parseGitHubEvent(event: any) {
 }
 
 // Cached Spotify recent tracks
+const getStoredSpotifyTracks = unstable_cache(
+	async (limit: number) => {
+		try {
+			const storedTracks = await db.query.spotifyListens.findMany({
+				orderBy: desc(schema.spotifyListens.playedAt),
+				limit
+			})
+
+			return storedTracks.map(track => ({
+				id: track.trackId,
+				name: track.trackName,
+				artist: track.artistName,
+				album: track.albumName || '',
+				url: track.trackUrl,
+				image: track.albumImage || '',
+				played_at: track.playedAt.toISOString()
+			}))
+		} catch (error) {
+			console.error('Error fetching stored Spotify tracks:', error)
+			return []
+		}
+	},
+	['spotify-stored-recent'],
+	{ revalidate: 300, tags: ['spotify'] }
+)
+
 const getSpotifyTracks = unstable_cache(
 	async (limit: number) => {
 		try {
@@ -305,11 +334,11 @@ const getSpotifyTracks = unstable_cache(
 				await import('@/server/services/spotify-auth')
 
 			if (!hasSpotifyCredentials()) {
-				return []
+				return getStoredSpotifyTracks(limit)
 			}
 
 			const accessToken = await getSpotifyAccessToken()
-			if (!accessToken) return []
+			if (!accessToken) return getStoredSpotifyTracks(limit)
 
 			const response = await fetch(
 				`${SPOTIFY_API_BASE}/me/player/recently-played?limit=${limit}`,
@@ -318,10 +347,10 @@ const getSpotifyTracks = unstable_cache(
 				}
 			)
 
-			if (!response.ok) return []
+			if (!response.ok) return getStoredSpotifyTracks(limit)
 
 			const data = await response.json()
-			return (
+			const recentTracks =
 				data.items?.map((item: any) => ({
 					id: item.track.id,
 					name: item.track.name,
@@ -333,10 +362,13 @@ const getSpotifyTracks = unstable_cache(
 					image: item.track.album.images[0]?.url || '',
 					played_at: item.played_at
 				})) || []
-			)
+
+			return recentTracks.length > 0
+				? recentTracks
+				: getStoredSpotifyTracks(limit)
 		} catch (error) {
 			console.error('Error fetching Spotify tracks:', error)
-			return []
+			return getStoredSpotifyTracks(limit)
 		}
 	},
 	['spotify-recent'],
