@@ -47,6 +47,8 @@ function DevWidgetWrapper() {
 }
 
 export function AppProviders({ children }: TProps) {
+	const remcoAnalyticsIngestUrl = process.env.NEXT_PUBLIC_REMCO_ANALYTICS_URL
+
 	return (
 		<PostHogProvider>
 			<CustomQueryClientProvider>
@@ -65,7 +67,11 @@ export function AppProviders({ children }: TProps) {
 
 							<Suspense fallback={null}>
 								<Analytics />
-								<RemcoAnalytics />
+								{remcoAnalyticsIngestUrl ? (
+									<RemcoAnalytics
+										ingestUrl={remcoAnalyticsIngestUrl}
+									/>
+								) : null}
 							</Suspense>
 							<Suspense fallback={null}>
 								<SpeedInsights />

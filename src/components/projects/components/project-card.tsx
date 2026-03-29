@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, memo, lazy, Suspense } from 'react'
 import { Github, ExternalLink, Eye, Play, ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatRelativeDate } from '@/lib/date'
+import { formatShortDate } from '@/lib/date'
 import type { IProject, TPreview } from '../types'
 import { GitInfo } from './git-info'
 
@@ -130,13 +130,11 @@ export const ProjectCard = memo(function ProjectCard({
 								</span>
 							)}
 							{project.git?.lastUpdated && (
-								<span className="text-[8px] sm:text-[9px] text-muted-foreground/40">
+								<span className="text-xs text-muted-foreground/60">
 									<span className="hidden md:inline">
 										last updated{' '}
 									</span>
-									{formatRelativeDate(
-										project.git.lastUpdated
-									)}
+									{formatShortDate(project.git.lastUpdated)}
 								</span>
 							)}
 						</div>
@@ -179,7 +177,7 @@ export const ProjectCard = memo(function ProjectCard({
 									setHighlightPreview(false)
 								}}
 								className={cn(
-									'relative p-1.5 transition-all duration-300',
+									'relative min-h-9 min-w-9 inline-flex items-center justify-center p-2 transition-all duration-300',
 									isPreviewVisible
 										? 'text-foreground'
 										: 'text-muted-foreground hover:text-foreground',
@@ -205,7 +203,7 @@ export const ProjectCard = memo(function ProjectCard({
 							href={project.github}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="p-1 text-muted-foreground transition-all duration-300 hover:text-foreground"
+							className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-all duration-300 hover:text-foreground"
 							style={{ transitionTimingFunction: EASE_OUT_EXPO }}
 							aria-label={`${project.name} on GitHub`}
 						>
@@ -216,7 +214,7 @@ export const ProjectCard = memo(function ProjectCard({
 								href={externalUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="p-1 text-muted-foreground transition-all duration-300 hover:text-foreground"
+								className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-all duration-300 hover:text-foreground"
 								style={{
 									transitionTimingFunction: EASE_OUT_EXPO
 								}}

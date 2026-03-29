@@ -3,6 +3,7 @@
 import { memo, useState, lazy, Suspense } from 'react'
 import { Github, ExternalLink, Eye, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { formatShortDate } from '@/lib/date'
 import type { IProject, TPreview } from '../types'
 
 const ProjectPreviewRenderer = lazy(() =>
@@ -52,20 +53,15 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 
 				<div className="flex items-center gap-1 sm:gap-2 shrink-0">
 					{project.git?.lastUpdated && (
-						<span className="hidden text-[10px] text-muted-foreground lg:inline">
-							{new Date(
-								project.git.lastUpdated
-							).toLocaleDateString('en-US', {
-								month: 'short',
-								day: 'numeric'
-							})}
+						<span className="hidden text-xs text-muted-foreground lg:inline">
+							{formatShortDate(project.git.lastUpdated)}
 						</span>
 					)}
 					<div className="flex gap-1 overflow-x-auto scrollbar-hide max-w-[120px] sm:max-w-none">
 						{project.tech.map(tech => (
 							<span
 								key={tech}
-								className="bg-secondary px-1 py-0.5 text-[10px] text-muted-foreground whitespace-nowrap shrink-0"
+								className="bg-secondary px-1.5 py-0.5 text-xs text-muted-foreground whitespace-nowrap shrink-0"
 							>
 								{tech}
 							</span>
@@ -76,7 +72,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 							<button
 								onClick={toggle}
 								className={cn(
-									'p-1 transition-colors',
+									'min-h-9 min-w-9 inline-flex items-center justify-center p-2 transition-colors',
 									isOpen
 										? 'text-foreground'
 										: 'text-muted-foreground hover:text-foreground'
@@ -103,7 +99,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 							href={project.github}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="p-1 text-muted-foreground transition-colors hover:text-foreground"
+							className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-colors hover:text-foreground"
 							aria-label={`View ${project.name} on GitHub`}
 						>
 							<Github className="h-3 w-3" />
@@ -113,7 +109,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 								href={externalUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="p-1 text-muted-foreground transition-colors hover:text-foreground"
+								className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-colors hover:text-foreground"
 								aria-label={`View ${project.name} demo`}
 							>
 								<ExternalLink className="h-3 w-3" />

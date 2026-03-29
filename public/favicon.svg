@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Remco Stoeten</title>
+  <rect width="64" height="64" rx="14" fill="#0a0a0a"/>
+  <path d="M18 48V16h16.5c8.6 0 14 5.1 14 12.7 0 5.8-3.2 9.8-8.7 11.5L49 48H38.8l-7.5-6.8H27.5V48H18Zm9.5-14.6h6c3.6 0 5.6-1.7 5.6-4.6 0-3-2-4.7-5.6-4.7h-6v9.3Z" fill="#f5f5f5"/>
+</svg>

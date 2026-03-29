@@ -121,21 +121,24 @@ export function WorkExperience({
 					</div>
 
 					{!showAll && remainingJobs.length > 0 && (
-						<div
-							className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/95 to-transparent z-30 flex items-end justify-center pb-4"
-							aria-hidden="true"
-						>
-							<button
-								onClick={() => setShowAll(true)}
-								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors pointer-events-auto"
-							>
-								<ChevronsUpDownIcon className="size-4" />
-								<span>
-									View All Experience ({remainingJobs.length}{' '}
-									more)
-								</span>
-							</button>
-						</div>
+						<>
+							<div
+								className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background via-background/95 to-transparent z-30"
+								aria-hidden="true"
+							/>
+							<div className="absolute inset-x-0 bottom-0 z-40 flex items-end justify-center pb-4">
+								<button
+									onClick={() => setShowAll(true)}
+									className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
+								>
+									<ChevronsUpDownIcon className="size-4" />
+									<span>
+										View All Experience (
+										{remainingJobs.length} more)
+									</span>
+								</button>
+							</div>
+						</>
 					)}
 				</div>
 
