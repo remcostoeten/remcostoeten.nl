@@ -1,4 +1,14 @@
 export { parseFrontmatter } from './frontmatter'
-export { getAllBlogPosts, getAllTags, getBlogPosts, getBlogPostsByTag } from './posts'
+export {
+	getAllBlogPosts,
+	getAllTags,
+	getAllTopics,
+	getBlogPosts,
+	getBlogPostsByTag,
+	getBlogPostsByTopic,
+	getTopicBySlug,
+	slugifyTopic
+} from './posts'
 export { calculateReadTime } from './read-time'
-export type { BlogPost, BlogPostMetadata } from './types'
+export { BLOG_TOPICS } from './types'
+export type { BlogPost, BlogPostMetadata, BlogTopic } from './types'

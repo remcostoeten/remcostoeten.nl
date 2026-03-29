@@ -1,9 +1,7 @@
-import { getAllBlogPosts } from '@/lib/blog'
+import { getVisibleBlogPosts } from '@/lib/blog/visibility'
 import { isAdmin } from '@/utils/is-admin'
 import { BlogPostsClient, PostCountHeader } from './posts-client'
 import { Section } from '../ui/section'
-import { db } from '@/server/db/connection'
-import { blogPosts } from '@/server/db/schema'
 
 export async function BlogPosts({
 	checkAdmin = true
@@ -11,66 +9,7 @@ export async function BlogPosts({
 	checkAdmin?: boolean
 }) {
 	const userIsAdmin = checkAdmin ? await isAdmin() : false
-
-	const filePosts = getAllBlogPosts()
-
-	console.log(
-		'[BlogPosts] userIsAdmin:',
-		userIsAdmin,
-		'total file posts:',
-		filePosts.length
-	)
-	filePosts.forEach(p => {
-		if (p.metadata.draft)
-			console.log(
-				'[BlogPosts] Draft post found:',
-				p.slug,
-				'draft:',
-				p.metadata.draft
-			)
-	})
-
-	// Fetch data from DB including draft status
-	const dbPosts = await db
-		.select({
-			slug: blogPosts.slug,
-			views: blogPosts.totalViews,
-			uniqueViews: blogPosts.uniqueViews,
-			isDraft: blogPosts.isDraft
-		})
-		.from(blogPosts)
-
-	const dbMap = new Map(
-		dbPosts.map(p => [
-			p.slug,
-			{
-				views: p.views,
-				uniqueViews: p.uniqueViews,
-				isDraft: p.isDraft
-			}
-		])
-	)
-
-	// Merge DB status into posts and filter
-	const processedPosts = filePosts
-		.map(post => {
-			const dbData = dbMap.get(post.slug)
-			const isDraft = dbData?.isDraft || post.metadata.draft || false
-
-			return {
-				...post,
-				metadata: {
-					...post.metadata,
-					draft: isDraft
-				},
-				views: dbData?.views || 0,
-				uniqueViews: dbData?.uniqueViews || 0
-			}
-		})
-		.filter(post => {
-			if (userIsAdmin) return true
-			return !post.metadata.draft
-		})
+	const processedPosts = await getVisibleBlogPosts(userIsAdmin)
 
 	const sortedBlogs = processedPosts.sort((a, b) => {
 		if (userIsAdmin) {

@@ -44,6 +44,9 @@ export function parseFrontmatter(fileContent: string) {
 			case 'readTime':
 				metadata.readTime = value
 				break
+			case 'topic':
+				metadata.topic = value as BlogPostMetadata['topic']
+				break
 			case 'draft':
 				metadata.draft = value.toLowerCase() === 'true'
 				break

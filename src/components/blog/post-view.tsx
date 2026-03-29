@@ -23,6 +23,7 @@ type BlogPost = {
 
 type Props = {
 	publishedAt: string
+	topic?: string
 	tags?: string[]
 	title: string
 	summary: string
@@ -34,6 +35,7 @@ type Props = {
 
 export function BlogPostClient({
 	publishedAt,
+	topic,
 	tags,
 	title,
 	summary: _summary,
@@ -123,12 +125,26 @@ export function BlogPostClient({
 			</div>
 
 			{/* Tags */}
-			{allTags.length > 0 && (
+			{(topic || allTags.length > 0) && (
 				<div className="flex flex-wrap gap-2">
-					{allTags.map(tag => (
+					{topic && (
 						<Link
+							href={`/blog/topics/${topic.toLowerCase()}`}
+							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
+                bg-neutral-50 dark:bg-neutral-900/60
+                text-neutral-600 dark:text-neutral-400
+                border border-neutral-200 dark:border-neutral-800
+                hover:bg-neutral-100 dark:hover:bg-neutral-800/60
+                hover:border-neutral-300 dark:hover:border-neutral-700
+                hover:text-neutral-900 dark:hover:text-neutral-200
+                rounded-md transition-all duration-200"
+						>
+							{topic}
+						</Link>
+					)}
+					{allTags.map(tag => (
+						<span
 							key={tag}
-							href={`/blog/topics/${tag.toLowerCase()}`}
 							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
                 bg-neutral-50 dark:bg-neutral-900/60
                 text-neutral-600 dark:text-neutral-400
@@ -139,7 +155,7 @@ export function BlogPostClient({
                 rounded-md transition-all duration-200"
 						>
 							{tag}
-						</Link>
+						</span>
 					))}
 				</div>
 			)}

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 
-import { getBlogPosts, getAllBlogPosts, calculateReadTime } from '@/lib/blog'
+import { getBlogPosts, calculateReadTime } from '@/lib/blog'
 import { baseUrl } from '@/app/sitemap'
 import { CustomMDX } from '@/components/blog/mdx'
 import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
@@ -15,6 +15,7 @@ import {
 import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
 import { eq } from 'drizzle-orm'
+import { getResolvedBlogPosts } from '@/lib/blog/visibility'
 
 // Force dynamic rendering due to auth requirements
 // Must be dynamic due to auth (cookies/headers) usage
@@ -105,7 +106,7 @@ export default async function Blog({
 		notFound()
 	}
 
-	const allPosts = getAllBlogPosts()
+	const allPosts = await getResolvedBlogPosts()
 	const post = allPosts.find(p => p.slug === slug)
 
 	if (!post) {
@@ -129,10 +130,16 @@ export default async function Blog({
 		notFound()
 	}
 
-	const currentIndex = allPosts.findIndex(p => p.slug === slug)
+	const visiblePosts = isAdminUser
+		? allPosts
+		: allPosts.filter(candidate => !candidate.metadata.draft)
+	const currentIndex = visiblePosts.findIndex(p => p.slug === slug)
 	const prevPost =
-		currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null
-	const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null
+		currentIndex < visiblePosts.length - 1
+			? visiblePosts[currentIndex + 1]
+			: null
+	const nextPost =
+		currentIndex > 0 ? visiblePosts[currentIndex - 1] : null
 
 	return (
 		<>
@@ -158,6 +165,7 @@ export default async function Blog({
 			<section className="bg-pattern relative">
 				<BlogPostClient
 					publishedAt={post.metadata.publishedAt}
+					topic={post.metadata.topic}
 					tags={post.metadata.tags}
 					title={post.metadata.title}
 					summary={post.metadata.summary}

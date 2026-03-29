@@ -1,17 +1,19 @@
-import { getBlogPostsByTag, getAllTags } from '@/lib/blog'
+import { getAllTopics, getTopicBySlug, slugifyTopic } from '@/lib/blog'
+import { getVisibleBlogPosts } from '@/lib/blog/visibility'
 import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
+import { isAdmin } from '@/utils/is-admin'
 
 // Must be dynamic due to auth (headers) usage
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
-	const tags = getAllTags()
-	return tags.map(tag => ({
-		topic: tag.name.toLowerCase()
+	const topics = getAllTopics()
+	return topics.map(topic => ({
+		topic: topic.slug
 	}))
 }
 
@@ -22,10 +24,15 @@ export async function generateMetadata({
 }) {
 	const { topic } = await params
 	const decodedTopic = decodeURIComponent(topic)
+	const canonicalTopic = getTopicBySlug(decodedTopic)
+
+	if (!canonicalTopic) {
+		return {}
+	}
 
 	return {
-		title: `${decodedTopic.charAt(0).toUpperCase() + decodedTopic.slice(1)} Posts`,
-		description: `Browse all posts about ${decodedTopic}.`
+		title: `${canonicalTopic} Posts`,
+		description: `Browse all posts filed under ${canonicalTopic.toLowerCase()}.`
 	}
 }
 
@@ -34,16 +41,22 @@ export default async function TopicPage({
 }: {
 	params: Promise<{ topic: string }>
 }) {
+	const userIsAdmin = await isAdmin()
 	const { topic } = await params
 	const decodedTopic = decodeURIComponent(topic)
-	const posts = getBlogPostsByTag(decodedTopic)
+	const canonicalTopic = getTopicBySlug(decodedTopic)
+
+	if (!canonicalTopic) {
+		notFound()
+	}
+
+	const posts = (await getVisibleBlogPosts(userIsAdmin)).filter(
+		post => slugifyTopic(post.metadata.topic || '') === slugifyTopic(canonicalTopic)
+	)
 
 	if (posts.length === 0) {
 		notFound()
 	}
-
-	const topicName =
-		decodedTopic.charAt(0).toUpperCase() + decodedTopic.slice(1)
 
 	return (
 		<section>
@@ -56,7 +69,7 @@ export default async function TopicPage({
 			</Link>
 
 			<PageHeader
-				title={topicName}
+				title={canonicalTopic}
 				icon={<Hash className="w-6 h-6 text-lime-400" />}
 				description={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} about this topic`}
 				className="mb-12"

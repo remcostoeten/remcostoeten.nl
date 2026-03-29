@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { Hash } from 'lucide-react'
-import { getAllTags } from '@/lib/blog'
+import { getVisibleTopics } from '@/lib/blog/visibility'
 
-export function TopicsSidebar() {
-	const tags = getAllTags()
+export async function TopicsSidebar() {
+	const topics = await getVisibleTopics()
 
 	return (
 		<aside className="hidden lg:block fixed -right-52 w-48 z-40 top-1.5">
@@ -12,18 +12,18 @@ export function TopicsSidebar() {
 					Topics
 				</h2>
 				<ul className="space-y-1">
-					{tags.map(tag => (
-						<li key={tag.name}>
+					{topics.map(topic => (
+						<li key={topic.slug}>
 							<Link
-								href={`/blog/topics/${tag.name.toLowerCase()}`}
+								href={`/blog/topics/${topic.slug}`}
 								className="group flex items-center justify-between py-1.5 text-sm text-neutral-400 hover:text-lime-400 transition-colors"
 							>
 								<span className="flex items-center gap-2">
 									<Hash className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />
-									<span className="truncate">{tag.name}</span>
+									<span className="truncate">{topic.name}</span>
 								</span>
 								<span className="text-xs text-neutral-600 tabular-nums">
-									{tag.count}
+									{topic.count}
 								</span>
 							</Link>
 						</li>
