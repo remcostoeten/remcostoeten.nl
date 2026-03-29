@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers'
 import { revalidatePath } from 'next/cache'
-import { eq, and, desc } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 import { db } from 'db'
 import { blogComments, user } from '@/server/db/schema'
 import { auth } from '@/server/auth'

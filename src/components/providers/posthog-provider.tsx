@@ -9,16 +9,16 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react'
 
 function PostHogPageView() {
 	const pathname = usePathname()
-	const posthog = usePostHog()
+	const posthogClient = usePostHog()
 
 	useEffect(() => {
-		if (pathname && posthog) {
+		if (pathname && posthogClient) {
 			const url = window.origin + pathname
-			posthog.capture('$pageview', {
+			posthogClient.capture('$pageview', {
 				$current_url: url
 			})
 		}
-	}, [pathname, posthog])
+	}, [pathname, posthogClient])
 
 	return null
 }

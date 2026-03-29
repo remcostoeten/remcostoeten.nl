@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { Home } from 'lucide-react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import { Button } from '@/components/ui/button'
 import { LegalLanguage } from './legal-language'

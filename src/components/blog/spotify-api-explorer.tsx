@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import {
 	Play,
 	Copy,
@@ -107,7 +107,7 @@ export function SpotifyApiExplorer() {
 			} else {
 				setResponse(JSON.stringify(data, null, 2))
 			}
-		} catch (err) {
+		} catch {
 			setError('Network error - check your connection')
 		} finally {
 			setLoading(false)

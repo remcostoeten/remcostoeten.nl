@@ -109,7 +109,7 @@ function CountryBar({
 	country,
 	count,
 	total,
-	rank
+	rank: _rank
 }: {
 	country: string | null
 	count: number

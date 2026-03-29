@@ -4,13 +4,12 @@ import { cn } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import {
 	motion,
-	AnimatePresence,
 	useScroll,
 	useTransform,
 	useSpring,
 	useMotionValueEvent
 } from 'framer-motion'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef } from 'react'
 import {
 	SiReact,
 	SiTypescript,

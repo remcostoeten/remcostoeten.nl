@@ -6,7 +6,6 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import {
-	Eye,
 	Clock,
 	Calendar,
 	ExternalLink,
@@ -15,7 +14,6 @@ import {
 	ArrowUp,
 	ArrowDown,
 	FileText,
-	TrendingUp,
 	Loader2
 } from 'lucide-react'
 import { toggleBlogDraft } from '@/actions/admin'

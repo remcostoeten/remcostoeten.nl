@@ -14,18 +14,10 @@ import {
 	Lock,
 	Globe
 } from 'lucide-react'
-import type { SpotifyTrack } from '@/server/services/spotify'
 import type { GitHubEventDetail } from '@/hooks/use-github'
 import { useCombinedActivity } from '@/hooks/use-combined-activity'
 import { ProjectHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers'
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback'
-
-const SPRING_CONFIG = {
-	type: 'spring' as const,
-	stiffness: 300,
-	damping: 25,
-	mass: 0.8
-}
 
 const SMOOTH_EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
 

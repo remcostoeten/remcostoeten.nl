@@ -37,7 +37,7 @@ export function SignInButton() {
 						'Sign-in is not available right now. Please configure an OAuth provider.'
 					)
 				}
-			} catch (error) {
+			} catch {
 				if (!isActive) return
 				setProviders([])
 				setLoadError(

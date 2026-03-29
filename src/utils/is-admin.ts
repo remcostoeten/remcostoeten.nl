@@ -1,5 +1,5 @@
 import { auth } from '@/server/auth'
-import { headers, cookies } from 'next/headers'
+import { headers } from 'next/headers'
 
 import { env } from '@/server/env'
 
@@ -32,7 +32,6 @@ export async function isAdmin(): Promise<boolean> {
 		const session = await getServerSession()
 
 		if (!session?.user) {
-			console.log('[isAdmin] No user session found')
 			return false
 		}
 
@@ -40,7 +39,6 @@ export async function isAdmin(): Promise<boolean> {
 		const isRoleAdmin = session.user.role === 'admin'
 
 		if (!isRoleAdmin && !isEmailMatch) {
-			console.log(`[isAdmin] User ${session.user.email} is not an admin`)
 			return false
 		}
 
