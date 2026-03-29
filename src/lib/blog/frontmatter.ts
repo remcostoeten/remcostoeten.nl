@@ -41,8 +41,8 @@ export function parseFrontmatter(fileContent: string) {
 	const parsed = rawFrontmatterSchema.parse(data)
 	const normalized = normalizedFrontmatterSchema.parse({
 		...parsed,
-		publishedAt: parsed.publishedAt ?? parsed.date,
-		summary: parsed.summary ?? parsed.description
+		publishedAt: parsed.publishedAt ?? parsed.date ?? '',
+		summary: parsed.summary ?? parsed.description ?? ''
 	})
 
 	return { metadata: normalized as BlogPostMetadata, content: content.trim() }

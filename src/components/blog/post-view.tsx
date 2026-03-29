@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import { trackBlogView } from '@/actions/analytics'
 import { getDateParts, readMinutes } from '@/lib/blog-format'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
+import { slugifyTopic } from '@/lib/blog/topic-slug'
 
 type BlogPost = {
 	metadata: {
@@ -127,7 +128,7 @@ export function BlogPostClient({
 				<div className="flex flex-wrap gap-2">
 					{topic && (
 						<Link
-							href={`/blog/topics/${topic.toLowerCase()}`}
+							href={`/blog/topics/${slugifyTopic(topic)}`}
 							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
                 bg-neutral-50 dark:bg-neutral-900/60
                 text-neutral-600 dark:text-neutral-400

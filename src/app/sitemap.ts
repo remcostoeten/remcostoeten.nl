@@ -1,11 +1,11 @@
-import { getBlogPosts, getAllTopics } from '@/lib/blog'
+import { getVisibleBlogPosts, getVisibleTopics } from '@/lib/blog'
 import { MetadataRoute } from 'next'
 
 export const baseUrl = 'https://remcostoeten.nl'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const posts = getBlogPosts()
-	const topics = getAllTopics()
+	const posts = await getVisibleBlogPosts()
+	const topics = await getVisibleTopics()
 
 	const routes = [
 		{

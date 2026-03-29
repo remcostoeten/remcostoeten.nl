@@ -3,12 +3,12 @@ export {
 	getAllBlogPosts,
 	getAllTags,
 	getAllTopics,
+	getConfiguredTopics,
 	getBlogPosts,
 	getBlogPostsByTag,
 	getBlogPostsByTopic,
-	getTopicBySlug,
-	slugifyTopic
 } from './posts'
+export { getTopicBySlug, slugifyTopic } from './topic-slug'
 export {
 	getAdjacentBlogPosts,
 	getResolvedBlogPostBySlug,

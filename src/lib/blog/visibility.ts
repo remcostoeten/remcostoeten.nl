@@ -1,7 +1,7 @@
 import { getAllBlogPosts } from './posts'
 import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
-import { getTopicBySlug, slugifyTopic } from './posts'
+import { getTopicBySlug, slugifyTopic } from './topic-slug'
 import type { BlogTopicSummary, ResolvedBlogPost } from './types'
 
 export async function getResolvedBlogPosts() {
@@ -121,7 +121,7 @@ export async function getVisibleTopics(includeDrafts = false) {
 	return Array.from(topicCounts.entries())
 		.map(([name, count]) => ({
 			name,
-			slug: name.toLowerCase(),
+			slug: slugifyTopic(name),
 			count
 		}))
 		.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)) as BlogTopicSummary[]

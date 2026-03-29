@@ -3,6 +3,7 @@ import path from 'path'
 import { parseFrontmatter } from './frontmatter'
 import { calculateReadTime } from './read-time'
 import { BLOG_TOPICS, type BlogPost, type BlogPostMetadata } from './types'
+import { getTopicBySlug, slugifyTopic } from './topic-slug'
 
 const BLOG_POSTS_DIR = path.join(
 	process.cwd(),
@@ -22,14 +23,6 @@ const GUIDE_TAGS = new Set([
 	'frontmatter',
 	'seo'
 ])
-
-export function slugifyTopic(topic: string) {
-	return topic.trim().toLowerCase()
-}
-
-export function getTopicBySlug(topicSlug: string) {
-	return BLOG_TOPICS.find(topic => slugifyTopic(topic) === slugifyTopic(topicSlug))
-}
 
 function inferBlogTopic(file: string, metadata: Partial<BlogPostMetadata>) {
 	if (metadata.topic) {
@@ -148,7 +141,9 @@ export function getAllTags() {
 		.sort((a, b) => b.count - a.count)
 }
 
-export function getAllTopics() {
+// Returns all configured canonical topics, with counts derived from public file posts.
+// This is useful for configuration-aware callers such as static params generation.
+export function getConfiguredTopics() {
 	const posts = getBlogPosts()
 	const topicMap = new Map<string, number>()
 
@@ -164,6 +159,8 @@ export function getAllTopics() {
 		count: topicMap.get(name) || 0
 	})).filter(topic => topic.count > 0)
 }
+
+export const getAllTopics = getConfiguredTopics
 
 export function getBlogPostsByTopic(topic: string) {
 	const canonicalTopic = getTopicBySlug(topic)
