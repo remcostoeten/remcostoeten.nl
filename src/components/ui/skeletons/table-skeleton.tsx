@@ -10,14 +10,14 @@ export function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
 		<div className="w-full space-y-3">
 			{/* Header */}
 			<div className="flex gap-4 pb-3 border-b border-border/50">
-				{Array.from({ length: columns }).map((_, i) => (
+				{Array.from({ length: columns }).map((unusedHeader, i) => (
 					<Skeleton key={`header-${i}`} className="h-4 flex-1" />
 				))}
 			</div>
 			{/* Rows */}
-			{Array.from({ length: rows }).map((_, rowIndex) => (
+			{Array.from({ length: rows }).map((unusedRow, rowIndex) => (
 				<div key={`row-${rowIndex}`} className="flex gap-4">
-					{Array.from({ length: columns }).map((_, colIndex) => (
+					{Array.from({ length: columns }).map((unusedCol, colIndex) => (
 						<Skeleton
 							key={`cell-${rowIndex}-${colIndex}`}
 							className="h-4 flex-1"

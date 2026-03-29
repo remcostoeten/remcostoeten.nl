@@ -10,7 +10,7 @@ export function GraphSkeleton({ className = '' }: GraphSkeletonProps) {
 		<div className={`space-y-2 ${className}`}>
 			{/* Month labels row - matches actual layout */}
 			<div className="flex text-[10px] text-muted-foreground mb-1 ml-7">
-				{Array.from({ length: 53 }).map((_, weekIndex) => {
+				{Array.from({ length: 53 }).map((unusedWeek, weekIndex) => {
 					// Show month label approximately every 4-5 weeks to match actual calendar
 					const showLabel = weekIndex % 4 === 0 && weekIndex / 4 < 12
 					return (
@@ -37,12 +37,12 @@ export function GraphSkeleton({ className = '' }: GraphSkeletonProps) {
 
 				{/* Grid squares - 53 weeks for full year */}
 				<div className="flex gap-[3px]">
-					{Array.from({ length: 53 }).map((_, weekIndex) => (
+					{Array.from({ length: 53 }).map((unusedWeek, weekIndex) => (
 						<div
 							key={weekIndex}
 							className="flex flex-col gap-[3px]"
 						>
-							{Array.from({ length: 7 }).map((_, dayIndex) => (
+							{Array.from({ length: 7 }).map((unusedDay, dayIndex) => (
 								<motion.div
 									key={dayIndex}
 									className="w-[10px] h-[10px] bg-muted/20 rounded-sm"

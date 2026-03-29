@@ -273,8 +273,6 @@ export function ActivityContributionGraph({
 		return Math.ceil(diffDays / 7) + 1
 	}, [previousYear])
 
-	const gap = 3
-
 	// Data weeks - for rendering actual data, starting from Feb of previous year
 	const weeks = useMemo(() => {
 		const weeksArray: ActivityDay[][] = []
@@ -317,8 +315,8 @@ export function ActivityContributionGraph({
 
 		for (let weekIndex = 0; weekIndex < totalWeeks; weekIndex++) {
 			const month = currentDate.getMonth()
-			const year = currentDate.getFullYear()
-			const monthKey = `${year}-${month}`
+			const currentDateYear = currentDate.getFullYear()
+			const monthKey = `${currentDateYear}-${month}`
 
 			// Show month label at first week of each month
 			if (
@@ -393,7 +391,6 @@ export function ActivityContributionGraph({
 							>
 								{week.map((day, dayIndex) => {
 									const hasData = !!day.date
-									const showData = !loading
 									const delayMs =
 										(weekIndex * 7 + dayIndex) * 2
 									const isToday =

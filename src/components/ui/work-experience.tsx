@@ -222,7 +222,7 @@ export function ExperienceItem({
 export function ExperiencePositionItem({
 	position,
 	shouldExpandAll = false,
-	isLast
+	isLast: _isLast
 }: {
 	position: ExperiencePositionItemType
 	shouldExpandAll?: boolean

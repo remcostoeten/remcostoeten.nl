@@ -81,7 +81,7 @@ export async function syncGitHubActivities(): Promise<SyncResult> {
 						: null
 				})
 				newItems++
-			} catch (insertError) {
+			} catch {
 				// Skip duplicates (unique constraint violation - race condition)
 				console.log(`Skipping duplicate event: ${event.id}`)
 			}
@@ -275,7 +275,7 @@ export async function syncSpotifyListens(): Promise<SyncResult> {
 					linkedActivityId: linkedActivity?.id || null
 				})
 				insertedCount++
-			} catch (insertError) {
+			} catch {
 				// Skip duplicates (race condition)
 				console.log(`Skipping duplicate track at: ${item.played_at}`)
 			}
