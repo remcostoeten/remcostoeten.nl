@@ -1,17 +1,18 @@
-import { getBlogPostsByTag, getAllTags } from '@/lib/blog'
+import { getAllTopics, getTopicArchive } from '@/lib/blog'
 import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
+import { isAdmin } from '@/utils/is-admin'
 
 // Must be dynamic due to auth (headers) usage
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
-	const tags = getAllTags()
-	return tags.map(tag => ({
-		topic: tag.name.toLowerCase()
+	const topics = getAllTopics()
+	return topics.map(topic => ({
+		topic: topic.slug
 	}))
 }
 
@@ -21,11 +22,15 @@ export async function generateMetadata({
 	params: Promise<{ topic: string }>
 }) {
 	const { topic } = await params
-	const decodedTopic = decodeURIComponent(topic)
+	const archive = await getTopicArchive(decodeURIComponent(topic))
+
+	if (!archive) {
+		return {}
+	}
 
 	return {
-		title: `${decodedTopic.charAt(0).toUpperCase() + decodedTopic.slice(1)} Posts`,
-		description: `Browse all posts about ${decodedTopic}.`
+		title: `${archive.topic} Posts`,
+		description: `Browse all posts filed under ${archive.topic.toLowerCase()}.`
 	}
 }
 
@@ -34,16 +39,13 @@ export default async function TopicPage({
 }: {
 	params: Promise<{ topic: string }>
 }) {
+	const userIsAdmin = await isAdmin()
 	const { topic } = await params
-	const decodedTopic = decodeURIComponent(topic)
-	const posts = getBlogPostsByTag(decodedTopic)
+	const archive = await getTopicArchive(decodeURIComponent(topic), userIsAdmin)
 
-	if (posts.length === 0) {
+	if (!archive) {
 		notFound()
 	}
-
-	const topicName =
-		decodedTopic.charAt(0).toUpperCase() + decodedTopic.slice(1)
 
 	return (
 		<section>
@@ -56,24 +58,14 @@ export default async function TopicPage({
 			</Link>
 
 			<PageHeader
-				title={topicName}
+				title={archive.topic}
 				icon={<Hash className="w-6 h-6 text-lime-400" />}
-				description={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} about this topic`}
+				description={`${archive.posts.length} ${archive.posts.length === 1 ? 'post' : 'posts'} about this topic`}
 				className="mb-12"
 			/>
 
 			<ul className="flex flex-col m-0 p-0 list-none">
-				{posts
-					.sort((a, b) => {
-						if (
-							new Date(a.metadata.publishedAt) >
-							new Date(b.metadata.publishedAt)
-						) {
-							return -1
-						}
-						return 1
-					})
-					.map((post, index) => (
+				{archive.posts.map((post, index) => (
 						<li key={post.slug} className="block p-0 m-0">
 							<Link
 								href={`/blog/${post.slug}`}

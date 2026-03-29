@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 			success: true,
 			message: 'Event captured successfully'
 		})
-	} catch (error) {
+	} catch {
 		return NextResponse.json(
 			{ error: 'Failed to capture event' },
 			{ status: 500 }

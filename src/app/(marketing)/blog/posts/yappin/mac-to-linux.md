@@ -2,7 +2,7 @@
 title: 'Linux is the goat, my personal dotfiles'
 publishedAt: '2025-12-18'
 summary: 'I switched to Linux on my work machine and personal computer and have increased my productivity by a lot.'
-categories: [Developer Experience, Engineering, Productivity]
+topic: 'Personal'
 tags: ['Productivity', 'Personal', 'Engineering']
 ---
 

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { MessageSquare, Mail, ExternalLink, ChevronDown } from 'lucide-react'
+import { ExternalLink, ChevronDown } from 'lucide-react'
 
 type ActivityComment = {
 	id: string

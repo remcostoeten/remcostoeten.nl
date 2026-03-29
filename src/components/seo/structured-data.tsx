@@ -1,4 +1,3 @@
-import { Metadata } from 'next'
 import { baseUrl } from '@/app/sitemap'
 
 type BlogPostStructuredDataProps = {

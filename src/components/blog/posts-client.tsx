@@ -20,9 +20,8 @@ type BlogPost = {
 		title: string
 		publishedAt: string
 		summary: string
-		categories?: string[]
+		topic?: string
 		tags?: string[]
-		topics?: string[]
 		readTime?: string
 		draft?: boolean
 	}
@@ -40,9 +39,8 @@ function BlogCard({ post }: Props) {
 	const readTimeMinutes = readMinutes(post.metadata.readTime || '')
 
 	const allTags = [
-		...(post.metadata.categories || []),
-		...(post.metadata.tags || []),
-		...(post.metadata.topics || [])
+		...(post.metadata.topic ? [post.metadata.topic] : []),
+		...(post.metadata.tags || [])
 	]
 
 	return (

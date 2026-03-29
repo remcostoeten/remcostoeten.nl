@@ -1,17 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
 	CheckCircle2,
 	Mail,
-	XCircle,
-	MousePointer,
-	ChevronDown,
-	ChevronUp,
-	Clock
 } from 'lucide-react'
 
 type ContactStats = {
@@ -39,78 +32,6 @@ function StatBox({
 		<div className={`rounded-lg p-3 text-center ${colors[color]}`}>
 			<div className="text-2xl font-bold">{value}</div>
 			<div className="text-xs opacity-80">{label}</div>
-		</div>
-	)
-}
-
-function SubmissionItem({ sub }: { sub: any }) {
-	const [expanded, setExpanded] = useState(false)
-	const isRecent =
-		new Date(sub.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-
-	return (
-		<div
-			className={`p-3 rounded-lg border transition-colors cursor-pointer hover:bg-muted/50 ${
-				isRecent
-					? 'border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20'
-					: 'bg-muted/30'
-			}`}
-			onClick={() => setExpanded(!expanded)}
-		>
-			<div className="flex items-start gap-3">
-				<CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-				<div className="flex-1 min-w-0">
-					<div className="flex items-center justify-between gap-2">
-						<div className="flex items-center gap-2">
-							<p className="text-sm font-medium truncate">
-								{sub.name}
-							</p>
-							{isRecent && (
-								<Badge
-									variant="secondary"
-									className="text-[10px] bg-green-100 text-green-700"
-								>
-									New
-								</Badge>
-							)}
-						</div>
-						<div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">
-							<Clock className="w-3 h-3" />
-							{new Date(sub.createdAt).toLocaleDateString(
-								'en-US',
-								{
-									month: 'short',
-									day: 'numeric',
-									hour: '2-digit',
-									minute: '2-digit'
-								}
-							)}
-						</div>
-					</div>
-					<p className="text-xs text-muted-foreground truncate">
-						{sub.email}
-					</p>
-					<p
-						className={`text-sm mt-2 ${expanded ? '' : 'line-clamp-2'}`}
-					>
-						{sub.message}
-					</p>
-					{sub.message && sub.message.length > 100 && (
-						<button className="text-xs text-primary mt-1 flex items-center gap-1">
-							{expanded ? (
-								<>
-									Show less <ChevronUp className="w-3 h-3" />
-								</>
-							) : (
-								<>
-									Read more{' '}
-									<ChevronDown className="w-3 h-3" />
-								</>
-							)}
-						</button>
-					)}
-				</div>
-			</div>
 		</div>
 	)
 }

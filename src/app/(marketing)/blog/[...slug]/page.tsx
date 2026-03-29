@@ -1,6 +1,11 @@
 import { notFound } from 'next/navigation'
 
-import { getBlogPosts, getAllBlogPosts, calculateReadTime } from '@/lib/blog'
+import {
+	calculateReadTime,
+	getAdjacentBlogPosts,
+	getBlogPosts,
+	getResolvedBlogPostBySlug
+} from '@/lib/blog'
 import { baseUrl } from '@/app/sitemap'
 import { CustomMDX } from '@/components/blog/mdx'
 import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
@@ -12,9 +17,6 @@ import {
 	BlogPostStructuredData,
 	BreadcrumbStructuredData
 } from '@/components/seo/structured-data'
-import { db } from '@/server/db/connection'
-import { blogPosts } from '@/server/db/schema'
-import { eq } from 'drizzle-orm'
 
 // Force dynamic rendering due to auth requirements
 // Must be dynamic due to auth (cookies/headers) usage
@@ -35,6 +37,7 @@ export async function generateMetadata({
 }: {
 	params: Promise<{ slug: string | string[] }>
 }) {
+	const isAdminUser = await checkAdminStatus()
 	const resolvedParams = await params
 	let slug = Array.isArray(resolvedParams.slug)
 		? resolvedParams.slug.join('/')
@@ -44,8 +47,12 @@ export async function generateMetadata({
 		return {}
 	}
 
-	let post = getBlogPosts().find(post => post.slug === slug)
+	let post = await getResolvedBlogPostBySlug(slug)
 	if (!post) {
+		return {}
+	}
+
+	if (post.metadata.draft && !isAdminUser) {
 		return {}
 	}
 
@@ -105,34 +112,20 @@ export default async function Blog({
 		notFound()
 	}
 
-	const allPosts = getAllBlogPosts()
-	const post = allPosts.find(p => p.slug === slug)
+	const post = await getResolvedBlogPostBySlug(slug)
 
 	if (!post) {
 		notFound()
 	}
 
 	const isAdminUser = await checkAdminStatus()
-
-	const dbData = await db.query.blogPosts.findFirst({
-		where: eq(blogPosts.slug, slug),
-		columns: {
-			uniqueViews: true,
-			totalViews: true,
-			isDraft: true
-		}
-	})
-
-	const isDraft = dbData?.isDraft || post.metadata.draft || false
+	const isDraft = post.metadata.draft || false
 
 	if (isDraft && !isAdminUser) {
 		notFound()
 	}
 
-	const currentIndex = allPosts.findIndex(p => p.slug === slug)
-	const prevPost =
-		currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null
-	const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null
+	const { prevPost, nextPost } = await getAdjacentBlogPosts(slug, isAdminUser)
 
 	return (
 		<>
@@ -158,13 +151,14 @@ export default async function Blog({
 			<section className="bg-pattern relative">
 				<BlogPostClient
 					publishedAt={post.metadata.publishedAt}
+					topic={post.metadata.topic}
 					tags={post.metadata.tags}
 					title={post.metadata.title}
 					summary={post.metadata.summary}
 					readTime={calculateReadTime(post.content)}
 					slug={post.slug}
-					uniqueViews={dbData?.uniqueViews || 0}
-					totalViews={dbData?.totalViews || 0}
+					uniqueViews={post.uniqueViews}
+					totalViews={post.views}
 				/>
 
 				<div className="screen-border mb-12" />

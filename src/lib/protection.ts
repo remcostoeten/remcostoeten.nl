@@ -1,7 +1,6 @@
 import { db } from '@/server/db/connection'
 import { and, eq, gt, count } from 'drizzle-orm'
 import { headers } from 'next/headers'
-import { PgTable, PgColumn } from 'drizzle-orm/pg-core'
 
 export const getClientIp = async () => {
 	const headersList = await headers()

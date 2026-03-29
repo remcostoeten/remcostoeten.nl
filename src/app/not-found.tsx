@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Home, FileText, Search, ArrowLeft } from 'lucide-react'
+import { Home, FileText } from 'lucide-react'
 import { baseUrl } from './sitemap'
 
 export default function NotFound() {

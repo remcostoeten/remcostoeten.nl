@@ -1,20 +1,15 @@
 import { createBaseMetadata } from './base'
 
 export const topicsMetadata = createBaseMetadata({
-	title: 'Topics - Blog Categories & Tags',
+	title: 'Topics - Blog Sections',
 	description:
-		'Explore blog posts organized by topics, categories, and tags. Discover articles on Engineering, Design, React, CSS, TypeScript, and more.',
+		'Browse blog posts by three high-level topics: Engineering, Guides, and Personal.',
 	keywords: [
 		'blog topics',
-		'categories',
-		'tags',
 		'engineering',
-		'design',
-		'react',
-		'css',
-		'typescript',
-		'web development',
-		'programming'
+		'guides',
+		'personal writing',
+		'software engineering'
 	],
 	canonical: '/blog/topics',
 	siteName: 'Blog'

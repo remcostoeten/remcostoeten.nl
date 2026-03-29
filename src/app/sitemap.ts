@@ -1,11 +1,11 @@
-import { getBlogPosts, getAllTags } from '@/lib/blog'
+import { getVisibleBlogPosts, getVisibleTopics } from '@/lib/blog'
 import { MetadataRoute } from 'next'
 
 export const baseUrl = 'https://remcostoeten.nl'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const posts = getBlogPosts()
-	const tags = getAllTags()
+	const posts = await getVisibleBlogPosts()
+	const topics = await getVisibleTopics()
 
 	const routes = [
 		{
@@ -62,8 +62,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		}
 	})
 
-	const tagRoutes = tags.map(tag => ({
-		url: `${baseUrl}/blog/topics/${tag.name.toLowerCase()}`,
+	const topicRoutes = topics.map(topic => ({
+		url: `${baseUrl}/blog/topics/${topic.slug}`,
 		lastModified: new Date(),
 		changeFrequency: 'weekly' as const,
 		priority: 0.7
@@ -77,6 +77,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: route.priority
 		})),
 		...blogs,
-		...tagRoutes
+		...topicRoutes
 	]
 }

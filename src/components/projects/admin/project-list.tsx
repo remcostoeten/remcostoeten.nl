@@ -9,14 +9,13 @@ type Props = {
 	projects: Project[]
 	selectedId: string | null
 	onSelect: (id: string) => void
-	onReorder: (projects: Project[]) => void
+	onReorder?: (projects: Project[]) => void
 }
 
 export function ProjectList({
 	projects,
 	selectedId,
-	onSelect,
-	onReorder
+	onSelect
 }: Props) {
 	const [isPending, startTransition] = useTransition()
 

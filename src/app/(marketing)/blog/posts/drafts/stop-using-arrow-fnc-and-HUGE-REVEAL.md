@@ -2,7 +2,8 @@
 title: 'ARROW FUNCTIONS REVEALED'
 publishedAt: '11-02-2026'
 updatedAt: '11-02-2026'
-summary: 'No clickbait here,  just the truth about arrow functions.', 'Yappin']
+summary: 'No clickbait here, just the truth about arrow functions.'
+tags: ['Engineering', 'Personal']
 author: 'Remco Stoeten'
 canonicalUrl: 'https://remcostoeten.nl/blog/stop-using-arrow-functions'
 slug: 'stop-using-arrow-functions'

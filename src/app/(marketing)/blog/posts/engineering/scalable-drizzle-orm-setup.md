@@ -7,7 +7,7 @@ tags: ['TypeScript', 'Architecture', 'Engineering']
 author: 'Remco Stoeten'
 canonicalUrl: 'https://remcostoeten.nl/blog/engineering/scalable-drizzle-orm-setup'
 slug: 'scalable-drizzle-orm-setup'
-draft: false,
+draft: false
 ---
 
 In my previous article regarding [Semantic Types](/blog/engineering/semantic-types-are-awesome), I discussed the power of semantic types for improved code clarity and maintenance. Now, let's explore how to apply this pattern to your database layer using Drizzle ORM.

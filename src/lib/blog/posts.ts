@@ -2,7 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import { parseFrontmatter } from './frontmatter'
 import { calculateReadTime } from './read-time'
-import type { BlogPost, BlogPostMetadata } from './types'
+import { BLOG_TOPICS, type BlogPost, type BlogPostMetadata } from './types'
+import { getTopicBySlug, slugifyTopic } from './topic-slug'
 
 const BLOG_POSTS_DIR = path.join(
 	process.cwd(),
@@ -12,6 +13,41 @@ const BLOG_POSTS_DIR = path.join(
 	'blog',
 	'posts'
 )
+
+const GUIDE_TAGS = new Set([
+	'guide',
+	'tutorial',
+	'how-to',
+	'oauth',
+	'oauth2',
+	'frontmatter',
+	'seo'
+])
+
+function inferBlogTopic(file: string, metadata: Partial<BlogPostMetadata>) {
+	if (metadata.topic) {
+		const explicitTopic = getTopicBySlug(metadata.topic)
+		if (explicitTopic) {
+			return explicitTopic
+		}
+	}
+
+	const normalizedTags = (metadata.tags || []).map(tag => tag.toLowerCase())
+	const isPersonalFolder = file
+		.split(path.sep)
+		.some(segment => segment.toLowerCase() === 'yappin')
+	const isGuide = normalizedTags.some(tag => GUIDE_TAGS.has(tag))
+
+	if (isPersonalFolder) {
+		return 'Personal'
+	}
+
+	if (isGuide) {
+		return 'Guides'
+	}
+
+	return 'Engineering'
+}
 
 function getMarkdownFiles(dir: string) {
 	const files: string[] = []
@@ -55,6 +91,7 @@ function getBlogPostData(dir: string): BlogPost[] {
 				content,
 				metadata: {
 					...metadata,
+					topic: inferBlogTopic(file, metadata),
 					draft: metadata.draft === true || isInDraftDirectory,
 					readTime: metadata.readTime || calculateReadTime(content)
 				}
@@ -102,6 +139,36 @@ export function getAllTags() {
 	return Array.from(tagMap.entries())
 		.map(([name, count]) => ({ name, count }))
 		.sort((a, b) => b.count - a.count)
+}
+
+// Returns all configured canonical topics, with counts derived from public file posts.
+// This is useful for configuration-aware callers such as static params generation.
+export function getConfiguredTopics() {
+	const posts = getBlogPosts()
+	const topicMap = new Map<string, number>()
+
+	posts.forEach(post => {
+		const topic = post.metadata.topic
+		if (!topic) return
+		topicMap.set(topic, (topicMap.get(topic) || 0) + 1)
+	})
+
+	return BLOG_TOPICS.map(name => ({
+		name,
+		slug: slugifyTopic(name),
+		count: topicMap.get(name) || 0
+	})).filter(topic => topic.count > 0)
+}
+
+export const getAllTopics = getConfiguredTopics
+
+export function getBlogPostsByTopic(topic: string) {
+	const canonicalTopic = getTopicBySlug(topic)
+	if (!canonicalTopic) return []
+
+	return getBlogPosts().filter(
+		post => slugifyTopic(post.metadata.topic || '') === slugifyTopic(canonicalTopic)
+	)
 }
 
 export function getBlogPostsByTag(tag: string) {

@@ -1,4 +1,29 @@
 export { parseFrontmatter } from './frontmatter'
-export { getAllBlogPosts, getAllTags, getBlogPosts, getBlogPostsByTag } from './posts'
+export {
+	getAllBlogPosts,
+	getAllTags,
+	getAllTopics,
+	getConfiguredTopics,
+	getBlogPosts,
+	getBlogPostsByTag,
+	getBlogPostsByTopic,
+} from './posts'
+export { getTopicBySlug, slugifyTopic } from './topic-slug'
+export {
+	getAdjacentBlogPosts,
+	getResolvedBlogPostBySlug,
+	getResolvedBlogPosts,
+	getTopicArchive,
+	getVisibleBlogPosts,
+	getVisibleTopics,
+	sortBlogPosts
+} from './visibility'
 export { calculateReadTime } from './read-time'
-export type { BlogPost, BlogPostMetadata } from './types'
+export { BLOG_TOPICS } from './types'
+export type {
+	BlogPost,
+	BlogPostMetadata,
+	BlogTopic,
+	BlogTopicSummary,
+	ResolvedBlogPost
+} from './types'
