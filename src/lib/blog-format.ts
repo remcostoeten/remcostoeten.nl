@@ -1,10 +1,10 @@
-export type DateParts = {
+type DateParts = {
 	day: number
 	month: string
 	year: number
 }
 
-export function parseDate(input: string): Date {
+function parseDate(input: string): Date {
 	const value = input?.trim()
 	if (!value) {
 		return new Date()

@@ -4,7 +4,7 @@ import { blogPosts } from '@/server/db/schema'
 import { getTopicBySlug, slugifyTopic } from './topic-slug'
 import type { BlogTopicSummary, ResolvedBlogPost } from './types'
 
-export async function getResolvedBlogPosts() {
+async function getResolvedBlogPosts() {
 	const filePosts = getAllBlogPosts()
 	const dbPosts = await db
 		.select({
@@ -42,7 +42,7 @@ export async function getResolvedBlogPosts() {
 	}) satisfies ResolvedBlogPost[]
 }
 
-export function sortBlogPosts(posts: ResolvedBlogPost[]) {
+function sortBlogPosts(posts: ResolvedBlogPost[]) {
 	return [...posts].sort((a, b) => {
 		if (a.metadata.draft && !b.metadata.draft) return -1
 		if (!a.metadata.draft && b.metadata.draft) return 1

@@ -125,25 +125,9 @@ export function getBlogPosts() {
 	return getAllBlogPosts().filter(post => !post.metadata.draft)
 }
 
-export function getAllTags() {
-	const posts = getBlogPosts()
-	const tagMap = new Map<string, number>()
-
-	posts.forEach(post => {
-		const tags = post.metadata.tags || []
-		tags.forEach(tag => {
-			tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
-		})
-	})
-
-	return Array.from(tagMap.entries())
-		.map(([name, count]) => ({ name, count }))
-		.sort((a, b) => b.count - a.count)
-}
-
 // Returns all configured canonical topics, with counts derived from public file posts.
 // This is useful for configuration-aware callers such as static params generation.
-export function getConfiguredTopics() {
+function getConfiguredTopics() {
 	const posts = getBlogPosts()
 	const topicMap = new Map<string, number>()
 
@@ -161,20 +145,3 @@ export function getConfiguredTopics() {
 }
 
 export const getAllTopics = getConfiguredTopics
-
-export function getBlogPostsByTopic(topic: string) {
-	const canonicalTopic = getTopicBySlug(topic)
-	if (!canonicalTopic) return []
-
-	return getBlogPosts().filter(
-		post => slugifyTopic(post.metadata.topic || '') === slugifyTopic(canonicalTopic)
-	)
-}
-
-export function getBlogPostsByTag(tag: string) {
-	return getBlogPosts().filter(post =>
-		(post.metadata.tags || []).some(
-			postTag => postTag.toLowerCase() === tag.toLowerCase()
-		)
-	)
-}
