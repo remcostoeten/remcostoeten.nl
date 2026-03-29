@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { getResolvedBlogPostBySlug } from '@/lib/blog'
 import { createArticleMetadata, extendMetadata, baseUrl } from '@/core/metadata/base'
-import { BlogPostView } from './view'
+import { BlogPostView } from '@/views/marketing/blog/post'
 import { checkAdminStatus } from '@/actions/auth'
 
 export const dynamic = 'force-dynamic'

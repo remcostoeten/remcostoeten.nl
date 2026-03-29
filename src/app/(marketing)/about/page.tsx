@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { createPageMetadata } from '@/core/metadata/base'
-import { AboutView } from './view'
+import { AboutView } from '@/views/marketing/about'
 
 export const metadata: Metadata = createPageMetadata({
 	title: 'About Remco Stoeten',

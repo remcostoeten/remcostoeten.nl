@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { createPageMetadata } from '@/core/metadata/base'
-import { SpotifyDevView } from './view'
+import { SpotifyDevView } from '@/views/marketing/dev/spotify'
 
 export const metadata: Metadata = createPageMetadata({
 	title: 'Spotify Token Generator',

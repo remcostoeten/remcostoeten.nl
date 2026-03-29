@@ -1,5 +1,5 @@
 import { homeMetadata } from '@/core/metadata'
-import { HomeView } from './view'
+import { HomeView } from '@/views/marketing/home'
 
 export const revalidate = 60
 

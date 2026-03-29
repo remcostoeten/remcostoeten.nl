@@ -1,5 +1,5 @@
 import { createPageMetadata } from '@/core/metadata/base'
-import { PrivacyView } from './view'
+import { PrivacyView } from '@/views/marketing/privacy'
 
 export const metadata = createPageMetadata({
 	title: 'Privacy Policy',

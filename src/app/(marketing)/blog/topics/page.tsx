@@ -1,5 +1,5 @@
 import { topicsMetadata } from '@/core/metadata'
-import { TopicsView } from './view'
+import { TopicsView } from '@/views/marketing/blog/topics'
 
 export const revalidate = 60
 
