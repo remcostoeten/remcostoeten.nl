@@ -6,14 +6,28 @@ import type { BlogTopicSummary, ResolvedBlogPost } from './types'
 
 async function getResolvedBlogPosts() {
 	const filePosts = getAllBlogPosts()
-	const dbPosts = await db
-		.select({
-			slug: blogPosts.slug,
-			views: blogPosts.totalViews,
-			uniqueViews: blogPosts.uniqueViews,
-			isDraft: blogPosts.isDraft
-		})
-		.from(blogPosts)
+	let dbPosts: Array<{
+		slug: string
+		views: number
+		uniqueViews: number
+		isDraft: boolean
+	}> = []
+
+	try {
+		dbPosts = await db
+			.select({
+				slug: blogPosts.slug,
+				views: blogPosts.totalViews,
+				uniqueViews: blogPosts.uniqueViews,
+				isDraft: blogPosts.isDraft
+			})
+			.from(blogPosts)
+	} catch (error) {
+		console.warn(
+			'Blog post analytics unavailable, falling back to file metadata only.',
+			error
+		)
+	}
 
 	const dbMap = new Map(
 		dbPosts.map(post => [

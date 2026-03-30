@@ -18,8 +18,7 @@ It combines a portfolio-style marketing site, an MDX blog, a protected admin are
 - Tailwind v4
 - Drizzle ORM + Postgres cloud (neon.tech)
 - GitHub OAuth (better-auth)
-- oxlint/oxfmt 
-
+- oxlint/oxfmt
 
 - PostHog, Vercel Analytics, GitHub API, Spotify API
 
@@ -61,7 +60,7 @@ BETTER_AUTH_SECRET="<random string>"
 5. Push the schema to your database
 
 ```bash
-bun drizzle-kit push 
+bun drizzle-kit push
 ```
 
 6. Start the development server
@@ -88,7 +87,7 @@ Optional, depending on which features you want enabled:
 - `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `SPOTIFY_REDIRECT_URI` for Spotify data
 - `IP_INFO_TOKEN` for IP geolocation https://ipinfo.io/
 - `CRON_SECRET` for protected sync endpoints
-<small>💡 For automated GitHub (and Google) OAuth creation view <a target="_blank" href="https://github.com/remcostoeten/oauth-app-automator">OAuth App Automator</a></small>
+  <small>💡 For automated GitHub (and Google) OAuth creation view <a target="_blank" href="https://github.com/remcostoeten/oauth-app-automator">OAuth App Automator</a></small>
 
 If an optional integration is missing, the related feature will be limited or disabled rather than preventing the whole app from running.
 
@@ -96,17 +95,23 @@ If an optional integration is missing, the related feature will be limited or di
 
 ```bash
 npm run dev
-npm run build
-npm run start
 npm run lint
-npm run lint:fix
 npm run typecheck
-npm run format
-npm run format:fix
-npm run db:generate
-npm run db:push
-npm run db:studio
+npm run test
+npm run test:watch
+npm run test:coverage
+npm run check
+npm run build
+npm run build:next
 ```
+
+## Release Gate
+
+- `npm run check` runs linting, type-checking, and Vitest.
+- `npm run build` now shows a staged release overview for lint, typecheck, tests, and the production build.
+- CI runs the same gate on pull requests and pushes to `master`.
+
+The raw Next.js build remains available as `npm run build:next`.
 
 ## Project Structure
 
@@ -132,21 +137,6 @@ Blog content lives in `src/app/(marketing)/blog/posts`.
 - API routes are intentionally thin and delegate work to server domains or actions.
 - Blog posts are read from the filesystem, parsed from frontmatter, and enriched with derived metadata like topic and reading time.
 - Draft visibility is enforced in the blog layer so unpublished posts stay private to authorized users.
-
-## Deployment Notes
-
-This project is set up for Vercel-style deployment, but it can run anywhere that supports Next.js, Node 24, Bun, and Postgres.
-
-Before deploying, make sure:
-
-- production environment variables are configured
-- the database is reachable from the deployment target
-- OAuth callback URLs match the deployed domain
-- scheduled sync requests are protected with `CRON_SECRET` if enabled
-
-## Release Checklist
-
-Use [ARCHITECTURE_CHECKLIST.md](./ARCHITECTURE_CHECKLIST.md) as the release gate for architecture cleanup, documentation, and smoke testing.
 
 ## License
 

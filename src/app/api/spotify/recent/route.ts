@@ -4,6 +4,7 @@ import {
 	hasSpotifyCredentials,
 	invalidateSpotifyTokenCache
 } from '@/server/spotify/auth'
+import { getStoredSpotifyTracks } from '@/server/spotify'
 
 // Use ISR with 30 second revalidation for recent tracks
 // (Recently played doesn't change that frequently)
@@ -18,22 +19,13 @@ export async function GET(request: Request) {
 		const limit = parseInt(searchParams.get('limit') || '10', 10)
 
 		if (!hasSpotifyCredentials()) {
-			console.log(
-				'🎵 No valid Spotify refresh token configured for recent tracks'
-			)
-			return NextResponse.json(
-				{ error: 'No refresh token configured' },
-				{ status: 404 }
-			)
+			return fallbackRecentTracks(limit)
 		}
 
 		const accessToken = await getSpotifyAccessToken()
 
 		if (!accessToken) {
-			return NextResponse.json(
-				{ error: 'Failed to get access token' },
-				{ status: 401 }
-			)
+			return fallbackRecentTracks(limit)
 		}
 
 		const recentResponse = await fetch(
@@ -66,9 +58,7 @@ export async function GET(request: Request) {
 			)
 
 			if (!retryResponse.ok) {
-				throw new Error(
-					`HTTP ${retryResponse.status}: ${retryResponse.statusText}`
-				)
+				return fallbackRecentTracks(limit)
 			}
 
 			const retryData = await retryResponse.json()
@@ -76,24 +66,27 @@ export async function GET(request: Request) {
 		}
 
 		if (!recentResponse.ok) {
-			throw new Error(
-				`HTTP ${recentResponse.status}: ${recentResponse.statusText}`
-			)
+			return fallbackRecentTracks(limit)
 		}
 
 		const recentData = await recentResponse.json()
 		return formatResponse(recentData)
 	} catch (error) {
 		console.error('Error in Spotify recent tracks API:', error)
-		return NextResponse.json(
-			{ error: 'Failed to fetch recent tracks' },
-			{ status: 500 }
+		return fallbackRecentTracks(
+			parseInt(new URL(request.url).searchParams.get('limit') || '10', 10)
 		)
 	}
 }
 
+async function fallbackRecentTracks(limit: number) {
+	const tracks = await getStoredSpotifyTracks(limit)
+	return NextResponse.json({ items: [], tracks })
+}
+
 function formatResponse(data: any) {
-	const tracks = data.items.map((item: any) => ({
+	const items = Array.isArray(data.items) ? data.items : []
+	const tracks = items.map((item: any) => ({
 		id: item.track.id,
 		name: item.track.name,
 		artist: item.track.artists.map((artist: any) => artist.name).join(', '),
@@ -103,5 +96,5 @@ function formatResponse(data: any) {
 		played_at: item.played_at
 	}))
 
-	return NextResponse.json({ items: data.items, tracks })
+	return NextResponse.json({ items, tracks })
 }
