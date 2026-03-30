@@ -13,6 +13,13 @@ const metricsCache = new Map<
 let rateLimitResetAt = 0
 let lastRateLimitLog = 0
 
+function isProductionBuildPhase() {
+	return (
+		process.env.NEXT_PHASE === 'phase-production-build' ||
+		process.env.npm_lifecycle_event === 'build'
+	)
+}
+
 interface IGitHubCommit {
 	sha: string
 	commit: {
@@ -160,6 +167,10 @@ export async function fetchGitMetrics(
 export async function enrichProjectsWithGitData<
 	T extends { github: string; git?: IGitMetrics }
 >(projects: T[]): Promise<T[]> {
+	if (isProductionBuildPhase()) {
+		return projects
+	}
+
 	const enriched: T[] = []
 
 	for (const project of projects) {

@@ -48,6 +48,13 @@ interface GitHubRepo {
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const GITHUB_USER = "remcostoeten";
 
+function shouldSkipLiveGitHubFetches(): boolean {
+  return (
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    process.env.npm_lifecycle_event === "build"
+  );
+}
+
 class GitHubService {
   private token: string;
   private baseUrl = "https://api.github.com";
@@ -121,6 +128,13 @@ class GitHubService {
   async getYearlyContributions(
     year: number = new Date().getFullYear(),
   ): Promise<GitHubContributionData> {
+    if (shouldSkipLiveGitHubFetches()) {
+      return {
+        totalContributions: 0,
+        weeks: [],
+      };
+    }
+
     try {
       const startDate = new Date(year, 0, 1);
       const endDate = new Date(year, 11, 31);
@@ -956,6 +970,10 @@ class GitHubService {
    * Get recent activity for the feed component
    */
   async getRecentActivity(limit: number = 10): Promise<GitHubEventDetail[]> {
+    if (shouldSkipLiveGitHubFetches()) {
+      return [];
+    }
+
     try {
       const response = await fetch(
         `${this.baseUrl}/users/${this.username}/events?per_page=50`,
