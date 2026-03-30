@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-	syncAll,
-	syncGitHubActivities,
-	syncSpotifyListens,
-	getSyncStatus
-} from '@/server/services/activity-sync'
+import { syncAll } from '@/server/activity-sync/sync-all'
+import { syncGitHubActivities } from '@/server/activity-sync/github-sync'
+import { syncSpotifyListens } from '@/server/activity-sync/spotify-sync'
+import { getSyncStatus } from '@/server/activity-sync/queries'
 import { isAdmin } from '@/utils/is-admin'
 
 export const dynamic = 'force-dynamic'
@@ -51,7 +49,9 @@ export async function POST(request: NextRequest) {
 
 		const service = request.nextUrl.searchParams.get('service')
 
-		console.log(`[Sync] Starting sync... (service: ${service || 'all'})`)
+		if (process.env.NODE_ENV === 'development') {
+			console.log(`[Sync] Starting sync... (service: ${service || 'all'})`)
+		}
 		const startTime = Date.now()
 
 		let result
@@ -64,7 +64,9 @@ export async function POST(request: NextRequest) {
 		}
 
 		const duration = Date.now() - startTime
-		console.log(`[Sync] Completed in ${duration}ms`, result)
+		if (process.env.NODE_ENV === 'development') {
+			console.log(`[Sync] Completed in ${duration}ms`, result)
+		}
 
 		return NextResponse.json({
 			success: true,

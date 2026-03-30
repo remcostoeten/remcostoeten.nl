@@ -1,4 +1,4 @@
-import { rehypeExtractCodeMeta } from "@/lib/rehype-extract-code-meta";
+import { rehypeExtractCodeMeta } from "@/shared/lib/rehype-extract-code-meta";
 import { ArrowUpRight } from "lucide-react";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";

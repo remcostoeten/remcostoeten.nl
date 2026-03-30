@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { isAllowedGitHubRepo, getGitHubToken } from '@/server/github'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 
-// Language colors from GitHub
 const LANGUAGE_COLORS: Record<string, string> = {
 	TypeScript: '#3178c6',
 	JavaScript: '#f1e05a',
@@ -34,7 +34,7 @@ function getHeaders(): Record<string, string> {
 		'User-Agent': 'remcostoeten-portfolio-activity'
 	}
 
-	const token = process.env.GITHUB_TOKEN
+	const token = getGitHubToken()
 	if (token) {
 		headers['Authorization'] = `token ${token}`
 	}
@@ -52,6 +52,10 @@ export async function GET(request: NextRequest) {
 			{ error: 'Missing owner or repo parameter' },
 			{ status: 400 }
 		)
+	}
+
+	if (!isAllowedGitHubRepo(owner, repo)) {
+		return NextResponse.json({ error: 'Repository not allowed' }, { status: 403 })
 	}
 
 	try {

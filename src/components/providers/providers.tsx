@@ -8,9 +8,8 @@ import { ThemeSwitch } from '@/components/theme-switch'
 
 import { StaggerProvider } from '@/components/ui/stagger-system'
 import { PostHogProvider } from '@/components/providers/posthog-provider'
-import { DevWidget } from '../../../tools/dev-menu'
-import { useSession } from '@/lib/auth-client'
-import { signOut } from '@/lib/auth-client'
+import { useSession } from '@/features/auth/client'
+import { signOut } from '@/features/auth/client'
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
 
 const Analytics = lazy(() =>
@@ -26,23 +25,37 @@ const RemcoAnalytics = lazy(() =>
 		default: m.Analytics
 	}))
 )
+const DevWidget =
+	process.env.NODE_ENV === 'development'
+		? lazy(() =>
+				import('../../../tools/dev-menu').then(m => ({
+					default: m.DevWidget
+				}))
+			)
+		: null
 
 type TProps = {
 	children: ReactNode
 }
 
 function DevWidgetWrapper() {
+	if (!DevWidget) {
+		return null
+	}
+
 	const { data: session } = useSession()
 
 	return (
-		<DevWidget
-			session={session}
-			onSignOut={signOut}
-			showAuth={true}
-			showRoutes={true}
-			showSystemInfo={true}
-			showSettings={true}
-		/>
+		<Suspense fallback={null}>
+			<DevWidget
+				session={session}
+				onSignOut={signOut}
+				showAuth={true}
+				showRoutes={true}
+				showSystemInfo={true}
+				showSettings={true}
+			/>
+		</Suspense>
 	)
 }
 

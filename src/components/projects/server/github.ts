@@ -1,6 +1,17 @@
 import type { IGitMetrics } from '../types'
+import { getGitHubToken } from '@/server/github'
 
 const GITHUB_API = 'https://api.github.com'
+const METRICS_TTL_MS = 60 * 60 * 1000
+const FAILURE_TTL_MS = 5 * 60 * 1000
+
+const metricsCache = new Map<
+	string,
+	{ expiresAt: number; value: IGitMetrics | null }
+>()
+
+let rateLimitResetAt = 0
+let lastRateLimitLog = 0
 
 interface IGitHubCommit {
 	sha: string
@@ -23,14 +34,53 @@ function extractOwnerRepo(
 	return { owner: match[1], repo: match[2].replace(/\.git$/, '') }
 }
 
+function getCachedMetrics(githubUrl: string): IGitMetrics | null | undefined {
+	const cached = metricsCache.get(githubUrl)
+	if (!cached) return undefined
+	if (cached.expiresAt <= Date.now()) {
+		metricsCache.delete(githubUrl)
+		return undefined
+	}
+	return cached.value
+}
+
+function setCachedMetrics(
+	githubUrl: string,
+	value: IGitMetrics | null,
+	ttlMs: number
+) {
+	metricsCache.set(githubUrl, {
+		value,
+		expiresAt: Date.now() + ttlMs
+	})
+}
+
+function getRateLimitCooldown(response: Response): number {
+	const resetHeader = response.headers.get('x-ratelimit-reset')
+	if (!resetHeader) return Date.now() + FAILURE_TTL_MS
+
+	const resetAt = Number(resetHeader) * 1000
+	return Number.isFinite(resetAt) ? resetAt : Date.now() + FAILURE_TTL_MS
+}
+
 async function safeFetch(
 	url: string,
 	headers: HeadersInit
 ): Promise<Response | null> {
+	if (rateLimitResetAt > Date.now()) {
+		return null
+	}
+
 	try {
 		const res = await fetch(url, { headers, next: { revalidate: 3600 } })
 		if (res.status === 403 || res.status === 429) {
-			console.warn(`GitHub rate limited for ${url}`)
+			rateLimitResetAt = getRateLimitCooldown(res)
+			if (Date.now() - lastRateLimitLog > 1000) {
+				lastRateLimitLog = Date.now()
+				console.warn(
+					`GitHub rate limited until ${new Date(rateLimitResetAt).toISOString()}`
+				)
+			}
 			return null
 		}
 		if (!res.ok) return null
@@ -43,14 +93,20 @@ async function safeFetch(
 export async function fetchGitMetrics(
 	githubUrl: string
 ): Promise<IGitMetrics | null> {
+	const cached = getCachedMetrics(githubUrl)
+	if (cached !== undefined) {
+		return cached
+	}
+
 	const parsed = extractOwnerRepo(githubUrl)
 	if (!parsed) return null
 
 	const { owner, repo } = parsed
+	const token = getGitHubToken()
 	const headers: HeadersInit = {
 		Accept: 'application/vnd.github.v3+json',
-		...(process.env.GITHUB_TOKEN && {
-			Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+		...(token && {
+			Authorization: `Bearer ${token}`
 		})
 	}
 
@@ -59,14 +115,20 @@ export async function fetchGitMetrics(
 			`${GITHUB_API}/repos/${owner}/${repo}`,
 			headers
 		)
-		if (!repoRes) return null
+		if (!repoRes) {
+			setCachedMetrics(githubUrl, null, FAILURE_TTL_MS)
+			return null
+		}
 		const repoData: IGitHubRepo = await repoRes.json()
 
 		const commitsRes = await safeFetch(
 			`${GITHUB_API}/repos/${owner}/${repo}/commits?per_page=1`,
 			headers
 		)
-		if (!commitsRes) return null
+		if (!commitsRes) {
+			setCachedMetrics(githubUrl, null, FAILURE_TTL_MS)
+			return null
+		}
 		const commits: IGitHubCommit[] = await commitsRes.json()
 		const latestCommit = commits[0]
 
@@ -78,7 +140,7 @@ export async function fetchGitMetrics(
 				totalCommits = Number.parseInt(lastPageMatch[1], 10)
 		}
 
-		return {
+		const metrics = {
 			lastUpdated: repoData.pushed_at,
 			lastCommitMessage:
 				latestCommit?.commit.message.split('\n')[0] || 'No commits',
@@ -86,8 +148,11 @@ export async function fetchGitMetrics(
 			firstCommitDate: repoData.pushed_at,
 			weeklyActivity: []
 		}
+		setCachedMetrics(githubUrl, metrics, METRICS_TTL_MS)
+		return metrics
 	} catch (error) {
 		console.error(`Failed to fetch git metrics for ${githubUrl}:`, error)
+		setCachedMetrics(githubUrl, null, FAILURE_TTL_MS)
 		return null
 	}
 }

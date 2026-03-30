@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/cn'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { XIcon } from 'lucide-react'
 import React, {

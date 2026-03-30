@@ -10,7 +10,7 @@ import {
 } from './activity-hover-card'
 import { useRepoDetails } from '@/hooks/use-repo-details'
 import { GitHubEventDetail } from '@/hooks/use-github'
-import { SpotifyTrack } from '@/server/services/spotify'
+import { SpotifyTrack } from '@/features/spotify/client'
 import React from 'react'
 
 type WrapperProps = {

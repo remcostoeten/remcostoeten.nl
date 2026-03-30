@@ -10,14 +10,13 @@ export const env = createEnv({
 
 		GITHUB_CLIENT_ID: z.string().optional(),
 		GITHUB_CLIENT_SECRET: z.string().optional(),
+		GITHUB_TOKEN: z.string().optional(),
 
 		GOOGLE_CLIENT_ID: z.string().optional(),
 		GOOGLE_CLIENT_SECRET: z.string().optional(),
 
 		ADMIN_EMAIL: z.string().email().optional(),
 		ALLOWED_GITHUB_USERNAME: z.string().optional(),
-		RESEND_API_KEY: z.string().optional(),
-		RESEND_EMAIL_FROM: z.string().email().optional(),
 		CRON_SECRET: z.string().min(1).optional(),
 
 		IP_INFO_TOKEN: z.string().optional()
@@ -33,13 +32,13 @@ export const env = createEnv({
 
 		GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
 		GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+		GITHUB_TOKEN: process.env.GITHUB_TOKEN,
 
 		GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
 		GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 
 		ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-		RESEND_API_KEY: process.env.RESEND_API_KEY,
-		RESEND_EMAIL_FROM: process.env.RESEND_EMAIL_FROM,
+		ALLOWED_GITHUB_USERNAME: process.env.ALLOWED_GITHUB_USERNAME,
 		CRON_SECRET: process.env.CRON_SECRET,
 
 		IP_INFO_TOKEN: process.env.IP_INFO_TOKEN,

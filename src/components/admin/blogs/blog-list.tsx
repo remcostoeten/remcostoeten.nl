@@ -19,7 +19,7 @@ import {
 	TrendingUp,
 	Loader2
 } from 'lucide-react'
-import { toggleBlogDraft } from '@/actions/admin'
+import { toggleBlogDraft } from '@/server/actions/admin'
 
 type BlogPost = {
 	slug: string
@@ -35,6 +35,10 @@ type BlogPost = {
 
 type SortField = 'title' | 'date' | 'views'
 type SortDirection = 'asc' | 'desc'
+
+function getPostHref(post: BlogPost) {
+	return post.metadata.draft ? `/admin/blog/${post.slug}` : `/blog/${post.slug}`
+}
 
 function BlogCard({ post }: { post: BlogPost }) {
 	const [isDraft, setIsDraft] = useState(post.metadata.draft ?? false)
@@ -124,7 +128,7 @@ function BlogCard({ post }: { post: BlogPost }) {
 							</div>
 						</div>
 						<Link
-							href={`/blog/${post.slug}`}
+							href={getPostHref(post)}
 							target="_blank"
 							className="p-1.5 rounded-md hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
 						>

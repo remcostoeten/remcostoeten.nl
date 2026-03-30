@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/cn'
 
 const DOMAINS = [
 	'gmail.com',

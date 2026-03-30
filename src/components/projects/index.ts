@@ -1,5 +1,4 @@
 export * from './types'
-export * from './data'
 export { ProjectShowcase } from './components/project-showcase'
 export { ProjectShowcaseClient } from './components/project-showcase-client'
 export { ProjectCard } from './components/project-card'

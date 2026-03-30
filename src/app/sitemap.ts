@@ -1,4 +1,4 @@
-import { getVisibleBlogPosts, getVisibleTopics } from '@/lib/blog'
+import { getVisibleBlogPosts, getVisibleTopics } from '@/features/blog'
 import { MetadataRoute } from 'next'
 
 export const baseUrl = 'https://remcostoeten.nl'

@@ -5,7 +5,7 @@ import {
 	getCurrentPlayback,
 	SpotifyTrack,
 	formatDuration
-} from '@/server/services/spotify'
+} from '@/features/spotify/client'
 
 export interface SpotifyPlaybackState {
 	track: SpotifyTrack | null
@@ -17,12 +17,16 @@ export interface SpotifyPlaybackState {
 	formattedDuration: string
 }
 
+const ACTIVE_POLL_INTERVAL = 10000
+const IDLE_POLL_INTERVAL = 60000
+const ERROR_POLL_INTERVAL = 180000
+
 // Adaptive polling based on connection quality
 const getPollingInterval = () => {
-	if (typeof navigator === 'undefined') return 10000
+	if (typeof navigator === 'undefined') return ACTIVE_POLL_INTERVAL
 
 	const connection = (navigator as any).connection
-	if (!connection) return 10000
+	if (!connection) return ACTIVE_POLL_INTERVAL
 
 	if (connection.saveData) return 30000 // Data saver mode
 	if (
@@ -30,7 +34,7 @@ const getPollingInterval = () => {
 		connection.effectiveType === '2g'
 	)
 		return 20000
-	return 10000 // Normal connections
+	return ACTIVE_POLL_INTERVAL
 }
 
 const TIMER_INTERVAL = 200 // Update local progress every 200ms
@@ -59,9 +63,10 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
 	const T0Ref = useRef<number>(0)
 	const lastTrackIdRef = useRef<string | null>(null)
 	const lastProgressRef = useRef<number>(0)
-	const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
+	const pollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 	const timerIntervalRef = useRef<NodeJS.Timeout | null>(null)
 	const isVisibleRef = useRef<boolean>(true)
+	const nextPollDelayRef = useRef<number>(getPollingInterval())
 
 	const calculateProgress = useCallback(
 		(isPlaying: boolean, duration: number): number => {
@@ -94,67 +99,89 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
 		})
 	}, [calculateProgress])
 
+	const scheduleNextPoll = useCallback((delay: number) => {
+		if (pollTimeoutRef.current) {
+			clearTimeout(pollTimeoutRef.current)
+		}
+
+		pollTimeoutRef.current = setTimeout(() => {
+			void fetchPlaybackState()
+		}, delay)
+	}, [])
+
 	const fetchPlaybackState = useCallback(async () => {
 		// Skip polling if tab is hidden (performance optimization)
 		if (!isVisibleRef.current) return
 
-		const playback = await getCurrentPlayback()
+		try {
+			const playback = await getCurrentPlayback()
 
-		if (!playback || !playback.track) {
-			setState({
-				track: null,
-				progress: 0,
-				duration: 0,
-				isPlaying: false,
-				percentage: 0,
-				formattedProgress: '0:00',
-				formattedDuration: '0:00'
-			})
-			lastTrackIdRef.current = null
-			return
-		}
+			if (!playback || !playback.track) {
+				setState({
+					track: null,
+					progress: 0,
+					duration: 0,
+					isPlaying: false,
+					percentage: 0,
+					formattedProgress: '0:00',
+					formattedDuration: '0:00'
+				})
+				lastTrackIdRef.current = null
+				nextPollDelayRef.current = IDLE_POLL_INTERVAL
+				return
+			}
 
-		const { track, progress_ms, duration_ms, is_playing } = playback
-		const trackChanged = lastTrackIdRef.current !== track.id
+			const { track, progress_ms, duration_ms, is_playing } = playback
+			const trackChanged = lastTrackIdRef.current !== track.id
 
-		const newT0 = Date.now() - progress_ms
+			const newT0 = Date.now() - progress_ms
 
-		// Detect drift (if local progress differs significantly from API)
-		const localProgress = calculateProgress(is_playing, duration_ms)
-		const drift = Math.abs(localProgress - progress_ms)
-		const shouldHardReset = drift > DRIFT_THRESHOLD || trackChanged
+			// Detect drift (if local progress differs significantly from API)
+			const localProgress = calculateProgress(is_playing, duration_ms)
+			const drift = Math.abs(localProgress - progress_ms)
+			const shouldHardReset = drift > DRIFT_THRESHOLD || trackChanged
 
-		if (shouldHardReset) {
-			T0Ref.current = newT0
+			if (shouldHardReset) {
+				T0Ref.current = newT0
+				lastProgressRef.current = progress_ms
+			} else {
+				// Soft sync: gradually adjust T0
+				T0Ref.current = newT0
+			}
+
+			lastTrackIdRef.current = track.id
 			lastProgressRef.current = progress_ms
-		} else {
-			// Soft sync: gradually adjust T0
-			T0Ref.current = newT0
+
+			const percentage =
+				duration_ms > 0 ? (progress_ms / duration_ms) * 100 : 0
+
+			setState({
+				track,
+				progress: progress_ms,
+				duration: duration_ms,
+				isPlaying: is_playing,
+				percentage: Math.min(percentage, 100),
+				formattedProgress: formatDuration(progress_ms),
+				formattedDuration: formatDuration(duration_ms)
+			})
+
+			nextPollDelayRef.current = is_playing
+				? getPollingInterval()
+				: IDLE_POLL_INTERVAL
+		} catch {
+			nextPollDelayRef.current = ERROR_POLL_INTERVAL
+		} finally {
+			if (isVisibleRef.current) {
+				scheduleNextPoll(nextPollDelayRef.current)
+			}
 		}
-
-		lastTrackIdRef.current = track.id
-		lastProgressRef.current = progress_ms
-
-		const percentage =
-			duration_ms > 0 ? (progress_ms / duration_ms) * 100 : 0
-
-		setState({
-			track,
-			progress: progress_ms,
-			duration: duration_ms,
-			isPlaying: is_playing,
-			percentage: Math.min(percentage, 100),
-			formattedProgress: formatDuration(progress_ms),
-			formattedDuration: formatDuration(duration_ms)
-		})
-	}, [calculateProgress])
+	}, [calculateProgress, scheduleNextPoll])
 
 	const startPolling = useCallback(() => {
-		if (pollIntervalRef.current) return // Already polling
+		if (pollTimeoutRef.current) return // Already polling
 
-		const POLL_INTERVAL = getPollingInterval()
-		fetchPlaybackState()
-		pollIntervalRef.current = setInterval(fetchPlaybackState, POLL_INTERVAL)
+		nextPollDelayRef.current = getPollingInterval()
+		void fetchPlaybackState()
 		timerIntervalRef.current = setInterval(
 			updateLocalProgress,
 			TIMER_INTERVAL
@@ -162,9 +189,9 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
 	}, [fetchPlaybackState, updateLocalProgress])
 
 	const stopPolling = useCallback(() => {
-		if (pollIntervalRef.current) {
-			clearInterval(pollIntervalRef.current)
-			pollIntervalRef.current = null
+		if (pollTimeoutRef.current) {
+			clearTimeout(pollTimeoutRef.current)
+			pollTimeoutRef.current = null
 		}
 		if (timerIntervalRef.current) {
 			clearInterval(timerIntervalRef.current)

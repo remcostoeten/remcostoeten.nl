@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useSession } from '@/lib/auth-client'
+import { useSession } from '@/features/auth/client'
 import { useRouter } from 'next/navigation'
 import { generateRoutes } from '../../tools/dev-menu/utils/generate-routes'
 import { Terminal } from 'lucide-react'

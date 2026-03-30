@@ -1,7 +1,7 @@
 'use client'
 
 import type { IGitMetrics } from '../types'
-import { formatDate } from '@/lib/date'
+import { formatDate } from '@/shared/lib/date'
 
 type Props = {
 	git: IGitMetrics

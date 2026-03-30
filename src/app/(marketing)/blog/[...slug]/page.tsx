@@ -1,28 +1,10 @@
-import { notFound } from 'next/navigation'
-
-import {
-	calculateReadTime,
-	getAdjacentBlogPosts,
-	getBlogPosts,
-	getResolvedBlogPostBySlug
-} from '@/lib/blog'
-import { baseUrl } from '@/app/sitemap'
-import { CustomMDX } from '@/components/blog/mdx'
-import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
-import { TableOfContents } from '@/components/blog/table-of-contents'
-import { ReactionBar } from '@/components/blog/reaction-bar'
-import { CommentSection } from '@/components/blog/comment-section'
-import { checkAdminStatus } from '@/actions/auth'
-import {
-	BlogPostStructuredData,
-	BreadcrumbStructuredData
-} from '@/components/seo/structured-data'
-
-// Force dynamic rendering due to auth requirements
-// Must be dynamic due to auth (cookies/headers) usage
-export const dynamic = 'force-dynamic'
+import { Metadata } from 'next'
+import { getResolvedBlogPostBySlug } from '@/features/blog'
+import { createArticleMetadata, extendMetadata, baseUrl } from '@/core/metadata/base'
+import { BlogPostView } from '@/views/marketing/blog/post'
 
 export async function generateStaticParams() {
+	const { getBlogPosts } = await import('@/features/blog')
 	let posts = getBlogPosts()
 
 	return posts
@@ -36,8 +18,7 @@ export async function generateMetadata({
 	params
 }: {
 	params: Promise<{ slug: string | string[] }>
-}) {
-	const isAdminUser = await checkAdminStatus()
+}): Promise<Metadata> {
 	const resolvedParams = await params
 	let slug = Array.isArray(resolvedParams.slug)
 		? resolvedParams.slug.join('/')
@@ -52,11 +33,7 @@ export async function generateMetadata({
 		return {}
 	}
 
-	if (post.metadata.draft && !isAdminUser) {
-		return {}
-	}
-
-	let {
+	const {
 		title,
 		publishedAt: publishedTime,
 		summary: description,
@@ -64,116 +41,25 @@ export async function generateMetadata({
 		updatedAt,
 		canonicalUrl
 	} = post.metadata
-	let ogImage = image
-		? image
-		: `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
-	return {
+	const base = createArticleMetadata({
 		title,
 		description,
+		publishedAt: publishedTime,
+		updatedAt,
+		image,
+		canonical: canonicalUrl || `/blog/${post.slug}`,
+		keywords: post.metadata.tags
+	})
+
+	return extendMetadata(base, {
 		openGraph: {
-			title,
-			description,
-			type: 'article',
-			publishedTime,
-			modifiedTime: updatedAt,
-			url: `${baseUrl}/blog/${post.slug}`,
-			images: [
-				{
-					url: ogImage
-				}
-			]
-		},
-		twitter: {
-			card: 'summary_large_image',
-			title,
-			description,
-			images: [ogImage]
-		},
-		alternates: {
-			canonical: canonicalUrl || `${baseUrl}/blog/${post.slug}`
+			...base.openGraph,
+			url: `${baseUrl}/blog/${post.slug}`
 		}
-	}
+	})
 }
 
-// No dynamic imports in this file - moved to client component
-
-export default async function Blog({
-	params
-}: {
-	params: Promise<{ slug: string | string[] }>
-}) {
-	const resolvedParams = await params
-	let slug = Array.isArray(resolvedParams.slug)
-		? resolvedParams.slug.join('/')
-		: resolvedParams.slug
-
-	if (!slug) {
-		notFound()
-	}
-
-	const post = await getResolvedBlogPostBySlug(slug)
-
-	if (!post) {
-		notFound()
-	}
-
-	const isAdminUser = await checkAdminStatus()
-	const isDraft = post.metadata.draft || false
-
-	if (isDraft && !isAdminUser) {
-		notFound()
-	}
-
-	const { prevPost, nextPost } = await getAdjacentBlogPosts(slug, isAdminUser)
-
-	return (
-		<>
-			<BlogPostStructuredData
-				title={post.metadata.title}
-				description={post.metadata.summary}
-				publishedAt={post.metadata.publishedAt}
-				updatedAt={post.metadata.updatedAt}
-				author={post.metadata.author || 'Remco Stoeten'}
-				image={post.metadata.image}
-				url={`${baseUrl}/blog/${post.slug}`}
-				keywords={post.metadata.tags || []}
-			/>
-			<BreadcrumbStructuredData
-				items={[
-					{ name: 'Home', url: '/' },
-					{ name: 'Blog', url: '/blog' },
-					{ name: post.metadata.title, url: `/blog/${post.slug}` }
-				]}
-			/>
-			<TableOfContents />
-
-			<section className="bg-pattern relative">
-				<BlogPostClient
-					publishedAt={post.metadata.publishedAt}
-					topic={post.metadata.topic}
-					tags={post.metadata.tags}
-					title={post.metadata.title}
-					summary={post.metadata.summary}
-					readTime={calculateReadTime(post.content)}
-					slug={post.slug}
-					uniqueViews={post.uniqueViews}
-					totalViews={post.views}
-				/>
-
-				<div className="screen-border mb-12" />
-
-				<article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-3xl prose-code:before:content-none prose-code:after:content-none">
-					<CustomMDX source={post.content} />
-				</article>
-
-				<div className="max-w-3xl">
-					<ReactionBar slug={post.slug} />
-					<CommentSection slug={post.slug} />
-				</div>
-
-				<PostNavigation prevPost={prevPost} nextPost={nextPost} />
-			</section>
-		</>
-	)
+export default function Page(props: { params: Promise<{ slug: string | string[] }> }) {
+	return <BlogPostView params={props.params} />
 }

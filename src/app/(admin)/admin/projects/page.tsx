@@ -6,7 +6,7 @@ export default async function AdminProjectsPage() {
 	const settings = await getSettings()
 
 	return (
-		<div className="p-6">
+		<div className="space-y-6">
 			<ProjectsAdmin
 				initialProjects={projects}
 				initialSettings={settings}

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
-import { signOut, useSession } from '@/lib/auth-client'
+import { signOut, useSession } from '@/features/auth/client'
 
 export function AdminSessionStatus() {
 	const router = useRouter()
@@ -37,10 +37,10 @@ export function AdminSessionStatus() {
 				<span className="hidden md:inline">
 					{isPending
 						? 'Checking session...'
-						: `Session active: ${userLabel}`}
+						: `Signed in as ${userLabel}`}
 				</span>
 				<span className="md:hidden">
-					{isPending ? 'Checking...' : 'Session active'}
+					{isPending ? 'Checking...' : 'Signed in'}
 				</span>
 			</div>
 

@@ -332,25 +332,6 @@ export function useGitHubRecentActivity(limit = 10) {
 }
 
 /**
- * Fetch detailed events for a date range (for calendar)
- */
-export function useGitHubEventsByDate(from: string, to: string) {
-	return useQuery({
-		queryKey: ['github', 'events', from, to],
-		queryFn: async () => {
-			if (!from || !to) return []
-			const response = await fetch(
-				`/api/github/events?from=${from}&to=${to}`
-			)
-			if (!response.ok) throw new Error('Failed to fetch GitHub events')
-			return response.json()
-		},
-		enabled: !!from && !!to,
-		staleTime: 5 * 60 * 1000 // 5 minutes
-	})
-}
-
-/**
  * Fetch contribution data for the graph
  */
 export function useGitHubContributions(

@@ -11,12 +11,28 @@ type Props = {
 	visibleRowCount?: number
 }
 
+function withQueryParam(url: string, key: string, value: string) {
+	try {
+		const parsed = new URL(url)
+		parsed.searchParams.set(key, value)
+		return parsed.toString()
+	} catch {
+		return url
+	}
+}
+
 function mapDbProjectToIProject(dbProject: Project): IProject {
+	const embedUrl = dbProject.demoBox ?? undefined
+	const themedEmbedUrl =
+		dbProject.title === 'Dora' && embedUrl
+			? withQueryParam(embedUrl, 'theme', 'claude-dark')
+			: embedUrl
+
 	const preview: TPreview = dbProject.demoUrl
 		? {
 				type: 'iframe',
 				url: dbProject.demoUrl,
-				embedUrl: dbProject.demoBox ?? undefined
+				embedUrl: themedEmbedUrl
 			}
 		: { type: 'none' }
 
@@ -75,25 +91,19 @@ async function ProjectShowcaseAsync({
 	const dbProjects = await getProjects()
 
 	const allProjects = dbProjects.map(mapDbProjectToIProject)
-	const featured = allProjects.filter(p => p.spotlight)
-	const other = allProjects.filter(p => !p.spotlight)
-
-	let enrichedFeatured = featured
-	let enrichedOther = other
+	let enrichedProjects = allProjects
 
 	try {
-		const [gitFeatured, gitOther] = await Promise.all([
-			enrichProjectsWithGitData(featured),
-			enrichProjectsWithGitData(other)
-		])
-		enrichedFeatured = gitFeatured
-		enrichedOther = gitOther
+		enrichedProjects = await enrichProjectsWithGitData(allProjects)
 	} catch (error) {
 		console.error(
 			'[ProjectShowcase] Git enrichment failed, using static data:',
 			error
 		)
 	}
+
+	const enrichedFeatured = enrichedProjects.filter(p => p.spotlight)
+	const enrichedOther = enrichedProjects.filter(p => !p.spotlight)
 
 	return (
 		<ProjectShowcaseClient

@@ -5,10 +5,9 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Eye } from 'lucide-react'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { useEffect } from 'react'
-import { trackBlogView } from '@/actions/analytics'
-import { getDateParts, readMinutes } from '@/lib/blog-format'
-import { Breadcrumbs } from '@/components/layout/breadcrumbs'
-import { slugifyTopic } from '@/lib/blog/topic-slug'
+import { trackBlogView } from '@/server/actions/blog/analytics'
+import { getDateParts, readMinutes } from '@/features/blog/lib/format'
+import { slugifyTopic } from '@/features/blog/lib/topic-slug'
 
 type BlogPost = {
 	metadata: {
@@ -60,12 +59,10 @@ export function BlogPostClient({
 	return (
 		<header>
 			{/* Navigation Row */}
-			<div className="flex items-center justify-between mb-5">
-				<Breadcrumbs />
-
+			<div className="mb-3">
 				<button
 					onClick={() => router.back()}
-					className="inline-flex items-center gap-2 px-3 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
+					className="inline-flex items-center gap-2 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
 				>
 					<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
 					back
@@ -165,9 +162,14 @@ export function BlogPostClient({
 interface PostNavigationProps {
 	prevPost: BlogPost | null
 	nextPost: BlogPost | null
+	basePath?: string
 }
 
-export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
+export function PostNavigation({
+	prevPost,
+	nextPost,
+	basePath = '/blog'
+}: PostNavigationProps) {
 	if (!prevPost && !nextPost) return null
 
 	return (
@@ -175,7 +177,7 @@ export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				{prevPost ? (
 					<Link
-						href={`/blog/${prevPost.slug}`}
+						href={`${basePath}/${prevPost.slug}`}
 						className="group flex flex-col p-4 rounded-xl 
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800
@@ -197,7 +199,7 @@ export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
 
 				{nextPost ? (
 					<Link
-						href={`/blog/${nextPost.slug}`}
+						href={`${basePath}/${nextPost.slug}`}
 						className="group flex flex-col p-4 rounded-xl text-right
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800

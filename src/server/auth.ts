@@ -1,8 +1,8 @@
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { admin } from 'better-auth/plugins'
-import { db } from 'db'
-import { env } from 'env'
+import { db } from '@/server/db/connection'
+import { env } from '@/server/env'
 import * as authSchema from './db/auth-schema'
 
 export type ProviderKey = 'github' | 'google'

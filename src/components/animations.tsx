@@ -1,6 +1,6 @@
 import { motion, useInView, useReducedMotion, Variants } from 'framer-motion'
 import { useRef } from 'react'
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/cn'
 
 interface StaggeredRevealProps {
 	children: React.ReactNode[]

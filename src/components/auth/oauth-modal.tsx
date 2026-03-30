@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X } from 'lucide-react'
-import { signInWithPopup } from '@/lib/auth-client'
+import { signInWithPopup } from '@/features/auth/client'
 import posthog from 'posthog-js'
 
 interface OAuthModalProps {

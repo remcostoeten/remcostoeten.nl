@@ -49,7 +49,7 @@ const CATEGORY_CONFIG = {
 		label: 'legal',
 		matcher: (path: string) => ['/privacy', '/terms'].includes(path)
 	},
-	other: { icon: Zap, label: 'other', matcher: () => true } // Fallback
+	other: { icon: Zap, label: 'other', matcher: () => true }
 } as const
 
 function RouteLink({ route, pathname }: Props & { route: RouteItem }) {
@@ -118,7 +118,6 @@ export function RoutesSection({ pathname }: Props) {
 		}
 	}
 
-	// Categorize routes
 	const categorized = {
 		core: [] as RouteItem[],
 		blog: [] as RouteItem[],

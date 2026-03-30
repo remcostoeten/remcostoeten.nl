@@ -1,6 +1,6 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn } from '@/shared/lib/cn'
 import { Plus } from 'lucide-react'
 import {
 	motion,
@@ -123,7 +123,7 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
 	return (
 		<div
 			className={cn(
-				'relative grid grid-cols-2 border-x md:grid-cols-4',
+				'relative grid grid-cols-2 md:grid-cols-4',
 				className
 			)}
 			{...props}

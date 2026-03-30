@@ -18,8 +18,10 @@ import type { GitHubEventDetail } from '@/hooks/use-github'
 import { useCombinedActivity } from '@/hooks/use-combined-activity'
 import { ProjectHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers'
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback'
+import type { SpotifyTrack } from '@/features/spotify/client'
 
 const SMOOTH_EASE = [0.22, 1, 0.36, 1] as [number, number, number, number]
+const SPOTIFY_TRACKS_CACHE_KEY = 'activity-feed:spotify-tracks'
 
 // Sentence variants for automatic transitions with stagger
 const sentenceVariants = {
@@ -406,9 +408,35 @@ export function ActivityFeed({
 		5
 	)
 	const activities = combinedData?.recentActivity || []
-	const tracks = combinedData?.spotifyTracks || []
+	const [cachedTracks, setCachedTracks] = useState<SpotifyTrack[]>([])
+	const liveTracks = combinedData?.spotifyTracks || []
+	const tracks = liveTracks.length > 0 ? liveTracks : cachedTracks
 
 	const playbackState = useSpotifyPlayback()
+
+	useEffect(() => {
+		try {
+			const raw = window.localStorage.getItem(SPOTIFY_TRACKS_CACHE_KEY)
+			if (!raw) return
+
+			const parsed = JSON.parse(raw)
+			if (Array.isArray(parsed) && parsed.length > 0) {
+				setCachedTracks(parsed)
+			}
+		} catch {
+			window.localStorage.removeItem(SPOTIFY_TRACKS_CACHE_KEY)
+		}
+	}, [])
+
+	useEffect(() => {
+		if (liveTracks.length === 0) return
+
+		setCachedTracks(liveTracks)
+		window.localStorage.setItem(
+			SPOTIFY_TRACKS_CACHE_KEY,
+			JSON.stringify(liveTracks)
+		)
+	}, [liveTracks])
 
 	// Motion values for drag and velocity
 	// Removed velocity-based blur for performance - was causing heavy per-frame calculations

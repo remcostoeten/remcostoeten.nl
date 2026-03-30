@@ -2,8 +2,8 @@
 
 import { memo, useState, lazy, Suspense } from 'react'
 import { Github, ExternalLink, Eye, ChevronDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { formatShortDate } from '@/lib/date'
+import { cn } from '@/shared/lib/cn'
+import { formatShortDate } from '@/shared/lib/date'
 import type { IProject, TPreview } from '../types'
 
 const ProjectPreviewRenderer = lazy(() =>
@@ -30,6 +30,8 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 	const hasPreview = project.preview?.type === 'iframe'
 	const hasDesc = !!project.additionalDescription
 	const isOpen = showPreview || showDesc
+	const visibleTech = project.tech.slice(0, 2)
+	const overflowTech = project.tech.slice(2)
 
 	const toggle = () => {
 		if (hasPreview) setShowPreview(!showPreview)
@@ -38,12 +40,12 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 
 	return (
 		<div className="flex flex-col border-b border-border">
-			<div className="flex items-center justify-between bg-card px-2 sm:px-3 py-2">
-				<div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-					<span className="text-sm font-medium text-foreground truncate max-w-[80px] sm:max-w-[120px] md:max-w-none">
+			<div className="group flex items-center justify-between bg-card px-2 sm:px-3 py-2">
+				<div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
+					<span className="min-w-0 flex-1 text-sm font-medium text-foreground truncate md:flex-none md:max-w-[40%] md:transition-[max-width] md:duration-300 md:ease-out md:group-hover:max-w-[55%] lg:max-w-[32%] lg:group-hover:max-w-[45%]">
 						{project.name}
 					</span>
-					<span className="hidden text-sm text-muted-foreground md:inline truncate max-w-[200px] lg:max-w-none">
+					<span className="hidden min-w-0 flex-1 text-sm text-muted-foreground md:inline truncate">
 						—{' '}
 						{project.description.length > 50
 							? `${project.description.slice(0, 50)}...`
@@ -51,14 +53,14 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 					</span>
 				</div>
 
-				<div className="flex items-center gap-1 sm:gap-2 shrink-0">
+				<div className="ml-2 flex shrink-0 items-center gap-1 sm:gap-2">
 					{project.git?.lastUpdated && (
 						<span className="hidden text-xs text-muted-foreground lg:inline">
 							{formatShortDate(project.git.lastUpdated)}
 						</span>
 					)}
-					<div className="flex gap-1 overflow-x-auto scrollbar-hide max-w-[120px] sm:max-w-none">
-						{project.tech.map(tech => (
+					<div className="hidden items-center gap-1 overflow-hidden sm:flex">
+						{visibleTech.map(tech => (
 							<span
 								key={tech}
 								className="bg-secondary px-1.5 py-0.5 text-xs text-muted-foreground whitespace-nowrap shrink-0"
@@ -66,6 +68,23 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 								{tech}
 							</span>
 						))}
+						{overflowTech.length > 0 && (
+							<>
+								<span className="shrink-0 text-xs text-muted-foreground/70 transition-opacity duration-200 group-hover:opacity-0">
+									+{overflowTech.length}
+								</span>
+								<div className="hidden items-center gap-1 overflow-hidden opacity-0 transition-[max-width,opacity] duration-300 ease-out md:flex md:max-w-0 md:group-hover:max-w-[220px] md:group-hover:opacity-100">
+									{overflowTech.map(tech => (
+										<span
+											key={tech}
+											className="bg-secondary px-1.5 py-0.5 text-xs text-muted-foreground whitespace-nowrap shrink-0"
+										>
+											{tech}
+										</span>
+									))}
+								</div>
+							</>
+						)}
 					</div>
 					<div className="flex items-center">
 						{(hasPreview || hasDesc) && (

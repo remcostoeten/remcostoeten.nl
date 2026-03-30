@@ -1,10 +1,10 @@
 'use server'
 
-import { db } from 'db'
-import { projects, projectSettings } from 'schema'
+import { db } from '@/server/db/connection'
+import { projects, projectSettings } from '@/server/db/schema'
 import { eq, gt, sql } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { isAdmin } from '@/lib/auth-guard'
+import { isAdmin } from '@/features/auth/guard'
 
 type MutationResult<T = void> =
 	| { success: true; data?: T }

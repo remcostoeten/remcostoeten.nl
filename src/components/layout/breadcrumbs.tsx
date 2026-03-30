@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { Fragment } from 'react'
+import { Fragment, Suspense } from 'react'
 import { Home } from 'lucide-react'
 
 interface BreadcrumbItem {
@@ -53,7 +53,7 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
 	return breadcrumbs
 }
 
-export function Breadcrumbs({ params }: BreadcrumbProps) {
+function BreadcrumbsContent({ params }: BreadcrumbProps) {
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
 	const breadcrumbs = generateBreadcrumbs(pathname)
@@ -102,5 +102,13 @@ export function Breadcrumbs({ params }: BreadcrumbProps) {
 				))}
 			</ol>
 		</nav>
+	)
+}
+
+export function Breadcrumbs(props: BreadcrumbProps) {
+	return (
+		<Suspense fallback={null}>
+			<BreadcrumbsContent {...props} />
+		</Suspense>
 	)
 }

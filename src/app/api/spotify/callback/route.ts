@@ -1,29 +1,43 @@
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
-import { requireDevToolsAccess } from '@/lib/dev-access'
+import { requireDevToolsAccess } from '@/server/security/dev-access'
 
 export const dynamic = 'force-dynamic'
 
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com'
+const DEFAULT_SPOTIFY_REDIRECT_URI =
+	'http://127.0.0.1:3000/api/spotify/callback'
+
+function getConfiguredAppUrl(request: NextRequest) {
+	const redirectUri =
+		process.env.SPOTIFY_REDIRECT_URI || DEFAULT_SPOTIFY_REDIRECT_URI
+
+	try {
+		return new URL(redirectUri).origin
+	} catch {
+		return new URL(request.url).origin
+	}
+}
 
 export async function GET(request: NextRequest) {
 	const denied = await requireDevToolsAccess()
 	if (denied) return denied
 
 	try {
+		const appUrl = getConfiguredAppUrl(request)
 		const { searchParams } = new URL(request.url)
 		const code = searchParams.get('code')
 		const error = searchParams.get('error')
 
 		if (error) {
 			return NextResponse.redirect(
-				new URL('/?error=' + error, request.url)
+				new URL('/?error=' + error, appUrl)
 			)
 		}
 
 		if (!code) {
 			return NextResponse.redirect(
-				new URL('/?error=no_code', request.url)
+				new URL('/?error=no_code', appUrl)
 			)
 		}
 
@@ -33,7 +47,7 @@ export async function GET(request: NextRequest) {
 
 		if (!clientId || !clientSecret) {
 			return NextResponse.redirect(
-				new URL('/?error=missing_credentials', request.url)
+				new URL('/?error=missing_credentials', appUrl)
 			)
 		}
 
@@ -52,8 +66,7 @@ export async function GET(request: NextRequest) {
 					grant_type: 'authorization_code',
 					code,
 					redirect_uri:
-						redirectUri ||
-						'http://127.0.0.1:3000/api/spotify/callback'
+						redirectUri || DEFAULT_SPOTIFY_REDIRECT_URI
 				})
 			}
 		)
@@ -63,7 +76,7 @@ export async function GET(request: NextRequest) {
 			return NextResponse.redirect(
 				new URL(
 					`/?error=token_exchange_failed&details=${errorData.error_description || errorData.error}`,
-					request.url
+					appUrl
 				)
 			)
 		}
@@ -74,11 +87,11 @@ export async function GET(request: NextRequest) {
 
 		if (!refreshToken) {
 			return NextResponse.redirect(
-				new URL('/dev/spotify?error=missing_refresh_token', request.url)
+				new URL('/dev/spotify?error=missing_refresh_token', appUrl)
 			)
 		}
 
-		const redirectUrl = new URL('/dev/spotify', request.url)
+		const redirectUrl = new URL('/dev/spotify', appUrl)
 		redirectUrl.searchParams.set('success', 'true')
 		const response = NextResponse.redirect(redirectUrl)
 
@@ -104,7 +117,7 @@ export async function GET(request: NextRequest) {
 	} catch (error) {
 		console.error('Error in Spotify callback:', error)
 		return NextResponse.redirect(
-			new URL('/?error=unknown_error', request.url)
+			new URL('/?error=unknown_error', getConfiguredAppUrl(request))
 		)
 	}
 }

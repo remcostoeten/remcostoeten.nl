@@ -3,9 +3,9 @@
 import { useState, useEffect, useTransition } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trash2, MessageSquare, Loader2 } from 'lucide-react'
-import { useSession } from '@/lib/auth-client'
+import { useSession } from '@/features/auth/client'
 import Image from 'next/image'
-import { addComment, deleteComment, getComments } from '@/actions/comments'
+import { addComment, deleteComment } from '@/server/actions/blog/comments'
 import { SignInButton } from './sign-in-button'
 import posthog from 'posthog-js'
 
@@ -35,7 +35,11 @@ export function CommentSection({ slug }: Props) {
 	useEffect(() => {
 		async function loadComments() {
 			setIsLoading(true)
-			const result = await getComments(slug)
+			const response = await fetch(
+				`/api/blog/comments?slug=${encodeURIComponent(slug)}`,
+				{ cache: 'no-store' }
+			)
+			const result = await response.json()
 			setComments(result.comments as Comment[])
 			setIsLoading(false)
 		}
@@ -61,7 +65,11 @@ export function CommentSection({ slug }: Props) {
 				})
 
 				setNewComment('')
-				const fresh = await getComments(slug)
+				const response = await fetch(
+					`/api/blog/comments?slug=${encodeURIComponent(slug)}`,
+					{ cache: 'no-store' }
+				)
+				const fresh = await response.json()
 				setComments(fresh.comments as Comment[])
 			}
 		})

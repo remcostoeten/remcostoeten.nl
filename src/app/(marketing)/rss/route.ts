@@ -1,5 +1,5 @@
 import { baseUrl } from '@/app/sitemap'
-import { getBlogPosts } from '@/lib/blog'
+import { getBlogPosts } from '@/features/blog'
 
 export async function GET() {
 	let allBlogs = getBlogPosts()

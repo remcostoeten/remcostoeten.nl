@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { signOut, useSession } from '@/lib/auth-client'
+import { signOut, useSession } from '@/features/auth/client'
 import { VimStatusBar } from '@/components/vim-status-bar'
 import { OAuthModal } from '@/components/auth/oauth-modal'
 import { useVimCommand } from '@/hooks/use-vim-command'

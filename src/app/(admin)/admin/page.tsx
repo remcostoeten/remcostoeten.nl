@@ -1,9 +1,9 @@
-import { getAdminMetrics } from '@/actions/admin'
-import { getAllBlogPosts } from '@/lib/blog'
+import { getAdminMetrics } from '@/server/queries/admin'
+import { getAllBlogPosts } from '@/features/blog'
 import { BlogTable } from '@/components/admin/blogs/blog-table'
 import { UserMetrics } from '@/components/admin/metrics/user-metrics'
 import { ContactOverview } from '@/components/admin/contact/contact-overview'
-import { getAllCommentsAdmin } from '@/actions/comments'
+import { getAllCommentsAdmin } from '@/server/queries/blog/comments'
 import { ActivityFeed } from '@/components/admin/activity/activity-feed'
 import { Eye, Users, MessageSquare, Mail, TrendingUp } from 'lucide-react'
 

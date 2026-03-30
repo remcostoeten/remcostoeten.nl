@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { githubService } from '@/server/services/github'
+import { githubService } from '@/server/github'
 
 export const revalidate = 60 // Cache for 1 minute
 

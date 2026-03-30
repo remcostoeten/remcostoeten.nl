@@ -3,7 +3,7 @@ import {
 	getSpotifyAccessToken,
 	hasSpotifyCredentials,
 	invalidateSpotifyTokenCache
-} from '@/server/services/spotify-auth'
+} from '@/server/spotify/auth'
 
 // Now playing needs to be dynamic since it changes frequently
 // But we still use the cached token for performance

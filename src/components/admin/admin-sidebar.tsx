@@ -10,7 +10,8 @@ import {
 	BarChart3,
 	FolderKanban,
 	PanelLeftClose,
-	PanelLeft
+	PanelLeft,
+	House
 } from 'lucide-react'
 
 const navItems = [
@@ -18,7 +19,8 @@ const navItems = [
 	{ href: '/admin#blogs', label: 'Blog Posts', icon: FileText },
 	{ href: '/admin#messages', label: 'Messages', icon: Mail },
 	{ href: '/admin#analytics', label: 'Analytics', icon: BarChart3 },
-	{ href: '/admin/projects', label: 'Projects', icon: FolderKanban }
+	{ href: '/admin/projects', label: 'Projects', icon: FolderKanban },
+	{ href: '/', label: 'Back to home', icon: House, exact: true }
 ]
 
 export function AdminSidebar() {
