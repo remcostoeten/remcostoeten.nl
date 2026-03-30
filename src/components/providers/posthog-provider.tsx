@@ -24,7 +24,11 @@ function PostHogPageView() {
 }
 
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
+	const posthogEnabled = process.env.NEXT_PUBLIC_ENABLE_POSTHOG === 'true'
+
 	useEffect(() => {
+		if (!posthogEnabled) return
+
 		const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY
 		if (!posthogKey) return
 
@@ -39,7 +43,11 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
 			capture_pageleave: false,
 			disable_session_recording: true
 		})
-	}, [])
+	}, [posthogEnabled])
+
+	if (!posthogEnabled) {
+		return <>{children}</>
+	}
 
 	return (
 		<PHProvider client={posthog}>

@@ -157,13 +157,6 @@
 		white-space: pre;
 	}
 
-	.font-brand {
-		font-family: Georgia, 'Playfair Display', 'Times New Roman', serif;
-	}
-
-	.font-reading {
-		font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
-	}
 }
 
 @plugin '@tailwindcss/typography';
@@ -223,39 +216,9 @@
 	text-wrap: balance;
 }
 
-.animate-enter {
-	animation: enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-	will-change: opacity, transform;
-}
-
-.animate-exit {
-	animation: exit 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
-	will-change: opacity, transform;
-}
-
 .animate-stagger {
 	animation: stagger-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 	will-change: opacity, transform;
-}
-
-.animate-wiggle {
-	animation: wiggle 1s ease-in-out infinite;
-	will-change: transform;
-}
-
-@keyframes music-bar {
-	0%,
-	100% {
-		height: 25%;
-	}
-
-	50% {
-		height: 100%;
-	}
-}
-
-.animate-pulse {
-	will-change: opacity;
 }
 
 @keyframes music-bar {

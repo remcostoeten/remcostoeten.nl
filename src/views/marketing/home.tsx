@@ -1,20 +1,12 @@
 import { Intro } from '@/components/home/hero'
 import { Section } from '@/components/ui/section'
 import nextDynamic from 'next/dynamic'
+import { ActivitySectionClient } from '@/components/landing/activity/activity-section-client'
+import { HomeBlogPosts } from '@/components/blog/home-blog-posts'
 import {
-	ActivitySectionSkeleton,
 	TechStackSkeleton,
-	WorkExperienceSkeleton,
-	BlogPostsSkeleton
+	WorkExperienceSkeleton
 } from '@/components/ui/skeletons/section-skeletons'
-
-const ActivitySection = nextDynamic(
-	() =>
-		import('@/components/landing/activity/section').then(m => ({
-			default: m.ActivitySection
-		})),
-	{ loading: () => <ActivitySectionSkeleton /> }
-)
 
 const TechStackCloud = nextDynamic(
 	() =>
@@ -30,12 +22,6 @@ const WorkExperienceSection = nextDynamic(
 			default: m.WorkExperienceSection
 		})),
 	{ loading: () => <WorkExperienceSkeleton /> }
-)
-
-const BlogPosts = nextDynamic(
-	() =>
-		import('@/components/blog/posts').then(m => ({ default: m.BlogPosts })),
-	{ loading: () => <BlogPostsSkeleton /> }
 )
 
 const ProjectShowcase = nextDynamic(
@@ -73,7 +59,7 @@ export function HomeView() {
 
 					<WorkExperienceSection />
 
-					<ActivitySection />
+					<ActivitySectionClient />
 
 					<Section title="Projects" noHeaderMargin>
 						<div className="space-y-4 pt-4">
@@ -87,7 +73,7 @@ export function HomeView() {
 						</div>
 					</Section>
 
-					<BlogPosts />
+					<HomeBlogPosts />
 				</div>
 			</div>
 		</>
