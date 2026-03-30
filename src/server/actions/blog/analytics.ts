@@ -4,8 +4,7 @@ import { db } from '@/server/db/connection'
 import { blogPosts, blogViews } from '@/server/db/schema'
 import { eq, and, sql } from 'drizzle-orm'
 import { headers } from 'next/headers'
-import { getClientIp } from '@/server/lib/protection'
-import { fetchGeoInfo } from '@/server/lib/geo'
+import { getClientIp, fetchGeoInfo } from '@/server/request'
 import { createHash } from 'crypto'
 
 /**

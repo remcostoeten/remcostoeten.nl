@@ -16,7 +16,7 @@ import {
 	FileText,
 	Loader2
 } from 'lucide-react'
-import { toggleBlogDraft } from '@/actions/admin'
+import { toggleBlogDraft } from '@/server/actions/admin'
 
 type BlogPost = {
 	slug: string
@@ -32,6 +32,10 @@ type BlogPost = {
 
 type SortField = 'title' | 'date' | 'views'
 type SortDirection = 'asc' | 'desc'
+
+function getPostHref(post: BlogPost) {
+	return post.metadata.draft ? `/admin/blog/${post.slug}` : `/blog/${post.slug}`
+}
 
 function StatusCell({ post }: { post: BlogPost }) {
 	const [isDraft, setIsDraft] = useState(post.metadata.draft ?? false)
@@ -309,7 +313,7 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 										</td>
 										<td className="px-4 py-3 text-right">
 											<Link
-												href={`/blog/${post.slug}`}
+												href={getPostHref(post)}
 												target="_blank"
 												className="p-1.5 rounded-sm hover:bg-muted/50 transition-colors opacity-0 group-hover:opacity-100 inline-flex"
 											>

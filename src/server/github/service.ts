@@ -1,4 +1,4 @@
-import { getGitHubToken } from '@/server/lib/github-token'
+import { getGitHubToken } from './auth'
 
 interface GitHubContributionDay {
   date: string;

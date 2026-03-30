@@ -1,10 +1,7 @@
-// Example usage configurations for DevMenu
+/** Example usage configurations for DevMenu */
 
 import { DevWidget } from './components/DevWidget'
 
-// =============================================================================
-// 1. Full Featured (with Auth)
-// =============================================================================
 export function FullFeaturedExample() {
 	const session = { user: { name: 'John', email: 'john@example.com' } }
 
@@ -20,9 +17,6 @@ export function FullFeaturedExample() {
 	)
 }
 
-// =============================================================================
-// 2. Public Site (No Auth)
-// =============================================================================
 export function PublicSiteExample() {
 	return (
 		<DevWidget
@@ -34,9 +28,6 @@ export function PublicSiteExample() {
 	)
 }
 
-// =============================================================================
-// 3. Minimal (Routes Only)
-// =============================================================================
 export function MinimalExample() {
 	return (
 		<DevWidget
@@ -48,9 +39,6 @@ export function MinimalExample() {
 	)
 }
 
-// =============================================================================
-// 4. API Testing (No Routes, Just Auth & System Info)
-// =============================================================================
 export function ApiTestingExample() {
 	const session = { user: { name: 'API Tester', email: 'tester@api.com' } }
 
@@ -67,9 +55,6 @@ export function ApiTestingExample() {
 	)
 }
 
-// =============================================================================
-// 5. Dashboard (Auth + Routes, Hide System Info)
-// =============================================================================
 export function DashboardExample() {
 	const session = { user: { name: 'Admin User', email: 'admin@company.com' } }
 

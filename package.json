@@ -1,9 +1,28 @@
 {
-	"private": true,
+    "name": "remcostoeten.nl",
+    "version": "0.1.0",
+    "description": "Personal site for Remco Stoeten",
+    "private": true,
+    "author": "Remco Stoeten",
+    "license": "MIT",
+    "homepage": "https://remcostoeten.nl",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/remcostoeten/remcostoeten.nl.git"
+    },
+    "bugs": {
+        "url": "https://github.com/remcostoeten/remcostoeten.nl/issues"
+    },
+    "keywords": [
+        "personal site",
+        "portfolio",
+        "Next.js",
+        "Remco Stoeten",
+        "web design"
+    ],
 	"scripts": {
 		"dev": "next dev",
 		"build": "bun --bun next build",
-		"build:fast": "next build --webpack",
 		"ogbuild": "next build",
 		"start": "next start",
 		"db:generate": "drizzle-kit generate",

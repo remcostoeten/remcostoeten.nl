@@ -1,4 +1,4 @@
-import { checkAdminStatus } from '@/actions/auth'
+import { checkAdminStatus } from '@/server/queries/auth'
 import { redirect } from 'next/navigation'
 import { ReactNode } from 'react'
 import { RefreshCw, Home } from 'lucide-react'

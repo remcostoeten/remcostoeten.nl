@@ -3,7 +3,7 @@ import {
 	getSpotifyAccessToken,
 	hasSpotifyCredentials,
 	invalidateSpotifyTokenCache
-} from '@/server/services/spotify-auth'
+} from '@/server/spotify/auth'
 
 // Use ISR with 30 second revalidation for recent tracks
 // (Recently played doesn't change that frequently)

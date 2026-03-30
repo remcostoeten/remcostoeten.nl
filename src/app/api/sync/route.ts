@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-	syncAll,
-	syncGitHubActivities,
-	syncSpotifyListens,
-	getSyncStatus
-} from '@/server/services/activity-sync'
+import { syncAll } from '@/server/activity-sync/sync-all'
+import { syncGitHubActivities } from '@/server/activity-sync/github-sync'
+import { syncSpotifyListens } from '@/server/activity-sync/spotify-sync'
+import { getSyncStatus } from '@/server/activity-sync/queries'
 import { isAdmin } from '@/utils/is-admin'
 
 export const dynamic = 'force-dynamic'

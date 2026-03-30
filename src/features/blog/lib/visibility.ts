@@ -63,9 +63,17 @@ export async function getVisibleBlogPosts(includeDrafts = false) {
 	return sortBlogPosts(visiblePosts)
 }
 
-export async function getResolvedBlogPostBySlug(slug: string) {
+export async function getResolvedBlogPostBySlug(
+	slug: string,
+	includeDrafts = false
+) {
 	const posts = await getResolvedBlogPosts()
-	return posts.find(post => post.slug === slug) || null
+
+	return (
+		posts.find(
+			post => post.slug === slug && (includeDrafts || !post.metadata.draft)
+		) || null
+	)
 }
 
 export async function getTopicArchive(

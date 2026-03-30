@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { isAllowedGitHubRepo } from '@/server/lib/github-route-access'
-import { getGitHubToken } from '@/server/lib/github-token'
+import { isAllowedGitHubRepo, getGitHubToken } from '@/server/github'
 
 const GITHUB_API_BASE = 'https://api.github.com'
 
-// Language colors from GitHub
 const LANGUAGE_COLORS: Record<string, string> = {
 	TypeScript: '#3178c6',
 	JavaScript: '#f1e05a',

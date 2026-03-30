@@ -25,7 +25,7 @@ const FALLBACK_TRACKS: SpotifyTrack[] = [
 		album: 'Future Nostalgia',
 		url: 'https://open.spotify.com/track/5yUbyW1MfxqBc0ZkUp1xNG',
 		image: 'https://i.scdn.co/image/ab67616d0000b2738d2b0c5a3c0eaedaece0a5c5',
-		played_at: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
+		played_at: new Date(Date.now() - 3600000).toISOString()
 	},
 	{
 		id: '3',
@@ -34,7 +34,7 @@ const FALLBACK_TRACKS: SpotifyTrack[] = [
 		album: 'Dreamland',
 		url: 'https://open.spotify.com/track/7Li6WYFTpGI6XnfVDbCxxt',
 		image: 'https://i.scdn.co/image/ab67616d0000b273a3c5de4def32adba8d8783a8',
-		played_at: new Date(Date.now() - 7200000).toISOString() // 2 hours ago
+		played_at: new Date(Date.now() - 7200000).toISOString()
 	}
 ]
 
@@ -167,13 +167,9 @@ export type CurrentPlayback = {
 	progress_ms: number
 	duration_ms: number
 	is_playing: boolean
-	timestamp: number // Server timestamp when data was fetched
+	timestamp: number
 }
 
-/**
- * Get current playback state for real-time monitoring
- * Returns null if nothing is playing
- */
 export async function getCurrentPlayback(): Promise<CurrentPlayback | null> {
 	try {
 		const response = await fetch('/api/spotify/now-playing')

@@ -1,18 +1,10 @@
-import {
-	pgTable,
-	text,
-	boolean,
-	integer,
-	timestamp,
-	index
-} from 'drizzle-orm/pg-core'
+import { pgTable, text, boolean, integer, index } from 'drizzle-orm/pg-core'
+import { primaryId, timestamps, updatedTimestamp } from './helpers'
 
 export const projects = pgTable(
 	'projects',
 	{
-		id: text('id')
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
+		...primaryId,
 		idx: integer('idx').notNull().unique(),
 		title: text('title').notNull(),
 		desc: text('desc').notNull(),
@@ -31,8 +23,7 @@ export const projects = pgTable(
 		hidden: boolean('hidden').default(false).notNull(),
 		defaultOpen: boolean('default_open').default(false).notNull(),
 		showIndicator: boolean('show_indicator').default(false).notNull(),
-		createdAt: timestamp('created_at').defaultNow().notNull(),
-		updatedAt: timestamp('updated_at').defaultNow().notNull()
+		...timestamps
 	},
 	t => [
 		index('projects_idx_idx').on(t.idx),
@@ -43,7 +34,7 @@ export const projects = pgTable(
 export const projectSettings = pgTable('project_settings', {
 	id: text('id').primaryKey().default('singleton'),
 	showN: integer('show_n').default(6).notNull(),
-	updatedAt: timestamp('updated_at').defaultNow().notNull()
+	...updatedTimestamp
 })
 
 export type Project = typeof projects.$inferSelect

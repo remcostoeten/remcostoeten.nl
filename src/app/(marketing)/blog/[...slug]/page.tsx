@@ -2,9 +2,6 @@ import { Metadata } from 'next'
 import { getResolvedBlogPostBySlug } from '@/features/blog'
 import { createArticleMetadata, extendMetadata, baseUrl } from '@/core/metadata/base'
 import { BlogPostView } from '@/views/marketing/blog/post'
-import { checkAdminStatus } from '@/actions/auth'
-
-export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
 	const { getBlogPosts } = await import('@/features/blog')
@@ -22,7 +19,6 @@ export async function generateMetadata({
 }: {
 	params: Promise<{ slug: string | string[] }>
 }): Promise<Metadata> {
-	const isAdminUser = await checkAdminStatus()
 	const resolvedParams = await params
 	let slug = Array.isArray(resolvedParams.slug)
 		? resolvedParams.slug.join('/')
@@ -34,10 +30,6 @@ export async function generateMetadata({
 
 	let post = await getResolvedBlogPostBySlug(slug)
 	if (!post) {
-		return {}
-	}
-
-	if (post.metadata.draft && !isAdminUser) {
 		return {}
 	}
 

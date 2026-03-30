@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Mail, User, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { submitContactForm } from '@/actions/contact'
+import { submitContactForm } from '@/server/actions/contact/submission'
 import { EmailAutocomplete } from './email-autocomplete'
 import { cn } from '@/shared/lib/cn'
 

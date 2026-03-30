@@ -3,6 +3,9 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
+const DEFAULT_SPOTIFY_REDIRECT_URI =
+	'http://127.0.0.1:3000/api/spotify/callback'
+
 function SpotifyDevContent() {
 	const searchParams = useSearchParams()
 	const [authUrl, setAuthUrl] = useState<string | null>(null)
@@ -271,9 +274,7 @@ function SpotifyDevContent() {
 							</code>{' '}
 							- Should be{' '}
 							<code className="text-zinc-400">
-								{typeof window !== 'undefined'
-									? `${window.location.origin}/api/spotify/callback`
-									: 'http://localhost:3000/api/spotify/callback'}
+								{DEFAULT_SPOTIFY_REDIRECT_URI}
 							</code>
 						</li>
 					</ul>

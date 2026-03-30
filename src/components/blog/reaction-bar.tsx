@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { motion } from 'framer-motion'
-import { toggleReaction, getReactions } from '@/actions/reactions'
+import { toggleReaction } from '@/server/actions/blog/reactions'
 import type { EmojiType } from '@/server/db/schema'
 import posthog from 'posthog-js'
 
@@ -38,7 +38,11 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 
 	useEffect(() => {
 		async function loadReactions() {
-			const result = await getReactions(slug)
+			const response = await fetch(
+				`/api/blog/reactions?slug=${encodeURIComponent(slug)}`,
+				{ cache: 'no-store' }
+			)
+			const result = await response.json()
 			if (result.reactions) {
 				setReactions(result.reactions)
 			}
@@ -72,7 +76,11 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 			const result = await toggleReaction(slug, emoji)
 
 			if (result.error) {
-				const fresh = await getReactions(slug)
+				const response = await fetch(
+					`/api/blog/reactions?slug=${encodeURIComponent(slug)}`,
+					{ cache: 'no-store' }
+				)
+				const fresh = await response.json()
 				if (fresh.reactions) {
 					setReactions(fresh.reactions)
 				}

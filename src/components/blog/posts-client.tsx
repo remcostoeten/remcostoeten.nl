@@ -41,7 +41,7 @@ function BlogCard({ post }: Props) {
 	const allTags = [
 		...(post.metadata.topic ? [post.metadata.topic] : []),
 		...(post.metadata.tags || [])
-	]
+	].filter((tag, index, arr) => arr.indexOf(tag) === index)
 
 	return (
 		<Link

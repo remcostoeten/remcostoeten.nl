@@ -17,8 +17,6 @@ export const env = createEnv({
 
 		ADMIN_EMAIL: z.string().email().optional(),
 		ALLOWED_GITHUB_USERNAME: z.string().optional(),
-		RESEND_API_KEY: z.string().optional(),
-		RESEND_EMAIL_FROM: z.string().email().optional(),
 		CRON_SECRET: z.string().min(1).optional(),
 
 		IP_INFO_TOKEN: z.string().optional()
@@ -41,8 +39,6 @@ export const env = createEnv({
 
 		ADMIN_EMAIL: process.env.ADMIN_EMAIL,
 		ALLOWED_GITHUB_USERNAME: process.env.ALLOWED_GITHUB_USERNAME,
-		RESEND_API_KEY: process.env.RESEND_API_KEY,
-		RESEND_EMAIL_FROM: process.env.RESEND_EMAIL_FROM,
 		CRON_SECRET: process.env.CRON_SECRET,
 
 		IP_INFO_TOKEN: process.env.IP_INFO_TOKEN,

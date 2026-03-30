@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { requireDevToolsAccess } from '@/server/lib/dev-access'
+import { requireDevToolsAccess } from '@/server/security/dev-access'
 
 export const dynamic = 'force-dynamic'
 

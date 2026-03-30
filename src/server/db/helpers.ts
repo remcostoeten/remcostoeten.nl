@@ -9,6 +9,10 @@ export const createdTimestamp = {
 	createdAt: timestamp('created_at').defaultNow().notNull()
 }
 
+export const updatedTimestamp = {
+	updatedAt: timestamp('updated_at').defaultNow().notNull()
+}
+
 export const primaryId = {
 	id: text('id')
 		.primaryKey()
@@ -17,10 +21,6 @@ export const primaryId = {
 
 export const visitorId = {
 	visitorId: text('visitor_id').notNull()
-}
-
-export const optionalVisitorId = {
-	visitorId: text('visitor_id')
 }
 
 export const blogSlug = {
@@ -44,6 +44,16 @@ export const engagementMetrics = {
 
 export const deviceType = {
 	device: text('device').$type<'desktop' | 'mobile' | 'tablet'>()
+}
+
+export const geoMetadata = {
+	ipAddress: text('ip_address'),
+	geoCountry: text('geo_country'),
+	geoCity: text('geo_city'),
+	geoRegion: text('geo_region'),
+	geoLoc: text('geo_loc'),
+	geoOrg: text('geo_org'),
+	geoTimezone: text('geo_timezone')
 }
 
 export type DeviceType = 'desktop' | 'mobile' | 'tablet'

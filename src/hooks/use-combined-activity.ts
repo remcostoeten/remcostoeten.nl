@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import type { SpotifyTrack } from '@/server/services/spotify'
+import type { SpotifyTrack } from '@/features/spotify/client'
 import type { GitHubEventDetail } from './use-github'
 
 export interface CombinedActivityData {

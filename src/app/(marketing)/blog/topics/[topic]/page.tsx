@@ -4,10 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
-import { isAdmin } from '@/utils/is-admin'
-
-// Must be dynamic due to auth (headers) usage
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export async function generateStaticParams() {
 	const topics = getAllTopics()
@@ -39,9 +36,8 @@ export default async function TopicPage({
 }: {
 	params: Promise<{ topic: string }>
 }) {
-	const userIsAdmin = await isAdmin()
 	const { topic } = await params
-	const archive = await getTopicArchive(decodeURIComponent(topic), userIsAdmin)
+	const archive = await getTopicArchive(decodeURIComponent(topic))
 
 	if (!archive) {
 		notFound()

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
-import { isAllowedGitHubRepo } from '@/server/lib/github-route-access'
-import { getGitHubToken } from '@/server/lib/github-token'
+import { isAllowedGitHubRepo, getGitHubToken } from '@/server/github'
 
 export const dynamic = 'force-dynamic'
 

@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-
 import {
 	calculateReadTime,
 	getAdjacentBlogPosts,
@@ -11,13 +10,10 @@ import { BlogPostClient, PostNavigation } from '@/components/blog/post-view'
 import { TableOfContents } from '@/components/blog/table-of-contents'
 import { ReactionBar } from '@/components/blog/reaction-bar'
 import { CommentSection } from '@/components/blog/comment-section'
-import { checkAdminStatus } from '@/actions/auth'
 import {
 	BlogPostStructuredData,
 	BreadcrumbStructuredData
 } from '@/components/seo/structured-data'
-
-export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
 	const { getBlogPosts } = await import('@/features/blog')
@@ -31,9 +27,15 @@ export async function generateStaticParams() {
 }
 
 export async function BlogPostView({
-	params
+	params,
+	includeDrafts = false,
+	linkBasePath = '/blog',
+	showStructuredData = true
 }: {
 	params: Promise<{ slug: string | string[] }>
+	includeDrafts?: boolean
+	linkBasePath?: string
+	showStructuredData?: boolean
 }) {
 	const resolvedParams = await params
 	let slug = Array.isArray(resolvedParams.slug)
@@ -44,40 +46,43 @@ export async function BlogPostView({
 		notFound()
 	}
 
-	const post = await getResolvedBlogPostBySlug(slug)
+	const post = await getResolvedBlogPostBySlug(slug, includeDrafts)
 
 	if (!post) {
 		notFound()
 	}
 
-	const isAdminUser = await checkAdminStatus()
-	const isDraft = post.metadata.draft || false
-
-	if (isDraft && !isAdminUser) {
-		notFound()
-	}
-
-	const { prevPost, nextPost } = await getAdjacentBlogPosts(slug, isAdminUser)
+	const { prevPost, nextPost } = await getAdjacentBlogPosts(
+		slug,
+		includeDrafts
+	)
 
 	return (
 		<>
-			<BlogPostStructuredData
-				title={post.metadata.title}
-				description={post.metadata.summary}
-				publishedAt={post.metadata.publishedAt}
-				updatedAt={post.metadata.updatedAt}
-				author={post.metadata.author || 'Remco Stoeten'}
-				image={post.metadata.image}
-				url={`${baseUrl}/blog/${post.slug}`}
-				keywords={post.metadata.tags || []}
-			/>
-			<BreadcrumbStructuredData
-				items={[
-					{ name: 'Home', url: '/' },
-					{ name: 'Blog', url: '/blog' },
-					{ name: post.metadata.title, url: `/blog/${post.slug}` }
-				]}
-			/>
+			{showStructuredData && (
+				<>
+					<BlogPostStructuredData
+						title={post.metadata.title}
+						description={post.metadata.summary}
+						publishedAt={post.metadata.publishedAt}
+						updatedAt={post.metadata.updatedAt}
+						author={post.metadata.author || 'Remco Stoeten'}
+						image={post.metadata.image}
+						url={`${baseUrl}/blog/${post.slug}`}
+						keywords={post.metadata.tags || []}
+					/>
+					<BreadcrumbStructuredData
+						items={[
+							{ name: 'Home', url: '/' },
+							{ name: 'Blog', url: '/blog' },
+							{
+								name: post.metadata.title,
+								url: `/blog/${post.slug}`
+							}
+						]}
+					/>
+				</>
+			)}
 			<TableOfContents />
 
 			<section className="bg-pattern relative">
@@ -104,7 +109,11 @@ export async function BlogPostView({
 					<CommentSection slug={post.slug} />
 				</div>
 
-				<PostNavigation prevPost={prevPost} nextPost={nextPost} />
+				<PostNavigation
+					prevPost={prevPost}
+					nextPost={nextPost}
+					basePath={linkBasePath}
+				/>
 			</section>
 		</>
 	)
