@@ -15,7 +15,7 @@ describe('spotify auth-url route', () => {
 	})
 
 	it('returns 400 when spotify client id is missing', async () => {
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/auth-url/route')
 		const response = await GET()
 		const data = await response.json()
 
@@ -30,7 +30,7 @@ describe('spotify auth-url route', () => {
 			'http://127.0.0.1:3000/api/spotify/callback'
 		)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/auth-url/route')
 		const response = await GET()
 		const data = await response.json()
 		const authUrl = new URL(data.authUrl)
