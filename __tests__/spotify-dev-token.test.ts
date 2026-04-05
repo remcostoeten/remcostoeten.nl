@@ -34,7 +34,7 @@ describe('spotify dev-token route', () => {
 			})
 		})
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/dev-token/route')
 		const response = await GET()
 		const data = await response.json()
 		const setCookie = response.headers.getSetCookie().join('\n')

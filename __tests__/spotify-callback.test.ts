@@ -22,7 +22,7 @@ describe('spotify callback route', () => {
 			'http://127.0.0.1:3000/api/spotify/callback'
 		)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/callback/route')
 		const response = await GET(
 			new NextRequest('http://localhost:3000/api/spotify/callback')
 		)
@@ -52,7 +52,7 @@ describe('spotify callback route', () => {
 			})
 		)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/callback/route')
 		const response = await GET(
 			new NextRequest(
 				'http://localhost:3000/api/spotify/callback?code=auth-code-123'

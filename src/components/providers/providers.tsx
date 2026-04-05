@@ -38,6 +38,31 @@ type TProps = {
 	children: ReactNode
 }
 
+function getSafeAnalyticsIngestUrl(rawUrl?: string) {
+	if (!rawUrl) return null
+
+	try {
+		const url = new URL(rawUrl)
+		const hostname = url.hostname.toLowerCase()
+		const isLocalHost =
+			hostname === 'localhost' ||
+			hostname === '127.0.0.1' ||
+			hostname === '0.0.0.0'
+
+		if (isLocalHost) return null
+		if (
+			process.env.NODE_ENV === 'production' &&
+			url.protocol !== 'https:'
+		) {
+			return null
+		}
+
+		return url.toString()
+	} catch {
+		return null
+	}
+}
+
 function DevWidgetWrapper() {
 	if (!DevWidget) {
 		return null
@@ -60,7 +85,10 @@ function DevWidgetWrapper() {
 }
 
 export function AppProviders({ children }: TProps) {
-	const remcoAnalyticsIngestUrl = process.env.NEXT_PUBLIC_REMCO_ANALYTICS_URL
+	const isProduction = process.env.NODE_ENV === 'production'
+	const remcoAnalyticsIngestUrl = getSafeAnalyticsIngestUrl(
+		process.env.NEXT_PUBLIC_REMCO_ANALYTICS_URL
+	)
 
 	return (
 		<PostHogProvider>
@@ -79,7 +107,7 @@ export function AppProviders({ children }: TProps) {
 							<Toaster />
 
 							<Suspense fallback={null}>
-								<Analytics />
+								{isProduction ? <Analytics /> : null}
 								{remcoAnalyticsIngestUrl ? (
 									<RemcoAnalytics
 										ingestUrl={remcoAnalyticsIngestUrl}
@@ -87,7 +115,7 @@ export function AppProviders({ children }: TProps) {
 								) : null}
 							</Suspense>
 							<Suspense fallback={null}>
-								<SpeedInsights />
+								{isProduction ? <SpeedInsights /> : null}
 							</Suspense>
 							<DevWidgetWrapper />
 						</StaggerProvider>

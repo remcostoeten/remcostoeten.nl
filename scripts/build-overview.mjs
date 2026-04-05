@@ -1,73 +1,123 @@
 import { spawn } from 'node:child_process'
 
 const COLORS = {
-	reset: '\x1b[0m',
-	dim: '\x1b[2m',
-	cyan: '\x1b[36m',
-	green: '\x1b[32m',
-	red: '\x1b[31m',
+	bold:   '\x1b[1m',
+	reset:  '\x1b[0m',
+	dim:    '\x1b[2m',
+	red:    '\x1b[31m',
+	green:  '\x1b[32m',
 	yellow: '\x1b[33m',
-	bold: '\x1b[1m'
+	magenta:'\x1b[35m',
+	cyan:   '\x1b[36m',
+	white:  '\x1b[37m'
 }
+
+const BOX_WIDTH      = 64
+const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+const CHECK          = '✓'
+const CROSS          = '✗'
+const ANSI_PATTERN   = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'gu')
 
 const steps = [
 	{ label: 'Lint', command: 'npm', args: ['run', 'lint'] },
 	{ label: 'Typecheck', command: 'npm', args: ['run', 'typecheck'] },
-	{ label: 'Tests', command: 'npm', args: ['run', 'test'] },
-	{ label: 'Build', command: 'npm', args: ['run', 'build:next'] }
+	{ label: 'Tests',     command: 'npm', args: ['run', 'test'] },
+	{ label: 'Build',     command: 'npm', args: ['run', 'build:next'] }
 ]
 
 const results = []
 const startedAt = Date.now()
+let spinnerIndex = 0
 
 function formatDuration(ms) {
 	if (ms < 1000) return `${ms}ms`
 	return `${(ms / 1000).toFixed(1)}s`
 }
 
-function rule(char = '=') {
-	return char.repeat(72)
+function rule(char = '─', len = BOX_WIDTH) {
+	return char.repeat(len)
+}
+
+function center(text, width = BOX_WIDTH) {
+	return text.padStart(Math.floor((width + text.length) / 2)).padEnd(width)
+}
+
+function line(content = '', width = BOX_WIDTH) {
+	return `${COLORS.cyan}│${COLORS.reset}${content.padEnd(width)}${COLORS.cyan}│${COLORS.reset}`
+}
+
+function stripAnsi(value) {
+	return value.replace(ANSI_PATTERN, '')
+}
+
+function lineWithAnsi(content, width = BOX_WIDTH) {
+	const visibleLength = stripAnsi(content).length
+	return line(content + ' '.repeat(Math.max(0, width - visibleLength)), width)
 }
 
 function printBanner() {
-	console.log(`${COLORS.cyan}${rule()}${COLORS.reset}`)
-	console.log(
-		`${COLORS.bold}${COLORS.cyan} Release Build Overview ${COLORS.reset}${COLORS.dim}lint -> typecheck -> test -> build${COLORS.reset}`
-	)
-	console.log(`${COLORS.cyan}${rule()}${COLORS.reset}\n`)
+	const title = '🚀 Release Build'
+	const subtitle = 'lint → typecheck → test → build'
+
+	console.log('')
+	console.log(COLORS.cyan + '┌' + rule('─') + '┐' + COLORS.reset)
+	console.log(line(`${COLORS.bold}${center(title)}${COLORS.reset}`))
+	console.log(line(`${COLORS.dim}${center(subtitle)}${COLORS.reset}`))
+	console.log(COLORS.cyan + '└' + rule('─') + '┘' + COLORS.reset)
+	console.log('')
 }
 
-function printStepHeader(index, total, label) {
+function printStepStart(index, total, label) {
+	spinnerIndex = 0
+	const frame = SPINNER_FRAMES[spinnerIndex % SPINNER_FRAMES.length]
 	console.log(
-		`${COLORS.bold}${COLORS.cyan}[${index}/${total}]${COLORS.reset} ${COLORS.bold}${label}${COLORS.reset}`
+		`${COLORS.cyan}${frame}${COLORS.reset} ${COLORS.bold}${index}/${total}${COLORS.reset} ${COLORS.white}${label}${COLORS.reset}`
 	)
-	console.log(`${COLORS.dim}${rule('-')}${COLORS.reset}`)
+}
+
+function printStepEnd(label, ok, duration) {
+	const icon = ok ? COLORS.green + CHECK : COLORS.red + CROSS
+	const status = ok ? COLORS.green + 'done' : COLORS.red + 'failed'
+
+	console.log(
+		`         ${icon}${COLORS.reset} ${COLORS.bold}${label}${COLORS.reset} ${COLORS.dim}${status} ${COLORS.white}${formatDuration(duration)}${COLORS.reset}`
+	)
+	console.log('')
 }
 
 function printSummary(success) {
-	console.log(`\n${COLORS.cyan}${rule()}${COLORS.reset}`)
-	console.log(
-		`${COLORS.bold}${success ? COLORS.green : COLORS.red}${success ? ' Summary' : ' Failed Summary'}${COLORS.reset}`
-	)
+	const totalDuration = Date.now() - startedAt
+	const summaryTitle = success ? ' ✅ Build Complete ' : ' ❌ Build Failed '
+
+	console.log(COLORS.cyan + '┌' + rule('─') + '┐' + COLORS.reset)
+	console.log(line(`${COLORS.bold}${center(summaryTitle)}${COLORS.reset}`))
+	console.log(COLORS.cyan + '├' + rule('─') + '┤' + COLORS.reset)
 
 	for (const result of results) {
-		const color = result.ok ? COLORS.green : COLORS.red
-		const state = result.ok ? 'PASS' : 'FAIL'
-		console.log(
-			`${color}${state.padEnd(4)}${COLORS.reset} ${result.label.padEnd(10)} ${COLORS.dim}${formatDuration(result.duration)}${COLORS.reset}`
-		)
+		const icon = result.ok ? `${COLORS.green}${CHECK}` : `${COLORS.red}${CROSS}`
+		const label = result.ok ? COLORS.green : COLORS.red
+		const duration = formatDuration(result.duration).padStart(10)
+		const content = ` ${icon}${COLORS.reset} ${label}${result.label.padEnd(14)}${COLORS.reset}${COLORS.dim}${duration}${COLORS.reset} `
+
+		console.log(lineWithAnsi(content))
 	}
 
-	console.log(
-		`${COLORS.bold}${success ? COLORS.green : COLORS.red}${success ? '\n Build pipeline complete' : '\n Build pipeline failed'}${COLORS.reset} ${COLORS.dim}in ${formatDuration(Date.now() - startedAt)}${COLORS.reset}`
-	)
-	console.log(`${COLORS.cyan}${rule()}${COLORS.reset}`)
+	console.log(COLORS.cyan + '├' + rule('─') + '┤' + COLORS.reset)
+
+	const totalLabel = success ? 'Total time' : 'Failed at'
+	const totalTime = formatDuration(totalDuration)
+	const footer = `  ${COLORS.bold}${totalLabel}${COLORS.reset}${COLORS.white}${totalTime.padStart(BOX_WIDTH - totalLabel.length - 2)}${COLORS.reset}`
+
+	console.log(lineWithAnsi(footer))
+	console.log(COLORS.cyan + '└' + rule('─') + '┘' + COLORS.reset)
+	console.log('')
 }
 
 function runStep(step, index, total) {
 	return new Promise((resolve, reject) => {
-		printStepHeader(index, total, step.label)
+		printStepStart(index, total, step.label)
 		const stepStart = Date.now()
+
 		const child = spawn(step.command, step.args, {
 			stdio: 'inherit',
 			shell: process.platform === 'win32'
@@ -78,17 +128,13 @@ function runStep(step, index, total) {
 			const ok = code === 0
 			results.push({ label: step.label, duration, ok })
 
+			printStepEnd(step.label, ok, duration)
+
 			if (ok) {
-				console.log(
-					`${COLORS.green}OK${COLORS.reset} ${step.label} ${COLORS.dim}(${formatDuration(duration)})${COLORS.reset}\n`
-				)
 				resolve()
 				return
 			}
 
-			console.error(
-				`${COLORS.red}FAILED${COLORS.reset} ${step.label} ${COLORS.dim}(${formatDuration(duration)})${COLORS.reset}\n`
-			)
 			reject(new Error(`${step.label} failed with exit code ${code}`))
 		})
 	})
@@ -105,7 +151,7 @@ async function main() {
 		printSummary(true)
 	} catch (error) {
 		printSummary(false)
-		console.error(`\n${COLORS.yellow}${String(error.message || error)}${COLORS.reset}`)
+		console.error(`${COLORS.yellow}${String(error.message || error)}${COLORS.reset}`)
 		process.exitCode = 1
 	}
 }

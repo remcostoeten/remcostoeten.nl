@@ -29,7 +29,7 @@ describe('spotify recent route', () => {
 			{ id: 'stored-1', name: 'Stored', artist: 'Artist' }
 		])
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/recent/route')
 		const response = await GET(
 			new Request('http://127.0.0.1:3000/api/spotify/recent?limit=5')
 		)
@@ -58,7 +58,7 @@ describe('spotify recent route', () => {
 			})
 		)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/recent/route')
 		const response = await GET(
 			new Request('http://127.0.0.1:3000/api/spotify/recent?limit=3')
 		)
@@ -98,7 +98,7 @@ describe('spotify recent route', () => {
 			})
 		)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/recent/route')
 		const response = await GET(
 			new Request('http://127.0.0.1:3000/api/spotify/recent?limit=1')
 		)

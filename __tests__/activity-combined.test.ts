@@ -62,7 +62,7 @@ describe('getCombinedActivity', () => {
 		githubMocks.getCachedGitHubActivity.mockResolvedValue(recentActivity)
 		spotifyMocks.getSpotifyTracks.mockResolvedValue(spotifyTracks)
 
-		const { getCombinedActivity } = await import('./combine')
+		const { getCombinedActivity } = await import('@/app/api/activity/combined/combine')
 		const result = await getCombinedActivity(5, 5)
 
 		expect(githubMocks.getCachedGitHubContributions).toHaveBeenNthCalledWith(
@@ -110,7 +110,7 @@ describe('getCombinedActivity', () => {
 		])
 		spotifyMocks.getSpotifyTracks.mockResolvedValue([])
 
-		const { getCombinedActivity } = await import('./combine')
+		const { getCombinedActivity } = await import('@/app/api/activity/combined/combine')
 		const result = await getCombinedActivity(3, 5)
 
 		expect(result.spotifyTracks).toEqual([])

@@ -53,7 +53,7 @@ describe('spotify track retrieval', () => {
 			}
 		])
 
-		const { getSpotifyTracks } = await import('./tracks')
+		const { getSpotifyTracks } = await import('@/server/spotify/tracks')
 		const result = await getSpotifyTracks(5)
 
 		expect(result).toEqual([
@@ -78,7 +78,7 @@ describe('spotify track retrieval', () => {
 		const fetchSpy = vi.fn()
 		vi.stubGlobal('fetch', fetchSpy)
 
-		const { getSpotifyTracks } = await import('./tracks')
+		const { getSpotifyTracks } = await import('@/server/spotify/tracks')
 		const result = await getSpotifyTracks(3)
 
 		expect(result).toEqual([])
@@ -107,7 +107,7 @@ describe('spotify track retrieval', () => {
 			})
 		)
 
-		const { getSpotifyTracks } = await import('./tracks')
+		const { getSpotifyTracks } = await import('@/server/spotify/tracks')
 		const result = await getSpotifyTracks(10)
 
 		expect(result).toEqual([
@@ -154,7 +154,7 @@ describe('spotify track retrieval', () => {
 			})
 		)
 
-		const { getSpotifyTracks } = await import('./tracks')
+		const { getSpotifyTracks } = await import('@/server/spotify/tracks')
 		const result = await getSpotifyTracks(1)
 
 		expect(result).toEqual([
@@ -193,7 +193,7 @@ describe('spotify track retrieval', () => {
 			})
 		)
 
-		const { getSpotifyTracks } = await import('./tracks')
+		const { getSpotifyTracks } = await import('@/server/spotify/tracks')
 		const result = await getSpotifyTracks(5)
 
 		expect(result[0]?.id).toBe('stored-3')

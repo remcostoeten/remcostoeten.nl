@@ -8,12 +8,12 @@ export default defineConfig({
 		environment: 'node',
 		globals: true,
 		setupFiles: ['./src/test/setup.ts'],
-		include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+		include: ['__tests__/**/*.test.ts', '__tests__/**/*.test.tsx'],
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'html'],
 			include: ['src/**/*.{ts,tsx}'],
-			exclude: ['src/**/*.test.ts', 'src/**/*.test.tsx']
+			exclude: ['__tests__/**/*.test.ts', '__tests__/**/*.test.tsx']
 		}
 	}
 })

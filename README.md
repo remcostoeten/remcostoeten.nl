@@ -3,6 +3,8 @@
 Source for [remcostoeten.nl](https://remcostoeten.nl), a personal website built with Next.js.  
 It combines a portfolio-style marketing site, an MDX blog, a protected admin area, and a small activity system that pulls GitHub and Spotify data into Postgres.
 
+![Preview of remcostoeten.nl](./public/images/readme/site-preview.png)
+
 ## What this project includes
 
 - A homepage with work experience, featured projects, and personal profile content

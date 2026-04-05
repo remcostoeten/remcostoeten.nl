@@ -20,7 +20,7 @@ describe('spotify now-playing route', () => {
 	it('returns a non-playing state when credentials are missing', async () => {
 		authMocks.hasSpotifyCredentials.mockReturnValue(false)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/now-playing/route')
 		const response = await GET()
 		const data = await response.json()
 
@@ -58,7 +58,7 @@ describe('spotify now-playing route', () => {
 			})
 		)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/now-playing/route')
 		const response = await GET()
 		const data = await response.json()
 
@@ -83,7 +83,7 @@ describe('spotify now-playing route', () => {
 				.mockResolvedValueOnce({ status: 204 })
 		)
 
-		const { GET } = await import('./route')
+		const { GET } = await import('@/app/api/spotify/now-playing/route')
 		const response = await GET()
 		const data = await response.json()
 
