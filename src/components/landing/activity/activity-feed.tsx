@@ -15,7 +15,11 @@ import {
 	Globe
 } from 'lucide-react'
 import type { GitHubEventDetail } from '@/hooks/use-github'
-import { useCombinedActivity } from '@/hooks/use-combined-activity'
+import {
+	COMBINED_ACTIVITY_LIMIT,
+	COMBINED_TRACKS_LIMIT,
+	useCombinedActivity
+} from '@/hooks/use-combined-activity'
 import { ProjectHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers'
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback'
 import type { SpotifyTrack } from '@/features/spotify/client'
@@ -444,8 +448,8 @@ export function ActivityFeed({
 	// *** PERFORMANCE OPTIMIZATION: Uses shared combined hook ***
 	// This reuses the same cached data as contribution-graph instead of making another 2 API calls
 	const { data: combinedData, isLoading: dataLoading } = useCombinedActivity(
-		activityCount,
-		5
+		Math.max(activityCount, COMBINED_ACTIVITY_LIMIT),
+		COMBINED_TRACKS_LIMIT
 	)
 	const activities = combinedData?.recentActivity || []
 	const [cachedTracks, setCachedTracks] = useState<SpotifyTrack[]>([])

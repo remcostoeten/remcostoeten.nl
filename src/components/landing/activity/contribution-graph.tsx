@@ -3,7 +3,11 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { useCombinedActivity } from '@/hooks/use-combined-activity'
+import {
+	COMBINED_ACTIVITY_LIMIT,
+	COMBINED_TRACKS_LIMIT,
+	useCombinedActivity
+} from '@/hooks/use-combined-activity'
 import type { GitHubEventDetail } from '@/hooks/use-github'
 
 interface ActivityDay {
@@ -35,6 +39,16 @@ export function ActivityContributionGraph({
 
 	// New state for loading details on demand
 	const [loadingDetails, setLoadingDetails] = useState(false)
+	const dialogRef = useRef<HTMLDivElement>(null)
+	const closeButtonRef = useRef<HTMLButtonElement>(null)
+	const triggerRef = useRef<HTMLButtonElement | null>(null)
+
+	const closeSelectedDay = () => {
+		setSelectedDay(null)
+		window.requestAnimationFrame(() => {
+			triggerRef.current?.focus()
+		})
+	}
 
 	// Fetch detailed events on demand if they are missing
 	useEffect(() => {
@@ -82,6 +96,55 @@ export function ActivityContributionGraph({
 		}
 	}, [selectedDay?.date, selectedDay?.githubCount]) // Depend on date and count
 
+	useEffect(() => {
+		if (!selectedDay) return
+
+		const focusTimer = window.setTimeout(() => {
+			closeButtonRef.current?.focus()
+		}, 0)
+
+		const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+			if (event.key === 'Escape') {
+				event.preventDefault()
+				closeSelectedDay()
+				return
+			}
+
+			if (event.key !== 'Tab') return
+
+			const dialogNode = dialogRef.current
+			if (!dialogNode) return
+
+			const focusableElements = Array.from(
+				dialogNode.querySelectorAll<HTMLElement>(
+					'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+				)
+			).filter(element => !element.hasAttribute('disabled'))
+
+			if (focusableElements.length === 0) return
+
+			const firstElement = focusableElements[0]
+			const lastElement = focusableElements[focusableElements.length - 1]
+
+			if (event.shiftKey) {
+				if (document.activeElement === firstElement) {
+					event.preventDefault()
+					lastElement.focus()
+				}
+			} else if (document.activeElement === lastElement) {
+				event.preventDefault()
+				firstElement.focus()
+			}
+		}
+
+		document.addEventListener('keydown', handleKeyDown)
+
+		return () => {
+			window.clearTimeout(focusTimer)
+			document.removeEventListener('keydown', handleKeyDown)
+		}
+	}, [selectedDay])
+
 	// For a rolling 12-month view
 	const currentYear = new Date().getFullYear()
 	const previousYear = currentYear - 1
@@ -89,8 +152,8 @@ export function ActivityContributionGraph({
 	// *** PERFORMANCE OPTIMIZATION: Single combined API call instead of 4+ separate ones ***
 	// Increased limit from 5 to 20 for initial feed, though on-demand fetch handles the rest
 	const { data: combinedData, isLoading: loading } = useCombinedActivity(
-		20,
-		10
+		COMBINED_ACTIVITY_LIMIT,
+		COMBINED_TRACKS_LIMIT
 	)
 
 	// Process contributions into a Map for lookup
@@ -336,9 +399,33 @@ export function ActivityContributionGraph({
 		return activityData.reduce((sum, day) => sum + day.githubCount, 0)
 	}, [activityData])
 
-	const handleDayClick = (day: ActivityDay) => {
+	const handleDayClick = (
+		day: ActivityDay,
+		event: React.MouseEvent<HTMLButtonElement>
+	) => {
+		triggerRef.current = event.currentTarget
 		setSelectedDay(day)
 		// Auto-scroll removed as we are now edge-to-edge
+	}
+
+	const formatDayLabel = (day: ActivityDay) => {
+		const dateLabel = new Date(day.date).toLocaleDateString('en-US', {
+			weekday: 'long',
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric'
+		})
+
+		if (day.totalActivity === 0) {
+			return `No activity on ${dateLabel}`
+		}
+
+		const githubLabel = `${day.githubCount} GitHub contribution${day.githubCount === 1 ? '' : 's'}`
+		const spotifyLabel = day.spotifyCount
+			? ` and ${day.spotifyCount} Spotify track${day.spotifyCount === 1 ? '' : 's'}`
+			: ''
+
+		return `${githubLabel}${spotifyLabel} on ${dateLabel}`
 	}
 
 	return (
@@ -347,9 +434,14 @@ export function ActivityContributionGraph({
 			<div
 				ref={graphRef}
 				className="w-full overflow-hidden"
-				role="img"
-				aria-label={`GitHub contribution graph from Feb ${previousYear} to Jan ${currentYear}, showing ${totalContributions} total contributions`}
+				role="region"
+				aria-labelledby="activity-graph-title"
 			>
+				<h2 id="activity-graph-title" className="sr-only">
+					GitHub contribution graph from Feb {previousYear} to Jan{' '}
+					{currentYear}, showing {totalContributions} total
+					contributions
+				</h2>
 				<div className="flex flex-col w-full relative">
 					{/* Month labels row - Using Grid to match columns exactly */}
 					<div
@@ -398,9 +490,16 @@ export function ActivityContributionGraph({
 										new Date().toISOString().split('T')[0]
 
 									return (
-										<div
+										<button
 											key={dayIndex}
-											className={`w-full aspect-square rounded-[2px] transition-all duration-300 ease-out ${
+											type="button"
+											aria-label={formatDayLabel(day)}
+											aria-haspopup={
+												day.totalActivity > 0
+													? 'dialog'
+													: undefined
+											}
+											className={`w-full aspect-square rounded-[2px] transition-[background-color,border-color,box-shadow,opacity] duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 focus-visible:ring-offset-background ${
 												hasData ? 'cursor-pointer' : ''
 											} ${
 												hasData
@@ -421,7 +520,9 @@ export function ActivityContributionGraph({
 												handleMouseEnter(e, day)
 											}
 											onMouseLeave={handleMouseLeave}
-											onClick={() => handleDayClick(day)}
+											onClick={e =>
+												handleDayClick(day, e)
+											}
 										/>
 									)
 								})}
@@ -455,17 +556,19 @@ export function ActivityContributionGraph({
 				</motion.div>
 			)}
 
-			{selectedDay && selectedDay.githubCount > 0 && (
+			{selectedDay && (
 				<motion.div
 					className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4"
-					onClick={() => setSelectedDay(null)}
+					onClick={closeSelectedDay}
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					role="dialog"
 					aria-modal="true"
 					aria-labelledby="activity-dialog-title"
+					aria-describedby="activity-dialog-description"
 				>
 					<motion.div
+						ref={dialogRef}
 						className="bg-card border border-border rounded-none w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
 						onClick={e => e.stopPropagation()}
 						initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -498,7 +601,10 @@ export function ActivityContributionGraph({
 											})}
 										</time>
 									</h3>
-									<p className="text-xs text-muted-foreground">
+									<p
+										id="activity-dialog-description"
+										className="text-xs text-muted-foreground"
+									>
 										{selectedDay.githubCount} contribution
 										{selectedDay.githubCount !== 1
 											? 's'
@@ -507,8 +613,10 @@ export function ActivityContributionGraph({
 								</div>
 							</div>
 							<button
-								onClick={() => setSelectedDay(null)}
-								className="text-muted-foreground hover:text-foreground p-1 hover:bg-muted/50 rounded transition-colors"
+								ref={closeButtonRef}
+								type="button"
+								onClick={closeSelectedDay}
+								className="text-muted-foreground hover:text-foreground p-1 hover:bg-muted/50 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 								aria-label="Close selected day"
 							>
 								<svg
@@ -558,13 +666,21 @@ export function ActivityContributionGraph({
 														available
 													</p>
 													<p className="text-xs opacity-75">
-														GitHub only provides
-														detailed events for the
-														last ~90 days.
-														<br />
-														Contribution counts are
-														still tracked via the
-														contributions API.
+														{selectedDay.githubCount >
+														0
+															? 'GitHub only provides detailed events for the last ~90 days.'
+															: 'No contributions were recorded on this day.'}
+														{selectedDay.githubCount >
+															0 && (
+															<>
+																<br />
+																Contribution
+																counts are still
+																tracked via the
+																contributions
+																API.
+															</>
+														)}
 													</p>
 												</div>
 											</div>

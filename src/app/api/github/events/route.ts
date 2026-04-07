@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { githubService } from '@/server/github'
+import { parseStrictIsoDateParam } from '@/shared/lib/request-params'
 
 export const revalidate = 60 // Cache for 1 minute
 export const dynamic = 'force-dynamic'
@@ -7,11 +8,11 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
-		const date = searchParams.get('date')
+		const date = parseStrictIsoDateParam(searchParams.get('date'))
 
 		if (!date) {
 			return NextResponse.json(
-				{ error: 'Date parameter is required' },
+				{ error: 'Date parameter must use YYYY-MM-DD' },
 				{ status: 400 }
 			)
 		}

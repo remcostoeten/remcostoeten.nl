@@ -43,6 +43,19 @@ describe('spotify recent route', () => {
 		})
 	})
 
+	it('clamps the requested limit before using the stored tracks fallback', async () => {
+		authMocks.hasSpotifyCredentials.mockReturnValue(false)
+		spotifyMocks.getStoredSpotifyTracks.mockResolvedValue([])
+
+		const { GET } = await import('@/app/api/spotify/recent/route')
+		const response = await GET(
+			new Request('http://127.0.0.1:3000/api/spotify/recent?limit=999')
+		)
+
+		expect(response.status).toBe(200)
+		expect(spotifyMocks.getStoredSpotifyTracks).toHaveBeenCalledWith(50)
+	})
+
 	it('returns stored tracks when spotify upstream fails', async () => {
 		authMocks.hasSpotifyCredentials.mockReturnValue(true)
 		authMocks.getSpotifyAccessToken.mockResolvedValue('token-123')

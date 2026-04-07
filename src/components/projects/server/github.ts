@@ -10,6 +10,8 @@ const metricsCache = new Map<
 	{ expiresAt: number; value: IGitMetrics | null }
 >()
 
+const GIT_ENRICHMENT_CONCURRENCY = 4
+
 let rateLimitResetAt = 0
 let lastRateLimitLog = 0
 
@@ -171,16 +173,50 @@ export async function enrichProjectsWithGitData<
 		return projects
 	}
 
-	const enriched: T[] = []
+	if (projects.length === 0) {
+		return projects
+	}
 
-	for (const project of projects) {
-		if (project.git) {
-			enriched.push(project)
-			continue
+	const enriched = [...projects]
+	let nextIndex = 0
+	const workerCount = Math.min(GIT_ENRICHMENT_CONCURRENCY, projects.length)
+	const workers = Array.from({ length: workerCount }, async () => {
+		while (true) {
+			const currentIndex = nextIndex
+			nextIndex += 1
+
+			if (currentIndex >= projects.length) {
+				return
+			}
+
+			const project = projects[currentIndex]
+
+			try {
+				if (project.git) {
+					enriched[currentIndex] = project
+					continue
+				}
+
+				const git = await fetchGitMetrics(project.github)
+				enriched[currentIndex] = git ? { ...project, git } : project
+			} catch (error) {
+				console.error(
+					`[ProjectShowcase] Git enrichment failed for ${project.github}:`,
+					error
+				)
+				enriched[currentIndex] = project
+			}
 		}
-		const git = await fetchGitMetrics(project.github)
-		enriched.push(git ? { ...project, git } : project)
-		await new Promise(r => setTimeout(r, 100))
+	})
+
+	const settledWorkers = await Promise.allSettled(workers)
+	for (const worker of settledWorkers) {
+		if (worker.status === 'rejected') {
+			console.error(
+				'[ProjectShowcase] Git enrichment worker failed:',
+				worker.reason
+			)
+		}
 	}
 
 	return enriched

@@ -146,7 +146,8 @@
 		@apply bg-background text-foreground;
 	}
 
-	:where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label, td, th) {
+	.prose :where(p, li, h1, h2, h3, h4, h5, h6, td, th),
+	.user-generated-content :where(p, li, h1, h2, h3, h4, h5, h6, td, th) {
 		overflow-wrap: anywhere;
 		word-break: break-word;
 	}
@@ -197,7 +198,6 @@
 }
 
 @keyframes wiggle {
-
 	0%,
 	100% {
 		transform: rotate(-12deg);
@@ -208,10 +208,6 @@
 	}
 }
 
-/* Maybe, not sure */
-/* Initial fix which was needed for sure was
-.prose :where(ul, ol) { text-wrap: balance; }
-*/
 .prose {
 	text-wrap: balance;
 }
@@ -222,7 +218,6 @@
 }
 
 @keyframes music-bar {
-
 	0%,
 	100% {
 		height: 25%;
@@ -251,17 +246,18 @@
 }
 
 .smooth-transition {
-	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transition:
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: transform, opacity;
 }
 
 .accordion-smooth {
-	transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	transition:
+		transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+		opacity 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+		height 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	will-change: transform, opacity, height;
-}
-
-.activity-section {
-	contain: layout style;
 }
 
 .stagger-1 {
@@ -418,7 +414,8 @@
 }
 
 .codeblock-search-toggle {
-	animation: codeblock-search-toggle 0.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+	animation: codeblock-search-toggle 0.2s cubic-bezier(0.2, 0.9, 0.3, 1)
+		forwards;
 	will-change: max-width, opacity;
 }
 
@@ -428,7 +425,8 @@
 }
 
 .codeblock-chevron-rotate {
-	animation: codeblock-chevron-rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: codeblock-chevron-rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1)
+		forwards;
 	will-change: transform;
 }
 
@@ -484,12 +482,19 @@
 }
 
 .codeblock-button {
-	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	transition:
+		opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+		transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+		background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+		color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: opacity, transform, background-color, color;
 }
 
 .codeblock-search-input {
-	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	transition:
+		background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+		color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+		border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: background-color, color, border-color;
 }
 
@@ -522,7 +527,11 @@
 }
 
 .project-card {
-	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transition:
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	will-change: transform, box-shadow, border-color;
 }
 
@@ -542,10 +551,12 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(90deg,
-			transparent,
-			rgba(255, 255, 255, 0.1),
-			transparent);
+	background: linear-gradient(
+		90deg,
+		transparent,
+		rgba(255, 255, 255, 0.1),
+		transparent
+	);
 	animation: tech-shimmer 2s infinite;
 }
 
@@ -606,8 +617,10 @@
 /* Replicating chanhdai.com styles */
 .bg-pattern {
 	background-color: hsl(var(--background));
-	background-image: radial-gradient(hsl(var(--foreground) / 0.07) 1px,
-			transparent 1px);
+	background-image: radial-gradient(
+		hsl(var(--foreground) / 0.07) 1px,
+		transparent 1px
+	);
 	background-size: 16px 16px;
 }
 
@@ -627,11 +640,13 @@
 	transform: translateY(-50%);
 	width: 100%;
 	height: 12px;
-	background-image: repeating-linear-gradient(-45deg,
-			transparent,
-			transparent 2px,
-			hsl(var(--foreground) / 0.05) 2px,
-			hsl(var(--foreground) / 0.05) 3px);
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent,
+		transparent 2px,
+		hsl(var(--foreground) / 0.05) 2px,
+		hsl(var(--foreground) / 0.05) 3px
+	);
 	pointer-events: none;
 	z-index: -1;
 }
@@ -645,11 +660,13 @@
 	margin-right: -50vw;
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
-	background-image: repeating-linear-gradient(-45deg,
-			transparent,
-			transparent 2px,
-			hsl(var(--foreground) / 0.03) 2px,
-			hsl(var(--foreground) / 0.03) 3px);
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent,
+		transparent 2px,
+		hsl(var(--foreground) / 0.03) 2px,
+		hsl(var(--foreground) / 0.03) 3px
+	);
 	background-color: transparent;
 	height: 44px;
 	display: flex;
@@ -752,7 +769,11 @@
 }
 
 .admin-nav-item {
-	transition: all 0.15s ease;
+	transition:
+		color 0.15s ease,
+		background-color 0.15s ease,
+		border-color 0.15s ease,
+		opacity 0.15s ease;
 }
 
 .admin-table-row {
@@ -773,7 +794,10 @@
 	justify-content: center;
 	padding: 6px;
 	color: hsl(var(--muted-foreground));
-	transition: all 0.15s ease;
+	transition:
+		color 0.15s ease,
+		background-color 0.15s ease,
+		opacity 0.15s ease;
 }
 
 .admin-header-btn:hover {
@@ -849,10 +873,12 @@
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(90deg,
-			hsl(var(--brand-500) / 0.1),
-			hsl(var(--primary) / 0.1),
-			hsl(var(--brand-500) / 0.1));
+	background: linear-gradient(
+		90deg,
+		hsl(var(--brand-500) / 0.1),
+		hsl(var(--primary) / 0.1),
+		hsl(var(--brand-500) / 0.1)
+	);
 	background-size: 200% 100%;
 	animation: tech-shimmer 8s linear infinite;
 	pointer-events: none;
@@ -937,12 +963,17 @@
 	position: relative;
 	padding: 0.125em 0.375em;
 	border-radius: 0.25em;
-	background: linear-gradient(to right,
-			hsl(var(--brand-500) / 0.08),
-			hsl(var(--brand-400) / 0.12));
+	background: linear-gradient(
+		to right,
+		hsl(var(--brand-500) / 0.08),
+		hsl(var(--brand-400) / 0.12)
+	);
 	color: hsl(var(--brand-500));
 	font-weight: 500;
-	transition: all 0.2s ease;
+	transition:
+		color 0.2s ease,
+		background-color 0.2s ease,
+		opacity 0.2s ease;
 }
 
 .demo-trigger::before {
@@ -951,26 +982,34 @@
 	inset: 0;
 	border-radius: 0.25em;
 	background-image:
-		repeating-linear-gradient(90deg,
+		repeating-linear-gradient(
+			90deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px),
-		repeating-linear-gradient(90deg,
+			transparent 8px
+		),
+		repeating-linear-gradient(
+			90deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px),
-		repeating-linear-gradient(0deg,
+			transparent 8px
+		),
+		repeating-linear-gradient(
+			0deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px),
-		repeating-linear-gradient(0deg,
+			transparent 8px
+		),
+		repeating-linear-gradient(
+			0deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px);
+			transparent 8px
+		);
 	background-size:
 		20px 1.5px,
 		20px 1.5px,
@@ -988,9 +1027,11 @@
 }
 
 .demo-trigger:hover {
-	background: linear-gradient(to right,
-			hsl(var(--brand-500) / 0.15),
-			hsl(var(--brand-400) / 0.2));
+	background: linear-gradient(
+		to right,
+		hsl(var(--brand-500) / 0.15),
+		hsl(var(--brand-400) / 0.2)
+	);
 	color: hsl(var(--brand-400));
 }
 
@@ -1027,8 +1068,7 @@
 .scrolled-away::before {
 	content: '';
 	position: absolute;
-	inset: -111px;
-
+	inset: -16px;
 	pointer-events: auto;
 }
 
@@ -1044,4 +1084,47 @@
 
 .small-title {
 	margin-top: -11px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	.animate-stagger,
+	.animate-pulse,
+	.animate-pattern-flow,
+	.codeblock-container,
+	.codeblock-header,
+	.codeblock-button,
+	.codeblock-search-input,
+	.project-card,
+	.admin-nav-item,
+	.admin-header-btn,
+	.demo-trigger,
+	.demo-trigger::before,
+	.tech-shimmer-effect::before,
+	.hue-overlay::before,
+	.scrolled-away,
+	.scrolled-away::before,
+	.demo-popover {
+		animation: none !important;
+		transition: none !important;
+	}
+
+	.project-card:hover,
+	.demo-trigger:hover,
+	.demo-trigger:hover::before {
+		animation: none !important;
+	}
+
+	.scrolled-away {
+		transform: none;
+		opacity: 1;
+		filter: none;
+	}
+
+	.scrolled-away::before {
+		inset: 0;
+	}
 }

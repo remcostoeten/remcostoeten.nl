@@ -88,8 +88,9 @@ export function WorkExperience({
 
 			<div className="space-y-4">
 				<div
+					id="experience-history"
 					className={cn(
-						'relative transition-all duration-700 ease-in-out',
+						'relative transition-[max-height] duration-700 ease-in-out',
 						showAll
 							? 'max-h-[2000px]'
 							: 'max-h-[200px] overflow-hidden'
@@ -105,7 +106,7 @@ export function WorkExperience({
 
 					<div
 						className={cn(
-							'space-y-4 transition-all duration-700',
+							'space-y-4 transition-[opacity,transform] duration-700',
 							showAll
 								? 'opacity-100 translate-y-0'
 								: 'opacity-0 translate-y-4 pointer-events-none'
@@ -128,7 +129,10 @@ export function WorkExperience({
 							/>
 							<div className="absolute inset-x-0 bottom-0 z-40 flex items-end justify-center pb-4">
 								<button
+									type="button"
 									onClick={() => setShowAll(true)}
+									aria-expanded={showAll}
+									aria-controls="experience-history"
 									className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
 								>
 									<ChevronsUpDownIcon className="size-4" />
@@ -145,7 +149,10 @@ export function WorkExperience({
 				{showAll && remainingJobs.length > 0 && (
 					<div className="flex justify-center py-2">
 						<button
+							type="button"
 							onClick={() => setShowAll(false)}
+							aria-expanded={showAll}
+							aria-controls="experience-history"
 							className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
 						>
 							<ChevronsDownUpIcon className="size-4 rotate-180" />
@@ -238,6 +245,7 @@ export function ExperiencePositionItem({
 		position.isExpanded || shouldExpandAll
 	)
 	const Icon = position.icon ? iconMap[position.icon] : CodeXmlIcon
+	const contentId = React.useId()
 
 	React.useEffect(() => {
 		if (shouldExpandAll) {
@@ -267,46 +275,51 @@ export function ExperiencePositionItem({
 			</div>
 
 			<div className="flex flex-col">
-				<div
-					className={cn(
-						'flex items-start justify-between select-none',
-						canCollapse && 'group/header cursor-pointer'
-					)}
-					tabIndex={-1}
-					onClick={() => canCollapse && setIsOpen(!isOpen)}
-				>
-					<div>
-						<h4
-							className={cn(
-								'text-sm font-semibold text-foreground transition-colors',
-								canCollapse &&
-									'group-hover/header:text-teal-600 dark:group-hover/header:text-teal-400'
-							)}
-						>
-							{position.title}
-						</h4>
-						<Metadata />
-					</div>
+				{canCollapse ? (
+					<button
+						type="button"
+						className={cn(
+							'flex w-full items-start justify-between select-none text-left rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+							'group/header cursor-pointer'
+						)}
+						aria-expanded={isOpen}
+						aria-controls={contentId}
+						onClick={() => setIsOpen(!isOpen)}
+					>
+						<div>
+							<h4
+								className={cn(
+									'text-sm font-semibold text-foreground transition-colors group-hover/header:text-teal-600 dark:group-hover/header:text-teal-400'
+								)}
+							>
+								{position.title}
+							</h4>
+							<Metadata />
+						</div>
 
-					{canCollapse && (
-						<button
-							type="button"
-							tabIndex={-1}
-							className="text-muted-foreground/40 hover:text-foreground transition-colors -mt-1 -mr-2 p-2"
-							aria-label={isOpen ? 'Collapse' : 'Expand'}
-						>
+						<span className="text-muted-foreground/40 transition-colors -mt-1 -mr-2 p-2 group-hover/header:text-foreground">
 							{isOpen ? (
 								<ChevronsDownUpIcon className="size-3.5" />
 							) : (
 								<ChevronsUpDownIcon className="size-3.5" />
 							)}
-						</button>
-					)}
-				</div>
+						</span>
+					</button>
+				) : (
+					<div className="flex items-start justify-between select-none">
+						<div>
+							<h4 className="text-sm font-semibold text-foreground">
+								{position.title}
+							</h4>
+							<Metadata />
+						</div>
+					</div>
+				)}
 
 				<AnimatePresence initial={false}>
 					{(isOpen || !canCollapse) && (
 						<motion.div
+							id={contentId}
 							initial={{ height: 0, opacity: 0 }}
 							animate={{ height: 'auto', opacity: 1 }}
 							exit={{ height: 0, opacity: 0 }}
@@ -338,20 +351,24 @@ function SkillsList({ skills }: { skills: string[] }) {
 	const THRESHOLD = 6
 	const hasMore = skills.length > THRESHOLD
 	const displayedSkills = showAll ? skills : skills.slice(0, THRESHOLD)
+	const listId = React.useId()
 
 	return (
 		<div className="pt-2">
-			<div className="flex flex-wrap gap-1.5">
+			<div id={listId} className="flex flex-wrap gap-1.5">
 				{displayedSkills.map((skill, index) => (
 					<Skill key={index}>{skill}</Skill>
 				))}
 				{hasMore && (
 					<button
+						type="button"
 						onClick={e => {
 							e.stopPropagation()
 							setShowAll(!showAll)
 						}}
-						className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 rounded-sm transition-all"
+						className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+						aria-expanded={showAll}
+						aria-controls={listId}
 					>
 						{showAll
 							? 'Less'
@@ -386,7 +403,7 @@ function Skill({ className, ...props }: React.ComponentProps<'span'>) {
 	return (
 		<span
 			className={cn(
-				'inline-flex items-center border border-foreground/10 px-2.5 py-0.5 text-xs font-medium text-foreground/80 transition-all hover:border-foreground/20 hover:text-foreground',
+				'inline-flex items-center border border-foreground/10 px-2.5 py-0.5 text-xs font-medium text-foreground/80 transition-colors hover:border-foreground/20 hover:text-foreground',
 				className
 			)}
 			style={{

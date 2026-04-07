@@ -5,9 +5,20 @@ import { Badge } from '@/components/ui/badge'
 import { CheckCircle2, Mail } from 'lucide-react'
 
 type ContactStats = {
-	submissions: any[]
-	interactions: any[]
-	abandonments: any[]
+	submissions: ContactSubmission[]
+	interactions: ContactTimelineEntry[]
+	abandonments: ContactTimelineEntry[]
+}
+
+type ContactTimelineEntry = {
+	id: string
+}
+
+type ContactSubmission = ContactTimelineEntry & {
+	name: string
+	email: string
+	message: string
+	createdAt: string | Date
 }
 
 function StatBox({

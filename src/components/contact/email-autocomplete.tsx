@@ -1,6 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect, KeyboardEvent } from 'react'
+import {
+	forwardRef,
+	useState,
+	useRef,
+	useEffect,
+	useId,
+	KeyboardEvent
+} from 'react'
 import { cn } from '@/shared/lib/cn'
 
 const DOMAINS = [
@@ -19,16 +26,18 @@ interface EmailAutocompleteProps extends React.InputHTMLAttributes<HTMLInputElem
 	value: string
 }
 
-export function EmailAutocomplete({
-	className,
-	onValueChange,
-	value,
-	...props
-}: EmailAutocompleteProps) {
+export const EmailAutocomplete = forwardRef<
+	HTMLInputElement,
+	EmailAutocompleteProps
+>(function EmailAutocomplete(
+	{ className, onValueChange, value, ...props },
+	forwardedRef
+) {
 	const [isOpen, setIsOpen] = useState(false)
 	const [selectedIndex, setSelectedIndex] = useState(0)
 	const inputRef = useRef<HTMLInputElement>(null)
 	const [query, setQuery] = useState('')
+	const listboxId = useId()
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const newValue = e.target.value
@@ -54,13 +63,21 @@ export function EmailAutocomplete({
 		}
 	}, [filteredDomains.length, value])
 
-	const handleSelect = (domain: string) => {
+	useEffect(() => {
+		if (selectedIndex >= filteredDomains.length) {
+			setSelectedIndex(0)
+		}
+	}, [filteredDomains.length, selectedIndex])
+
+	const handleSelect = (domain: string, focusInput = true) => {
 		const atIndex = value.lastIndexOf('@')
 		if (atIndex !== -1) {
 			const newValue = value.slice(0, atIndex + 1) + domain
 			onValueChange(newValue)
 			setIsOpen(false)
-			inputRef.current?.focus()
+			if (focusInput) {
+				inputRef.current?.focus()
+			}
 		}
 	}
 
@@ -76,12 +93,16 @@ export function EmailAutocomplete({
 				prev =>
 					(prev - 1 + filteredDomains.length) % filteredDomains.length
 			)
-		} else if (e.key === 'Enter' || e.key === 'Tab') {
+		} else if (e.key === 'Enter') {
+			e.preventDefault()
+			handleSelect(filteredDomains[selectedIndex])
+		} else if (e.key === 'Tab') {
 			if (isOpen) {
-				e.preventDefault()
-				handleSelect(filteredDomains[selectedIndex])
+				handleSelect(filteredDomains[selectedIndex], false)
+				setIsOpen(false)
 			}
 		} else if (e.key === 'Escape') {
+			e.preventDefault()
 			setIsOpen(false)
 		}
 	}
@@ -89,8 +110,29 @@ export function EmailAutocomplete({
 	return (
 		<div className="relative w-full">
 			<input
-				ref={inputRef}
+				ref={node => {
+					inputRef.current = node
+					if (typeof forwardedRef === 'function') {
+						forwardedRef(node)
+					} else if (forwardedRef) {
+						;(
+							forwardedRef as React.MutableRefObject<HTMLInputElement | null>
+						).current = node
+					}
+				}}
 				type="email"
+				role="combobox"
+				aria-autocomplete="list"
+				aria-haspopup="listbox"
+				aria-expanded={isOpen && filteredDomains.length > 0}
+				aria-controls={
+					isOpen && filteredDomains.length > 0 ? listboxId : undefined
+				}
+				aria-activedescendant={
+					isOpen && filteredDomains.length > 0
+						? `${listboxId}-option-${selectedIndex}`
+						: undefined
+				}
 				className={cn(
 					'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
 					className
@@ -98,17 +140,25 @@ export function EmailAutocomplete({
 				value={value}
 				onChange={handleInputChange}
 				onKeyDown={handleKeyDown}
-				autoComplete="off"
+				autoComplete={props.autoComplete ?? 'email'}
 				{...props}
 			/>
 			{isOpen && filteredDomains.length > 0 && (
 				<div className="absolute z-50 w-full mt-1 bg-popover text-popover-foreground rounded-md border shadow-md overflow-hidden animate-in fade-in-0 zoom-in-95 bg-white dark:bg-zinc-950">
-					<ul className="max-h-[200px] overflow-auto py-1">
+					<ul
+						id={listboxId}
+						role="listbox"
+						aria-label="Suggested email domains"
+						className="max-h-[200px] overflow-auto py-1"
+					>
 						{filteredDomains.map((domain, index) => (
 							<li
 								key={domain}
+								id={`${listboxId}-option-${index}`}
+								role="option"
+								aria-selected={index === selectedIndex}
 								className={cn(
-									'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none',
+									'relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm',
 									index === selectedIndex
 										? 'bg-accent/10 text-accent-foreground bg-zinc-100 dark:bg-zinc-800'
 										: 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
@@ -127,4 +177,6 @@ export function EmailAutocomplete({
 			)}
 		</div>
 	)
-}
+})
+
+EmailAutocomplete.displayName = 'EmailAutocomplete'

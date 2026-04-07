@@ -44,39 +44,58 @@ function Table({ data }) {
 }
 
 function CustomLink(props) {
-	let href = props.href
+	const { href, children, ...rest } = props
+	const resolvedHref = typeof href === 'string' ? href : undefined
 	const isGithubLink =
-		typeof href === 'string' &&
-		(href.includes('github.com/') ||
-			href.includes('raw.githubusercontent.com/'))
+		typeof resolvedHref === 'string' &&
+		(resolvedHref.includes('github.com/') ||
+			resolvedHref.includes('raw.githubusercontent.com/'))
 
-	if (href.startsWith('/')) {
+	if (!resolvedHref) {
+		return <a {...rest}>{children}</a>
+	}
+
+	if (resolvedHref.startsWith('/')) {
 		return (
-			<Link href={href} {...props}>
-				{props.children}
+			<Link href={resolvedHref} {...rest}>
+				{children}
 			</Link>
 		)
 	}
 
-	if (href.startsWith('#')) {
-		return <a {...props} />
+	if (resolvedHref.startsWith('#')) {
+		return (
+			<a href={resolvedHref} {...rest}>
+				{children}
+			</a>
+		)
 	}
 
 	if (isGithubLink) {
 		return (
 			<a
+				href={resolvedHref}
 				target="_blank"
 				rel="noopener noreferrer"
-				{...props}
+				{...rest}
 				className="group inline-flex items-center gap-1.5"
 			>
-				<span>{props.children}</span>
-				<ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-55 transition-all duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
+				<span>{children}</span>
+				<ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-55 transition-[opacity,transform] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100" />
 			</a>
 		)
 	}
 
-	return <a target="_blank" rel="noopener noreferrer" {...props} />
+	return (
+		<a
+			href={resolvedHref}
+			target="_blank"
+			rel="noopener noreferrer"
+			{...rest}
+		>
+			{children}
+		</a>
+	)
 }
 
 function RoundedImage(props) {
@@ -241,7 +260,6 @@ let components = {
 	Video,
 	CollapsibleMedia,
 
-	// BtwfyiDemo,
 	a: CustomLink,
 	Notice,
 	NoticeAlert,

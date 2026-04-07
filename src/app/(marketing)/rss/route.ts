@@ -1,25 +1,25 @@
-import { baseUrl } from '@/app/sitemap'
-import { getBlogPosts } from '@/features/blog'
+import { baseUrl } from '@/core/config/site'
+import { getVisibleBlogPosts } from '@/features/blog'
+
+function escapeXml(value: string) {
+	return value
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&apos;')
+}
 
 export async function GET() {
-	let allBlogs = getBlogPosts()
+	const allBlogs = await getVisibleBlogPosts()
 
 	const itemsXml = allBlogs
-		.sort((a, b) => {
-			if (
-				new Date(a.metadata.publishedAt) >
-				new Date(b.metadata.publishedAt)
-			) {
-				return -1
-			}
-			return 1
-		})
 		.map(
 			post =>
 				`<item>
-          <title>${post.metadata.title}</title>
-          <link>${baseUrl}/blog/${post.slug}</link>
-          <description>${post.metadata.summary || ''}</description>
+          <title>${escapeXml(post.metadata.title)}</title>
+          <link>${escapeXml(`${baseUrl}/blog/${post.slug}`)}</link>
+          <description>${escapeXml(post.metadata.summary || '')}</description>
           <pubDate>${new Date(
 				post.metadata.publishedAt
 			).toUTCString()}</pubDate>
@@ -39,7 +39,7 @@ export async function GET() {
 
 	return new Response(rssFeed, {
 		headers: {
-			'Content-Type': 'text/xml'
+			'Content-Type': 'application/rss+xml; charset=utf-8'
 		}
 	})
 }

@@ -80,7 +80,7 @@ function readMarkdownFile(filePath: string) {
 	return parseFrontmatter(rawContent)
 }
 
-function getBlogPostData(dir: string): BlogPost[] {
+function getBlogPostData(dir: string): Array<BlogPost | null> {
 	return getMarkdownFiles(dir).map(file => {
 		try {
 			const { metadata, content } = readMarkdownFile(path.join(dir, file))
@@ -101,24 +101,15 @@ function getBlogPostData(dir: string): BlogPost[] {
 			}
 		} catch (error) {
 			console.error(`Error parsing MDX file ${file}:`, error)
-
-			return {
-				metadata: {
-					title: 'Error',
-					publishedAt: '',
-					summary: 'Error parsing file',
-					readTime: '0 min'
-				} as BlogPostMetadata,
-				slug: file.replace(/\.(mdx|md)$/, ''),
-				content: ''
-			}
+			return null
 		}
 	})
 }
 
 export function getAllBlogPosts() {
 	const posts = getBlogPostData(BLOG_POSTS_DIR).filter(
-		post => post && post.slug && post.metadata && post.metadata.title
+		(post): post is BlogPost =>
+			Boolean(post && post.slug && post.metadata && post.metadata.title)
 	)
 
 	return Array.from(new Map(posts.map(post => [post.slug, post])).values())
