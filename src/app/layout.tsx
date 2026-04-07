@@ -8,7 +8,7 @@ import {
 	PersonStructuredData
 } from '@/components/seo/structured-data'
 import { AppProviders } from '@/components/providers/providers'
-import { baseUrl } from './sitemap'
+import { baseUrl } from '@/core/config/site'
 import './global.css'
 
 export const metadata: Metadata = {

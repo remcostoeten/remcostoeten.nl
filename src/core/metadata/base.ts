@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { baseUrl as siteBaseUrl } from '@/core/config/site'
 
 export interface BaseMetadataConfig {
 	title: string
@@ -10,10 +11,9 @@ export interface BaseMetadataConfig {
 	noIndex?: boolean
 }
 
-export const baseUrl =
-	process.env.NEXT_PUBLIC_SITE_URL || 'https://remcostoeten.nl'
+export { siteBaseUrl as baseUrl }
 
-const defaultImage = `${baseUrl}/og`
+const defaultImage = `${siteBaseUrl}/og`
 
 export function createPageMetadata(config: BaseMetadataConfig): Metadata {
 	const {
@@ -38,7 +38,7 @@ export function createPageMetadata(config: BaseMetadataConfig): Metadata {
 			type: 'website',
 			locale: 'en_US',
 			siteName,
-			url: canonical ? `${baseUrl}${canonical}` : undefined,
+			url: canonical ? `${siteBaseUrl}${canonical}` : undefined,
 			images: [
 				{
 					url: image,
@@ -67,7 +67,7 @@ export function createPageMetadata(config: BaseMetadataConfig): Metadata {
 		},
 		...(canonical && {
 			alternates: {
-				canonical: `${baseUrl}${canonical}`
+				canonical: `${siteBaseUrl}${canonical}`
 			}
 		})
 	}
@@ -95,7 +95,7 @@ export function createArticleMetadata(config: {
 	} = config
 
 	const imageUrl =
-		ogImage || `${baseUrl}/og?title=${encodeURIComponent(title)}`
+		ogImage || `${siteBaseUrl}/og?title=${encodeURIComponent(title)}`
 
 	return {
 		title,
@@ -108,7 +108,7 @@ export function createArticleMetadata(config: {
 			publishedTime: publishedAt,
 			modifiedTime: updatedAt,
 			authors: [author],
-			url: canonical ? `${baseUrl}${canonical}` : undefined,
+			url: canonical ? `${siteBaseUrl}${canonical}` : undefined,
 			images: [
 				{
 					url: imageUrl,
@@ -125,7 +125,7 @@ export function createArticleMetadata(config: {
 			images: [imageUrl]
 		},
 		alternates: {
-			canonical: canonical ? `${baseUrl}${canonical}` : undefined
+			canonical: canonical ? `${siteBaseUrl}${canonical}` : undefined
 		}
 	}
 }

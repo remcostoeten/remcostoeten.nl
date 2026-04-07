@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { AlertTriangle, FileText, Github, Shield } from 'lucide-react'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
@@ -67,6 +67,11 @@ interface TermsCopy {
 	liabilityNote: string
 	changes: string[]
 	contact: string
+}
+
+const lastUpdatedByLanguage: Record<LegalLanguage, string> = {
+	en: 'April 7, 2026',
+	nl: '7 april 2026'
 }
 
 const termsCopy: Record<LegalLanguage, TermsCopy> = {
@@ -346,19 +351,7 @@ export default function TermsContent() {
 		}
 	}, [searchParams])
 
-	const lastUpdated = useMemo(
-		function deriveDate() {
-			return new Date().toLocaleDateString(
-				language === 'nl' ? 'nl-NL' : 'en-US',
-				{
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				}
-			)
-		},
-		[language]
-	)
+	const lastUpdated = lastUpdatedByLanguage[language]
 
 	const copy = termsCopy[language]
 
