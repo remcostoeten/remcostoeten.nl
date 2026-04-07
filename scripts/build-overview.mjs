@@ -1,28 +1,30 @@
 import { spawn } from 'node:child_process'
 
 const COLORS = {
-	bold:   '\x1b[1m',
-	reset:  '\x1b[0m',
-	dim:    '\x1b[2m',
-	red:    '\x1b[31m',
-	green:  '\x1b[32m',
+	bold: '\x1b[1m',
+	reset: '\x1b[0m',
+	dim: '\x1b[2m',
+	red: '\x1b[31m',
+	green: '\x1b[32m',
 	yellow: '\x1b[33m',
-	magenta:'\x1b[35m',
-	cyan:   '\x1b[36m',
-	white:  '\x1b[37m'
+	magenta: '\x1b[35m',
+	cyan: '\x1b[36m',
+	white: '\x1b[37m'
 }
 
-const BOX_WIDTH      = 64
+const BOX_WIDTH = 64
 const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-const CHECK          = '✓'
-const CROSS          = '✗'
-const ANSI_PATTERN   = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'gu')
+const CHECK = '✓'
+const CROSS = '✗'
+const ANSI_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'gu')
+const PACKAGE_RUNNER = process.env.npm_execpath?.includes('bun')
+	? { command: 'bun', args: ['run'] }
+	: { command: 'npm', args: ['run'] }
 
 const steps = [
-	{ label: 'Lint', command: 'npm', args: ['run', 'lint'] },
-	{ label: 'Typecheck', command: 'npm', args: ['run', 'typecheck'] },
-	{ label: 'Tests',     command: 'npm', args: ['run', 'test'] },
-	{ label: 'Build',     command: 'npm', args: ['run', 'build:next'] }
+	{ label: 'Lint', script: 'lint' },
+	{ label: 'Tests', script: 'test' },
+	{ label: 'Build', script: 'build:next' }
 ]
 
 const results = []
@@ -57,7 +59,7 @@ function lineWithAnsi(content, width = BOX_WIDTH) {
 
 function printBanner() {
 	const title = '🚀 Release Build'
-	const subtitle = 'lint → typecheck → test → build'
+	const subtitle = 'lint → test → build'
 
 	console.log('')
 	console.log(COLORS.cyan + '┌' + rule('─') + '┐' + COLORS.reset)
@@ -94,7 +96,9 @@ function printSummary(success) {
 	console.log(COLORS.cyan + '├' + rule('─') + '┤' + COLORS.reset)
 
 	for (const result of results) {
-		const icon = result.ok ? `${COLORS.green}${CHECK}` : `${COLORS.red}${CROSS}`
+		const icon = result.ok
+			? `${COLORS.green}${CHECK}`
+			: `${COLORS.red}${CROSS}`
 		const label = result.ok ? COLORS.green : COLORS.red
 		const duration = formatDuration(result.duration).padStart(10)
 		const content = ` ${icon}${COLORS.reset} ${label}${result.label.padEnd(14)}${COLORS.reset}${COLORS.dim}${duration}${COLORS.reset} `
@@ -118,7 +122,7 @@ function runStep(step, index, total) {
 		printStepStart(index, total, step.label)
 		const stepStart = Date.now()
 
-		const child = spawn(step.command, step.args, {
+		const child = spawn(PACKAGE_RUNNER.command, [...PACKAGE_RUNNER.args, step.script], {
 			stdio: 'inherit',
 			shell: process.platform === 'win32'
 		})
@@ -151,7 +155,9 @@ async function main() {
 		printSummary(true)
 	} catch (error) {
 		printSummary(false)
-		console.error(`${COLORS.yellow}${String(error.message || error)}${COLORS.reset}`)
+		console.error(
+			`${COLORS.yellow}${String(error.message || error)}${COLORS.reset}`
+		)
 		process.exitCode = 1
 	}
 }

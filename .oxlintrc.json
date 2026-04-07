@@ -16,10 +16,5 @@
 	"rules": {
 		"eslint/no-unused-vars": "warn"
 	},
-	"ignorePatterns": [
-		".next/**",
-		"node_modules/**",
-		"out/**",
-		"build/**"
-	]
+	"ignorePatterns": [".next/**", "node_modules/**", "out/**", "build/**"]
 }
