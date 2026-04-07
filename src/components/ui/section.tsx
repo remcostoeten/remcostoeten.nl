@@ -1,7 +1,5 @@
-'use client'
-
-import { ReactNode } from 'react'
-import { LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
+import type { LucideIcon } from 'lucide-react'
 
 interface SectionProps {
 	children: ReactNode

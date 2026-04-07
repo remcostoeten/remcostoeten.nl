@@ -1,7 +1,5 @@
-'use client'
-
-import { ReactNode } from 'react'
-import { LucideIcon } from 'lucide-react'
+import type { CSSProperties, ReactNode } from 'react'
+import type { LucideIcon } from 'lucide-react'
 
 type BackgroundDirection = 'default' | 'horizontal' | 'vertical' | 'diagonal'
 type ColorPattern = 'light' | 'dark'
@@ -107,7 +105,7 @@ export function Heading({
 		.filter(Boolean)
 		.join(' ')
 
-	const customStyle: React.CSSProperties = borderColor
+	const customStyle: CSSProperties = borderColor
 		? {
 				borderTopColor: borderColor,
 				borderBottomColor: borderColor
