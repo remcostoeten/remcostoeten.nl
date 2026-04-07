@@ -21,8 +21,7 @@ import {
 	SiGithubactions,
 	SiBun,
 	SiHono,
-	SiTurso,
-	SiCss3
+	SiTurso
 } from 'react-icons/si'
 
 type TechItem = {
@@ -38,7 +37,7 @@ const LOGOS: TechItem[] = [
 	{ name: 'next', label: 'Next.js', Icon: SiNextdotjs },
 	{ name: 'bun', label: 'Bun', Icon: SiBun },
 	{ name: 'typescript', label: 'TypeScript', Icon: SiTypescript },
-	{ name: 'styling', label: 'CSS / Tailwind', Icon: [SiCss3, SiTailwindcss] },
+	{ name: 'styling', label: 'CSS / Tailwind', Icon: [SiTailwindcss] },
 	{ name: 'node-hono', label: 'Node.js / Hono', Icon: [SiNodedotjs, SiHono] },
 	{
 		name: 'postgres-libsql',

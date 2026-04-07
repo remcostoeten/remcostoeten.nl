@@ -16,7 +16,8 @@ export function ActivitySection() {
 				title="Activity & Contributions"
 				noMargin
 				bgDirection="diagonal"
-				colorPattern="light"
+				colorPattern="dark"
+				animateStripes
 				headerAction={
 					<time
 						dateTime={`${year}`}

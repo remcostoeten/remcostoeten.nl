@@ -11,7 +11,9 @@ import { ResumeDrawer } from '../resume-drawer'
 
 export function Footer() {
 	const [copied, setCopied] = useState(false)
-	const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear())
+	const [currentYear, setCurrentYear] = useState(() =>
+		new Date().getFullYear()
+	)
 	const email = 'stoetenremco.rs@gmail.com'
 	const displayEmail = 'stoetenremco [dot] rs [at] gmail [dot] com'
 
@@ -109,7 +111,7 @@ export function Footer() {
 									/>{' '}
 									{relativeTimeInfo.unit} ago
 								</span>
-								<span className="text-muted-foreground/50 group-hover:text-muted-foreground transition-colors truncate max-w-[180px]">
+								<span className="text-muted-foreground/80 group-hover:text-foreground transition-colors truncate max-w-[180px]">
 									· {latestCommit.message}
 								</span>
 							</a>
@@ -147,7 +149,7 @@ export function Footer() {
 					<div className="flex items-center gap-4">
 						<Link
 							href="/about"
-								className="hover:text-foreground transition-colors"
+							className="hover:text-foreground transition-colors"
 						>
 							About
 						</Link>

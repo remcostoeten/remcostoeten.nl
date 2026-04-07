@@ -506,26 +506,26 @@ export function ActivityContributionGraph({
 									</p>
 								</div>
 							</div>
-						<button
-							onClick={() => setSelectedDay(null)}
-							className="text-muted-foreground hover:text-foreground p-1 hover:bg-muted/50 rounded transition-colors"
-							aria-label="Close selected day"
-						>
-							<svg
-								className="w-5 h-5"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-								aria-hidden="true"
+							<button
+								onClick={() => setSelectedDay(null)}
+								className="text-muted-foreground hover:text-foreground p-1 hover:bg-muted/50 rounded transition-colors"
+								aria-label="Close selected day"
 							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M6 18L18 6M6 6l12 12"
-								/>
-							</svg>
-						</button>
+								<svg
+									className="w-5 h-5"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
+									<path
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										strokeWidth={2}
+										d="M6 18L18 6M6 6l12 12"
+									/>
+								</svg>
+							</button>
 						</div>
 
 						{/* Activity List */}

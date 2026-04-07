@@ -156,7 +156,6 @@
 		overflow-x: auto;
 		white-space: pre;
 	}
-
 }
 
 @plugin '@tailwindcss/typography';
@@ -198,6 +197,7 @@
 }
 
 @keyframes wiggle {
+
 	0%,
 	100% {
 		transform: rotate(-12deg);
@@ -222,6 +222,7 @@
 }
 
 @keyframes music-bar {
+
 	0%,
 	100% {
 		height: 25%;
@@ -417,8 +418,7 @@
 }
 
 .codeblock-search-toggle {
-	animation: codeblock-search-toggle 0.2s cubic-bezier(0.2, 0.9, 0.3, 1)
-		forwards;
+	animation: codeblock-search-toggle 0.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
 	will-change: max-width, opacity;
 }
 
@@ -428,8 +428,7 @@
 }
 
 .codeblock-chevron-rotate {
-	animation: codeblock-chevron-rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1)
-		forwards;
+	animation: codeblock-chevron-rotate 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 	will-change: transform;
 }
 
@@ -543,12 +542,10 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(
-		90deg,
-		transparent,
-		rgba(255, 255, 255, 0.1),
-		transparent
-	);
+	background: linear-gradient(90deg,
+			transparent,
+			rgba(255, 255, 255, 0.1),
+			transparent);
 	animation: tech-shimmer 2s infinite;
 }
 
@@ -609,10 +606,8 @@
 /* Replicating chanhdai.com styles */
 .bg-pattern {
 	background-color: hsl(var(--background));
-	background-image: radial-gradient(
-		hsl(var(--foreground) / 0.07) 1px,
-		transparent 1px
-	);
+	background-image: radial-gradient(hsl(var(--foreground) / 0.07) 1px,
+			transparent 1px);
 	background-size: 16px 16px;
 }
 
@@ -632,13 +627,11 @@
 	transform: translateY(-50%);
 	width: 100%;
 	height: 12px;
-	background-image: repeating-linear-gradient(
-		-45deg,
-		transparent,
-		transparent 2px,
-		hsl(var(--foreground) / 0.05) 2px,
-		hsl(var(--foreground) / 0.05) 3px
-	);
+	background-image: repeating-linear-gradient(-45deg,
+			transparent,
+			transparent 2px,
+			hsl(var(--foreground) / 0.05) 2px,
+			hsl(var(--foreground) / 0.05) 3px);
 	pointer-events: none;
 	z-index: -1;
 }
@@ -652,13 +645,11 @@
 	margin-right: -50vw;
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
-	background-image: repeating-linear-gradient(
-		-45deg,
-		transparent,
-		transparent 2px,
-		hsl(var(--foreground) / 0.03) 2px,
-		hsl(var(--foreground) / 0.03) 3px
-	);
+	background-image: repeating-linear-gradient(-45deg,
+			transparent,
+			transparent 2px,
+			hsl(var(--foreground) / 0.03) 2px,
+			hsl(var(--foreground) / 0.03) 3px);
 	background-color: transparent;
 	height: 44px;
 	display: flex;
@@ -858,12 +849,10 @@
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: linear-gradient(
-		90deg,
-		hsl(var(--brand-500) / 0.1),
-		hsl(var(--primary) / 0.1),
-		hsl(var(--brand-500) / 0.1)
-	);
+	background: linear-gradient(90deg,
+			hsl(var(--brand-500) / 0.1),
+			hsl(var(--primary) / 0.1),
+			hsl(var(--brand-500) / 0.1));
 	background-size: 200% 100%;
 	animation: tech-shimmer 8s linear infinite;
 	pointer-events: none;
@@ -948,11 +937,9 @@
 	position: relative;
 	padding: 0.125em 0.375em;
 	border-radius: 0.25em;
-	background: linear-gradient(
-		to right,
-		hsl(var(--brand-500) / 0.08),
-		hsl(var(--brand-400) / 0.12)
-	);
+	background: linear-gradient(to right,
+			hsl(var(--brand-500) / 0.08),
+			hsl(var(--brand-400) / 0.12));
 	color: hsl(var(--brand-500));
 	font-weight: 500;
 	transition: all 0.2s ease;
@@ -964,34 +951,26 @@
 	inset: 0;
 	border-radius: 0.25em;
 	background-image:
-		repeating-linear-gradient(
-			90deg,
+		repeating-linear-gradient(90deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px
-		),
-		repeating-linear-gradient(
-			90deg,
+			transparent 8px),
+		repeating-linear-gradient(90deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px
-		),
-		repeating-linear-gradient(
-			0deg,
+			transparent 8px),
+		repeating-linear-gradient(0deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px
-		),
-		repeating-linear-gradient(
-			0deg,
+			transparent 8px),
+		repeating-linear-gradient(0deg,
 			hsl(var(--brand-500)) 0,
 			hsl(var(--brand-500)) 4px,
 			transparent 4px,
-			transparent 8px
-		);
+			transparent 8px);
 	background-size:
 		20px 1.5px,
 		20px 1.5px,
@@ -1009,11 +988,9 @@
 }
 
 .demo-trigger:hover {
-	background: linear-gradient(
-		to right,
-		hsl(var(--brand-500) / 0.15),
-		hsl(var(--brand-400) / 0.2)
-	);
+	background: linear-gradient(to right,
+			hsl(var(--brand-500) / 0.15),
+			hsl(var(--brand-400) / 0.2));
 	color: hsl(var(--brand-400));
 }
 
@@ -1042,13 +1019,16 @@
 	transform: scale(0.92);
 	opacity: 0.3;
 	filter: blur(1px);
+
+	transform: translateY(-35px);
 	pointer-events: auto;
 }
 
 .scrolled-away::before {
 	content: '';
 	position: absolute;
-	inset: -40px;
+	inset: -111px;
+
 	pointer-events: auto;
 }
 

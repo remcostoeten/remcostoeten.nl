@@ -186,12 +186,12 @@ export function AnnouncementBanner() {
 		if (!dragState.isDragging) return
 		const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY
 		const diff = clientY - dragState.startY
-		setDragState(prev => ({ ...prev, currentY: Math.max(0, diff) }))
+		setDragState(prev => ({ ...prev, currentY: Math.min(0, diff) }))
 	}
 
 	function handleDragEnd() {
 		if (!dragState.isDragging) return
-		if (dragState.currentY > 50) {
+		if (dragState.currentY < -50) {
 			handleClose()
 		}
 		setDragState({ isDragging: false, startY: 0, currentY: 0 })
@@ -199,10 +199,10 @@ export function AnnouncementBanner() {
 
 	if (!isVisible) return null
 
-	const translateY = isHidden ? 200 : dragState.currentY
+	const translateY = isHidden ? -200 : dragState.currentY
 
 	return (
-		<div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none">
+		<div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4 sm:px-6 pointer-events-none">
 			<div
 				ref={wrapperRef}
 				className={cn(
@@ -226,7 +226,7 @@ export function AnnouncementBanner() {
 			>
 				<Announcement
 					themed
-					className="group border-border/60 bg-background/80 supports-[backdrop-filter]:backdrop-blur-sm text-foreground cursor-grab active:cursor-grabbing pr-10 shadow-sm shadow-accent/10 w-full"
+					className="group border-border/40 bg-background/70 supports-[backdrop-filter]:bg-background/50 supports-[backdrop-filter]:backdrop-blur-md text-foreground cursor-grab active:cursor-grabbing pr-10 shadow-sm shadow-accent/10 w-full"
 				>
 					<AnnouncementTag className="-ml-1 bg-amber-500/15 text-amber-500 px-2 py-0.5 leading-none text-[10px] sm:text-xs">
 						Beta

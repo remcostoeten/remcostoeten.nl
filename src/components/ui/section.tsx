@@ -8,12 +8,12 @@ interface SectionProps {
 	title?: string
 	icon?: LucideIcon
 	className?: string
+
 	headerAction?: ReactNode
 	noPadding?: boolean
-	/** Apply consistent horizontal padding (px-6 md:px-12) to content */
 	contentPadding?: boolean
-	/** Remove margin-bottom from the header */
 	noHeaderMargin?: boolean
+	animatedStripes?: boolean
 }
 
 /**
@@ -30,13 +30,14 @@ export function Section({
 	headerAction,
 	noPadding = false,
 	contentPadding = true,
-	noHeaderMargin = false
+	noHeaderMargin = false,
+	animatedStripes = false
 }: SectionProps) {
 	return (
 		<section className={`relative ${className}`}>
 			{title && (
 				<div
-					className={`full-width-header ${noHeaderMargin ? '!mb-0' : ''}`}
+					className={`full-width-header ${noHeaderMargin ? '!mb-0' : ''} ${animatedStripes ? 'animate-pattern-flow' : ''}`.trim()}
 				>
 					<div className="header-content-container flex items-center justify-between header-content-container--with-padding">
 						<h2 className="text-sm font-medium text-muted-foreground flex items-center gap-2">

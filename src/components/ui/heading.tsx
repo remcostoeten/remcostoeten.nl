@@ -23,9 +23,10 @@ interface HeadingProps {
 	bgDirection?: BackgroundDirection
 	/** Color pattern for light/dark theme */
 	colorPattern?: ColorPattern
-
 	/** Add a subtle color gradient overlay */
 	hueOverlay?: boolean
+	/** Slightly animate the stripes pattern */
+	animateStripes?: boolean
 }
 
 /**
@@ -43,9 +44,9 @@ export function Heading({
 	borderColor,
 	bgDirection = 'default',
 	colorPattern = 'light',
-	hueOverlay = false
+	hueOverlay = false,
+	animateStripes = false
 }: HeadingProps) {
-	// Background gradient classes based on direction
 	const bgDirectionClasses = {
 		default: '',
 		horizontal: 'bg-gradient-to-r',
@@ -85,6 +86,7 @@ export function Heading({
 		noMargin && '!mb-0',
 		customBackground,
 		hueOverlay && 'hue-overlay',
+		animateStripes && 'animate-pattern-flow',
 		className
 	]
 		.filter(Boolean)
