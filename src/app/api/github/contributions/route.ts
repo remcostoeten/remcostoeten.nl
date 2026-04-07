@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { githubService } from '@/server/github'
+import { parseYearParam } from '@/shared/lib/request-params'
 
 // Use ISR with 1 hour revalidation - contribution data doesn't change frequently
 export const revalidate = 3600
@@ -31,7 +32,21 @@ export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
 		const yearParam = searchParams.get('year')
-		const year = yearParam ? parseInt(yearParam) : new Date().getFullYear()
+		const currentYear = new Date().getFullYear()
+		const year = parseYearParam(yearParam, {
+			defaultValue: currentYear,
+			min: 2008,
+			max: currentYear
+		})
+
+		if (year === null) {
+			return NextResponse.json(
+				{
+					error: 'Year parameter must be between 2008 and the current year'
+				},
+				{ status: 400 }
+			)
+		}
 
 		const contributions = await fetchWithRetry(year)
 

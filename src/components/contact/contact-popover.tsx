@@ -14,6 +14,10 @@ export function ContactPopover() {
 	const containerRef = useRef<HTMLDivElement>(null)
 	const popoverRef = useRef<HTMLDivElement>(null)
 	const triggerRef = useRef<HTMLButtonElement>(null)
+	const nameRef = useRef<HTMLInputElement>(null)
+	const emailRef = useRef<HTMLInputElement>(null)
+	const subjectRef = useRef<HTMLInputElement>(null)
+	const messageRef = useRef<HTMLTextAreaElement>(null)
 
 	const [name, setName] = useState('')
 	const [email, setEmail] = useState('')
@@ -21,7 +25,23 @@ export function ContactPopover() {
 	const [message, setMessage] = useState('')
 	const [errors, setErrors] = useState<Record<string, string[]>>({})
 
-	const toggleOpen = () => setIsOpen(!isOpen)
+	const toggleOpen = () => setIsOpen(prev => !prev)
+
+	const focusFirstErrorField = (nextErrors: Record<string, string[]>) => {
+		const firstInvalidField = ['name', 'email', 'subject', 'message'].find(
+			field => nextErrors[field]?.length
+		)
+
+		if (firstInvalidField === 'name') {
+			nameRef.current?.focus()
+		} else if (firstInvalidField === 'email') {
+			emailRef.current?.focus()
+		} else if (firstInvalidField === 'subject') {
+			subjectRef.current?.focus()
+		} else if (firstInvalidField === 'message') {
+			messageRef.current?.focus()
+		}
+	}
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
@@ -132,6 +152,7 @@ export function ContactPopover() {
 			} else {
 				if (result.errors) {
 					setErrors(result.errors)
+					focusFirstErrorField(result.errors)
 				} else {
 					toast.error(result.message)
 				}
@@ -147,6 +168,7 @@ export function ContactPopover() {
 		<div className="relative inline-block text-left" ref={containerRef}>
 			<button
 				ref={triggerRef}
+				type="button"
 				onClick={toggleOpen}
 				aria-haspopup="dialog"
 				aria-expanded={isOpen}
@@ -183,6 +205,7 @@ export function ContactPopover() {
 									Get in touch
 								</h3>
 								<button
+									type="button"
 									onClick={() => setIsOpen(false)}
 									aria-label="Close contact form"
 									className="text-muted-foreground hover:text-foreground rounded-full p-1 hover:bg-accent transition-colors"
@@ -203,9 +226,18 @@ export function ContactPopover() {
 										<User className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
 										<input
 											id="name"
+											name="name"
+											ref={nameRef}
 											value={name}
 											onChange={e =>
 												setName(e.target.value)
+											}
+											autoComplete="name"
+											aria-invalid={Boolean(errors.name)}
+											aria-describedby={
+												errors.name
+													? 'contact-name-error'
+													: undefined
 											}
 											className={cn(
 												'flex h-9 w-full rounded-md border border-input bg-transparent pl-9 pr-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
@@ -216,7 +248,10 @@ export function ContactPopover() {
 										/>
 									</div>
 									{errors.name && (
-										<p className="text-xs text-destructive">
+										<p
+											id="contact-name-error"
+											className="text-xs text-destructive"
+										>
 											{errors.name[0]}
 										</p>
 									)}
@@ -233,8 +268,17 @@ export function ContactPopover() {
 										<Mail className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground z-10" />
 										<EmailAutocomplete
 											id="email"
+											name="email"
+											ref={emailRef}
 											value={email}
 											onValueChange={setEmail}
+											autoComplete="email"
+											aria-invalid={Boolean(errors.email)}
+											aria-describedby={
+												errors.email
+													? 'contact-email-error'
+													: undefined
+											}
 											className={cn(
 												'pl-9',
 												errors.email &&
@@ -244,7 +288,10 @@ export function ContactPopover() {
 										/>
 									</div>
 									{errors.email && (
-										<p className="text-xs text-destructive">
+										<p
+											id="contact-email-error"
+											className="text-xs text-destructive"
+										>
 											{errors.email[0]}
 										</p>
 									)}
@@ -262,14 +309,31 @@ export function ContactPopover() {
 									</label>
 									<input
 										id="subject"
+										name="subject"
+										ref={subjectRef}
 										value={subject}
 										onChange={e =>
 											setSubject(e.target.value)
+										}
+										autoComplete="off"
+										aria-invalid={Boolean(errors.subject)}
+										aria-describedby={
+											errors.subject
+												? 'contact-subject-error'
+												: undefined
 										}
 										className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 										placeholder="Project inquiry"
 									/>
 								</div>
+								{errors.subject && (
+									<p
+										id="contact-subject-error"
+										className="text-xs text-destructive"
+									>
+										{errors.subject[0]}
+									</p>
+								)}
 
 								<div className="space-y-2">
 									<label
@@ -281,11 +345,22 @@ export function ContactPopover() {
 									<div className="relative">
 										<textarea
 											id="message"
+											name="message"
+											ref={messageRef}
 											value={message}
 											onChange={e =>
 												setMessage(e.target.value)
 											}
 											rows={4}
+											autoComplete="off"
+											aria-invalid={Boolean(
+												errors.message
+											)}
+											aria-describedby={
+												errors.message
+													? 'contact-message-error'
+													: undefined
+											}
 											className={cn(
 												'flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none',
 												errors.message &&
@@ -295,7 +370,10 @@ export function ContactPopover() {
 										/>
 									</div>
 									{errors.message && (
-										<p className="text-xs text-destructive">
+										<p
+											id="contact-message-error"
+											className="text-xs text-destructive"
+										>
 											{errors.message[0]}
 										</p>
 									)}

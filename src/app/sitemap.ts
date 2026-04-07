@@ -1,7 +1,8 @@
 import { getVisibleBlogPosts, getVisibleTopics } from '@/features/blog'
+import { baseUrl } from '@/core/config/site'
 import { MetadataRoute } from 'next'
 
-export const baseUrl = 'https://remcostoeten.nl'
+export { baseUrl } from '@/core/config/site'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const posts = await getVisibleBlogPosts()
@@ -37,11 +38,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			url: '/terms',
 			changeFrequency: 'monthly',
 			priority: 0.6
-		},
-		{
-			url: '/playground',
-			changeFrequency: 'monthly',
-			priority: 0.5
 		},
 		{
 			url: '/rss',

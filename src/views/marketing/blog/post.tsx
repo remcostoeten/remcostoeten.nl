@@ -15,7 +15,7 @@ import {
 	BreadcrumbStructuredData
 } from '@/components/seo/structured-data'
 
-export async function generateStaticParams() {
+export async function getBlogPostStaticParams() {
 	const { getBlogPosts } = await import('@/features/blog')
 	let posts = getBlogPosts()
 

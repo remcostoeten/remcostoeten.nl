@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
 			'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
 		start_url: '/',
 		display: 'standalone',
-		background_color: '#ffffff',
-		theme_color: '#ffffff',
+		background_color: '#000000',
+		theme_color: '#000000',
 		icons: [
 			{
 				src: '/favicon.ico',

@@ -73,7 +73,7 @@ export async function GET() {
 
 async function handleNowPlayingResponse(response: Response) {
 	// 204 = no content (nothing playing)
-	if (response.status === 204 || response.status > 400) {
+	if (response.status === 204 || !response.ok) {
 		return NextResponse.json({ isPlaying: false })
 	}
 

@@ -17,12 +17,16 @@ const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', 
 const CHECK = '✓'
 const CROSS = '✗'
 const ANSI_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'gu')
-const PACKAGE_RUNNER = process.env.npm_execpath?.includes('bun')
-	? { command: 'bun', args: ['run'] }
-	: { command: 'npm', args: ['run'] }
+const PACKAGE_RUNNER = { command: 'bun', args: ['run'] }
+const BUILD_ENV = {
+	DATABASE_URL: 'https://example.com',
+	BETTER_AUTH_URL: 'http://localhost:3000',
+	BETTER_AUTH_SECRET: 'ci-build-secret-ci-build-secret-ci-build-secret'
+}
 
 const steps = [
 	{ label: 'Lint', script: 'lint' },
+	{ label: 'Typecheck', script: 'typecheck' },
 	{ label: 'Tests', script: 'test' },
 	{ label: 'Build', script: 'build:next' }
 ]
@@ -59,7 +63,7 @@ function lineWithAnsi(content, width = BOX_WIDTH) {
 
 function printBanner() {
 	const title = '🚀 Release Build'
-	const subtitle = 'lint → test → build'
+	const subtitle = 'lint → typecheck → test → build'
 
 	console.log('')
 	console.log(COLORS.cyan + '┌' + rule('─') + '┐' + COLORS.reset)
@@ -122,10 +126,18 @@ function runStep(step, index, total) {
 		printStepStart(index, total, step.label)
 		const stepStart = Date.now()
 
-		const child = spawn(PACKAGE_RUNNER.command, [...PACKAGE_RUNNER.args, step.script], {
-			stdio: 'inherit',
-			shell: process.platform === 'win32'
-		})
+		const child = spawn(
+			PACKAGE_RUNNER.command,
+			[...PACKAGE_RUNNER.args, step.script],
+			{
+				env: {
+					...BUILD_ENV,
+					...process.env
+				},
+				stdio: 'inherit',
+				shell: process.platform === 'win32'
+			}
+		)
 
 		child.on('exit', code => {
 			const duration = Date.now() - stepStart

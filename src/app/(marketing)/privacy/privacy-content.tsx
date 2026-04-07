@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Cookie, Database, Eye, Mail, Shield, Users } from 'lucide-react'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
@@ -53,6 +53,11 @@ interface PrivacyCopy {
 	contactTitle: string
 	contactIntro: string
 	contactNote: string
+}
+
+const lastUpdatedByLanguage: Record<LegalLanguage, string> = {
+	en: 'April 7, 2026',
+	nl: '7 april 2026'
 }
 
 const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
@@ -302,19 +307,7 @@ export default function PrivacyContent() {
 		}
 	}, [searchParams])
 
-	const lastUpdated = useMemo(
-		function deriveDate() {
-			return new Date().toLocaleDateString(
-				language === 'nl' ? 'nl-NL' : 'en-US',
-				{
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				}
-			)
-		},
-		[language]
-	)
+	const lastUpdated = lastUpdatedByLanguage[language]
 
 	const copy = privacyCopy[language]
 

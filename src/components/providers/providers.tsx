@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactNode, lazy, Suspense } from 'react'
+import { lazy, Suspense, type ReactNode } from 'react'
 import { Toaster } from 'sonner'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'

@@ -42,5 +42,6 @@ setup-posthog.md
 env.production
 .lh-tmp/*
 .api-test-output/
+perf.json
+lighthouse-report.json
 www.remcostoeten.nl-*.json
-    

@@ -1,16 +1,16 @@
-import { ProjectShowcase } from "@/components/projects";
-import { Section } from "@/components/ui/section";
+import { ProjectShowcase } from '@/components/projects'
+import { Section } from '@/components/ui/section'
 
 type Props = {
-  visibleRowCount?: number;
-};
+	visibleRowCount?: number
+}
 
 export function ProjectsView({ visibleRowCount = 6 }: Props) {
-  return (
-    <Section noPadding contentPadding={false}>
-      <div className="mx-auto max-w-3xl">
-        <ProjectShowcase visibleRowCount={visibleRowCount} />
-      </div>
-    </Section>
-  );
+	return (
+		<Section noPadding contentPadding={false}>
+			<div className="mx-auto max-w-3xl">
+				<ProjectShowcase visibleRowCount={visibleRowCount} />
+			</div>
+		</Section>
+	)
 }
