@@ -11,7 +11,8 @@ import {
 	FolderKanban,
 	PanelLeftClose,
 	PanelLeft,
-	House
+	House,
+	Settings
 } from 'lucide-react'
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
 	{ href: '/admin#messages', label: 'Messages', icon: Mail },
 	{ href: '/admin#analytics', label: 'Analytics', icon: BarChart3 },
 	{ href: '/admin/projects', label: 'Projects', icon: FolderKanban },
+	{ href: '/admin/settings', label: 'Settings', icon: Settings },
 	{ href: '/', label: 'Back to home', icon: House, exact: true }
 ]
 

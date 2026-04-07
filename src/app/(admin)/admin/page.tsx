@@ -5,6 +5,7 @@ import { UserMetrics } from '@/components/admin/metrics/user-metrics'
 import { ContactOverview } from '@/components/admin/contact/contact-overview'
 import { getAllCommentsAdmin } from '@/server/queries/blog/comments'
 import { ActivityFeed } from '@/components/admin/activity/activity-feed'
+import { AnalyticsConfigPanel } from '@/components/admin/analytics/analytics-config-panel'
 import { Eye, Users, MessageSquare, Mail, TrendingUp } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -121,6 +122,7 @@ export default async function AdminPage() {
 				</div>
 
 				<aside className="space-y-4">
+					<AnalyticsConfigPanel />
 					<ActivityFeed
 						comments={comments.map(comment => ({
 							...comment,
