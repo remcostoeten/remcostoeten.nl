@@ -23,9 +23,7 @@ type TestResult = {
 }
 
 const providerEndpoints: Record<string, string | undefined> = {
-	vercel: 'https://www.google-analytics.com/collect',
 	remco: getProviderConfig('remco').ingestUrl,
-	'speed-insights': undefined,
 	posthog: process.env.NEXT_PUBLIC_POSTHOG_HOST
 }
 
