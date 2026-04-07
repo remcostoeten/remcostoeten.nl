@@ -5,5 +5,7 @@ export function slugifyTopic(topic: string) {
 }
 
 export function getTopicBySlug(topicSlug: string): BlogTopic | undefined {
-	return BLOG_TOPICS.find(topic => slugifyTopic(topic) === slugifyTopic(topicSlug))
+	return BLOG_TOPICS.find(
+		topic => slugifyTopic(topic) === slugifyTopic(topicSlug)
+	)
 }

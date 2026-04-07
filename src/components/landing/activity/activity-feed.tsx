@@ -156,102 +156,142 @@ type ActivityGrammar = {
 const ACTIVITY_GRAMMAR: Record<string, ActivityGrammar[]> = {
 	commit: [
 		{
-			prefix: 'Just pushed to',
-			repoToEventConnector: 'with',
+			prefix: 'Pushing updates in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
-			prefix: 'Shipped code in',
-			repoToEventConnector: 'with',
+			prefix: 'Engineering in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
 			prefix: 'Working in',
-			repoToEventConnector: 'with',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Committing to',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	],
 	pr: [
 		{
-			prefix: 'Opened a PR in',
-			repoToEventConnector: 'for',
+			prefix: 'Pull request in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
-			prefix: 'Submitted changes in',
-			repoToEventConnector: 'for',
+			prefix: 'Proposing changes in',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Integrating code in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	],
 	create: [
 		{
-			prefix: 'Created in',
-			repoToEventConnector: 'as',
+			prefix: 'Setting up in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
-			prefix: 'Started in',
-			repoToEventConnector: 'as',
+			prefix: 'Branching out in',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Starting work in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	],
 	review: [
 		{
-			prefix: 'Reviewed in',
-			repoToEventConnector: 'for',
+			prefix: 'Reviewing code in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
-			prefix: 'Left review feedback in',
-			repoToEventConnector: 'for',
+			prefix: 'Evaluating changes in',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Checking PR in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	],
 	issue: [
 		{
-			prefix: 'Opened an issue in',
-			repoToEventConnector: 'about',
+			prefix: 'Tracking a bug in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
-			prefix: 'Debugging in',
-			repoToEventConnector: 'around',
+			prefix: 'Discussing an issue in',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Troubleshooting in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	],
 	star: [
-		{ prefix: 'Starred', showEventBadge: false },
+		{ prefix: 'Starred repository', showEventBadge: false },
 		{ prefix: 'Bookmarked', showEventBadge: false }
 	],
-	fork: [{ prefix: 'Forked', showEventBadge: false }],
+	fork: [{ prefix: 'Forked repository', showEventBadge: false }],
 	release: [
 		{
-			prefix: 'Released in',
-			repoToEventConnector: 'as',
+			prefix: 'Shipping release in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
-			prefix: 'Shipped in',
-			repoToEventConnector: 'as',
+			prefix: 'Deploying version in',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Tagging release in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	],
 	delete: [
 		{
-			prefix: 'Removed in',
-			repoToEventConnector: 'as',
+			prefix: 'Cleaning up in',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Pruning branches in',
+			repoToEventConnector: '→',
+			showEventBadge: true
+		},
+		{
+			prefix: 'Removing items in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	],
 	default: [
 		{
-			prefix: 'Active in',
-			repoToEventConnector: 'with',
+			prefix: 'Activity in',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		},
 		{
 			prefix: 'Working in',
-			repoToEventConnector: 'on',
+			repoToEventConnector: '→',
 			showEventBadge: true
 		}
 	]
@@ -531,12 +571,7 @@ export function ActivityFeed({
 		}, 100)
 
 		return () => clearInterval(interval)
-	}, [
-		pairedContent.length,
-		isPaused,
-		rotationInterval,
-		rotateActivity
-	])
+	}, [pairedContent.length, isPaused, rotationInterval, rotateActivity])
 
 	useEffect(() => {
 		setElapsedTime(0)

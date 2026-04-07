@@ -10,7 +10,8 @@ export interface BaseMetadataConfig {
 	noIndex?: boolean
 }
 
-export const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://remcostoeten.nl'
+export const baseUrl =
+	process.env.NEXT_PUBLIC_SITE_URL || 'https://remcostoeten.nl'
 
 const defaultImage = `${baseUrl}/og`
 
@@ -93,7 +94,8 @@ export function createArticleMetadata(config: {
 		keywords
 	} = config
 
-	const imageUrl = ogImage || `${baseUrl}/og?title=${encodeURIComponent(title)}`
+	const imageUrl =
+		ogImage || `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
 	return {
 		title,
@@ -133,34 +135,34 @@ export function extendMetadata(
 	overrides: Partial<Metadata>
 ): Metadata {
 	const result: Metadata = { ...base }
-	
+
 	if (base.openGraph || overrides.openGraph) {
 		result.openGraph = {
 			...(base.openGraph as object),
 			...(overrides.openGraph as object)
 		} as Metadata['openGraph']
 	}
-	
+
 	if (base.twitter || overrides.twitter) {
 		result.twitter = {
 			...(base.twitter as object),
 			...(overrides.twitter as object)
 		} as Metadata['twitter']
 	}
-	
+
 	if (base.robots || overrides.robots) {
 		result.robots = {
 			...(base.robots as object),
 			...(overrides.robots as object)
 		} as Metadata['robots']
 	}
-	
+
 	if (base.alternates || overrides.alternates) {
 		result.alternates = {
 			...(base.alternates as object),
 			...(overrides.alternates as object)
 		} as Metadata['alternates']
 	}
-	
+
 	return result
 }

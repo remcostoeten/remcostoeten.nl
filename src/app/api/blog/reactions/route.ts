@@ -1,4 +1,7 @@
-import { getEmptyReactions, getReactions } from '@/server/queries/blog/reactions'
+import {
+	getEmptyReactions,
+	getReactions
+} from '@/server/queries/blog/reactions'
 import { getVisitorId } from '@/server/request'
 
 export async function GET(request: Request) {
@@ -15,6 +18,9 @@ export async function GET(request: Request) {
 		return Response.json(result)
 	} catch (error) {
 		console.error('[GET /api/blog/reactions] Error:', error)
-		return Response.json({ reactions: getEmptyReactions() }, { status: 500 })
+		return Response.json(
+			{ reactions: getEmptyReactions() },
+			{ status: 500 }
+		)
 	}
 }

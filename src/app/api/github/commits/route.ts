@@ -25,21 +25,21 @@ export async function GET(request: NextRequest) {
 		const owner = searchParams.get('owner')
 		const repo = searchParams.get('repo')
 
-			if (!owner || !repo) {
-				return NextResponse.json(
-					{ error: 'Missing owner or repo parameter' },
-					{ status: 400 }
-				)
-			}
+		if (!owner || !repo) {
+			return NextResponse.json(
+				{ error: 'Missing owner or repo parameter' },
+				{ status: 400 }
+			)
+		}
 
-			if (!isAllowedGitHubRepo(owner, repo)) {
-				return NextResponse.json(
-					{ error: 'Repository not allowed' },
-					{ status: 403 }
-				)
-			}
+		if (!isAllowedGitHubRepo(owner, repo)) {
+			return NextResponse.json(
+				{ error: 'Repository not allowed' },
+				{ status: 403 }
+			)
+		}
 
-			const token = getGitHubToken()
+		const token = getGitHubToken()
 
 		const headers: Record<string, string> = {
 			Accept: 'application/vnd.github.v3+json',

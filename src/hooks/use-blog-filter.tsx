@@ -5,11 +5,11 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 type BlogFilter = "all" | "drafts" | "published";
 
 type Props = {
-  filter: BlogFilter;
-  setFilter: (filter: BlogFilter) => void;
-};
+	filter: BlogFilter
+	setFilter: (filter: BlogFilter) => void
+}
 
-const BlogFilterContext = createContext<Props | null>(null);
+const BlogFilterContext = createContext<Props | null>(null)
 
 export function BlogFilterProvider({ children }: { children: ReactNode }) {
   const [filter, setFilter] = useState<BlogFilter>("all");

@@ -86,10 +86,15 @@ describe('spotify recent route', () => {
 								artists: [{ name: 'Artist one' }],
 								album: {
 									name: 'Album',
-									images: [{ url: 'https://i.scdn.co/image/live-1' }]
+									images: [
+										{
+											url: 'https://i.scdn.co/image/live-1'
+										}
+									]
 								},
 								external_urls: {
-									spotify: 'https://open.spotify.com/track/live-1'
+									spotify:
+										'https://open.spotify.com/track/live-1'
 								}
 							}
 						}

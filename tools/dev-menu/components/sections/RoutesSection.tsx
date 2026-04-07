@@ -91,12 +91,22 @@ export function RoutesSection({ pathname }: Props) {
 		try {
 			setLoading(true)
 			const res = await fetch('/api/dev/routes')
-			if (!res.ok) throw new Error('Failed to fetch')
+			if (!res.ok) {
+				const errorData = await res.json().catch(() => ({}))
+				console.error('Routes fetch failed:', {
+					status: res.status,
+					statusText: res.statusText,
+					error: errorData.error || 'Unknown error'
+				})
+				throw new Error(
+					errorData.error || `Failed to fetch: ${res.status}`
+				)
+			}
 			const data: RouteResponse = await res.json()
 			setRoutes(data.routes)
 			setError(false)
 		} catch (e) {
-			console.error(e)
+			console.error('Error in fetchRoutes:', e)
 			setError(true)
 		} finally {
 			setLoading(false)

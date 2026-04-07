@@ -50,7 +50,9 @@ export async function POST(request: NextRequest) {
 		const service = request.nextUrl.searchParams.get('service')
 
 		if (process.env.NODE_ENV === 'development') {
-			console.log(`[Sync] Starting sync... (service: ${service || 'all'})`)
+			console.log(
+				`[Sync] Starting sync... (service: ${service || 'all'})`
+			)
 		}
 		const startTime = Date.now()
 

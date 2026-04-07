@@ -33,7 +33,9 @@ export async function TopicsSidebar() {
 										</p>
 										<p className="text-xs text-muted-foreground/60">
 											{topic.count}{' '}
-											{topic.count === 1 ? 'post' : 'posts'}
+											{topic.count === 1
+												? 'post'
+												: 'posts'}
 										</p>
 									</div>
 								</div>

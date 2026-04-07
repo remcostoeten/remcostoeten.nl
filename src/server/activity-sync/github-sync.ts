@@ -45,7 +45,9 @@ export async function syncGitHubActivities(): Promise<SyncResult> {
 					url: event.url,
 					isPrivate: event.isPrivate,
 					eventDate: new Date(event.timestamp),
-					payload: event.payload ? JSON.stringify(event.payload) : null
+					payload: event.payload
+						? JSON.stringify(event.payload)
+						: null
 				})
 				newItems++
 			} catch {

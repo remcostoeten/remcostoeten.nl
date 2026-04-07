@@ -30,10 +30,12 @@ This is where it gets annoying:
 
 ```js
 export const SomeView = () => {
-	return <button onClick={() => console.log('clicked')}>Create invoice</button>
+	return (
+		<button onClick={() => console.log('clicked')}>Create invoice</button>
+	)
 }
 
-export const calculateTotal = (items) => {
+export const calculateTotal = items => {
 	return items.reduce((sum, item) => sum + item.price, 0)
 }
 ```
@@ -51,7 +53,9 @@ export function SomeView() {
 	return (
 		<section>
 			<h1>Invoices</h1>
-			<button onClick={() => console.log('clicked')}>Create invoice</button>
+			<button onClick={() => console.log('clicked')}>
+				Create invoice
+			</button>
 		</section>
 	)
 }
@@ -71,6 +75,7 @@ Ready for the huge reveal? Two lines. You wont believe your eyes!
 export const Foo = () => {}
 export function Foo() {}
 ```
+
 Arrow constants ARE longer. Shocking, I know.
 
-Besides that you  will benefit from hoisting yadadada when using good old functional syntax.
+Besides that you will benefit from hoisting yadadada when using good old functional syntax.

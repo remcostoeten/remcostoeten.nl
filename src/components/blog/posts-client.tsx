@@ -107,7 +107,7 @@ function BlogCard({ post }: Props) {
 								{allTags.slice(0, 3).map(tag => (
 									<span
 										key={tag}
-										className="border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-foreground/70"
+										className="border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-foreground/80"
 									>
 										{tag}
 									</span>

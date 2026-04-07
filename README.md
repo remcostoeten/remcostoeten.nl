@@ -85,7 +85,7 @@ Optional, depending on which features you want enabled:
 
 - `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` for GitHub OAuth
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for Google OAuth
-  - `GITHUB_TOKEN` for server-side GitHub API access
+    - `GITHUB_TOKEN` for server-side GitHub API access
 - `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `SPOTIFY_REDIRECT_URI` for Spotify data
 - `IP_INFO_TOKEN` for IP geolocation https://ipinfo.io/
 - `CRON_SECRET` for protected sync endpoints

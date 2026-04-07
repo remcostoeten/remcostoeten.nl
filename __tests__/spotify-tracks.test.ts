@@ -139,13 +139,21 @@ describe('spotify track retrieval', () => {
 							track: {
 								id: 'live-1',
 								name: 'Live listen',
-								artists: [{ name: 'Artist one' }, { name: 'Artist two' }],
+								artists: [
+									{ name: 'Artist one' },
+									{ name: 'Artist two' }
+								],
 								album: {
 									name: 'Album one',
-									images: [{ url: 'https://i.scdn.co/image/live-1' }]
+									images: [
+										{
+											url: 'https://i.scdn.co/image/live-1'
+										}
+									]
 								},
 								external_urls: {
-									spotify: 'https://open.spotify.com/track/live-1'
+									spotify:
+										'https://open.spotify.com/track/live-1'
 								}
 							}
 						}

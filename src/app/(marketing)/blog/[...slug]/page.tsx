@@ -1,6 +1,10 @@
 import { Metadata } from 'next'
 import { getResolvedBlogPostBySlug } from '@/features/blog'
-import { createArticleMetadata, extendMetadata, baseUrl } from '@/core/metadata/base'
+import {
+	createArticleMetadata,
+	extendMetadata,
+	baseUrl
+} from '@/core/metadata/base'
 import { BlogPostView } from '@/views/marketing/blog/post'
 
 export async function generateStaticParams() {
@@ -60,6 +64,8 @@ export async function generateMetadata({
 	})
 }
 
-export default function Page(props: { params: Promise<{ slug: string | string[] }> }) {
+export default function Page(props: {
+	params: Promise<{ slug: string | string[] }>
+}) {
 	return <BlogPostView params={props.params} />
 }

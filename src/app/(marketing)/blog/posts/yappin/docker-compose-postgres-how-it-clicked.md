@@ -39,10 +39,10 @@ This is a valid and working Postgres setup:
 
 ```yaml filename="docker-compose.yml"
 services:
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_PASSWORD: postgres
+    postgres:
+        image: postgres:16
+        environment:
+            POSTGRES_PASSWORD: postgres
 ```
 
 This already runs a database. No ports, no volumes, no extras.
@@ -117,7 +117,7 @@ Named volume example:
 
 ```yaml filename="docker-compose.yml"
 volumes:
-  - pg-data:/var/lib/postgresql/data
+    - pg-data:/var/lib/postgresql/data
 ```
 
 Once this volume exists, Postgres will never reinitialize itself.
@@ -165,12 +165,12 @@ Compose file:
 
 ```yaml filename="docker-compose.yml"
 services:
-  postgres:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    postgres:
+        image: postgres:16
+        environment:
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 ```
 
 Docker Compose automatically loads `.env`. No extra tooling required.
@@ -213,23 +213,23 @@ The clearest setup for dev and test is multiple containers.
 
 ```yaml filename="docker-compose.yml"
 services:
-  postgres_dev:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: app_dev
-    ports:
-      - "55432:5432"
-    volumes:
-      - pg-dev:/var/lib/postgresql/data
+    postgres_dev:
+        image: postgres:16
+        environment:
+            POSTGRES_DB: app_dev
+        ports:
+            - '55432:5432'
+        volumes:
+            - pg-dev:/var/lib/postgresql/data
 
-  postgres_test:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: app_test
-    ports:
-      - "55433:5432"
-    volumes:
-      - pg-test:/var/lib/postgresql/data
+    postgres_test:
+        image: postgres:16
+        environment:
+            POSTGRES_DB: app_test
+        ports:
+            - '55433:5432'
+        volumes:
+            - pg-test:/var/lib/postgresql/data
 ```
 
 Each database is fully isolated. No shared state, no accidental cross-use.

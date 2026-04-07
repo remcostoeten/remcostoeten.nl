@@ -87,7 +87,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
 				location: 'Lemmer / Joure (Office)',
 				icon: 'code',
 				description: `
-- Built 30+ custom Magento 2 webshops for B2B and B2C clients (equestrian, fashion, industrial).
+- Built various custom Magento 2 webshops for B2B/B2C clients.
 - Developed with PHTML, BEM SCSS, and JavaScript (Vanilla, jQuery, Knockout.js).`,
 				skills: [
 					'Magento 2',
@@ -127,7 +127,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
 
 export function WorkExperienceSection() {
 	return (
-		<Section title="Professional Experience">
+		<Section animatedStripes title="Professional Experience">
 			<WorkExperience experiences={WORK_EXPERIENCE} />
 		</Section>
 	)

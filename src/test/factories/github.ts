@@ -1,7 +1,4 @@
-export function createContributionDay(
-	date: string,
-	contributionCount: number
-) {
+export function createContributionDay(date: string, contributionCount: number) {
 	return {
 		date,
 		contributionCount

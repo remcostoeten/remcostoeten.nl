@@ -1,7 +1,10 @@
 import { unstable_cache } from 'next/cache'
 import { desc } from 'drizzle-orm'
 import { db, schema } from '@/server/db/connection'
-import { getSpotifyAccessToken, hasSpotifyCredentials } from '@/server/spotify/auth'
+import {
+	getSpotifyAccessToken,
+	hasSpotifyCredentials
+} from '@/server/spotify/auth'
 import type { SpotifyTrack } from './types'
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1'
@@ -56,7 +59,9 @@ export const getSpotifyTracks = unstable_cache(
 				data.items?.map((item: any) => ({
 					id: item.track.id,
 					name: item.track.name,
-					artist: item.track.artists.map((a: any) => a.name).join(', '),
+					artist: item.track.artists
+						.map((a: any) => a.name)
+						.join(', '),
 					album: item.track.album.name,
 					url: item.track.external_urls.spotify,
 					image: item.track.album.images[0]?.url || '',

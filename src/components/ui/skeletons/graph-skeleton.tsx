@@ -42,19 +42,21 @@ export function GraphSkeleton({ className = '' }: GraphSkeletonProps) {
 							key={weekIndex}
 							className="flex flex-col gap-[3px]"
 						>
-							{Array.from({ length: 7 }).map((unusedDay, dayIndex) => (
-								<motion.div
-									key={dayIndex}
-									className="w-[10px] h-[10px] bg-muted/20 rounded-sm"
-									initial={{ opacity: 0, scale: 0.5 }}
-									animate={{ opacity: 1, scale: 1 }}
-									transition={{
-										delay: Math.random() * 0.8,
-										duration: 0.2,
-										ease: [0.25, 0.46, 0.45, 0.94]
-									}}
-								/>
-							))}
+							{Array.from({ length: 7 }).map(
+								(unusedDay, dayIndex) => (
+									<motion.div
+										key={dayIndex}
+										className="w-[10px] h-[10px] bg-muted/20 rounded-sm"
+										initial={{ opacity: 0, scale: 0.5 }}
+										animate={{ opacity: 1, scale: 1 }}
+										transition={{
+											delay: Math.random() * 0.8,
+											duration: 0.2,
+											ease: [0.25, 0.46, 0.45, 0.94]
+										}}
+									/>
+								)
+							)}
 						</div>
 					))}
 				</div>

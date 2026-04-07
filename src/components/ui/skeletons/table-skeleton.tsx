@@ -17,12 +17,14 @@ export function TableSkeleton({ rows = 5, columns = 4 }: TableSkeletonProps) {
 			{/* Rows */}
 			{Array.from({ length: rows }).map((unusedRow, rowIndex) => (
 				<div key={`row-${rowIndex}`} className="flex gap-4">
-					{Array.from({ length: columns }).map((unusedCol, colIndex) => (
-						<Skeleton
-							key={`cell-${rowIndex}-${colIndex}`}
-							className="h-4 flex-1"
-						/>
-					))}
+					{Array.from({ length: columns }).map(
+						(unusedCol, colIndex) => (
+							<Skeleton
+								key={`cell-${rowIndex}-${colIndex}`}
+								className="h-4 flex-1"
+							/>
+						)
+					)}
 				</div>
 			))}
 		</div>
