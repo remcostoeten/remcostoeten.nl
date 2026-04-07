@@ -12,6 +12,7 @@ async function findPageFiles(
 	currentDir = rootDir
 ): Promise<string[]> {
 	const entries = await readdir(currentDir, { withFileTypes: true })
+	// console.log(`Scanning dir: ${currentDir}, found ${entries.length} entries`)
 	const files = await Promise.all(
 		entries.map(async entry => {
 			if (entry.name.startsWith('.') || entry.name.startsWith('_'))
@@ -56,8 +57,10 @@ export async function GET() {
 	try {
 		const cwd = process.cwd()
 		const appDir = path.join(cwd, 'src/app')
+		// console.log(`Route scanner source: ${appDir}`)
 
 		const files = await findPageFiles(appDir)
+		// console.log(`Scanner found ${files.length} page files`)
 
 		const routes = files.map(file => {
 			// file is relative to appDir, e.g. "(marketing)/about/page.tsx"

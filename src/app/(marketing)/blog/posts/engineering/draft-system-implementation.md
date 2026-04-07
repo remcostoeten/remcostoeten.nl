@@ -1,8 +1,8 @@
 ---
-title: "Building a draft system for markdown files in Next.js"
-publishedAt: "2025/12/16"
+title: 'Building a draft system for markdown files in Next.js'
+publishedAt: '2025/12/16'
 summary: "Running a blog through filesystem is great, although accidental commits of unfinished posts are bound to happen sooner or later. Here's how I implemented a draft system using MDX frontmatter"
-tags: ["Engineering", "Next.js", "Guide", "Frontmatter"]
+tags: ['Engineering', 'Next.js', 'Guide', 'Frontmatter']
 draft: false
 ---
 
@@ -42,21 +42,21 @@ That meant teaching the frontmatter parser to recognize and store that value.
 
 ```typescript title="src/lib/blog/frontmatter.ts"
 switch (trimmedKey) {
-  case 'title':
-    metadata.title = value
-    break
-  case 'summary':
-    metadata.summary = value
-    break
-  case 'draft':
-    metadata.draft = value.toLowerCase() === 'true'
-    break
-  case 'slug':
-    metadata.slug = value
-    break
-  case 'updatedAt':
-    metadata.updatedAt = value
-    break
+	case 'title':
+		metadata.title = value
+		break
+	case 'summary':
+		metadata.summary = value
+		break
+	case 'draft':
+		metadata.draft = value.toLowerCase() === 'true'
+		break
+	case 'slug':
+		metadata.slug = value
+		break
+	case 'updatedAt':
+		metadata.updatedAt = value
+		break
 }
 ```
 
@@ -64,7 +64,7 @@ With that in place, a post can be marked directly in the file:
 
 ```md
 ---
-title: "Some unfinished post"
+title: 'Some unfinished post'
 draft: true
 ---
 ```
@@ -100,15 +100,14 @@ The helper looks roughly like this:
 
 ```typescript title="src/utils/is-admin.ts"
 export async function isAdmin() {
-  const session = await getServerSession()
+	const session = await getServerSession()
 
-  if (!session?.user) return false
+	if (!session?.user) return false
 
-  const isEmailMatch = isAdminEmail(session.user.email)
-  const isRoleAdmin = session.user.role === 'admin'
+	const isEmailMatch = isAdminEmail(session.user.email)
+	const isRoleAdmin = session.user.role === 'admin'
 
-
-  return isRoleAdmin || isEmailMatch
+	return isRoleAdmin || isEmailMatch
 }
 ```
 
@@ -132,11 +131,11 @@ const allPosts = getAllBlogPosts()
 const post = allPosts.find(p => p.slug === slug)
 
 if (!post) {
-  notFound()
+	notFound()
 }
 
 if (post.metadata.draft && !isAdminUser) {
-  notFound()
+	notFound()
 }
 ```
 

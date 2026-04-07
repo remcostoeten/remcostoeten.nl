@@ -1,8 +1,4 @@
-export {
-	getAllBlogPosts,
-	getAllTopics,
-	getBlogPosts,
-} from './posts'
+export { getAllBlogPosts, getAllTopics, getBlogPosts } from './posts'
 export { slugifyTopic } from './topic-slug'
 export {
 	getAdjacentBlogPosts,

@@ -52,7 +52,8 @@ export async function getContactAnalytics() {
 		).length,
 		under30s: abandonmentTimes.filter(
 			t =>
-				(t.timeToAbandon || 0) >= 15000 && (t.timeToAbandon || 0) < 30000
+				(t.timeToAbandon || 0) >= 15000 &&
+				(t.timeToAbandon || 0) < 30000
 		).length,
 		over30s: abandonmentTimes.filter(t => (t.timeToAbandon || 0) >= 30000)
 			.length
@@ -70,12 +71,17 @@ export async function getContactAnalytics() {
 			conversionRate:
 				totalFormStarts[0].count > 0
 					? Math.round(
-							(totalSubmissions[0].count / totalFormStarts[0].count) * 100
+							(totalSubmissions[0].count /
+								totalFormStarts[0].count) *
+								100
 						)
 					: 0,
 			clickToStartRate:
 				totalClicks[0].count > 0
-					? Math.round((totalFormStarts[0].count / totalClicks[0].count) * 100)
+					? Math.round(
+							(totalFormStarts[0].count / totalClicks[0].count) *
+								100
+						)
 					: 0
 		}
 	}

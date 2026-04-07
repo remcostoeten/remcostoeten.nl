@@ -61,7 +61,8 @@ function sortBlogPosts(posts: ResolvedBlogPost[]) {
 		if (a.metadata.draft && !b.metadata.draft) return -1
 		if (!a.metadata.draft && b.metadata.draft) return 1
 
-		return new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
+		return new Date(a.metadata.publishedAt) >
+			new Date(b.metadata.publishedAt)
 			? -1
 			: 1
 	})
@@ -85,7 +86,8 @@ export async function getResolvedBlogPostBySlug(
 
 	return (
 		posts.find(
-			post => post.slug === slug && (includeDrafts || !post.metadata.draft)
+			post =>
+				post.slug === slug && (includeDrafts || !post.metadata.draft)
 		) || null
 	)
 }
@@ -98,7 +100,9 @@ export async function getTopicArchive(
 	if (!canonicalTopic) return null
 
 	const posts = (await getVisibleBlogPosts(includeDrafts)).filter(
-		post => slugifyTopic(post.metadata.topic || '') === slugifyTopic(canonicalTopic)
+		post =>
+			slugifyTopic(post.metadata.topic || '') ===
+			slugifyTopic(canonicalTopic)
 	)
 
 	if (posts.length === 0) return null
@@ -112,7 +116,10 @@ export async function getTopicArchive(
 export async function getAdjacentBlogPosts(
 	slug: string,
 	includeDrafts = false
-): Promise<{ prevPost: ResolvedBlogPost | null; nextPost: ResolvedBlogPost | null }> {
+): Promise<{
+	prevPost: ResolvedBlogPost | null
+	nextPost: ResolvedBlogPost | null
+}> {
 	const posts = await getVisibleBlogPosts(includeDrafts)
 	const currentIndex = posts.findIndex(post => post.slug === slug)
 
@@ -146,5 +153,7 @@ export async function getVisibleTopics(includeDrafts = false) {
 			slug: slugifyTopic(name),
 			count
 		}))
-		.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)) as BlogTopicSummary[]
+		.sort(
+			(a, b) => b.count - a.count || a.name.localeCompare(b.name)
+		) as BlogTopicSummary[]
 }

@@ -9,7 +9,10 @@ export async function GET(request: Request) {
 	const activityLimit = parseInt(searchParams.get('activityLimit') || '5', 10)
 	const tracksLimit = parseInt(searchParams.get('tracksLimit') || '10', 10)
 
-	const combinedActivity = await getCombinedActivity(activityLimit, tracksLimit)
+	const combinedActivity = await getCombinedActivity(
+		activityLimit,
+		tracksLimit
+	)
 
 	return NextResponse.json(combinedActivity, {
 		headers: {

@@ -61,7 +61,10 @@ function getMarkdownFiles(dir: string) {
 
 			if (stat.isDirectory()) {
 				scanDirectory(fullPath)
-			} else if (path.extname(item) === '.mdx' || path.extname(item) === '.md') {
+			} else if (
+				path.extname(item) === '.mdx' ||
+				path.extname(item) === '.md'
+			) {
 				files.push(path.relative(dir, fullPath))
 			}
 		}

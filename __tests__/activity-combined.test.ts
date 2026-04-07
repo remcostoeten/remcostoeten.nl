@@ -62,17 +62,16 @@ describe('getCombinedActivity', () => {
 		githubMocks.getCachedGitHubActivity.mockResolvedValue(recentActivity)
 		spotifyMocks.getSpotifyTracks.mockResolvedValue(spotifyTracks)
 
-		const { getCombinedActivity } = await import('@/app/api/activity/combined/combine')
+		const { getCombinedActivity } =
+			await import('@/app/api/activity/combined/combine')
 		const result = await getCombinedActivity(5, 5)
 
-		expect(githubMocks.getCachedGitHubContributions).toHaveBeenNthCalledWith(
-			1,
-			2026
-		)
-		expect(githubMocks.getCachedGitHubContributions).toHaveBeenNthCalledWith(
-			2,
-			2025
-		)
+		expect(
+			githubMocks.getCachedGitHubContributions
+		).toHaveBeenNthCalledWith(1, 2026)
+		expect(
+			githubMocks.getCachedGitHubContributions
+		).toHaveBeenNthCalledWith(2, 2025)
 		expect(githubMocks.getCachedGitHubActivity).toHaveBeenCalledWith(5)
 		expect(spotifyMocks.getSpotifyTracks).toHaveBeenCalledWith(5)
 
@@ -84,7 +83,9 @@ describe('getCombinedActivity', () => {
 			{ date: '2026-01-01', contributionCount: 4 },
 			{ date: '2026-01-02', contributionCount: 1 }
 		])
-		expect(result.fetchedAt).toBe(new Date('2026-03-30T06:15:00.000Z').getTime())
+		expect(result.fetchedAt).toBe(
+			new Date('2026-03-30T06:15:00.000Z').getTime()
+		)
 	})
 
 	it('returns partial data cleanly when spotify has no tracks', async () => {
@@ -110,7 +111,8 @@ describe('getCombinedActivity', () => {
 		])
 		spotifyMocks.getSpotifyTracks.mockResolvedValue([])
 
-		const { getCombinedActivity } = await import('@/app/api/activity/combined/combine')
+		const { getCombinedActivity } =
+			await import('@/app/api/activity/combined/combine')
 		const result = await getCombinedActivity(3, 5)
 
 		expect(result.spotifyTracks).toEqual([])

@@ -1,15 +1,5 @@
-import {
-	pgTable,
-	text,
-	index,
-	integer
-} from 'drizzle-orm/pg-core'
-import {
-	primaryId,
-	createdTimestamp,
-	visitorId,
-	geoMetadata
-} from './helpers'
+import { pgTable, text, index, integer } from 'drizzle-orm/pg-core'
+import { primaryId, createdTimestamp, visitorId, geoMetadata } from './helpers'
 
 export const contactSubmissions = pgTable('contact_submissions', {
 	...primaryId,

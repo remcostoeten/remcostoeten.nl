@@ -19,6 +19,7 @@ export async function HomeBlogPosts() {
 
 	return (
 		<Section
+			animatedStripes
 			title="Posts"
 			headerAction={<HomePostCountHeader count={posts.length} />}
 			noHeaderMargin
@@ -33,15 +34,21 @@ export async function HomeBlogPosts() {
 
 				<div className="border-b border-border/40 pt-2">
 					{previewPosts.map(post => {
-						const dateParts = getDateParts(post.metadata.publishedAt)
+						const dateParts = getDateParts(
+							post.metadata.publishedAt
+						)
 						const readTimeMinutes = readMinutes(
 							post.metadata.readTime || ''
 						)
 
 						const allTags = [
-							...(post.metadata.topic ? [post.metadata.topic] : []),
+							...(post.metadata.topic
+								? [post.metadata.topic]
+								: []),
 							...(post.metadata.tags || [])
-						].filter((tag, index, arr) => arr.indexOf(tag) === index)
+						].filter(
+							(tag, index, arr) => arr.indexOf(tag) === index
+						)
 
 						return (
 							<Link
@@ -77,21 +84,24 @@ export async function HomeBlogPosts() {
 														·
 													</span>
 													<span className="whitespace-nowrap">
-														{readTimeMinutes} min read
+														{readTimeMinutes} min
+														read
 													</span>
 												</>
 											)}
 
 											{allTags.length > 0 && (
 												<div className="flex flex-wrap gap-1.5 sm:ml-1">
-													{allTags.slice(0, 3).map(tag => (
-														<span
-															key={tag}
-															className="border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted-foreground/70"
-														>
-															{tag}
-														</span>
-													))}
+													{allTags
+														.slice(0, 3)
+														.map(tag => (
+															<span
+																key={tag}
+																className="border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-foreground/80"
+															>
+																{tag}
+															</span>
+														))}
 												</div>
 											)}
 										</div>

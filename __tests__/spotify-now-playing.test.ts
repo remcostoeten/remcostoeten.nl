@@ -44,7 +44,10 @@ describe('spotify now-playing route', () => {
 					item: {
 						id: 'live-1',
 						name: 'Live song',
-						artists: [{ name: 'Artist one' }, { name: 'Artist two' }],
+						artists: [
+							{ name: 'Artist one' },
+							{ name: 'Artist two' }
+						],
 						album: {
 							name: 'Album one',
 							images: [{ url: 'https://i.scdn.co/image/live-1' }]
@@ -78,7 +81,8 @@ describe('spotify now-playing route', () => {
 
 		vi.stubGlobal(
 			'fetch',
-			vi.fn()
+			vi
+				.fn()
 				.mockResolvedValueOnce({ status: 401 })
 				.mockResolvedValueOnce({ status: 204 })
 		)

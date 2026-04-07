@@ -19,7 +19,8 @@ describe('project github enrichment', () => {
 		const fetchSpy = vi.fn()
 		vi.stubGlobal('fetch', fetchSpy)
 
-		const { enrichProjectsWithGitData } = await import('@/components/projects/server/github')
+		const { enrichProjectsWithGitData } =
+			await import('@/components/projects/server/github')
 		const projects = [
 			{
 				name: 'Project one',

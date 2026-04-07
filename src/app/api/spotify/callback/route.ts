@@ -30,15 +30,11 @@ export async function GET(request: NextRequest) {
 		const error = searchParams.get('error')
 
 		if (error) {
-			return NextResponse.redirect(
-				new URL('/?error=' + error, appUrl)
-			)
+			return NextResponse.redirect(new URL('/?error=' + error, appUrl))
 		}
 
 		if (!code) {
-			return NextResponse.redirect(
-				new URL('/?error=no_code', appUrl)
-			)
+			return NextResponse.redirect(new URL('/?error=no_code', appUrl))
 		}
 
 		const clientId = process.env.SPOTIFY_CLIENT_ID
@@ -65,8 +61,7 @@ export async function GET(request: NextRequest) {
 				body: new URLSearchParams({
 					grant_type: 'authorization_code',
 					code,
-					redirect_uri:
-						redirectUri || DEFAULT_SPOTIFY_REDIRECT_URI
+					redirect_uri: redirectUri || DEFAULT_SPOTIFY_REDIRECT_URI
 				})
 			}
 		)

@@ -10,5 +10,6 @@ export async function requireDevToolsAccess() {
 		return null
 	}
 
+	console.warn(`[DevAccess] Unauthorized: NODE_ENV=${process.env.NODE_ENV}`)
 	return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 }

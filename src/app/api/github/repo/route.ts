@@ -55,7 +55,10 @@ export async function GET(request: NextRequest) {
 	}
 
 	if (!isAllowedGitHubRepo(owner, repo)) {
-		return NextResponse.json({ error: 'Repository not allowed' }, { status: 403 })
+		return NextResponse.json(
+			{ error: 'Repository not allowed' },
+			{ status: 403 }
+		)
 	}
 
 	try {

@@ -37,7 +37,9 @@ type SortField = 'title' | 'date' | 'views'
 type SortDirection = 'asc' | 'desc'
 
 function getPostHref(post: BlogPost) {
-	return post.metadata.draft ? `/admin/blog/${post.slug}` : `/blog/${post.slug}`
+	return post.metadata.draft
+		? `/admin/blog/${post.slug}`
+		: `/blog/${post.slug}`
 }
 
 function BlogCard({ post }: { post: BlogPost }) {
