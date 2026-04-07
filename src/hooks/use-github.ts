@@ -1,6 +1,9 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import type { GitHubEventDetail } from '@/features/github/types'
+
+export type { GitHubEventDetail } from '@/features/github/types'
 
 export interface GitHubUser {
 	login: string
@@ -292,29 +295,6 @@ export function useLatestCommit(owner: string, repo: string) {
 	})
 }
 
-export interface GitHubEventDetail {
-	id: string
-	type:
-		| 'commit'
-		| 'pr'
-		| 'issue'
-		| 'review'
-		| 'release'
-		| 'fork'
-		| 'star'
-		| 'create'
-		| 'delete'
-		| 'unknown'
-	title: string
-	description: string
-	url: string
-	repository: string
-	timestamp: string
-	isPrivate: boolean
-	icon?: string
-	payload?: any
-}
-
 /**
  * Fetch detailed GitHub activity for the activity feed
  */
@@ -331,6 +311,11 @@ export function useGitHubRecentActivity(limit = 10) {
 	})
 }
 
+type GitHubContributionResponseItem = {
+	date: string
+	data: number
+}
+
 /**
  * Fetch contribution data for the graph
  */
@@ -344,10 +329,11 @@ export function useGitHubContributions(
 				`/api/github/contributions?year=${year}`
 			)
 			if (!response.ok) throw new Error('Failed to fetch contributions')
-			const data = await response.json()
+			const data =
+				(await response.json()) as GitHubContributionResponseItem[]
 
-			const contributionsMap = new Map<string, any>()
-			data.forEach((item: any) => {
+			const contributionsMap = new Map<string, number>()
+			data.forEach(item => {
 				contributionsMap.set(item.date, item.data)
 			})
 			return contributionsMap

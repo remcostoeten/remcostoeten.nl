@@ -1,4 +1,5 @@
 import { getGitHubToken } from './auth'
+import type { GitHubEventDetail } from '@/features/github/types'
 
 interface GitHubContributionDay {
 	date: string
@@ -1035,31 +1036,10 @@ export type {
 	GitHubRepo
 }
 
-export interface GitHubEventDetail {
-	id: string
-	type:
-		| 'commit'
-		| 'pr'
-		| 'issue'
-		| 'review'
-		| 'release'
-		| 'fork'
-		| 'star'
-		| 'create'
-		| 'delete'
-		| 'unknown'
-	title: string
-	description: string
-	url: string
-	repository: string
-	timestamp: string
-	isPrivate: boolean
-	icon?: string
-	payload?: any
-}
-
 export interface GitHubDayActivity {
 	date: string
 	events: GitHubEventDetail[]
 	totalCount: number
 }
+
+export type { GitHubEventDetail } from '@/features/github/types'
