@@ -37,6 +37,7 @@ describe('spotify now-playing route', () => {
 		vi.stubGlobal(
 			'fetch',
 			vi.fn().mockResolvedValue({
+				ok: true,
 				status: 200,
 				json: vi.fn().mockResolvedValue({
 					is_playing: true,
@@ -71,6 +72,27 @@ describe('spotify now-playing route', () => {
 		expect(data.duration_ms).toBe(200000)
 		expect(data.track.id).toBe('live-1')
 		expect(data.track.artist).toBe('Artist one, Artist two')
+	})
+
+	it('returns a non-playing state when spotify responds with a non-ok status', async () => {
+		authMocks.hasSpotifyCredentials.mockReturnValue(true)
+		authMocks.getSpotifyAccessToken.mockResolvedValue('token-123')
+		vi.stubGlobal(
+			'fetch',
+			vi.fn().mockResolvedValue({
+				ok: false,
+				status: 429,
+				statusText: 'Too Many Requests',
+				json: vi.fn()
+			})
+		)
+
+		const { GET } = await import('@/app/api/spotify/now-playing/route')
+		const response = await GET()
+		const data = await response.json()
+
+		expect(response.status).toBe(200)
+		expect(data).toEqual({ isPlaying: false })
 	})
 
 	it('retries once on 401 and returns a non-playing state when spotify stays unavailable', async () => {

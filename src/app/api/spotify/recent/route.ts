@@ -5,6 +5,7 @@ import {
 	invalidateSpotifyTokenCache
 } from '@/server/spotify/auth'
 import { getStoredSpotifyTracks } from '@/server/spotify'
+import { parseBoundedIntParam } from '@/shared/lib/request-params'
 
 // Use ISR with 30 second revalidation for recent tracks
 // (Recently played doesn't change that frequently)
@@ -16,7 +17,11 @@ const SPOTIFY_API_BASE = 'https://api.spotify.com/v1'
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)
-		const limit = parseInt(searchParams.get('limit') || '10', 10)
+		const limit = parseBoundedIntParam(searchParams.get('limit'), {
+			defaultValue: 10,
+			min: 1,
+			max: 50
+		})
 
 		if (!hasSpotifyCredentials()) {
 			return fallbackRecentTracks(limit)
@@ -74,7 +79,14 @@ export async function GET(request: Request) {
 	} catch (error) {
 		console.error('Error in Spotify recent tracks API:', error)
 		return fallbackRecentTracks(
-			parseInt(new URL(request.url).searchParams.get('limit') || '10', 10)
+			parseBoundedIntParam(
+				new URL(request.url).searchParams.get('limit'),
+				{
+					defaultValue: 10,
+					min: 1,
+					max: 50
+				}
+			)
 		)
 	}
 }

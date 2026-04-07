@@ -35,9 +35,7 @@ export async function POST(request: NextRequest) {
 		const isCronRequest =
 			cronSecret && authHeader === `Bearer ${cronSecret}`
 
-		const isVercelCron = request.headers.get('x-vercel-cron') === '1'
-
-		if (!isCronRequest && !isVercelCron) {
+		if (!isCronRequest) {
 			const userIsAdmin = await isAdmin()
 			if (!userIsAdmin) {
 				return NextResponse.json(
@@ -57,12 +55,17 @@ export async function POST(request: NextRequest) {
 		const startTime = Date.now()
 
 		let result
-		if (service === 'github') {
+		if (!service || service === 'all') {
+			result = await syncAll()
+		} else if (service === 'github') {
 			result = { github: await syncGitHubActivities() }
 		} else if (service === 'spotify') {
 			result = { spotify: await syncSpotifyListens() }
 		} else {
-			result = await syncAll()
+			return NextResponse.json(
+				{ error: 'Invalid service parameter' },
+				{ status: 400 }
+			)
 		}
 
 		const duration = Date.now() - startTime
