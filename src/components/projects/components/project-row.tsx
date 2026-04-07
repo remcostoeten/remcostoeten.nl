@@ -30,8 +30,8 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 	const hasPreview = project.preview?.type === 'iframe'
 	const hasDesc = !!project.additionalDescription
 	const isOpen = showPreview || showDesc
-	const visibleTech = project.tech.slice(0, 2)
-	const overflowTech = project.tech.slice(2)
+	const primaryTech = project.tech[0]
+	const techSummary = project.tech.join(', ')
 
 	const toggle = () => {
 		if (hasPreview) setShowPreview(!showPreview)
@@ -46,10 +46,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 						{project.name}
 					</span>
 					<span className="hidden min-w-0 flex-1 text-sm text-muted-foreground md:inline truncate">
-						—{' '}
-						{project.description.length > 50
-							? `${project.description.slice(0, 50)}...`
-							: project.description}
+						— {project.description}
 					</span>
 				</div>
 
@@ -59,33 +56,19 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 							{formatShortDate(project.git.lastUpdated)}
 						</span>
 					)}
-					<div className="hidden items-center gap-1 overflow-hidden sm:flex">
-						{visibleTech.map(tech => (
+					{primaryTech && (
+						<div
+							className="hidden items-center overflow-hidden md:flex"
+							title={techSummary}
+						>
 							<span
-								key={tech}
 								className="bg-secondary px-1.5 py-0.5 text-xs text-muted-foreground whitespace-nowrap shrink-0"
+								aria-label={`Tech stack: ${techSummary}`}
 							>
-								{tech}
+								{primaryTech}
 							</span>
-						))}
-						{overflowTech.length > 0 && (
-							<>
-								<span className="shrink-0 text-xs text-muted-foreground/70 transition-opacity duration-200 group-hover:opacity-0">
-									+{overflowTech.length}
-								</span>
-								<div className="hidden items-center gap-1 overflow-hidden opacity-0 transition-[max-width,opacity] duration-300 ease-out md:flex md:max-w-0 md:group-hover:max-w-[220px] md:group-hover:opacity-100">
-									{overflowTech.map(tech => (
-										<span
-											key={tech}
-											className="bg-secondary px-1.5 py-0.5 text-xs text-muted-foreground whitespace-nowrap shrink-0"
-										>
-											{tech}
-										</span>
-									))}
-								</div>
-							</>
-						)}
-					</div>
+						</div>
+					)}
 					<div className="flex items-center">
 						{(hasPreview || hasDesc) && (
 							<button
@@ -139,7 +122,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 			</div>
 
 			<div
-				className="grid transition-all duration-500"
+				className="grid transition-[grid-template-rows] duration-500"
 				style={{
 					gridTemplateRows: isOpen ? '1fr' : '0fr',
 					transitionTimingFunction: EASE_OUT_EXPO
@@ -150,7 +133,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 						<Suspense
 							fallback={
 								<div className="h-[150px] flex items-center justify-center text-xs text-muted-foreground">
-									Loading...
+									Loading…
 								</div>
 							}
 						>
