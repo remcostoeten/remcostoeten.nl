@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from 'react'
 
-type BlogFilter = "all" | "drafts" | "published";
+type BlogFilter = 'all' | 'drafts' | 'published'
 
 type Props = {
 	filter: BlogFilter
@@ -12,19 +12,19 @@ type Props = {
 const BlogFilterContext = createContext<Props | null>(null)
 
 export function BlogFilterProvider({ children }: { children: ReactNode }) {
-  const [filter, setFilter] = useState<BlogFilter>("all");
+	const [filter, setFilter] = useState<BlogFilter>('all')
 
-  return (
-    <BlogFilterContext.Provider value={{ filter, setFilter }}>
-      {children}
-    </BlogFilterContext.Provider>
-  );
+	return (
+		<BlogFilterContext.Provider value={{ filter, setFilter }}>
+			{children}
+		</BlogFilterContext.Provider>
+	)
 }
 
 export function useBlogFilter() {
-  const context = useContext(BlogFilterContext);
-  if (!context) {
-    return { filter: "all" as BlogFilter, setFilter: () => {} };
-  }
-  return context;
+	const context = useContext(BlogFilterContext)
+	if (!context) {
+		return { filter: 'all' as BlogFilter, setFilter: () => {} }
+	}
+	return context
 }

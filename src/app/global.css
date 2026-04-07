@@ -146,7 +146,8 @@
 		@apply bg-background text-foreground;
 	}
 
-	:where(p, li, h1, h2, h3, h4, h5, h6, td, th) {
+	.prose :where(p, li, h1, h2, h3, h4, h5, h6, td, th),
+	.user-generated-content :where(p, li, h1, h2, h3, h4, h5, h6, td, th) {
 		overflow-wrap: anywhere;
 		word-break: break-word;
 	}
