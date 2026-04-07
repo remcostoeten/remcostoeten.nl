@@ -9,12 +9,12 @@ import {
 import { ProjectsView } from '../projects'
 
 const TechStackCloud = nextDynamic(
-	() =>
-		import('@/components/landing/tech-stack-cloud').then(m => ({
-			default: m.TechStackCloud
-		})),
-	{ loading: () => <TechStackSkeleton /> }
-)
+  () =>
+    import("@/components/landing/tech-stack-cloud").then((m) => ({
+      default: m.TechStackCloud,
+    })),
+  { loading: () => <TechStackSkeleton /> },
+);
 
 const WorkExperienceSection = nextDynamic(
 	() =>
@@ -35,18 +35,18 @@ const ActivitySectionClient = nextDynamic(
 )
 
 const ProjectShowcase = nextDynamic(
-	() =>
-		import('@/components/projects').then(m => ({
-			default: m.ProjectShowcase
-		})),
-	{ loading: () => <div className="h-64 animate-pulse bg-muted/20" /> }
-)
+  () =>
+    import("@/components/projects").then((m) => ({
+      default: m.ProjectShowcase,
+    })),
+  { loading: () => <div className="h-64 animate-pulse bg-muted/20" /> },
+);
 
 export function HomeView() {
-	return (
-		<>
-			<div className="space-y-6">
-				<Intro />
+  return (
+    <>
+      <div className="space-y-6">
+        <Intro />
 
 				<div className="space-y-4">
 					<Section

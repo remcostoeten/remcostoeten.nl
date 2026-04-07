@@ -11,7 +11,8 @@ export interface BaseMetadataConfig {
 	noIndex?: boolean
 }
 
-export { siteBaseUrl as baseUrl }
+export const baseUrl =
+	process.env.NEXT_PUBLIC_SITE_URL || 'https://remcostoeten.nl'
 
 const defaultImage = `${siteBaseUrl}/og`
 
@@ -95,7 +96,7 @@ export function createArticleMetadata(config: {
 	} = config
 
 	const imageUrl =
-		ogImage || `${siteBaseUrl}/og?title=${encodeURIComponent(title)}`
+		ogImage || `${baseUrl}/og?title=${encodeURIComponent(title)}`
 
 	return {
 		title,
