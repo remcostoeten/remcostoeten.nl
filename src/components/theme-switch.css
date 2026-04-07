@@ -522,3 +522,36 @@
 		transform: translateY(-100%) translateX(50%);
 	}
 }
+
+@media (prefers-reduced-motion: reduce) {
+	.theme-switch,
+	.theme-switch *,
+	.theme-switch *::before,
+	.theme-switch *::after {
+		animation: none !important;
+		transition: none !important;
+		will-change: auto !important;
+	}
+
+	.theme-switch__sun-moon-container:hover,
+	.theme-switch__moon:hover,
+	.theme-switch__container:hover .theme-switch__clouds {
+		transform: none !important;
+	}
+
+	.theme-switch__moon:hover .theme-switch__spot {
+		background-color: var(--spot-color) !important;
+	}
+
+	.theme-switch__sun-moon-container:hover::after {
+		opacity: 0 !important;
+	}
+
+	.theme-switch__shooting-star,
+	.theme-switch__shooting-star-2,
+	.theme-switch__meteor,
+	.theme-switch__aurora,
+	.theme-switch__comets {
+		display: none !important;
+	}
+}
