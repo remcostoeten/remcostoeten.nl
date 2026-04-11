@@ -13,7 +13,7 @@ import { SettingsPopover } from './sections/SettingsPopover'
 
 interface DevWidgetProps extends DevWidgetConfig {
 	session?: Session | null
-	onSignOut?: () => void
+	onSignOut?: () => void | Promise<void>
 }
 
 export function DevWidget({

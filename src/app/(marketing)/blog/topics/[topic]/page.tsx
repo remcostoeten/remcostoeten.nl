@@ -1,10 +1,11 @@
 import { getAllTopics, getTopicArchive } from '@/features/blog'
 import { formatDate } from '@/utils/client-utils'
+import { isAdmin } from '@/utils/is-admin'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
 	const topics = getAllTopics()
@@ -36,8 +37,12 @@ export default async function TopicPage({
 }: {
 	params: Promise<{ topic: string }>
 }) {
+	const userIsAdmin = await isAdmin()
 	const { topic } = await params
-	const archive = await getTopicArchive(decodeURIComponent(topic))
+	const archive = await getTopicArchive(
+		decodeURIComponent(topic),
+		userIsAdmin
+	)
 
 	if (!archive) {
 		notFound()
@@ -64,7 +69,11 @@ export default async function TopicPage({
 				{archive.posts.map((post, index) => (
 					<li key={post.slug} className="block p-0 m-0">
 						<Link
-							href={`/blog/${post.slug}`}
+							href={
+								userIsAdmin && post.metadata.draft
+									? `/admin/blog/${post.slug}`
+									: `/blog/${post.slug}`
+							}
 							className="group relative block animate-stagger active:scale-[0.995] transition-transform overflow-hidden first:rounded-t-2xl last:rounded-b-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
 							style={{ animationDelay: `${index * 50}ms` }}
 						>

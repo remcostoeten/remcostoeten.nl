@@ -56,6 +56,42 @@ function shouldSkipLiveGitHubFetches(): boolean {
 	)
 }
 
+export function selectDistinctRecentActivity(
+	events: GitHubEventDetail[],
+	limit: number
+): GitHubEventDetail[] {
+	const seenRepositories = new Set<string>()
+	const distinctEvents: GitHubEventDetail[] = []
+	const fallbackEvents: GitHubEventDetail[] = []
+
+	for (const event of events) {
+		if (seenRepositories.has(event.repository)) {
+			fallbackEvents.push(event)
+			continue
+		}
+
+		seenRepositories.add(event.repository)
+		distinctEvents.push(event)
+
+		if (distinctEvents.length >= limit) {
+			break
+		}
+	}
+
+	if (distinctEvents.length >= limit) {
+		return distinctEvents
+	}
+
+	for (const event of fallbackEvents) {
+		distinctEvents.push(event)
+		if (distinctEvents.length >= limit) {
+			break
+		}
+	}
+
+	return distinctEvents
+}
+
 class GitHubService {
 	private token: string
 	private baseUrl = 'https://api.github.com'
@@ -1016,10 +1052,9 @@ class GitHubService {
 				if (detail) {
 					details.push(detail)
 				}
-				if (details.length >= limit) break
 			}
 
-			return details
+			return selectDistinctRecentActivity(details, limit)
 		} catch (error) {
 			console.error('Error fetching recent activity:', error)
 			return []

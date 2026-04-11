@@ -1,6 +1,7 @@
 'use client'
 
 import { lazy, Suspense, type ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 import { Toaster } from 'sonner'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
@@ -37,7 +38,9 @@ function DevWidgetWrapper() {
 		<Suspense fallback={null}>
 			<DevWidget
 				session={session}
-				onSignOut={signOut}
+				onSignOut={async () => {
+					await signOut()
+				}}
 				showAuth={true}
 				showRoutes={true}
 				showSystemInfo={true}
@@ -47,26 +50,37 @@ function DevWidgetWrapper() {
 	)
 }
 
+function AppChrome() {
+	const pathname = usePathname()
+	const needsAuthShell =
+		pathname.startsWith('/blog') || pathname.startsWith('/admin')
+
+	return (
+		<>
+			<ThemeSwitch />
+			<Toaster />
+			<UnifiedAnalytics />
+			<DevWidgetWrapper />
+			{needsAuthShell ? <VimAuthProvider /> : null}
+		</>
+	)
+}
+
 export function AppProviders({ children }: TProps) {
 	return (
 		<PostHogProvider>
 			<CustomQueryClientProvider>
 				<BlogFilterProvider>
-					<VimAuthProvider>
-						<StaggerProvider
-							config={{
-								baseDelay: 80,
-								initialDelay: 0,
-								strategy: 'mount-order'
-							}}
-						>
-							<ThemeSwitch />
-							{children}
-							<Toaster />
-							<UnifiedAnalytics />
-							<DevWidgetWrapper />
-						</StaggerProvider>
-					</VimAuthProvider>
+					<StaggerProvider
+						config={{
+							baseDelay: 80,
+							initialDelay: 0,
+							strategy: 'mount-order'
+						}}
+					>
+						{children}
+						<AppChrome />
+					</StaggerProvider>
 				</BlogFilterProvider>
 			</CustomQueryClientProvider>
 		</PostHogProvider>

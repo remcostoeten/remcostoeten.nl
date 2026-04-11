@@ -25,7 +25,7 @@ export async function BlogPosts({
 					</p>
 				</div>
 				<div className="pt-2">
-					<BlogPostsClient posts={sortedBlogs} />
+					<BlogPostsClient posts={sortedBlogs} isAdmin={userIsAdmin} />
 				</div>
 			</div>
 		</Section>

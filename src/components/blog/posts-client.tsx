@@ -32,9 +32,18 @@ type BlogPost = {
 
 type Props = {
 	post: BlogPost
+	isAdmin?: boolean
 }
 
-function BlogCard({ post }: Props) {
+function getPostHref(post: BlogPost, isAdmin: boolean) {
+	if (isAdmin && post.metadata.draft) {
+		return `/admin/blog/${post.slug}`
+	}
+
+	return `/blog/${post.slug}`
+}
+
+function BlogCard({ post, isAdmin = false }: Props) {
 	const dateParts = getDateParts(post.metadata.publishedAt)
 	const readTimeMinutes = readMinutes(post.metadata.readTime || '')
 
@@ -45,7 +54,7 @@ function BlogCard({ post }: Props) {
 
 	return (
 		<Link
-			href={`/blog/${post.slug}`}
+			href={getPostHref(post, isAdmin)}
 			className="group -mx-4 flex items-start justify-between gap-4 border-b border-border/40 px-4 py-5 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary last:border-b-0 md:-mx-5 md:px-5"
 		>
 			<div className="min-w-0 flex-1">
@@ -127,6 +136,7 @@ function BlogCard({ post }: Props) {
 
 type BlogPostsProps = {
 	posts: BlogPost[]
+	isAdmin?: boolean
 }
 
 function BlogCardSkeleton() {
@@ -147,7 +157,10 @@ function BlogCardSkeleton() {
 	)
 }
 
-export function BlogPostsClient({ posts }: BlogPostsProps) {
+export function BlogPostsClient({
+	posts,
+	isAdmin = false
+}: BlogPostsProps) {
 	const [showAll, setShowAll] = useState(false)
 	const { filter, setFilter } = useBlogFilter()
 
@@ -181,7 +194,7 @@ export function BlogPostsClient({ posts }: BlogPostsProps) {
 
 			<div className="border-b border-border/40">
 				{displayedBlogs.map(post => (
-					<BlogCard key={post.slug} post={post} />
+					<BlogCard key={post.slug} post={post} isAdmin={isAdmin} />
 				))}
 			</div>
 

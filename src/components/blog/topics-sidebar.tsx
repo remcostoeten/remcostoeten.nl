@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { ArrowUpRight, Hash } from 'lucide-react'
 import { getVisibleTopics } from '@/features/blog/lib/visibility'
+import { isAdmin } from '@/utils/is-admin'
 import { Section } from '../ui/section'
 
 export async function TopicsSidebar() {
-	const topics = await getVisibleTopics()
+	const userIsAdmin = await isAdmin()
+	const topics = await getVisibleTopics(userIsAdmin)
 
 	return (
 		<Section title="Browse by Topic" noHeaderMargin>

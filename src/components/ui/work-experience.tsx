@@ -63,6 +63,7 @@ export function WorkExperience({
 	experiences: ExperienceItemType[]
 }) {
 	const [showAll, setShowAll] = React.useState(false)
+	const [showEducation, setShowEducation] = React.useState(false)
 
 	const currentJob = experiences.find(exp => exp.isCurrentEmployer)
 	const education = experiences.find(exp => exp.id === 'education')
@@ -72,6 +73,9 @@ export function WorkExperience({
 
 	const previewJob = workHistory[0]
 	const remainingJobs = workHistory.slice(1)
+
+	const educationCount = education?.positions.length ?? 0
+	const showEducationToggle = educationCount > 1
 
 	return (
 		<div
@@ -163,11 +167,39 @@ export function WorkExperience({
 			</div>
 
 			{education && (
-				<ExperienceItem
-					key={education.id}
-					experience={education}
-					shouldExpandAll={showAll}
-				/>
+				<>
+					<ExperienceItem
+						key={education.id}
+						experience={education}
+						shouldExpandAll={showEducation || !showEducationToggle}
+					/>
+					{showEducationToggle && !showEducation && (
+						<div className="flex justify-center py-2">
+							<button
+								type="button"
+								onClick={() => setShowEducation(true)}
+								aria-expanded={showEducation}
+								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
+							>
+								<ChevronsUpDownIcon className="size-4" />
+								<span>View All ({educationCount})</span>
+							</button>
+						</div>
+					)}
+					{showEducationToggle && showEducation && (
+						<div className="flex justify-center py-2">
+							<button
+								type="button"
+								onClick={() => setShowEducation(false)}
+								aria-expanded={showEducation}
+								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
+							>
+								<ChevronsDownUpIcon className="size-4 rotate-180" />
+							<span>Show Less</span>
+							</button>
+						</div>
+					)}
+				</>
 			)}
 		</div>
 	)

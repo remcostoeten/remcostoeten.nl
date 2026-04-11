@@ -14,6 +14,7 @@ import {
 	BlogPostStructuredData,
 	BreadcrumbStructuredData
 } from '@/components/seo/structured-data'
+import { isAdmin } from '@/utils/is-admin'
 
 export async function getBlogPostStaticParams() {
 	const { getBlogPosts } = await import('@/features/blog')
@@ -37,6 +38,7 @@ export async function BlogPostView({
 	linkBasePath?: string
 	showStructuredData?: boolean
 }) {
+	const userIsAdmin = includeDrafts || (await isAdmin())
 	const resolvedParams = await params
 	let slug = Array.isArray(resolvedParams.slug)
 		? resolvedParams.slug.join('/')
@@ -46,7 +48,7 @@ export async function BlogPostView({
 		notFound()
 	}
 
-	const post = await getResolvedBlogPostBySlug(slug, includeDrafts)
+	const post = await getResolvedBlogPostBySlug(slug, userIsAdmin)
 
 	if (!post) {
 		notFound()
@@ -54,7 +56,7 @@ export async function BlogPostView({
 
 	const { prevPost, nextPost } = await getAdjacentBlogPosts(
 		slug,
-		includeDrafts
+		userIsAdmin
 	)
 
 	return (

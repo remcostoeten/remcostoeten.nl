@@ -9,7 +9,7 @@ import { useBlogFilter } from '@/hooks/use-blog-filter'
 import { OuterAuthGlow } from '../ui/effects/ouder-auth-glow'
 
 type Props = {
-	children: React.ReactNode
+	children?: React.ReactNode
 }
 
 export function VimAuthProvider({ children }: Props) {

@@ -24,7 +24,9 @@ export interface AnalyticsConfig {
 export const analyticsConfig: AnalyticsConfig = {
 	providers: {
 		vercel: {
-			enabled: process.env.NODE_ENV === 'production'
+			enabled:
+				process.env.NODE_ENV === 'production' &&
+				process.env.NEXT_PUBLIC_ENABLE_VERCEL_ANALYTICS === 'true'
 		},
 		remco: {
 			enabled: !!process.env.NEXT_PUBLIC_REMCO_ANALYTICS_URL,
@@ -36,7 +38,9 @@ export const analyticsConfig: AnalyticsConfig = {
 				!!process.env.NEXT_PUBLIC_POSTHOG_KEY
 		},
 		'speed-insights': {
-			enabled: process.env.NODE_ENV === 'production'
+			enabled:
+				process.env.NODE_ENV === 'production' &&
+				process.env.NEXT_PUBLIC_ENABLE_SPEED_INSIGHTS === 'true'
 		}
 	},
 	adminAnalytics: {

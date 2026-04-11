@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 
 interface AuthSectionProps {
 	session?: Session | null
-	onSignOut?: () => void
+	onSignOut?: () => void | Promise<void>
 }
 
 export function AuthSection({ session, onSignOut }: AuthSectionProps) {
@@ -33,7 +33,9 @@ export function AuthSection({ session, onSignOut }: AuthSectionProps) {
 				</div>
 				{onSignOut && (
 					<button
-						onClick={onSignOut}
+						onClick={() => {
+							void onSignOut()
+						}}
 						className="flex items-center gap-1 px-2 py-1 text-[10px] bg-[hsl(355,98%,75%)]/10 text-[hsl(355,98%,75%)] hover:bg-[hsl(355,98%,75%)]/20 border border-[hsl(355,98%,75%)]/20 transition-colors"
 						title="Sign out"
 					>
