@@ -23,6 +23,7 @@
 	],
 	"scripts": {
 		"dev": "next dev",
+		"postinstall": "node scripts/repair-typescript.mjs",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:coverage": "vitest run --coverage",
@@ -36,7 +37,7 @@
 		"db:studio": "drizzle-kit studio",
 		"lint": "oxlint",
 		"lint:fix": "oxlint --fix",
-		"typecheck": "node -e \"globalThis.ts=require('typescript');process.argv=['node','tsc','--noEmit'];require('typescript/bin/tsc')\"",
+		"typecheck": "node scripts/repair-typescript.mjs && tsc --noEmit",
 		"format": "oxfmt --check",
 		"format:fix": "oxfmt"
 	},
