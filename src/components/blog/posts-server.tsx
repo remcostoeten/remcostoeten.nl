@@ -1,4 +1,4 @@
-import { getVisibleBlogPosts } from '@/features/blog'
+import { getVisibleBlogPosts, BLOG_DESCRIPTION } from '@/features/blog'
 import { isAdmin } from '@/utils/is-admin'
 import { BlogPostsClient, PostCountHeader } from './posts-client'
 import { Section } from '../ui/section'
@@ -20,8 +20,7 @@ export async function BlogPosts({
 			<div className="px-4 pt-4 md:px-5">
 				<div className="border-b border-border/40 pb-4">
 					<p className="max-w-2xl text-sm leading-relaxed text-muted-foreground/80">
-						Build notes, postmortems, and technical writeups worth
-						keeping around after the tab would normally be closed.
+						{BLOG_DESCRIPTION}
 					</p>
 				</div>
 				<div className="pt-2">
