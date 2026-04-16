@@ -27,8 +27,28 @@ It is less of a polished launch post and more of a snapshot. A place to document
   - **GitHub**: [remcostoeten/analytics](https://github.com/remcostoeten/analytics)
   - **Live Demo**: [analytics.remcostoeten.nl](https://analytics.remcostoeten.nl)
 
-- **[ GitHub and Google OAuth automator ]**  
+- **[ @remcostoeten/use-shortcut ]**  
+  I built this because existing shortcut libraries felt clunky. I wanted a "human-readable" API that felt like writing a sentence, with perfect TypeScript autocompletion for every key and modifier. 
+
+  - **Tech Talk**: A zero-dependency React hook built with a fluent/chainable builder pattern. It handles event listener cleanup automatically and supports advanced modifier combinations without manual string parsing.
+  - **Possibilities**: Support for command combos (Ctrl/Cmd + K), sequential key presses (G then H), global/scoped listeners, and automatic documentation generation via description tags.
+  - **Usage**:
+    ````tsx
+    useShortcut()
+      .cmd('k')
+      .action(() => setOpen(true))
+      .description('Open command palette')
+      .build();
+    ````
+  - **GitHub**: [remcostoeten/use-shortcut](https://github.com/remcostoeten/use-shortcut)
+  - **Live Demo**: [use-shortcut.vercel.app](https://use-shortcut.vercel.app)
+
+- **[ oauth-app-automator ]**  
   I hate creating OAuth applications when using social providers. Thus I automated the process with a Python program. Authenticate once and from there you're able to create, (bulk) delete apps and test credentials. Write secret and client ID to clipboard, or straight in your environment variable.
+
+  - **Tech Talk**: Python-based automation that scripts the actual browser interactions (via Selenium/Playwright) to fetch credentials directly from provider portals (GitHub/Google).
+  - **Possibilities**: Bulk creation of developer apps, automatic `.env` file updates, and a clean interactive CLI/TUI for managing credentials.
+  - **GitHub**: [remcostoeten/oauth-app-automator](https://github.com/remcostoeten/oauth-app-automator)
 
 ## What changed while building it
 
