@@ -8,6 +8,10 @@ draft: false
 
 Once you start writing more often, unfinished posts start piling up in the repo. I wanted to keep those drafts around without risking that they would accidentally show up in the public blog, so I added a simple draft system around my filesystem-based blog.
 
+Here's what the final experience looks like — the admin can toggle between viewing all posts (including drafts) or just the published ones:
+
+<Video src="/draft-demo.mp4" width="800" height="450" loop muted className="my-8" />
+
 I already had GitHub OAuth in place for a private admin area, plus a server-side admin check based on role and email. That made the draft flow fairly small to implement.
 
 ## Requirements
@@ -159,5 +163,3 @@ The final system is small, but it covers the whole flow:
 I also added a visible draft badge in the blog listing so I can immediately tell which entries are still private when browsing as admin.
 
 Related file: [`src/components/blog/posts-client.tsx`](https://github.com/remcostoeten/remcostoeten.nl/blob/master/src/components/blog/posts-client.tsx)
-
-<Video src="/draft-demo.mp4" width="800" height="450" loop muted className="my-8" />

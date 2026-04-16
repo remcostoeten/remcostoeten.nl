@@ -1,10 +1,13 @@
 import { rehypeExtractCodeMeta } from '@/shared/lib/rehype-extract-code-meta'
+import rehypeRaw from 'rehype-raw'
 import { ArrowUpRight } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import remarkGfm from 'remark-gfm'
+import remarkDirective from 'remark-directive'
+import remarkCalloutDirectives from '@microflash/remark-callout-directives'
 import { CodeBlock } from '../ui/code-block'
 import {
 	Notice,
@@ -115,6 +118,42 @@ function Video({ src, ...props }: { src: string; [key: string]: any }) {
 		</video>
 	)
 }
+
+function PassthroughHTML({ children, ...props }: any) {
+	return React.createElement(
+		(props as any).tagName || 'div',
+		props,
+		children
+	)
+}
+
+const htmlElementsToPass = [
+	'details',
+	'summary',
+	'section',
+	'small',
+	'div',
+	'span',
+	'p',
+	'strong',
+	'em',
+	'u',
+	'abbr',
+	'acronym',
+	'blockquote',
+	'cite',
+	'del',
+	'ins',
+	'kbd',
+	'samp',
+	'var',
+	'mark',
+	'time',
+	'output',
+	'progress',
+	'meter',
+	'center'
+]
 
 function extractTextContent(node: React.ReactNode): string {
 	if (typeof node === 'string' || typeof node === 'number') {
@@ -249,6 +288,13 @@ function normalizeCodeBlockInfo(
 	}
 }
 
+const htmlElementComponents = Object.fromEntries(
+	htmlElementsToPass.map(tag => [
+		tag,
+		(props: any) => <PassthroughHTML {...props} tagName={tag} />
+	])
+)
+
 let components = {
 	h1: createHeading(1),
 	h2: createHeading(2),
@@ -259,6 +305,7 @@ let components = {
 	Image: RoundedImage,
 	Video,
 	CollapsibleMedia,
+	...htmlElementComponents,
 
 	a: CustomLink,
 	Notice,
@@ -361,9 +408,17 @@ export function CustomMDX(props) {
 			components={{ ...components, ...(props.components || {}) }}
 			options={{
 				mdxOptions: {
-					remarkPlugins: [remarkGfm],
-					rehypePlugins: [rehypeExtractCodeMeta]
-				}
+					remarkPlugins: [
+						remarkGfm,
+						remarkDirective,
+						remarkCalloutDirectives
+					],
+					rehypePlugins: [
+						rehypeExtractCodeMeta,
+						rehypeRaw
+					]
+				},
+				allowDangerousHtml: true
 			}}
 		/>
 	)

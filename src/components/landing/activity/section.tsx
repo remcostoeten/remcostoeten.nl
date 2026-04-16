@@ -30,17 +30,28 @@ export function ActivitySection() {
           Besides my professional work, I also build a lot of open source.
           Primarily I've been working on{" "}
           <Link href="https://skriuw.vercel.app" target="_blank">
-            <ProjectHoverWrapper
-              repository="remcostoeten/skriuw"
-              isPrivate={false}
-            >
+            <ProjectHoverWrapper repository="remcostoeten/skriuw" isPrivate={false}>
               <span className="text-foreground/80 underline decoration-dotted underline-offset-4">
                 Skriuw
               </span>
             </ProjectHoverWrapper>
-          </Link>
-          . A Notion-like desktop application which is almost in beta for you to
-          try!
+          </Link>, a Notion-like desktop application which is almost in beta for you to
+          try. I've also been building{" "}
+          <Link href="https://doradb.vercel.app" target="_blank">
+            <ProjectHoverWrapper repository="remcostoeten/doradb" isPrivate={false}>
+              <span className="text-foreground/80 underline decoration-dotted underline-offset-4">
+                DoraDB
+              </span>
+            </ProjectHoverWrapper>
+          </Link>{" "}
+          and{" "}
+          <Link href="https://zentjes.vercel.app" target="_blank">
+            <ProjectHoverWrapper repository="remcostoeten/zentjes" isPrivate={false}>
+              <span className="text-foreground/80 underline decoration-dotted underline-offset-4">
+                Zentjes
+              </span>
+            </ProjectHoverWrapper>
+          </Link>.
         </p>
 
         <div>

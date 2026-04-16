@@ -61,7 +61,7 @@ function AppChrome() {
 			<Toaster />
 			<UnifiedAnalytics />
 			<DevWidgetWrapper />
-			{needsAuthShell ? <VimAuthProvider /> : null}
+			<VimAuthProvider />
 		</>
 	)
 }

@@ -6,10 +6,10 @@ import { Terminal, X, Settings, Home } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { DevWidgetConfig, Corner, Session } from './types'
-import { AuthSection } from './sections/AuthSection'
-import { RoutesSection } from './sections/RoutesSection'
-import { SystemInfoSection } from './sections/SystemInfoSection'
-import { SettingsPopover } from './sections/SettingsPopover'
+import { AuthSection } from './sections/auth-section'
+import { RoutesSection } from './sections/routes-section'
+import { SystemInfoSection } from './sections/system-info-setion'
+import { SettingsPopover } from './sections/settings-popover'
 
 interface DevWidgetProps extends DevWidgetConfig {
 	session?: Session | null
@@ -91,7 +91,7 @@ export function DevWidget({
 			>
 				<button
 					onClick={() => setIsMinimized(false)}
-					className="bg-[hsl(0,0%,7%)] text-[hsl(167.8,53.25%,54.71%)] p-2 shadow-lg hover:bg-[hsl(0,0%,12%)] transition-colors border border-[hsl(0,0%,18%)]"
+					className="bg-background-secondary text-primary p-2 shadow-lg hover:bg-accent transition-colors border border-border"
 					title="Dev Tools"
 				>
 					<Terminal className="w-4 h-4" />
@@ -116,10 +116,10 @@ export function DevWidget({
 				initial={{ opacity: 0, y: 8 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-				className="fixed z-50 bg-[hsl(0,0%,7%)] text-[hsl(0,0%,85%)] shadow-2xl border border-[hsl(0,0%,18%)] min-w-[280px] max-h-[85vh] overflow-hidden flex flex-col font-mono"
+				className="fixed z-50 bg-background-secondary text-foreground shadow-2xl border border-border min-w-[280px] max-h-[85vh] overflow-hidden flex flex-col font-mono"
 				style={currentPos}
 			>
-				<div className="flex items-center justify-between px-3 py-2 border-b border-[hsl(0,0%,18%)] bg-[hsl(0,0%,8.6%)]">
+				<div className="flex items-center justify-between px-3 py-2 border-b border-border bg-background">
 					<div className="flex items-center gap-2">
 						<Terminal className="w-3.5 h-3.5 text-[hsl(167.8,53.25%,54.71%)]" />
 						<span className="text-[11px] font-medium tracking-tight uppercase">
@@ -139,7 +139,7 @@ export function DevWidget({
 								onClick={() =>
 									setIsSettingsOpen(!isSettingsOpen)
 								}
-								className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] transition-colors p-1"
+								className="text-muted-foreground hover:text-foreground transition-colors p-1"
 								title="Settings"
 							>
 								<Settings className="w-3.5 h-3.5" />
@@ -147,7 +147,7 @@ export function DevWidget({
 						)}
 						<button
 							onClick={() => setIsMinimized(true)}
-							className="text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] transition-colors p-1"
+							className="text-muted-foreground hover:text-foreground transition-colors p-1"
 						>
 							<X className="w-3.5 h-3.5" />
 						</button>
@@ -169,11 +169,11 @@ export function DevWidget({
 					)}
 				</div>
 
-				<div className="px-3 py-1.5 border-t border-[hsl(0,0%,18%)] bg-[hsl(0,0%,8.6%)]">
-					<div className="flex items-center justify-between text-[9px] text-[hsl(0,0%,55%)]">
+				<div className="px-3 py-1.5 border-t border-border bg-background">
+					<div className="flex items-center justify-between text-[9px] text-muted-foreground">
 						<span>
 							press{' '}
-							<kbd className="px-1 py-0.5 bg-[hsl(0,0%,18%)] text-[hsl(0,0%,70%)]">
+							<kbd className="px-1 py-0.5 bg-accent text-foreground">
 								`
 							</kbd>{' '}
 							to toggle

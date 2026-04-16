@@ -31,6 +31,7 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 	other
 }: Props) {
 	const [showAll, setShowAll] = useState(false)
+	const [openRowName, setOpenRowName] = useState<string | null>(null)
 	const [activeFeaturedIndex, setActiveFeaturedIndex] = useState(0)
 	const [hasSwitched, setHasSwitched] = useState(false)
 	const firstCardRef = useRef<HTMLDivElement>(null)
@@ -98,7 +99,18 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 				>
 					<Suspense fallback={null}>
 						{other.map(project => (
-							<ProjectRow key={project.name} project={project} />
+							<ProjectRow
+								key={project.name}
+								project={project}
+								isOpen={openRowName === project.name}
+								onToggle={() =>
+									setOpenRowName(current =>
+										current === project.name
+											? null
+											: project.name
+									)
+								}
+							/>
 						))}
 					</Suspense>
 				</div>

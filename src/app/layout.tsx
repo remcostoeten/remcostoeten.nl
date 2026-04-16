@@ -8,6 +8,7 @@ import {
 	PersonStructuredData
 } from '@/components/seo/structured-data'
 import { AppProviders } from '@/components/providers/providers'
+import { ThemeInitializer } from '@/components/theme-initializer'
 import { baseUrl } from '@/core/config/site'
 import './global.css'
 
@@ -109,23 +110,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				/>
 				<link rel="preconnect" href="https://i.scdn.co" />
 
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `
-              (function(){
-                try {
-                  var savedTheme = localStorage.getItem('theme');
-                  var systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                } catch(e) {}
-              })();
-            `
-					}}
-				/>
+				<ThemeInitializer />
 				<WebsiteStructuredData />
 				<PersonStructuredData />
 			</head>

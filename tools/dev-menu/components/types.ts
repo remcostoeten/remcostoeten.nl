@@ -1,6 +1,6 @@
 export type Corner = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'
 
-export interface DevWidgetConfig {
+export type DevWidgetConfig = {
 	showAuth?: boolean
 	showRoutes?: boolean
 	showSystemInfo?: boolean
@@ -9,11 +9,11 @@ export interface DevWidgetConfig {
 	isAdmin?: boolean
 }
 
-export interface SessionUser {
+export type SessionUser = {
 	name?: string
 	email?: string
 }
 
-export interface Session {
+export type Session = {
 	user?: SessionUser
 }

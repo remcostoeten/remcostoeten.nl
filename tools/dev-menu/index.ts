@@ -1,7 +1,7 @@
-export { DevWidget } from './components/DevWidget'
+export { DevWidget } from './components/dev-widget'
 export * from './components/types'
 
-export { AuthSection } from './components/sections/AuthSection'
-export { RoutesSection } from './components/sections/RoutesSection'
-export { SystemInfoSection } from './components/sections/SystemInfoSection'
-export { SettingsPopover } from './components/sections/SettingsPopover'
+export { AuthSection } from './components/sections/auth-section'
+export { RoutesSection } from './components/sections/routes-section'
+export { SystemInfoSection } from './components/sections/system-info-setion'
+export { SettingsPopover } from './components/sections/settings-popover'

@@ -1,6 +1,6 @@
 /** Example usage configurations for DevMenu */
 
-import { DevWidget } from './components/DevWidget'
+import { DevWidget } from './components/dev-widget'
 
 export function FullFeaturedExample() {
 	const session = { user: { name: 'John', email: 'john@example.com' } }

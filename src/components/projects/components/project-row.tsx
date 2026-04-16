@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useState, lazy, Suspense } from 'react'
+import { memo, lazy, Suspense } from 'react'
 import { Github, ExternalLink, Eye, ChevronDown } from 'lucide-react'
 import { cn } from '@/shared/lib/cn'
 import { formatShortDate } from '@/shared/lib/date'
@@ -14,6 +14,8 @@ const ProjectPreviewRenderer = lazy(() =>
 
 type Props = {
 	project: IProject
+	isOpen: boolean
+	onToggle: () => void
 }
 
 const EASE_OUT_EXPO = 'cubic-bezier(0.16, 1, 0.3, 1)'
@@ -23,20 +25,16 @@ function getExternalUrl(preview?: TPreview) {
 	return undefined
 }
 
-export const ProjectRow = memo(function ProjectRow({ project }: Props) {
-	const [showPreview, setShowPreview] = useState(false)
-	const [showDesc, setShowDesc] = useState(false)
+export const ProjectRow = memo(function ProjectRow({
+	project,
+	isOpen,
+	onToggle
+}: Props) {
 	const externalUrl = getExternalUrl(project.preview)
 	const hasPreview = project.preview?.type === 'iframe'
 	const hasDesc = !!project.additionalDescription
-	const isOpen = showPreview || showDesc
 	const primaryTech = project.tech[0]
 	const techSummary = project.tech.join(', ')
-
-	const toggle = () => {
-		if (hasPreview) setShowPreview(!showPreview)
-		else if (hasDesc) setShowDesc(!showDesc)
-	}
 
 	return (
 		<div className="flex flex-col border-b border-border">
@@ -72,7 +70,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 					<div className="flex items-center">
 						{(hasPreview || hasDesc) && (
 							<button
-								onClick={toggle}
+								onClick={onToggle}
 								className={cn(
 									'min-h-9 min-w-9 inline-flex items-center justify-center p-2 transition-colors',
 									isOpen
@@ -129,7 +127,7 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 				}}
 			>
 				<div className="overflow-hidden">
-					{showPreview && (
+					{hasPreview && isOpen && (
 						<Suspense
 							fallback={
 								<div className="h-[150px] flex items-center justify-center text-xs text-muted-foreground">
@@ -140,11 +138,11 @@ export const ProjectRow = memo(function ProjectRow({ project }: Props) {
 							<ProjectPreviewRenderer
 								preview={project.preview}
 								name={project.name}
-								isVisible={showPreview}
+								isVisible={isOpen}
 							/>
 						</Suspense>
 					)}
-					{showDesc && !showPreview && (
+					{hasDesc && !hasPreview && isOpen && (
 						<div className="px-3 py-3 text-xs text-muted-foreground/80 leading-relaxed border-t border-border bg-muted/20">
 							{project.additionalDescription}
 						</div>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LayoutGrid } from 'lucide-react'
 import { Corner } from '../types'
 
-interface SettingsPopoverProps {
+type Props = {
 	isOpen: boolean
 	corner: Corner
 	onClose: () => void
@@ -18,7 +18,7 @@ export function SettingsPopover({
 	onClose,
 	onCornerChange,
 	currentPos
-}: SettingsPopoverProps) {
+}: Props) {
 	return (
 		<AnimatePresence>
 			{isOpen && (
@@ -27,7 +27,7 @@ export function SettingsPopover({
 					animate={{ opacity: 1, y: 0 }}
 					exit={{ opacity: 0, y: 4 }}
 					transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-					className="fixed z-[60] bg-[hsl(0,0%,7%)] border border-[hsl(0,0%,18%)] shadow-2xl p-2 min-w-[180px] font-mono"
+					className="fixed z-[60] bg-background-secondary border border-border shadow-2xl p-2 min-w-[180px] font-mono"
 					style={{
 						right:
 							currentPos.right !== undefined
@@ -47,7 +47,7 @@ export function SettingsPopover({
 								: undefined
 					}}
 				>
-					<div className="flex items-center gap-1.5 mb-2 px-1 text-[hsl(0,0%,55%)]">
+					<div className="flex items-center gap-1.5 mb-2 px-1 text-muted-foreground">
 						<LayoutGrid className="w-3 h-3" />
 						<span className="text-[9px] uppercase tracking-wider">
 							position
@@ -69,16 +69,15 @@ export function SettingsPopover({
 									onCornerChange(c)
 									onClose()
 								}}
-								className={`relative flex flex-col items-center gap-1 p-1.5 border transition-colors ${
-									corner === c
-										? 'bg-[hsl(167.8,53.25%,54.71%)]/10 border-[hsl(167.8,53.25%,54.71%)]/50 text-[hsl(167.8,53.25%,65%)]'
-										: 'bg-[hsl(0,0%,8.6%)] border-[hsl(0,0%,18%)] text-[hsl(0,0%,55%)] hover:text-[hsl(0,0%,85%)] hover:border-[hsl(0,0%,25%)]'
-								}`}
+								className={`relative flex flex-col items-center gap-1 p-1.5 border transition-colors ${corner === c
+									? 'bg-primary/10 border-primary/50 text-primary'
+									: 'bg-background border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'
+									}`}
 							>
-								<div className="w-full aspect-video bg-[hsl(0,0%,12%)] flex items-center justify-center relative">
-									<div className="absolute inset-0.5 border border-[hsl(0,0%,18%)]">
+								<div className="w-full aspect-video bg-accent flex items-center justify-center relative">
+									<div className="absolute inset-0.5 border border-border">
 										<div
-											className={`absolute w-2.5 h-1.5 ${corner === c ? 'bg-[hsl(167.8,53.25%,54.71%)]' : 'bg-[hsl(0,0%,25%)]'}`}
+											className={`absolute w-2.5 h-1.5 ${corner === c ? 'bg-primary' : 'bg-muted-foreground'}`}
 											style={{
 												top: c.startsWith('top')
 													? '1px'

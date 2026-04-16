@@ -7,6 +7,7 @@ tags: ['Engineering', 'Personal']
 author: 'Remco Stoeten'
 canonicalUrl: 'https://remcostoeten.nl/blog/stop-using-arrow-functions'
 slug: 'stop-using-arrow-functions'
+draft: false
 ---
 
 Arrow functions were revolutionary. Very slick. Very modern. Also wildly overused. This agonizing example is something I see way to often.
