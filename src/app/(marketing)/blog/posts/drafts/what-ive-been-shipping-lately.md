@@ -50,6 +50,17 @@ It is less of a polished launch post and more of a snapshot. A place to document
   - **Possibilities**: Bulk creation of developer apps, automatic `.env` file updates, and a clean interactive CLI/TUI for managing credentials.
   - **GitHub**: [remcostoeten/oauth-app-automator](https://github.com/remcostoeten/oauth-app-automator)
 
+- **[ Kuizer ]**  
+  Maintaining large TypeScript projects often leads to "dead code rot." I needed a fast, reliable way to prune the tree without manual auditing—so I built Kuizer to handle the heavy lifting.
+
+  - **Tech Talk**: A high-performance CLI built with **Bun**. It analyzes the TypeScript import graph to detect unreachable files and unused exports by deep-diving into the AST.
+  - **Possibilities**: Browse findings in an interactive terminal UI (TUI), categorize unused exports (types vs components), and safe snapshot-based rollbacks for every automated fix.
+  - **Usage**:
+    ````bash
+    kuizer detect --interactive
+    ````
+  - **GitHub**: [remcostoeten/kuizer](https://github.com/remcostoeten/kuizer)
+
 ## What changed while building it
 
 Most things never ship exactly as planned. The interesting part is usually what changed in the process.
