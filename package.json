@@ -45,6 +45,7 @@
 		"node": "24.x"
 	},
 	"dependencies": {
+		"@microflash/remark-callout-directives": "^5.0.0",
 		"@neondatabase/serverless": "^1.0.2",
 		"@radix-ui/react-collapsible": "^1.1.12",
 		"@radix-ui/react-scroll-area": "^1.2.10",
@@ -52,7 +53,7 @@
 		"@radix-ui/react-slot": "^1.2.4",
 		"@radix-ui/react-switch": "^1.2.6",
 		"@radix-ui/react-tabs": "^1.1.13",
-		"@remcostoeten/analytics": "0.0.1",
+		"@remcostoeten/analytics": "^1.1.1",
 		"@remcostoeten/use-shortcut": "^1.0.0",
 		"@t3-oss/env-nextjs": "^0.13.10",
 		"@tailwindcss/postcss": "^4.1.18",
@@ -81,6 +82,8 @@
 		"react-markdown": "^10.1.0",
 		"react-syntax-highlighter": "^16.1.0",
 		"rehype-mdx-code-props": "^3.0.1",
+		"rehype-raw": "^7.0.0",
+		"remark-directive": "^4.0.0",
 		"remark-gfm": "^4.0.1",
 		"sonner": "^1.5.0",
 		"tailwind-merge": "^3.4.0",
