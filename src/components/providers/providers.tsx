@@ -1,11 +1,11 @@
 'use client'
 
 import { lazy, Suspense, type ReactNode } from 'react'
-import { usePathname } from 'next/navigation'
 import { Toaster } from 'sonner'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 import { VimAuthProvider } from '@/components/auth/vim-auth-provider'
 import { ThemeSwitch } from '@/components/theme-switch'
+import { DevToolsBanner } from '@/components/devtools-banner'
 
 import { StaggerProvider } from '@/components/ui/stagger-system'
 import { PostHogProvider } from '@/components/providers/posthog-provider'
@@ -51,10 +51,6 @@ function DevWidgetWrapper() {
 }
 
 function AppChrome() {
-	const pathname = usePathname()
-	const needsAuthShell =
-		pathname.startsWith('/blog') || pathname.startsWith('/admin')
-
 	return (
 		<>
 			<ThemeSwitch />
@@ -62,6 +58,7 @@ function AppChrome() {
 			<UnifiedAnalytics />
 			<DevWidgetWrapper />
 			<VimAuthProvider />
+			<DevToolsBanner />
 		</>
 	)
 }
