@@ -46,7 +46,7 @@ export function TechStackSkeleton() {
 
 	return (
 		<div className="relative grid grid-cols-2 border-x md:grid-cols-4">
-			<div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t" />
+			<div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-dvw border-t" />
 			{Array.from({ length: 8 }).map((_, i) => {
 				const style = CARD_STYLES[i] || {
 					className: 'border-r border-b',
@@ -85,7 +85,7 @@ export function TechStackSkeleton() {
 					</div>
 				)
 			})}
-			<div className="-translate-x-1/2 -bottom-px pointer-events-none absolute left-1/2 w-screen border-b" />
+			<div className="-translate-x-1/2 -bottom-px pointer-events-none absolute left-1/2 w-dvw border-b" />
 		</div>
 	)
 }

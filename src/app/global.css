@@ -653,11 +653,11 @@
 
 .full-width-header {
 	position: relative;
-	width: 100vw;
+	width: 100dvw;
 	left: 50%;
 	right: 50%;
-	margin-left: -50vw;
-	margin-right: -50vw;
+	margin-left: -50dvw;
+	margin-right: -50dvw;
 	border-top: 1px solid hsl(var(--border));
 	border-bottom: 1px solid hsl(var(--border));
 	background-image: repeating-linear-gradient(

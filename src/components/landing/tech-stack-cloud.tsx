@@ -127,7 +127,7 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
 			)}
 			{...props}
 		>
-			<div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-screen border-t" />
+			<div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-dvw border-t" />
 
 			{LOGOS.map(function (logo, i) {
 				const style = CARD_STYLES[i] || {
@@ -145,7 +145,7 @@ export function TechStackCloud({ className, ...props }: TechStackCloudProps) {
 				)
 			})}
 
-			<div className="-translate-x-1/2 -bottom-px pointer-events-none absolute left-1/2 w-screen border-b" />
+			<div className="-translate-x-1/2 -bottom-px pointer-events-none absolute left-1/2 w-dvw border-b" />
 		</div>
 	)
 }
