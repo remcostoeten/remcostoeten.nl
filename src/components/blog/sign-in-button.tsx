@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Github } from 'lucide-react'
-import posthog from 'posthog-js'
 import { signIn } from '@/features/auth/client'
 
 type Provider = 'github' | 'google'
@@ -58,11 +57,6 @@ export function SignInButton() {
 		setAuthError(null)
 		setIsLoading(provider)
 
-		posthog.capture('sign_in_initiated', {
-			provider: provider,
-			source: 'blog_sign_in_button'
-		})
-
 		signIn
 			.social({
 				provider,
@@ -73,9 +67,6 @@ export function SignInButton() {
 				setIsLoading(null)
 				setAuthError(
 					'Sign-in failed. Please check your OAuth configuration or try another provider.'
-				)
-				posthog.captureException(
-					error instanceof Error ? error : new Error('Sign in failed')
 				)
 			})
 	}

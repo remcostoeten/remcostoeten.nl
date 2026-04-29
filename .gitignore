@@ -45,3 +45,4 @@ env.production
 perf.json
 lighthouse-report.json
 www.remcostoeten.nl-*.json
+.env.local.bk

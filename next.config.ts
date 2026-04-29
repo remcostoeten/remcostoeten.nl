@@ -67,9 +67,7 @@ const nextConfig: NextConfig = {
 			'@radix-ui/react-switch',
 			'framer-motion',
 			'react-markdown',
-			'react-syntax-highlighter',
-			'posthog-js',
-			'better-auth'
+			'react-syntax-highlighter'
 		]
 	},
 	typescript: {

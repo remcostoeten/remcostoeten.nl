@@ -8,7 +8,6 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { DevToolsBanner } from '@/components/devtools-banner'
 
 import { StaggerProvider } from '@/components/ui/stagger-system'
-import { PostHogProvider } from '@/components/providers/posthog-provider'
 import { useSession } from '@/features/auth/client'
 import { signOut } from '@/features/auth/client'
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
@@ -65,21 +64,19 @@ function AppChrome() {
 
 export function AppProviders({ children }: TProps) {
 	return (
-		<PostHogProvider>
-			<CustomQueryClientProvider>
-				<BlogFilterProvider>
-					<StaggerProvider
-						config={{
-							baseDelay: 80,
-							initialDelay: 0,
-							strategy: 'mount-order'
-						}}
-					>
-						{children}
-						<AppChrome />
-					</StaggerProvider>
-				</BlogFilterProvider>
-			</CustomQueryClientProvider>
-		</PostHogProvider>
+		<CustomQueryClientProvider>
+			<BlogFilterProvider>
+				<StaggerProvider
+					config={{
+						baseDelay: 80,
+						initialDelay: 0,
+						strategy: 'mount-order'
+					}}
+				>
+					{children}
+					<AppChrome />
+				</StaggerProvider>
+			</BlogFilterProvider>
+		</CustomQueryClientProvider>
 	)
 }

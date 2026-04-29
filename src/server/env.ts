@@ -21,10 +21,7 @@ export const env = createEnv({
 
 		IP_INFO_TOKEN: z.string().optional()
 	},
-	client: {
-		NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
-		NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional()
-	},
+	client: {},
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
 		BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
@@ -41,9 +38,6 @@ export const env = createEnv({
 		ALLOWED_GITHUB_USERNAME: process.env.ALLOWED_GITHUB_USERNAME,
 		CRON_SECRET: process.env.CRON_SECRET,
 
-		IP_INFO_TOKEN: process.env.IP_INFO_TOKEN,
-
-		NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
-		NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST
+		IP_INFO_TOKEN: process.env.IP_INFO_TOKEN
 	}
 })

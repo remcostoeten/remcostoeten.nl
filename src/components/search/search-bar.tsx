@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useId } from 'react'
 import { Search, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import posthog from 'posthog-js'
 
 interface SearchResult {
 	slug: string
@@ -102,13 +101,6 @@ export function SearchBar({
 	}, [])
 
 	const handleResultClick = (slug: string, title?: string) => {
-		posthog.capture('blog_search_result_clicked', {
-			slug: slug,
-			title: title,
-			query: query,
-			results_count: results.length
-		})
-
 		router.push(`/blog/${slug}`)
 		setIsOpen(false)
 		setQuery('')
@@ -117,12 +109,6 @@ export function SearchBar({
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
-
-		posthog.capture('blog_search_performed', {
-			query: query,
-			results_count: results.length,
-			has_results: results.length > 0
-		})
 
 		if (results.length > 0) {
 			handleResultClick(results[0].slug, results[0].title)

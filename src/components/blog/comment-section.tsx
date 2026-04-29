@@ -7,7 +7,6 @@ import { useSession } from '@/features/auth/client'
 import Image from 'next/image'
 import { addComment, deleteComment } from '@/server/actions/blog/comments'
 import { SignInButton } from './sign-in-button'
-import posthog from 'posthog-js'
 
 type Comment = {
 	id: string
@@ -58,12 +57,6 @@ export function CommentSection({ slug }: Props) {
 			if (result.error) {
 				setError(result.error)
 			} else {
-				// Track comment submitted event
-				posthog.capture('blog_comment_submitted', {
-					slug: slug,
-					comment_length: newComment.length
-				})
-
 				setNewComment('')
 				const response = await fetch(
 					`/api/blog/comments?slug=${encodeURIComponent(slug)}`,
@@ -80,12 +73,6 @@ export function CommentSection({ slug }: Props) {
 			const result = await deleteComment(commentId)
 
 			if (!result.error) {
-				// Track comment deleted event
-				posthog.capture('blog_comment_deleted', {
-					slug: slug,
-					comment_id: commentId
-				})
-
 				setComments(prev => prev.filter(c => c.id !== commentId))
 			}
 		})
