@@ -1,8 +1,8 @@
 ---
-title: 'I turned my rofi launcher into a config playground'
+title: 'I turned my rofi launcher into a simple control center'
 publishedAt: '2026-04-29'
 updatedAt: '2026-04-29'
-summary: 'I rebuilt my rofi launcher so it can handle app search, scoped file search, bang commands, and a config menu from inside the UI.'
+summary: 'I rebuilt my rofi launcher so it works as one place to open apps, search files, run commands, and jump into settings.'
 tags: ['Personal', 'Tooling', 'Rofi', 'Workflow']
 topic: 'Personal'
 author: 'Remco Stoeten'
@@ -10,68 +10,49 @@ slug: 'rofi-launcher-power-user-mode'
 draft: false
 ---
 
-I keep ending up with the same kind of tool: something that starts as a launcher
-and slowly becomes a small control surface for my machine.
+I was looking for something similar to Raycast or Spotlight, came across rofi, but rofi never quite fit that role out of the box.
 
-This one started because I wanted a better rofi launcher for my dotfiles. It
-ended up becoming a place where I can launch apps, search files, jump into
-config, and define custom commands without opening a separate app.
+So I adjusted it until it did.
 
-## What it is
+![Rofi Launcher Power User Mode](/images/rofi-power-user-mode.png)
+*My rofi setup showing the different available modes and commands right in the UI.*
 
-The launcher now does a few different jobs:
+## What it does
 
-- normal app search as you type
-- prefix-based file search after `Enter`
-- bang commands like `!web` or `!shutdown`
-- a `:config` menu for opening the launcher config files
-- a visible settings entry so the options are obvious in the UI
+The launcher now handles a few common tasks:
 
-It is still rofi, but it behaves more like a small command palette with a few
-specific modes.
+- search and open apps as you type
+- search for files
+- run quick commands like opening a website or shutting down
+- open config files directly from a menu
+- show available options clearly in the UI
 
-## How to get it
-
-The source lives in my dotfiles repo once I push it:
-
-- `bin/launcher`
-- `configs/rofi/README.md`
-- `configs/rofi/raycast.rasi`
-- `configs/rofi/pinned-apps`
-- `configs/rofi/bang-commands.lua`
-
-The live files on the machine are in `~/.config/rofi/`.
+You can think of it like a mix between Spotlight, Raycast, and a settings panel, but built on top of rofi.
 
 ## How it works
 
-The main idea is simple:
+The idea is simple:
 
-- typing normally filters apps live
-- entering a prefix switches to a different action
-- pressing `Enter` tells the launcher to run that action
+- you type something
+- you can add a small prefix to tell it what you mean
+- press Enter to run it
 
-That matters because rofi script mode does not stream every keystroke back into
-the script. So I made the UI spell that out instead of pretending it is live
-search everywhere.
+Some examples:
 
-The current prefixes are:
+- typing normally searches apps
+- `!web cats` searches the web
+- `/documents report` searches inside a folder
+- `:config` opens config shortcuts
 
-- `:` for launcher commands
-- `:config` for config files and editor shortcuts
-- `/` for folder scopes
-- `/path query` for scoped filename search
-- `*.md` for filename search in home
-- `**text` for content search in home
-- `!bang args` for custom commands from Lua
+Instead of trying to guess everything, the launcher makes these options visible so you do not have to remember them.
 
-## What I added
+## Custom commands
 
-The part I like most is the `bang-commands.lua` file. That gives me a tiny,
-data-driven way to map a shortcut to an action.
+One of the more useful parts is a small file where I define my own commands.
 
-For example:
+Example:
 
-```lua
+~~~lua
 return {
   {
     bang = '!web',
@@ -80,45 +61,38 @@ return {
     description = 'Search the web',
   },
 }
-```
+~~~
 
-That means I can type:
+This lets me type:
 
-```text
+~~~text
 !web rofi script mode
-```
+~~~
 
-and it turns into the configured command.
+and it automatically turns that into a Google search.
 
-I also added `:config`, so I can do things like:
+You can add your own commands the same way.
 
-- `:config`
-- `:config nvim`
-- `:config code`
-- `:config zed`
+## The UI
 
-That keeps the config files close to the launcher itself, which is the whole
-point of this kind of setup.
+I changed the interface to make things more obvious:
 
-## The UI part
+- there is a hint bar showing what you can do
+- there is a visible settings option in the list
 
-I wanted the launcher to stop hiding the important stuff.
-
-So the UI now keeps a visible hint bar for the available modes, and there is a
-settings row right in the main list. The point is not to be clever. The point is
-to make the available paths obvious without making me remember them.
+The goal is not to be clever, but to make it clear what is possible without needing to remember shortcuts.
 
 ## Why I built it
 
-Mostly because I wanted one place where I could:
+Mostly to keep everything in one place:
 
 - open apps quickly
-- reach config files without hunting through paths
-- define my own commands
-- keep the whole thing inside the same launcher instead of splitting it into
-  five tools
+- find files without digging through folders
+- access configs without thinking about paths
+- run small custom commands
+
+Instead of using multiple tools, this keeps it all inside one launcher.
+
+You can find the code and configs for this setup in my [dotfiles](https://github.com/remcostoeten/dotfiles/tree/master/configs/rofi).
 
 That is enough for me.
-
-I like tools that become more useful the longer I use them, not tools that need
-their own onboarding story.

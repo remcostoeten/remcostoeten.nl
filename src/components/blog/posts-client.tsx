@@ -161,7 +161,7 @@ export function BlogPostsClient({
 	posts,
 	isAdmin = false
 }: BlogPostsProps) {
-	const [showAll, setShowAll] = useState(false)
+	const [showAll, setShowAll] = useState(true)
 	const { filter, setFilter } = useBlogFilter()
 
 	const filteredPosts = posts.filter(post => {
