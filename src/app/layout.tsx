@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { cn } from '@/shared/lib/cn'
@@ -119,6 +120,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				suppressHydrationWarning
 			>
 				<AppProviders>{children}</AppProviders>
+				<Script
+					defer
+					src="https://static.cloudflareinsights.com/beacon.min.js"
+					data-cf-beacon='{"token":"32bdf382dc08494ab635789326c70d46"}'
+				/>
 			</body>
 		</html>
 	)

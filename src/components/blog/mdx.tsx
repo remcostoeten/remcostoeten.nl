@@ -119,9 +119,9 @@ function Video({ src, ...props }: { src: string; [key: string]: any }) {
 	)
 }
 
-function PassthroughHTML({ children, ...props }: any) {
+function PassthroughHTML({ children, tagName, ...props }: any) {
 	return React.createElement(
-		(props as any).tagName || 'div',
+		tagName || 'div',
 		props,
 		children
 	)

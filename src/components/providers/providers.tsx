@@ -16,7 +16,7 @@ import { UnifiedAnalytics } from '@/core/analytics'
 const DevWidget =
 	process.env.NODE_ENV === 'development'
 		? lazy(() =>
-				import('../../../tools/dev-menu').then(m => ({
+				import('../../../scripts/tools/dev-menu').then(m => ({
 					default: m.DevWidget
 				}))
 			)

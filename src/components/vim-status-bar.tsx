@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSession } from '@/features/auth/client'
 import { useRouter } from 'next/navigation'
-import { generateRoutes } from '../../tools/dev-menu/utils/generate-routes'
+import { generateRoutes } from '../../scripts/tools/dev-menu/utils/generate-routes'
 import { Terminal } from 'lucide-react'
 
 const COMMANDS = [
