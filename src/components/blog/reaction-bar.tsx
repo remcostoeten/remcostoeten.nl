@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { toggleReaction } from '@/server/actions/blog/reactions'
 import type { EmojiType } from '@/server/db/schema'
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/shared/lib/cn'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import {
 	BriefcaseBusinessIcon,
 	ChevronsDownUpIcon,

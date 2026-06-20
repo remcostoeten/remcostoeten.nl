@@ -4,13 +4,36 @@ import { Section } from '@/components/ui/section'
 
 const WORK_EXPERIENCE: ExperienceItemType[] = [
 	{
+		id: 'nextgen-automotive',
+		companyName: 'NextGen Automotive Group',
+		positions: [
+			{
+				id: 'nextgen-automotive-developer',
+				title: 'Full-Stack Developer',
+				employmentPeriod: '2026 — present',
+				employmentType: 'Full-time',
+				icon: 'code',
+				description: `Building customer facing portals and internal tooling for the automotive business.`,
+				skills: [
+					'Preact',
+					'React',
+					'GraphQL/REST',
+					'PHP/Symfony',
+					'Elixir'
+				],
+				isExpanded: true
+			}
+		],
+		isCurrentEmployer: true
+	},
+	{
 		id: 'brainstud',
 		companyName: 'Brainstud / Allyoucanlearn',
 		positions: [
 			{
 				id: 'brainstud-frontend',
 				title: 'Front End Developer',
-				employmentPeriod: '2025 — present',
+				employmentPeriod: '2025 — 2026',
 				employmentType: 'Full-time',
 				location: 'Zwolle (Hybrid)',
 				icon: 'education',
@@ -27,8 +50,7 @@ const WORK_EXPERIENCE: ExperienceItemType[] = [
 				],
 				isExpanded: true
 			}
-		],
-		isCurrentEmployer: true
+		]
 	},
 	{
 		id: 'pleio',

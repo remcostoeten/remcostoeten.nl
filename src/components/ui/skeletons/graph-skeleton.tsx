@@ -1,5 +1,5 @@
 import { Skeleton } from './skeleton'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 interface GraphSkeletonProps {
 	className?: string

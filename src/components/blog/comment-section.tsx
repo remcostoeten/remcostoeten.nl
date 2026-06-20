@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { Trash2, MessageSquare, Loader2 } from 'lucide-react'
 import { useSession } from '@/features/auth/client'
 import Image from 'next/image'

@@ -8,7 +8,7 @@ import {
 	useTransform,
 	useSpring,
 	useMotionValueEvent
-} from 'framer-motion'
+} from 'motion/react'
 import { useState, useRef } from 'react'
 import {
 	SiReact,

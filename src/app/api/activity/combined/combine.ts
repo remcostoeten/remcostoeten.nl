@@ -3,6 +3,7 @@ import {
 	getCachedGitHubContributions
 } from '@/server/github'
 import { getSpotifyTracks } from '@/server/spotify'
+import { getYTMusicTracks, hasYTMusicCredentials } from '@/server/ytmusic'
 import type { CombinedActivityResponse } from './types'
 
 export async function getCombinedActivity(
@@ -16,12 +17,14 @@ export async function getCombinedActivity(
 		currentYearContributions,
 		previousYearContributions,
 		recentActivity,
-		spotifyTracks
+		spotifyTracks,
+		ytmTracks
 	] = await Promise.all([
 		getCachedGitHubContributions(currentYear),
 		getCachedGitHubContributions(previousYear),
 		getCachedGitHubActivity(activityLimit),
-		getSpotifyTracks(tracksLimit)
+		getSpotifyTracks(tracksLimit),
+		hasYTMusicCredentials() ? getYTMusicTracks(tracksLimit) : Promise.resolve([] as any[]),
 	])
 
 	const contributionsMap: Record<
@@ -42,13 +45,15 @@ export async function getCombinedActivity(
 		}
 	}
 
+	const tracks = spotifyTracks.length > 0 ? spotifyTracks : ytmTracks
+
 	return {
 		contributions: Object.values(contributionsMap),
 		totalContributions:
 			(currentYearContributions?.totalContributions || 0) +
 			(previousYearContributions?.totalContributions || 0),
 		recentActivity,
-		spotifyTracks,
+		spotifyTracks: tracks,
 		fetchedAt: Date.now()
 	}
 }

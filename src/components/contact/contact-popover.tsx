@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { X, Send, Mail, User, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { submitContactForm } from '@/server/actions/contact/submission'

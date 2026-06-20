@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
 		name: 'Remco Stoeten - Frontend Engineer',
 		short_name: 'Remco Stoeten',
 		description:
-			'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
+			'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.',
 		start_url: '/',
 		display: 'standalone',
 		background_color: '#000000',
@@ -20,6 +20,22 @@ export default function manifest(): MetadataRoute.Manifest {
 				src: '/favicon.svg',
 				sizes: 'any',
 				type: 'image/svg+xml'
+			},
+			{
+				src: '/icon-192.png',
+				sizes: '192x192',
+				type: 'image/png'
+			},
+			{
+				src: '/icon-512.png',
+				sizes: '512x512',
+				type: 'image/png'
+			},
+			{
+				src: '/icon-512-maskable.png',
+				sizes: '512x512',
+				type: 'image/png',
+				purpose: 'maskable'
 			}
 		]
 	}

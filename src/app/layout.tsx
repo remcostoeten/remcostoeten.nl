@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 		template: '%s | Remco Stoeten'
 	},
 	description:
-		'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
+		'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.',
 	keywords: [
 		'Remco Stoeten',
 		'Frontend Engineer',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 	openGraph: {
 		title: 'Remco Stoeten - Frontend Engineer',
 		description:
-			'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.',
+			'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.',
 		url: baseUrl,
 		siteName: 'Remco Stoeten',
 		locale: 'en_US',
@@ -77,9 +77,14 @@ export const metadata: Metadata = {
 		}
 	},
 	icons: {
-		icon: '/favicon.svg',
-		shortcut: '/favicon.svg',
-		apple: '/favicon.svg'
+		icon: [
+			{ url: '/favicon.ico', sizes: 'any' },
+			{ url: '/favicon.svg', type: 'image/svg+xml' },
+			{ url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+			{ url: '/icon-512.png', type: 'image/png', sizes: '512x512' }
+		],
+		shortcut: '/favicon.ico',
+		apple: '/apple-icon.png'
 	},
 	manifest: '/manifest.webmanifest',
 	other: {
@@ -98,6 +103,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			)}
 		>
 			<head>
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||!t){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`
+					}}
+				/>
 				<link rel="dns-prefetch" href="//api.github.com" />
 				<link rel="dns-prefetch" href="//api.spotify.com" />
 				<link
@@ -105,6 +115,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 					href="//avatars.githubusercontent.com"
 				/>
 				<link rel="dns-prefetch" href="//i.scdn.co" />
+				<link
+					rel="dns-prefetch"
+					href="//yt3.googleusercontent.com"
+				/>
 				<link
 					rel="preconnect"
 					href="https://avatars.githubusercontent.com"

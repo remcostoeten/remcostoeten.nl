@@ -35,8 +35,7 @@ export function ActivitySection() {
                 Skriuw
               </span>
             </ProjectHoverWrapper>
-          </Link>, a Notion-like desktop application which is almost in beta for you to
-          try. I've also been building{" "}
+          </Link>, a Notion-like desktop application, and{" "}
           <Link href="https://doradb.vercel.app" target="_blank">
             <ProjectHoverWrapper repository="remcostoeten/doradb" isPrivate={false}>
               <span className="text-foreground/80 underline decoration-dotted underline-offset-4">
@@ -44,14 +43,7 @@ export function ActivitySection() {
               </span>
             </ProjectHoverWrapper>
           </Link>{" "}
-          and{" "}
-          <Link href="https://zentjes.vercel.app" target="_blank">
-            <ProjectHoverWrapper repository="remcostoeten/zentjes" isPrivate={false}>
-              <span className="text-foreground/80 underline decoration-dotted underline-offset-4">
-                Zentjes
-              </span>
-            </ProjectHoverWrapper>
-          </Link>.
+          — both currently in beta.
         </p>
 
         <div>

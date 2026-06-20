@@ -90,17 +90,32 @@ export function PersonStructuredData() {
 		'@type': 'Person',
 		name: 'Remco Stoeten',
 		url: baseUrl,
+		image: `${baseUrl}/og`,
 		sameAs: [
 			'https://github.com/remcostoeten',
-			'https://www.linkedin.com/in/remco-stoeten/'
+			'https://www.linkedin.com/in/remco-stoeten/',
+			'https://x.com/remcostoeten'
 		],
 		jobTitle: 'Frontend Engineer',
 		worksFor: {
 			'@type': 'Organization',
 			name: 'Brainstud'
 		},
+		knowsAbout: [
+			'Frontend Development',
+			'React',
+			'Next.js',
+			'TypeScript',
+			'Tailwind CSS',
+			'Web Performance',
+			'User Interface Design'
+		],
+		nationality: {
+			'@type': 'Country',
+			name: 'Netherlands'
+		},
 		description:
-			'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.'
+			'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.'
 	}
 
 	return (
