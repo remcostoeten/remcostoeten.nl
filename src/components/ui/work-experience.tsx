@@ -293,7 +293,7 @@ export function ExperiencePositionItem({
 					<span className="text-muted-foreground/40">·</span>
 				</>
 			)}
-			<div className="flex items-center font-medium opacity-90">
+			<div className="flex items-center font-medium">
 				{position.employmentPeriod}
 			</div>
 		</div>

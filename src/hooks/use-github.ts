@@ -283,14 +283,29 @@ export function useAllGitHubData() {
 }
 
 /**
- * Fetch a single commit for a specific repository
+ * Fetch a single commit for a specific repository (via server API to use auth token)
  */
 export function useLatestCommit(owner: string, repo: string) {
 	return useQuery({
 		queryKey: ['github', 'commit', owner, repo],
-		queryFn: () => fetchLatestCommitForRepo(owner, repo),
-		staleTime: 2 * 60 * 1000, // 2 minutes
-		retry: 2,
+		queryFn: async (): Promise<CommitData | null> => {
+			const response = await fetch(
+				`/api/github/commits?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}`
+			)
+			if (!response.ok) return null
+			const data = await response.json()
+			if (!data.commit) return null
+			const projectInfo = LATEST_PROJECTS.find(
+				p => p.owner === owner && p.repo === repo
+			)
+			return {
+				...data.commit,
+				projectName: projectInfo?.name || repo,
+				color: projectInfo?.color || 'text-muted-foreground'
+			}
+		},
+		staleTime: 5 * 60 * 1000,
+		retry: 1,
 		enabled: !!owner && !!repo
 	})
 }

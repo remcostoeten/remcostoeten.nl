@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Copy, Check, Github, Linkedin, Twitter, GitCommit } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -11,9 +11,6 @@ import { ResumeDrawer } from '../resume-drawer'
 
 export function Footer() {
 	const [copied, setCopied] = useState(false)
-	const [currentYear, setCurrentYear] = useState(() =>
-		new Date().getFullYear()
-	)
 	const email = 'stoetenremco.rs@gmail.com'
 	const displayEmail = 'stoetenremco [dot] rs [at] gmail [dot] com'
 
@@ -58,10 +55,6 @@ export function Footer() {
 		},
 		{ name: 'X', href: 'https://x.com/remcostoeten', icon: Twitter }
 	]
-
-	useEffect(() => {
-		setCurrentYear(new Date().getFullYear())
-	}, [])
 
 	return (
 		<footer className="border-t border-border/50 bg-background">
@@ -145,7 +138,7 @@ export function Footer() {
 				</div>
 
 				<div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">
-					<p>© {currentYear} Remco Stoeten</p>
+					<p>© {new Date().getFullYear()} Remco Stoeten</p>
 					<div className="flex items-center gap-4">
 						<Link
 							href="/about"

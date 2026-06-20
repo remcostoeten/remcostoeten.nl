@@ -130,7 +130,7 @@ export const ProjectCard = memo(function ProjectCard({
 								</span>
 							)}
 							{project.git?.lastUpdated && (
-								<span className="text-xs text-muted-foreground/60">
+								<span className="text-xs text-muted-foreground/80">
 									<span className="hidden md:inline">
 										last updated{' '}
 									</span>
