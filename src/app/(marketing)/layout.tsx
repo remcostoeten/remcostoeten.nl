@@ -1,7 +1,6 @@
 import { ReactNode } from 'react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import { Footer } from '@/components/layout/footer'
-import { AnnouncementBanner } from '@/components/ui/announcement-banner'
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
 	return (
@@ -12,7 +11,6 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
 			>
 				Skip to content
 			</a>
-			<AnnouncementBanner />
 			<main
 				id="main-content"
 				tabIndex={-1}
