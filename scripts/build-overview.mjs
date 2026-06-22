@@ -17,7 +17,7 @@ const SPINNER_FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', 
 const CHECK = '✓'
 const CROSS = '✗'
 const ANSI_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'gu')
-const PACKAGE_RUNNER = { command: 'bun', args: ['run'] }
+const PACKAGE_RUNNER = { command: 'npm', args: ['run'] }
 const BUILD_ENV = {
 	DATABASE_URL: 'https://example.com',
 	BETTER_AUTH_URL: 'http://localhost:3000',
