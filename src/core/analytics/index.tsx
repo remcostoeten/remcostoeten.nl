@@ -14,11 +14,7 @@ const VercelAnalytics = lazy(() =>
 	}))
 )
 
-const VercelSpeedInsights = lazy(() =>
-	import('@vercel/speed-insights/next').then(m => ({
-		default: m.SpeedInsights
-	}))
-)
+export { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
 
 function Analytics() {
 	const ingestUrl = process.env.NEXT_PUBLIC_ANALYTICS_URL
