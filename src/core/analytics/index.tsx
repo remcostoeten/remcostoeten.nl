@@ -8,6 +8,14 @@ const RemcoAnalytics = lazy(() =>
 	}))
 )
 
+const VercelAnalytics = lazy(() =>
+	import('@vercel/analytics/react').then(m => ({
+		default: m.Analytics
+	}))
+)
+
+export { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
+
 function Analytics() {
 	const ingestUrl = process.env.NEXT_PUBLIC_ANALYTICS_URL
 	if (!ingestUrl) return null
@@ -15,9 +23,17 @@ function Analytics() {
 }
 
 export function UnifiedAnalytics() {
+	const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
+
 	return (
 		<Suspense fallback={null}>
 			<Analytics />
+			{isProduction ? (
+				<>
+					<VercelAnalytics />
+					<VercelSpeedInsights />
+				</>
+			) : null}
 		</Suspense>
 	)
 }

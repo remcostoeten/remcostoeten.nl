@@ -39,12 +39,15 @@ export function listProviders(): ProviderKey[] {
 }
 
 export const auth = betterAuth({
+	baseURL: env.BETTER_AUTH_URL,
 	database: drizzleAdapter(db, {
 		provider: 'pg',
 		schema: authSchema
 	}),
 	trustedOrigins: [
 		env.BETTER_AUTH_URL,
+		'https://remcostoeten.nl',
+		'https://www.remcostoeten.nl',
 		'http://localhost:3000',
 		'http://localhost:3001',
 		'http://localhost:3002'

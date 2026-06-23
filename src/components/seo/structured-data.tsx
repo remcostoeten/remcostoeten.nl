@@ -29,11 +29,13 @@ export function BlogPostStructuredData({
 		image: image || `${baseUrl}/og?title=${encodeURIComponent(title)}`,
 		author: {
 			'@type': 'Person',
+			'@id': `${baseUrl}/#person`,
 			name: author,
 			url: baseUrl
 		},
 		publisher: {
 			'@type': 'Person',
+			'@id': `${baseUrl}/#person`,
 			name: 'Remco Stoeten',
 			logo: {
 				'@type': 'ImageObject',
@@ -63,12 +65,20 @@ export function BlogPostStructuredData({
 	)
 }
 
+export const PERSON_ID = `${baseUrl}/#person`
+export const WEBSITE_ID = `${baseUrl}/#website`
+
 export function WebsiteStructuredData() {
 	const structuredData = {
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
+		'@id': WEBSITE_ID,
 		name: 'Remco Stoeten - Frontend Engineer',
+		alternateName: ['Remco Stoeten', 'remcostoeten', 'remcostoeten.nl'],
 		url: baseUrl,
+		inLanguage: 'en',
+		publisher: { '@id': PERSON_ID },
+		about: { '@id': PERSON_ID },
 		potentialAction: {
 			'@type': 'SearchAction',
 			target: `${baseUrl}/blog?q={search_term_string}`,
@@ -88,19 +98,37 @@ export function PersonStructuredData() {
 	const structuredData = {
 		'@context': 'https://schema.org',
 		'@type': 'Person',
+		'@id': PERSON_ID,
 		name: 'Remco Stoeten',
+		alternateName: 'remcostoeten',
 		url: baseUrl,
+		mainEntityOfPage: baseUrl,
+		image: `${baseUrl}/og`,
 		sameAs: [
 			'https://github.com/remcostoeten',
-			'https://www.linkedin.com/in/remco-stoeten/'
+			'https://www.linkedin.com/in/remco-stoeten/',
+			'https://x.com/remcostoeten'
 		],
 		jobTitle: 'Frontend Engineer',
 		worksFor: {
 			'@type': 'Organization',
 			name: 'Brainstud'
 		},
+		knowsAbout: [
+			'Frontend Development',
+			'React',
+			'Next.js',
+			'TypeScript',
+			'Tailwind CSS',
+			'Web Performance',
+			'User Interface Design'
+		],
+		nationality: {
+			'@type': 'Country',
+			name: 'Netherlands'
+		},
 		description:
-			'Dutch software engineer focused on front-end development with 8 years of experience across e-commerce, SaaS, and government e-learning projects.'
+			'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.'
 	}
 
 	return (

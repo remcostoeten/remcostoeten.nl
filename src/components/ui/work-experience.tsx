@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/shared/lib/cn'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import {
 	BriefcaseBusinessIcon,
 	ChevronsDownUpIcon,
@@ -293,7 +293,7 @@ export function ExperiencePositionItem({
 					<span className="text-muted-foreground/40">·</span>
 				</>
 			)}
-			<div className="flex items-center font-medium opacity-90">
+			<div className="flex items-center font-medium">
 				{position.employmentPeriod}
 			</div>
 		</div>

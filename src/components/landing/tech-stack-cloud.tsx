@@ -8,7 +8,7 @@ import {
 	useTransform,
 	useSpring,
 	useMotionValueEvent
-} from 'framer-motion'
+} from 'motion/react'
 import { useState, useRef } from 'react'
 import {
 	SiReact,
@@ -225,7 +225,7 @@ function TechCard({ logo, className, children, ...props }: TechCardProps) {
 									index % 2 === 1 ? 'rotateX(180deg)' : 'none'
 							}}
 						>
-							<ActiveIcon className="w-8 h-8 md:w-10 md:h-10 text-foreground/60 group-hover:text-foreground transition-colors duration-200" />
+							<ActiveIcon className="w-8 h-8 md:w-10 md:h-10 text-foreground/60 group-hover:text-foreground transition-colors duration-200" aria-hidden="true" />
 						</div>
 					</motion.div>
 				</div>

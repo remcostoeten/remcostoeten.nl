@@ -4,7 +4,7 @@ import { HomeBlogPostsClient } from "./home-blog-posts-client";
 
 function HomePostCountHeader({ count }: { count: number }) {
   return (
-    <span className="text-xs text-muted-foreground/60 inline-flex items-baseline gap-1">
+    <span className="text-xs text-muted-foreground/80 inline-flex items-baseline gap-1">
       {count}
       <span>posts</span>
     </span>

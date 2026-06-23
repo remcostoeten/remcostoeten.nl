@@ -11,7 +11,7 @@ import React, {
 	type ReactNode,
 	type RefObject
 } from 'react'
-import { useInView, useReducedMotion } from 'framer-motion'
+import { useInView, useReducedMotion } from 'motion/react'
 
 // Check for debug flag via environment or global
 const isDebugMode = () => {

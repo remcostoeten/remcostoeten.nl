@@ -1,4 +1,4 @@
-import { motion, useInView, useReducedMotion, Variants } from 'framer-motion'
+import { motion, useInView, useReducedMotion, Variants } from 'motion/react'
 import { useRef } from 'react'
 import { cn } from '@/shared/lib/cn'
 

@@ -46,3 +46,7 @@ perf.json
 lighthouse-report.json
 www.remcostoeten.nl-*.json
 .env.local.bk
+env.bk.ocal
+auth_session/
+scripts/ytmusic/headers.json
+scripts/ytmusic/oauth.json

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence } from 'motion/react'
 import { useSession } from '@/features/auth/client'
 import { useRouter } from 'next/navigation'
 import { generateRoutes } from '../../scripts/tools/dev-menu/utils/generate-routes'
@@ -207,7 +207,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 	}
 
 	return (
-		<>
+		<div className="relative">
 			{/* Mobile Trigger Button */}
 			<motion.button
 				onClick={() => {
@@ -297,6 +297,6 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 					</motion.div>
 				)}
 			</AnimatePresence>
-		</>
+		</div>
 	)
 }

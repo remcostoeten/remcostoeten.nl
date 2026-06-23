@@ -126,12 +126,13 @@ export function AboutView() {
 						<p className="text-sm text-muted-foreground/90 leading-relaxed">
 							Currently working at{' '}
 							<strong className="text-foreground">
-								Brainstud
+								NextGen Automotive Group
 							</strong>
-							, where I help build educational platforms and
-							tools. Outside of work, I enjoy tinkering with side
-							projects, exploring new frameworks, and contributing
-							to open source.
+							, building customer facing portals and internal tooling for the automotive business. Besides my professional work, I also build a lot of open source — primarily{' '}
+							<strong className="text-foreground">Skriuw</strong>
+							, a Notion-like desktop application, and{' '}
+							<strong className="text-foreground">DoraDB</strong>
+							, both currently in beta.
 						</p>
 					</div>
 				</Section>

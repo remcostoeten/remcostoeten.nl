@@ -71,7 +71,7 @@ export function GET(request: Request) {
 							fontFamily: 'ui-monospace, monospace'
 						}}
 					>
-						remcostoeten.com
+						remcostoeten.nl
 					</span>
 				</div>
 			</div>
