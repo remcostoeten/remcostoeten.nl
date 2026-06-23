@@ -1,104 +1,134 @@
+<div align="center">
+
 # remcostoeten.nl
 
-Source for [remcostoeten.nl](https://remcostoeten.nl), a personal website built with Next.js.  
-It combines a portfolio-style marketing site, an MDX blog, a protected admin area, and a small activity system that pulls GitHub and Spotify data into Postgres.
+<a href="https://remcostoeten.nl"><img src=".github/assets/preview.png" alt="remcostoeten.nl — home page" width="100%" /></a>
 
-![Preview of remcostoeten.nl](./public/images/readme/site-preview.png)
+**My corner of the internet.** Part portfolio, part blog, part playground for ideas
+I want to ship before I talk myself out of them.
 
-## What this project includes
+[**→ Visit the live site**](https://remcostoeten.nl) &nbsp;·&nbsp; [Read the blog](https://remcostoeten.nl/posts) &nbsp;·&nbsp; [About me](https://remcostoeten.nl/about)
 
-- A homepage with work experience, featured projects, and personal profile content
-- A filesystem-based MDX blog with topics, RSS, syntax highlighting, and draft support
-- An admin area for managing project visibility and internal content workflows
-- GitHub and Spotify integrations for recent activity and listening data
-- A contact flow backed by server actions and database persistence
-- Optional analytics and email integrations for production deployments
+<a href="https://shieldcn.dev/github/stars/remcostoeten/remcostoeten.nl.svg"><img src="https://shieldcn.dev/github/stars/remcostoeten/remcostoeten.nl.svg?variant=secondary" alt="Stars" /></a>
+<a href="https://github.com/remcostoeten/remcostoeten.nl/commits"><img src="https://shieldcn.dev/github/last-commit/remcostoeten/remcostoeten.nl.svg?variant=secondary" alt="Last commit" /></a>
+<a href="./LICENSE"><img src="https://shieldcn.dev/github/license/remcostoeten/remcostoeten.nl.svg?variant=secondary" alt="License" /></a>
+
+</div>
+
+---
+
+It started as a place to park a CV and quietly grew into a small system: an MDX blog,
+a GitHub + Spotify activity feed, an admin area, and a pile of things I built mostly
+because I was curious whether I could. The code is open — poke around, steal what's useful.
+
+---
 
 ## Stack
 
-- Next.js 16, React 19 and TypeScript
-- Tailwind v4
-- Drizzle ORM + Postgres cloud (neon.tech)
-- GitHub OAuth (better-auth)
-- oxlint/oxfmt
+| Layer        | Tech                                               |
+| ------------ | -------------------------------------------------- |
+| Framework    | Next.js 16 (App Router)                            |
+| Language     | TypeScript 5.9                                     |
+| Styling      | Tailwind v4                                        |
+| Database     | Drizzle ORM + Neon Postgres                        |
+| Auth         | better-auth (GitHub + Google OAuth)                |
+| Blog         | MDX (filesystem-based, next-mdx-remote)            |
+| Integrations | GitHub API, Spotify API, PostHog, Vercel Analytics |
+| Tooling      | Bun, oxlint, oxfmt, Vitest                         |
 
-- PostHog, Vercel Analytics, GitHub API, Spotify API
+## Features
 
-## Requirements
+- **Marketing / home**: work history, featured projects, profile
+- **Blog**: MDX posts with topics, reading time, RSS, syntax highlighting, draft support
+- **Search**: full client-side search across blog posts
+- **Admin area**: manage project visibility and content workflows (GitHub OAuth gated)
+- **Activity feed**: syncs GitHub commits and Spotify listening data into Postgres via cron
+- **Contact**: server action backed, persisted to database
+- **OG images**: dynamic edge-rendered open graph images
+- **Analytics**: PostHog + Vercel Analytics + Speed Insights
 
-- Node.js `24.x`
-- Bun
-- A Postgres database
+## Project structure
 
-## Quick Start
+```
+src/
+├── app/
+│   ├── (admin)/         # protected admin routes
+│   ├── (auth)/          # sign-in / callback
+│   ├── (marketing)/     # public-facing pages
+│   ├── api/             # thin API route handlers
+│   └── og/              # OG image generation
+├── components/          # shared UI components
+├── core/                # analytics, config, metadata
+├── features/            # domain modules (auth, blog, github, spotify)
+├── server/              # DB, queries, actions, security (never imported client-side)
+├── shared/lib/          # utilities shared across server + client
+└── views/               # page-level view components
+```
 
-1. Clone the repository
+## Getting started
+
+**Requirements:** Node.js `24.x`, Bun
 
 ```bash
 git clone https://github.com/remcostoeten/remcostoeten.nl.git
 cd remcostoeten.nl
-```
-
-2. Install dependencies
-
-```bash
 bun install
-```
-
-3. Create your local environment file
-
-```bash
 cp .env.example .env.local
 ```
 
-4. Fill in the minimum required variables in `.env.local`
+Fill in the required env vars (see below), then:
 
 ```bash
-DATABASE_URL="<https://neon.tech>"
-BETTER_AUTH_URL="http://localhost:3000"
-BETTER_AUTH_SECRET="<random string>"
+bun db:push      # push schema to your database
+bun dev          # start dev server -> http://localhost:3000
 ```
 
-5. Push the schema to your database
+## Environment variables
+
+**Required**
+
+```env
+DATABASE_URL=
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=
+```
+
+**Optional** (features degrade gracefully when missing)
+
+```env
+# OAuth providers
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Integrations
+GITHUB_TOKEN=              # server-side GitHub API
+SPOTIFY_CLIENT_ID=
+SPOTIFY_CLIENT_SECRET=
+SPOTIFY_REFRESH_TOKEN=
+SPOTIFY_REDIRECT_URI=
+
+# Infrastructure
+IP_INFO_TOKEN=             # ipinfo.io geolocation
+CRON_SECRET=               # protects sync endpoints
+```
+
+> Tip: automate GitHub/Google OAuth app creation with [oauth-app-automator](https://github.com/remcostoeten/oauth-app-automator).
+
+## Scripts
 
 ```bash
-bun drizzle-kit push
+bun dev               # development server
+bun run build:next    # production build
+bun test              # run tests
+bun run check         # lint + typecheck + test
+bun db:generate       # generate Drizzle migrations
+bun db:push           # push schema
+bun db:studio         # Drizzle Studio
+bun run lint:fix      # auto-fix lint errors
+bun run format:fix    # auto-format
 ```
-
-6. Start the development server
-
-```bash
-bun run dev
-```
-
-Open `http://localhost:3000`.
-
-## Environment Variables
-
-Required for a basic local setup:
-
-- `DATABASE_URL`
-- `BETTER_AUTH_URL`
-- `BETTER_AUTH_SECRET`
-
-Optional, depending on which features you want enabled:
-
-- `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` for GitHub OAuth
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for Google OAuth
-    - `GITHUB_TOKEN` for server-side GitHub API access
-- `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `SPOTIFY_REDIRECT_URI` for Spotify data
-- `IP_INFO_TOKEN` for IP geolocation https://ipinfo.io/
-- `CRON_SECRET` for protected sync endpoints
-  <small>💡 For automated GitHub (and Google) OAuth creation view <a target="_blank" href="https://github.com/remcostoeten/oauth-app-automator">OAuth App Automator</a></small>
-
-If an optional integration is missing, the related feature will be limited or disabled rather than preventing the whole app from running.
-
-## Architecture Notes
-
-- Server code stays under `src/server` to keep runtime boundaries explicit.
-- API routes are intentionally thin and delegate work to server domains or actions.
-- Blog posts are read from the filesystem, parsed from frontmatter, and enriched with derived metadata like topic and reading time.
-- Draft visibility is enforced in the blog layer so unpublished posts stay private to authorized users.
 
 ## License
 

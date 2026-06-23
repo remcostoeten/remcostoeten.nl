@@ -70,12 +70,12 @@ The important part is not just creating indexes. The important part is measuring
 
 ## The Result
 
-| Term | Before | After | Change |
-| --- | ---: | ---: | ---: |
-| `http` | `827.190 ms` | `21.621 ms` | ~38x faster |
-| `photo` | `313.753 ms` | `4.566 ms` | ~69x faster |
-| `thanks` | `327.628 ms` | `4.210 ms` | ~78x faster |
-| `test` | `323.533 ms` | `5.479 ms` | ~59x faster |
+| Term     |       Before |       After |      Change |
+| -------- | -----------: | ----------: | ----------: |
+| `http`   | `827.190 ms` | `21.621 ms` | ~38x faster |
+| `photo`  | `313.753 ms` |  `4.566 ms` | ~69x faster |
+| `thanks` | `327.628 ms` |  `4.210 ms` | ~78x faster |
+| `test`   | `323.533 ms` |  `5.479 ms` | ~59x faster |
 
 The post-index plan changed to this:
 

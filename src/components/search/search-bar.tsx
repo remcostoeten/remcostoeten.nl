@@ -100,22 +100,22 @@ export function SearchBar({
 		}
 	}, [])
 
-	const handleResultClick = (slug: string, title?: string) => {
+	function handleResultClick(slug: string) {
 		router.push(`/blog/${slug}`)
 		setIsOpen(false)
 		setQuery('')
 		inputRef.current?.blur()
 	}
 
-	const handleSubmit = (e: React.FormEvent) => {
+	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault()
 
 		if (results.length > 0) {
-			handleResultClick(results[0].slug, results[0].title)
+			handleResultClick(results[0].slug)
 		}
 	}
 
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+	function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
 		if (
 			!isOpen &&
 			query.trim() &&
@@ -155,10 +155,7 @@ export function SearchBar({
 		if (event.key === 'Enter') {
 			if (isOpen && activeIndex >= 0 && activeIndex < results.length) {
 				event.preventDefault()
-				handleResultClick(
-					results[activeIndex].slug,
-					results[activeIndex].title
-				)
+				handleResultClick(results[activeIndex].slug)
 			}
 			return
 		}
@@ -254,10 +251,7 @@ export function SearchBar({
 									onMouseEnter={() => setActiveIndex(index)}
 									onMouseDown={e => e.preventDefault()}
 									onClick={() =>
-										handleResultClick(
-											result.slug,
-											result.title
-										)
+										handleResultClick(result.slug)
 									}
 									className={`w-full px-4 py-3 text-left cursor-pointer transition-colors ${
 										activeIndex === index

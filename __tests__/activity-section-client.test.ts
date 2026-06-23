@@ -3,9 +3,7 @@ import { shouldLoadActivitySection } from '@/components/landing/activity/activit
 
 describe('shouldLoadActivitySection', () => {
 	it('loads activity only when the section intersects the viewport', () => {
-		expect(shouldLoadActivitySection({ isIntersecting: false })).toBe(
-			false
-		)
+		expect(shouldLoadActivitySection({ isIntersecting: false })).toBe(false)
 		expect(shouldLoadActivitySection({ isIntersecting: true })).toBe(true)
 	})
 })

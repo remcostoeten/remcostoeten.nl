@@ -115,10 +115,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 					href="//avatars.githubusercontent.com"
 				/>
 				<link rel="dns-prefetch" href="//i.scdn.co" />
-				<link
-					rel="dns-prefetch"
-					href="//yt3.googleusercontent.com"
-				/>
+				<link rel="dns-prefetch" href="//yt3.googleusercontent.com" />
 				<link
 					rel="preconnect"
 					href="https://avatars.githubusercontent.com"

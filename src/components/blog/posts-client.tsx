@@ -157,10 +157,7 @@ function BlogCardSkeleton() {
 	)
 }
 
-export function BlogPostsClient({
-	posts,
-	isAdmin = false
-}: BlogPostsProps) {
+export function BlogPostsClient({ posts, isAdmin = false }: BlogPostsProps) {
 	const [showAll, setShowAll] = useState(true)
 	const { filter, setFilter } = useBlogFilter()
 

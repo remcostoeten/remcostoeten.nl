@@ -69,10 +69,11 @@ export function SettingsPopover({
 									onCornerChange(c)
 									onClose()
 								}}
-								className={`relative flex flex-col items-center gap-1 p-1.5 border transition-colors ${corner === c
-									? 'bg-primary/10 border-primary/50 text-primary'
-									: 'bg-background border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'
-									}`}
+								className={`relative flex flex-col items-center gap-1 p-1.5 border transition-colors ${
+									corner === c
+										? 'bg-primary/10 border-primary/50 text-primary'
+										: 'bg-background border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/50'
+								}`}
 							>
 								<div className="w-full aspect-video bg-accent flex items-center justify-center relative">
 									<div className="absolute inset-0.5 border border-border">
