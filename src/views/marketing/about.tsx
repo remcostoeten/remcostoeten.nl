@@ -128,11 +128,14 @@ export function AboutView() {
 							<strong className="text-foreground">
 								NextGen Automotive Group
 							</strong>
-							, building customer facing portals and internal tooling for the automotive business. Besides my professional work, I also build a lot of open source — primarily{' '}
-							<strong className="text-foreground">Skriuw</strong>
-							, a Notion-like desktop application, and{' '}
-							<strong className="text-foreground">DoraDB</strong>
-							, both currently in beta.
+							, building customer facing portals and internal
+							tooling for the automotive business. Besides my
+							professional work, I also build a lot of open source
+							— primarily{' '}
+							<strong className="text-foreground">Skriuw</strong>,
+							a Notion-like desktop application, and{' '}
+							<strong className="text-foreground">DoraDB</strong>,
+							both currently in beta.
 						</p>
 					</div>
 				</Section>

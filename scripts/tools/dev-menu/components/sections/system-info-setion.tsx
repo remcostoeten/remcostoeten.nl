@@ -8,10 +8,7 @@ type Props = {
 	onToggle: () => void
 }
 
-export function SystemInfoSection({
-	isExpanded,
-	onToggle
-}: Props) {
+export function SystemInfoSection({ isExpanded, onToggle }: Props) {
 	return (
 		<>
 			<div className="px-2 pt-1">
@@ -60,7 +57,7 @@ export function SystemInfoSection({
 								<span className="block text-[9px] text-muted-foreground leading-relaxed break-all">
 									{typeof window !== 'undefined'
 										? navigator.userAgent.slice(0, 80) +
-										'...'
+											'...'
 										: 'n/a'}
 								</span>
 							</div>

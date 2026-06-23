@@ -36,16 +36,16 @@ interface YtmusicapiTrack {
 }
 
 function parsePythonHistory(raw: YtmusicapiTrack[]): YTMusicTrack[] {
-	return raw.map((item) => ({
+	return raw.map(item => ({
 		id: item.videoId || '',
 		name: item.title || 'Unknown',
-		artist: item.artists?.map((a) => a.name).join(', ') || 'Unknown',
+		artist: item.artists?.map(a => a.name).join(', ') || 'Unknown',
 		album: item.album?.name || '',
 		url: item.videoId
 			? `https://music.youtube.com/watch?v=${item.videoId}`
 			: '',
 		image: item.album?.thumbnails?.slice(-1)[0]?.url || '',
-		played_at: item.played || new Date().toISOString(),
+		played_at: item.played || new Date().toISOString()
 	}))
 }
 
@@ -53,13 +53,10 @@ export function getPythonYTMusicTracks(limit: number): YTMusicTrack[] {
 	if (!hasOAuthCredentials()) return []
 
 	try {
-		const result = execSync(
-			`${PYTHON_VENV} ${HISTORY_SCRIPT} ${limit}`,
-			{
-				encoding: 'utf-8',
-				timeout: 15000,
-			}
-		)
+		const result = execSync(`${PYTHON_VENV} ${HISTORY_SCRIPT} ${limit}`, {
+			encoding: 'utf-8',
+			timeout: 15000
+		})
 		const data = JSON.parse(result.trim())
 		return parsePythonHistory(data)
 	} catch (error) {
@@ -68,10 +65,12 @@ export function getPythonYTMusicTracks(limit: number): YTMusicTrack[] {
 	}
 }
 
-export async function getLocalServerTracks(limit: number): Promise<YTMusicTrack[]> {
+export async function getLocalServerTracks(
+	limit: number
+): Promise<YTMusicTrack[]> {
 	try {
 		const res = await fetch(`http://127.0.0.1:8370/recent?limit=${limit}`, {
-			signal: AbortSignal.timeout(5000),
+			signal: AbortSignal.timeout(5000)
 		})
 		if (!res.ok) return []
 		const data = await res.json()
@@ -79,11 +78,12 @@ export async function getLocalServerTracks(limit: number): Promise<YTMusicTrack[
 		return data.map((t: any) => ({
 			id: t.id || '',
 			name: t.name || 'Unknown',
-			artist: (t.artist || '').replace(/,?\s*•\s*/g, '').trim() || 'Unknown',
+			artist:
+				(t.artist || '').replace(/,?\s*•\s*/g, '').trim() || 'Unknown',
 			album: t.album || '',
 			url: `https://music.youtube.com/watch?v=${t.id}`,
 			image: t.image || '',
-			played_at: t.played_at || new Date().toISOString(),
+			played_at: t.played_at || new Date().toISOString()
 		}))
 	} catch {
 		return []

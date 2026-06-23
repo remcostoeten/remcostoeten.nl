@@ -24,7 +24,9 @@ export async function getCombinedActivity(
 		getCachedGitHubContributions(previousYear),
 		getCachedGitHubActivity(activityLimit),
 		getSpotifyTracks(tracksLimit),
-		hasYTMusicCredentials() ? getYTMusicTracks(tracksLimit) : Promise.resolve([] as any[]),
+		hasYTMusicCredentials()
+			? getYTMusicTracks(tracksLimit)
+			: Promise.resolve([] as any[])
 	])
 
 	const contributionsMap: Record<

@@ -35,7 +35,9 @@ function rebuildCookieHeader(cookieMap: Map<string, string>): string {
 	return parts.join('; ')
 }
 
-async function fetchPageConfig(cookieMap: Map<string, string>): Promise<{ userSessionId: string; visitorData: string; pageId: string }> {
+async function fetchPageConfig(
+	cookieMap: Map<string, string>
+): Promise<{ userSessionId: string; visitorData: string; pageId: string }> {
 	// SOCS=CAI prevents YouTube from showing the GDPR consent page
 	const cookieHeader = rebuildCookieHeader(cookieMap) + '; SOCS=CAI'
 	const response = await fetch('https://music.youtube.com', {
@@ -44,24 +46,31 @@ async function fetchPageConfig(cookieMap: Map<string, string>): Promise<{ userSe
 			'accept-language': 'en-US,en;q=0.9',
 			cookie: cookieHeader,
 			'user-agent':
-				'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
-		},
+				'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36'
+		}
 	})
 	const html = await response.text()
 
 	const datasyncMatch = html.match(/"DATASYNC_ID"\s*:\s*"([^"]+)"/)
-	if (!datasyncMatch) throw new Error('Could not find DATASYNC_ID in YT Music page')
+	if (!datasyncMatch)
+		throw new Error('Could not find DATASYNC_ID in YT Music page')
 	const datasyncParts = datasyncMatch[1].split('||')
 	const userSessionId = datasyncParts[1] || datasyncParts[0] || ''
 	const pageId = datasyncParts[0] || ''
 
 	const visitorMatch = html.match(/"VISITOR_DATA"\s*:\s*"([^"]+)"/)
-	const visitorData = visitorMatch ? visitorMatch[1].replace(/\\u003d/gi, '=') : ''
+	const visitorData = visitorMatch
+		? visitorMatch[1].replace(/\\u003d/gi, '=')
+		: ''
 
 	return { userSessionId, visitorData, pageId }
 }
 
-function sapisidHash(timestamp: string, cookieValue: string, userSessionId: string): string {
+function sapisidHash(
+	timestamp: string,
+	cookieValue: string,
+	userSessionId: string
+): string {
 	const hash = crypto
 		.createHash('sha1')
 		.update(`${userSessionId} ${timestamp} ${cookieValue} ${YTM_ORIGIN}`)
@@ -69,7 +78,9 @@ function sapisidHash(timestamp: string, cookieValue: string, userSessionId: stri
 	return `${timestamp}_${hash}_u`
 }
 
-async function generateAuthHeader(cookieMap: Map<string, string>): Promise<{ authHeader: string; visitorData: string; pageId: string }> {
+async function generateAuthHeader(
+	cookieMap: Map<string, string>
+): Promise<{ authHeader: string; visitorData: string; pageId: string }> {
 	const ts = Math.floor(Date.now() / 1000).toString()
 
 	if (!cachedUserSessionId) {
@@ -79,10 +90,12 @@ async function generateAuthHeader(cookieMap: Map<string, string>): Promise<{ aut
 		cachedPageId = config.pageId
 	}
 
-	const sapisid = cookieMap.get('__Secure-3PAPISID') || cookieMap.get('SAPISID')
+	const sapisid =
+		cookieMap.get('__Secure-3PAPISID') || cookieMap.get('SAPISID')
 	if (!sapisid) throw new Error('Missing __Secure-3PAPISID or SAPISID cookie')
 
-	const sapisid1 = cookieMap.get('__Secure-1PAPISID') || cookieMap.get('APISID')
+	const sapisid1 =
+		cookieMap.get('__Secure-1PAPISID') || cookieMap.get('APISID')
 	if (!sapisid1) throw new Error('Missing __Secure-1PAPISID or APISID cookie')
 
 	const sapisid3 = cookieMap.get('__Secure-3PAPISID') || sapisid
@@ -90,10 +103,14 @@ async function generateAuthHeader(cookieMap: Map<string, string>): Promise<{ aut
 	const parts = [
 		`SAPISIDHASH ${sapisidHash(ts, sapisid, cachedUserSessionId)}`,
 		`SAPISID1PHASH ${sapisidHash(ts, sapisid1, cachedUserSessionId)}`,
-		`SAPISID3PHASH ${sapisidHash(ts, sapisid3, cachedUserSessionId)}`,
+		`SAPISID3PHASH ${sapisidHash(ts, sapisid3, cachedUserSessionId)}`
 	]
 
-	return { authHeader: parts.join(' '), visitorData: cachedVisitorData!, pageId: cachedPageId! }
+	return {
+		authHeader: parts.join(' '),
+		visitorData: cachedVisitorData!,
+		pageId: cachedPageId!
+	}
 }
 
 export function invalidateYTMusicClient(): void {
@@ -104,7 +121,11 @@ export function invalidateYTMusicClient(): void {
 	cachedPageId = null
 }
 
-export async function fetchInnertube(endpoint: string, body: Record<string, unknown>, clientVersion?: string) {
+export async function fetchInnertube(
+	endpoint: string,
+	body: Record<string, unknown>,
+	clientVersion?: string
+) {
 	const cookieStr = process.env.YTM_COOKIE
 	if (!cookieStr) throw new Error('YTM_COOKIE not configured')
 
@@ -113,7 +134,8 @@ export async function fetchInnertube(endpoint: string, body: Record<string, unkn
 	}
 	cachedAuthUser = process.env.YTM_AUTH_USER || '0'
 
-	const { authHeader, visitorData, pageId } = await generateAuthHeader(cachedCookieMap)
+	const { authHeader, visitorData, pageId } =
+		await generateAuthHeader(cachedCookieMap)
 	const cookieHeader = rebuildCookieHeader(cachedCookieMap)
 
 	const payload = {
@@ -124,15 +146,15 @@ export async function fetchInnertube(endpoint: string, body: Record<string, unkn
 				gl: 'US',
 				clientName: 'WEB_REMIX',
 				clientVersion: clientVersion || '1.20260531.05.00',
-				...(visitorData && { visitorData }),
+				...(visitorData && { visitorData })
 			},
 			user: { lockedSafetyMode: false },
 			request: {
 				useSsl: true,
 				internalExperimentFlags: [],
-				consistencyTokenJars: [],
-			},
-		},
+				consistencyTokenJars: []
+			}
+		}
 	}
 
 	const response = await fetch(
@@ -154,10 +176,10 @@ export async function fetchInnertube(endpoint: string, body: Record<string, unkn
 				'X-Origin': YTM_ORIGIN,
 				'X-Youtube-Bootstrap-Logged-In': 'true',
 				'X-Youtube-Client-Name': '67',
-				...(visitorData && { 'X-Goog-Visitor-Id': visitorData }),
+				...(visitorData && { 'X-Goog-Visitor-Id': visitorData })
 			},
-			body: JSON.stringify(payload),
-		},
+			body: JSON.stringify(payload)
+		}
 	)
 
 	if (!response.ok) {

@@ -16,7 +16,9 @@ const FALLBACK_TRACKS: YTMusicTrack[] = [
 	}
 ]
 
-export async function getLatestYTMusicTracks(limit = 10): Promise<YTMusicTrack[]> {
+export async function getLatestYTMusicTracks(
+	limit = 10
+): Promise<YTMusicTrack[]> {
 	try {
 		const response = await fetch(`/api/ytmusic/recent?limit=${limit}`)
 

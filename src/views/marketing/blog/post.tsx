@@ -54,10 +54,7 @@ export async function BlogPostView({
 		notFound()
 	}
 
-	const { prevPost, nextPost } = await getAdjacentBlogPosts(
-		slug,
-		userIsAdmin
-	)
+	const { prevPost, nextPost } = await getAdjacentBlogPosts(slug, userIsAdmin)
 
 	return (
 		<>

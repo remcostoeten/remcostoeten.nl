@@ -79,14 +79,16 @@ export function HomeBlogPostsClient({ posts }: Props) {
 
 										{allTags.length > 0 && (
 											<div className="flex flex-wrap gap-1.5 sm:ml-1">
-												{allTags.slice(0, 3).map(tag => (
-													<span
-														key={tag}
-														className="border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-foreground/80"
-													>
-														{tag}
-													</span>
-												))}
+												{allTags
+													.slice(0, 3)
+													.map(tag => (
+														<span
+															key={tag}
+															className="border border-border/50 bg-secondary/40 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-foreground/80"
+														>
+															{tag}
+														</span>
+													))}
 											</div>
 										)}
 									</div>

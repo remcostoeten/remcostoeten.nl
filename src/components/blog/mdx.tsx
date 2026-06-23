@@ -120,11 +120,7 @@ function Video({ src, ...props }: { src: string; [key: string]: any }) {
 }
 
 function PassthroughHTML({ children, tagName, ...props }: any) {
-	return React.createElement(
-		tagName || 'div',
-		props,
-		children
-	)
+	return React.createElement(tagName || 'div', props, children)
 }
 
 const htmlElementsToPass = [
@@ -413,10 +409,7 @@ export function CustomMDX(props) {
 						remarkDirective,
 						remarkCalloutDirectives
 					],
-					rehypePlugins: [
-						rehypeExtractCodeMeta,
-						rehypeRaw
-					]
+					rehypePlugins: [rehypeExtractCodeMeta, rehypeRaw]
 				},
 				allowDangerousHtml: true
 			}}
