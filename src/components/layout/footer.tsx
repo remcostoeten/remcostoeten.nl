@@ -50,7 +50,7 @@ export function Footer() {
 		},
 		{
 			name: 'LinkedIn',
-			href: 'https://linkedin.com/in/remcostoeten',
+			href: 'https://www.linkedin.com/in/remco-stoeten/',
 			icon: Linkedin
 		},
 		{ name: 'X', href: 'https://x.com/remcostoeten', icon: Twitter }
@@ -126,7 +126,7 @@ export function Footer() {
 									key={social.name}
 									href={social.href}
 									target="_blank"
-									rel="noopener noreferrer"
+									rel="me noopener noreferrer"
 									className="text-muted-foreground hover:text-foreground transition-colors"
 									aria-label={social.name}
 								>

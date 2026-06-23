@@ -29,11 +29,13 @@ export function BlogPostStructuredData({
 		image: image || `${baseUrl}/og?title=${encodeURIComponent(title)}`,
 		author: {
 			'@type': 'Person',
+			'@id': `${baseUrl}/#person`,
 			name: author,
 			url: baseUrl
 		},
 		publisher: {
 			'@type': 'Person',
+			'@id': `${baseUrl}/#person`,
 			name: 'Remco Stoeten',
 			logo: {
 				'@type': 'ImageObject',
@@ -63,12 +65,20 @@ export function BlogPostStructuredData({
 	)
 }
 
+export const PERSON_ID = `${baseUrl}/#person`
+export const WEBSITE_ID = `${baseUrl}/#website`
+
 export function WebsiteStructuredData() {
 	const structuredData = {
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
+		'@id': WEBSITE_ID,
 		name: 'Remco Stoeten - Frontend Engineer',
+		alternateName: ['Remco Stoeten', 'remcostoeten', 'remcostoeten.nl'],
 		url: baseUrl,
+		inLanguage: 'en',
+		publisher: { '@id': PERSON_ID },
+		about: { '@id': PERSON_ID },
 		potentialAction: {
 			'@type': 'SearchAction',
 			target: `${baseUrl}/blog?q={search_term_string}`,
@@ -88,8 +98,11 @@ export function PersonStructuredData() {
 	const structuredData = {
 		'@context': 'https://schema.org',
 		'@type': 'Person',
+		'@id': PERSON_ID,
 		name: 'Remco Stoeten',
+		alternateName: 'remcostoeten',
 		url: baseUrl,
+		mainEntityOfPage: baseUrl,
 		image: `${baseUrl}/og`,
 		sameAs: [
 			'https://github.com/remcostoeten',

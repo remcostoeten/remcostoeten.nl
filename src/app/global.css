@@ -228,6 +228,36 @@
 	}
 }
 
+@keyframes cell-pop-in {
+	0% {
+		opacity: 0;
+		transform: scale(0);
+	}
+
+	60% {
+		opacity: 1;
+		transform: scale(1.18);
+	}
+
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.cell-pop-in {
+	transform-origin: center;
+	opacity: 0;
+	animation: cell-pop-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cell-pop-in {
+		animation: none;
+		opacity: 1;
+	}
+}
+
 .animate-pulse {
 	will-change: opacity;
 }
