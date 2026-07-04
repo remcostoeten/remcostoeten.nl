@@ -14,7 +14,15 @@ const VercelAnalytics = lazy(() =>
 	}))
 )
 
-export { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
+const PostHogAnalytics = lazy(() =>
+	import('./posthog').then(m => ({
+		default: m.PostHogAnalytics
+	}))
+)
+
+import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
+
+export { VercelSpeedInsights }
 
 function Analytics() {
 	const ingestUrl = process.env.NEXT_PUBLIC_ANALYTICS_URL
@@ -28,6 +36,7 @@ export function UnifiedAnalytics() {
 	return (
 		<Suspense fallback={null}>
 			<Analytics />
+			<PostHogAnalytics />
 			{isProduction ? (
 				<>
 					<VercelAnalytics />
