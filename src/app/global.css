@@ -1121,9 +1121,6 @@
 		scroll-behavior: auto;
 	}
 
-	.animate-stagger,
-	.animate-pulse,
-	.animate-pattern-flow,
 	.codeblock-container,
 	.codeblock-header,
 	.codeblock-button,
@@ -1173,7 +1170,10 @@
 	.hue-overlay::before,
 	.scrolled-away,
 	.scrolled-away::before,
-	.demo-popover {
+	.demo-popover,
+	.animate-stagger,
+	.animate-pulse,
+	.animate-pattern-flow {
 		animation: none !important;
 		transition: none !important;
 	}

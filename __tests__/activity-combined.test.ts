@@ -15,8 +15,14 @@ const spotifyMocks = vi.hoisted(() => ({
 	getSpotifyTracks: vi.fn()
 }))
 
+const ytmusicMocks = vi.hoisted(() => ({
+	getYTMusicTracks: vi.fn(),
+	hasYTMusicCredentials: vi.fn()
+}))
+
 vi.mock('@/server/github', () => githubMocks)
 vi.mock('@/server/spotify', () => spotifyMocks)
+vi.mock('@/server/ytmusic', () => ytmusicMocks)
 
 describe('getCombinedActivity', () => {
 	beforeEach(() => {
@@ -24,6 +30,8 @@ describe('getCombinedActivity', () => {
 		githubMocks.getCachedGitHubActivity.mockReset()
 		githubMocks.getCachedGitHubContributions.mockReset()
 		spotifyMocks.getSpotifyTracks.mockReset()
+		ytmusicMocks.getYTMusicTracks.mockReset()
+		ytmusicMocks.hasYTMusicCredentials.mockReturnValue(false)
 	})
 
 	it('merges both contribution years, preserves activity, and includes spotify tracks', async () => {

@@ -42,6 +42,7 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
 		if (segment === 'blog') label = 'Blog'
 		if (segment === 'categories') label = 'Categories'
 		if (segment === 'topics') label = 'Topics'
+		if (segment === 'find-replace') label = 'Find & Replace'
 
 		breadcrumbs.push({
 			label,

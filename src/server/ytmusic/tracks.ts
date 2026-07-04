@@ -1,6 +1,10 @@
 import { unstable_cache } from 'next/cache'
 import { fetchInnertube, hasYTMusicCredentials } from './auth'
-import { hasOAuthCredentials, getPythonYTMusicTracks, getLocalServerTracks } from './python-bridge'
+import {
+	hasOAuthCredentials,
+	getPythonYTMusicTracks,
+	getLocalServerTracks
+} from './python-bridge'
 import type { YTMusicTrack } from '@/features/ytmusic/types'
 import { db } from '@/server/db/connection'
 import { ytmusicCache } from '@/server/db/ytmusic-schema'
@@ -16,7 +20,7 @@ let firstSeenAt: Map<string, string> = new Map()
 async function readDbCache(): Promise<YTMusicTrack[]> {
 	try {
 		const row = await db.query.ytmusicCache.findFirst({
-			where: eq(ytmusicCache.key, DB_CACHE_KEY),
+			where: eq(ytmusicCache.key, DB_CACHE_KEY)
 		})
 		return row?.tracks ?? []
 	} catch {
@@ -31,7 +35,7 @@ async function writeDbCache(tracks: YTMusicTrack[]): Promise<void> {
 			.values({ key: DB_CACHE_KEY, tracks, updatedAt: new Date() })
 			.onConflictDoUpdate({
 				target: ytmusicCache.key,
-				set: { tracks, updatedAt: new Date() },
+				set: { tracks, updatedAt: new Date() }
 			})
 	} catch {}
 }
@@ -40,7 +44,7 @@ function formatPythonTracks(tracks: YTMusicTrack[]): YTMusicTrack[] {
 	const now = Date.now()
 	return tracks.map((track, i) => ({
 		...track,
-		played_at: track.played_at || new Date(now - i * 180_000).toISOString(),
+		played_at: track.played_at || new Date(now - i * 180_000).toISOString()
 	}))
 }
 
@@ -51,7 +55,7 @@ export const getYTMusicTracks = unstable_cache(
 		try {
 			if (hasYTMusicCredentials()) {
 				const data = await fetchInnertube('browse', {
-					browseId: 'FEmusic_history',
+					browseId: 'FEmusic_history'
 				})
 
 				const contents = traverse(
@@ -110,10 +114,7 @@ export const getYTMusicTracks = unstable_cache(
 	{ revalidate: 30, tags: ['ytmusic'] }
 )
 
-function parseInnertubeTracks(
-	contents: any[],
-	limit: number
-): YTMusicTrack[] {
+function parseInnertubeTracks(contents: any[], limit: number): YTMusicTrack[] {
 	const rawTracks: any[] = []
 	for (const section of contents) {
 		const shelf =
@@ -186,7 +187,7 @@ function parseInnertubeTracks(
 			album: album || '',
 			url: `${YTM_BASE}/watch?v=${id}`,
 			image: thumbnail || '',
-			played_at: firstSeenAt.get(id)!,
+			played_at: firstSeenAt.get(id)!
 		})
 	}
 
@@ -201,7 +202,10 @@ function traverse(obj: unknown, ...keys: string[]): unknown {
 		if (key === '*') {
 			if (Array.isArray(current)) {
 				for (const item of current) {
-					const result = traverse(item, ...keys.slice(keys.indexOf('*') + 1))
+					const result = traverse(
+						item,
+						...keys.slice(keys.indexOf('*') + 1)
+					)
 					if (result !== undefined) return result
 				}
 				return undefined
@@ -221,7 +225,14 @@ function traverse(obj: unknown, ...keys: string[]): unknown {
 }
 
 function extractArtists(item: any): string {
-	const runs = traverse(item, 'flexColumns', '1', 'musicResponsiveListItemFlexColumnRenderer', 'text', 'runs') as any[] | undefined
+	const runs = traverse(
+		item,
+		'flexColumns',
+		'1',
+		'musicResponsiveListItemFlexColumnRenderer',
+		'text',
+		'runs'
+	) as any[] | undefined
 	if (!Array.isArray(runs)) return ''
 
 	const names: string[] = []
@@ -234,7 +245,8 @@ function extractArtists(item: any): string {
 			text.includes('/') ||
 			text.startsWith('Album') ||
 			/\d+(\.\d+)?[KMB]?\s*views?/i.test(text)
-		) continue
+		)
+			continue
 		names.push(text)
 	}
 
@@ -242,12 +254,27 @@ function extractArtists(item: any): string {
 }
 
 function extractAlbum(item: any): string {
-	const album = traverse(item, 'flexColumns', '2', 'musicResponsiveListItemFlexColumnRenderer', 'text', 'runs', '0', 'text') as string | undefined
+	const album = traverse(
+		item,
+		'flexColumns',
+		'2',
+		'musicResponsiveListItemFlexColumnRenderer',
+		'text',
+		'runs',
+		'0',
+		'text'
+	) as string | undefined
 	return album || ''
 }
 
 function extractThumbnail(item: any): string {
-	const thumbnails = traverse(item, 'thumbnail', 'musicThumbnailRenderer', 'thumbnail', 'thumbnails') as any[] | undefined
+	const thumbnails = traverse(
+		item,
+		'thumbnail',
+		'musicThumbnailRenderer',
+		'thumbnail',
+		'thumbnails'
+	) as any[] | undefined
 	if (!Array.isArray(thumbnails) || !thumbnails.length) return ''
 	const last = thumbnails[thumbnails.length - 1]
 	return last?.url || ''

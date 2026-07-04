@@ -147,6 +147,12 @@ export function Footer() {
 							About
 						</Link>
 						<Link
+							href="/tools"
+							className="hover:text-foreground transition-colors"
+						>
+							Tools
+						</Link>
+						<Link
 							href="/privacy"
 							className="hover:text-foreground transition-colors"
 						>

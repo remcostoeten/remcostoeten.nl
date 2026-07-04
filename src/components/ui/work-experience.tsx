@@ -195,7 +195,7 @@ export function WorkExperience({
 								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
 							>
 								<ChevronsDownUpIcon className="size-4 rotate-180" />
-							<span>Show Less</span>
+								<span>Show Less</span>
 							</button>
 						</div>
 					)}
