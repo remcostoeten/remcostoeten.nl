@@ -2,11 +2,9 @@ import Link from 'next/link'
 import { Hash } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
 import { getVisibleTopics } from '@/features/blog'
-import { isAdmin } from '@/utils/is-admin'
 
 export async function TopicsView() {
-	const userIsAdmin = await isAdmin()
-	const topics = await getVisibleTopics(userIsAdmin)
+	const topics = await getVisibleTopics(false)
 
 	return (
 		<section className="space-y-6 sm:space-y-8">

@@ -26,3 +26,12 @@ export type TPdokLocation = {
 	lat: number
 	lng: number
 }
+
+export type TSpot = {
+	id: string
+	name: string
+	lat: number
+	lng: number
+	kind: string
+	address: string | null
+}

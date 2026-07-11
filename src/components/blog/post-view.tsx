@@ -1,5 +1,6 @@
 'use client'
 
+import type { Route } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowRight, Eye } from 'lucide-react'
@@ -177,7 +178,7 @@ export function PostNavigation({
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				{prevPost ? (
 					<Link
-						href={`${basePath}/${prevPost.slug}`}
+						href={`${basePath}/${prevPost.slug}` as Route}
 						className="group flex flex-col p-4 rounded-xl 
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800
@@ -199,7 +200,7 @@ export function PostNavigation({
 
 				{nextPost ? (
 					<Link
-						href={`${basePath}/${nextPost.slug}`}
+						href={`${basePath}/${nextPost.slug}` as Route}
 						className="group flex flex-col p-4 rounded-xl text-right
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800

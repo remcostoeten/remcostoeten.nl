@@ -2,14 +2,16 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import type { Metadata } from 'next'
-import { Badge } from '@/components/ui/badge'
 import { createPageMetadata } from '@/core/metadata/base'
 import {
 	getAvailableTools,
-	getToolBySlug,
-	TOOL_CATEGORY_LABELS
+	getToolBySlug
 } from '@/features/miscellaneous/constants/tools'
+import type { TToolSlug } from '@/features/miscellaneous/constants/tools'
+import { ToolCategoryBadge } from '@/features/miscellaneous/components/tool-category-badge'
 import { ToolRenderer } from '@/features/miscellaneous/components/tool-renderer'
+
+export const prefetch = 'allow-runtime'
 
 type Props = {
 	params: Promise<{ slug: string }>
@@ -50,20 +52,14 @@ export default async function Page({ params }: Props) {
 					<h1 className="text-lg font-semibold text-foreground">
 						{tool.name}
 					</h1>
-					<Badge
-						variant="secondary"
-						className="rounded-sm font-normal"
-					>
-						{TOOL_CATEGORY_LABELS[tool.category]}
-					</Badge>
+					<ToolCategoryBadge category={tool.category} />
 				</div>
 				<p className="text-sm text-muted-foreground max-w-prose">
-					{tool.description} Everything runs locally in your browser
-					and is saved automatically.
+					{tool.description}
 				</p>
 			</header>
 
-			<ToolRenderer slug={tool.slug} />
+			<ToolRenderer slug={tool.slug as TToolSlug} />
 		</div>
 	)
 }

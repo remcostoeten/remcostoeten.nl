@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server'
 import path from 'path'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-export const dynamic = 'force-dynamic' // Ensure this route is dynamic
 
 const PAGE_EXTENSIONS = new Set(['.tsx', '.js', '.jsx'])
 

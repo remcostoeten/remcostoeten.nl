@@ -4,7 +4,7 @@ import { baseUrl as siteBaseUrl } from '@/core/config/site'
 export interface BaseMetadataConfig {
 	title: string
 	description: string
-	keywords?: string[]
+	keywords?: readonly string[]
 	canonical?: string
 	siteName?: string
 	image?: string
@@ -31,7 +31,7 @@ export function createPageMetadata(config: BaseMetadataConfig): Metadata {
 	return {
 		title: fullTitle,
 		description,
-		keywords,
+		keywords: keywords ? [...keywords] : undefined,
 		openGraph: {
 			title: fullTitle,
 			description,
@@ -81,7 +81,7 @@ export function createArticleMetadata(config: {
 	author?: string
 	image?: string
 	canonical?: string
-	keywords?: string[]
+	keywords?: readonly string[]
 }): Metadata {
 	const {
 		title,
@@ -100,7 +100,7 @@ export function createArticleMetadata(config: {
 	return {
 		title,
 		description,
-		keywords,
+		keywords: keywords ? [...keywords] : undefined,
 		openGraph: {
 			title,
 			description,

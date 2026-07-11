@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import type { Route } from 'next'
 import Link from 'next/link'
 import { Section } from '@/components/ui/section'
 import {
@@ -90,7 +91,7 @@ export function AboutView() {
 						{socialLinks.map(link => (
 							<Link
 								key={link.name}
-								href={link.href}
+								href={link.href as Route}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground border border-border/50 rounded-none hover:bg-muted/50 transition-colors"

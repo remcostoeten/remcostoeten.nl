@@ -7,6 +7,7 @@ import React, {
 	useRef,
 	useState,
 	useCallback,
+	useId,
 	useMemo,
 	type ReactNode,
 	type RefObject
@@ -292,8 +293,7 @@ export function useStaggerLayer<T extends HTMLElement = HTMLElement>(
 	} = useStaggerContext()
 
 	const ref = useRef<T>(null)
-	const idRef = useRef(`stagger-${Math.random().toString(36).substr(2, 9)}`)
-	const id = idRef.current
+	const id = `stagger-${useId()}`
 
 	const shouldReduceMotion = useReducedMotion()
 	const isInView = useInView(ref as RefObject<Element>, {

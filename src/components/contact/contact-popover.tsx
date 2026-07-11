@@ -2,15 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { X, Send, Mail, User, Loader2 } from 'lucide-react'
+import { X, Mail, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { submitContactForm } from '@/server/actions/contact/submission'
 import { EmailAutocomplete } from './email-autocomplete'
+import { SendButton, type TSendStatus } from './send-button'
 import { cn } from '@/shared/lib/cn'
+
+const FORM_FIELDS = ['name', 'email', 'subject', 'message'] as const
 
 export function ContactPopover() {
 	const [isOpen, setIsOpen] = useState(false)
-	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [status, setStatus] = useState<TSendStatus>('idle')
 	const containerRef = useRef<HTMLDivElement>(null)
 	const popoverRef = useRef<HTMLDivElement>(null)
 	const triggerRef = useRef<HTMLButtonElement>(null)
@@ -28,7 +31,7 @@ export function ContactPopover() {
 	const toggleOpen = () => setIsOpen(prev => !prev)
 
 	const focusFirstErrorField = (nextErrors: Record<string, string[]>) => {
-		const firstInvalidField = ['name', 'email', 'subject', 'message'].find(
+		const firstInvalidField = FORM_FIELDS.find(
 			field => nextErrors[field]?.length
 		)
 
@@ -128,39 +131,48 @@ export function ContactPopover() {
 		prevIsOpenRef.current = isOpen
 	}, [isOpen])
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		setIsSubmitting(true)
+		setStatus('sending')
 		setErrors({})
 
-		const formData = new FormData()
-		formData.append('name', name)
-		formData.append('email', email)
-		formData.append('subject', subject)
-		formData.append('message', message)
+		const formData = new FormData(e.currentTarget)
 
 		try {
 			const result = await submitContactForm(formData)
 
 			if (result.success) {
+				setStatus('success')
 				toast.success(result.message)
-				setIsOpen(false)
 				setName('')
 				setEmail('')
 				setSubject('')
 				setMessage('')
+				setTimeout(() => {
+					setIsOpen(false)
+					setStatus('idle')
+				}, 1200)
+				return
+			}
+
+			setStatus('idle')
+
+			const fieldErrors = result.errors ?? {}
+			const hasVisibleError = FORM_FIELDS.some(
+				field => fieldErrors[field]?.length
+			)
+
+			if (hasVisibleError) {
+				setErrors(fieldErrors)
+				focusFirstErrorField(fieldErrors)
 			} else {
-				if (result.errors) {
-					setErrors(result.errors)
-					focusFirstErrorField(result.errors)
-				} else {
-					toast.error(result.message)
-				}
+				toast.error(
+					result.message ?? 'Something went wrong. Please try again.'
+				)
 			}
 		} catch {
+			setStatus('idle')
 			toast.error('An unexpected error occurred.')
-		} finally {
-			setIsSubmitting(false)
 		}
 	}
 
@@ -240,9 +252,9 @@ export function ContactPopover() {
 													: undefined
 											}
 											className={cn(
-												'flex h-9 w-full rounded-md border border-input bg-transparent pl-9 pr-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+												'flex h-9 w-full rounded-md border-0 bg-transparent pl-9 pr-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
 												errors.name &&
-													'border-destructive focus-visible:ring-destructive'
+													'focus-visible:ring-destructive'
 											)}
 											placeholder="Your name"
 										/>
@@ -282,7 +294,7 @@ export function ContactPopover() {
 											className={cn(
 												'pl-9',
 												errors.email &&
-													'border-destructive focus-visible:ring-destructive'
+													'focus-visible:ring-destructive'
 											)}
 											placeholder="name@example.com"
 										/>
@@ -322,7 +334,7 @@ export function ContactPopover() {
 												? 'contact-subject-error'
 												: undefined
 										}
-										className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+										className="flex h-9 w-full rounded-md border-0 bg-transparent px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 										placeholder="Project inquiry"
 									/>
 								</div>
@@ -362,9 +374,9 @@ export function ContactPopover() {
 													: undefined
 											}
 											className={cn(
-												'flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none',
+												'flex w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none',
 												errors.message &&
-													'border-destructive focus-visible:ring-destructive'
+													'focus-visible:ring-destructive'
 											)}
 											placeholder="How can I help you?"
 										/>
@@ -388,23 +400,7 @@ export function ContactPopover() {
 								/>
 
 								<div className="flex justify-end pt-2">
-									<button
-										type="submit"
-										disabled={isSubmitting}
-										className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 w-full"
-									>
-										{isSubmitting ? (
-											<>
-												<Loader2 className="w-4 h-4 mr-2 animate-spin" />
-												Sending...
-											</>
-										) : (
-											<>
-												<Send className="w-4 h-4 mr-2" />
-												Send Message
-											</>
-										)}
-									</button>
+									<SendButton status={status} />
 								</div>
 							</form>
 						</div>

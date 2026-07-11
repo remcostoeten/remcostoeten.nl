@@ -1,4 +1,5 @@
 import { rehypeExtractCodeMeta } from '@/shared/lib/rehype-extract-code-meta'
+import { nodeTypes } from '@mdx-js/mdx'
 import rehypeRaw from 'rehype-raw'
 import { ArrowUpRight } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -409,7 +410,10 @@ export function CustomMDX(props) {
 						remarkDirective,
 						remarkCalloutDirectives
 					],
-					rehypePlugins: [rehypeExtractCodeMeta, rehypeRaw]
+					rehypePlugins: [
+						rehypeExtractCodeMeta,
+						[rehypeRaw, { passThrough: nodeTypes }]
+					]
 				},
 				allowDangerousHtml: true
 			}}

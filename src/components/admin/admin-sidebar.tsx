@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { Route } from 'next'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -61,7 +62,7 @@ export function AdminSidebar() {
 						return (
 							<Link
 								key={item.href}
-								href={item.href}
+								href={item.href as Route}
 								className={`admin-nav-item flex items-center gap-3 px-3 py-2.5 text-sm transition-all relative ${
 									active
 										? 'text-[hsl(var(--brand-400))] bg-[hsl(var(--brand-500)/0.08)]'

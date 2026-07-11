@@ -2,9 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Crosshair, Loader2, MapPin, Search } from 'lucide-react'
+import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/shared/lib/cn'
 import { parseLatLng } from '../utils/geo'
+import {
+	isGoogleMapsShortLink,
+	parseGoogleMapsUrl
+} from '../utils/google-maps'
 import { lookupLocation, suggestLocations } from '../utils/pdok'
 import type { TPdokLocation, TPdokSuggestion } from '../types'
 
@@ -20,11 +25,16 @@ export function LocationSearch({ onPick }: Props) {
 	const [active, setActive] = useState(0)
 	const wrapRef = useRef<HTMLDivElement>(null)
 
-	const coords = useMemo(() => parseLatLng(query), [query])
+	const gmaps = useMemo(() => parseGoogleMapsUrl(query), [query])
+	const shortLink = useMemo(() => isGoogleMapsShortLink(query), [query])
+	const coords = useMemo(
+		() => (gmaps ? null : parseLatLng(query)),
+		[query, gmaps]
+	)
 
 	useEffect(() => {
 		const trimmed = query.trim()
-		if (coords || trimmed.length < 2) {
+		if (coords || gmaps || shortLink || trimmed.length < 2) {
 			setSuggestions([])
 			return
 		}
@@ -51,7 +61,7 @@ export function LocationSearch({ onPick }: Props) {
 			controller.abort()
 			clearTimeout(timer)
 		}
-	}, [query, coords])
+	}, [query, coords, gmaps, shortLink])
 
 	useEffect(() => {
 		function onDocClick(event: MouseEvent) {
@@ -72,6 +82,49 @@ export function LocationSearch({ onPick }: Props) {
 		setQuery('')
 	}
 
+	function pickGmaps() {
+		if (!gmaps) return
+		setOpen(false)
+		onPick({
+			label: gmaps.label ?? `${gmaps.lat}, ${gmaps.lng}`,
+			lat: gmaps.lat,
+			lng: gmaps.lng
+		})
+		setQuery('')
+	}
+
+	async function resolveShortLink() {
+		if (loading) return
+		setLoading(true)
+		try {
+			const response = await fetch('/api/hemelsbreed/expand', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ url: query.trim() })
+			})
+			const data = await response.json()
+			const point =
+				response.ok && typeof data.url === 'string'
+					? parseGoogleMapsUrl(data.url)
+					: null
+			if (!point) {
+				toast.error('Could not read a location from that link')
+				return
+			}
+			setOpen(false)
+			onPick({
+				label: point.label ?? `${point.lat}, ${point.lng}`,
+				lat: point.lat,
+				lng: point.lng
+			})
+			setQuery('')
+		} catch {
+			toast.error('Could not resolve the Google Maps link')
+		} finally {
+			setLoading(false)
+		}
+	}
+
 	async function pick(suggestion: TPdokSuggestion) {
 		setOpen(false)
 		setQuery(suggestion.label)
@@ -87,10 +140,12 @@ export function LocationSearch({ onPick }: Props) {
 	}
 
 	function onKeyDown(event: React.KeyboardEvent) {
-		if (coords) {
+		if (coords || gmaps || shortLink) {
 			if (event.key === 'Enter') {
 				event.preventDefault()
-				pickCoords()
+				if (coords) pickCoords()
+				else if (gmaps) pickGmaps()
+				else resolveShortLink()
 			} else if (event.key === 'Escape') {
 				setOpen(false)
 			}
@@ -123,10 +178,11 @@ export function LocationSearch({ onPick }: Props) {
 					value={query}
 					onChange={event => setQuery(event.target.value)}
 					onFocus={() =>
-						(coords || suggestions.length > 0) && setOpen(true)
+						(coords || gmaps || shortLink || suggestions.length > 0) &&
+						setOpen(true)
 					}
 					onKeyDown={onKeyDown}
-					placeholder="Address, postcode or place — e.g. 1012 AB or Utrecht"
+					placeholder="Address, postcode, place or Google Maps link"
 					className="pl-8 pr-8 transition-colors focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:bg-muted/50"
 					aria-label="Search a location in the Netherlands"
 					autoComplete="off"
@@ -165,7 +221,71 @@ export function LocationSearch({ onPick }: Props) {
 				</ul>
 			)}
 
-			{open && !coords && suggestions.length > 0 && (
+			{gmaps && (
+				<ul
+					role="listbox"
+					className="absolute z-[500] mt-1 w-full overflow-auto border border-border/60 bg-popover shadow-lg"
+				>
+					<li role="option" aria-selected>
+						<button
+							type="button"
+							onClick={pickGmaps}
+							className="flex w-full items-center gap-2 bg-accent px-3 py-2 text-left text-sm text-accent-foreground"
+						>
+							<MapPin
+								aria-hidden
+								className="size-3.5 shrink-0 text-muted-foreground"
+							/>
+							<span className="truncate">
+								Drop pin at{' '}
+								{gmaps.label ??
+									`${gmaps.lat.toFixed(5)}, ${gmaps.lng.toFixed(5)}`}
+							</span>
+							<span className="ml-auto shrink-0 text-xs text-muted-foreground">
+								Google Maps
+							</span>
+						</button>
+					</li>
+				</ul>
+			)}
+
+			{shortLink && !gmaps && (
+				<ul
+					role="listbox"
+					className="absolute z-[500] mt-1 w-full overflow-auto border border-border/60 bg-popover shadow-lg"
+				>
+					<li role="option" aria-selected>
+						<button
+							type="button"
+							onClick={resolveShortLink}
+							disabled={loading}
+							className="flex w-full items-center gap-2 bg-accent px-3 py-2 text-left text-sm text-accent-foreground disabled:opacity-60"
+						>
+							{loading ? (
+								<Loader2
+									aria-hidden
+									className="size-3.5 shrink-0 animate-spin text-muted-foreground"
+								/>
+							) : (
+								<MapPin
+									aria-hidden
+									className="size-3.5 shrink-0 text-muted-foreground"
+								/>
+							)}
+							<span className="truncate">
+								{loading
+									? 'Resolving shared link…'
+									: 'Drop pin from this shared link'}
+							</span>
+							<span className="ml-auto shrink-0 text-xs text-muted-foreground">
+								Google Maps
+							</span>
+						</button>
+					</li>
+				</ul>
+			)}
+
+			{open && !coords && !gmaps && !shortLink && suggestions.length > 0 && (
 				<ul
 					role="listbox"
 					className="absolute z-[500] mt-1 max-h-72 w-full overflow-auto border border-border/60 bg-popover shadow-lg"

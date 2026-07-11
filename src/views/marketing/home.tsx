@@ -3,6 +3,7 @@ import { Section } from '@/components/ui/section'
 import nextDynamic from 'next/dynamic'
 import { HomeBlogPosts } from '@/components/blog/home-blog-posts'
 import {
+	ActivitySectionSkeleton,
 	TechStackSkeleton,
 	WorkExperienceSkeleton
 } from '@/components/ui/skeletons/section-skeletons'
@@ -31,7 +32,7 @@ const ActivitySectionClient = nextDynamic(
 				default: m.ActivitySectionClient
 			})
 		),
-	{ loading: () => <div className="h-48 animate-pulse bg-muted/20" /> }
+	{ loading: () => <ActivitySectionSkeleton /> }
 )
 
 export function HomeView() {

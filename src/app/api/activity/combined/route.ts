@@ -3,7 +3,6 @@ import { getCombinedActivity } from './combine'
 import { parseBoundedIntParam } from '@/shared/lib/request-params'
 
 // Aggressive caching - 5 minutes for combined activity data
-export const revalidate = 300
 
 export async function GET(request: Request) {
 	const { searchParams } = new URL(request.url)

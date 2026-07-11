@@ -29,7 +29,7 @@ export function BlogView() {
 						</Link>
 					</div>
 				</div>
-				<BlogPosts />
+				<BlogPosts checkAdmin={false} />
 				<TopicsSidebar />
 			</section>
 		</>

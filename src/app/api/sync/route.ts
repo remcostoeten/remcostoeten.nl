@@ -5,7 +5,6 @@ import { syncSpotifyListens } from '@/server/activity-sync/spotify-sync'
 import { getSyncStatus } from '@/server/activity-sync/queries'
 import { isAdmin } from '@/utils/is-admin'
 
-export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 /**

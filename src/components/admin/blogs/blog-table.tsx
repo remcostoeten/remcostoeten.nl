@@ -4,6 +4,7 @@ import { useState, useMemo, useTransition } from 'react'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
+import type { Route } from 'next'
 import Link from 'next/link'
 import {
 	Clock,
@@ -315,7 +316,7 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 										</td>
 										<td className="px-4 py-3 text-right">
 											<Link
-												href={getPostHref(post)}
+												href={getPostHref(post) as Route}
 												target="_blank"
 												className="p-1.5 rounded-sm hover:bg-muted/50 transition-colors opacity-0 group-hover:opacity-100 inline-flex"
 											>

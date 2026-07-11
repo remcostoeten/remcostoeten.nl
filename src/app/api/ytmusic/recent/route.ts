@@ -3,7 +3,6 @@ import { getYTMusicTracks } from '@/server/ytmusic/tracks'
 import { hasYTMusicCredentials } from '@/server/ytmusic/auth'
 import { parseBoundedIntParam } from '@/shared/lib/request-params'
 
-export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
 	try {

@@ -1,26 +1,28 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
-import { Search, Star, Wrench } from 'lucide-react'
+import { useDeferredValue, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
+import { Search, Star, Clock } from 'lucide-react'
 import { useShortcutMap } from '@remcostoeten/use-shortcut/react'
 import { Input } from '@/components/ui/input'
 import { Section } from '@/components/ui/section'
-import { TOOLS } from '../constants/tools'
-import type { TToolDefinition } from '../types'
+import { cn } from '@/shared/lib/cn'
+import {
+	getToolBySlug,
+	searchTools,
+	TOOL_CATEGORIES,
+	TOOL_CATEGORY_LABELS,
+	TOOLS
+} from '../constants/tools'
+import { useRecentTools } from '../hooks/use-tool-usage'
+import type { TToolCategory, TToolDefinition } from '../types'
 import { ToolCard } from './tool-card'
 
-function matchesQuery(tool: TToolDefinition, query: string): boolean {
-	if (!query) return true
-	const haystack = [tool.name, tool.description, ...tool.keywords]
-		.join(' ')
-		.toLowerCase()
-	return query
-		.toLowerCase()
-		.split(/\s+/)
-		.every(term => haystack.includes(term))
+type Props = {
+	intro: ReactNode
 }
 
-function ToolGrid({ tools }: { tools: TToolDefinition[] }) {
+function ToolGrid({ tools }: { tools: readonly TToolDefinition[] }) {
 	return (
 		<ul className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="list">
 			{tools.map(tool => (
@@ -32,8 +34,73 @@ function ToolGrid({ tools }: { tools: TToolDefinition[] }) {
 	)
 }
 
-export function ToolsHub() {
+type TCategoryFilter = TToolCategory | 'all'
+
+function CategoryFilters({
+	active,
+	onChange
+}: {
+	active: TCategoryFilter
+	onChange: (category: TCategoryFilter) => void
+}) {
+	const options: { value: TCategoryFilter; label: string }[] = [
+		{ value: 'all', label: 'All' },
+		...TOOL_CATEGORIES.map(category => ({
+			value: category,
+			label: TOOL_CATEGORY_LABELS[category]
+		}))
+	]
+
+	return (
+		<div role="group" aria-label="Filter tools by category" className="flex flex-wrap gap-2">
+			{options.map(option => (
+				<button
+					key={option.value}
+					type="button"
+					aria-pressed={active === option.value}
+					onClick={() => onChange(option.value)}
+					className={cn(
+						'rounded-sm border px-2.5 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+						active === option.value
+							? 'border-foreground/50 bg-foreground/10 text-foreground'
+							: 'border-border/50 text-muted-foreground hover:border-border hover:text-foreground'
+					)}
+				>
+					{option.label}
+				</button>
+			))}
+		</div>
+	)
+}
+
+function RecentTools() {
+	const { recent, hydrated } = useRecentTools()
+
+	if (!hydrated || recent.length === 0) return null
+
+	const tools = recent
+		.map(slug => getToolBySlug(slug))
+		.filter((tool): tool is TToolDefinition => Boolean(tool))
+
+	if (tools.length === 0) return null
+
+	return (
+		<Section title="Recently Used">
+			<div className="px-4 md:px-5 pt-2">
+				<div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+					<Clock aria-hidden className="size-3.5" />
+					Continue where you left off
+				</div>
+				<ToolGrid tools={tools} />
+			</div>
+		</Section>
+	)
+}
+
+export function ToolsHub({ intro }: Props) {
 	const [query, setQuery] = useState('')
+	const [category, setCategory] = useState<TCategoryFilter>('all')
+	const deferredQuery = useDeferredValue(query)
 	const searchRef = useRef<HTMLInputElement>(null)
 
 	useShortcutMap({
@@ -44,29 +111,18 @@ export function ToolsHub() {
 		}
 	})
 
-	const tools = useMemo(
-		() => TOOLS.filter(tool => matchesQuery(tool, query)),
-		[query]
-	)
+	const tools = useMemo(() => {
+		const matches = searchTools(deferredQuery)
+		return category === 'all'
+			? matches
+			: matches.filter(tool => tool.category === category)
+	}, [deferredQuery, category])
 
 	return (
 		<div className="flex flex-col gap-6">
 			<Section title="Miscellaneous Tools">
 				<div className="px-4 md:px-5 pt-4 flex flex-col gap-4">
-					<div>
-						<h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
-							<Wrench
-								aria-hidden
-								className="size-4 text-muted-foreground"
-							/>
-							Miscellaneous Tools
-						</h1>
-						<p className="mt-1 text-sm text-muted-foreground max-w-prose">
-							A growing collection of small, browser-based
-							utilities. Everything runs entirely client-side —
-							nothing you type or upload ever leaves your machine.
-						</p>
-					</div>
+					{intro}
 
 					<div className="flex flex-col gap-3">
 						<div className="relative">
@@ -90,7 +146,7 @@ export function ToolsHub() {
 
 						<p
 							aria-live="polite"
-							className="text-xs text-muted-foreground"
+							className="h-4 text-xs text-muted-foreground"
 						>
 							{tools.length === TOOLS.length
 								? `${TOOLS.length} tools`

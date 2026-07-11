@@ -10,12 +10,17 @@ export const contactSubmissionSchema = z.object({
 
 export type ContactSubmissionInput = z.infer<typeof contactSubmissionSchema>
 
+function readField(formData: FormData, field: string) {
+	const value = formData.get(field)
+	return typeof value === 'string' ? value : undefined
+}
+
 export function parseContactFormData(formData: FormData) {
 	return {
-		name: formData.get('name'),
-		email: formData.get('email'),
-		subject: formData.get('subject'),
-		message: formData.get('message'),
-		_gotcha: formData.get('_gotcha')
-	} as ContactSubmissionInput
+		name: readField(formData, 'name'),
+		email: readField(formData, 'email'),
+		subject: readField(formData, 'subject'),
+		message: readField(formData, 'message'),
+		_gotcha: readField(formData, '_gotcha')
+	}
 }

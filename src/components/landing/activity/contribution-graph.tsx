@@ -9,6 +9,7 @@ import {
 	useCombinedActivity
 } from '@/hooks/use-combined-activity'
 import type { GitHubEventDetail } from '@/hooks/use-github'
+import { useCurrentYear } from '@/hooks/use-current-year'
 
 interface ActivityDay {
 	date: string
@@ -29,10 +30,12 @@ interface ActivityContributionGraphProps {
 }
 
 export function ActivityContributionGraph({
-	year = new Date().getFullYear(),
+	year,
 	showLegend = true,
 	className = ''
 }: ActivityContributionGraphProps) {
+	const currentYear = useCurrentYear()
+	const resolvedYear = year ?? currentYear
 	const [selectedDay, setSelectedDay] = useState<ActivityDay | null>(null)
 	const [hoveredDay, setHoveredDay] = useState<ActivityDay | null>(null)
 	const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
@@ -289,7 +292,7 @@ export function ActivityContributionGraph({
 		})
 
 		return Array.from(activityMap.values())
-	}, [githubContributions, tracks, year, loading, detailedEvents, startDate])
+	}, [githubContributions, tracks, resolvedYear, loading, detailedEvents, startDate])
 
 	const getColorForLevel = (level: number) => {
 		// Level 0 (empty)

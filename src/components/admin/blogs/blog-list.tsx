@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import type { Route } from 'next'
 import Link from 'next/link'
 import {
 	Eye,
@@ -130,7 +131,7 @@ function BlogCard({ post }: { post: BlogPost }) {
 							</div>
 						</div>
 						<Link
-							href={getPostHref(post)}
+							href={getPostHref(post) as Route}
 							target="_blank"
 							className="p-1.5 rounded-md hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
 						>

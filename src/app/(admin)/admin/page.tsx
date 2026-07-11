@@ -7,7 +7,6 @@ import { getAllCommentsAdmin } from '@/server/queries/blog/comments'
 import { ActivityFeed } from '@/components/admin/activity/activity-feed'
 import { Eye, Users, MessageSquare, Mail, TrendingUp } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
 
 function GlassStatCard({
 	icon: Icon,

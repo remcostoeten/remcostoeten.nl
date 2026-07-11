@@ -2,16 +2,37 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import nextDynamic from 'next/dynamic'
-import { Layers, Lock, LockOpen, Ruler, Trash2 } from 'lucide-react'
+import {
+	Copy,
+	Crosshair,
+	Layers,
+	Loader2,
+	Lock,
+	LockOpen,
+	LocateFixed,
+	Maximize2,
+	Minimize2,
+	Ruler,
+	Trash2
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/shared/lib/cn'
 import { useLocalStorage } from '../hooks/use-local-storage'
+import { SendToTool } from '../components/send-to-tool'
+import { geolocationErrorMessage, locate } from '../utils/geolocation'
+import { consumeLocations, type TLocationPoint } from '../utils/location-handoff'
+import { appendSavedLocation, locationLabel } from '../utils/locations'
+import { reverseGeocode } from '../utils/reverse-geocode'
 import { CircleList } from './components/circle-list'
+import { ImportCoordinates } from './components/import-coordinates'
 import { LocationSearch } from './components/location-search'
 import { MapsBar } from './components/maps-bar'
-import { circlesOverlap, nextColor } from './utils/geo'
-import type { TPdokLocation, TRadiusCircle, TSavedMap } from './types'
+import { SpotSearch } from './components/spot-search'
+import { circlesOverlap, formatKm, nextColor } from './utils/geo'
+import { googleMapsSearchUrl } from './utils/google-maps'
+import { trilaterate } from './utils/trilateration'
+import type { TPdokLocation, TRadiusCircle, TSavedMap, TSpot } from './types'
 
 const STORAGE_KEY = 'misc-tools:hemelsbreed:circles'
 const MAPS_KEY = 'misc-tools:hemelsbreed:maps'
@@ -67,12 +88,17 @@ export default function HemelsbreedTool() {
 	const [focus, setFocus] = useState<TFocus | null>(null)
 	const [measuring, setMeasuring] = useState(false)
 	const [editing, setEditing] = useState(false)
+	const [expanded, setExpanded] = useState(false)
 	const [eHeld, setEHeld] = useState(false)
+	const [spots, setSpots] = useState<TSpot[]>([])
+	const [locating, setLocating] = useState(false)
 	const nonceRef = useRef(0)
 	const nameRef = useRef(0)
+	const handoffRef = useRef(false)
 
 	const canEdit = editing || eHeld
 	const overlaps = useMemo(() => countOverlaps(circles), [circles])
+	const estimate = useMemo(() => trilaterate(circles), [circles])
 	const activeMap = useMemo(
 		() => maps.find(map => map.id === activeMapId) ?? null,
 		[maps, activeMapId]
@@ -148,6 +174,81 @@ export default function HemelsbreedTool() {
 		addCircle(lat, lng, `Point ${nameRef.current}`)
 	}
 
+	function circleExistsAt(lat: number, lng: number): boolean {
+		const epsilon = 1e-4
+		return circles.some(
+			circle =>
+				Math.abs(circle.lat - lat) < epsilon &&
+				Math.abs(circle.lng - lng) < epsilon
+		)
+	}
+
+	function importPoints(points: TLocationPoint[]) {
+		if (points.length === 0) return
+		setCircles(current => {
+			const used = current.map(circle => circle.color)
+			const additions = points.map(point => {
+				const color = nextColor(used)
+				used.push(color)
+				return {
+					id: newId(),
+					label: point.label,
+					lat: point.lat,
+					lng: point.lng,
+					radiusKm: DEFAULT_RADIUS_KM,
+					color,
+					visible: true
+				}
+			})
+			return [...current, ...additions]
+		})
+		const first = points[0]
+		focusOn(first.lat, first.lng, DEFAULT_RADIUS_KM)
+		toast.success(
+			`Imported ${points.length} ${points.length === 1 ? 'pin' : 'pins'}`
+		)
+	}
+
+	useEffect(() => {
+		if (!hydrated || handoffRef.current) return
+		handoffRef.current = true
+		importPoints(consumeLocations('hemelsbreed'))
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [hydrated])
+
+	async function addMyLocation() {
+		setLocating(true)
+		try {
+			const fix = await locate()
+			if (circleExistsAt(fix.lat, fix.lng)) {
+				focusOn(fix.lat, fix.lng, DEFAULT_RADIUS_KM)
+				toast.info('Your location is already on the map')
+				return
+			}
+
+			const id = addCircle(fix.lat, fix.lng, 'My location')
+			toast.success(`Added your location (± ${Math.round(fix.accuracy)} m)`)
+
+			const address = await reverseGeocode(fix.lat, fix.lng)
+			const label = locationLabel({ ...address, lat: fix.lat, lng: fix.lng })
+			updateCircle(id, { label })
+			appendSavedLocation({ ...address, lat: fix.lat, lng: fix.lng })
+		} catch (cause) {
+			toast.error(geolocationErrorMessage(cause))
+		} finally {
+			setLocating(false)
+		}
+	}
+
+	function circlesAsPoints(): TLocationPoint[] {
+		return circles.map(circle => ({
+			id: circle.id,
+			lat: circle.lat,
+			lng: circle.lng,
+			label: circle.label
+		}))
+	}
+
 	function updateCircle(id: string, patch: Partial<TRadiusCircle>) {
 		setCircles(current =>
 			current.map(circle =>
@@ -203,6 +304,26 @@ export default function HemelsbreedTool() {
 	function focusCircle(id: string) {
 		const circle = circles.find(c => c.id === id)
 		if (circle) focusOn(circle.lat, circle.lng, circle.radiusKm)
+	}
+
+	function focusEstimate() {
+		if (!estimate) return
+		focusOn(estimate.lat, estimate.lng, Math.max(estimate.errorKm * 3, 1))
+	}
+
+	async function copyEstimate() {
+		if (!estimate) return
+		const text = `${estimate.lat.toFixed(5)}, ${estimate.lng.toFixed(5)}`
+		try {
+			await navigator.clipboard.writeText(text)
+			toast.success(`Copied ${text}`)
+		} catch {
+			toast.error('Copy failed')
+		}
+	}
+
+	function focusSpot(spot: TSpot) {
+		focusOn(spot.lat, spot.lng, 0.5)
 	}
 
 	function saveAsNewMap() {
@@ -288,7 +409,12 @@ export default function HemelsbreedTool() {
 	}
 
 	return (
-		<div className="grid gap-4 lg:grid-cols-[1fr_360px]">
+		<div
+			className={cn(
+				'grid gap-4',
+				expanded ? 'lg:grid-cols-1' : 'lg:grid-cols-[1fr_360px]'
+			)}
+		>
 			<div className="flex flex-col gap-3">
 				<MapsBar
 					maps={maps}
@@ -301,10 +427,37 @@ export default function HemelsbreedTool() {
 					onRename={renameMap}
 					onDelete={deleteMap}
 				/>
-				<div className="flex items-center gap-2">
-					<div className="flex-1">
+				<div className="flex flex-wrap items-center gap-2">
+					<div className="min-w-[16rem] flex-1">
 						<LocationSearch onPick={onPickLocation} />
 					</div>
+					<ImportCoordinates
+						existsAt={circleExistsAt}
+						onImport={importPoints}
+					/>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						className="h-9 shrink-0 gap-1.5"
+						onClick={addMyLocation}
+						disabled={locating}
+						title="Drop a circle on your current position"
+					>
+						{locating ? (
+							<Loader2 aria-hidden className="size-4 animate-spin" />
+						) : (
+							<LocateFixed aria-hidden className="size-4" />
+						)}
+						{locating ? 'Locating…' : 'My location'}
+					</Button>
+					<SendToTool
+						from="hemelsbreed"
+						points={circlesAsPoints}
+						label="Send circles to"
+						className="h-9"
+						disabled={circles.length === 0}
+					/>
 					<Button
 						type="button"
 						variant={measuring ? 'default' : 'outline'}
@@ -333,6 +486,22 @@ export default function HemelsbreedTool() {
 						)}
 						{canEdit ? 'Editing' : 'Locked'}
 					</Button>
+					<Button
+						type="button"
+						variant={expanded ? 'default' : 'outline'}
+						size="sm"
+						className="h-9 shrink-0 gap-1.5"
+						onClick={() => setExpanded(value => !value)}
+						aria-pressed={expanded}
+						title="Toggle a bigger map"
+					>
+						{expanded ? (
+							<Minimize2 aria-hidden className="size-4" />
+						) : (
+							<Maximize2 aria-hidden className="size-4" />
+						)}
+						{expanded ? 'Collapse' : 'Expand'}
+					</Button>
 				</div>
 				<MapCanvas
 					circles={circles}
@@ -341,6 +510,9 @@ export default function HemelsbreedTool() {
 					focus={focus}
 					measuring={measuring}
 					editable={canEdit}
+					expanded={expanded}
+					estimate={estimate}
+					spots={spots}
 					onAddAt={onAddAt}
 					onSelect={setSelectedId}
 					onDeselect={() => setSelectedId(null)}
@@ -401,10 +573,70 @@ export default function HemelsbreedTool() {
 					onFocus={focusCircle}
 				/>
 
+				{estimate && (
+					<div className="flex flex-col gap-2 border border-amber-400/40 bg-amber-400/5 p-3">
+						<div className="flex items-center gap-2 text-sm font-medium">
+							<Crosshair
+								aria-hidden
+								className="size-4 text-amber-400"
+							/>
+							Most likely crossing point
+						</div>
+						<p className="font-mono text-xs text-muted-foreground">
+							{estimate.lat.toFixed(5)}, {estimate.lng.toFixed(5)}{' '}
+							<span className="text-foreground">
+								± {formatKm(estimate.errorKm)}
+							</span>
+						</p>
+						<div className="flex items-center gap-2">
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								className="h-7 gap-1.5 px-2 text-xs"
+								onClick={focusEstimate}
+							>
+								<Crosshair aria-hidden className="size-3.5" />
+								Focus
+							</Button>
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								className="h-7 gap-1.5 px-2 text-xs text-muted-foreground"
+								onClick={copyEstimate}
+							>
+								<Copy aria-hidden className="size-3.5" />
+								Copy coords
+							</Button>
+							<a
+								href={googleMapsSearchUrl(
+									estimate.lat,
+									estimate.lng
+								)}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+							>
+								Open in Maps
+							</a>
+						</div>
+					</div>
+				)}
+
+				<SpotSearch
+					estimate={estimate}
+					spots={spots}
+					onSpots={setSpots}
+					onFocusSpot={focusSpot}
+				/>
+
 				<p className="text-xs text-muted-foreground">
 					Cyan shading marks where circles overlap — the brighter the
-					patch, the more radii agree, pinpointing the location. Search
-					an address or postcode to drop a radius, then measure the
+					patch, the more radii agree. With three or more circles the
+					amber crosshair pins the point that best matches every
+					radius; the dashed ring shows how far off the distances are.
+					Search that spot for real places, or measure the
 					straight-line distance between any two points.
 				</p>
 			</aside>

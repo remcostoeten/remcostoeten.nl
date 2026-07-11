@@ -1,6 +1,6 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
@@ -41,6 +41,7 @@ export async function toggleBlogDraft(
 				})
 		}
 
+		updateTag('blog-posts')
 		revalidatePath('/admin')
 		revalidatePath('/blog')
 

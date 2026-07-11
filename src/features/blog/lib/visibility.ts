@@ -3,8 +3,12 @@ import { db } from '@/server/db/connection'
 import { blogPosts } from '@/server/db/schema'
 import { getTopicBySlug, slugifyTopic } from './topic-slug'
 import type { BlogTopicSummary, ResolvedBlogPost } from './types'
+import { cacheLife, cacheTag } from 'next/cache'
 
 async function getResolvedBlogPosts() {
+	'use cache'
+	cacheTag('blog-posts')
+	cacheLife('hours')
 	const filePosts = getAllBlogPosts()
 	let dbPosts: Array<{
 		slug: string

@@ -3,8 +3,6 @@ import { githubService } from '@/server/github'
 import { parseYearParam } from '@/shared/lib/request-params'
 
 // Use ISR with 1 hour revalidation - contribution data doesn't change frequently
-export const revalidate = 3600
-export const dynamic = 'force-dynamic'
 
 async function fetchWithRetry(year: number, maxRetries = 3) {
 	let lastError: Error | null = null

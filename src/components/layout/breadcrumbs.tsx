@@ -1,5 +1,6 @@
 'use client'
 
+import type { Route } from 'next'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Fragment, Suspense } from 'react'
@@ -71,7 +72,7 @@ function BreadcrumbsContent({ params }: BreadcrumbProps) {
 			<ol className="flex items-center gap-1 text-xs font-mono text-muted-foreground/50">
 				<li>
 					<Link
-						href={buildHref('/', params)}
+						href={buildHref('/', params) as Route}
 						className="hover:text-foreground transition-colors flex items-center"
 						title="Home"
 					>
@@ -92,7 +93,7 @@ function BreadcrumbsContent({ params }: BreadcrumbProps) {
 								</span>
 							) : (
 								<Link
-									href={`${crumb.href}${linkParams}`}
+									href={`${crumb.href}${linkParams}` as Route}
 									className="hover:text-foreground transition-colors"
 								>
 									{crumb.label.toLowerCase()}

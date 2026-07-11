@@ -1,5 +1,6 @@
 'use client'
 
+import type { Route } from 'next'
 import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -67,7 +68,7 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 							className="h-7 text-xs"
 						>
 							<Link
-								href={`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
+								href={`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route}
 							>
 								Privacy
 							</Link>
@@ -81,7 +82,7 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 							className="h-7 text-xs"
 						>
 							<Link
-								href={`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}`}
+								href={`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route}
 							>
 								Terms
 							</Link>
@@ -111,7 +112,7 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 			params.delete('lang')
 		}
 		const newUrl = `${window.location.pathname}?${params.toString()}`
-		router.replace(newUrl, { scroll: false })
+		router.replace(newUrl as Route, { scroll: false })
 		onLanguageChange('en')
 	}
 
@@ -119,7 +120,7 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 		const params = new URLSearchParams(searchParams.toString())
 		params.set('lang', 'nl')
 		const newUrl = `${window.location.pathname}?${params.toString()}`
-		router.replace(newUrl, { scroll: false })
+		router.replace(newUrl as Route, { scroll: false })
 		onLanguageChange('nl')
 	}
 }

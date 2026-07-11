@@ -3,8 +3,10 @@
 import { useEffect, useRef } from 'react'
 import 'leaflet/dist/leaflet.css'
 import type * as L from 'leaflet'
+import { cn } from '@/shared/lib/cn'
 import { bearing, circleContains, compass, formatKm, haversineKm } from '../utils/geo'
-import type { TRadiusCircle } from '../types'
+import type { TTrilaterationEstimate } from '../utils/trilateration'
+import type { TRadiusCircle, TSpot } from '../types'
 
 type TFocus = { lat: number; lng: number; radiusKm: number; nonce: number }
 
@@ -15,6 +17,9 @@ type Props = {
 	focus: TFocus | null
 	measuring: boolean
 	editable: boolean
+	expanded: boolean
+	estimate: TTrilaterationEstimate | null
+	spots: TSpot[]
 	onAddAt: (lat: number, lng: number) => void
 	onSelect: (id: string) => void
 	onDeselect: () => void
@@ -33,6 +38,14 @@ type TMeasure = {
 const NL_CENTER: [number, number] = [52.1326, 5.2913]
 const HEAT_STEP = 5
 const HEAT_RGB = '56,189,248'
+
+function escapeHtml(value: string): string {
+	return value
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+}
 
 function setDraggable(marker: L.Marker, draggable: boolean) {
 	if (draggable) marker.dragging?.enable()
@@ -55,6 +68,9 @@ export function MapCanvas({
 	focus,
 	measuring,
 	editable,
+	expanded,
+	estimate,
+	spots,
 	onAddAt,
 	onSelect,
 	onDeselect,
@@ -65,6 +81,10 @@ export function MapCanvas({
 	const mapRef = useRef<L.Map | null>(null)
 	const leafletRef = useRef<typeof L | null>(null)
 	const layersRef = useRef<Map<string, TLayers>>(new Map())
+	const estimateRef = useRef<{ marker: L.Marker; ring: L.Circle } | null>(
+		null
+	)
+	const spotsRef = useRef<L.LayerGroup | null>(null)
 	const readyRef = useRef(false)
 	const rafRef = useRef<number | null>(null)
 
@@ -131,6 +151,8 @@ export function MapCanvas({
 			mapRef.current = map
 			readyRef.current = true
 			syncLayers()
+			syncEstimate()
+			syncSpots()
 			requestHeat()
 		})
 
@@ -140,6 +162,8 @@ export function MapCanvas({
 			mapRef.current?.remove()
 			mapRef.current = null
 			layersRef.current.clear()
+			estimateRef.current = null
+			spotsRef.current = null
 			readyRef.current = false
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,6 +173,16 @@ export function MapCanvas({
 		syncLayers()
 		requestHeat()
 	}, [circles, selectedId, hoveredId, editable])
+
+	useEffect(() => {
+		syncEstimate()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [estimate])
+
+	useEffect(() => {
+		syncSpots()
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [spots])
 
 	useEffect(() => {
 		const map = mapRef.current
@@ -169,6 +203,13 @@ export function MapCanvas({
 		if (!measuring) clearMeasure()
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [measuring])
+
+	useEffect(() => {
+		const map = mapRef.current
+		if (!map) return
+		const timeout = setTimeout(() => map.invalidateSize(), 220)
+		return () => clearTimeout(timeout)
+	}, [expanded])
 
 	function requestHeat() {
 		if (rafRef.current) return
@@ -277,6 +318,79 @@ export function MapCanvas({
 		measureRef.current = { points: [], line: null, label: null, pins: [] }
 	}
 
+	function syncEstimate() {
+		const map = mapRef.current
+		const leaflet = leafletRef.current
+		if (!map || !leaflet || !readyRef.current) return
+
+		if (!estimate) {
+			estimateRef.current?.marker.remove()
+			estimateRef.current?.ring.remove()
+			estimateRef.current = null
+			return
+		}
+
+		const position: [number, number] = [estimate.lat, estimate.lng]
+		const ringMeters = Math.max(estimate.errorKm, 0.05) * 1000
+		const icon = leaflet.divIcon({
+			className: '',
+			iconSize: [22, 22],
+			iconAnchor: [11, 11],
+			html: '<span style="display:grid;place-items:center;width:22px;height:22px;border-radius:9999px;background:rgba(251,191,36,0.15);border:2px solid #fbbf24;box-shadow:0 0 0 1px rgba(0,0,0,0.4)"><span style="width:4px;height:4px;border-radius:9999px;background:#fbbf24"></span></span>'
+		})
+
+		if (estimateRef.current) {
+			estimateRef.current.marker.setLatLng(position)
+			estimateRef.current.ring
+				.setLatLng(position)
+				.setRadius(ringMeters)
+			return
+		}
+
+		const marker = leaflet
+			.marker(position, { icon, interactive: false, keyboard: false })
+			.addTo(map)
+		const ring = leaflet
+			.circle(position, {
+				radius: ringMeters,
+				color: '#fbbf24',
+				weight: 1.5,
+				dashArray: '4 6',
+				fill: false,
+				interactive: false
+			})
+			.addTo(map)
+		estimateRef.current = { marker, ring }
+	}
+
+	function syncSpots() {
+		const map = mapRef.current
+		const leaflet = leafletRef.current
+		if (!map || !leaflet || !readyRef.current) return
+
+		spotsRef.current?.remove()
+		spotsRef.current = null
+		if (spots.length === 0) return
+
+		const group = leaflet.layerGroup()
+		for (const spot of spots) {
+			leaflet
+				.circleMarker([spot.lat, spot.lng], {
+					radius: 5,
+					color: '#ffffff',
+					weight: 1.5,
+					fillColor: '#f97316',
+					fillOpacity: 0.9
+				})
+				.bindPopup(
+					`<strong>${escapeHtml(spot.name)}</strong><br/>${escapeHtml(spot.kind)}${spot.address ? `<br/>${escapeHtml(spot.address)}` : ''}<br/><a href="https://www.google.com/maps/search/?api=1&amp;query=${spot.lat}%2C${spot.lng}" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>`
+				)
+				.addTo(group)
+		}
+		group.addTo(map)
+		spotsRef.current = group
+	}
+
 	function syncLayers() {
 		const map = mapRef.current
 		const leaflet = leafletRef.current
@@ -364,7 +478,10 @@ export function MapCanvas({
 	return (
 		<div
 			ref={containerRef}
-			className="relative h-[420px] w-full overflow-hidden rounded-none border border-border/50 bg-muted/40 md:h-[560px]"
+			className={cn(
+				'relative w-full overflow-hidden rounded-none border border-border/50 bg-muted/40 transition-[height] duration-200',
+				expanded ? 'h-[560px] md:h-[80vh]' : 'h-[420px] md:h-[560px]'
+			)}
 			role="application"
 			aria-label="Interactive radius map of the Netherlands"
 		>

@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server'
 import { githubService } from '@/server/github'
 import { parseStrictIsoDateParam } from '@/shared/lib/request-params'
 
-export const revalidate = 60 // Cache for 1 minute
-export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
 	try {

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-export const dynamic = 'force-dynamic'
 
 export async function GET() {
 	const denied = await requireDevToolsAccess()

@@ -90,6 +90,23 @@ export function CoordinateIcon(props: Props) {
 }
 
 /**
+ * @description Crosshair whose centre dot pulses a radar ping outward on hover.
+ */
+export function LocateIcon(props: Props) {
+	return (
+		<svg {...iconProps(props)}>
+			<circle className='locate-ping' cx='12' cy='12' r='4' />
+			<circle cx='12' cy='12' r='7' />
+			<path d='M12 2v3' />
+			<path d='M12 19v3' />
+			<path d='M2 12h3' />
+			<path d='M19 12h3' />
+			<circle className='locate-dot' cx='12' cy='12' r='1.6' fill='currentColor' stroke='none' />
+		</svg>
+	)
+}
+
+/**
  * @description Circle that retracts into its radius line, then redraws as the line sweeps 360° on hover.
  */
 export function RadiusIcon(props: Props) {

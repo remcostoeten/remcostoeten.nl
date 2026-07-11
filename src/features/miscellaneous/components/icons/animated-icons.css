@@ -72,6 +72,48 @@
 	animation: ai-radius-sweep 1.2s cubic-bezier(0.45, 0, 0.25, 1);
 }
 
+/* locate */
+.ai-icon .locate-ping {
+	transform-box: view-box;
+	transform-origin: 12px 12px;
+	opacity: 0;
+}
+
+.ai-icon .locate-dot {
+	transform-box: view-box;
+	transform-origin: 12px 12px;
+}
+
+:is(.ai-icon:hover, .ai-trigger:hover .ai-icon) .locate-ping {
+	animation: ai-locate-ping 1.4s ease-out infinite;
+}
+
+:is(.ai-icon:hover, .ai-trigger:hover .ai-icon) .locate-dot {
+	animation: ai-locate-pulse 1.4s ease-out infinite;
+}
+
+@keyframes ai-locate-ping {
+	0% {
+		transform: scale(0.4);
+		opacity: 0.9;
+	}
+	80%,
+	100% {
+		transform: scale(1.8);
+		opacity: 0;
+	}
+}
+
+@keyframes ai-locate-pulse {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.35);
+	}
+}
+
 @keyframes ai-spin {
 	to {
 		transform: rotate(360deg);

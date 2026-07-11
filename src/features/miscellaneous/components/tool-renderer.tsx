@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import nextDynamic from 'next/dynamic'
 import type { ComponentType } from 'react'
+import type { TToolSlug } from '../constants/tools'
 import { useRecentTools } from '../hooks/use-tool-usage'
 
 function ToolSkeleton() {
@@ -10,36 +11,31 @@ function ToolSkeleton() {
 		<div
 			role="status"
 			aria-label="Loading tool"
-			className="flex flex-col gap-3"
+			className="flex min-h-[70vh] flex-col gap-3"
 		>
-			<div className="h-8 w-64 animate-pulse bg-muted/60" />
-			<div className="h-28 animate-pulse bg-muted/60" />
-			<div className="h-96 animate-pulse bg-muted/60" />
+			<div className="h-8 w-64 shrink-0 animate-pulse bg-muted/60" />
+			<div className="h-28 shrink-0 animate-pulse bg-muted/60" />
+			<div className="grow animate-pulse bg-muted/60" />
 		</div>
 	)
 }
 
-const toolComponents: Record<string, ComponentType> = {
-	'find-replace': nextDynamic(() => import('../find-replace'), {
-		ssr: false,
-		loading: ToolSkeleton
-	}),
-	'diff-checker': nextDynamic(() => import('../diff-checker'), {
-		ssr: false,
-		loading: ToolSkeleton
-	}),
-	hemelsbreed: nextDynamic(() => import('../hemelsbreed'), {
-		ssr: false,
-		loading: ToolSkeleton
-	}),
-	'coordinate-marker': nextDynamic(() => import('../coordinate-marker'), {
-		ssr: false,
-		loading: ToolSkeleton
-	})
+type TLoader = () => Promise<{ default: ComponentType }>
+
+function lazyTool(loader: TLoader, ssr = false) {
+	return nextDynamic(loader, { ssr, loading: ToolSkeleton })
+}
+
+const TOOL_COMPONENTS: Record<TToolSlug, ComponentType> = {
+	'find-replace': lazyTool(() => import('../find-replace')),
+	'diff-checker': lazyTool(() => import('../diff-checker'), true),
+	hemelsbreed: lazyTool(() => import('../hemelsbreed')),
+	'coordinate-marker': lazyTool(() => import('../coordinate-marker')),
+	'my-location': lazyTool(() => import('../my-location'))
 }
 
 type Props = {
-	slug: string
+	slug: TToolSlug
 }
 
 export function ToolRenderer({ slug }: Props) {
@@ -49,7 +45,12 @@ export function ToolRenderer({ slug }: Props) {
 		markUsed(slug)
 	}, [slug, markUsed])
 
-	const Tool = toolComponents[slug]
+	const Tool = TOOL_COMPONENTS[slug]
 	if (!Tool) return null
-	return <Tool />
+
+	return (
+		<div className="min-h-[70vh]">
+			<Tool />
+		</div>
+	)
 }

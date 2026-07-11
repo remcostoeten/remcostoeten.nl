@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-export const dynamic = 'force-dynamic'
 
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com'
 const DEFAULT_SPOTIFY_REDIRECT_URI =

@@ -13,5 +13,5 @@ export type TToolDefinition = {
 	category: TToolCategory
 	icon: TToolIcon
 	status: TToolStatus
-	keywords: string[]
+	keywords: readonly string[]
 }

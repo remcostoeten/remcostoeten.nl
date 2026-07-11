@@ -2,6 +2,10 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
 	outputFileTracingRoot: process.cwd(),
+	reactCompiler: true,
+	cacheComponents: true,
+	typedRoutes: true,
+	partialPrefetching: true,
 	images: {
 		remotePatterns: [
 			{
@@ -75,6 +79,8 @@ const nextConfig: NextConfig = {
 		]
 	},
 	experimental: {
+		inlineCss: true,
+		viewTransition: true,
 		optimizePackageImports: [
 			'lucide-react',
 			'react-icons',

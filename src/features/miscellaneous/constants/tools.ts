@@ -2,6 +2,7 @@ import {
 	CoordinateIcon,
 	DiffIcon,
 	FindReplaceIcon,
+	LocateIcon,
 	RadiusIcon
 } from '../components/icons/animated-icons'
 import type { TToolCategory, TToolDefinition } from '../types'
@@ -15,7 +16,7 @@ export const TOOL_CATEGORIES = Object.keys(
 	TOOL_CATEGORY_LABELS
 ) as TToolCategory[]
 
-export const TOOLS: TToolDefinition[] = [
+export const TOOLS = [
 	{
 		slug: 'find-replace',
 		name: 'Find & Replace',
@@ -58,6 +59,30 @@ export const TOOLS: TToolDefinition[] = [
 		]
 	},
 	{
+		slug: 'my-location',
+		name: 'My Location',
+		description:
+			'Detect where you are right now and resolve it to latitude, longitude, street, postcode, city and country — copy any value, all of them, or the whole thing as JSON.',
+		category: 'geo',
+		icon: LocateIcon,
+		status: 'available',
+		keywords: [
+			'my location',
+			'current location',
+			'geolocation',
+			'gps',
+			'where am i',
+			'latitude',
+			'longitude',
+			'coordinates',
+			'city',
+			'address',
+			'postcode',
+			'reverse geocode',
+			'copy'
+		]
+	},
+	{
 		slug: 'hemelsbreed',
 		name: 'Hemelsbreed Radius',
 		description:
@@ -82,12 +107,30 @@ export const TOOLS: TToolDefinition[] = [
 			'triangulate'
 		]
 	}
-]
+] as const satisfies readonly TToolDefinition[]
+
+export type TToolSlug = (typeof TOOLS)[number]['slug']
+
+const SEARCH_HAYSTACKS = new Map<string, string>(
+	TOOLS.map(tool => [
+		tool.slug,
+		[tool.name, tool.description, ...tool.keywords].join(' ').toLowerCase()
+	])
+)
+
+export function searchTools(query: string): readonly TToolDefinition[] {
+	const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+	if (terms.length === 0) return TOOLS
+	return TOOLS.filter(tool => {
+		const haystack = SEARCH_HAYSTACKS.get(tool.slug) ?? ''
+		return terms.every(term => haystack.includes(term))
+	})
+}
 
 export function getToolBySlug(slug: string): TToolDefinition | undefined {
 	return TOOLS.find(tool => tool.slug === slug)
 }
 
-export function getAvailableTools(): TToolDefinition[] {
-	return TOOLS
+export function getAvailableTools(): readonly TToolDefinition[] {
+	return TOOLS.filter(tool => tool.status === 'available')
 }

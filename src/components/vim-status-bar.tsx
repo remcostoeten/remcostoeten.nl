@@ -1,10 +1,11 @@
 'use client'
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import type { Route } from 'next'
 import { motion, AnimatePresence } from 'motion/react'
 import { useSession } from '@/features/auth/client'
 import { useRouter } from 'next/navigation'
-import { generateRoutes } from '../../scripts/tools/dev-menu/utils/generate-routes'
+import { generateRoutes } from '@/utils/generate-routes'
 import { Terminal } from 'lucide-react'
 
 const COMMANDS = [
@@ -101,7 +102,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 				setIsVisible(false)
 				setInput('')
 				setSelectedIndex(0)
-				router.push(cmd)
+				router.push(cmd as Route)
 				return
 			}
 

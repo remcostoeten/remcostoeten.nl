@@ -1,18 +1,26 @@
 import { checkAdminStatus } from '@/server/queries/auth'
 import { redirect } from 'next/navigation'
-import { ReactNode } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { RefreshCw, Home } from 'lucide-react'
 import Link from 'next/link'
 import { AdminSessionStatus } from '@/components/admin/admin-session-status'
 import { AdminSidebar } from '@/components/admin/admin-sidebar'
 
-export const dynamic = 'force-dynamic'
+export default function AdminLayout({ children }: { children: ReactNode }) {
+	return (
+		<Suspense
+			fallback={
+				<div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
+					Loading admin…
+				</div>
+			}
+		>
+			<AdminShell>{children}</AdminShell>
+		</Suspense>
+	)
+}
 
-export default async function AdminLayout({
-	children
-}: {
-	children: ReactNode
-}) {
+async function AdminShell({ children }: { children: ReactNode }) {
 	const isAdmin = await checkAdminStatus()
 
 	if (!isAdmin) {

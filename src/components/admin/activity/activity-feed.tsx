@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import type { Route } from 'next'
 import Link from 'next/link'
 import { ExternalLink, ChevronDown } from 'lucide-react'
 
@@ -130,7 +131,7 @@ export function ActivityFeed({
 									</span>
 									{item.type === 'comment' ? (
 										<Link
-											href={item.href!}
+											href={item.href! as Route}
 											target="_blank"
 											className="font-medium text-[hsl(var(--brand-400))] hover:underline"
 										>

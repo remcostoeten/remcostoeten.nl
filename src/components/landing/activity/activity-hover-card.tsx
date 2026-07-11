@@ -4,6 +4,7 @@ import { useState, useRef, ReactNode, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
+import type { Route } from 'next'
 import Link from 'next/link'
 
 function useIsMobile() {
@@ -505,7 +506,7 @@ export function SpotifyCard({
 
 			<div className="flex-1 min-w-0 space-y-1">
 				<Link
-					href={url}
+					href={url as Route}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="block font-medium text-foreground hover:text-green-500 transition-colors truncate"

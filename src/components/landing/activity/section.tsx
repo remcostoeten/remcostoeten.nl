@@ -3,11 +3,10 @@ import { Section } from '../../ui/section'
 import { Heading } from '../../ui/heading'
 import { ActivityFeed } from './activity-feed'
 import { ProjectHoverWrapper } from './hover-wrappers'
+import { CurrentYear } from '@/components/ui/current-year'
 import Link from 'next/link'
 
 export function ActivitySection() {
-	const year = new Date().getFullYear()
-
 	return (
 		<Section noPadding contentPadding={true} className="mb-0">
 			<Heading
@@ -17,12 +16,7 @@ export function ActivitySection() {
 				colorPattern="dark"
 				animateStripes
 				headerAction={
-					<time
-						dateTime={`${year}`}
-						className="text-xs text-muted-foreground/60 inline-flex items-baseline"
-					>
-						{year}
-					</time>
+					<CurrentYear className="text-xs text-muted-foreground/60 inline-flex items-baseline" />
 				}
 			/>
 			<div className="space-y-4 pt-3">
@@ -54,7 +48,7 @@ export function ActivitySection() {
 				</p>
 
 				<div>
-					<ActivityContributionGraph year={year} showLegend={true} />
+					<ActivityContributionGraph showLegend={true} />
 				</div>
 
 				<ActivityFeed activityCount={5} rotationInterval={6000} />

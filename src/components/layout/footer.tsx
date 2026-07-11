@@ -8,6 +8,7 @@ import { useLatestCommit } from '@/hooks/use-github'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { ContactPopover } from '@/components/contact/contact-popover'
 import { ResumeDrawer } from '../resume-drawer'
+import { CurrentYear } from '@/components/ui/current-year'
 
 export function Footer() {
 	const [copied, setCopied] = useState(false)
@@ -138,7 +139,9 @@ export function Footer() {
 				</div>
 
 				<div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">
-					<p>© {new Date().getFullYear()} Remco Stoeten</p>
+					<p>
+						© <CurrentYear /> Remco Stoeten
+					</p>
 					<div className="flex items-center gap-4">
 						<Link
 							href="/about"

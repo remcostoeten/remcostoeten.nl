@@ -4,6 +4,7 @@ import React, {
 	createContext,
 	useContext,
 	useEffect,
+	useId,
 	useRef,
 	useState
 } from 'react'
@@ -275,9 +276,7 @@ export function AnimatedNumber({
 	})
 
 	// Legacy context hook
-	const id = useRef(
-		`animated-number-${Math.random().toString(36).substr(2, 9)}`
-	).current
+	const id = `animated-number-${useId()}`
 	const { registerNumber, unregisterNumber, getStaggerDelay } =
 		useAnimatedNumberContext()
 

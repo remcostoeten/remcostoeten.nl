@@ -7,7 +7,6 @@ import {
 
 // Now playing needs to be dynamic since it changes frequently
 // But we still use the cached token for performance
-export const dynamic = 'force-dynamic'
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1'
 

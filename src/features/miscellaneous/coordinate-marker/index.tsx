@@ -6,11 +6,28 @@ import {
 	Trash2,
 	Layers,
 	Loader2,
+	LocateFixed,
 	Search,
 	Check
 } from 'lucide-react'
+import { toast } from 'sonner'
 import 'leaflet/dist/leaflet.css'
 import type * as L from 'leaflet'
+import { SendToTool } from '../components/send-to-tool'
+import { geolocationErrorMessage, locate } from '../utils/geolocation'
+import {
+	consumeLocations,
+	type TLocationPoint
+} from '../utils/location-handoff'
+import {
+	SAVED_LOCATIONS_KEY,
+	loadSavedLocations,
+	newLocationId,
+	saveLocations,
+	toLocationPoints,
+	type TSavedLocation
+} from '../utils/locations'
+import { reverseGeocode } from '../utils/reverse-geocode'
 
 type SearchResult = {
 	place_id: number
@@ -19,64 +36,12 @@ type SearchResult = {
 	display_name: string
 }
 
-type SavedPoint = {
-	id: string
-	lat: number
-	lng: number
-	createdAt: number
-	address?: string
-	street?: string
-	houseNumber?: string
-	postcode?: string
-	city?: string
-	region?: string
-	country?: string
+type SavedPoint = TSavedLocation & {
 	loading?: boolean
 }
 
-const STORAGE_KEY = 'misc-tools:coordinates'
-
-function loadPoints(): SavedPoint[] {
-	if (typeof window === 'undefined') return []
-	try {
-		const raw = localStorage.getItem(STORAGE_KEY)
-		if (!raw) return []
-		const parsed = JSON.parse(raw)
-		return Array.isArray(parsed) ? parsed : []
-	} catch {
-		return []
-	}
-}
-
 function savePoints(points: SavedPoint[]) {
-	const clean = points.map(({ loading: _l, ...rest }) => rest)
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(clean))
-}
-
-async function reverseGeocode(
-	lat: number,
-	lng: number
-): Promise<Partial<SavedPoint>> {
-	try {
-		const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
-		const res = await fetch(url, { headers: { Accept: 'application/json' } })
-		if (!res.ok) return {}
-		const data = await res.json()
-		const a = data.address ?? {}
-		const city =
-			a.city || a.town || a.village || a.hamlet || a.municipality || a.county
-		return {
-			address: data.display_name as string | undefined,
-			street: a.road || a.pedestrian || a.footway,
-			houseNumber: a.house_number,
-			postcode: a.postcode,
-			city,
-			region: a.state,
-			country: a.country
-		}
-	} catch {
-		return {}
-	}
+	saveLocations(points.map(({ loading: _l, ...rest }) => rest))
 }
 
 function escapeHtml(s: string): string {
@@ -157,13 +122,78 @@ export default function CoordinateMarkerTool() {
 	const [searching, setSearching] = useState(false)
 	const [showSuggestions, setShowSuggestions] = useState(false)
 	const [copied, setCopied] = useState<string | null>(null)
+	const [locating, setLocating] = useState(false)
 
 	addModeRef.current = addMode
 
+	const resolveAddress = useCallback(
+		(id: string, lat: number, lng: number) => {
+			reverseGeocode(lat, lng).then(info => {
+				setPoints(prev => {
+					const next = prev.map(pt =>
+						pt.id === id ? { ...pt, ...info, loading: false } : pt
+					)
+					savePoints(next)
+					return next
+				})
+			})
+		},
+		[]
+	)
+
+	const addPoint = useCallback(
+		(lat: number, lng: number) => {
+			const id = newLocationId()
+			const point: SavedPoint = {
+				id,
+				lat,
+				lng,
+				createdAt: Date.now(),
+				loading: true
+			}
+			setPoints(prev => {
+				const next = [point, ...prev]
+				savePoints(next)
+				return next
+			})
+			resolveAddress(id, lat, lng)
+			return id
+		},
+		[resolveAddress]
+	)
+
 	useEffect(() => {
-		setPoints(loadPoints())
+		const stored = loadSavedLocations()
+		const incoming = consumeLocations('coordinate-marker').filter(
+			point =>
+				!stored.some(
+					saved =>
+						Math.abs(saved.lat - point.lat) < 1e-4 &&
+						Math.abs(saved.lng - point.lng) < 1e-4
+				)
+		)
+		const added: SavedPoint[] = incoming.map(point => ({
+			id: newLocationId(),
+			lat: point.lat,
+			lng: point.lng,
+			createdAt: Date.now(),
+			loading: true
+		}))
+
+		const next = [...added, ...stored]
+		setPoints(next)
 		setReady(true)
-	}, [])
+
+		if (added.length > 0) {
+			savePoints(next)
+			added.forEach(point =>
+				resolveAddress(point.id, point.lat, point.lng)
+			)
+			toast.success(
+				`Added ${added.length} ${added.length === 1 ? 'pin' : 'pins'}`
+			)
+		}
+	}, [resolveAddress])
 
 	const copyToClipboard = useCallback(
 		async (value: string, key: string) => {
@@ -180,9 +210,23 @@ export default function CoordinateMarkerTool() {
 		[]
 	)
 
+	const addMyLocation = useCallback(async () => {
+		setLocating(true)
+		try {
+			const fix = await locate()
+			addPoint(fix.lat, fix.lng)
+			mapRef.current?.setView([fix.lat, fix.lng], 15, { animate: true })
+			toast.success(`Pinned your location (± ${Math.round(fix.accuracy)} m)`)
+		} catch (cause) {
+			toast.error(geolocationErrorMessage(cause))
+		} finally {
+			setLocating(false)
+		}
+	}, [addPoint])
+
 	// Init map
 	useEffect(() => {
-		if (!containerRef.current || mapRef.current) return
+		if (!ready || !containerRef.current || mapRef.current) return
 
 		let cancelled = false
 
@@ -209,28 +253,7 @@ export default function CoordinateMarkerTool() {
 
 			map.on('click', (e: L.LeafletMouseEvent) => {
 				if (!addModeRef.current) return
-				const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-				const p: SavedPoint = {
-					id,
-					lat: e.latlng.lat,
-					lng: e.latlng.lng,
-					createdAt: Date.now(),
-					loading: true
-				}
-				setPoints(prev => {
-					const next = [p, ...prev]
-					savePoints(next)
-					return next
-				})
-				reverseGeocode(e.latlng.lat, e.latlng.lng).then(info => {
-					setPoints(prev => {
-						const next = prev.map(pt =>
-							pt.id === id ? { ...pt, ...info, loading: false } : pt
-						)
-						savePoints(next)
-						return next
-					})
-				})
+				addPoint(e.latlng.lat, e.latlng.lng)
 			})
 
 			mapRef.current = map
@@ -245,7 +268,7 @@ export default function CoordinateMarkerTool() {
 			markersRef.current.clear()
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	}, [ready])
 
 	// Sync markers when points change
 	useEffect(() => {
@@ -345,34 +368,13 @@ export default function CoordinateMarkerTool() {
 		(s: SearchResult) => {
 			const lat = parseFloat(s.lat)
 			const lng = parseFloat(s.lon)
-			const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-			const p: SavedPoint = {
-				id,
-				lat,
-				lng,
-				createdAt: Date.now(),
-				loading: true
-			}
-			setPoints(prev => {
-				const next = [p, ...prev]
-				savePoints(next)
-				return next
-			})
-			reverseGeocode(lat, lng).then(info => {
-				setPoints(prev => {
-					const next = prev.map(pt =>
-						pt.id === id ? { ...pt, ...info, loading: false } : pt
-					)
-					savePoints(next)
-					return next
-				})
-			})
+			addPoint(lat, lng)
 			mapRef.current?.setView([lat, lng], 14, { animate: true })
 			setQuery('')
 			setSuggestions([])
 			setShowSuggestions(false)
 		},
-		[]
+		[addPoint]
 	)
 
 	if (!ready) {
@@ -489,6 +491,20 @@ export default function CoordinateMarkerTool() {
 						<div className="absolute top-2 right-2 z-[900] flex items-center gap-2 rounded-md border border-border bg-popover/90 backdrop-blur px-2 py-1.5 shadow-lg shadow-black/40">
 							<button
 								type="button"
+								onClick={addMyLocation}
+								disabled={locating}
+								className="inline-flex items-center gap-1.5 rounded bg-secondary/60 px-2 py-1 text-xs text-foreground/80 transition-colors hover:bg-secondary disabled:opacity-50"
+								title="Pin your current position"
+							>
+								{locating ? (
+									<Loader2 className="size-3.5 animate-spin" />
+								) : (
+									<LocateFixed className="size-3.5" />
+								)}
+								{locating ? 'Locating…' : 'My location'}
+							</button>
+							<button
+								type="button"
 								onClick={() => setAddMode(v => !v)}
 								aria-pressed={addMode}
 								className={`inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs transition-colors ${
@@ -527,6 +543,15 @@ export default function CoordinateMarkerTool() {
 							<Trash2 className="size-3.5" /> Clear
 						</button>
 					</div>
+
+					{points.length > 0 && (
+						<SendToTool
+							from="coordinate-marker"
+							points={() => toLocationPoints(points)}
+							label="Send all pins to"
+							className="w-full justify-center"
+						/>
+					)}
 
 					{points.length === 0 ? (
 						<div className="rounded-md border border-border/60 p-4 text-sm text-muted-foreground">
@@ -659,8 +684,9 @@ export default function CoordinateMarkerTool() {
 					)}
 
 					<p className="text-xs text-muted-foreground leading-relaxed pt-2 border-t border-border/50">
-						Reverse geocoding by OpenStreetMap Nominatim. Data stored under{' '}
-						<code className="text-foreground">{STORAGE_KEY}</code>.
+						Reverse geocoding by OpenStreetMap Nominatim. Pins are shared
+						with the other map tools, stored under{' '}
+						<code className="text-foreground">{SAVED_LOCATIONS_KEY}</code>.
 					</p>
 				</aside>
 			</div>
