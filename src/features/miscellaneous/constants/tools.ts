@@ -185,25 +185,3 @@ export function getToolBySlug(slug: string): TToolDefinition | undefined {
 export function getAvailableTools(): readonly TToolDefinition[] {
 	return TOOLS.filter(tool => tool.status === 'available')
 }
-
-export function getToolCountsByCategory(): Record<TToolCategory, number> {
-	return TOOLS.reduce(
-		(counts, tool) => {
-			counts[tool.category] += 1
-			return counts
-		},
-		Object.fromEntries(
-			TOOL_CATEGORIES.map(category => [category, 0])
-		) as Record<TToolCategory, number>
-	)
-}
-
-export function getToolsGroupedByCategory(): readonly {
-	category: TToolCategory
-	tools: readonly TToolDefinition[]
-}[] {
-	return TOOL_CATEGORIES.map(category => ({
-		category,
-		tools: getAvailableTools().filter(tool => tool.category === category)
-	})).filter(group => group.tools.length > 0)
-}

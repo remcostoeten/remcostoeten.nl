@@ -9,7 +9,6 @@ import { Section } from '@/components/ui/section'
 import { cn } from '@/shared/lib/cn'
 import {
 	getToolBySlug,
-	getToolCountsByCategory,
 	searchTools,
 	TOOL_CATEGORIES,
 	TOOL_CATEGORY_LABELS,
@@ -44,13 +43,11 @@ function CategoryFilters({
 	active: TCategoryFilter
 	onChange: (category: TCategoryFilter) => void
 }) {
-	const counts = getToolCountsByCategory()
-	const options: { value: TCategoryFilter; label: string; count: number }[] = [
-		{ value: 'all', label: 'All', count: TOOLS.length },
+	const options: { value: TCategoryFilter; label: string }[] = [
+		{ value: 'all', label: 'All' },
 		...TOOL_CATEGORIES.map(category => ({
 			value: category,
-			label: TOOL_CATEGORY_LABELS[category],
-			count: counts[category]
+			label: TOOL_CATEGORY_LABELS[category]
 		}))
 	]
 
@@ -63,14 +60,13 @@ function CategoryFilters({
 					aria-pressed={active === option.value}
 					onClick={() => onChange(option.value)}
 					className={cn(
-						'inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+						'rounded-sm border px-2.5 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
 						active === option.value
 							? 'border-foreground/50 bg-foreground/10 text-foreground'
 							: 'border-border/50 text-muted-foreground hover:border-border hover:text-foreground'
 					)}
 				>
 					{option.label}
-					<span className="text-muted-foreground">{option.count}</span>
 				</button>
 			))}
 		</div>
@@ -148,8 +144,6 @@ export function ToolsHub({ intro }: Props) {
 							/>
 						</div>
 
-						<CategoryFilters active={category} onChange={setCategory} />
-
 						<p
 							aria-live="polite"
 							className="h-4 text-xs text-muted-foreground"
@@ -161,8 +155,6 @@ export function ToolsHub({ intro }: Props) {
 					</div>
 				</div>
 			</Section>
-
-			<RecentTools />
 
 			<Section title="Tools">
 				<div className="px-4 md:px-5 pt-2">

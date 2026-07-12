@@ -80,6 +80,7 @@ const nextConfig: NextConfig = {
 	},
 	experimental: {
 		inlineCss: true,
+		viewTransition: true,
 		optimizePackageImports: [
 			'lucide-react',
 			'react-icons',

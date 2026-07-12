@@ -9,7 +9,6 @@ import {
 } from '@/features/miscellaneous/constants/tools'
 import type { TToolSlug } from '@/features/miscellaneous/constants/tools'
 import { ToolCategoryBadge } from '@/features/miscellaneous/components/tool-category-badge'
-import { ToolQuickNav } from '@/features/miscellaneous/components/tool-quick-nav'
 import { ToolRenderer } from '@/features/miscellaneous/components/tool-renderer'
 
 export const prefetch = 'allow-runtime'
@@ -59,8 +58,6 @@ export default async function Page({ params }: Props) {
 					{tool.description}
 				</p>
 			</header>
-
-			<ToolQuickNav currentSlug={tool.slug} />
 
 			<ToolRenderer slug={tool.slug as TToolSlug} />
 		</div>
