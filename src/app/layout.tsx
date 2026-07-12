@@ -1,4 +1,4 @@
-import { ReactNode, ViewTransition } from 'react'
+import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { GeistSans } from 'geist/font/sans'
@@ -130,11 +130,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				className="antialiased bg-background text-foreground"
 				suppressHydrationWarning
 			>
-				<AppProviders>
-					<ViewTransition name="page">
-						{children}
-					</ViewTransition>
-				</AppProviders>
+				<AppProviders>{children}</AppProviders>
 				<Script
 					defer
 					src="https://static.cloudflareinsights.com/beacon.min.js"
