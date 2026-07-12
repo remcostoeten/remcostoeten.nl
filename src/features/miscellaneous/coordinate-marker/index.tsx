@@ -11,6 +11,7 @@ import {
 	Check
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { noop } from '@/shared/lib/noop'
 import 'leaflet/dist/leaflet.css'
 import type * as L from 'leaflet'
 import { SendToTool } from '../components/send-to-tool'
@@ -81,15 +82,22 @@ function popupHtml(p: SavedPoint): string {
 	const rows: string[] = []
 
 	if (p.city) {
+		const headerValue = [p.city, p.country].filter(Boolean).join(', ')
 		rows.push(
-			`<div style="font-weight:600;font-size:13px;color:#f8fafc">${escapeHtml(p.city)}${p.country ? `<span style="color:#94a3b8;font-weight:400">, ${escapeHtml(p.country)}</span>` : ''}</div>`
+			`<button type="button" class="crds-copy crds-copy-title" data-copy="${escapeHtml(headerValue)}" title="Click to copy">
+        <span>${escapeHtml(p.city)}${p.country ? `<span style="color:#94a3b8;font-weight:400">, ${escapeHtml(p.country)}</span>` : ''}</span>
+        <span class="crds-copy-ind" aria-hidden="true"></span>
+      </button>`
 		)
 	}
 
 	const fieldRow = (label: string, value: string) =>
-		`<div style="display:flex;gap:8px;font-size:11px;line-height:1.5">
-      <span style="color:#64748b;min-width:40px;text-transform:uppercase;letter-spacing:0.04em;font-size:10px">${label}</span>
-      <span style="color:#e2e8f0;font-family:ui-monospace,monospace">${escapeHtml(value)}</span>
+		`<div style="display:flex;gap:8px;align-items:baseline;font-size:11px;line-height:1.5">
+      <span style="color:#737373;min-width:44px;text-transform:uppercase;letter-spacing:0.04em;font-size:10px">${label}</span>
+      <button type="button" class="crds-copy" data-copy="${escapeHtml(value)}" title="Click to copy">
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(value)}</span>
+        <span class="crds-copy-ind" aria-hidden="true"></span>
+      </button>
     </div>`
 
 	if (streetLine) rows.push(fieldRow('Street', streetLine))
@@ -106,6 +114,19 @@ function popupHtml(p: SavedPoint): string {
       ${rows.slice(1).join('')}
     </div>
   </div>`
+}
+
+function handlePopupCopyClick(event: Event) {
+	const trigger = (event.target as HTMLElement).closest?.(
+		'[data-copy]'
+	) as HTMLElement | null
+	if (!trigger) return
+	const value = trigger.getAttribute('data-copy')
+	if (!value) return
+	navigator.clipboard.writeText(value).then(() => {
+		trigger.setAttribute('data-copied', '')
+		window.setTimeout(() => trigger.removeAttribute('data-copied'), 1200)
+	}, noop)
 }
 
 export default function CoordinateMarkerTool() {
@@ -256,6 +277,12 @@ export default function CoordinateMarkerTool() {
 				addPoint(e.latlng.lat, e.latlng.lng)
 			})
 
+			map.on('popupopen', (e: L.PopupEvent) => {
+				e.popup
+					.getElement()
+					?.addEventListener('click', handlePopupCopyClick)
+			})
+
 			mapRef.current = map
 			syncMarkers(leaflet, map)
 		})
@@ -300,7 +327,7 @@ export default function CoordinateMarkerTool() {
 					.marker([p.lat, p.lng], { icon: createPinIcon(leaflet) })
 					.addTo(map)
 					.bindPopup(popupHtml(p), {
-						className: '',
+						className: 'crds-popup',
 						closeButton: true,
 						offset: leaflet.point(0, -36)
 					})
@@ -395,6 +422,68 @@ export default function CoordinateMarkerTool() {
 			<style>{`
 				@keyframes crds-spin {
 					to { transform: rotate(360deg); }
+				}
+				.crds-popup .leaflet-popup-content-wrapper {
+					background: #111113;
+					color: #e5e5e5;
+					border: 1px solid rgba(148, 163, 184, 0.18);
+					border-radius: 10px;
+					box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+				}
+				.crds-popup .leaflet-popup-content {
+					margin: 12px 14px;
+					line-height: 1.5;
+				}
+				.crds-popup .leaflet-popup-tip {
+					background: #111113;
+					border: 1px solid rgba(148, 163, 184, 0.18);
+					box-shadow: none;
+				}
+				.crds-popup .leaflet-popup-close-button {
+					color: #a3a3a3;
+				}
+				.crds-popup .leaflet-popup-close-button:hover {
+					color: #fff;
+				}
+				.crds-popup .crds-copy {
+					cursor: pointer;
+					background: transparent;
+					border: 0;
+					padding: 1px 4px;
+					margin: -1px -4px;
+					border-radius: 4px;
+					font-family: ui-monospace, monospace;
+					font-size: 11px;
+					color: #e2e8f0;
+					display: inline-flex;
+					align-items: center;
+					gap: 6px;
+					max-width: 100%;
+					min-width: 0;
+				}
+				.crds-popup .crds-copy:hover {
+					background: rgba(148, 163, 184, 0.14);
+				}
+				.crds-popup .crds-copy-title {
+					font-family: inherit;
+					font-size: 13px;
+					font-weight: 600;
+					color: #f8fafc;
+				}
+				.crds-popup .crds-copy .crds-copy-ind::after {
+					content: '⧉';
+					opacity: 0;
+					transition: opacity 0.15s;
+				}
+				.crds-popup .crds-copy:hover .crds-copy-ind::after {
+					opacity: 0.55;
+				}
+				.crds-popup .crds-copy[data-copied] {
+					color: #86efac;
+				}
+				.crds-popup .crds-copy[data-copied] .crds-copy-ind::after {
+					content: '✓';
+					opacity: 1;
 				}
 			`}</style>
 			<div className="grid gap-4 lg:grid-cols-[1fr_360px]">

@@ -107,6 +107,50 @@ export function LocateIcon(props: Props) {
 }
 
 /**
+ * @description Curly braces that spread apart around a pulsing dot on hover.
+ */
+export function BracesIcon(props: Props) {
+	return (
+		<svg {...iconProps(props)}>
+			<path
+				className='brace-left'
+				d='M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1'
+			/>
+			<path
+				className='brace-right'
+				d='M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1'
+			/>
+			<circle
+				className='brace-dot'
+				cx='12'
+				cy='12'
+				r='1.4'
+				fill='currentColor'
+				stroke='none'
+			/>
+		</svg>
+	)
+}
+
+/**
+ * @description Chain link whose two halves pull apart and snap back on hover.
+ */
+export function LinkExtractIcon(props: Props) {
+	return (
+		<svg {...iconProps(props)}>
+			<path
+				className='link-half-a'
+				d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'
+			/>
+			<path
+				className='link-half-b'
+				d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'
+			/>
+		</svg>
+	)
+}
+
+/**
  * @description Circle that retracts into its radius line, then redraws as the line sweeps 360° on hover.
  */
 export function RadiusIcon(props: Props) {

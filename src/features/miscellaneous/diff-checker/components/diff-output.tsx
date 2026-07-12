@@ -4,11 +4,22 @@ import { Fragment, useMemo, useRef, useState } from 'react'
 import { ChevronDown, ChevronUp, Columns2, Rows3 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/shared/lib/cn'
-import type { TDiffLine } from '../types'
-import { diffLines, diffWords, summarizeDiff } from '../utils/diff'
+import type { TDiffGranularity, TDiffLine } from '../types'
+import { diffLines, diffSegments, summarizeDiff } from '../utils/diff'
 
 const CONTEXT_LINES = 3
 const COLLAPSE_THRESHOLD = 8
+
+const GRANULARITIES: { value: TDiffGranularity; label: string; hint: string }[] =
+	[
+		{ value: 'line', label: 'Line', hint: 'Highlight whole changed lines' },
+		{ value: 'word', label: 'Word', hint: 'Highlight changed words' },
+		{
+			value: 'char',
+			label: 'Char',
+			hint: 'Highlight changed characters'
+		}
+	]
 
 type TDiffRow =
 	| {
@@ -105,16 +116,21 @@ function buildRows(
 	return { rows, hunkCount: hunk + 1 }
 }
 
-function WordDiffText({
+function InlineDiffText({
 	a,
 	b,
-	side
+	side,
+	granularity
 }: {
 	a: string
 	b: string
 	side: 'removed' | 'added'
+	granularity: TDiffGranularity
 }) {
-	const segments = useMemo(() => diffWords(a, b), [a, b])
+	const segments = useMemo(
+		() => diffSegments(a, b, granularity),
+		[a, b, granularity]
+	)
 	return (
 		<>
 			{segments
@@ -140,15 +156,18 @@ function WordDiffText({
 
 function DiffCell({
 	line,
-	counterpart
+	counterpart,
+	granularity
 }: {
 	line: TDiffLine | null
 	counterpart: TDiffLine | null
+	granularity: TDiffGranularity
 }) {
 	if (line === null) {
 		return <div aria-hidden className="h-full min-h-5 bg-muted/30" />
 	}
 	const paired =
+		granularity !== 'line' &&
 		counterpart !== null &&
 		line.type !== 'equal' &&
 		counterpart.type !== 'equal'
@@ -186,16 +205,18 @@ function DiffCell({
 							: ''}
 				</span>
 				{paired && line.type === 'removed' ? (
-					<WordDiffText
+					<InlineDiffText
 						a={line.text}
 						b={counterpart.text}
 						side="removed"
+						granularity={granularity}
 					/>
 				) : paired && line.type === 'added' ? (
-					<WordDiffText
+					<InlineDiffText
 						a={counterpart.text}
 						b={line.text}
 						side="added"
+						granularity={granularity}
 					/>
 				) : (
 					line.text || ' '
@@ -219,6 +240,7 @@ export function DiffOutput({
 	rightLabel
 }: Props) {
 	const [inline, setInline] = useState(false)
+	const [granularity, setGranularity] = useState<TDiffGranularity>('word')
 	const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set())
 	const [activeHunk, setActiveHunk] = useState(0)
 	const containerRef = useRef<HTMLDivElement>(null)
@@ -257,6 +279,29 @@ export function DiffOutput({
 				</p>
 
 				<div className="flex items-center gap-1">
+					<div
+						role="group"
+						aria-label="Diff granularity"
+						className="mr-1 flex items-center rounded-md border border-border/60"
+					>
+						{GRANULARITIES.map(option => (
+							<button
+								key={option.value}
+								type="button"
+								title={option.hint}
+								aria-pressed={granularity === option.value}
+								onClick={() => setGranularity(option.value)}
+								className={cn(
+									'h-8 px-2.5 text-xs transition-colors first:rounded-l-[5px] last:rounded-r-[5px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
+									granularity === option.value
+										? 'bg-muted font-medium text-foreground'
+										: 'text-muted-foreground hover:text-foreground'
+								)}
+							>
+								{option.label}
+							</button>
+						))}
+					</div>
 					<Button
 						variant="outline"
 						size="sm"
@@ -352,6 +397,7 @@ export function DiffOutput({
 														? null
 														: row.right
 												}
+												granularity={granularity}
 											/>
 										</div>
 									)}
@@ -360,6 +406,7 @@ export function DiffOutput({
 											<DiffCell
 												line={row.right}
 												counterpart={row.left}
+												granularity={granularity}
 											/>
 										)}
 								</Fragment>
@@ -379,6 +426,7 @@ export function DiffOutput({
 											? null
 											: row.right
 									}
+									granularity={granularity}
 								/>
 								<DiffCell
 									line={
@@ -391,6 +439,7 @@ export function DiffOutput({
 											? null
 											: row.left
 									}
+									granularity={granularity}
 								/>
 							</div>
 						)

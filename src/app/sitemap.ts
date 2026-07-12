@@ -1,4 +1,5 @@
 import { getVisibleBlogPosts, getVisibleTopics } from '@/features/blog'
+import { getAvailableTools } from '@/features/miscellaneous/constants/tools'
 import { baseUrl } from '@/core/config/site'
 import { MetadataRoute } from 'next'
 
@@ -40,11 +41,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.6
 		},
 		{
+			url: '/tools',
+			changeFrequency: 'weekly',
+			priority: 0.8
+		},
+		{
 			url: '/rss',
 			changeFrequency: 'daily',
 			priority: 0.4
 		}
 	] as const
+
+	const toolRoutes = getAvailableTools().map(tool => ({
+		url: `${baseUrl}/tools/${tool.slug}`,
+		lastModified: new Date(),
+		changeFrequency: 'monthly' as const,
+		priority: 0.7
+	}))
 
 	const blogs = posts.map(post => {
 		const date = new Date(post.metadata.publishedAt)
@@ -73,6 +86,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: route.priority
 		})),
 		...blogs,
-		...topicRoutes
+		...topicRoutes,
+		...toolRoutes
 	]
 }

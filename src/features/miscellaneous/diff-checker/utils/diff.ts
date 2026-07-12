@@ -1,7 +1,8 @@
-import type { TDiffLine, TDiffSegment } from '../types'
+import type { TDiffGranularity, TDiffLine, TDiffSegment } from '../types'
 
 const LCS_LINE_LIMIT = 3000
 const WORD_DIFF_CHAR_LIMIT = 2000
+const CHAR_DIFF_CHAR_LIMIT = 1200
 
 function buildLcsTable(a: string[], b: string[]): Uint32Array {
 	const width = b.length + 1
@@ -156,20 +157,37 @@ export function diffLines(a: string, b: string): TDiffLine[] {
 	return [...head, ...middle, ...tail]
 }
 
+function tokenize(text: string, granularity: TDiffGranularity): string[] {
+	if (granularity === 'char') return Array.from(text)
+	return text.split(/(\s+)/).filter(token => token !== '')
+}
+
 /**
- * Word-level diff for a pair of changed lines. Falls back to a whole-line
- * removed/added pair when the lines are too long to compare comfortably.
+ * Intra-line diff for a pair of changed lines, split either on word boundaries
+ * or on individual characters. Falls back to a whole-line removed/added pair
+ * when the lines are too long to compare comfortably — the character limit is
+ * lower because its LCS table grows with the character count, not word count.
+ *
+ * Passing `'line'` yields no intra-line detail: the whole line reads as removed
+ * plus added.
  */
-export function diffWords(a: string, b: string): TDiffSegment[] {
-	if (a.length > WORD_DIFF_CHAR_LIMIT || b.length > WORD_DIFF_CHAR_LIMIT) {
+export function diffSegments(
+	a: string,
+	b: string,
+	granularity: TDiffGranularity = 'word'
+): TDiffSegment[] {
+	const limit =
+		granularity === 'char' ? CHAR_DIFF_CHAR_LIMIT : WORD_DIFF_CHAR_LIMIT
+
+	if (granularity === 'line' || a.length > limit || b.length > limit) {
 		return [
 			{ type: 'removed', text: a },
 			{ type: 'added', text: b }
 		]
 	}
 
-	const aTokens = a.split(/(\s+)/).filter(token => token !== '')
-	const bTokens = b.split(/(\s+)/).filter(token => token !== '')
+	const aTokens = tokenize(a, granularity)
+	const bTokens = tokenize(b, granularity)
 	const table = buildLcsTable(aTokens, bTokens)
 	const width = bTokens.length + 1
 	const segments: TDiffSegment[] = []
@@ -208,6 +226,14 @@ export function diffWords(a: string, b: string): TDiffSegment[] {
 	}
 
 	return segments
+}
+
+export function diffWords(a: string, b: string): TDiffSegment[] {
+	return diffSegments(a, b, 'word')
+}
+
+export function diffChars(a: string, b: string): TDiffSegment[] {
+	return diffSegments(a, b, 'char')
 }
 
 export function summarizeDiff(lines: TDiffLine[]): {

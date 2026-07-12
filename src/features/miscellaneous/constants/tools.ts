@@ -1,7 +1,9 @@
 import {
+	BracesIcon,
 	CoordinateIcon,
 	DiffIcon,
 	FindReplaceIcon,
+	LinkExtractIcon,
 	LocateIcon,
 	RadiusIcon
 } from '../components/icons/animated-icons'
@@ -30,11 +32,60 @@ export const TOOLS = [
 	{
 		slug: 'diff-checker',
 		name: 'Diff Checker',
-		description: 'Compare two texts with line and word level diffs.',
+		description:
+			'Compare two texts with line, word, or character level diffs.',
 		category: 'text',
 		icon: DiffIcon,
 		status: 'available',
-		keywords: ['diff', 'compare', 'changes', 'text']
+		keywords: ['diff', 'compare', 'changes', 'text', 'character']
+	},
+	{
+		slug: 'json-tool',
+		name: 'JSON Tool',
+		description:
+			'Validate, format and minify JSON, sort its keys, and convert it to a TypeScript type, YAML or CSV — with the exact line and column of every syntax error.',
+		category: 'text',
+		icon: BracesIcon,
+		status: 'available',
+		keywords: [
+			'json',
+			'json formatter',
+			'json beautifier',
+			'pretty print',
+			'json validator',
+			'minify',
+			'json to typescript',
+			'json to yaml',
+			'json to csv',
+			'sort keys',
+			'parse error',
+			'lint'
+		]
+	},
+	{
+		slug: 'link-extractor',
+		name: 'Link Extractor',
+		description:
+			'Paste any text and pull the links out of it — keep or delete lines by word, keep only links or only prose, put every link on its own line, sort, dedupe, and open them in batches.',
+		category: 'text',
+		icon: LinkExtractIcon,
+		status: 'available',
+		keywords: [
+			'link extractor',
+			'url extractor',
+			'text extractor',
+			'extract links',
+			'extract urls',
+			'filter lines',
+			'delete lines containing',
+			'keep lines containing',
+			'grep',
+			'open links',
+			'bulk open',
+			'sort links',
+			'dedupe',
+			'url list'
+		]
 	},
 	{
 		slug: 'coordinate-marker',

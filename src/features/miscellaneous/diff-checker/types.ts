@@ -11,3 +11,5 @@ export type TDiffSegment = {
 	type: TDiffLineType
 	text: string
 }
+
+export type TDiffGranularity = 'line' | 'word' | 'char'
