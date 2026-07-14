@@ -4,10 +4,12 @@ type DateParts = {
 	year: number
 }
 
+const FALLBACK_DATE = new Date(0)
+
 function parseDate(input: string): Date {
 	const value = input?.trim()
 	if (!value) {
-		return new Date()
+		return FALLBACK_DATE
 	}
 
 	const directDate = new Date(value)
@@ -46,7 +48,7 @@ function parseDate(input: string): Date {
 		}
 	}
 
-	return new Date()
+	return FALLBACK_DATE
 }
 
 export function getDateParts(input: string): DateParts {

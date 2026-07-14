@@ -44,6 +44,12 @@
   "engines": {
     "node": "24.x"
   },
+  "browserslist": [
+    "last 2 Chrome versions",
+    "last 2 Firefox versions",
+    "last 2 Safari versions",
+    "last 2 Edge versions"
+  ],
   "dependencies": {
     "@microflash/remark-callout-directives": "^5.0.0",
     "@neondatabase/serverless": "^1.0.2",

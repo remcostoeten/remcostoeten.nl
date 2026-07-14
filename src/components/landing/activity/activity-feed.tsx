@@ -415,10 +415,10 @@ function LiveGlow({ progress, currentMs, durationMs }: LiveGlowProps) {
 					</motion.div>
 				</div>
 				<div className="absolute -top-5 left-0 right-0 flex justify-between px-0">
-					<span className="text-[10px] font-mono text-muted-foreground/40 tabular-nums select-none">
+					<span className="text-[10px] font-mono text-muted-foreground/80 tabular-nums select-none">
 						0:00
 					</span>
-					<span className="text-[10px] font-mono text-muted-foreground/40 tabular-nums select-none">
+					<span className="text-[10px] font-mono text-muted-foreground/80 tabular-nums select-none">
 						{formatTrackTime(durationMs)}
 					</span>
 				</div>

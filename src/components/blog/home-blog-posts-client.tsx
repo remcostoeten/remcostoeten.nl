@@ -59,7 +59,7 @@ export function HomeBlogPostsClient({ posts }: Props) {
 										</div>
 									</div>
 
-									<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground/50">
+									<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground/80">
 										<span className="font-mono tabular-nums whitespace-nowrap">
 											{dateParts.day}{' '}
 											{dateParts.month.slice(0, 3)}{' '}
