@@ -8,6 +8,7 @@ import {
 	WorkExperienceSkeleton
 } from '@/components/ui/skeletons/section-skeletons'
 import { ProjectsView } from '../projects'
+import { PackagesSection } from '@/components/packages/packages-section'
 
 const TechStackCloud = nextDynamic(
 	() =>
@@ -61,6 +62,7 @@ export function HomeView() {
 
 					<WorkExperienceSection />
 					<ProjectsView />
+					<PackagesSection />
 					<ActivitySectionClient />
 
 					<HomeBlogPosts />

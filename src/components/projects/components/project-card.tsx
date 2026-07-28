@@ -6,6 +6,7 @@ import { cn } from '@/shared/lib/cn'
 import { formatShortDate } from '@/shared/lib/date'
 import type { IProject, TPreview } from '../types'
 import { GitInfo } from './git-info'
+import { ProjectPreviewSkeleton } from './project-preview-skeleton'
 
 const ProjectPreviewRenderer = lazy(() =>
 	import('./project-preview').then(m => ({
@@ -236,13 +237,7 @@ export const ProjectCard = memo(function ProjectCard({
 					>
 						<div className="overflow-hidden">
 							{isPreviewVisible && (
-								<Suspense
-									fallback={
-										<div className="h-[150px] sm:h-[200px] flex items-center justify-center text-xs text-muted-foreground">
-											Loading...
-										</div>
-									}
-								>
+								<Suspense fallback={<ProjectPreviewSkeleton />}>
 									<ProjectPreviewRenderer
 										preview={project.preview}
 										name={project.name}

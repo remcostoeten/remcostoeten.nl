@@ -73,6 +73,9 @@ export async function GET(request: Request) {
 		}
 
 		const recentData = await recentResponse.json()
+		if (!Array.isArray(recentData.items) || recentData.items.length === 0) {
+			return fallbackRecentTracks(limit)
+		}
 		return formatResponse(recentData)
 	} catch (error) {
 		console.error('Error in Spotify recent tracks API:', error)

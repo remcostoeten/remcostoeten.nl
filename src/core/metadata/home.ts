@@ -14,7 +14,10 @@ export const homeMetadata = createPageMetadata({
 		'typescript',
 		'css',
 		'frontend',
-		'programming'
+		'programming',
+		'npm packages',
+		'React libraries',
+		'open source developer tools'
 	],
 	canonical: '/'
 })

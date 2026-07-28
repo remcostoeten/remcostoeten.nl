@@ -5,6 +5,7 @@ import { Github, ExternalLink, Eye, ChevronDown } from 'lucide-react'
 import { cn } from '@/shared/lib/cn'
 import { formatShortDate } from '@/shared/lib/date'
 import type { IProject, TPreview } from '../types'
+import { ProjectPreviewSkeleton } from './project-preview-skeleton'
 
 const ProjectPreviewRenderer = lazy(() =>
 	import('./project-preview').then(m => ({
@@ -128,13 +129,7 @@ export const ProjectRow = memo(function ProjectRow({
 			>
 				<div className="overflow-hidden">
 					{hasPreview && isOpen && (
-						<Suspense
-							fallback={
-								<div className="h-[150px] flex items-center justify-center text-xs text-muted-foreground">
-									Loading…
-								</div>
-							}
-						>
+						<Suspense fallback={<ProjectPreviewSkeleton compact />}>
 							<ProjectPreviewRenderer
 								preview={project.preview}
 								name={project.name}

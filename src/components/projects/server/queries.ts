@@ -1,10 +1,12 @@
-'use server'
-
+import { cacheTag } from 'next/cache'
 import { db } from '@/server/db/connection'
 import { projects, projectSettings } from '@/server/db/schema'
 import { eq, asc } from 'drizzle-orm'
 
 export async function getProjects(includeHidden = false) {
+	'use cache'
+	cacheTag('projects')
+
 	try {
 		const query = includeHidden
 			? db.select().from(projects).orderBy(asc(projects.idx))
@@ -22,6 +24,9 @@ export async function getProjects(includeHidden = false) {
 }
 
 export async function getProject(id: string) {
+	'use cache'
+	cacheTag('projects')
+
 	try {
 		const [project] = await db
 			.select()
@@ -35,21 +40,16 @@ export async function getProject(id: string) {
 }
 
 export async function getSettings() {
+	'use cache'
+	cacheTag('projects')
+
 	try {
 		const [settings] = await db
 			.select()
 			.from(projectSettings)
 			.where(eq(projectSettings.id, 'singleton'))
 
-		if (!settings) {
-			const [newSettings] = await db
-				.insert(projectSettings)
-				.values({ id: 'singleton', showN: 6 })
-				.returning()
-			return newSettings
-		}
-
-		return settings
+		return settings ?? { id: 'singleton', showN: 6, updatedAt: new Date() }
 	} catch (error) {
 		console.error('[getSettings] Database error:', error)
 		return { id: 'singleton', showN: 6, updatedAt: new Date() }

@@ -3,7 +3,7 @@
 import { db } from '@/server/db/connection'
 import { projects, projectSettings } from '@/server/db/schema'
 import { eq, gt, sql } from 'drizzle-orm'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 import { isAdmin } from '@/features/auth/guard'
 
 type MutationResult<T = void> =
@@ -56,6 +56,7 @@ export async function createProject(data: {
 		})
 		.returning({ id: projects.id })
 
+	updateTag('projects')
 	revalidatePath('/')
 	revalidatePath('/admin/projects')
 
@@ -91,6 +92,7 @@ export async function updateProject(
 		.set({ ...data, updatedAt: new Date() })
 		.where(eq(projects.id, id))
 
+	updateTag('projects')
 	revalidatePath('/')
 	revalidatePath('/admin/projects')
 
@@ -113,6 +115,7 @@ export async function deleteProject(id: string): Promise<MutationResult> {
 			.where(gt(projects.idx, deleted.idx))
 	}
 
+	updateTag('projects')
 	revalidatePath('/')
 	revalidatePath('/admin/projects')
 
@@ -156,6 +159,7 @@ export async function reorderProject(
 		.set({ idx: newIdx, updatedAt: new Date() })
 		.where(eq(projects.id, id))
 
+	updateTag('projects')
 	revalidatePath('/')
 	revalidatePath('/admin/projects')
 
@@ -194,6 +198,7 @@ export async function moveProject(
 		.set({ idx: targetIdx, updatedAt: new Date() })
 		.where(eq(projects.id, id))
 
+	updateTag('projects')
 	revalidatePath('/')
 	revalidatePath('/admin/projects')
 
@@ -208,10 +213,14 @@ export async function updateSettings(showN: number): Promise<MutationResult> {
 		return { success: false, error: 'showN must be between 1 and 50' }
 
 	await db
-		.update(projectSettings)
-		.set({ showN, updatedAt: new Date() })
-		.where(eq(projectSettings.id, 'singleton'))
+		.insert(projectSettings)
+		.values({ id: 'singleton', showN })
+		.onConflictDoUpdate({
+			target: projectSettings.id,
+			set: { showN, updatedAt: new Date() }
+		})
 
+	updateTag('projects')
 	revalidatePath('/')
 	revalidatePath('/admin/projects')
 

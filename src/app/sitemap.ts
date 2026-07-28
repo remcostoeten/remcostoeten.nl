@@ -2,6 +2,7 @@ import { getVisibleBlogPosts, getVisibleTopics } from '@/features/blog'
 import { getAvailableTools } from '@/features/miscellaneous/constants/tools'
 import { baseUrl } from '@/core/config/site'
 import { MetadataRoute } from 'next'
+import { developerPackages } from '@/features/packages/data'
 
 export { baseUrl } from '@/core/config/site'
 
@@ -46,6 +47,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.8
 		},
 		{
+			url: '/packages',
+			changeFrequency: 'weekly',
+			priority: 0.8
+		},
+		{
 			url: '/rss',
 			changeFrequency: 'daily',
 			priority: 0.4
@@ -57,6 +63,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		lastModified: new Date(),
 		changeFrequency: 'monthly' as const,
 		priority: 0.7
+	}))
+
+	const packageRoutes = developerPackages.map(pkg => ({
+		url: `${baseUrl}/packages/${pkg.slug}`,
+		lastModified: new Date(),
+		changeFrequency: 'weekly' as const,
+		priority: 0.8
 	}))
 
 	const blogs = posts.map(post => {
@@ -87,6 +100,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		})),
 		...blogs,
 		...topicRoutes,
-		...toolRoutes
+		...toolRoutes,
+		...packageRoutes
 	]
 }
