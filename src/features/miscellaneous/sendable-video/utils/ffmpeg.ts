@@ -22,8 +22,8 @@ function seekArgs(range: TTrimRange | null): {
  */
 export function isRemuxCompatible(probe: string): boolean {
 	if (!/Video:\s*h264/i.test(probe)) return false
-	const audio = probe.match(/Audio:\s*(\w+)/i)
-	return !audio || /^(aac|mp3)$/i.test(audio[1])
+	const codecs = [...probe.matchAll(/Audio:\s*(\w+)/gi)].map(match => match[1])
+	return codecs.every(codec => /^(aac|mp3)$/i.test(codec))
 }
 
 /**

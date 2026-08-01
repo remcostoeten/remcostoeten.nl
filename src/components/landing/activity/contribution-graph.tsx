@@ -435,9 +435,7 @@ export function ActivityContributionGraph({
 		const totalCells = totalWeeks * 7
 		const moveByKey: Record<string, number> = {
 			ArrowRight: 7,
-			ArrowLeft: -7,
-			ArrowDown: 1,
-			ArrowUp: -1
+			ArrowLeft: -7
 		}
 
 		let nextIndex: number
@@ -445,6 +443,12 @@ export function ActivityContributionGraph({
 			nextIndex = 0
 		} else if (event.key === 'End') {
 			nextIndex = totalCells - 1
+		} else if (event.key === 'ArrowDown') {
+			nextIndex =
+				activeCellIndex % 7 === 6 ? activeCellIndex : activeCellIndex + 1
+		} else if (event.key === 'ArrowUp') {
+			nextIndex =
+				activeCellIndex % 7 === 0 ? activeCellIndex : activeCellIndex - 1
 		} else if (event.key in moveByKey) {
 			nextIndex = Math.min(
 				totalCells - 1,

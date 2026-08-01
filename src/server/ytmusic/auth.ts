@@ -1,4 +1,5 @@
 import crypto from 'node:crypto'
+import { YTMusicUnauthorizedError } from './parser'
 
 const YTM_ORIGIN = 'https://music.youtube.com'
 const FALLBACK_API_KEY = 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30'
@@ -192,6 +193,12 @@ export async function fetchInnertube(
 	)
 
 	if (!response.ok) {
+		invalidateYTMusicClient()
+		if (response.status === 401 || response.status === 403) {
+			throw new YTMusicUnauthorizedError(
+				`YouTube Music rejected the session (${response.status})`
+			)
+		}
 		throw new Error(`YouTube Music API failed (${response.status})`)
 	}
 	return response.json()

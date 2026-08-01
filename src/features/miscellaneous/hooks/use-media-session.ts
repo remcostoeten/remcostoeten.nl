@@ -27,21 +27,22 @@ export function useMediaSession(
 	onRestore: (session: TRestoredMediaSession) => void
 ) {
 	const onRestoreRef = useRef(onRestore)
-	const startedRef = useRef(false)
 
 	useEffect(() => {
 		onRestoreRef.current = onRestore
 	})
 
 	useEffect(() => {
-		if (startedRef.current) return
-		startedRef.current = true
+		let cancelled = false
 		loadMediaSession(toolKey)
 			.then(session => {
-				if (!session.file) return
+				if (cancelled || !session.file) return
 				onRestoreRef.current({ ...session, file: session.file })
 			})
 			.catch(warn)
+		return () => {
+			cancelled = true
+		}
 	}, [toolKey])
 
 	const persistFile = useCallback(

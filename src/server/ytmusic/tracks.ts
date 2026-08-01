@@ -8,6 +8,7 @@ import {
 } from './parser'
 
 const FRESH_CACHE_MS = 30_000
+const MAX_CACHED_TRACKS = 50
 
 interface GetYTMusicOptions {
 	forceRefresh?: boolean
@@ -65,13 +66,13 @@ export async function getYTMusicResult(
 		const data = await fetchInnertube('browse', {
 			browseId: 'FEmusic_history'
 		})
-		const parsedTracks = parseInnertubeTracks(data, limit)
-		const tracks = stabilizeTrackTimestamps(
+		const parsedTracks = parseInnertubeTracks(data, MAX_CACHED_TRACKS)
+		const allTracks = stabilizeTrackTimestamps(
 			parsedTracks,
 			cache?.tracks ?? []
 		)
 
-		if (tracks.length === 0) {
+		if (allTracks.length === 0) {
 			return createResult({
 				status: 'empty',
 				source: 'youtube-music',
@@ -84,11 +85,11 @@ export async function getYTMusicResult(
 			})
 		}
 
-		const updatedAt = await writeYTMusicCache(tracks)
+		const updatedAt = await writeYTMusicCache(allTracks)
 		return createResult({
 			status: 'ok',
 			source: 'youtube-music',
-			tracks,
+			tracks: allTracks.slice(0, limit),
 			message: 'Live listening history received from YouTube Music.',
 			credentialsConfigured: true,
 			isStale: false,

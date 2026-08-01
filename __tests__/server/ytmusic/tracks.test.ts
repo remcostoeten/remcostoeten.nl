@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const authMocks = vi.hoisted(() => ({
 	fetchInnertube: vi.fn(),
@@ -35,6 +35,10 @@ describe('YouTube Music retrieval', () => {
 		cacheMocks.writeYTMusicCache.mockResolvedValue(
 			new Date('2026-08-01T12:00:00.000Z')
 		)
+	})
+
+	afterEach(() => {
+		vi.useRealTimers()
 	})
 
 	it('serves stale saved tracks when live credentials are absent', async () => {
