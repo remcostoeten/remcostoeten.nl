@@ -47,11 +47,20 @@ export function ActivitySection() {
 					, both currently in beta.
 				</p>
 
+				<a
+					href="#activity-feed"
+					className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:rounded focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-background"
+				>
+					Skip activity calendar
+				</a>
+
 				<div>
 					<ActivityContributionGraph showLegend={true} />
 				</div>
 
-				<ActivityFeed activityCount={5} rotationInterval={6000} />
+				<div id="activity-feed" tabIndex={-1}>
+					<ActivityFeed activityCount={5} rotationInterval={6000} />
+				</div>
 			</div>
 		</Section>
 	)

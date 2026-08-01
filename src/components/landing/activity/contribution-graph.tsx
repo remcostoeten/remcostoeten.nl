@@ -415,6 +415,50 @@ export function ActivityContributionGraph({
 		return activityData.reduce((sum, day) => sum + day.githubCount, 0)
 	}, [activityData])
 
+	const cellRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
+	const [focusedCellIndex, setFocusedCellIndex] = useState<number | null>(null)
+
+	const todayCellIndex = useMemo(() => {
+		const todayStr = new Date().toISOString().split('T')[0]
+		for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
+			const dayIndex = weeks[weekIndex].findIndex(
+				day => day.date === todayStr
+			)
+			if (dayIndex !== -1) return weekIndex * 7 + dayIndex
+		}
+		return 0
+	}, [weeks])
+
+	const activeCellIndex = focusedCellIndex ?? todayCellIndex
+
+	function handleGridKeyDown(event: React.KeyboardEvent) {
+		const totalCells = totalWeeks * 7
+		const moveByKey: Record<string, number> = {
+			ArrowRight: 7,
+			ArrowLeft: -7,
+			ArrowDown: 1,
+			ArrowUp: -1
+		}
+
+		let nextIndex: number
+		if (event.key === 'Home') {
+			nextIndex = 0
+		} else if (event.key === 'End') {
+			nextIndex = totalCells - 1
+		} else if (event.key in moveByKey) {
+			nextIndex = Math.min(
+				totalCells - 1,
+				Math.max(0, activeCellIndex + moveByKey[event.key])
+			)
+		} else {
+			return
+		}
+
+		event.preventDefault()
+		setFocusedCellIndex(nextIndex)
+		cellRefs.current.get(nextIndex)?.focus()
+	}
+
 	const handleDayClick = (
 		day: ActivityDay,
 		event: React.MouseEvent<HTMLButtonElement>
@@ -490,6 +534,7 @@ export function ActivityContributionGraph({
 						style={{
 							gridTemplateColumns: `repeat(${totalWeeks}, 1fr)`
 						}}
+						onKeyDown={handleGridKeyDown}
 					>
 						{weeks.map((week, weekIndex) => (
 							<div
@@ -498,9 +543,8 @@ export function ActivityContributionGraph({
 							>
 								{week.map((day, dayIndex) => {
 									const hasData = !!day.date
-									const delayMs =
-										cellDelays[weekIndex * 7 + dayIndex] ??
-										0
+									const flatIndex = weekIndex * 7 + dayIndex
+									const delayMs = cellDelays[flatIndex] ?? 0
 									const isToday =
 										day.date ===
 										new Date().toISOString().split('T')[0]
@@ -509,6 +553,26 @@ export function ActivityContributionGraph({
 										<button
 											key={dayIndex}
 											type="button"
+											ref={node => {
+												if (node) {
+													cellRefs.current.set(
+														flatIndex,
+														node
+													)
+												} else {
+													cellRefs.current.delete(
+														flatIndex
+													)
+												}
+											}}
+											tabIndex={
+												flatIndex === activeCellIndex
+													? 0
+													: -1
+											}
+											onFocus={() =>
+												setFocusedCellIndex(flatIndex)
+											}
 											aria-label={formatDayLabel(day)}
 											aria-haspopup={
 												day.totalActivity > 0
