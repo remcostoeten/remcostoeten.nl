@@ -1,5 +1,9 @@
 import { baseUrl } from '@/core/config/site'
 
+function serializeStructuredData(value: object) {
+	return JSON.stringify(value).replace(/</g, '\\u003c')
+}
+
 type BlogPostStructuredDataProps = {
 	title: string
 	description: string
@@ -60,7 +64,93 @@ export function BlogPostStructuredData({
 	return (
 		<script
 			type="application/ld+json"
-			dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+			dangerouslySetInnerHTML={{
+				__html: serializeStructuredData(structuredData)
+			}}
+		/>
+	)
+}
+
+type ToolStructuredDataProps = {
+	name: string
+	description: string
+	slug: string
+	category: string
+	keywords: readonly string[]
+	updatedAt: string
+	featureList?: readonly string[]
+}
+
+export function ToolStructuredData({
+	name,
+	description,
+	slug,
+	category,
+	keywords,
+	updatedAt,
+	featureList = []
+}: ToolStructuredDataProps) {
+	const url = `${baseUrl}/tools/${slug}`
+	const structuredData = {
+		'@context': 'https://schema.org',
+		'@type': 'WebApplication',
+		'@id': `${url}/#application`,
+		name,
+		description,
+		url,
+		applicationCategory:
+			category === 'media'
+				? 'MultimediaApplication'
+				: 'DeveloperApplication',
+		applicationSubCategory: category,
+		operatingSystem: 'Any',
+		browserRequirements: 'Requires JavaScript and a modern web browser.',
+		isAccessibleForFree: true,
+		offers: {
+			'@type': 'Offer',
+			price: 0,
+			priceCurrency: 'EUR'
+		},
+		creator: { '@id': PERSON_ID },
+		dateModified: updatedAt,
+		keywords,
+		featureList
+	}
+
+	return (
+		<script
+			type="application/ld+json"
+			dangerouslySetInnerHTML={{
+				__html: serializeStructuredData(structuredData)
+			}}
+		/>
+	)
+}
+
+type FaqStructuredDataProps = {
+	items: readonly { question: string; answer: string }[]
+}
+
+export function FaqStructuredData({ items }: FaqStructuredDataProps) {
+	const structuredData = {
+		'@context': 'https://schema.org',
+		'@type': 'FAQPage',
+		mainEntity: items.map(item => ({
+			'@type': 'Question',
+			name: item.question,
+			acceptedAnswer: {
+				'@type': 'Answer',
+				text: item.answer
+			}
+		}))
+	}
+
+	return (
+		<script
+			type="application/ld+json"
+			dangerouslySetInnerHTML={{
+				__html: serializeStructuredData(structuredData)
+			}}
 		/>
 	)
 }
@@ -89,7 +179,9 @@ export function WebsiteStructuredData() {
 	return (
 		<script
 			type="application/ld+json"
-			dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+			dangerouslySetInnerHTML={{
+				__html: serializeStructuredData(structuredData)
+			}}
 		/>
 	)
 }
@@ -134,7 +226,9 @@ export function PersonStructuredData() {
 	return (
 		<script
 			type="application/ld+json"
-			dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+			dangerouslySetInnerHTML={{
+				__html: serializeStructuredData(structuredData)
+			}}
 		/>
 	)
 }
@@ -167,7 +261,9 @@ export function BreadcrumbStructuredData({
 	return (
 		<script
 			type="application/ld+json"
-			dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+			dangerouslySetInnerHTML={{
+				__html: serializeStructuredData(structuredData)
+			}}
 		/>
 	)
 }

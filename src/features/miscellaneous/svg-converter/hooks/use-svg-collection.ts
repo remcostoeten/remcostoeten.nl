@@ -76,17 +76,16 @@ export function useSvgCollection() {
 
 	const remove = useCallback((ids: Iterable<string>) => {
 		const removeSet = new Set(ids)
-		setItems(current => {
-			const next = current
+		setItems(current =>
+			current
 				.filter(item => !removeSet.has(item.id))
 				.map((item, index) => ({ ...item, index: index + 1 }))
-			setFocusedId(currentFocus =>
-				next.some(item => item.id === currentFocus)
-					? currentFocus
-					: next[0]?.id
-			)
-			return next
-		})
+		)
+		setFocusedId(currentFocus =>
+			currentFocus && removeSet.has(currentFocus)
+				? undefined
+				: currentFocus
+		)
 		setSelected(
 			current => new Set([...current].filter(id => !removeSet.has(id)))
 		)
@@ -175,7 +174,7 @@ export function useSvgCollection() {
 	}, [])
 
 	const focused = useMemo(
-		() => items.find(item => item.id === focusedId),
+		() => items.find(item => item.id === focusedId) ?? items[0],
 		[items, focusedId]
 	)
 	return {
@@ -186,7 +185,7 @@ export function useSvgCollection() {
 		setItems,
 		selected,
 		setSelected,
-		focusedId,
+		focusedId: focused?.id,
 		setFocusedId,
 		focused,
 		inputMessage,

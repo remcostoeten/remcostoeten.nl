@@ -216,11 +216,14 @@ function runStep(step, index, total) {
 		child.stdout.on('data', chunk => stdoutGutter.push(chunk))
 		child.stderr.on('data', chunk => stderrGutter.push(chunk))
 
-		child.on('exit', code => {
+		let settled = false
+
+		function finishStep(ok, failure) {
+			if (settled) return
+			settled = true
 			stdoutGutter.flush()
 			stderrGutter.flush()
 			const duration = Date.now() - stepStart
-			const ok = code === 0
 			results.push({ label: step.label, duration, ok })
 
 			printStepEnd(step.label, ok, duration)
@@ -230,7 +233,21 @@ function runStep(step, index, total) {
 				return
 			}
 
-			reject(new Error(`${step.label} failed with exit code ${code}`))
+			reject(failure)
+		}
+
+		child.on('error', error => {
+			finishStep(
+				false,
+				new Error(`${step.label} failed to start: ${error.message}`)
+			)
+		})
+
+		child.on('close', code => {
+			finishStep(
+				code === 0,
+				new Error(`${step.label} failed with exit code ${code}`)
+			)
 		})
 	})
 }

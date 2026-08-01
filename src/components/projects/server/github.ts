@@ -77,11 +77,13 @@ export async function fetchGitMetrics(
 	githubUrl: string
 ): Promise<IGitMetrics | null> {
 	'use cache'
-	cacheLife('hours')
 	cacheTag('github-metrics', `github-metrics:${githubUrl}`)
 
 	const parsed = extractOwnerRepo(githubUrl)
-	if (!parsed) return null
+	if (!parsed) {
+		cacheLife('hours')
+		return null
+	}
 
 	const { owner, repo } = parsed
 	const token = getGitHubToken()
@@ -98,6 +100,7 @@ export async function fetchGitMetrics(
 			headers
 		)
 		if (!repoRes) {
+			cacheLife('minutes')
 			return null
 		}
 		const repoData: IGitHubRepo = await repoRes.json()
@@ -107,6 +110,7 @@ export async function fetchGitMetrics(
 			headers
 		)
 		if (!commitsRes) {
+			cacheLife('minutes')
 			return null
 		}
 		const commits: IGitHubCommit[] = await commitsRes.json()
@@ -120,6 +124,7 @@ export async function fetchGitMetrics(
 				totalCommits = Number.parseInt(lastPageMatch[1], 10)
 		}
 
+		cacheLife('hours')
 		const metrics = {
 			lastUpdated: repoData.pushed_at,
 			lastCommitMessage:
@@ -131,6 +136,7 @@ export async function fetchGitMetrics(
 		return metrics
 	} catch (error) {
 		console.error(`Failed to fetch git metrics for ${githubUrl}:`, error)
+		cacheLife('minutes')
 		return null
 	}
 }

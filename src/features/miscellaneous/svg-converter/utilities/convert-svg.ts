@@ -82,6 +82,23 @@ function optimizeNumbers(root: Element, settings: ConversionSettings) {
 	}
 }
 
+const METADATA_ATTRIBUTES = new Set([
+	'xml:space',
+	'enable-background',
+	'baseprofile',
+	'version'
+])
+
+function removeMetadata(root: Element) {
+	for (const element of [root, ...Array.from(root.querySelectorAll('*'))]) {
+		for (const attribute of Array.from(element.attributes)) {
+			const name = attribute.name.toLowerCase()
+			if (name.startsWith('data-') || METADATA_ATTRIBUTES.has(name))
+				element.removeAttribute(attribute.name)
+		}
+	}
+}
+
 const TAG_NAMES: Record<string, string> = {
 	clippath: 'clipPath',
 	lineargradient: 'linearGradient',
@@ -145,7 +162,8 @@ function controlledRootAttributes(item: SvgItem, root: Element): string[] {
 	]
 	for (const attribute of Array.from(root.attributes))
 		attributes.push(convertAttribute(attribute.name, attribute.value))
-	attributes.push('width={size}', 'height={size}')
+	if (settings.removeDimensions)
+		attributes.push('width={size}', 'height={size}')
 	if (item.viewBox) attributes.push(`viewBox=${JSON.stringify(item.viewBox)}`)
 	if (settings.preserveAspectRatio)
 		attributes.push('preserveAspectRatio="xMidYMid meet"')
@@ -179,6 +197,7 @@ export function generateComponent(
 		root.querySelectorAll('desc').forEach(node => node.remove())
 	if (!item.settings.preserveIds && item.settings.prefixIds)
 		rewriteIds(root, item.component)
+	if (item.settings.removeMetadata) removeMetadata(root)
 	transformColors(root, item.settings)
 	optimizeNumbers(root, item.settings)
 	if (item.settings.colorMode === 'fill')
@@ -187,8 +206,10 @@ export function generateComponent(
 		root.setAttribute('fill', 'none')
 		root.setAttribute('stroke', 'currentColor')
 	}
-	root.removeAttribute('width')
-	root.removeAttribute('height')
+	if (item.settings.removeDimensions) {
+		root.removeAttribute('width')
+		root.removeAttribute('height')
+	}
 	const controlledNames = [
 		'viewBox',
 		'preserveAspectRatio',

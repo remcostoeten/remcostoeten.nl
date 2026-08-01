@@ -91,11 +91,9 @@ export function sanitizeSvg(markup: string): SanitizeResult {
 		const tag = node.tagName.toLowerCase()
 		if (BLOCKED_ELEMENTS.has(tag)) {
 			if (tag === 'script')
-				errors.push('The SVG contains unsupported script content.')
+				warnings.push('Removed unsupported script content.')
 			else if (tag === 'foreignobject')
-				errors.push(
-					'The SVG contains unsupported embedded HTML content.'
-				)
+				warnings.push('Removed unsupported embedded HTML content.')
 			else warnings.push(`Removed unsafe <${node.tagName}> content.`)
 			node.remove()
 			continue
@@ -113,22 +111,22 @@ export function sanitizeSvg(markup: string): SanitizeResult {
 			const value = attribute.value
 			if (name.startsWith('on')) {
 				node.removeAttribute(attribute.name)
-				errors.push(`Removed unsafe ${attribute.name} event handler.`)
+				warnings.push(`Removed unsafe ${attribute.name} event handler.`)
 			} else if (isUnsafeValue(value)) {
 				node.removeAttribute(attribute.name)
-				errors.push('Removed a JavaScript URL from the SVG.')
+				warnings.push('Removed a JavaScript URL from the SVG.')
 			} else if (URL_ATTRIBUTES.has(name) && isExternalReference(value)) {
 				node.removeAttribute(attribute.name)
-				errors.push('The SVG contains an unsafe external reference.')
+				warnings.push('Removed an unsafe external reference.')
 			} else if (
 				name === 'style' &&
 				/(?:url\s*\(\s*["']?(?!#)|@import|expression\s*\()/i.test(value)
 			) {
 				node.removeAttribute(attribute.name)
-				errors.push('Removed unsafe style content.')
+				warnings.push('Removed unsafe style content.')
 			} else if (/url\s*\(\s*["']?(?!#)/i.test(value)) {
 				node.removeAttribute(attribute.name)
-				errors.push('The SVG contains an unsafe external reference.')
+				warnings.push('Removed an unsafe external reference.')
 			}
 		}
 	}

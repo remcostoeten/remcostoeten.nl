@@ -66,7 +66,8 @@ describe('SVG sanitization', () => {
 		expect(result.markup).not.toMatch(
 			/script|foreignObject|onclick|https:|javascript:/
 		)
-		expect(result.errors.length).toBeGreaterThanOrEqual(4)
+		expect(result.errors).toEqual([])
+		expect(result.warnings.length).toBeGreaterThanOrEqual(4)
 	})
 
 	it('preserves safe gradients, masks and clip paths with internal references', () => {

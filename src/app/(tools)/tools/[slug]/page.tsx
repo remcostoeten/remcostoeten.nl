@@ -4,14 +4,22 @@ import { ArrowLeft } from 'lucide-react'
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { createPageMetadata } from '@/core/metadata/base'
+import { baseUrl } from '@/core/config/site'
+import {
+	BreadcrumbStructuredData,
+	FaqStructuredData,
+	ToolStructuredData
+} from '@/components/seo/structured-data'
 import {
 	getAvailableTools,
 	getToolBySlug
 } from '@/features/miscellaneous/constants/tools'
+import { getToolSeoContent } from '@/features/miscellaneous/constants/tool-seo'
 import type { TToolSlug } from '@/features/miscellaneous/constants/tools'
 import { ToolCategoryBadge } from '@/features/miscellaneous/components/tool-category-badge'
 import { ToolQuickNav } from '@/features/miscellaneous/components/tool-quick-nav'
 import { ToolRenderer } from '@/features/miscellaneous/components/tool-renderer'
+import { ToolSeoContent } from '@/features/miscellaneous/components/tool-seo-content'
 
 export const prefetch = 'allow-runtime'
 
@@ -27,11 +35,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const { slug } = await params
 	const tool = getToolBySlug(slug)
 	if (!tool) return {}
+	const seo = getToolSeoContent(slug)
 	return createPageMetadata({
-		title: tool.name,
-		description: tool.description,
+		title: seo?.metaTitle ?? tool.name,
+		description: seo?.metaDescription ?? tool.description,
 		canonical: `/tools/${tool.slug}`,
-		keywords: tool.keywords
+		keywords: tool.keywords,
+		image: `${baseUrl}/tools/${tool.slug}/og`
 	})
 }
 
@@ -39,9 +49,27 @@ async function ToolPage({ params }: Props) {
 	const { slug } = await params
 	const tool = getToolBySlug(slug)
 	if (!tool || tool.status !== 'available') notFound()
+	const seo = getToolSeoContent(slug)
 
 	return (
 		<div className="px-4 md:px-5 flex flex-col gap-4">
+			<ToolStructuredData
+				name={tool.name}
+				description={seo?.metaDescription ?? tool.description}
+				slug={tool.slug}
+				category={tool.category}
+				keywords={tool.keywords}
+				updatedAt={tool.updatedAt}
+				featureList={seo?.highlights}
+			/>
+			<BreadcrumbStructuredData
+				items={[
+					{ name: 'Home', url: '/' },
+					{ name: 'Tools', url: '/tools' },
+					{ name: tool.name, url: `/tools/${tool.slug}` }
+				]}
+			/>
+			{seo ? <FaqStructuredData items={seo.faqs} /> : null}
 			<header className="flex flex-col gap-2">
 				<Link
 					href="/tools"
@@ -64,6 +92,8 @@ async function ToolPage({ params }: Props) {
 			<ToolQuickNav currentSlug={tool.slug} />
 
 			<ToolRenderer slug={tool.slug as TToolSlug} />
+
+			{seo ? <ToolSeoContent name={tool.name} content={seo} /> : null}
 		</div>
 	)
 }
