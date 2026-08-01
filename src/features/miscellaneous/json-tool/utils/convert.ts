@@ -81,7 +81,7 @@ export function toCsv(value: TJsonValue): TConversion {
 	if (!Array.isArray(value)) {
 		return {
 			ok: false,
-			error: 'CSV needs an array at the root — wrap your object in [ ].'
+			error: 'CSV needs an array at the root. Wrap your object in [ ].'
 		}
 	}
 	if (value.length === 0) return { ok: true, text: '' }

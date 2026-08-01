@@ -157,7 +157,7 @@ export function OutputPanel({ store }: Props) {
 
 				{result.lines.length === 0 && (
 					<li className="px-1 text-sm text-muted-foreground">
-						Nothing to show yet — paste some text on the left.
+						Nothing to show yet. Paste some text on the left.
 					</li>
 				)}
 			</ol>

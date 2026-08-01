@@ -42,6 +42,7 @@ export function HomeBlogPostsClient({ posts }: Props) {
 						<Link
 							key={post.slug}
 							href={`/blog/${post.slug}`}
+							prefetch
 							className="group -mx-4 flex items-start justify-between gap-4 border-b border-border/40 px-4 py-5 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary last:border-b-0 md:-mx-5 md:px-5"
 						>
 							<div className="min-w-0 flex-1">

@@ -8,9 +8,9 @@ import { UnifiedAnalytics } from '@/core/analytics'
 export function AppChrome() {
 	return (
 		<>
+			<UnifiedAnalytics />
 			<ThemeSwitch />
 			<Toaster />
-			<UnifiedAnalytics />
 			<VimAuthProvider />
 		</>
 	)

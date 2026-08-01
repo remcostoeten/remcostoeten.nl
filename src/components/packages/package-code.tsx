@@ -56,12 +56,12 @@ export function PackageCode({
 					tsx
 				</span>
 			</div>
-			<pre className="overflow-x-auto p-4 font-mono text-xs leading-6 text-[hsl(var(--sh-text))]">
+			<pre className="min-w-0 max-w-full overflow-x-hidden whitespace-pre-wrap break-words p-4 font-mono text-xs leading-6 text-[hsl(var(--sh-text))] [overflow-wrap:anywhere]">
 				<code>
 					{code.split('\n').map((line, index) => (
 						<span
 							key={`${line}-${index}`}
-							className="block min-w-max"
+							className="block min-w-0 whitespace-pre-wrap break-words [overflow-wrap:anywhere]"
 						>
 							<span className="mr-4 inline-block w-4 select-none text-right text-[hsl(var(--sh-comment))]">
 								{index + 1}

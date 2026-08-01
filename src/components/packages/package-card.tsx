@@ -16,6 +16,7 @@ export function PackageCard({ pkg, version }: Props) {
 		<article className="group relative border-b border-border/60 last:border-b-0">
 			<Link
 				href={`/packages/${pkg.slug}` as Route}
+				prefetch
 				className="block px-4 py-5 md:px-5 transition-colors duration-150 ease-out hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:bg-muted/50"
 				aria-label={`Read about ${pkg.name}`}
 			>

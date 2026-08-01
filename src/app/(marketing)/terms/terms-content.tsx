@@ -94,7 +94,7 @@ const termsCopy: Record<LegalLanguage, TermsCopy> = {
 		updatedLabel: 'Last updated',
 		overview: [
 			'Welcome to remcostoeten.nl. These Terms of Service govern your use of my personal website and blog. By accessing or using this site, you agree to these terms.',
-			'This is a personal portfolio and blog. I am not a company—just a developer sharing work and thoughts.'
+			'This is a personal portfolio and blog. I am not a company, just a developer sharing work and thoughts.'
 		],
 		personality: 'Friendly, direct, and transparent',
 		license:
@@ -192,7 +192,7 @@ const termsCopy: Record<LegalLanguage, TermsCopy> = {
 			{ label: 'I am not liable for code issues in tutorials.' }
 		],
 		liabilityNote:
-			'This is a personal project—use it responsibly and at your own risk.',
+			'This is a personal project. Use it responsibly and at your own risk.',
 		changes: [
 			'I may update these Terms occasionally. Changes are effective immediately upon posting. Continued use of the site means you accept the updated terms.',
 			'Major changes will be announced in a blog post or site notice.'
@@ -219,7 +219,7 @@ const termsCopy: Record<LegalLanguage, TermsCopy> = {
 		updatedLabel: 'Laatst bijgewerkt',
 		overview: [
 			'Welkom op remcostoeten.nl. Deze gebruiksvoorwaarden zijn van toepassing op mijn persoonlijke website en blog. Door de site te gebruiken ga je hiermee akkoord.',
-			'Dit is een persoonlijk portfolio en blog. Ik ben geen bedrijf—alleen een ontwikkelaar die werk en ideeën deelt.'
+			'Dit is een persoonlijk portfolio en blog. Ik ben geen bedrijf, alleen een ontwikkelaar die werk en ideeën deelt.'
 		],
 		personality: 'Vriendelijk, direct en transparant',
 		license:
@@ -328,7 +328,7 @@ const termsCopy: Record<LegalLanguage, TermsCopy> = {
 			}
 		],
 		liabilityNote:
-			'Dit is een persoonlijk project—gebruik het verantwoord en op eigen risico.',
+			'Dit is een persoonlijk project. Gebruik het verantwoord en op eigen risico.',
 		changes: [
 			'Ik kan deze voorwaarden af en toe bijwerken. Wijzigingen zijn direct van kracht na publicatie. Door de site te blijven gebruiken accepteer je de bijgewerkte voorwaarden.',
 			'Grote wijzigingen kondig ik aan in een blogpost of melding op de site.'

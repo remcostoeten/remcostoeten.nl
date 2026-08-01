@@ -1,7 +1,7 @@
 ---
 title: 'JavaScript biggest secret'
 publishedAt: '11-02-2026'
-updatedAt: '11-02-2026'
+updatedAt: '30-06-2026'
 summary: 'Only ELITE engineers know this secret.'
 tags: ['Engineering', 'Personal']
 author: 'Remco Stoeten'
@@ -10,73 +10,26 @@ slug: 'stop-using-arrow-functions'
 draft: false
 ---
 
-Arrow functions were revolutionary. Very slick. Very modern. Also wildly overused. This agonizing example is something I see way to often.
+For anyone <small><i>or your ai ;)</i></small> writing arrow functions like this:
 
-```js
+```typescript
 export const SomeView = () => {
-	return (
-		<section>
-			<h1>Invoices</h1>
-			<p>We turned a normal function into branding.</p>
-		</section>
-	)
+ return ()
 }
 ```
 
-Nice. Clean. Contemporary. Completely unnecessary.S
+Please stop.
 
-## Nice Example
+Watch this:
 
-This is where it gets annoying:
-
-```js
+```typescript
 export const SomeView = () => {
-	return (
-		<button onClick={() => console.log('clicked')}>Create invoice</button>
-	)
-}
-
-export const calculateTotal = items => {
-	return items.reduce((sum, item) => sum + item.price, 0)
-}
-```
-
-`onClick` is fine. That arrow function has a job.
-
-That `return items.reduce(...)` is also fine.
-
-The boilerplate around the exported component and utility is the part that is pointless.
-
-Write this instead:
-
-```js
+ return () => {}
 export function SomeView() {
-	return (
-		<section>
-			<h1>Invoices</h1>
-			<button onClick={() => console.log('clicked')}>
-				Create invoice
-			</button>
-		</section>
-	)
-}
+ return () => {}
+f`
+You see which has fewer characters!? Crazy right?
 
-export function calculateTotal(items) {
-	return items.reduce((sum, item) => sum + item.price, 0)
-}
-```
+On top of that hosting rocks. Please stop returning your arrow functions.
 
-Same behavior. Less nonsense.
 
-## The Huge Reveal
-
-Ready for the huge reveal? Two lines. You wont believe your eyes!
-
-```js
-export const Foo = () => {}
-export function Foo() {}
-```
-
-Arrow constants ARE longer. Shocking, I know.
-
-Besides that you will benefit from hoisting yadadada when using good old functional syntax.

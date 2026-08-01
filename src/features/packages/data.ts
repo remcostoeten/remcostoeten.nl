@@ -1,4 +1,4 @@
-import { cache } from 'react'
+import { cacheLife, cacheTag } from 'next/cache'
 
 export type DeveloperPackage = {
 	slug: string
@@ -45,7 +45,7 @@ export const developerPackages: readonly DeveloperPackage[] = [
 		whyHeading: 'The auth UI is usually the part every app rebuilds.',
 		demoUrl: 'https://auth-drawer.remcostoeten.nl/',
 		apiIntro:
-			'AuthDrawer renders the surface, useAuth opens it and reads session state, and the adapter connects those calls to your existing auth client. Your auth client still owns credentials, sessions, and requests.',
+			'AuthDrawer renders the surface, useAuth opens it and reads session state, and the adapter connects those calls to your existing auth client. Your auth client still owns credentials, sessions, and requests. The whole surface is typed: config keys, provider names, adapter methods, and error codes autocomplete in the editor, so most integrations never need the docs open.',
 		apiDetails: [
 			{
 				name: 'AuthDrawer',
@@ -59,7 +59,7 @@ export const developerPackages: readonly DeveloperPackage[] = [
 					{
 						name: 'config',
 						description:
-							'Optional. Controls copy, OAuth providers, layout, visual styling, and motion.'
+							'Optional. A typed AuthConfig merged over defaults. Controls copy, OAuth providers, layout, visual styling, and motion.'
 					},
 					{
 						name: 'hideTrigger',
@@ -135,7 +135,8 @@ export function Auth() {
 		highlights: [
 			'Provider-agnostic adapter boundary for Better Auth, Supabase, Auth.js, Clerk, Firebase, Passport, and custom JWT or REST APIs.',
 			'Drawer and modal presentation with responsive mobile behavior, focus management, overlays, and configurable motion.',
-			'Email/password, registration, password reset, OAuth providers, session hooks, and controlled trigger APIs.'
+			'Email/password, registration, password reset, OAuth providers, session hooks, and controlled trigger APIs.',
+			'Typed end to end: the AuthConfig and AuthAdapter contracts drive autocomplete for every config key, provider name, and error code.'
 		],
 		workflow: [
 			{
@@ -209,16 +210,81 @@ export function SignInButton() {
 
   return <button onClick={() => open('sign-in')}>Sign in</button>
 }`
+			},
+			{
+				title: '4. Shape it with config',
+				description:
+					'One optional AuthConfig object, deep merged over sensible defaults. Set only what you change and let intellisense walk you through the rest: ui.auth for providers and form flags, ui.presentation for drawer or modal, ui.copy for every string.',
+				fileName: 'app/auth.tsx',
+				code: `<AuthDrawer
+  adapter={adapter}
+  config={{
+    ui: {
+      auth: {
+        providers: ['github', 'google'],
+        allowRegister: true,
+        emailAutocomplete: { domains: ['company.com'] }
+      },
+      presentation: { variant: 'modal' }
+    }
+  }}
+/>`
+			},
+			{
+				title: '5. Bring your own backend',
+				description:
+					'An adapter is a plain object mapping your auth API to the AuthResult shape. Only signIn is required with the createAdapter helper: the drawer feature-detects signUp, OAuth, and reset methods and renders only the flows you implement. Typed error codes like rate_limited and invalid_credentials pick the right message and retry behavior.',
+				fileName: 'lib/auth-adapter.ts',
+				code: `import { createAdapter } from '@remcostoeten/auth-drawer'
+
+export const adapter = createAdapter({
+  id: 'my-api',
+  async signIn({ email, password }) {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    })
+
+    if (!res.ok) {
+      const rateLimited = res.status === 429
+
+      return {
+        success: false,
+        error: {
+          code: rateLimited ? 'rate_limited' : 'invalid_credentials',
+          target: 'form',
+          message: rateLimited
+            ? 'Too many attempts. Wait a moment and try again.'
+            : 'Email or password is incorrect.'
+        }
+      }
+    }
+
+    return { success: true, data: await res.json() }
+  }
+})`
 			}
 		],
 		faqs: [
 			{
 				question: 'Does it include an auth backend?',
-				answer: 'No. It is UI plus typed adapter glue for your existing authentication system.'
+				answer: 'No, deliberately. It is the sign-in surface plus a typed adapter over whatever already owns your sessions: Better Auth, Supabase, NextAuth, Clerk, Firebase, Passport, or your own JWT and REST endpoints. Your backend does not change; the drawer just stops you from rebuilding its UI in every app.'
 			},
 			{
-				question: 'Can I change provider buttons and copy?',
-				answer: 'Yes. Provider lists, presentation, copy, layout, triggers, and motion are configurable.'
+				question: 'My auth provider is not in the adapter list. Am I stuck?',
+				answer: 'No. Implement the exported AuthAdapter contract (signIn, signUp, signOut, useSession) and the drawer treats it like any first-party adapter. TypeScript checks your implementation against the contract, and the UI reveals registration, OAuth, and reset flows based on which methods you actually provide.'
+			},
+			{
+				question: 'Do I need Tailwind or a separate stylesheet?',
+				answer: 'Neither. Prebuilt styles ship with the component import, so there is no CSS file to remember and no Tailwind requirement in your app. Presentation, copy, provider buttons, and motion are all shaped through one deep-merged config object instead.'
+			},
+			{
+				question: 'Does it work with the Next.js App Router?',
+				answer: 'Yes. Mount AuthProvider and AuthDrawer in a small client shell near the root and add a portal div to your layout so the drawer renders above page content with scroll lock. Server components everywhere else stay server components.'
+			},
+			{
+				question: 'Can I build the UI before the backend exists?',
+				answer: 'Yes. Ship the bundled mock adapter, click through sign-in, registration, and reset with fake sessions, then swap in the real adapter later. Nothing in the UI layer changes.'
 			}
 		]
 	},
@@ -228,7 +294,7 @@ export function SignInButton() {
 		packageName: '@remcostoeten/use-shortcut',
 		tagline: 'Keyboard shortcuts without the ceremony.',
 		description:
-			'A typed React shortcut builder for key combinations, sequences, scopes, recording, and debug hooks—without scattering keyboard listeners through every component.',
+			'A typed React shortcut builder for key combinations, sequences, scopes, recording, and debug hooks, without scattering keyboard listeners through every component.',
 		whyHeading: 'Keyboard listeners get messy once shortcuts have scope.',
 		keywords: [
 			'React keyboard shortcuts',
@@ -557,21 +623,24 @@ type NpmPackage = {
 	license?: string
 }
 
-export const getNpmPackage = cache(
-	async (packageName: string): Promise<NpmPackage | null> => {
-		try {
-			const response = await fetch(
-				`https://registry.npmjs.org/${encodeURIComponent(packageName)}/latest`,
-				{ next: { revalidate: 3600, tags: [`npm:${packageName}`] } }
-			)
+export async function getNpmPackage(
+	packageName: string
+): Promise<NpmPackage | null> {
+	'use cache'
+	cacheLife('hours')
+	cacheTag(`npm:${packageName}`)
 
-			if (!response.ok) return null
-			return (await response.json()) as NpmPackage
-		} catch {
-			return null
-		}
+	try {
+		const response = await fetch(
+			`https://registry.npmjs.org/${encodeURIComponent(packageName)}/latest`
+		)
+
+		if (!response.ok) return null
+		return (await response.json()) as NpmPackage
+	} catch {
+		return null
 	}
-)
+}
 
 export function getDeveloperPackage(slug: string) {
 	return developerPackages.find(pkg => pkg.slug === slug)

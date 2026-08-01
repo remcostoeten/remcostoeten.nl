@@ -26,14 +26,14 @@ export function createPageMetadata(config: BaseMetadataConfig): Metadata {
 		noIndex = false
 	} = config
 
-	const fullTitle = noIndex ? title : `${title} | ${siteName}`
+	const socialTitle = noIndex ? title : `${title} | ${siteName}`
 
 	return {
-		title: fullTitle,
+		title,
 		description,
 		keywords: keywords ? [...keywords] : undefined,
 		openGraph: {
-			title: fullTitle,
+			title: socialTitle,
 			description,
 			type: 'website',
 			locale: 'en_US',
@@ -50,7 +50,7 @@ export function createPageMetadata(config: BaseMetadataConfig): Metadata {
 		},
 		twitter: {
 			card: 'summary_large_image',
-			title: fullTitle,
+			title: socialTitle,
 			description,
 			images: [image]
 		},

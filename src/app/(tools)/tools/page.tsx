@@ -6,7 +6,7 @@ import { ToolsHub } from '@/features/miscellaneous/components/tools-hub'
 export const metadata: Metadata = createPageMetadata({
 	title: 'Miscellaneous Tools',
 	description:
-		'A collection of small, browser-based developer utilities. Find & replace, formatters, converters and generators — everything runs client-side.',
+		'A collection of small, browser-based developer utilities. Find & replace, formatters, converters and generators. Everything runs client-side.',
 	canonical: '/tools',
 	keywords: [
 		'developer tools',
@@ -25,7 +25,7 @@ function ToolsIntro() {
 			</h1>
 			<p className="mt-1 text-sm text-muted-foreground max-w-prose">
 				A growing collection of small, browser-based utilities. Everything
-				runs entirely client-side — nothing you type or upload ever leaves
+				runs entirely client-side, so nothing you type or upload ever leaves
 				your machine.
 			</p>
 		</div>

@@ -62,8 +62,8 @@ export function HomeView() {
 
 					<WorkExperienceSection />
 					<ProjectsView />
-					<PackagesSection />
 					<ActivitySectionClient />
+					<PackagesSection />
 
 					<HomeBlogPosts />
 				</div>

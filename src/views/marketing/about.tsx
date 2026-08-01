@@ -110,33 +110,37 @@ export function AboutView() {
 							<strong className="text-foreground">
 								Remco Stoeten
 							</strong>
-							, a Dutch software engineer focused on front-end
-							development with a degree in graphic design. With{' '}
+							, a Dutch frontend engineer who started out in
+							graphic design and ended up{' '}
 							<strong className="text-foreground">8 years</strong>{' '}
-							of professional experience, I've worked across
-							e-commerce, SaaS, government, and e-learning
-							projects.
+							deep in React and TypeScript. Along the way I've
+							shipped for e-commerce, SaaS, government, and
+							e-learning, so I've seen my share of both greenfield
+							and legacy.
 						</p>
 						<p className="text-sm text-muted-foreground/90 leading-relaxed">
-							I specialize in building modern, performant web
-							applications using React, TypeScript, and Next.js.
-							I'm passionate about creating intuitive user
-							experiences, writing clean code, and continuously
-							learning new technologies.
+							Most of my work is React, TypeScript, and Next.js. I
+							care about interfaces that feel instant, type
+							systems that actually pull their weight, and I hold
+							unreasonably strong opinions about small things,
+							like whether you should ever write an arrow
+							function.
 						</p>
 						<p className="text-sm text-muted-foreground/90 leading-relaxed">
-							Currently working at{' '}
+							By day I'm at{' '}
 							<strong className="text-foreground">
 								NextGen Automotive Group
 							</strong>
-							, building customer facing portals and internal
-							tooling for the automotive business. Besides my
-							professional work, I also build a lot of open source
-							— primarily{' '}
+							, building customer portals and internal tooling for
+							the automotive business. The rest of the time I
+							overengineer open source:{' '}
 							<strong className="text-foreground">Skriuw</strong>,
-							a Notion-like desktop application, and{' '}
+							a Notion-like desktop app,{' '}
 							<strong className="text-foreground">DoraDB</strong>,
-							both currently in beta.
+							a cross-platform database manager, and a handful of
+							npm packages that exist so I never have to build the
+							same UI twice. The first two are in beta, and I'm in
+							no rush.
 						</p>
 					</div>
 				</Section>
@@ -155,8 +159,8 @@ export function AboutView() {
 									Bachelor's Degree
 								</p>
 								<p className="text-xs text-muted-foreground/50 mt-0.5">
-									Combining design thinking with technical
-									implementation
+									Final two years spent on interactive web
+									design, which is where the code took over
 								</p>
 							</div>
 						</div>

@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArrowUpRight, Check, Github, Package } from 'lucide-react'
+import { Suspense } from 'react'
 import { BreadcrumbStructuredData } from '@/components/seo/structured-data'
+import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
 import { PackageCode } from '@/components/packages/package-code'
 import { baseUrl } from '@/core/config/site'
 import {
@@ -12,7 +14,7 @@ import {
 
 type Props = { params: Promise<{ slug: string }> }
 
-export const instant = false
+export const instant = true
 
 export function generateStaticParams() {
 	return developerPackages.map(pkg => ({ slug: pkg.slug }))
@@ -56,7 +58,41 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	}
 }
 
-export default async function PackagePage({ params }: Props) {
+function PackagePageFallback() {
+	return (
+		<article aria-busy="true" aria-label="Loading package details">
+			<header className="border-b border-border/60 px-4 pb-7 md:px-5">
+				<div className="flex items-start gap-3">
+					<div className="flex size-10 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 shadow-sm">
+						<Package
+							className="size-4 animate-pulse text-muted-foreground"
+							aria-hidden="true"
+						/>
+					</div>
+					<div className="min-w-0 flex-1 space-y-3">
+						<div className="h-6 w-40 animate-pulse rounded-sm bg-muted" />
+						<div className="h-4 w-full max-w-md animate-pulse rounded-sm bg-muted/70" />
+					</div>
+				</div>
+			</header>
+			<div className="space-y-3 px-4 py-7 md:px-5">
+				<div className="h-4 w-full animate-pulse rounded-sm bg-muted/60" />
+				<div className="h-4 w-5/6 animate-pulse rounded-sm bg-muted/50" />
+				<div className="h-28 w-full animate-pulse rounded-sm bg-muted/40" />
+			</div>
+		</article>
+	)
+}
+
+export default function PackagePage({ params }: Props) {
+	return (
+		<Suspense fallback={<PackagePageFallback />}>
+			<PackagePageContent params={params} />
+		</Suspense>
+	)
+}
+
+async function PackagePageContent({ params }: Props) {
 	const pkg = getDeveloperPackage((await params).slug)
 	if (!pkg) notFound()
 
@@ -228,28 +264,9 @@ export default async function PackagePage({ params }: Props) {
 						</li>
 					))}
 				</ul>
-				{pkg.demoUrl && (
-					<div className="mt-6 grid gap-3 sm:grid-cols-2">
-						{[
-							['/auth-drawer-demo-quick.webm', 'Quick open'],
-							['/auth-drawer-demo-hq.webm', 'Full drawer view']
-						].map(([src, label]) => (
-							<div key={src} className="min-w-0">
-								<video
-									className="aspect-[8/5] w-full border border-border bg-[#0b0b0c] object-contain"
-									src={src}
-									muted
-									loop
-									autoPlay
-									playsInline
-									controls
-									aria-label={`${label} Auth Drawer recording`}
-								/>
-								<p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-									{label}
-								</p>
-							</div>
-						))}
+				{pkg.slug === 'auth-drawer' && (
+					<div className="mt-6">
+						<AuthDrawerDemo />
 					</div>
 				)}
 			</section>

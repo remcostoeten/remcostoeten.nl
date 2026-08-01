@@ -575,7 +575,7 @@ export default function CoordinateMarkerTool() {
 							}`}
 							style={{ cursor: addMode ? 'crosshair' : '' }}
 							role="application"
-							aria-label="Interactive map — click to drop a coordinate marker"
+							aria-label="Interactive map, click to drop a coordinate marker"
 						/>
 						<div className="absolute top-2 right-2 z-[900] flex items-center gap-2 rounded-md border border-border bg-popover/90 backdrop-blur px-2 py-1.5 shadow-lg shadow-black/40">
 							<button
