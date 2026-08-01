@@ -16,8 +16,7 @@ const spotifyMocks = vi.hoisted(() => ({
 }))
 
 const ytmusicMocks = vi.hoisted(() => ({
-	getYTMusicTracks: vi.fn(),
-	hasYTMusicCredentials: vi.fn()
+	getYTMusicTracks: vi.fn()
 }))
 
 vi.mock('@/server/github', () => githubMocks)
@@ -31,7 +30,7 @@ describe('getCombinedActivity', () => {
 		githubMocks.getCachedGitHubContributions.mockReset()
 		spotifyMocks.getSpotifyTracks.mockReset()
 		ytmusicMocks.getYTMusicTracks.mockReset()
-		ytmusicMocks.hasYTMusicCredentials.mockReturnValue(false)
+		ytmusicMocks.getYTMusicTracks.mockResolvedValue([])
 	})
 
 	it('merges both contribution years, preserves activity, and includes spotify tracks', async () => {
@@ -82,6 +81,7 @@ describe('getCombinedActivity', () => {
 		).toHaveBeenNthCalledWith(2, 2025)
 		expect(githubMocks.getCachedGitHubActivity).toHaveBeenCalledWith(5)
 		expect(spotifyMocks.getSpotifyTracks).toHaveBeenCalledWith(5)
+		expect(ytmusicMocks.getYTMusicTracks).not.toHaveBeenCalled()
 
 		expect(result.totalContributions).toBe(17)
 		expect(result.recentActivity).toEqual(recentActivity)
@@ -96,7 +96,7 @@ describe('getCombinedActivity', () => {
 		)
 	})
 
-	it('returns partial data cleanly when spotify has no tracks', async () => {
+	it('uses YouTube Music only when Spotify has no tracks', async () => {
 		vi.useFakeTimers()
 		vi.setSystemTime(new Date('2026-03-30T06:15:00.000Z'))
 
@@ -118,12 +118,23 @@ describe('getCombinedActivity', () => {
 			createGitHubActivity()
 		])
 		spotifyMocks.getSpotifyTracks.mockResolvedValue([])
+		const ytmTracks = [
+			{
+				...createSpotifyTrack({
+					id: 'ytm-1',
+					name: 'YouTube fallback'
+				}),
+				played_at_estimated: true
+			}
+		]
+		ytmusicMocks.getYTMusicTracks.mockResolvedValue(ytmTracks)
 
 		const { getCombinedActivity } =
 			await import('@/app/api/activity/combined/combine')
 		const result = await getCombinedActivity(3, 5)
 
-		expect(result.spotifyTracks).toEqual([])
+		expect(ytmusicMocks.getYTMusicTracks).toHaveBeenCalledWith(5)
+		expect(result.spotifyTracks).toEqual(ytmTracks)
 		expect(result.recentActivity).toHaveLength(1)
 		expect(result.contributions).toEqual([
 			{ date: '2026-01-01', contributionCount: 2 }
