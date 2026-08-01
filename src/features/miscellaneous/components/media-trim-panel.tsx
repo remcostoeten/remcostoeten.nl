@@ -56,8 +56,10 @@ export function MediaTrimPanel({
 		}
 
 		video.currentTime = trim.start
-		void video.play()
-		setPreviewing(true)
+		void video.play().then(
+			() => setPreviewing(true),
+			() => setPreviewing(false)
+		)
 	}
 
 	return (
@@ -84,6 +86,7 @@ export function MediaTrimPanel({
 				ref={videoRef}
 				src={fileUrl}
 				playsInline
+				preload="metadata"
 				controls
 				className="max-h-80 w-full bg-black/40"
 				onLoadedMetadata={event =>
@@ -150,7 +153,7 @@ export function MediaTrimPanel({
 					? 'The browser cannot preview this codec, so trimming is unavailable. Converting still processes the whole clip.'
 					: isFullSelection
 						? 'Full clip selected. The whole video will be processed.'
-						: `Keeps ${formatRange(trim.start, trim.end)} — ${formatSeconds(selectedLength)} (${((selectedLength / duration) * 100).toFixed(0)}% of source).`}
+						: `Keeps ${formatRange(trim.start, trim.end)} - ${formatSeconds(selectedLength)} (${((selectedLength / duration) * 100).toFixed(0)}% of source).`}
 			</p>
 
 			<div className="flex flex-wrap items-center gap-2">

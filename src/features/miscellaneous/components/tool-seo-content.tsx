@@ -71,24 +71,6 @@ export function ToolSeoContent({ name, content }: Props) {
 					{content.formats}
 				</p>
 			</div>
-
-			<div className="mt-6">
-				<h3 className="text-sm font-medium text-foreground">
-					Frequently asked questions
-				</h3>
-				<div className="mt-3 divide-y divide-border/50 border-y border-border/50">
-					{content.faqs.map(faq => (
-						<details key={faq.question} className="group py-3">
-							<summary className="cursor-pointer list-none text-sm font-medium text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-								{faq.question}
-							</summary>
-							<p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">
-								{faq.answer}
-							</p>
-						</details>
-					))}
-				</div>
-			</div>
 		</section>
 	)
 }

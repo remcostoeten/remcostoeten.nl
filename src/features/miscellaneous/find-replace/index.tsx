@@ -19,6 +19,7 @@ import {
 	CollapsibleContent,
 	CollapsibleTrigger
 } from '@/components/ui/collapsible'
+import { FindReplaceSkeleton } from '../components/tool-skeletons'
 import { writeDiffHandoff } from '../diff-checker/utils/handoff'
 import { AdvancedReplace } from './components/advanced-replace'
 import { EditorPanels } from './components/editor-panels'
@@ -165,17 +166,7 @@ export default function FindReplaceTool() {
 	}
 
 	if (!store.hydrated) {
-		return (
-			<div
-				role="status"
-				aria-label="Loading find and replace"
-				className="flex flex-col gap-3"
-			>
-				<div className="h-8 w-64 animate-pulse bg-muted/60" />
-				<div className="h-28 animate-pulse bg-muted/60" />
-				<div className="h-96 animate-pulse bg-muted/60" />
-			</div>
-		)
+		return <FindReplaceSkeleton />
 	}
 
 	return (

@@ -3,7 +3,10 @@
 import { Download, Film, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/shared/lib/cn'
-import { Segmented, ToggleChip } from '../../link-extractor/components/segmented'
+import {
+	Segmented,
+	ToggleChip
+} from '../../link-extractor/components/segmented'
 import { GIF_FPS_OPTIONS } from '../constants'
 import type { TSendableVideoStore } from '../hooks/use-sendable-video-store'
 import { bytesToHuman } from '../../utils/format'
@@ -64,18 +67,43 @@ export function ExportPanel({ store }: Props) {
 					Export GIF
 				</Button>
 				{output ? (
-					<Button
-						asChild
-						size="sm"
-						variant="outline"
-						className="h-8 gap-1.5 text-xs"
-					>
-						<a href={output.url} download={output.name}>
-							<Download aria-hidden className="size-3.5" />
-							Download {output.name} ({bytesToHuman(output.size)}
-							)
-						</a>
-					</Button>
+					<>
+						<Button
+							asChild
+							size="sm"
+							variant="outline"
+							className="h-8 gap-1.5 text-xs"
+						>
+							<a href={output.url} download={output.name}>
+								<Download aria-hidden className="size-3.5" />
+								Download {output.name} (
+								{bytesToHuman(output.size)})
+							</a>
+						</Button>
+						<div className="basis-full" />
+						{output.kind === 'gif' ? (
+							<figure className="flex flex-col gap-1">
+								<img
+									src={output.url}
+									alt="Rendered GIF result"
+									className="max-h-96 w-fit max-w-full border border-border/50"
+								/>
+								<figcaption className="text-xs text-muted-foreground">
+									Rendered GIF: {output.name} (
+									{bytesToHuman(output.size)})
+								</figcaption>
+							</figure>
+						) : (
+							<video
+								controls
+								playsInline
+								preload="metadata"
+								src={output.url}
+								className="max-h-96 w-fit max-w-full border border-border/50"
+								aria-label="Rendered MP4 result"
+							/>
+						)}
+					</>
 				) : null}
 			</div>
 
