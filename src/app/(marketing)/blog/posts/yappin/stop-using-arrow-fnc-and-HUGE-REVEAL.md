@@ -24,12 +24,14 @@ Watch this:
 
 ```typescript
 export const SomeView = () => {
- return () => {}
+	return () => {}
+}
+
 export function SomeView() {
- return () => {}
-f`
+	return () => {}
+}
+```
+
 You see which has fewer characters!? Crazy right?
 
-On top of that hosting rocks. Please stop returning your arrow functions.
-
-
+On top of that hoisting rocks. Please stop returning your arrow functions.

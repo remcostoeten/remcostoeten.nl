@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { noop } from '@/shared/lib/noop'
 import { useLocalStorage } from '../../hooks/use-local-storage'
+import { useMediaSession } from '../../hooks/use-media-session'
 import type { TMediaOutput, TMediaStatus } from '../../types/media'
 import {
 	deleteQuiet,
@@ -58,6 +59,29 @@ export function useGifToVideoStore() {
 	const [output, setOutput] = useState<TMediaOutput | null>(null)
 
 	const urlsRef = useRef<string[]>([])
+	const restoredRef = useRef(false)
+
+	const { persistFile, persistOutput } = useMediaSession(
+		STORAGE_KEY,
+		session => {
+			if (restoredRef.current) return
+			restoredRef.current = true
+			setFile(session.file)
+			setFileUrl(URL.createObjectURL(session.file))
+			if (session.output) {
+				setOutput({
+					url: URL.createObjectURL(session.output.blob),
+					name: session.output.name,
+					size: session.output.blob.size,
+					mime: session.output.mime
+				})
+			}
+			setStatus({
+				message: 'Restored your previous session from this browser.',
+				mode: 'idle'
+			})
+		}
+	)
 
 	useEffect(() => {
 		urlsRef.current = [fileUrl, output?.url].filter(
@@ -73,16 +97,18 @@ export function useGifToVideoStore() {
 	)
 
 	const clearOutput = useCallback(() => {
+		persistOutput(null)
 		setOutput(previous => {
 			if (previous) URL.revokeObjectURL(previous.url)
 			return null
 		})
-	}, [])
+	}, [persistOutput])
 
 	const selectFile = useCallback(
 		(next: File | null) => {
 			if (busy) return
 
+			restoredRef.current = true
 			clearOutput()
 			setFileUrl(previous => {
 				if (previous) URL.revokeObjectURL(previous)
@@ -91,6 +117,7 @@ export function useGifToVideoStore() {
 			setProgress(0)
 
 			if (!next) {
+				persistFile(null)
 				setFile(null)
 				setStatus(IDLE_STATUS)
 				return
@@ -98,6 +125,7 @@ export function useGifToVideoStore() {
 
 			const sizeMb = next.size / (1024 * 1024)
 			if (sizeMb > MAX_INPUT_MB) {
+				persistFile(null)
 				setFile(null)
 				setStatus({
 					message: `File is ${sizeMb.toFixed(1)} MB. Keep it under ${MAX_INPUT_MB} MB for browser conversion.`,
@@ -106,6 +134,7 @@ export function useGifToVideoStore() {
 				return
 			}
 
+			persistFile(next)
 			setFile(next)
 			setFileUrl(URL.createObjectURL(next))
 			setStatus({
@@ -113,7 +142,7 @@ export function useGifToVideoStore() {
 				mode: 'idle'
 			})
 		},
-		[busy, clearOutput]
+		[busy, clearOutput, persistFile]
 	)
 
 	const setFormat = useCallback(
@@ -167,9 +196,15 @@ export function useGifToVideoStore() {
 				outputName,
 				OUTPUT_MIMES[options.format]
 			)
+			const outputFileName = `${stem(file.name)}.${options.format}`
+			persistOutput({
+				blob,
+				name: outputFileName,
+				mime: OUTPUT_MIMES[options.format]
+			})
 			setOutput({
 				url: URL.createObjectURL(blob),
-				name: `${stem(file.name)}.${options.format}`,
+				name: outputFileName,
 				size: blob.size,
 				mime: OUTPUT_MIMES[options.format]
 			})
@@ -187,7 +222,7 @@ export function useGifToVideoStore() {
 			setFFmpegProgressHandler(noop)
 			setBusy(false)
 		}
-	}, [busy, clearOutput, file, options])
+	}, [busy, clearOutput, file, options, persistOutput])
 
 	return {
 		file,

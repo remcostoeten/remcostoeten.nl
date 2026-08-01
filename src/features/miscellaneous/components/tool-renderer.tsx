@@ -1,10 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
 import nextDynamic from 'next/dynamic'
 import type { ComponentType } from 'react'
 import type { TToolSlug } from '../constants/tools'
-import { useRecentTools } from '../hooks/use-tool-usage'
 
 function ToolSkeleton() {
 	return (
@@ -45,12 +43,6 @@ type Props = {
 }
 
 export function ToolRenderer({ slug }: Props) {
-	const { markUsed } = useRecentTools()
-
-	useEffect(() => {
-		markUsed(slug)
-	}, [slug, markUsed])
-
 	const Tool = TOOL_COMPONENTS[slug]
 	if (!Tool) return null
 

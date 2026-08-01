@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { noop } from '@/shared/lib/noop'
 import { useLocalStorage } from '../../hooks/use-local-storage'
+import { useMediaSession } from '../../hooks/use-media-session'
 import { useTrimState } from '../../hooks/use-trim-state'
+import type { TTrimRange } from '../../types/media'
 import {
 	DEFAULT_OPTIONS,
 	GIF_PRESETS,
@@ -18,12 +20,18 @@ import {
 	deleteQuiet,
 	execWithLogs,
 	loadFFmpeg,
+	probeLogs,
 	readOutputBlob,
 	setFFmpegProgressHandler,
 	writeInputFile
 } from '../../utils/ffmpeg'
 import { stem } from '../../utils/format'
-import { encodeArgs, gifArgs, remuxArgs } from '../utils/ffmpeg'
+import {
+	encodeArgs,
+	gifArgs,
+	isRemuxCompatible,
+	remuxArgs
+} from '../utils/ffmpeg'
 
 const IDLE_STATUS: TStatus = {
 	message: 'Select a video to get started.',
@@ -60,6 +68,31 @@ export function useSendableVideoStore() {
 		file: null,
 		output: null
 	})
+	const pendingTrimRef = useRef<TTrimRange | null>(null)
+	const restoredRef = useRef(false)
+
+	const { persistFile, persistTrim, persistOutput } = useMediaSession(
+		STORAGE_KEY,
+		session => {
+			if (restoredRef.current) return
+			restoredRef.current = true
+			pendingTrimRef.current = session.trim
+			setFile(session.file)
+			setFileUrl(URL.createObjectURL(session.file))
+			if (session.output) {
+				setOutput({
+					url: URL.createObjectURL(session.output.blob),
+					name: session.output.name,
+					size: session.output.blob.size,
+					kind: session.output.mime === 'image/gif' ? 'gif' : 'mp4'
+				})
+			}
+			setStatus({
+				message: 'Restored your previous session from this browser.',
+				mode: 'idle'
+			})
+		}
+	)
 
 	useEffect(() => {
 		urlsRef.current.file = fileUrl
@@ -79,16 +112,19 @@ export function useSendableVideoStore() {
 	)
 
 	const clearOutput = useCallback(() => {
+		persistOutput(null)
 		setOutput(previous => {
 			if (previous) URL.revokeObjectURL(previous.url)
 			return null
 		})
-	}, [])
+	}, [persistOutput])
 
 	const selectFile = useCallback(
 		(next: File | null) => {
 			if (busy) return
 
+			restoredRef.current = true
+			pendingTrimRef.current = null
 			clearOutput()
 			setFileUrl(previous => {
 				if (previous) URL.revokeObjectURL(previous)
@@ -98,6 +134,7 @@ export function useSendableVideoStore() {
 			setProgress(0)
 
 			if (!next) {
+				persistFile(null)
 				setFile(null)
 				setStatus(IDLE_STATUS)
 				return
@@ -105,6 +142,7 @@ export function useSendableVideoStore() {
 
 			const sizeMb = next.size / (1024 * 1024)
 			if (sizeMb > MAX_INPUT_MB) {
+				persistFile(null)
 				setFile(null)
 				setStatus({
 					message: `File is ${sizeMb.toFixed(1)} MB. Keep it under ${MAX_INPUT_MB} MB for browser conversion.`,
@@ -113,6 +151,7 @@ export function useSendableVideoStore() {
 				return
 			}
 
+			persistFile(next)
 			setFile(next)
 			setFileUrl(URL.createObjectURL(next))
 			setStatus({
@@ -120,8 +159,27 @@ export function useSendableVideoStore() {
 				mode: 'idle'
 			})
 		},
-		[busy, clearOutput, clearTrim]
+		[busy, clearOutput, clearTrim, persistFile]
 	)
+
+	const handleMetadata = useCallback(
+		(nextDuration: number) => {
+			trimState.handleMetadata(
+				nextDuration,
+				pendingTrimRef.current ?? undefined
+			)
+			pendingTrimRef.current = null
+		},
+		[trimState.handleMetadata]
+	)
+
+	useEffect(() => {
+		if (!file || trimState.duration <= 0) return
+		const timeout = setTimeout(() => {
+			persistTrim(hasTrim ? trim : null)
+		}, 300)
+		return () => clearTimeout(timeout)
+	}, [file, trimState.duration, hasTrim, trim, persistTrim])
 
 	const setMuteAudio = useCallback(
 		(muteAudio: boolean) => {
@@ -168,7 +226,10 @@ export function useSendableVideoStore() {
 			})
 
 			let blob: Blob | null = null
-			if (!options.muteAudio) {
+			if (
+				!options.muteAudio &&
+				isRemuxCompatible(await probeLogs(ffmpeg, INPUT_NAME))
+			) {
 				try {
 					await execWithLogs(ffmpeg, remuxArgs(range))
 					blob = await readOutputBlob(ffmpeg, OUTPUT_MP4, 'video/mp4')
@@ -183,22 +244,21 @@ export function useSendableVideoStore() {
 					message: 'Re-encoding for compatibility…',
 					mode: 'processing'
 				})
-				await execWithLogs(
-					ffmpeg,
-					encodeArgs(range, options.muteAudio)
-				)
+				await execWithLogs(ffmpeg, encodeArgs(range, options.muteAudio))
 				blob = await readOutputBlob(ffmpeg, OUTPUT_MP4, 'video/mp4')
 			}
 
+			const outputName = `${stem(file.name)}_sendable.mp4`
+			persistOutput({ blob, name: outputName, mime: 'video/mp4' })
 			setOutput({
 				url: URL.createObjectURL(blob),
-				name: `${stem(file.name)}_sendable.mp4`,
+				name: outputName,
 				size: blob.size,
 				kind: 'mp4'
 			})
 			setProgress(100)
 			setStatus({
-				message: 'Done — your MP4 is ready to download.',
+				message: 'Done - your MP4 is ready to download.',
 				mode: 'success'
 			})
 
@@ -210,7 +270,7 @@ export function useSendableVideoStore() {
 			setFFmpegProgressHandler(noop)
 			setBusy(false)
 		}
-	}, [busy, clearOutput, file, hasTrim, options.muteAudio, trim])
+	}, [busy, clearOutput, file, hasTrim, options.muteAudio, persistOutput, trim])
 
 	const exportGif = useCallback(async () => {
 		if (!file || busy) return
@@ -244,15 +304,17 @@ export function useSendableVideoStore() {
 			await execWithLogs(ffmpeg, gifArgs(hasTrim ? trim : null, preset))
 
 			const blob = await readOutputBlob(ffmpeg, OUTPUT_GIF, 'image/gif')
+			const outputName = `${stem(file.name)}_${preset.fps}fps.gif`
+			persistOutput({ blob, name: outputName, mime: 'image/gif' })
 			setOutput({
 				url: URL.createObjectURL(blob),
-				name: `${stem(file.name)}_${preset.fps}fps.gif`,
+				name: outputName,
 				size: blob.size,
 				kind: 'gif'
 			})
 			setProgress(100)
 			setStatus({
-				message: 'Done — your GIF is ready to download.',
+				message: 'Done - your GIF is ready to download.',
 				mode: 'success'
 			})
 
@@ -264,7 +326,7 @@ export function useSendableVideoStore() {
 			setFFmpegProgressHandler(noop)
 			setBusy(false)
 		}
-	}, [busy, clearOutput, file, hasTrim, options.gifFps, trim])
+	}, [busy, clearOutput, file, hasTrim, options.gifFps, persistOutput, trim])
 
 	return {
 		file,
@@ -279,7 +341,7 @@ export function useSendableVideoStore() {
 		busy,
 		output,
 		selectFile,
-		handleMetadata: trimState.handleMetadata,
+		handleMetadata,
 		updateTrim: trimState.updateTrim,
 		commitTrim: trimState.commitTrim,
 		undoTrim: trimState.undoTrim,

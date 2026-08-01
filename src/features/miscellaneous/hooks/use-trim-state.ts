@@ -40,13 +40,17 @@ export function useTrimState() {
 		setHistory([])
 	}, [])
 
-	const handleMetadata = useCallback((nextDuration: number) => {
-		if (!Number.isFinite(nextDuration) || nextDuration <= 0) return
-		const full = { start: 0, end: nextDuration }
-		setDuration(nextDuration)
-		setTrim(full)
-		setHistory([full])
-	}, [])
+	const handleMetadata = useCallback(
+		(nextDuration: number, initial?: TTrimRange) => {
+			if (!Number.isFinite(nextDuration) || nextDuration <= 0) return
+			const full = { start: 0, end: nextDuration }
+			const start = initial ? clampTrim(initial, nextDuration) : full
+			setDuration(nextDuration)
+			setTrim(start)
+			setHistory(rangesEqual(start, full) ? [full] : [full, start])
+		},
+		[]
+	)
 
 	const updateTrim = useCallback(
 		(next: TTrimRange) => {

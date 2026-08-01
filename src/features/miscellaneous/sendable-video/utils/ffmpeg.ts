@@ -14,6 +14,19 @@ function seekArgs(range: TTrimRange | null): {
 }
 
 /**
+ * Decides from `ffmpeg -i` probe output whether a lossless remux would yield
+ * a chat-app compatible MP4: H.264 video plus AAC/MP3 or no audio. HEVC
+ * sources (typical iPhone .MOV) remux without error but produce an MP4 that
+ * browsers and WhatsApp Web cannot decode, so they must take the re-encode
+ * path instead.
+ */
+export function isRemuxCompatible(probe: string): boolean {
+	if (!/Video:\s*h264/i.test(probe)) return false
+	const audio = probe.match(/Audio:\s*(\w+)/i)
+	return !audio || /^(aac|mp3)$/i.test(audio[1])
+}
+
+/**
  * Lossless remux into MP4 with a faststart header — the quick path when the
  * source codecs are already chat-app compatible.
  */

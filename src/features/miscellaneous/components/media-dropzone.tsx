@@ -64,7 +64,7 @@ export function MediaDropzone({
 						{file.name}
 					</span>
 					<span className="text-xs text-muted-foreground">
-						{bytesToHuman(file.size)} — drop or click to replace
+						{bytesToHuman(file.size)} - drop or click to replace
 					</span>
 				</>
 			) : (

@@ -119,15 +119,6 @@ async function PackagePageContent({ params }: Props) {
 					url: baseUrl
 				},
 				keywords: pkg.keywords.join(', ')
-			},
-			{
-				'@type': 'FAQPage',
-				'@id': `${pageUrl}#faq`,
-				mainEntity: pkg.faqs.map(faq => ({
-					'@type': 'Question',
-					name: faq.question,
-					acceptedAnswer: { '@type': 'Answer', text: faq.answer }
-				}))
 			}
 		]
 	}
@@ -222,12 +213,6 @@ async function PackagePageContent({ params }: Props) {
 						className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 					>
 						API examples
-					</a>
-					<a
-						href="#faq"
-						className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-					>
-						FAQ
 					</a>
 				</div>
 			</nav>
@@ -402,32 +387,6 @@ async function PackagePageContent({ params }: Props) {
 						))}
 					</div>
 				)}
-			</section>
-
-			<section
-				id="faq"
-				aria-labelledby="faq-heading"
-				className="px-4 py-7 md:px-5"
-			>
-				<SectionLabel>FAQ</SectionLabel>
-				<h2
-					id="faq-heading"
-					className="mt-2 text-lg font-semibold tracking-tight"
-				>
-					Before adding it to your stack.
-				</h2>
-				<div className="mt-5 divide-y divide-border border-y border-border">
-					{pkg.faqs.map(faq => (
-						<div key={faq.question} className="py-4">
-							<h3 className="text-sm font-medium">
-								{faq.question}
-							</h3>
-							<p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-								{faq.answer}
-							</p>
-						</div>
-					))}
-				</div>
 			</section>
 		</article>
 	)

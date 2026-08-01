@@ -7,7 +7,6 @@ import { createPageMetadata } from '@/core/metadata/base'
 import { baseUrl } from '@/core/config/site'
 import {
 	BreadcrumbStructuredData,
-	FaqStructuredData,
 	ToolStructuredData
 } from '@/components/seo/structured-data'
 import {
@@ -69,7 +68,6 @@ async function ToolPage({ params }: Props) {
 					{ name: tool.name, url: `/tools/${tool.slug}` }
 				]}
 			/>
-			{seo ? <FaqStructuredData items={seo.faqs} /> : null}
 			<header className="flex flex-col gap-2">
 				<Link
 					href="/tools"

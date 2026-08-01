@@ -82,6 +82,29 @@ export async function execWithLogs(
 }
 
 /**
+ * Runs `ffmpeg -i` on a virtual file and returns the stream-info log output.
+ * The exec exits non-zero by design (no output file is given), so the exit
+ * code is ignored.
+ */
+export async function probeLogs(ffmpeg: FFmpeg, name: string): Promise<string> {
+	const logs: string[] = []
+	const onLog = ({ message }: { message: string }) => {
+		logs.push(message)
+	}
+	ffmpeg.on('log', onLog)
+
+	try {
+		await ffmpeg.exec(['-i', name])
+	} catch {
+		noop()
+	} finally {
+		ffmpeg.off('log', onLog)
+	}
+
+	return logs.join('\n')
+}
+
+/**
  * Writes a browser File into the ffmpeg virtual filesystem under the given
  * name, replacing any previous file with that name.
  */
