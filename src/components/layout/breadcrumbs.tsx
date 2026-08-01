@@ -57,13 +57,41 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
 	return breadcrumbs
 }
 
-function BreadcrumbsContent({ params }: BreadcrumbProps) {
-	const pathname = usePathname()
+function CrumbLinkWithLang({ href, label }: { href: string; label: string }) {
 	const searchParams = useSearchParams()
-	const breadcrumbs = generateBreadcrumbs(pathname)
-
 	const langParam = searchParams.get('lang')
 	const linkParams = langParam ? `?lang=${langParam}` : ''
+
+	return (
+		<Link
+			href={`${href}${linkParams}` as Route}
+			className="hover:text-foreground transition-colors"
+		>
+			{label}
+		</Link>
+	)
+}
+
+function CrumbLink({ href, label }: { href: string; label: string }) {
+	return (
+		<Suspense
+			fallback={
+				<Link
+					href={href as Route}
+					className="hover:text-foreground transition-colors"
+				>
+					{label}
+				</Link>
+			}
+		>
+			<CrumbLinkWithLang href={href} label={label} />
+		</Suspense>
+	)
+}
+
+function BreadcrumbsContent({ params }: BreadcrumbProps) {
+	const pathname = usePathname()
+	const breadcrumbs = generateBreadcrumbs(pathname)
 
 	if (pathname === '/' || breadcrumbs.length === 0) {
 		return null
@@ -94,12 +122,10 @@ function BreadcrumbsContent({ params }: BreadcrumbProps) {
 									{crumb.label.toLowerCase()}
 								</span>
 							) : (
-								<Link
-									href={`${crumb.href}${linkParams}` as Route}
-									className="hover:text-foreground transition-colors"
-								>
-									{crumb.label.toLowerCase()}
-								</Link>
+								<CrumbLink
+									href={crumb.href}
+									label={crumb.label.toLowerCase()}
+								/>
 							)}
 						</li>
 					</Fragment>
@@ -110,9 +136,5 @@ function BreadcrumbsContent({ params }: BreadcrumbProps) {
 }
 
 export function Breadcrumbs(props: BreadcrumbProps) {
-	return (
-		<Suspense fallback={null}>
-			<BreadcrumbsContent {...props} />
-		</Suspense>
-	)
+	return <BreadcrumbsContent {...props} />
 }

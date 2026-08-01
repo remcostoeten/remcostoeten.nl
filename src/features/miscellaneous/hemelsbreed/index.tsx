@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/shared/lib/cn'
 import { useLocalStorage } from '../hooks/use-local-storage'
 import { SendToTool } from '../components/send-to-tool'
+import { HemelsbreedSkeleton } from '../components/tool-skeletons'
 import { geolocationErrorMessage, locate } from '../utils/geolocation'
 import { consumeLocations, type TLocationPoint } from '../utils/location-handoff'
 import { appendSavedLocation, locationLabel } from '../utils/locations'
@@ -396,16 +397,7 @@ export default function HemelsbreedTool() {
 	}
 
 	if (!hydrated) {
-		return (
-			<div
-				role="status"
-				aria-label="Loading tool"
-				className="grid gap-4 lg:grid-cols-[1fr_360px]"
-			>
-				<div className="h-[420px] animate-pulse bg-muted/60 md:h-[560px]" />
-				<div className="h-96 animate-pulse bg-muted/60" />
-			</div>
-		)
+		return <HemelsbreedSkeleton />
 	}
 
 	return (

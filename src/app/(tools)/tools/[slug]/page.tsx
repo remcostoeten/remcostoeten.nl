@@ -99,14 +99,20 @@ async function ToolPage({ params }: Props) {
 function ToolPageFallback() {
 	return (
 		<div
-			className="px-4 md:px-5"
+			className="px-4 md:px-5 flex flex-col gap-4"
 			role="status"
 			aria-label="Loading tool workspace"
 		>
-			<div className="h-4 w-20 animate-pulse bg-muted/60" />
-			<div className="mt-4 h-7 w-48 animate-pulse bg-muted/60" />
-			<div className="mt-3 h-4 w-full max-w-xl animate-pulse bg-muted/60" />
-			<div className="mt-6 min-h-[70vh] border border-border/50" />
+			<header className="flex flex-col gap-2">
+				<div className="h-4 w-16 animate-pulse bg-muted/60" />
+				<div className="flex h-7 flex-wrap items-center gap-2">
+					<div className="h-7 w-44 animate-pulse bg-muted/60" />
+					<div className="h-[22px] w-16 animate-pulse rounded-md bg-muted/60" />
+				</div>
+				<div className="h-5 w-full max-w-prose animate-pulse bg-muted/60" />
+			</header>
+			<ToolQuickNav currentSlug="" />
+			<div className="min-h-[70vh]" />
 		</div>
 	)
 }
