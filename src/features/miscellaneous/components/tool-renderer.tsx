@@ -31,9 +31,13 @@ const TOOL_COMPONENTS: Record<TToolSlug, ComponentType> = {
 	'diff-checker': lazyTool(() => import('../diff-checker'), true),
 	'link-extractor': lazyTool(() => import('../link-extractor'), true),
 	'json-tool': lazyTool(() => import('../json-tool'), true),
+	'svg-converter': lazyTool(() => import('../svg-converter'), true),
 	hemelsbreed: lazyTool(() => import('../hemelsbreed')),
 	'coordinate-marker': lazyTool(() => import('../coordinate-marker')),
-	'my-location': lazyTool(() => import('../my-location'))
+	'my-location': lazyTool(() => import('../my-location')),
+	'sendable-video': lazyTool(() => import('../sendable-video')),
+	'gif-to-video': lazyTool(() => import('../gif-to-video')),
+	'video-to-gif': lazyTool(() => import('../video-to-gif'))
 }
 
 type Props = {

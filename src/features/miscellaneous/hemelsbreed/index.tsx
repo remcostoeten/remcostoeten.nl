@@ -632,7 +632,7 @@ export default function HemelsbreedTool() {
 				/>
 
 				<p className="text-xs text-muted-foreground">
-					Cyan shading marks where circles overlap — the brighter the
+					Cyan shading marks where circles overlap: the brighter the
 					patch, the more radii agree. With three or more circles the
 					amber crosshair pins the point that best matches every
 					radius; the dashed ring shows how far off the distances are.

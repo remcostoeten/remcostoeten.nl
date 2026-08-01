@@ -43,8 +43,8 @@ export function ActivitySection() {
 								DoraDB
 							</span>
 						</ProjectHoverWrapper>
-					</Link>{' '}
-					— both currently in beta.
+					</Link>
+					, both currently in beta.
 				</p>
 
 				<div>

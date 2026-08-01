@@ -1,6 +1,6 @@
 import type { ComponentType, SVGProps } from 'react'
 
-export type TToolCategory = 'text' | 'geo'
+export type TToolCategory = 'text' | 'geo' | 'media'
 
 export type TToolStatus = 'available'
 

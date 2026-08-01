@@ -1,14 +1,9 @@
 import type { IGitMetrics } from '../types'
 import { getGitHubToken } from '@/server/github'
+import { cacheLife, cacheTag } from 'next/cache'
 
 const GITHUB_API = 'https://api.github.com'
-const METRICS_TTL_MS = 60 * 60 * 1000
 const FAILURE_TTL_MS = 5 * 60 * 1000
-
-const metricsCache = new Map<
-	string,
-	{ expiresAt: number; value: IGitMetrics | null }
->()
 
 const GIT_ENRICHMENT_CONCURRENCY = 4
 
@@ -43,27 +38,6 @@ function extractOwnerRepo(
 	return { owner: match[1], repo: match[2].replace(/\.git$/, '') }
 }
 
-function getCachedMetrics(githubUrl: string): IGitMetrics | null | undefined {
-	const cached = metricsCache.get(githubUrl)
-	if (!cached) return undefined
-	if (cached.expiresAt <= Date.now()) {
-		metricsCache.delete(githubUrl)
-		return undefined
-	}
-	return cached.value
-}
-
-function setCachedMetrics(
-	githubUrl: string,
-	value: IGitMetrics | null,
-	ttlMs: number
-) {
-	metricsCache.set(githubUrl, {
-		value,
-		expiresAt: Date.now() + ttlMs
-	})
-}
-
 function getRateLimitCooldown(response: Response): number {
 	const resetHeader = response.headers.get('x-ratelimit-reset')
 	if (!resetHeader) return Date.now() + FAILURE_TTL_MS
@@ -81,7 +55,7 @@ async function safeFetch(
 	}
 
 	try {
-		const res = await fetch(url, { headers, next: { revalidate: 3600 } })
+		const res = await fetch(url, { headers })
 		if (res.status === 403 || res.status === 429) {
 			rateLimitResetAt = getRateLimitCooldown(res)
 			if (Date.now() - lastRateLimitLog > 1000) {
@@ -102,10 +76,9 @@ async function safeFetch(
 export async function fetchGitMetrics(
 	githubUrl: string
 ): Promise<IGitMetrics | null> {
-	const cached = getCachedMetrics(githubUrl)
-	if (cached !== undefined) {
-		return cached
-	}
+	'use cache'
+	cacheLife('hours')
+	cacheTag('github-metrics', `github-metrics:${githubUrl}`)
 
 	const parsed = extractOwnerRepo(githubUrl)
 	if (!parsed) return null
@@ -125,7 +98,6 @@ export async function fetchGitMetrics(
 			headers
 		)
 		if (!repoRes) {
-			setCachedMetrics(githubUrl, null, FAILURE_TTL_MS)
 			return null
 		}
 		const repoData: IGitHubRepo = await repoRes.json()
@@ -135,7 +107,6 @@ export async function fetchGitMetrics(
 			headers
 		)
 		if (!commitsRes) {
-			setCachedMetrics(githubUrl, null, FAILURE_TTL_MS)
 			return null
 		}
 		const commits: IGitHubCommit[] = await commitsRes.json()
@@ -157,11 +128,9 @@ export async function fetchGitMetrics(
 			firstCommitDate: repoData.pushed_at,
 			weeklyActivity: []
 		}
-		setCachedMetrics(githubUrl, metrics, METRICS_TTL_MS)
 		return metrics
 	} catch (error) {
 		console.error(`Failed to fetch git metrics for ${githubUrl}:`, error)
-		setCachedMetrics(githubUrl, null, FAILURE_TTL_MS)
 		return null
 	}
 }

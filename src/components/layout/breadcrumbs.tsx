@@ -44,6 +44,8 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
 		if (segment === 'categories') label = 'Categories'
 		if (segment === 'topics') label = 'Topics'
 		if (segment === 'find-replace') label = 'Find & Replace'
+		if (segment === 'gif-to-video') label = 'GIF to Video'
+		if (segment === 'video-to-gif') label = 'Video to GIF'
 
 		breadcrumbs.push({
 			label,

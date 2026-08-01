@@ -3,15 +3,19 @@ import {
 	CoordinateIcon,
 	DiffIcon,
 	FindReplaceIcon,
+	GifToVideoIcon,
 	LinkExtractIcon,
 	LocateIcon,
-	RadiusIcon
+	RadiusIcon,
+	VideoConvertIcon,
+	VideoToGifIcon
 } from '../components/icons/animated-icons'
 import type { TToolCategory, TToolDefinition } from '../types'
 
 export const TOOL_CATEGORY_LABELS: Record<TToolCategory, string> = {
 	text: 'Text',
-	geo: 'Maps'
+	geo: 'Maps',
+	media: 'Media'
 }
 
 export const TOOL_CATEGORIES = Object.keys(
@@ -43,7 +47,7 @@ export const TOOLS = [
 		slug: 'json-tool',
 		name: 'JSON Tool',
 		description:
-			'Validate, format and minify JSON, sort its keys, and convert it to a TypeScript type, YAML or CSV — with the exact line and column of every syntax error.',
+			'Validate, format and minify JSON, sort its keys, and convert it to a TypeScript type, YAML or CSV, with the exact line and column of every syntax error.',
 		category: 'text',
 		icon: BracesIcon,
 		status: 'available',
@@ -63,10 +67,20 @@ export const TOOLS = [
 		]
 	},
 	{
+		slug: 'svg-converter',
+		name: 'SVG to React',
+		description:
+			'Extract, sanitize, preview and convert one or many SVGs into deterministic React TSX components and local ZIP packages.',
+		category: 'text',
+		icon: BracesIcon,
+		status: 'available',
+		keywords: ['svg', 'react', 'tsx', 'icon', 'converter', 'component', 'sanitize', 'zip']
+	},
+	{
 		slug: 'link-extractor',
 		name: 'Link Extractor',
 		description:
-			'Paste any text and pull the links out of it — keep or delete lines by word, keep only links or only prose, put every link on its own line, sort, dedupe, and open them in batches.',
+			'Paste any text and pull the links out of it. Keep or delete lines by word, keep only links or only prose, put every link on its own line, sort, dedupe, and open them in batches.',
 		category: 'text',
 		icon: LinkExtractIcon,
 		status: 'available',
@@ -113,7 +127,7 @@ export const TOOLS = [
 		slug: 'my-location',
 		name: 'My Location',
 		description:
-			'Detect where you are right now and resolve it to latitude, longitude, street, postcode, city and country — copy any value, all of them, or the whole thing as JSON.',
+			'Detect where you are right now and resolve it to latitude, longitude, street, postcode, city and country. Copy any value, all of them, or the whole thing as JSON.',
 		category: 'geo',
 		icon: LocateIcon,
 		status: 'available',
@@ -156,6 +170,74 @@ export const TOOLS = [
 			'geo',
 			'crow',
 			'triangulate'
+		]
+	},
+	{
+		slug: 'sendable-video',
+		name: 'Sendable Video',
+		description:
+			'Convert any video into an MP4 that WhatsApp Web and other chat apps accept, or into an optimized GIF. Trim the clip first if you want. Everything runs in your browser, nothing is uploaded.',
+		category: 'media',
+		icon: VideoConvertIcon,
+		status: 'available',
+		keywords: [
+			'video',
+			'video converter',
+			'mp4',
+			'whatsapp',
+			'whatsapp web',
+			'sendable',
+			'gif',
+			'video to gif',
+			'mov to mp4',
+			'mkv to mp4',
+			'hevc',
+			'h264',
+			'compress',
+			'trim',
+			'ffmpeg'
+		]
+	},
+	{
+		slug: 'gif-to-video',
+		name: 'GIF to Video',
+		description:
+			'Turn an animated GIF into a compact MP4 or WebM — usually many times smaller — with quality presets and an instant result preview. Runs entirely in your browser.',
+		category: 'media',
+		icon: GifToVideoIcon,
+		status: 'available',
+		keywords: [
+			'gif to mp4',
+			'gif to webm',
+			'gif to video',
+			'gif converter',
+			'compress gif',
+			'animated gif',
+			'shrink gif',
+			'mp4',
+			'webm',
+			'ffmpeg'
+		]
+	},
+	{
+		slug: 'video-to-gif',
+		name: 'Video to GIF',
+		description:
+			'Convert a video clip into an optimized looping GIF. Control framerate, width and quality, and render a quick preview with a size estimate before committing to the full clip. Runs entirely in your browser.',
+		category: 'media',
+		icon: VideoToGifIcon,
+		status: 'available',
+		keywords: [
+			'video to gif',
+			'mp4 to gif',
+			'mov to gif',
+			'gif maker',
+			'gif creator',
+			'animated gif',
+			'fps',
+			'palette',
+			'loop',
+			'ffmpeg'
 		]
 	}
 ] as const satisfies readonly TToolDefinition[]

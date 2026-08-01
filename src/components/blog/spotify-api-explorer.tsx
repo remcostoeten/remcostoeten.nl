@@ -178,7 +178,7 @@ export function SpotifyApiExplorer() {
 						>
 							Token Generator
 						</a>{' '}
-						— expires in 1 hour
+						(expires in 1 hour)
 					</p>
 				</div>
 

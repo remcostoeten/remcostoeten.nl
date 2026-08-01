@@ -236,7 +236,7 @@ export function SpotSearch({ estimate, spots, onSpots, onFocusSpot }: Props) {
 					title={
 						aiAvailable
 							? 'Queries are interpreted by AI into OpenStreetMap tags'
-							: 'AI interpretation is reserved for the site owner — searches fall back to keyword and name matching'
+							: 'AI interpretation is reserved for the site owner, so searches fall back to keyword and name matching'
 					}
 				>
 					{aiAvailable ? (

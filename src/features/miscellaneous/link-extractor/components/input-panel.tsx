@@ -69,7 +69,7 @@ export function InputPanel({ store }: Props) {
 			/>
 
 			<footer className="flex h-9 items-center border-t border-border/50 px-2 text-xs text-muted-foreground">
-				Everything runs in your browser — nothing is uploaded.
+				Everything runs in your browser, nothing is uploaded.
 			</footer>
 		</section>
 	)

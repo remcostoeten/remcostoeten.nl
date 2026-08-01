@@ -151,6 +151,56 @@ export function LinkExtractIcon(props: Props) {
 }
 
 /**
+ * @description Video camera whose lens cone nudges toward the frame while the body leans back on hover.
+ */
+export function VideoConvertIcon(props: Props) {
+	return (
+		<svg {...iconProps(props)}>
+			<rect className='vc-body' x='2' y='6' width='14' height='12' rx='2' />
+			<path className='vc-cone' d='m22 8-6 4 6 4V8Z' />
+		</svg>
+	)
+}
+
+/**
+ * @description Film-frames rectangle with an arrow that slides toward a play triangle on hover.
+ */
+export function GifToVideoIcon(props: Props) {
+	return (
+		<svg {...iconProps(props)}>
+			<rect x='2' y='6' width='8' height='12' rx='1.5' />
+			<path d='M4.5 9.5h3' />
+			<path d='M4.5 12h3' />
+			<path d='M4.5 14.5h3' />
+			<g className='g2v-arrow'>
+				<path d='M12.5 12h4' />
+				<path d='m15 9.5 2.5 2.5-2.5 2.5' />
+			</g>
+			<path className='g2v-play' d='M18.6 9.4v5.2l3.4-2.6Z' />
+		</svg>
+	)
+}
+
+/**
+ * @description Play triangle with an arrow that slides toward a film-frames rectangle on hover.
+ */
+export function VideoToGifIcon(props: Props) {
+	return (
+		<svg {...iconProps(props)}>
+			<path className='v2g-play' d='M2 9.4v5.2l3.4-2.6Z' />
+			<g className='v2g-arrow'>
+				<path d='M7.5 12h4' />
+				<path d='m10 9.5 2.5 2.5-2.5 2.5' />
+			</g>
+			<rect x='14' y='6' width='8' height='12' rx='1.5' />
+			<path d='M16.5 9.5h3' />
+			<path d='M16.5 12h3' />
+			<path d='M16.5 14.5h3' />
+		</svg>
+	)
+}
+
+/**
  * @description Circle that retracts into its radius line, then redraws as the line sweeps 360° on hover.
  */
 export function RadiusIcon(props: Props) {

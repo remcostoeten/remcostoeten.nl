@@ -6,6 +6,7 @@ import { CustomQueryClientProvider } from '@/components/providers/query-client-p
 
 import { StaggerProvider } from '@/components/ui/stagger-system'
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
+import { UnifiedAnalytics } from '@/core/analytics'
 
 const AppChrome = nextDynamic(
 	() =>
@@ -55,6 +56,7 @@ export function AppProviders({ children }: TProps) {
 						strategy: 'mount-order'
 					}}
 				>
+					<UnifiedAnalytics />
 					{children}
 					{shouldLoadAppChrome && <AppChrome />}
 				</StaggerProvider>
