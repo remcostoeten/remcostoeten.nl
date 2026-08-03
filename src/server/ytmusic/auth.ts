@@ -1,69 +1,88 @@
 import crypto from 'node:crypto'
+import { YTMusicUnauthorizedError } from './parser'
 
 const YTM_ORIGIN = 'https://music.youtube.com'
-const YTM_API_KEY = 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30'
+const FALLBACK_API_KEY = 'AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX30'
+const FALLBACK_CLIENT_VERSION = '1.20260531.05.00'
+const REQUEST_TIMEOUT_MS = 10_000
+const USER_AGENT =
+	'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36'
 
+interface PageConfig {
+	apiKey: string
+	clientVersion: string
+	pageId: string
+	userSessionId: string
+	visitorData: string
+}
+
+let cachedCookie = ''
 let cachedCookieMap: Map<string, string> | null = null
-let cachedAuthUser = '0'
-let cachedUserSessionId: string | null = null
-let cachedVisitorData: string | null = null
-let cachedPageId: string | null = null
+let cachedPageConfig: PageConfig | null = null
 
 export function hasYTMusicCredentials(): boolean {
-	const cookie = process.env.YTM_COOKIE
-	return !!(
-		cookie &&
-		cookie !== 'your_ytm_cookie_here' &&
-		!cookie.startsWith('#')
+	const cookie = process.env.YTM_COOKIE?.trim()
+	return Boolean(
+		cookie && cookie !== 'your_ytm_cookie_here' && !cookie.startsWith('#')
 	)
 }
 
-function parseCookieMap(cookieStr: string): Map<string, string> {
+function parseCookieMap(cookie: string): Map<string, string> {
 	const map = new Map<string, string>()
-	for (const part of cookieStr.split(';')) {
-		const eq = part.indexOf('=')
-		if (eq > 0) {
-			map.set(part.substring(0, eq).trim(), part.substring(eq + 1).trim())
-		}
+	for (const part of cookie.split(';')) {
+		const separator = part.indexOf('=')
+		if (separator <= 0) continue
+		map.set(
+			part.slice(0, separator).trim(),
+			part.slice(separator + 1).trim()
+		)
 	}
 	return map
 }
 
 function rebuildCookieHeader(cookieMap: Map<string, string>): string {
-	const parts: string[] = []
-	cookieMap.forEach((value, key) => parts.push(`${key}=${value}`))
-	return parts.join('; ')
+	return Array.from(cookieMap, ([key, value]) => `${key}=${value}`).join('; ')
+}
+
+function readConfigValue(html: string, key: string): string {
+	const match = html.match(new RegExp(`"${key}"\\s*:\\s*"([^"]+)"`))
+	return match?.[1]?.replace(/\\u003d/gi, '=') ?? ''
 }
 
 async function fetchPageConfig(
 	cookieMap: Map<string, string>
-): Promise<{ userSessionId: string; visitorData: string; pageId: string }> {
-	// SOCS=CAI prevents YouTube from showing the GDPR consent page
-	const cookieHeader = rebuildCookieHeader(cookieMap) + '; SOCS=CAI'
-	const response = await fetch('https://music.youtube.com', {
+): Promise<PageConfig> {
+	const cookieHeader = `${rebuildCookieHeader(cookieMap)}; SOCS=CAI`
+	const response = await fetch(YTM_ORIGIN, {
+		cache: 'no-store',
 		headers: {
 			accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 			'accept-language': 'en-US,en;q=0.9',
 			cookie: cookieHeader,
-			'user-agent':
-				'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36'
-		}
+			'user-agent': USER_AGENT
+		},
+		signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
 	})
+	if (!response.ok) {
+		throw new Error(`YouTube Music bootstrap failed (${response.status})`)
+	}
+
 	const html = await response.text()
+	const datasyncId = readConfigValue(html, 'DATASYNC_ID')
+	if (!datasyncId) {
+		throw new Error('YouTube Music bootstrap did not return a session ID')
+	}
 
-	const datasyncMatch = html.match(/"DATASYNC_ID"\s*:\s*"([^"]+)"/)
-	if (!datasyncMatch)
-		throw new Error('Could not find DATASYNC_ID in YT Music page')
-	const datasyncParts = datasyncMatch[1].split('||')
-	const userSessionId = datasyncParts[1] || datasyncParts[0] || ''
-	const pageId = datasyncParts[0] || ''
-
-	const visitorMatch = html.match(/"VISITOR_DATA"\s*:\s*"([^"]+)"/)
-	const visitorData = visitorMatch
-		? visitorMatch[1].replace(/\\u003d/gi, '=')
-		: ''
-
-	return { userSessionId, visitorData, pageId }
+	const [pageId = '', userSessionId = pageId] = datasyncId.split('||')
+	return {
+		apiKey: readConfigValue(html, 'INNERTUBE_API_KEY') || FALLBACK_API_KEY,
+		clientVersion:
+			readConfigValue(html, 'INNERTUBE_CLIENT_VERSION') ||
+			FALLBACK_CLIENT_VERSION,
+		pageId,
+		userSessionId,
+		visitorData: readConfigValue(html, 'VISITOR_DATA')
+	}
 }
 
 function sapisidHash(
@@ -79,65 +98,52 @@ function sapisidHash(
 }
 
 async function generateAuthHeader(
-	cookieMap: Map<string, string>
-): Promise<{ authHeader: string; visitorData: string; pageId: string }> {
-	const ts = Math.floor(Date.now() / 1000).toString()
-
-	if (!cachedUserSessionId) {
-		const config = await fetchPageConfig(cookieMap)
-		cachedUserSessionId = config.userSessionId
-		cachedVisitorData = config.visitorData
-		cachedPageId = config.pageId
-	}
-
+	cookieMap: Map<string, string>,
+	pageConfig: PageConfig
+): Promise<string> {
+	const timestamp = Math.floor(Date.now() / 1000).toString()
 	const sapisid =
 		cookieMap.get('__Secure-3PAPISID') || cookieMap.get('SAPISID')
-	if (!sapisid) throw new Error('Missing __Secure-3PAPISID or SAPISID cookie')
-
 	const sapisid1 =
 		cookieMap.get('__Secure-1PAPISID') || cookieMap.get('APISID')
-	if (!sapisid1) throw new Error('Missing __Secure-1PAPISID or APISID cookie')
 
-	const sapisid3 = cookieMap.get('__Secure-3PAPISID') || sapisid
-
-	const parts = [
-		`SAPISIDHASH ${sapisidHash(ts, sapisid, cachedUserSessionId)}`,
-		`SAPISID1PHASH ${sapisidHash(ts, sapisid1, cachedUserSessionId)}`,
-		`SAPISID3PHASH ${sapisidHash(ts, sapisid3, cachedUserSessionId)}`
-	]
-
-	return {
-		authHeader: parts.join(' '),
-		visitorData: cachedVisitorData!,
-		pageId: cachedPageId!
+	if (!sapisid || !sapisid1) {
+		throw new Error(
+			'The YouTube Music cookie is missing its SAPISID credentials'
+		)
 	}
+
+	return [
+		`SAPISIDHASH ${sapisidHash(timestamp, sapisid, pageConfig.userSessionId)}`,
+		`SAPISID1PHASH ${sapisidHash(timestamp, sapisid1, pageConfig.userSessionId)}`,
+		`SAPISID3PHASH ${sapisidHash(timestamp, sapisid, pageConfig.userSessionId)}`
+	].join(' ')
 }
 
 export function invalidateYTMusicClient(): void {
+	cachedCookie = ''
 	cachedCookieMap = null
-	cachedAuthUser = '0'
-	cachedUserSessionId = null
-	cachedVisitorData = null
-	cachedPageId = null
+	cachedPageConfig = null
 }
 
 export async function fetchInnertube(
 	endpoint: string,
-	body: Record<string, unknown>,
-	clientVersion?: string
-) {
-	const cookieStr = process.env.YTM_COOKIE
-	if (!cookieStr) throw new Error('YTM_COOKIE not configured')
+	body: Record<string, unknown>
+): Promise<unknown> {
+	const cookie = process.env.YTM_COOKIE?.trim()
+	if (!cookie) throw new Error('YTM_COOKIE is not configured')
 
-	if (!cachedCookieMap) {
-		cachedCookieMap = parseCookieMap(cookieStr)
+	if (!cachedCookieMap || cachedCookie !== cookie) {
+		invalidateYTMusicClient()
+		cachedCookie = cookie
+		cachedCookieMap = parseCookieMap(cookie)
 	}
-	cachedAuthUser = process.env.YTM_AUTH_USER || '0'
+	if (!cachedPageConfig) {
+		cachedPageConfig = await fetchPageConfig(cachedCookieMap)
+	}
 
-	const { authHeader, visitorData, pageId } =
-		await generateAuthHeader(cachedCookieMap)
-	const cookieHeader = rebuildCookieHeader(cachedCookieMap)
-
+	const pageConfig = cachedPageConfig
+	const authorization = await generateAuthHeader(cachedCookieMap, pageConfig)
 	const payload = {
 		...body,
 		context: {
@@ -145,8 +151,10 @@ export async function fetchInnertube(
 				hl: 'en',
 				gl: 'US',
 				clientName: 'WEB_REMIX',
-				clientVersion: clientVersion || '1.20260531.05.00',
-				...(visitorData && { visitorData })
+				clientVersion: pageConfig.clientVersion,
+				...(pageConfig.visitorData && {
+					visitorData: pageConfig.visitorData
+				})
 			},
 			user: { lockedSafetyMode: false },
 			request: {
@@ -158,33 +166,40 @@ export async function fetchInnertube(
 	}
 
 	const response = await fetch(
-		`https://music.youtube.com/youtubei/v1/${endpoint}?alt=json&key=${YTM_API_KEY}`,
+		`${YTM_ORIGIN}/youtubei/v1/${endpoint}?alt=json&key=${pageConfig.apiKey}`,
 		{
 			method: 'POST',
 			headers: {
 				accept: '*/*',
 				'accept-language': 'en-US,en;q=0.9',
 				'content-type': 'application/json',
-				Authorization: authHeader,
-				Cookie: cookieHeader,
+				Authorization: authorization,
+				Cookie: rebuildCookieHeader(cachedCookieMap),
 				origin: YTM_ORIGIN,
-				referer: 'https://music.youtube.com/',
-				'user-agent':
-					'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
-				'X-Goog-AuthUser': cachedAuthUser,
-				'X-Goog-PageId': pageId,
+				referer: `${YTM_ORIGIN}/`,
+				'user-agent': USER_AGENT,
+				'X-Goog-AuthUser': process.env.YTM_AUTH_USER || '0',
+				'X-Goog-PageId': pageConfig.pageId,
 				'X-Origin': YTM_ORIGIN,
 				'X-Youtube-Bootstrap-Logged-In': 'true',
 				'X-Youtube-Client-Name': '67',
-				...(visitorData && { 'X-Goog-Visitor-Id': visitorData })
+				...(pageConfig.visitorData && {
+					'X-Goog-Visitor-Id': pageConfig.visitorData
+				})
 			},
-			body: JSON.stringify(payload)
+			body: JSON.stringify(payload),
+			signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
 		}
 	)
 
 	if (!response.ok) {
-		throw new Error(`Innertube API error: ${response.status}`)
+		invalidateYTMusicClient()
+		if (response.status === 401 || response.status === 403) {
+			throw new YTMusicUnauthorizedError(
+				`YouTube Music rejected the session (${response.status})`
+			)
+		}
+		throw new Error(`YouTube Music API failed (${response.status})`)
 	}
-
 	return response.json()
 }

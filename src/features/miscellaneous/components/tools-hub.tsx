@@ -1,21 +1,19 @@
 'use client'
 
-import { useDeferredValue, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import { Search, Star, Clock } from 'lucide-react'
+import { Search, Star } from 'lucide-react'
 import { useShortcutMap } from '@remcostoeten/use-shortcut/react'
 import { Input } from '@/components/ui/input'
 import { Section } from '@/components/ui/section'
 import { cn } from '@/shared/lib/cn'
 import {
-	getToolBySlug,
 	getToolCountsByCategory,
 	searchTools,
 	TOOL_CATEGORIES,
 	TOOL_CATEGORY_LABELS,
 	TOOLS
 } from '../constants/tools'
-import { useRecentTools } from '../hooks/use-tool-usage'
 import type { TToolCategory, TToolDefinition } from '../types'
 import { ToolCard } from './tool-card'
 
@@ -45,17 +43,22 @@ function CategoryFilters({
 	onChange: (category: TCategoryFilter) => void
 }) {
 	const counts = getToolCountsByCategory()
-	const options: { value: TCategoryFilter; label: string; count: number }[] = [
-		{ value: 'all', label: 'All', count: TOOLS.length },
-		...TOOL_CATEGORIES.map(category => ({
-			value: category,
-			label: TOOL_CATEGORY_LABELS[category],
-			count: counts[category]
-		}))
-	]
+	const options: { value: TCategoryFilter; label: string; count: number }[] =
+		[
+			{ value: 'all', label: 'All', count: TOOLS.length },
+			...TOOL_CATEGORIES.map(category => ({
+				value: category,
+				label: TOOL_CATEGORY_LABELS[category],
+				count: counts[category]
+			}))
+		]
 
 	return (
-		<div role="group" aria-label="Filter tools by category" className="flex flex-wrap gap-2">
+		<div
+			role="group"
+			aria-label="Filter tools by category"
+			className="flex flex-wrap gap-2"
+		>
 			{options.map(option => (
 				<button
 					key={option.value}
@@ -70,41 +73,18 @@ function CategoryFilters({
 					)}
 				>
 					{option.label}
-					<span className="text-muted-foreground">{option.count}</span>
+					<span className="text-muted-foreground">
+						{option.count}
+					</span>
 				</button>
 			))}
 		</div>
 	)
 }
 
-function RecentTools() {
-	const { recent, hydrated } = useRecentTools()
-
-	if (!hydrated || recent.length === 0) return null
-
-	const tools = recent
-		.map(slug => getToolBySlug(slug))
-		.filter((tool): tool is TToolDefinition => Boolean(tool))
-
-	if (tools.length === 0) return null
-
-	return (
-		<Section title="Recently Used">
-			<div className="px-4 md:px-5 pt-2">
-				<div className="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-					<Clock aria-hidden className="size-3.5" />
-					Continue where you left off
-				</div>
-				<ToolGrid tools={tools} />
-			</div>
-		</Section>
-	)
-}
-
 export function ToolsHub({ intro }: Props) {
 	const [query, setQuery] = useState('')
 	const [category, setCategory] = useState<TCategoryFilter>('all')
-	const deferredQuery = useDeferredValue(query)
 	const searchRef = useRef<HTMLInputElement>(null)
 
 	useShortcutMap({
@@ -116,11 +96,11 @@ export function ToolsHub({ intro }: Props) {
 	})
 
 	const tools = useMemo(() => {
-		const matches = searchTools(deferredQuery)
+		const matches = searchTools(query)
 		return category === 'all'
 			? matches
 			: matches.filter(tool => tool.category === category)
-	}, [deferredQuery, category])
+	}, [query, category])
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -148,7 +128,10 @@ export function ToolsHub({ intro }: Props) {
 							/>
 						</div>
 
-						<CategoryFilters active={category} onChange={setCategory} />
+						<CategoryFilters
+							active={category}
+							onChange={setCategory}
+						/>
 
 						<p
 							aria-live="polite"
@@ -161,8 +144,6 @@ export function ToolsHub({ intro }: Props) {
 					</div>
 				</div>
 			</Section>
-
-			<RecentTools />
 
 			<Section title="Tools">
 				<div className="px-4 md:px-5 pt-2">

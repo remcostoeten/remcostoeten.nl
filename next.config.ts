@@ -40,6 +40,12 @@ const nextConfig: NextConfig = {
 				hostname: 'yt3.googleusercontent.com',
 				port: '',
 				pathname: '**'
+			},
+			{
+				protocol: 'https',
+				hostname: 'i.ytimg.com',
+				port: '',
+				pathname: '**'
 			}
 		],
 		formats: ['image/webp', 'image/avif'],

@@ -1,3 +1,7 @@
+.ai-icon {
+	overflow: visible;
+}
+
 .ai-icon * {
 	transform-box: fill-box;
 	transform-origin: center;

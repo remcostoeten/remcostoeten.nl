@@ -31,7 +31,6 @@ export type DeveloperPackage = {
 		code: string
 		fileName: string
 	}[]
-	faqs: { question: string; answer: string }[]
 }
 
 export const developerPackages: readonly DeveloperPackage[] = [
@@ -264,28 +263,6 @@ export const adapter = createAdapter({
   }
 })`
 			}
-		],
-		faqs: [
-			{
-				question: 'Does it include an auth backend?',
-				answer: 'No, deliberately. It is the sign-in surface plus a typed adapter over whatever already owns your sessions: Better Auth, Supabase, NextAuth, Clerk, Firebase, Passport, or your own JWT and REST endpoints. Your backend does not change; the drawer just stops you from rebuilding its UI in every app.'
-			},
-			{
-				question: 'My auth provider is not in the adapter list. Am I stuck?',
-				answer: 'No. Implement the exported AuthAdapter contract (signIn, signUp, signOut, useSession) and the drawer treats it like any first-party adapter. TypeScript checks your implementation against the contract, and the UI reveals registration, OAuth, and reset flows based on which methods you actually provide.'
-			},
-			{
-				question: 'Do I need Tailwind or a separate stylesheet?',
-				answer: 'Neither. Prebuilt styles ship with the component import, so there is no CSS file to remember and no Tailwind requirement in your app. Presentation, copy, provider buttons, and motion are all shaped through one deep-merged config object instead.'
-			},
-			{
-				question: 'Does it work with the Next.js App Router?',
-				answer: 'Yes. Mount AuthProvider and AuthDrawer in a small client shell near the root and add a portal div to your layout so the drawer renders above page content with scroll lock. Server components everywhere else stay server components.'
-			},
-			{
-				question: 'Can I build the UI before the backend exists?',
-				answer: 'Yes. Ship the bundled mock adapter, click through sign-in, registration, and reset with fake sessions, then swap in the real adapter later. Nothing in the UI layer changes.'
-			}
 		]
 	},
 	{
@@ -438,16 +415,6 @@ $.mod.key('k').on(() => openPalette())`
 							'Run the handler after the complete sequence matches.'
 					}
 				]
-			}
-		],
-		faqs: [
-			{
-				question: 'Does mod work on Windows and macOS?',
-				answer: 'Yes. The mod modifier maps to Cmd on macOS and Ctrl elsewhere.'
-			},
-			{
-				question: 'Can shortcuts be scoped to an editor or modal?',
-				answer: 'Yes. Use scopes and guards so only active UI owns a shortcut.'
 			}
 		]
 	},
@@ -602,16 +569,6 @@ saveSettings().then(() => notice.success('Settings saved'))`
 						description: 'Optional label for the confirm action.'
 					}
 				]
-			}
-		],
-		faqs: [
-			{
-				question: 'Can I use promise tracking?',
-				answer: 'Yes. notify.promise() manages loading, success, and error states around async work.'
-			},
-			{
-				question: 'Can notifications be themed?',
-				answer: 'Yes. Set color mode, radius, icon treatment, position, duration, and swipe behavior on Notifier.'
 			}
 		]
 	}

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { noop } from '@/shared/lib/noop'
 import { useLocalStorage } from '../../hooks/use-local-storage'
+import { useMediaSession } from '../../hooks/use-media-session'
 import { useTrimState } from '../../hooks/use-trim-state'
 import type {
 	TMediaOutput,
@@ -70,6 +71,31 @@ export function useVideoToGifStore() {
 
 	const inputWrittenFor = useRef<File | null>(null)
 	const urlsRef = useRef<string[]>([])
+	const pendingTrimRef = useRef<TTrimRange | null>(null)
+	const restoredRef = useRef(false)
+
+	const { persistFile, persistTrim, persistOutput } = useMediaSession(
+		STORAGE_KEY,
+		session => {
+			if (restoredRef.current) return
+			restoredRef.current = true
+			pendingTrimRef.current = session.trim
+			setFile(session.file)
+			setFileUrl(URL.createObjectURL(session.file))
+			if (session.output) {
+				setOutput({
+					url: URL.createObjectURL(session.output.blob),
+					name: session.output.name,
+					size: session.output.blob.size,
+					mime: session.output.mime
+				})
+			}
+			setStatus({
+				message: 'Restored your previous session from this browser.',
+				mode: 'idle'
+			})
+		}
+	)
 
 	useEffect(() => {
 		urlsRef.current = [fileUrl, preview?.url, output?.url].filter(
@@ -92,16 +118,19 @@ export function useVideoToGifStore() {
 	}, [])
 
 	const clearOutput = useCallback(() => {
+		persistOutput(null)
 		setOutput(previous => {
 			if (previous) URL.revokeObjectURL(previous.url)
 			return null
 		})
-	}, [])
+	}, [persistOutput])
 
 	const selectFile = useCallback(
 		(next: File | null) => {
 			if (busy) return
 
+			restoredRef.current = true
+			pendingTrimRef.current = null
 			clearPreview()
 			clearOutput()
 			inputWrittenFor.current = null
@@ -113,6 +142,7 @@ export function useVideoToGifStore() {
 			setProgress(0)
 
 			if (!next) {
+				persistFile(null)
 				setFile(null)
 				setStatus(IDLE_STATUS)
 				return
@@ -120,6 +150,7 @@ export function useVideoToGifStore() {
 
 			const sizeMb = next.size / (1024 * 1024)
 			if (sizeMb > MAX_INPUT_MB) {
+				persistFile(null)
 				setFile(null)
 				setStatus({
 					message: `File is ${sizeMb.toFixed(1)} MB. Keep it under ${MAX_INPUT_MB} MB for browser conversion.`,
@@ -128,6 +159,7 @@ export function useVideoToGifStore() {
 				return
 			}
 
+			persistFile(next)
 			setFile(next)
 			setFileUrl(URL.createObjectURL(next))
 			setStatus({
@@ -136,8 +168,27 @@ export function useVideoToGifStore() {
 				mode: 'idle'
 			})
 		},
-		[busy, clearOutput, clearPreview, clearTrim]
+		[busy, clearOutput, clearPreview, clearTrim, persistFile]
 	)
+
+	const handleMetadata = useCallback(
+		(nextDuration: number) => {
+			trimState.handleMetadata(
+				nextDuration,
+				pendingTrimRef.current ?? undefined
+			)
+			pendingTrimRef.current = null
+		},
+		[trimState.handleMetadata]
+	)
+
+	useEffect(() => {
+		if (!file || duration <= 0) return
+		const timeout = setTimeout(() => {
+			persistTrim(hasTrim ? trim : null)
+		}, 300)
+		return () => clearTimeout(timeout)
+	}, [file, duration, hasTrim, trim, persistTrim])
 
 	const updateTrim = useCallback(
 		(next: TTrimRange) => {
@@ -285,9 +336,11 @@ export function useVideoToGifStore() {
 			)
 
 			const blob = await readOutputBlob(ffmpeg, OUTPUT_NAME, 'image/gif')
+			const outputName = `${stem(file.name)}_${options.fps}fps.gif`
+			persistOutput({ blob, name: outputName, mime: 'image/gif' })
 			setOutput({
 				url: URL.createObjectURL(blob),
-				name: `${stem(file.name)}_${options.fps}fps.gif`,
+				name: outputName,
 				size: blob.size,
 				mime: 'image/gif'
 			})
@@ -304,7 +357,16 @@ export function useVideoToGifStore() {
 			setFFmpegProgressHandler(noop)
 			setBusy(false)
 		}
-	}, [busy, clearOutput, ensureInputWritten, file, hasTrim, options, trim])
+	}, [
+		busy,
+		clearOutput,
+		ensureInputWritten,
+		file,
+		hasTrim,
+		options,
+		persistOutput,
+		trim
+	])
 
 	const effectiveDuration = hasTrim ? trim.end - trim.start : duration
 	const estimatedSize =
@@ -327,7 +389,7 @@ export function useVideoToGifStore() {
 		output,
 		estimatedSize,
 		selectFile,
-		handleMetadata: trimState.handleMetadata,
+		handleMetadata,
 		updateTrim,
 		commitTrim: trimState.commitTrim,
 		undoTrim,

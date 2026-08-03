@@ -35,7 +35,7 @@ export function ToolQuickNav({ currentSlug }: Props) {
 								href={`/tools/${tool.slug}`}
 								aria-current={isCurrent ? 'page' : undefined}
 								className={cn(
-									'inline-flex items-center gap-1.5 rounded-sm border px-2 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+									'ai-trigger inline-flex items-center gap-1.5 overflow-visible rounded-sm border px-2 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
 									isCurrent
 										? 'border-foreground/50 bg-foreground/10 text-foreground'
 										: 'border-border/50 text-muted-foreground hover:border-border hover:text-foreground'
