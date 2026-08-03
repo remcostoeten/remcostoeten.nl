@@ -102,25 +102,25 @@ export function useSvgCollection() {
 				if (item.id !== id) return item
 				const base = componentName(value, item.component)
 				const component = uniqueName(base, used)
-				const duplicateWarning =
+				const duplicateNotice =
 					'A duplicate component name was resolved automatically.'
-				const warnings = item.warnings.filter(
-					warning =>
-						warning !== duplicateWarning &&
-						warning !== 'The component name was normalized.'
+				const notices = item.notices.filter(
+					notice =>
+						notice !== duplicateNotice &&
+						notice !== 'The component name was normalized.'
 				)
-				if (component !== base) warnings.push(duplicateWarning)
+				if (component !== base) notices.push(duplicateNotice)
 				if (component !== value)
-					warnings.push('The component name was normalized.')
+					notices.push('The component name was normalized.')
 				return {
 					...item,
 					name: value,
 					component,
 					filename: filenameFor(component),
-					warnings,
+					notices,
 					state: item.errors.length
 						? 'invalid'
-						: warnings.length
+						: item.warnings.length
 							? 'warning'
 							: 'valid'
 				}

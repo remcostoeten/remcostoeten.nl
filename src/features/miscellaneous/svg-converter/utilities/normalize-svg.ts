@@ -22,7 +22,13 @@ export function normalizeSources(
 		const importedFilename = filenames[index]
 		const parsed = source.complete
 			? parseSvg(source.markup)
-			: { markup: '', colors: [], errors: source.errors, warnings: [] }
+			: {
+					markup: '',
+					colors: [],
+					errors: source.errors,
+					warnings: [],
+					notices: []
+				}
 		const rawName =
 			parsed.sourceName || importedFilename?.replace(/\.svg$/i, '') || ''
 		const fallback = single
@@ -33,8 +39,9 @@ export function normalizeSources(
 		const duplicate = component !== base
 		const errors = [...source.errors, ...parsed.errors]
 		const warnings = [...parsed.warnings]
+		const notices = [...parsed.notices]
 		if (duplicate)
-			warnings.push(
+			notices.push(
 				'A duplicate component name was resolved automatically.'
 			)
 		return {
@@ -54,6 +61,7 @@ export function normalizeSources(
 					: 'valid',
 			errors,
 			warnings,
+			notices,
 			colors: parsed.colors,
 			markup: parsed.markup,
 			viewBox: parsed.viewBox,

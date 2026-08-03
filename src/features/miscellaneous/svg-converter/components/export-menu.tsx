@@ -33,7 +33,7 @@ export function ExportMenu({
 		0
 	)
 	const duplicates = valid.filter(item =>
-		item.warnings.includes(
+		item.notices.includes(
 			'A duplicate component name was resolved automatically.'
 		)
 	)
@@ -63,8 +63,10 @@ export function ExportMenu({
 			</div>
 			<div className="mb-3 border bg-muted/20 p-2 text-[11px] text-muted-foreground">
 				<p>
-					{valid.length} icons included · {invalid} invalid excluded ·{' '}
-					{warningCount} warnings remain
+					{valid.length} icons included · {invalid} invalid excluded
+					{warningCount
+						? ` · ${warningCount} warning${warningCount === 1 ? '' : 's'} remain`
+						: ''}
 				</p>
 				<p>
 					Output: individual TSX, combined icons.tsx, or modular
