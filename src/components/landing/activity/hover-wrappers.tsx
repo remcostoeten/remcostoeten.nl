@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { AlertCircle } from 'lucide-react'
 import {
 	ActivityHoverCard,
 	GitHubProjectCard,
@@ -8,7 +9,10 @@ import {
 	SpotifyCard,
 	GitHubProjectCardSkeleton
 } from './activity-hover-card'
-import { useRepoDetails } from '@/hooks/use-repo-details'
+import {
+	useRepoDetails,
+	getRepoDetailsErrorMessage
+} from '@/hooks/use-repo-details'
 import { GitHubEventDetail } from '@/hooks/use-github'
 import { SpotifyTrack } from '@/features/spotify/client'
 import React from 'react'
@@ -27,11 +31,12 @@ export function ProjectHoverWrapper({
 	const [isHovering, setIsHovering] = useState(false)
 	const [owner, repo] = repository.split('/')
 
-	const { data: repoDetails, isLoading } = useRepoDetails(
-		owner,
-		repo,
-		isHovering
-	)
+	const {
+		data: repoDetails,
+		isLoading,
+		isError,
+		error
+	} = useRepoDetails(owner, repo, isHovering)
 
 	return (
 		<ActivityHoverCard
@@ -60,11 +65,18 @@ export function ProjectHoverWrapper({
 					url={repoDetails.url}
 					isPrivate={repoDetails.isPrivate}
 				/>
+			) : isPrivate ? (
+				<div className="text-sm text-muted-foreground">
+					Private repository
+				</div>
+			) : isError ? (
+				<div className="flex items-start gap-2 text-sm text-muted-foreground">
+					<AlertCircle className="size-4 shrink-0 mt-0.5 text-amber-500" />
+					<span>{getRepoDetailsErrorMessage(error)}</span>
+				</div>
 			) : (
 				<div className="text-sm text-muted-foreground">
-					{isPrivate
-						? 'Private repository'
-						: 'Could not load repository details'}
+					Could not load repository details
 				</div>
 			)}
 		</ActivityHoverCard>

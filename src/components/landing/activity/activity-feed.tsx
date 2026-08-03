@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, type PointerEvent } from 'react'
 import { motion, AnimatePresence, PanInfo } from 'motion/react'
 import {
 	Music,
@@ -314,6 +314,16 @@ function getActivityGrammar(
 		return { ...phrases[seed % phrases.length], showEventBadge: false }
 	}
 	return phrases[seed % phrases.length]
+}
+
+// The manual-slide variant lives inside a Framer Motion `drag="x"` container.
+// The drag recognizer listens for pointerdown on that container, so a click on a
+// nested link is treated as the start of a (zero-distance) drag and the link never
+// navigates. Stopping the pointerdown during the capture phase keeps it from ever
+// reaching the drag listener, so the anchor behaves like a normal link while swipe
+// navigation on the rest of the card is unaffected.
+function stopDragPropagation(event: PointerEvent<HTMLAnchorElement>) {
+	event.stopPropagation()
 }
 
 function getShortRepoName(fullName: string) {
@@ -938,6 +948,7 @@ export function ActivityFeed({
 											href={currentActivity.url}
 											target="_blank"
 											rel="noopener noreferrer"
+											onPointerDownCapture={stopDragPropagation}
 											className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary font-medium border border-primary/20 rounded-[4px] text-[12px] shrink-0"
 										>
 											<Globe className="size-3 shrink-0" />
@@ -993,6 +1004,7 @@ export function ActivityFeed({
 												href={displayTrack.url}
 												target="_blank"
 												rel="noopener noreferrer"
+												onPointerDownCapture={stopDragPropagation}
 												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] min-w-0 shrink ${
 													isCurrentTrackLive
 														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20'
