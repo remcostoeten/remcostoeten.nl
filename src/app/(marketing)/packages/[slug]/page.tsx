@@ -190,33 +190,6 @@ async function PackagePageContent({ params }: Props) {
 					)}
 				</div>
 			</header>
-
-			<nav
-				aria-label="On this page"
-				className="border-b border-border/60 px-4 py-3 md:px-5"
-			>
-				<div className="flex gap-x-4 gap-y-2 overflow-x-auto whitespace-nowrap font-mono text-[11px] text-muted-foreground">
-					<a
-						href="#why"
-						className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-					>
-						What it replaces
-					</a>
-					<a
-						href="#quick-start"
-						className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-					>
-						Quick start
-					</a>
-					<a
-						href="#api"
-						className="transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-					>
-						API examples
-					</a>
-				</div>
-			</nav>
-
 			<section
 				id="why"
 				aria-labelledby="why-heading"

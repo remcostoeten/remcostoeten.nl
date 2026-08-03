@@ -269,10 +269,15 @@ function CollectionRow({
 						'mt-1 inline-block text-[10px] uppercase tracking-wide',
 						item.state === 'invalid'
 							? 'text-red-500'
-							: 'text-muted-foreground'
+							: item.state === 'warning'
+								? 'text-amber-500'
+								: 'text-emerald-500'
 					)}
 				>
 					{item.state}
+					{item.state === 'valid' && item.notices.length
+						? ' · auto-fixed'
+						: ''}
 				</span>
 			</button>
 			<div className="flex flex-col">

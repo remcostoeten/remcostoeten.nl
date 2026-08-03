@@ -1,4 +1,4 @@
-import { AlertTriangle, CircleCheck, CircleX } from 'lucide-react'
+import { AlertTriangle, CircleCheck, CircleX, Wrench } from 'lucide-react'
 import { ColorList } from './color-list'
 import { ConvertOptions } from './convert-options'
 import { SvgPreview } from './svg-preview'
@@ -66,6 +66,19 @@ export function SvgDetail({
 							invalid.
 						</p>
 					) : null}
+				</div>
+			) : null}
+			{item.notices.length ? (
+				<div className="mb-3 space-y-1 border-l-2 border-emerald-500/50 bg-muted/20 py-1.5 pl-3 pr-2 text-[11px] text-muted-foreground">
+					{item.notices.map(notice => (
+						<p key={notice} className="flex items-start gap-1.5">
+							<Wrench
+								aria-hidden
+								className="mt-0.5 size-3 shrink-0 text-emerald-500"
+							/>
+							{notice}
+						</p>
+					))}
 				</div>
 			) : null}
 			{item.state !== 'invalid' ? (

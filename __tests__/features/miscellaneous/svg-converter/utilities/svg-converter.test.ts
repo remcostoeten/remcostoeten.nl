@@ -81,6 +81,48 @@ describe('SVG sanitization', () => {
 	})
 })
 
+describe('SVG auto-fixes', () => {
+	it('keeps fixed-dimension SVGs valid and reports the fix as a notice', () => {
+		const item = normalizeSources(
+			extractSvgs(
+				'<svg width="24" height="24" viewBox="0 0 24 24"><path d="M0 0"/></svg>'
+			).sources
+		)[0]
+		expect(item.state).toBe('valid')
+		expect(item.warnings).toEqual([])
+		expect(item.notices.join(' ')).toContain('size prop')
+	})
+
+	it('derives a viewBox from width and height when missing', () => {
+		const item = normalizeSources(
+			extractSvgs('<svg width="16" height="32"><path d="M0 0"/></svg>')
+				.sources
+		)[0]
+		expect(item.state).toBe('valid')
+		expect(item.viewBox).toBe('0 0 16 32')
+		expect(generateComponent(item)).toContain('viewBox="0 0 16 32"')
+		expect(item.notices.join(' ')).toContain('added viewBox')
+	})
+
+	it('still warns when no viewBox can be derived', () => {
+		const item = normalizeSources(
+			extractSvgs('<svg><path d="M0 0"/></svg>').sources
+		)[0]
+		expect(item.state).toBe('warning')
+		expect(item.warnings.join(' ')).toContain('no viewBox')
+	})
+
+	it('treats auto-resolved duplicate names as valid with a notice', () => {
+		const items = normalizeSources(
+			extractSvgs(
+				'<svg viewBox="0 0 2 2" data-icon="a"/><svg viewBox="0 0 2 2" data-icon="a"/>'
+			).sources
+		)
+		expect(items[1].state).toBe('valid')
+		expect(items[1].notices.join(' ')).toContain('duplicate component name')
+	})
+})
+
 describe('React conversion', () => {
 	it('normalizes names and filenames', () => {
 		expect(componentName('arrow-left', '')).toBe('ArrowLeftIcon')

@@ -5,6 +5,7 @@ import { ArrowLeftRight, Eraser } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { useLocalStorage } from '../hooks/use-local-storage'
+import { DiffCheckerSkeleton } from '../components/tool-skeletons'
 import { DiffOutput } from './components/diff-output'
 import { TextPanel } from './components/text-panel'
 import { readDiffHandoff } from './utils/handoff'
@@ -34,17 +35,7 @@ export default function DiffCheckerTool() {
 	}, [leftHydrated, rightHydrated, setLeft, setRight])
 
 	if (!leftHydrated || !rightHydrated) {
-		return (
-			<div
-				role="status"
-				aria-label="Loading diff checker"
-				className="flex flex-col gap-3"
-			>
-				<div className="h-8 w-64 animate-pulse bg-muted/60" />
-				<div className="h-80 animate-pulse bg-muted/60" />
-				<div className="h-96 animate-pulse bg-muted/60" />
-			</div>
-		)
+		return <DiffCheckerSkeleton />
 	}
 
 	function swap() {

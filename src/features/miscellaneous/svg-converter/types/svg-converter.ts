@@ -24,6 +24,7 @@ export type SvgMetadata = {
 	colors: SvgColor[]
 	errors: string[]
 	warnings: string[]
+	notices: string[]
 }
 
 export type ColorMode = 'preserve' | 'fill' | 'stroke'
@@ -60,6 +61,7 @@ export type SvgItem = {
 	state: SvgState
 	errors: string[]
 	warnings: string[]
+	notices: string[]
 	colors: SvgColor[]
 	markup: string
 	viewBox?: string
