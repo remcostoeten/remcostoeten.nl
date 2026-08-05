@@ -23,7 +23,6 @@ export type DeveloperPackage = {
 	quickStartFile: string
 	whenToUse: string
 	highlights: string[]
-	workflow: { title: string; description: string }[]
 	api: { name: string; description: string }[]
 	apiExamples: {
 		title: string
@@ -136,22 +135,6 @@ export function Auth() {
 			'Drawer and modal presentation with responsive mobile behavior, focus management, overlays, and configurable motion.',
 			'Email/password, registration, password reset, OAuth providers, session hooks, and controlled trigger APIs.',
 			'Typed end to end: the AuthConfig and AuthAdapter contracts drive autocomplete for every config key, provider name, and error code.'
-		],
-		workflow: [
-			{
-				title: 'Connect adapter',
-				description: 'Map existing auth client to typed adapter once.'
-			},
-			{
-				title: 'Mount surface',
-				description:
-					'Place AuthProvider and AuthDrawer near application root.'
-			},
-			{
-				title: 'Open anywhere',
-				description:
-					'Use hook or trigger API from navigation, paywalls, or protected actions.'
-			}
 		],
 		api: [
 			{
@@ -302,22 +285,6 @@ export function CommandMenu() {
 			'Scopes, guards, and input handling let shortcuts behave correctly in layered application UI.',
 			'Typed maps, recording mode, structured debug events, and attempt inspection support larger shortcut systems.'
 		],
-		workflow: [
-			{
-				title: 'Create builder',
-				description: 'Call useShortcut once inside feature component.'
-			},
-			{
-				title: 'Describe intent',
-				description:
-					'Bind combinations or sequences close to feature behavior.'
-			},
-			{
-				title: 'Control scope',
-				description:
-					'Enable only where shortcut should own keyboard input.'
-			}
-		],
 		api: [
 			{
 				name: 'useShortcut()',
@@ -422,10 +389,10 @@ $.mod.key('k').on(() => openPalette())`
 		slug: 'notifier',
 		name: 'Notifier',
 		packageName: '@remcostoeten/notifier',
-		tagline: 'Notifications with a fluent API.',
+		tagline: 'A small notification API for React.',
 		description:
-			'A lightweight, chainable React notification system for useful feedback: status changes, async work, confirmations, and errors that need a clear next state.',
-		whyHeading: 'Feedback state should not become modal state.',
+			'Show loading, success, error, and confirmation states without building a new feedback component for every action.',
+		whyHeading: 'Show what happened without interrupting the flow.',
 		keywords: [
 			'React notifications',
 			'toast library',
@@ -435,37 +402,28 @@ $.mod.key('k').on(() => openPalette())`
 		npmUrl: 'https://www.npmjs.com/package/@remcostoeten/notifier',
 		sourceUrl: 'https://github.com/remcostoeten/Notify',
 		install: 'npm install @remcostoeten/notifier',
-		quickStartFile: 'app/layout.tsx',
-		quickStart: `import { Notifier, notify } from '@remcostoeten/notifier'
+		quickStartFile: 'components/save-button.tsx',
+		quickStart: `'use client'
 
-export function App() {
-  return <Notifier position="bottom-right" />
-}
+import { Notifier, notify } from '@remcostoeten/notifier'
+import '@remcostoeten/notifier/styles'
 
-const notice = notify.loading('Saving settings…')
-saveSettings().then(() => notice.success('Settings saved'))`,
+export function SaveButton() {
+  return (
+    <>
+      <button onClick={() => notify.success('Settings saved')}>
+        Save settings
+      </button>
+      <Notifier position="bottom-right" colorMode="auto" />
+    </>
+  )
+}`,
 		whenToUse:
-			'Use Notifier when a product action needs compact, visible feedback without turning every mutation into its own modal state machine. Especially useful for saves, imports, background work, and destructive confirmation.',
+			'Use it for saves, uploads, background work, and actions that need confirmation.',
 		highlights: [
-			'Chain a single notice from loading to success or error as async work resolves.',
-			'Track promises, ask async confirmation questions, dismiss individual notices, or clear a queue.',
-			'Configure placement, duration, visible count, theme mode, radius, icons, hover pause, and swipe dismissal.'
-		],
-		workflow: [
-			{
-				title: 'Mount once',
-				description: 'Render Notifier near app root.'
-			},
-			{
-				title: 'Start feedback',
-				description:
-					'Create loading or informational notice at action boundary.'
-			},
-			{
-				title: 'Resolve state',
-				description:
-					'Promote same notice to success or error after work completes.'
-			}
+			'Update the same notification as async work moves from loading to success or error.',
+			'Track a promise or wait for a confirmation with one call.',
+			'Choose the position, duration, theme, radius, and dismissal behavior.'
 		],
 		api: [
 			{
@@ -486,89 +444,14 @@ saveSettings().then(() => notice.success('Settings saved'))`,
 		],
 		apiExamples: [
 			{
-				title: '1. Show a result',
-				description:
-					'Use a direct call when the next state is already known.',
-				fileName: 'components/save-button.tsx',
-				code: `notify.success('Settings saved')`
-			},
-			{
-				title: '2. Show work in progress',
-				description:
-					'Keep one notice and promote it when the request finishes.',
-				fileName: 'components/save-button.tsx',
-				code: `const notice = notify.loading('Saving settings…')
-
-saveSettings().then(() => notice.success('Settings saved'))`
-			},
-			{
-				title: '3. Let the promise drive it',
-				description:
-					'Use the promise helper when loading, success, and error all follow the request.',
+				title: 'Track a save',
+				description: 'Let the request decide which state appears next.',
 				fileName: 'components/save-button.tsx',
 				code: `notify.promise(saveSettings(), {
   loading: 'Saving settings…',
   success: 'Settings saved',
   error: 'Could not save settings'
 })`
-			}
-		],
-		apiDetails: [
-			{
-				name: '<Notifier />',
-				signature:
-					'<Notifier position="bottom-right" options={options} />',
-				arguments: [
-					{
-						name: 'position',
-						description:
-							'Where the notification region is mounted: top, bottom, left, or right variants.'
-					},
-					{
-						name: 'options',
-						description:
-							'Optional defaults for duration, visible count, theme, radius, icons, and swipe behavior.'
-					}
-				]
-			},
-			{
-				name: 'notify.promise()',
-				signature: 'notify.promise(task, messages, options?)',
-				arguments: [
-					{
-						name: 'task',
-						description:
-							'The promise that controls the notification lifecycle.'
-					},
-					{
-						name: 'messages.loading',
-						description: 'Text shown while the promise is pending.'
-					},
-					{
-						name: 'messages.success / error',
-						description:
-							'Text shown when the promise resolves or rejects.'
-					}
-				]
-			},
-			{
-				name: 'notify.confirm()',
-				signature: 'await notify.confirm(options)',
-				arguments: [
-					{
-						name: 'options.title',
-						description: 'The confirmation heading.'
-					},
-					{
-						name: 'options.description',
-						description:
-							'The context for the action the user is about to confirm.'
-					},
-					{
-						name: 'options.confirmLabel',
-						description: 'Optional label for the confirm action.'
-					}
-				]
 			}
 		]
 	}

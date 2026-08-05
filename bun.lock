@@ -17,6 +17,7 @@
         "@radix-ui/react-tabs": "^1.1.13",
         "@remcostoeten/analytics": "^1.7.0",
         "@remcostoeten/auth-drawer": "^0.3.2",
+        "@remcostoeten/notifier": "^1.1.0",
         "@remcostoeten/use-shortcut": "^2.3.0",
         "@t3-oss/env-nextjs": "^0.13.10",
         "@tailwindcss/postcss": "^4.1.18",
@@ -439,6 +440,8 @@
     "@remcostoeten/analytics": ["@remcostoeten/analytics@1.7.0", "", { "peerDependencies": { "react": "^18.0.0 || ^19.0.0" } }, "sha512-6zBomBUckjOk7osPfrFnX+8v8pmy/ygFZiJYxehAni/KdcHdJBMN8gg6t6MnQB3XSjr3GqKCzzosFgk7otkJjQ=="],
 
     "@remcostoeten/auth-drawer": ["@remcostoeten/auth-drawer@0.3.2", "", { "dependencies": { "clsx": "^2.1.1", "tailwind-merge": "^2.6.0" }, "peerDependencies": { "framer-motion": "^12.0.0", "lucide-react": "^0.400.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-c95Wk5TLZ7szqFKamPCRxuML9kCAci8zDy7ZVN6vVw60zzx4yONdDxR/u2blQWgpZbkZeNOWD8hIcOP86RxJTg=="],
+
+    "@remcostoeten/notifier": ["@remcostoeten/notifier@1.1.0", "", { "peerDependencies": { "motion": ">=12.0.0", "react": ">=18.0.0", "react-dom": ">=18.0.0" } }, "sha512-eE1QkF27gxJATV/wlvI4h/LlEM1Lj7+gYRKG4BRdreZZshFUqKwDj3zUpJU7ldU7oXJb2JkZ+/OBm3txP70vnw=="],
 
     "@remcostoeten/use-shortcut": ["@remcostoeten/use-shortcut@2.3.0", "", { "peerDependencies": { "react": ">=18.0.0" } }, "sha512-PFUDYVgmsoIeoK1zYwa2crUdCZ0Tj+qx2K9DiTIo24xEJvwmz42IEt6A33N6Egfw8AsmM0/eSiVkHkXkqie7pQ=="],
 
