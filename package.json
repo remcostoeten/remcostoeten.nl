@@ -80,6 +80,7 @@
     "geist": "1.2.2",
     "glob": "^13.0.3",
     "gray-matter": "^4.0.3",
+    "heic2any": "^0.0.4",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.562.0",
     "motion": "^12.40.0",

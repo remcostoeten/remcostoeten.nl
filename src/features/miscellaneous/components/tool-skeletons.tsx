@@ -8,7 +8,11 @@ type TIconGroupProps = {
 	gap?: string
 }
 
-function IconGroup({ count, className = 'h-7 w-7', gap = 'gap-0.5' }: TIconGroupProps) {
+function IconGroup({
+	count,
+	className = 'h-7 w-7',
+	gap = 'gap-0.5'
+}: TIconGroupProps) {
 	return (
 		<div className={`flex items-center ${gap}`}>
 			{Array.from({ length: count }, (_, i) => (
@@ -53,7 +57,11 @@ export function FindReplaceSkeleton() {
 									<Skeleton className="h-9 w-9" />
 									<Skeleton className="h-9 w-9" />
 									<div className="ml-1 flex items-center gap-1">
-										<IconGroup count={4} className="h-9 w-9" gap="gap-1" />
+										<IconGroup
+											count={4}
+											className="h-9 w-9"
+											gap="gap-1"
+										/>
 									</div>
 								</div>
 							</div>
@@ -121,7 +129,10 @@ export function DiffCheckerSkeleton() {
 
 				<div className="grid grid-cols-1 divide-y divide-border/50 border border-border/50 bg-card md:grid-cols-2 md:divide-x md:divide-y-0">
 					{[0, 1].map(i => (
-						<section key={i} className="relative flex min-w-0 flex-col">
+						<section
+							key={i}
+							className="relative flex min-w-0 flex-col"
+						>
 							<header className="flex items-center justify-between border-b border-border/50 px-3 py-1.5">
 								<Skeleton className="h-4 w-20" />
 								<IconGroup count={4} />
@@ -350,7 +361,11 @@ function SvgConverterSkeleton() {
 									<Skeleton className="h-3.5 w-16 rounded-none" />
 									<Skeleton className="h-3 w-40 rounded-none" />
 								</div>
-								<IconGroup count={4} className="size-[30px] rounded-none" gap="gap-1" />
+								<IconGroup
+									count={4}
+									className="size-[30px] rounded-none"
+									gap="gap-1"
+								/>
 							</div>
 							<div className="flex gap-3 border-b px-3 py-2">
 								<Skeleton className="h-3.5 w-16 rounded-none" />
@@ -603,6 +618,7 @@ export const TOOL_SKELETONS: Record<TToolSlug, ComponentType> = {
 	hemelsbreed: HemelsbreedSkeleton,
 	'coordinate-marker': CoordinateMarkerSkeleton,
 	'my-location': MyLocationSkeleton,
+	'heic-converter': GifToVideoSkeleton,
 	'sendable-video': SendableVideoSkeleton,
 	'gif-to-video': GifToVideoSkeleton,
 	'video-to-gif': VideoToGifSkeleton

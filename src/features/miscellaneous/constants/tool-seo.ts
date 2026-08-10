@@ -10,6 +10,24 @@ export type TToolSeoContent = {
 }
 
 const TOOL_SEO_CONTENT = {
+	'heic-converter': {
+		metaTitle: 'HEIC to JPG & PNG Converter — Private & Browser-Based',
+		metaDescription:
+			'Convert HEIC and HEIF photos to JPG or PNG privately in your browser. Batch convert iPhone images with quality control and no uploads.',
+		intro: 'Open iPhone photos in apps and websites that do not support HEIC. The decoder runs locally in your browser, lets you convert several photos in one pass and creates standard JPG or PNG files without an upload queue.',
+		highlights: [
+			'Batch convert up to 12 HEIC or HEIF photos at a time.',
+			'Choose compact JPG with quality control or lossless PNG output.',
+			'Keep photos on your device—the converter does not upload them.'
+		],
+		steps: [
+			'Drop HEIC or HEIF photos into the converter or choose them from your device.',
+			'Select JPG or PNG and adjust JPG quality if needed.',
+			'Convert, inspect the previews and download one image or the whole batch.'
+		],
+		formats:
+			'Input: HEIC and HEIF photos. Output: broadly compatible JPG or lossless PNG images. EXIF metadata is not copied to the converted files.'
+	},
 	'svg-converter': {
 		metaTitle: 'SVG to React Converter — Generate TSX Components',
 		metaDescription:
