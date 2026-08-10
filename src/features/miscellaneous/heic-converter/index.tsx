@@ -126,6 +126,16 @@ export default function HeicConverter() {
 			const { default: heic2any } = await import('heic2any')
 			const convertedResults: TConvertedImage[] = []
 
+			// Track duplicate source-name/lastModified combinations for collision detection
+			const sourceKeyMap = new Map<string, number>()
+			for (const file of files) {
+				const key = `${file.name}-${file.lastModified}`
+				sourceKeyMap.set(key, (sourceKeyMap.get(key) || 0) + 1)
+			}
+
+			// Track occurrences for batch-level discriminators
+			const sourceKeyOccurrences = new Map<string, number>()
+
 			for (const [fileIndex, file] of files.entries()) {
 				setStatus({
 					mode: 'processing',
@@ -138,14 +148,20 @@ export default function HeicConverter() {
 				})
 				const blobs = Array.isArray(converted) ? converted : [converted]
 
+				const sourceKey = `${file.name}-${file.lastModified}`
+				const isColliding = sourceKeyMap.get(sourceKey)! > 1
+				const batchDiscriminator = sourceKeyOccurrences.get(sourceKey) || 0
+				sourceKeyOccurrences.set(sourceKey, batchDiscriminator + 1)
+
 				for (const [imageIndex, blob] of blobs.entries()) {
 					const hasMultipleImages = blobs.length > 1
 					convertedResults.push({
-						id: `${file.name}-${file.lastModified}-${imageIndex}`,
+						id: `${sourceKey}-${batchDiscriminator}-${imageIndex}`,
 						name: outputName(
 							file.name,
 							format,
-							hasMultipleImages ? imageIndex : undefined
+							hasMultipleImages ? imageIndex : undefined,
+							isColliding ? batchDiscriminator : undefined
 						),
 						url: URL.createObjectURL(blob),
 						size: blob.size,
@@ -263,9 +279,10 @@ export default function HeicConverter() {
 						/>
 					</div>
 					{format === 'jpeg' ? (
-						<label className="flex min-w-52 grow items-center gap-2 text-xs text-muted-foreground sm:max-w-xs">
-							Quality
+						<div className="flex min-w-52 grow items-center gap-2 text-xs text-muted-foreground sm:max-w-xs">
+							<label htmlFor="quality-slider">Quality</label>
 							<input
+								id="quality-slider"
 								type="range"
 								min={0.5}
 								max={1}
@@ -286,7 +303,7 @@ export default function HeicConverter() {
 							<output className="w-8 text-right text-foreground">
 								{Math.round(quality * 100)}%
 							</output>
-						</label>
+						</div>
 					) : (
 						<p className="text-xs text-muted-foreground">
 							PNG is lossless and usually much larger than JPG.

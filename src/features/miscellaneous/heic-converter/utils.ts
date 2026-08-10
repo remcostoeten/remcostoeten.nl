@@ -20,11 +20,14 @@ export function validateHeicFile(file: File): string | null {
 export function outputName(
 	sourceName: string,
 	format: TImageFormat,
-	index?: number
+	index?: number,
+	collisionDiscriminator?: number
 ): string {
-	const suffix = index === undefined ? '' : `-${index + 1}`
+	const multiImageSuffix = index === undefined ? '' : `-${index + 1}`
+	const collisionSuffix =
+		collisionDiscriminator === undefined ? '' : `-${collisionDiscriminator + 1}`
 	const extension = format === 'jpeg' ? 'jpg' : 'png'
-	return `${stem(sourceName)}${suffix}.${extension}`
+	return `${stem(sourceName)}${multiImageSuffix}${collisionSuffix}.${extension}`
 }
 
 export function outputMime(format: TImageFormat): string {
