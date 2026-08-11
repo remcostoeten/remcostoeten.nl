@@ -4,6 +4,7 @@ import { ArrowUpRight, Check, Github, Package } from 'lucide-react'
 import { Suspense } from 'react'
 import { BreadcrumbStructuredData } from '@/components/seo/structured-data'
 import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
+import { NotifierDemo } from '@/components/packages/notifier-demo'
 import { PackageCode } from '@/components/packages/package-code'
 import { baseUrl } from '@/core/config/site'
 import {
@@ -227,6 +228,11 @@ async function PackagePageContent({ params }: Props) {
 						<AuthDrawerDemo />
 					</div>
 				)}
+				{pkg.slug === 'notifier' && (
+					<div className="mt-6">
+						<NotifierDemo />
+					</div>
+				)}
 			</section>
 
 			<section
@@ -252,34 +258,6 @@ async function PackagePageContent({ params }: Props) {
 					fileName={pkg.quickStartFile}
 					className="mt-4"
 				/>
-			</section>
-
-			<section
-				aria-labelledby="workflow-heading"
-				className="border-b border-border/60 px-4 py-7 md:px-5"
-			>
-				<SectionLabel>Integration shape</SectionLabel>
-				<h2
-					id="workflow-heading"
-					className="mt-2 text-lg font-semibold tracking-tight"
-				>
-					A small path from install to product behavior.
-				</h2>
-				<ol className="mt-5 grid gap-px border border-border bg-border sm:grid-cols-3">
-					{pkg.workflow.map((item, index) => (
-						<li key={item.title} className="bg-background p-4">
-							<span className="font-mono text-[10px] text-muted-foreground">
-								0{index + 1}
-							</span>
-							<h3 className="mt-2 text-sm font-medium">
-								{item.title}
-							</h3>
-							<p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-								{item.description}
-							</p>
-						</li>
-					))}
-				</ol>
 			</section>
 
 			<section

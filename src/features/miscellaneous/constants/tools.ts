@@ -4,6 +4,7 @@ import {
 	DiffIcon,
 	FindReplaceIcon,
 	GifToVideoIcon,
+	ImageConvertIcon,
 	LinkExtractIcon,
 	LocateIcon,
 	RadiusIcon,
@@ -187,6 +188,25 @@ export const TOOLS = [
 			'geo',
 			'crow',
 			'triangulate'
+		]
+	},
+	{
+		slug: 'heic-converter',
+		name: 'HEIC Converter',
+		description:
+			'Convert iPhone HEIC and HEIF photos to JPG or PNG in your browser. Batch convert, preview and download without uploading anything.',
+		updatedAt: '2026-08-10',
+		category: 'media',
+		icon: ImageConvertIcon,
+		status: 'available',
+		keywords: [
+			'heic to jpg',
+			'heic to jpeg',
+			'heic to png',
+			'heif converter',
+			'iphone photo',
+			'image converter',
+			'batch converter'
 		]
 	},
 	{
