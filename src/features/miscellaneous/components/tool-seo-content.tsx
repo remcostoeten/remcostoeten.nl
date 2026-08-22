@@ -36,7 +36,7 @@ export function ToolSeoContent({ name, content }: Props) {
 							<li key={highlight} className="flex gap-2">
 								<span
 									aria-hidden
-									className="text-foreground/50"
+									className="text-muted-foreground"
 								>
 									—
 								</span>
@@ -53,7 +53,7 @@ export function ToolSeoContent({ name, content }: Props) {
 					<ol className="mt-3 space-y-2 text-sm leading-6 text-muted-foreground">
 						{content.steps.map((step, index) => (
 							<li key={step} className="flex gap-2">
-								<span className="font-mono text-foreground/50">
+								<span className="font-mono text-muted-foreground">
 									{index + 1}.
 								</span>
 								<span>{step}</span>

@@ -6,8 +6,8 @@ import { toast } from 'sonner'
 import Link from 'next/link'
 import { useLatestCommit } from '@/hooks/use-github'
 import { AnimatedNumber } from '../ui/effects/animated-number'
-import { ContactPopover } from '@/components/contact/contact-popover'
-import { ResumeDrawer } from '../resume-drawer'
+import { LazyContactPopover } from '@/components/contact/lazy-contact-popover'
+import { LazyResumeDrawer } from '../lazy-resume-drawer'
 import { CurrentYear } from '@/components/ui/current-year'
 
 export function Footer() {
@@ -113,11 +113,11 @@ export function Footer() {
 					</div>
 
 					<div className="flex items-center gap-4">
-						<ContactPopover />
+						<LazyContactPopover />
 
 						<span className="text-border">|</span>
 
-						<ResumeDrawer />
+						<LazyResumeDrawer />
 
 						<span className="text-border">|</span>
 

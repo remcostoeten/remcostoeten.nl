@@ -12,7 +12,8 @@ import React, {
 	type ReactNode,
 	type RefObject
 } from 'react'
-import { useInView, useReducedMotion } from 'motion/react'
+import { useInViewOnce } from '@/hooks/use-in-view-once'
+import { useReducedMotion } from '@/hooks/use-reduced-motion'
 
 // Check for debug flag via environment or global
 const isDebugMode = () => {
@@ -296,10 +297,7 @@ export function useStaggerLayer<T extends HTMLElement = HTMLElement>(
 	const id = `stagger-${useId()}`
 
 	const shouldReduceMotion = useReducedMotion()
-	const isInView = useInView(ref as RefObject<Element>, {
-		once: true,
-		margin: '-50px'
-	})
+	const isInView = useInViewOnce(ref as RefObject<Element | null>, '-50px')
 
 	// Register/unregister on mount
 	useEffect(() => {

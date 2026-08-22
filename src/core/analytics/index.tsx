@@ -1,48 +1,55 @@
 'use client'
 
-import { lazy, Suspense } from 'react'
-
-const RemcoAnalytics = lazy(() =>
-	import('@remcostoeten/analytics').then(m => ({
-		default: m.Analytics
-	}))
-)
-
-const VercelAnalytics = lazy(() =>
-	import('@vercel/analytics/react').then(m => ({
-		default: m.Analytics
-	}))
-)
-
-const PostHogAnalytics = lazy(() =>
-	import('./posthog').then(m => ({
-		default: m.PostHogAnalytics
-	}))
-)
-
+import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import {
+	observePerformance,
+	observeScroll,
+	observeTimeOnPage
+} from '@remcostoeten/analytics'
+import {
+	AnalyticsProvider,
+	usePageview
+} from '@remcostoeten/analytics-manager/react'
 import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
+import { analytics } from './manager'
+import { PostHogAnalytics } from './posthog'
 
 export { VercelSpeedInsights }
 
-function Analytics() {
+function Pageviews() {
+	usePageview(usePathname())
+	return null
+}
+
+function RemcoObservers() {
 	const ingestUrl = process.env.NEXT_PUBLIC_ANALYTICS_URL
-	if (!ingestUrl) return null
-	return <RemcoAnalytics ingestUrl={ingestUrl} />
+
+	useEffect(() => {
+		if (!ingestUrl) return
+
+		const options = { ingestUrl, projectId: 'remcostoeten.nl' }
+		const stop = [
+			observePerformance(options),
+			observeScroll(options),
+			observeTimeOnPage(options)
+		]
+
+		return () => stop.forEach(cleanup => cleanup())
+	}, [ingestUrl])
+
+	return null
 }
 
 export function UnifiedAnalytics() {
 	const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
 
 	return (
-		<Suspense fallback={null}>
-			<Analytics />
+		<AnalyticsProvider analytics={analytics}>
 			<PostHogAnalytics />
-			{isProduction ? (
-				<>
-					<VercelAnalytics />
-					<VercelSpeedInsights />
-				</>
-			) : null}
-		</Suspense>
+			<Pageviews />
+			<RemcoObservers />
+			{isProduction ? <VercelSpeedInsights /> : null}
+		</AnalyticsProvider>
 	)
 }

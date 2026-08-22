@@ -215,6 +215,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 					setIsVisible(true)
 					setInput(':')
 				}}
+				aria-label="Open command bar"
 				className="fixed bottom-4 right-4 z-[9990] w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white shadow-lg md:hidden"
 				whileTap={{ scale: 0.95 }}
 				initial={{ opacity: 0, scale: 0.8 }}
