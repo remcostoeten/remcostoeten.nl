@@ -8,7 +8,8 @@ import React, {
 	useRef,
 	useState
 } from 'react'
-import { useInView, useReducedMotion } from 'motion/react'
+import { useInViewOnce } from '@/hooks/use-in-view-once'
+import { useReducedMotion } from '@/hooks/use-reduced-motion'
 import { useStaggerLayer } from '../stagger-system'
 
 // =============================================================================
@@ -281,7 +282,7 @@ export function AnimatedNumber({
 		useAnimatedNumberContext()
 
 	// Only enable view-based animations on client side
-	const isInView = useInView(elementRef, { once: true, margin: '100px' })
+	const isInView = useInViewOnce(elementRef, '100px')
 
 	useEffect(() => {
 		setIsClient(true)

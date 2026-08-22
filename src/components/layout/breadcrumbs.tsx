@@ -2,8 +2,8 @@
 
 import type { Route } from 'next'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { Fragment, Suspense } from 'react'
+import { usePathname } from 'next/navigation'
+import { Fragment, useEffect, useState } from 'react'
 import { Home } from 'lucide-react'
 
 interface BreadcrumbItem {
@@ -57,13 +57,21 @@ function generateBreadcrumbs(pathname: string): BreadcrumbItem[] {
 	return breadcrumbs
 }
 
-function BreadcrumbsContent({ params }: BreadcrumbProps) {
-	const pathname = usePathname()
-	const searchParams = useSearchParams()
-	const breadcrumbs = generateBreadcrumbs(pathname)
+function useLangParam() {
+	const [linkParams, setLinkParams] = useState('')
 
-	const langParam = searchParams.get('lang')
-	const linkParams = langParam ? `?lang=${langParam}` : ''
+	useEffect(() => {
+		const lang = new URLSearchParams(window.location.search).get('lang')
+		if (lang) setLinkParams(`?lang=${lang}`)
+	}, [])
+
+	return linkParams
+}
+
+export function Breadcrumbs({ params }: BreadcrumbProps) {
+	const pathname = usePathname()
+	const breadcrumbs = generateBreadcrumbs(pathname)
+	const linkParams = useLangParam()
 
 	if (pathname === '/' || breadcrumbs.length === 0) {
 		return null
@@ -71,7 +79,7 @@ function BreadcrumbsContent({ params }: BreadcrumbProps) {
 
 	return (
 		<nav aria-label="Breadcrumb">
-			<ol className="flex items-center gap-1 text-xs font-mono text-muted-foreground/50">
+			<ol className="flex items-center gap-1 text-xs font-mono text-muted-foreground">
 				<li>
 					<Link
 						href={buildHref('/', params) as Route}
@@ -106,13 +114,5 @@ function BreadcrumbsContent({ params }: BreadcrumbProps) {
 				))}
 			</ol>
 		</nav>
-	)
-}
-
-export function Breadcrumbs(props: BreadcrumbProps) {
-	return (
-		<Suspense fallback={null}>
-			<BreadcrumbsContent {...props} />
-		</Suspense>
 	)
 }

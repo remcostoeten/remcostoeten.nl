@@ -12,7 +12,6 @@ import {
 	TerminalIcon
 } from 'lucide-react'
 import React from 'react'
-import ReactMarkdown from 'react-markdown'
 
 const iconMap = {
 	code: CodeXmlIcon,
@@ -360,9 +359,7 @@ export function ExperiencePositionItem({
 						>
 							{position.description && (
 								<Prose>
-									<ReactMarkdown>
-										{position.description}
-									</ReactMarkdown>
+									<Description text={position.description} />
 								</Prose>
 							)}
 
@@ -409,6 +406,30 @@ function SkillsList({ skills }: { skills: string[] }) {
 				)}
 			</div>
 		</div>
+	)
+}
+
+function Description({ text }: { text: string }) {
+	const lines = text
+		.split('\n')
+		.map(line => line.trim())
+		.filter(Boolean)
+	const bullets = lines.filter(line => line.startsWith('- '))
+	const paragraphs = lines.filter(line => !line.startsWith('- '))
+
+	return (
+		<>
+			{paragraphs.map(paragraph => (
+				<p key={paragraph}>{paragraph}</p>
+			))}
+			{bullets.length > 0 && (
+				<ul>
+					{bullets.map(bullet => (
+						<li key={bullet}>{bullet.slice(2)}</li>
+					))}
+				</ul>
+			)}
+		</>
 	)
 }
 

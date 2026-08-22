@@ -118,7 +118,6 @@ const nextConfig: NextConfig = {
 			'@radix-ui/react-tabs',
 			'@radix-ui/react-switch',
 			'motion',
-			'react-markdown',
 			'react-syntax-highlighter'
 		]
 	},

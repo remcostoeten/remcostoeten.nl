@@ -11,8 +11,12 @@ import { cn } from '@/shared/lib/cn'
 
 const FORM_FIELDS = ['name', 'email', 'subject', 'message'] as const
 
-export function ContactPopover() {
-	const [isOpen, setIsOpen] = useState(false)
+type TContactPopoverProps = {
+	initialOpen?: boolean
+}
+
+export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
+	const [isOpen, setIsOpen] = useState(initialOpen)
 	const [status, setStatus] = useState<TSendStatus>('idle')
 	const containerRef = useRef<HTMLDivElement>(null)
 	const popoverRef = useRef<HTMLDivElement>(null)

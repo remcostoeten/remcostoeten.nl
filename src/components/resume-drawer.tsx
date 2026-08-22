@@ -4,11 +4,15 @@ import { Drawer } from 'vaul'
 import { FileUser, Download, X, Maximize2, Minimize2 } from 'lucide-react'
 import { useState } from 'react'
 
-export function ResumeDrawer() {
+type Props = {
+	initialOpen?: boolean
+}
+
+export function ResumeDrawer({ initialOpen = false }: Props) {
 	const [isFullscreen, setIsFullscreen] = useState(false)
 
 	return (
-		<Drawer.Root shouldScaleBackground>
+		<Drawer.Root shouldScaleBackground defaultOpen={initialOpen}>
 			<Drawer.Trigger asChild>
 				<button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
 					<FileUser className="w-4 h-4" />

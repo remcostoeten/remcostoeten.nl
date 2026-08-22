@@ -19,7 +19,8 @@ export function PostHogAnalytics() {
 			api_host: '/ingest',
 			ui_host: uiHost,
 			defaults: '2025-05-24',
-			person_profiles: 'identified_only'
+			person_profiles: 'identified_only',
+			capture_pageview: false
 		})
 	}, [])
 

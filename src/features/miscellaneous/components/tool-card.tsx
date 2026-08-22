@@ -16,20 +16,19 @@ function ToolCardImpl({ tool }: Props) {
 	return (
 		<Link
 			href={`/tools/${tool.slug}`}
-			aria-labelledby={`tool-${tool.slug}-name`}
 			className="group ai-trigger relative flex h-full flex-col gap-3 rounded-none border border-border/50 bg-card p-4 transition-colors hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 		>
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex size-8 shrink-0 items-center justify-center rounded-md border border-border/50 bg-muted/60">
-					<Icon aria-hidden className="size-4 text-muted-foreground" />
+					<Icon
+						aria-hidden
+						className="size-4 text-muted-foreground"
+					/>
 				</div>
 			</div>
 
 			<div className="min-w-0 grow">
-				<h3
-					id={`tool-${tool.slug}-name`}
-					className="text-sm font-medium text-foreground"
-				>
+				<h3 className="text-sm font-medium text-foreground">
 					{tool.name}
 				</h3>
 				<p className="mt-1 text-sm text-muted-foreground">

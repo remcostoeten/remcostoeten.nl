@@ -18,7 +18,6 @@ export function PackageCard({ pkg, version }: Props) {
 				href={`/packages/${pkg.slug}` as Route}
 				prefetch
 				className="block px-4 py-5 md:px-5 transition-colors duration-150 ease-out hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring active:bg-muted/50"
-				aria-label={`Read about ${pkg.name}`}
 			>
 				<div className="flex items-start gap-3">
 					<div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-border/70 bg-background shadow-sm">

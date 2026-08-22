@@ -1,8 +1,6 @@
 import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
 import { cn } from '@/shared/lib/cn'
 import {
 	WebsiteStructuredData,
@@ -99,7 +97,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			suppressHydrationWarning
 			className={cn(
 				'bg-white text-black antialiased dark:bg-black dark:text-white',
-				`${GeistSans.variable} ${GeistMono.variable} font-sans`
+				'font-sans'
 			)}
 		>
 			<head>

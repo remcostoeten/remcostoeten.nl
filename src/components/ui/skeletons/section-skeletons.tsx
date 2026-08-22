@@ -149,7 +149,7 @@ export function ActivitySectionSkeleton() {
 									key={month}
 									className="relative overflow-visible z-20"
 								>
-									<span className="whitespace-nowrap absolute text-[10px] text-muted-foreground/30">
+									<span className="whitespace-nowrap absolute text-[10px] text-muted-foreground">
 										{month}
 									</span>
 								</div>
