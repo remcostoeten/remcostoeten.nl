@@ -20,7 +20,6 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/shared/lib/cn'
 import { useLocalStorage } from '../hooks/use-local-storage'
 import { SendToTool } from '../components/send-to-tool'
-import { HemelsbreedSkeleton } from '../components/tool-skeletons'
 import { geolocationErrorMessage, locate } from '../utils/geolocation'
 import { consumeLocations, type TLocationPoint } from '../utils/location-handoff'
 import { appendSavedLocation, locationLabel } from '../utils/locations'
@@ -396,10 +395,6 @@ export default function HemelsbreedTool() {
 		toast.success('Deleted')
 	}
 
-	if (!hydrated) {
-		return <HemelsbreedSkeleton />
-	}
-
 	return (
 		<div
 			className={cn(
@@ -407,6 +402,10 @@ export default function HemelsbreedTool() {
 				expanded ? 'lg:grid-cols-1' : 'lg:grid-cols-[1fr_360px]'
 			)}
 		>
+			<link rel="preconnect" href="https://a.basemaps.cartocdn.com" />
+			<link rel="dns-prefetch" href="https://b.basemaps.cartocdn.com" />
+			<link rel="dns-prefetch" href="https://c.basemaps.cartocdn.com" />
+			<link rel="dns-prefetch" href="https://d.basemaps.cartocdn.com" />
 			<div className="flex flex-col gap-3">
 				<MapsBar
 					maps={maps}

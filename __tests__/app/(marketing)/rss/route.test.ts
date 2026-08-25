@@ -6,7 +6,7 @@ const blogMocks = vi.hoisted(() => ({
 
 vi.mock('@/features/blog', () => blogMocks)
 vi.mock('@/app/sitemap', () => ({
-	baseUrl: 'https://remcostoeten.nl'
+	baseUrl: 'https://www.remcostoeten.nl'
 }))
 
 describe('rss route', () => {
@@ -41,7 +41,7 @@ describe('rss route', () => {
 			'<description>2 &lt; 3 and &quot;quotes&quot; too</description>'
 		)
 		expect(body).toContain(
-			'<link>https://remcostoeten.nl/blog/engineering/escape-test</link>'
+			'<link>https://www.remcostoeten.nl/blog/engineering/escape-test</link>'
 		)
 		expect(body).not.toContain('<title>Hello & Goodbye</title>')
 	})

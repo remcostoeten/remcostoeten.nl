@@ -55,7 +55,19 @@ const nextConfig: NextConfig = {
 		qualities: [75, 85]
 	},
 	async redirects() {
+		const nonCanonicalHosts = [
+			'remcostoeten-nl.vercel.app',
+			'remcostoeten-remcostoetens-projects.vercel.app',
+			'remcostoeten-git-master-remcostoetens-projects.vercel.app'
+		]
+
 		return [
+			...nonCanonicalHosts.map(host => ({
+				source: '/:path*',
+				has: [{ type: 'host' as const, value: host }],
+				destination: 'https://www.remcostoeten.nl/:path*',
+				permanent: true
+			})),
 			{
 				source: '/categories',
 				destination: '/blog/topics',

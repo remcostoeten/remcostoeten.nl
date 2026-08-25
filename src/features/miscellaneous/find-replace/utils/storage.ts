@@ -26,7 +26,21 @@ export function createWorkspace(name: string): TWorkspace {
 }
 
 export function createInitialState(): TPersistedState {
-	const workspace = createWorkspace('Workspace 1')
+	// Deterministic id and timestamps so the pre-hydration state renders
+	// identically on the server and the client's first paint.
+	const workspace: TWorkspace = {
+		id: 'workspace-initial',
+		name: 'Workspace 1',
+		pinned: false,
+		createdAt: 0,
+		updatedAt: 0,
+		input: '',
+		output: '',
+		search: '',
+		replace: '',
+		options: { ...DEFAULT_OPTIONS },
+		snapshots: []
+	}
 	return {
 		version: STORAGE_VERSION,
 		activeWorkspaceId: workspace.id,
