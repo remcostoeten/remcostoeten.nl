@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { cn } from '@/shared/lib/cn'
 import {
 	WebsiteStructuredData,
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
 		'Web Development',
 		'Netherlands'
 	],
-	authors: [{ name: 'Remco Stoeten', url: 'https://remcostoeten.nl' }],
+	authors: [{ name: 'Remco Stoeten', url: 'https://www.remcostoeten.nl' }],
 	creator: 'Remco Stoeten',
 	publisher: 'Remco Stoeten',
 	formatDetection: {
@@ -129,11 +128,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				suppressHydrationWarning
 			>
 				<AppProviders>{children}</AppProviders>
-				<Script
-					defer
-					src="https://static.cloudflareinsights.com/beacon.min.js"
-					data-cf-beacon='{"token":"32bdf382dc08494ab635789326c70d46"}'
-				/>
 			</body>
 		</html>
 	)
