@@ -21,7 +21,8 @@ export function PostHogAnalytics() {
 			defaults: '2025-05-24',
 			person_profiles: 'identified_only',
 			capture_pageview: false,
-			disable_session_recording: true
+			disable_session_recording: true,
+			disable_surveys: true
 		})
 	}, [])
 
