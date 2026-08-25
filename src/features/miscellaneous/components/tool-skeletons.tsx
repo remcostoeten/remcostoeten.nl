@@ -525,6 +525,41 @@ function MediaDropzoneSkeleton() {
 	)
 }
 
+function HeicConverterSkeleton() {
+	return (
+		<LoadingShell>
+			<div className="flex flex-col gap-3">
+				<div className="grid min-h-44 place-items-center border border-dashed border-border/60 bg-card px-5 py-8">
+					<div className="flex max-w-md flex-col items-center gap-2">
+						<Skeleton className="size-11 rounded-full" />
+						<div className="flex flex-col items-center gap-1.5">
+							<Skeleton className="h-5 w-44" />
+							<Skeleton className="h-4 w-56 max-w-full" />
+						</div>
+						<Skeleton className="h-4 w-44" />
+					</div>
+				</div>
+
+				<section className="border border-border/50 bg-card">
+					<div className="flex flex-wrap items-center gap-x-5 gap-y-3 p-3">
+						<div className="flex items-center gap-2">
+							<Skeleton className="h-4 w-12 rounded-sm" />
+							<Skeleton className="h-8 w-[132px]" />
+						</div>
+						<div className="flex min-w-52 grow items-center gap-2 sm:max-w-xs">
+							<Skeleton className="h-4 w-12 rounded-sm" />
+							<Skeleton className="h-1 grow" />
+							<Skeleton className="h-4 w-8" />
+						</div>
+					</div>
+				</section>
+
+				<Skeleton className="h-4 w-64 max-w-full rounded-sm" />
+			</div>
+		</LoadingShell>
+	)
+}
+
 function SendableVideoSkeleton() {
 	return (
 		<LoadingShell>
@@ -618,7 +653,7 @@ export const TOOL_SKELETONS: Record<TToolSlug, ComponentType> = {
 	hemelsbreed: HemelsbreedSkeleton,
 	'coordinate-marker': CoordinateMarkerSkeleton,
 	'my-location': MyLocationSkeleton,
-	'heic-converter': GifToVideoSkeleton,
+	'heic-converter': HeicConverterSkeleton,
 	'sendable-video': SendableVideoSkeleton,
 	'gif-to-video': GifToVideoSkeleton,
 	'video-to-gif': VideoToGifSkeleton

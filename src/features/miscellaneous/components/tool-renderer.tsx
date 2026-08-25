@@ -1,5 +1,3 @@
-'use client'
-
 import nextDynamic from 'next/dynamic'
 import type { ComponentType } from 'react'
 import type { TToolSlug } from '../constants/tools'
@@ -9,7 +7,7 @@ type TLoader = () => Promise<{ default: ComponentType }>
 
 function lazyTool(slug: TToolSlug, loader: TLoader) {
 	const Fallback = TOOL_SKELETONS[slug]
-	return nextDynamic(loader, { ssr: true, loading: () => <Fallback /> })
+	return nextDynamic(loader, { loading: () => <Fallback /> })
 }
 
 const TOOL_COMPONENTS: Record<TToolSlug, ComponentType> = {

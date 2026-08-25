@@ -20,7 +20,6 @@ import {
 	CollapsibleTrigger
 } from '@/components/ui/collapsible'
 import { writeDiffHandoff } from '../diff-checker/utils/handoff'
-import { FindReplaceSkeleton } from '../components/tool-skeletons'
 import { AdvancedReplace } from './components/advanced-replace'
 import { EditorPanels } from './components/editor-panels'
 import { FindControls } from './components/find-controls'
@@ -163,10 +162,6 @@ export default function FindReplaceTool() {
 		store.setSearch('')
 		store.setReplace('')
 		toast.success('Workspace reset')
-	}
-
-	if (!store.hydrated) {
-		return <FindReplaceSkeleton />
 	}
 
 	return (

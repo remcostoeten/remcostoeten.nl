@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
-import { Suspense } from 'react'
+import { cacheLife } from 'next/cache'
 import type { Metadata } from 'next'
 import { createPageMetadata } from '@/core/metadata/base'
 import { baseUrl } from '@/core/config/site'
@@ -45,6 +45,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function ToolPage({ params }: Props) {
+	'use cache'
+	cacheLife('max')
 	const { slug } = await params
 	const tool = getToolBySlug(slug)
 	if (!tool || tool.status !== 'available') notFound()
@@ -96,25 +98,4 @@ async function ToolPage({ params }: Props) {
 	)
 }
 
-function ToolPageFallback() {
-	return (
-		<div
-			className="px-4 md:px-5"
-			role="status"
-			aria-label="Loading tool workspace"
-		>
-			<div className="h-4 w-20 animate-pulse bg-muted/60" />
-			<div className="mt-4 h-7 w-48 animate-pulse bg-muted/60" />
-			<div className="mt-3 h-4 w-full max-w-xl animate-pulse bg-muted/60" />
-			<div className="mt-6 min-h-[70vh] border border-border/50" />
-		</div>
-	)
-}
-
-export default function Page({ params }: Props) {
-	return (
-		<Suspense fallback={<ToolPageFallback />}>
-			<ToolPage params={params} />
-		</Suspense>
-	)
-}
+export default ToolPage
