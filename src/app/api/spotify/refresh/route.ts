@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-
 export async function POST(request: NextRequest) {
 	const denied = await requireDevToolsAccess()
 	if (denied) return denied

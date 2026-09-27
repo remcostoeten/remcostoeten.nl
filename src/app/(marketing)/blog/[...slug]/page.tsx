@@ -7,7 +7,6 @@ import {
 } from '@/core/metadata/base'
 import { BlogPostView } from '@/views/marketing/blog/post'
 
-
 export async function generateStaticParams() {
 	const { getBlogPosts } = await import('@/features/blog')
 	let posts = getBlogPosts()

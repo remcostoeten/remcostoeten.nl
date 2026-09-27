@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og'
 
-
 export function GET(request: Request) {
 	const url = new URL(request.url)
 	const title = url.searchParams.get('title') || 'Remco Stoeten'

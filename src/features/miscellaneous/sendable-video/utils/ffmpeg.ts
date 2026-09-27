@@ -22,7 +22,9 @@ function seekArgs(range: TTrimRange | null): {
  */
 export function isRemuxCompatible(probe: string): boolean {
 	if (!/Video:\s*h264/i.test(probe)) return false
-	const codecs = [...probe.matchAll(/Audio:\s*(\w+)/gi)].map(match => match[1])
+	const codecs = [...probe.matchAll(/Audio:\s*(\w+)/gi)].map(
+		match => match[1]
+	)
 	return codecs.every(codec => /^(aac|mp3)$/i.test(codec))
 }
 
@@ -92,7 +94,10 @@ export function encodeArgs(
  * Two-pass palette GIF encode (palettegen + paletteuse) at the preset's fps
  * and max width.
  */
-export function gifArgs(range: TTrimRange | null, preset: TGifPreset): string[] {
+export function gifArgs(
+	range: TTrimRange | null,
+	preset: TGifPreset
+): string[] {
 	const seek = seekArgs(range)
 	return [
 		...seek.before,

@@ -92,7 +92,10 @@ export function MapsBar({
 						/>
 					)}
 				</span>
-				<ChevronDown aria-hidden className="size-4 shrink-0 opacity-60" />
+				<ChevronDown
+					aria-hidden
+					className="size-4 shrink-0 opacity-60"
+				/>
 			</Button>
 
 			<Button
@@ -101,7 +104,9 @@ export function MapsBar({
 				size="sm"
 				className="h-9 shrink-0 gap-1.5"
 				onClick={onSave}
-				title={active ? 'Save changes to this map' : 'Save as a new map'}
+				title={
+					active ? 'Save changes to this map' : 'Save as a new map'
+				}
 			>
 				<Save aria-hidden className="size-4" />
 				Save
@@ -143,11 +148,14 @@ export function MapsBar({
 
 					{maps.length === 0 ? (
 						<p className="px-2 py-4 text-center text-xs text-muted-foreground">
-							No saved maps yet. Save the current circles to start a
-							collection.
+							No saved maps yet. Save the current circles to start
+							a collection.
 						</p>
 					) : (
-						<ul className="max-h-72 overflow-y-auto py-1" role="list">
+						<ul
+							className="max-h-72 overflow-y-auto py-1"
+							role="list"
+						>
 							{maps.map(map => {
 								const isActive = map.id === activeMapId
 								const isRenaming = map.id === renamingId
@@ -169,9 +177,15 @@ export function MapsBar({
 														)
 													}
 													onKeyDown={event => {
-														if (event.key === 'Enter')
+														if (
+															event.key ===
+															'Enter'
+														)
 															commitRename(map.id)
-														if (event.key === 'Escape')
+														if (
+															event.key ===
+															'Escape'
+														)
 															setRenamingId(null)
 													}}
 													onBlur={() =>
@@ -204,11 +218,14 @@ export function MapsBar({
 														</span>
 														<span className="truncate text-[11px] text-muted-foreground">
 															{map.circles.length}{' '}
-															{map.circles.length ===
-															1
+															{map.circles
+																.length === 1
 																? 'circle'
 																: 'circles'}{' '}
-															· {formatWhen(map.updatedAt)}
+															·{' '}
+															{formatWhen(
+																map.updatedAt
+															)}
 														</span>
 													</span>
 												</button>
@@ -222,8 +239,12 @@ export function MapsBar({
 														size="icon"
 														className="size-7 text-muted-foreground hover:text-foreground"
 														onClick={() => {
-															setDraftName(map.name)
-															setRenamingId(map.id)
+															setDraftName(
+																map.name
+															)
+															setRenamingId(
+																map.id
+															)
 														}}
 														aria-label="Rename map"
 													>

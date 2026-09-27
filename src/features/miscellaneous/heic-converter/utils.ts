@@ -25,7 +25,9 @@ export function outputName(
 ): string {
 	const multiImageSuffix = index === undefined ? '' : `-${index + 1}`
 	const collisionSuffix =
-		collisionDiscriminator === undefined ? '' : `-${collisionDiscriminator + 1}`
+		collisionDiscriminator === undefined
+			? ''
+			: `-${collisionDiscriminator + 1}`
 	const extension = format === 'jpeg' ? 'jpg' : 'png'
 	return `${stem(sourceName)}${multiImageSuffix}${collisionSuffix}.${extension}`
 }

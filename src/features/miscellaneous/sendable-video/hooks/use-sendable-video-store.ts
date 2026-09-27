@@ -270,7 +270,15 @@ export function useSendableVideoStore() {
 			setFFmpegProgressHandler(noop)
 			setBusy(false)
 		}
-	}, [busy, clearOutput, file, hasTrim, options.muteAudio, persistOutput, trim])
+	}, [
+		busy,
+		clearOutput,
+		file,
+		hasTrim,
+		options.muteAudio,
+		persistOutput,
+		trim
+	])
 
 	const exportGif = useCallback(async () => {
 		if (!file || busy) return

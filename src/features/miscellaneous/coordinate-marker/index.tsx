@@ -217,20 +217,17 @@ export default function CoordinateMarkerTool() {
 		}
 	}, [resolveAddress])
 
-	const copyToClipboard = useCallback(
-		async (value: string, key: string) => {
-			try {
-				await navigator.clipboard.writeText(value)
-				setCopied(key)
-				window.setTimeout(() => {
-					setCopied(prev => (prev === key ? null : prev))
-				}, 1200)
-			} catch {
-				/* ignore */
-			}
-		},
-		[]
-	)
+	const copyToClipboard = useCallback(async (value: string, key: string) => {
+		try {
+			await navigator.clipboard.writeText(value)
+			setCopied(key)
+			window.setTimeout(() => {
+				setCopied(prev => (prev === key ? null : prev))
+			}, 1200)
+		} catch {
+			/* ignore */
+		}
+	}, [])
 
 	const addMyLocation = useCallback(async () => {
 		setLocating(true)
@@ -238,7 +235,9 @@ export default function CoordinateMarkerTool() {
 			const fix = await locate()
 			addPoint(fix.lat, fix.lng)
 			mapRef.current?.setView([fix.lat, fix.lng], 15, { animate: true })
-			toast.success(`Pinned your location (± ${Math.round(fix.accuracy)} m)`)
+			toast.success(
+				`Pinned your location (± ${Math.round(fix.accuracy)} m)`
+			)
 		} catch (cause) {
 			toast.error(geolocationErrorMessage(cause))
 		} finally {
@@ -492,7 +491,10 @@ export default function CoordinateMarkerTool() {
 							}}
 							onFocus={() => setShowSuggestions(true)}
 							onBlur={() =>
-								window.setTimeout(() => setShowSuggestions(false), 150)
+								window.setTimeout(
+									() => setShowSuggestions(false),
+									150
+								)
 							}
 							placeholder="Search for an address, city or place…"
 							className="w-full h-10 rounded-md border border-border bg-card pl-9 pr-9 text-sm placeholder:text-muted-foreground/70 focus:outline-none focus:border-border focus-visible:outline-none focus:ring-1 focus:ring-muted-foreground/30"
@@ -519,8 +521,11 @@ export default function CoordinateMarkerTool() {
 											const parts = s.display_name
 												.split(',')
 												.map(p => p.trim())
-											const primary = parts[0] ?? s.display_name
-											const secondary = parts.slice(1).join(', ')
+											const primary =
+												parts[0] ?? s.display_name
+											const secondary = parts
+												.slice(1)
+												.join(', ')
 											return (
 												<li key={s.place_id}>
 													<button
@@ -543,8 +548,13 @@ export default function CoordinateMarkerTool() {
 															) : null}
 														</div>
 														<span className="font-mono text-[10px] text-muted-foreground/70 shrink-0 pt-0.5">
-															{parseFloat(s.lat).toFixed(3)},{' '}
-															{parseFloat(s.lon).toFixed(3)}
+															{parseFloat(
+																s.lat
+															).toFixed(3)}
+															,{' '}
+															{parseFloat(
+																s.lon
+															).toFixed(3)}
 														</span>
 													</button>
 												</li>
@@ -601,9 +611,10 @@ export default function CoordinateMarkerTool() {
 					</div>
 
 					<p className="text-xs text-muted-foreground">
-						Toggle <span className="text-foreground">Add mode</span>,
-						then click the map to drop a pin. Search for an address, or click
-						any coordinate or city to copy. Works worldwide.
+						Toggle <span className="text-foreground">Add mode</span>
+						, then click the map to drop a pin. Search for an
+						address, or click any coordinate or city to copy. Works
+						worldwide.
 					</p>
 				</div>
 
@@ -613,7 +624,8 @@ export default function CoordinateMarkerTool() {
 						<div className="flex items-center gap-2 text-sm">
 							<Layers className="size-4 text-muted-foreground" />
 							<span>
-								{points.length} pin{points.length === 1 ? '' : 's'}
+								{points.length} pin
+								{points.length === 1 ? '' : 's'}
 							</span>
 						</div>
 						<button
@@ -636,8 +648,8 @@ export default function CoordinateMarkerTool() {
 
 					{points.length === 0 ? (
 						<div className="rounded-md border border-border/60 p-4 text-sm text-muted-foreground">
-							No pins yet. Toggle <strong>Add mode</strong> and click
-							anywhere on the map to save a coordinate.
+							No pins yet. Toggle <strong>Add mode</strong> and
+							click anywhere on the map to save a coordinate.
 						</div>
 					) : (
 						<ul className="flex flex-col gap-2 max-h-[560px] overflow-y-auto pr-1">
@@ -680,7 +692,9 @@ export default function CoordinateMarkerTool() {
 												)}
 											</button>
 											<button
-												onClick={() => removePoint(p.id)}
+												onClick={() =>
+													removePoint(p.id)
+												}
 												className="shrink-0 rounded p-1 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
 												aria-label="Remove pin"
 											>
@@ -707,9 +721,15 @@ export default function CoordinateMarkerTool() {
 													<dd>
 														<CopyValue
 															value={cityLine}
-															copied={copied === `${p.id}:city`}
+															copied={
+																copied ===
+																`${p.id}:city`
+															}
 															onCopy={() =>
-																copyToClipboard(cityLine, `${p.id}:city`)
+																copyToClipboard(
+																	cityLine,
+																	`${p.id}:city`
+																)
 															}
 														/>
 													</dd>
@@ -732,7 +752,9 @@ export default function CoordinateMarkerTool() {
 												<CopyValue
 													value={p.lat.toFixed(6)}
 													mono
-													copied={copied === `${p.id}:lat`}
+													copied={
+														copied === `${p.id}:lat`
+													}
 													onCopy={() =>
 														copyToClipboard(
 															p.lat.toFixed(6),
@@ -748,7 +770,9 @@ export default function CoordinateMarkerTool() {
 												<CopyValue
 													value={p.lng.toFixed(6)}
 													mono
-													copied={copied === `${p.id}:lng`}
+													copied={
+														copied === `${p.id}:lng`
+													}
 													onCopy={() =>
 														copyToClipboard(
 															p.lng.toFixed(6),
@@ -765,9 +789,12 @@ export default function CoordinateMarkerTool() {
 					)}
 
 					<p className="text-xs text-muted-foreground leading-relaxed pt-2 border-t border-border/50">
-						Reverse geocoding by OpenStreetMap Nominatim. Pins are shared
-						with the other map tools, stored under{' '}
-						<code className="text-foreground">{SAVED_LOCATIONS_KEY}</code>.
+						Reverse geocoding by OpenStreetMap Nominatim. Pins are
+						shared with the other map tools, stored under{' '}
+						<code className="text-foreground">
+							{SAVED_LOCATIONS_KEY}
+						</code>
+						.
 					</p>
 				</aside>
 			</div>

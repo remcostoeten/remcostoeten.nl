@@ -29,7 +29,11 @@ export const FORMAT_OPTIONS = [
 
 export const QUALITY_OPTIONS = [
 	{ value: 'small', label: 'Small', hint: 'Most compression, softer image' },
-	{ value: 'balanced', label: 'Balanced', hint: 'Good size/quality tradeoff' },
+	{
+		value: 'balanced',
+		label: 'Balanced',
+		hint: 'Good size/quality tradeoff'
+	},
 	{ value: 'high', label: 'High', hint: 'Near-lossless, largest file' }
 ] as const satisfies readonly {
 	value: TVideoQuality

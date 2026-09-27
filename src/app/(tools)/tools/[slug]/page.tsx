@@ -20,8 +20,6 @@ import { ToolQuickNav } from '@/features/miscellaneous/components/tool-quick-nav
 import { ToolRenderer } from '@/features/miscellaneous/components/tool-renderer'
 import { ToolSeoContent } from '@/features/miscellaneous/components/tool-seo-content'
 
-export const prefetch = 'allow-runtime'
-
 type Props = {
 	params: Promise<{ slug: string }>
 }

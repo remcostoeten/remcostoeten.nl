@@ -103,12 +103,13 @@ export function SpotSearch({ estimate, spots, onSpots, onFocusSpot }: Props) {
 	const [radiusUnit, setRadiusUnit] = useState<'m' | 'km'>('km')
 	const [loading, setLoading] = useState(false)
 	const [phases, setPhases] = useState<TPhase[]>([])
-	const [interpretation, setInterpretation] = useState<TInterpretation | null>(
-		null
-	)
+	const [interpretation, setInterpretation] =
+		useState<TInterpretation | null>(null)
 	const [error, setError] = useState<string | null>(null)
 	const [searched, setSearched] = useState(false)
-	const [searchedRadiusKm, setSearchedRadiusKm] = useState<number | null>(null)
+	const [searchedRadiusKm, setSearchedRadiusKm] = useState<number | null>(
+		null
+	)
 
 	const sessionRole = session?.user
 		? ((session.user as { role?: string | null }).role ?? null)
@@ -223,7 +224,10 @@ export function SpotSearch({ estimate, spots, onSpots, onFocusSpot }: Props) {
 		<div className="flex flex-col gap-2 border border-border/50 bg-muted/20 p-3">
 			<div className="flex items-center justify-between gap-2">
 				<div className="flex items-center gap-2 text-sm font-medium">
-					<Sparkles aria-hidden className="size-4 text-muted-foreground" />
+					<Sparkles
+						aria-hidden
+						className="size-4 text-muted-foreground"
+					/>
 					Find spots at the crossing
 				</div>
 				<span
@@ -384,8 +388,11 @@ export function SpotSearch({ estimate, spots, onSpots, onFocusSpot }: Props) {
 				<p className="flex items-center gap-1.5 text-xs text-muted-foreground">
 					<Search aria-hidden className="size-3.5" />
 					No matches within{' '}
-					{searchedRadiusKm ? formatKm(searchedRadiusKm) : 'the radius'}{' '}
-					of the crossing point. Try a broader term or a bigger radius.
+					{searchedRadiusKm
+						? formatKm(searchedRadiusKm)
+						: 'the radius'}{' '}
+					of the crossing point. Try a broader term or a bigger
+					radius.
 				</p>
 			)}
 
@@ -393,7 +400,8 @@ export function SpotSearch({ estimate, spots, onSpots, onFocusSpot }: Props) {
 				<>
 					<div className="flex items-center justify-between text-xs text-muted-foreground">
 						<span>
-							{spots.length} {spots.length === 1 ? 'spot' : 'spots'}
+							{spots.length}{' '}
+							{spots.length === 1 ? 'spot' : 'spots'}
 							{searchedRadiusKm
 								? ` · within ${formatKm(searchedRadiusKm)}`
 								: ''}
@@ -412,7 +420,10 @@ export function SpotSearch({ estimate, spots, onSpots, onFocusSpot }: Props) {
 					</div>
 					<ul className="max-h-56 divide-y divide-border/40 overflow-auto">
 						{spots.map(spot => (
-							<li key={spot.id} className="flex items-stretch gap-1">
+							<li
+								key={spot.id}
+								className="flex items-stretch gap-1"
+							>
 								<button
 									type="button"
 									onClick={() => onFocusSpot(spot)}
@@ -431,19 +442,27 @@ export function SpotSearch({ estimate, spots, onSpots, onFocusSpot }: Props) {
 										</span>
 										<span className="block truncate text-xs text-muted-foreground">
 											{spot.kind}
-											{spot.address ? ` · ${spot.address}` : ''}
+											{spot.address
+												? ` · ${spot.address}`
+												: ''}
 										</span>
 									</span>
 								</button>
 								<a
-									href={googleMapsSearchUrl(spot.lat, spot.lng)}
+									href={googleMapsSearchUrl(
+										spot.lat,
+										spot.lng
+									)}
 									target="_blank"
 									rel="noopener noreferrer"
 									title={`Open ${spot.name} in Google Maps`}
 									aria-label={`Open ${spot.name} in Google Maps`}
 									className="flex shrink-0 items-center px-2 text-muted-foreground hover:bg-accent hover:text-foreground"
 								>
-									<ExternalLink aria-hidden className="size-3.5" />
+									<ExternalLink
+										aria-hidden
+										className="size-3.5"
+									/>
 								</a>
 							</li>
 						))}

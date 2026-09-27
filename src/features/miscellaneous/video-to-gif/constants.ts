@@ -23,7 +23,11 @@ export const FPS_OPTIONS = [
 	{ value: '10', label: '10 fps', hint: 'Smallest file, choppier motion' },
 	{ value: '15', label: '15 fps', hint: 'Good balance for most clips' },
 	{ value: '20', label: '20 fps', hint: 'Smooth motion, larger file' },
-	{ value: '24', label: '24 fps', hint: 'Near-source smoothness, largest file' }
+	{
+		value: '24',
+		label: '24 fps',
+		hint: 'Near-source smoothness, largest file'
+	}
 ] as const satisfies readonly { value: TGifFps; label: string; hint: string }[]
 
 export const WIDTH_OPTIONS = [

@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server'
 import path from 'path'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-
 const PAGE_EXTENSIONS = new Set(['.tsx', '.js', '.jsx'])
 
 async function findPageFiles(

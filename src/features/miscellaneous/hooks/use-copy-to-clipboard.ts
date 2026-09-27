@@ -24,7 +24,10 @@ export function useCopyToClipboard(resetAfterMs = 1500) {
 				setCopiedKey(key)
 				toast.success(label)
 				if (timeout.current) clearTimeout(timeout.current)
-				timeout.current = setTimeout(() => setCopiedKey(null), resetAfterMs)
+				timeout.current = setTimeout(
+					() => setCopiedKey(null),
+					resetAfterMs
+				)
 			} catch (error) {
 				console.warn('Clipboard write failed', error)
 				toast.error('Could not copy to clipboard')

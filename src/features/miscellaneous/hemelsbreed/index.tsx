@@ -21,7 +21,10 @@ import { cn } from '@/shared/lib/cn'
 import { useLocalStorage } from '../hooks/use-local-storage'
 import { SendToTool } from '../components/send-to-tool'
 import { geolocationErrorMessage, locate } from '../utils/geolocation'
-import { consumeLocations, type TLocationPoint } from '../utils/location-handoff'
+import {
+	consumeLocations,
+	type TLocationPoint
+} from '../utils/location-handoff'
 import { appendSavedLocation, locationLabel } from '../utils/locations'
 import { reverseGeocode } from '../utils/reverse-geocode'
 import { CircleList } from './components/circle-list'
@@ -227,10 +230,16 @@ export default function HemelsbreedTool() {
 			}
 
 			const id = addCircle(fix.lat, fix.lng, 'My location')
-			toast.success(`Added your location (± ${Math.round(fix.accuracy)} m)`)
+			toast.success(
+				`Added your location (± ${Math.round(fix.accuracy)} m)`
+			)
 
 			const address = await reverseGeocode(fix.lat, fix.lng)
-			const label = locationLabel({ ...address, lat: fix.lat, lng: fix.lng })
+			const label = locationLabel({
+				...address,
+				lat: fix.lat,
+				lng: fix.lng
+			})
 			updateCircle(id, { label })
 			appendSavedLocation({ ...address, lat: fix.lat, lng: fix.lng })
 		} catch (cause) {
@@ -436,7 +445,10 @@ export default function HemelsbreedTool() {
 						title="Drop a circle on your current position"
 					>
 						{locating ? (
-							<Loader2 aria-hidden className="size-4 animate-spin" />
+							<Loader2
+								aria-hidden
+								className="size-4 animate-spin"
+							/>
 						) : (
 							<LocateFixed aria-hidden className="size-4" />
 						)}

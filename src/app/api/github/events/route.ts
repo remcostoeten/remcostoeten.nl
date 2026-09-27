@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { githubService } from '@/server/github'
 import { parseStrictIsoDateParam } from '@/shared/lib/request-params'
 
-
 export async function GET(request: Request) {
 	try {
 		const { searchParams } = new URL(request.url)

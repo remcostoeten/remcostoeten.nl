@@ -316,7 +316,9 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 										</td>
 										<td className="px-4 py-3 text-right">
 											<Link
-												href={getPostHref(post) as Route}
+												href={
+													getPostHref(post) as Route
+												}
 												target="_blank"
 												className="p-1.5 rounded-sm hover:bg-muted/50 transition-colors opacity-0 group-hover:opacity-100 inline-flex"
 											>

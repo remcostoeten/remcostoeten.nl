@@ -6,10 +6,7 @@ import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/shared/lib/cn'
 import { parseLatLng } from '../utils/geo'
-import {
-	isGoogleMapsShortLink,
-	parseGoogleMapsUrl
-} from '../utils/google-maps'
+import { isGoogleMapsShortLink, parseGoogleMapsUrl } from '../utils/google-maps'
 import { lookupLocation, suggestLocations } from '../utils/pdok'
 import type { TPdokLocation, TPdokSuggestion } from '../types'
 
@@ -178,7 +175,10 @@ export function LocationSearch({ onPick }: Props) {
 					value={query}
 					onChange={event => setQuery(event.target.value)}
 					onFocus={() =>
-						(coords || gmaps || shortLink || suggestions.length > 0) &&
+						(coords ||
+							gmaps ||
+							shortLink ||
+							suggestions.length > 0) &&
 						setOpen(true)
 					}
 					onKeyDown={onKeyDown}
@@ -285,40 +285,44 @@ export function LocationSearch({ onPick }: Props) {
 				</ul>
 			)}
 
-			{open && !coords && !gmaps && !shortLink && suggestions.length > 0 && (
-				<ul
-					role="listbox"
-					className="absolute z-[500] mt-1 max-h-72 w-full overflow-auto border border-border/60 bg-popover shadow-lg"
-				>
-					{suggestions.map((suggestion, index) => (
-						<li
-							key={suggestion.id}
-							role="option"
-							aria-selected={index === active}
-						>
-							<button
-								type="button"
-								onMouseEnter={() => setActive(index)}
-								onClick={() => pick(suggestion)}
-								className={cn(
-									'flex w-full items-center gap-2 px-3 py-2 text-left text-sm',
-									index === active
-										? 'bg-accent text-accent-foreground'
-										: 'text-foreground'
-								)}
+			{open &&
+				!coords &&
+				!gmaps &&
+				!shortLink &&
+				suggestions.length > 0 && (
+					<ul
+						role="listbox"
+						className="absolute z-[500] mt-1 max-h-72 w-full overflow-auto border border-border/60 bg-popover shadow-lg"
+					>
+						{suggestions.map((suggestion, index) => (
+							<li
+								key={suggestion.id}
+								role="option"
+								aria-selected={index === active}
 							>
-								<MapPin
-									aria-hidden
-									className="size-3.5 shrink-0 text-muted-foreground"
-								/>
-								<span className="truncate">
-									{suggestion.label}
-								</span>
-							</button>
-						</li>
-					))}
-				</ul>
-			)}
+								<button
+									type="button"
+									onMouseEnter={() => setActive(index)}
+									onClick={() => pick(suggestion)}
+									className={cn(
+										'flex w-full items-center gap-2 px-3 py-2 text-left text-sm',
+										index === active
+											? 'bg-accent text-accent-foreground'
+											: 'text-foreground'
+									)}
+								>
+									<MapPin
+										aria-hidden
+										className="size-3.5 shrink-0 text-muted-foreground"
+									/>
+									<span className="truncate">
+										{suggestion.label}
+									</span>
+								</button>
+							</li>
+						))}
+					</ul>
+				)}
 		</div>
 	)
 }

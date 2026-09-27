@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 
 const MAX_HOPS = 3
-const ALLOWED_HOSTS = /(^|\.)(goo\.gl|google\.[a-z]{2,3}(\.[a-z]{2})?)$|^maps\.app\.goo\.gl$/
+const ALLOWED_HOSTS =
+	/(^|\.)(goo\.gl|google\.[a-z]{2,3}(\.[a-z]{2})?)$|^maps\.app\.goo\.gl$/
 
 function allowedUrl(input: string): URL | null {
 	try {
@@ -40,7 +41,9 @@ export async function POST(request: Request) {
 			response = await fetch(current, {
 				method: 'GET',
 				redirect: 'manual',
-				headers: { 'User-Agent': 'Mozilla/5.0 (compatible; remcostoeten.nl)' },
+				headers: {
+					'User-Agent': 'Mozilla/5.0 (compatible; remcostoeten.nl)'
+				},
 				signal: AbortSignal.timeout(8000)
 			})
 		} catch {
