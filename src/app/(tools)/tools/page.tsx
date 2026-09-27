@@ -24,9 +24,9 @@ function ToolsIntro() {
 				Miscellaneous Tools
 			</h1>
 			<p className="mt-1 text-sm text-muted-foreground max-w-prose">
-				A growing collection of small, browser-based utilities. Everything
-				runs entirely client-side, so nothing you type or upload ever leaves
-				your machine.
+				A growing collection of small, browser-based utilities.
+				Everything runs entirely client-side, so nothing you type or
+				upload ever leaves your machine.
 			</p>
 		</div>
 	)

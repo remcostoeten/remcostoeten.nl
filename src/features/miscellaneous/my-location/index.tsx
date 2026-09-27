@@ -194,9 +194,7 @@ export default function MyLocationTool() {
 				id: savedId ?? 'my-location',
 				lat: location.lat,
 				lng: location.lng,
-				label: location.city
-					? locationLabel(location)
-					: 'My location'
+				label: location.city ? locationLabel(location) : 'My location'
 			}
 		]
 	}
@@ -231,7 +229,11 @@ export default function MyLocationTool() {
 							variant="outline"
 							className="gap-2"
 							onClick={() =>
-								copy(toPlainText(fields), 'all', 'All values copied')
+								copy(
+									toPlainText(fields),
+									'all',
+									'All values copied'
+								)
 							}
 						>
 							{copiedKey === 'all' ? (
@@ -305,9 +307,9 @@ export default function MyLocationTool() {
 
 			{status === 'idle' && (
 				<div className="border border-dashed border-border/50 p-6 text-center text-sm text-muted-foreground">
-					Your browser will ask for permission. Coordinates are resolved to
-					an address via OpenStreetMap, and only stored if you save them
-					as a pin or send them to another tool.
+					Your browser will ask for permission. Coordinates are
+					resolved to an address via OpenStreetMap, and only stored if
+					you save them as a pin or send them to another tool.
 				</div>
 			)}
 

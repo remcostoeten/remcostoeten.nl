@@ -292,7 +292,14 @@ export function ActivityContributionGraph({
 		})
 
 		return Array.from(activityMap.values())
-	}, [githubContributions, tracks, resolvedYear, loading, detailedEvents, startDate])
+	}, [
+		githubContributions,
+		tracks,
+		resolvedYear,
+		loading,
+		detailedEvents,
+		startDate
+	])
 
 	const getColorForLevel = (level: number) => {
 		// Level 0 (empty)
@@ -416,7 +423,9 @@ export function ActivityContributionGraph({
 	}, [activityData])
 
 	const cellRefs = useRef<Map<number, HTMLButtonElement>>(new Map())
-	const [focusedCellIndex, setFocusedCellIndex] = useState<number | null>(null)
+	const [focusedCellIndex, setFocusedCellIndex] = useState<number | null>(
+		null
+	)
 
 	const todayCellIndex = useMemo(() => {
 		const todayStr = new Date().toISOString().split('T')[0]
@@ -445,10 +454,14 @@ export function ActivityContributionGraph({
 			nextIndex = totalCells - 1
 		} else if (event.key === 'ArrowDown') {
 			nextIndex =
-				activeCellIndex % 7 === 6 ? activeCellIndex : activeCellIndex + 1
+				activeCellIndex % 7 === 6
+					? activeCellIndex
+					: activeCellIndex + 1
 		} else if (event.key === 'ArrowUp') {
 			nextIndex =
-				activeCellIndex % 7 === 0 ? activeCellIndex : activeCellIndex - 1
+				activeCellIndex % 7 === 0
+					? activeCellIndex
+					: activeCellIndex - 1
 		} else if (event.key in moveByKey) {
 			nextIndex = Math.min(
 				totalCells - 1,

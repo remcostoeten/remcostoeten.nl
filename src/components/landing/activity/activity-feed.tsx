@@ -1,4 +1,10 @@
-import { useState, useEffect, useMemo, useCallback, type PointerEvent } from 'react'
+import {
+	useState,
+	useEffect,
+	useMemo,
+	useCallback,
+	type PointerEvent
+} from 'react'
 import { motion, AnimatePresence, PanInfo } from 'motion/react'
 import {
 	Music,
@@ -948,7 +954,9 @@ export function ActivityFeed({
 											href={currentActivity.url}
 											target="_blank"
 											rel="noopener noreferrer"
-											onPointerDownCapture={stopDragPropagation}
+											onPointerDownCapture={
+												stopDragPropagation
+											}
 											className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary font-medium border border-primary/20 rounded-[4px] text-[12px] shrink-0"
 										>
 											<Globe className="size-3 shrink-0" />
@@ -1004,7 +1012,9 @@ export function ActivityFeed({
 												href={displayTrack.url}
 												target="_blank"
 												rel="noopener noreferrer"
-												onPointerDownCapture={stopDragPropagation}
+												onPointerDownCapture={
+													stopDragPropagation
+												}
 												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] min-w-0 shrink ${
 													isCurrentTrackLive
 														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20'

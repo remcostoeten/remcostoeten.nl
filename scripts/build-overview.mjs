@@ -82,14 +82,16 @@ function boxCentered(content) {
 }
 
 function printBanner() {
-	const flow = steps
-		.map(step => step.label.toLowerCase())
-		.join(` ${DOT} `)
+	const flow = steps.map(step => step.label.toLowerCase()).join(` ${DOT} `)
 
 	console.log('')
 	console.log(boxTop())
 	console.log(boxLine())
-	console.log(boxCentered(`${COLORS.bold}${COLORS.text}remcostoeten.nl${COLORS.reset} ${COLORS.muted}release build${COLORS.reset}`))
+	console.log(
+		boxCentered(
+			`${COLORS.bold}${COLORS.text}remcostoeten.nl${COLORS.reset} ${COLORS.muted}release build${COLORS.reset}`
+		)
+	)
 	console.log(boxCentered(`${COLORS.accent}${flow}${COLORS.reset}`))
 	console.log(boxLine())
 	console.log(boxBottom())
@@ -100,7 +102,9 @@ function printStepStart(index, total, label) {
 	const header = ` ${COLORS.accent}${index}/${total}${COLORS.reset} ${COLORS.bold}${COLORS.text}${label}${COLORS.reset} `
 	const tail = rule(BOX_WIDTH - visibleLength(header) - 2)
 
-	console.log(`${COLORS.frame}╭─${COLORS.reset}${header}${COLORS.frame}${tail}${COLORS.reset}`)
+	console.log(
+		`${COLORS.frame}╭─${COLORS.reset}${header}${COLORS.frame}${tail}${COLORS.reset}`
+	)
 }
 
 function printStepEnd(label, ok, duration) {
@@ -128,7 +132,9 @@ function printSummary(success) {
 	const labelWidth = Math.max(...steps.map(step => step.label.length))
 
 	console.log(boxTop())
-	console.log(boxCentered(`${color}${COLORS.bold}${icon} ${title}${COLORS.reset}`))
+	console.log(
+		boxCentered(`${color}${COLORS.bold}${icon} ${title}${COLORS.reset}`)
+	)
 	console.log(boxDivider())
 
 	for (const result of results) {

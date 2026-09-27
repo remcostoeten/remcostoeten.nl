@@ -68,7 +68,9 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 							className="h-7 text-xs"
 						>
 							<Link
-								href={`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route}
+								href={
+									`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route
+								}
 							>
 								Privacy
 							</Link>
@@ -82,7 +84,9 @@ export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
 							className="h-7 text-xs"
 						>
 							<Link
-								href={`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route}
+								href={
+									`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route
+								}
 							>
 								Terms
 							</Link>

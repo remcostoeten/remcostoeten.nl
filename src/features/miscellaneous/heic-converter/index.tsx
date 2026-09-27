@@ -150,7 +150,8 @@ export default function HeicConverter() {
 
 				const sourceKey = `${file.name}-${file.lastModified}`
 				const isColliding = sourceKeyMap.get(sourceKey)! > 1
-				const batchDiscriminator = sourceKeyOccurrences.get(sourceKey) || 0
+				const batchDiscriminator =
+					sourceKeyOccurrences.get(sourceKey) || 0
 				sourceKeyOccurrences.set(sourceKey, batchDiscriminator + 1)
 
 				for (const [imageIndex, blob] of blobs.entries()) {

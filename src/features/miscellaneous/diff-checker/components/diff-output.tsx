@@ -10,16 +10,19 @@ import { diffLines, diffSegments, summarizeDiff } from '../utils/diff'
 const CONTEXT_LINES = 3
 const COLLAPSE_THRESHOLD = 8
 
-const GRANULARITIES: { value: TDiffGranularity; label: string; hint: string }[] =
-	[
-		{ value: 'line', label: 'Line', hint: 'Highlight whole changed lines' },
-		{ value: 'word', label: 'Word', hint: 'Highlight changed words' },
-		{
-			value: 'char',
-			label: 'Char',
-			hint: 'Highlight changed characters'
-		}
-	]
+const GRANULARITIES: {
+	value: TDiffGranularity
+	label: string
+	hint: string
+}[] = [
+	{ value: 'line', label: 'Line', hint: 'Highlight whole changed lines' },
+	{ value: 'word', label: 'Word', hint: 'Highlight changed words' },
+	{
+		value: 'char',
+		label: 'Char',
+		hint: 'Highlight changed characters'
+	}
+]
 
 type TDiffRow =
 	| {

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com'
 const DEFAULT_SPOTIFY_REDIRECT_URI =
 	'http://127.0.0.1:3000/api/spotify/callback'

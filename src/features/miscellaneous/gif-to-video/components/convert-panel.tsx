@@ -75,8 +75,7 @@ export function ConvertPanel({ store }: Props) {
 					>
 						<a href={output.url} download={output.name}>
 							<Download aria-hidden className="size-3.5" />
-							Download {output.name} ({bytesToHuman(output.size)}
-							)
+							Download {output.name} ({bytesToHuman(output.size)})
 						</a>
 					</Button>
 				) : null}

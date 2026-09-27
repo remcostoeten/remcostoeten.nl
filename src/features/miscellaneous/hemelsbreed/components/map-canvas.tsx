@@ -4,7 +4,13 @@ import { useEffect, useRef } from 'react'
 import 'leaflet/dist/leaflet.css'
 import type * as L from 'leaflet'
 import { cn } from '@/shared/lib/cn'
-import { bearing, circleContains, compass, formatKm, haversineKm } from '../utils/geo'
+import {
+	bearing,
+	circleContains,
+	compass,
+	formatKm,
+	haversineKm
+} from '../utils/geo'
 import type { TTrilaterationEstimate } from '../utils/trilateration'
 import type { TRadiusCircle, TSpot } from '../types'
 
@@ -243,7 +249,10 @@ export function MapCanvas({
 
 		for (let py = 0; py < size.y; py += HEAT_STEP) {
 			for (let px = 0; px < size.x; px += HEAT_STEP) {
-				const point = leaflet.point(px + HEAT_STEP / 2, py + HEAT_STEP / 2)
+				const point = leaflet.point(
+					px + HEAT_STEP / 2,
+					py + HEAT_STEP / 2
+				)
 				const ll = map.containerPointToLatLng(point)
 				let count = 0
 				for (const circle of visible) {
@@ -341,9 +350,7 @@ export function MapCanvas({
 
 		if (estimateRef.current) {
 			estimateRef.current.marker.setLatLng(position)
-			estimateRef.current.ring
-				.setLatLng(position)
-				.setRadius(ringMeters)
+			estimateRef.current.ring.setLatLng(position).setRadius(ringMeters)
 			return
 		}
 

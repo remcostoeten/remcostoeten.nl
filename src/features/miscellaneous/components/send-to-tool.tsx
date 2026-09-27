@@ -122,7 +122,9 @@ export function SendToTool({
 								onClick={() => send(target)}
 								className="flex w-full flex-col gap-0.5 rounded-sm px-2 py-1.5 text-left hover:bg-accent/40"
 							>
-								<span className="text-sm">{nameOf(target)}</span>
+								<span className="text-sm">
+									{nameOf(target)}
+								</span>
 								{tool && (
 									<span className="line-clamp-1 text-[11px] text-muted-foreground">
 										{tool.description}

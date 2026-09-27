@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-
 export async function GET() {
 	const denied = await requireDevToolsAccess()
 	if (denied) return denied

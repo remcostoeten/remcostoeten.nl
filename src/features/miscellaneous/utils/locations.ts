@@ -66,7 +66,9 @@ export function locationLabel(
 }
 
 /** Strips a saved pin down to the shape other tools consume. */
-export function toLocationPoints(locations: TSavedLocation[]): TLocationPoint[] {
+export function toLocationPoints(
+	locations: TSavedLocation[]
+): TLocationPoint[] {
 	return locations.map(location => ({
 		id: location.id,
 		lat: location.lat,

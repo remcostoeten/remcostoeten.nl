@@ -138,7 +138,9 @@ export function CircleList({
 									})
 								}}
 								aria-label={
-									circle.visible ? 'Hide circle' : 'Show circle'
+									circle.visible
+										? 'Hide circle'
+										: 'Show circle'
 								}
 							>
 								{circle.visible ? (

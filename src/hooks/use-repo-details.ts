@@ -82,8 +82,7 @@ export function useRepoDetails(owner: string, repo: string, enabled = false) {
 		// Don't retry client errors (rate limit, 404, auth) — retrying just burns
 		// more of the already-exhausted unauthenticated request budget.
 		retry: (failureCount, error) => {
-			const status =
-				error instanceof RepoDetailsError ? error.status : 0
+			const status = error instanceof RepoDetailsError ? error.status : 0
 			if (status >= 400 && status < 500) return false
 			return failureCount < 2
 		}

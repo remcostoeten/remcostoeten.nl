@@ -22,7 +22,9 @@ function clampTrim(range: TTrimRange, duration: number): TTrimRange {
 }
 
 function rangesEqual(a: TTrimRange, b: TTrimRange): boolean {
-	return Math.abs(a.start - b.start) < 0.001 && Math.abs(a.end - b.end) < 0.001
+	return (
+		Math.abs(a.start - b.start) < 0.001 && Math.abs(a.end - b.end) < 0.001
+	)
 }
 
 /**
@@ -86,8 +88,7 @@ export function useTrimState() {
 	}, [duration])
 
 	const hasTrim = useMemo(
-		() =>
-			duration > 0 && (trim.start > 0.01 || trim.end < duration - 0.01),
+		() => duration > 0 && (trim.start > 0.01 || trim.end < duration - 0.01),
 		[duration, trim]
 	)
 

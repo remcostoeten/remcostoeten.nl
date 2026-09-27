@@ -22,11 +22,7 @@ import {
 	OUTPUT_NAMES,
 	STORAGE_KEY
 } from '../constants'
-import type {
-	TPersistedOptions,
-	TVideoFormat,
-	TVideoQuality
-} from '../types'
+import type { TPersistedOptions, TVideoFormat, TVideoQuality } from '../types'
 import { convertArgs } from '../utils/args'
 
 const IDLE_STATUS: TMediaStatus = {

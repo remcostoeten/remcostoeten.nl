@@ -7,7 +7,6 @@ import { getAllCommentsAdmin } from '@/server/queries/blog/comments'
 import { ActivityFeed } from '@/components/admin/activity/activity-feed'
 import { Eye, Users, MessageSquare, Mail, TrendingUp } from 'lucide-react'
 
-
 function GlassStatCard({
 	icon: Icon,
 	label,

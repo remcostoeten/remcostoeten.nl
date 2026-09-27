@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { requireDevToolsAccess } from '@/server/security/dev-access'
 
-
 const SPOTIFY_ACCOUNTS_BASE = 'https://accounts.spotify.com'
 
 export async function POST(request: Request) {

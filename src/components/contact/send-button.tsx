@@ -38,7 +38,9 @@ export function SendButton({ status, className }: Props) {
 			type="submit"
 			disabled={isBusy}
 			aria-live="polite"
-			whileTap={shouldReduceMotion || isBusy ? undefined : { scale: 0.97 }}
+			whileTap={
+				shouldReduceMotion || isBusy ? undefined : { scale: 0.97 }
+			}
 			transition={{ duration: 0.16, ease: EASE_OUT }}
 			animate={{
 				backgroundColor:

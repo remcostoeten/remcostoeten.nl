@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { githubService } from '@/server/github'
 
-
 export async function GET() {
 	try {
 		const activity = await githubService.getRecentActivity(10)

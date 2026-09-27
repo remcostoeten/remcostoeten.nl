@@ -86,8 +86,9 @@ export function ImportCoordinates({ existsAt, onImport }: Props) {
 				>
 					{points.length === 0 ? (
 						<p className="px-2 py-4 text-center text-xs text-muted-foreground">
-							No saved coordinates found. Drop pins in the long &amp;
-							lat tool first, then import them here as circles.
+							No saved coordinates found. Drop pins in the long
+							&amp; lat tool first, then import them here as
+							circles.
 						</p>
 					) : (
 						<>
@@ -119,7 +120,10 @@ export function ImportCoordinates({ existsAt, onImport }: Props) {
 							>
 								{points.map(point => {
 									const isSelected = selected.has(point.id)
-									const already = existsAt(point.lat, point.lng)
+									const already = existsAt(
+										point.lat,
+										point.lng
+									)
 									return (
 										<li key={point.id}>
 											<button

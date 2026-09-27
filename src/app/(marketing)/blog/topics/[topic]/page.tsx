@@ -6,7 +6,6 @@ import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
 import { cacheLife, cacheTag } from 'next/cache'
 
-
 export async function generateStaticParams() {
 	const topics = getAllTopics()
 	return topics.map(topic => ({

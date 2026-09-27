@@ -55,7 +55,10 @@ const KEYWORD_SELECTORS: [RegExp, TSelector[]][] = [
 	[/tandarts|dentist/i, ['amenity=dentist']],
 	[/dierenarts|\bvet\b|veterinar/i, ['amenity=veterinary']],
 	[/school/i, ['amenity=school']],
-	[/kinderdagverblijf|daycare|kindergarten|creche/i, ['amenity=kindergarten']],
+	[
+		/kinderdagverblijf|daycare|kindergarten|creche/i,
+		['amenity=kindergarten']
+	],
 	[/university|universiteit/i, ['amenity=university']],
 	[/library|bibliotheek/i, ['amenity=library']],
 	[/bookstore|boekhandel|book shop/i, ['shop=books']],
@@ -96,11 +99,10 @@ const KEYWORD_SELECTORS: [RegExp, TSelector[]][] = [
 	[/basketball/i, ['leisure=pitch', 'sport=basketball']],
 	[/skate ?park/i, ['leisure=pitch', 'sport=skateboard']],
 	[/climbing|klimhal/i, ['sport=climbing']],
-	[/horse|paard|equestrian|stable|manege/i, [
-		'leisure=horse_riding',
-		'sport=equestrian',
-		'amenity=stable'
-	]],
+	[
+		/horse|paard|equestrian|stable|manege/i,
+		['leisure=horse_riding', 'sport=equestrian', 'amenity=stable']
+	],
 	[/marina|jachthaven/i, ['leisure=marina']],
 	[/yoga/i, ['sport=yoga']],
 	[/bank\b|geldautomaat|\batm\b/i, ['amenity=bank', 'amenity=atm']],
@@ -114,17 +116,15 @@ const KEYWORD_SELECTORS: [RegExp, TSelector[]][] = [
 	[/shopping mall|winkelcentrum/i, ['shop=mall']],
 	[/market\b|markt\b/i, ['amenity=marketplace']],
 	[/town ?hall|gemeentehuis|stadhuis/i, ['amenity=townhall']],
-	[/city center|city centre|stadscentrum|\bcentrum\b|downtown/i, [
-		'landuse=commercial',
-		'place=square',
-		'amenity=townhall'
-	]],
+	[
+		/city center|city centre|stadscentrum|\bcentrum\b|downtown/i,
+		['landuse=commercial', 'place=square', 'amenity=townhall']
+	],
 	[/apartment|flats?\b|appartement/i, ['building=apartments']],
-	[/housing|woonwijk|\bhuizen\b|houses?\b|residential/i, [
-		'building=residential',
-		'building=house',
-		'landuse=residential'
-	]]
+	[
+		/housing|woonwijk|\bhuizen\b|houses?\b|residential/i,
+		['building=residential', 'building=house', 'landuse=residential']
+	]
 ]
 
 function keywordSelectors(query: string): TSelector[] {
@@ -275,7 +275,8 @@ async function nominatimSpots(
 		return data.flatMap(item => {
 			const spotLat = Number(item?.lat)
 			const spotLng = Number(item?.lon)
-			if (!Number.isFinite(spotLat) || !Number.isFinite(spotLng)) return []
+			if (!Number.isFinite(spotLat) || !Number.isFinite(spotLng))
+				return []
 			const displayName =
 				typeof item?.display_name === 'string' ? item.display_name : ''
 			return [
@@ -286,7 +287,8 @@ async function nominatimSpots(
 					lng: spotLng,
 					kind: typeof item?.type === 'string' ? item.type : 'place',
 					address:
-						displayName.split(',').slice(1, 3).join(',').trim() || null
+						displayName.split(',').slice(1, 3).join(',').trim() ||
+						null
 				}
 			]
 		})
@@ -321,7 +323,12 @@ async function fetchOverpassElements(
 }
 
 export async function POST(request: Request) {
-	let body: { query?: unknown; lat?: unknown; lng?: unknown; radiusKm?: unknown }
+	let body: {
+		query?: unknown
+		lat?: unknown
+		lng?: unknown
+		radiusKm?: unknown
+	}
 	try {
 		body = await request.json()
 	} catch {
@@ -347,7 +354,10 @@ export async function POST(request: Request) {
 		lng < -180 ||
 		lng > 180
 	) {
-		return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 })
+		return NextResponse.json(
+			{ error: 'Invalid coordinates' },
+			{ status: 400 }
+		)
 	}
 
 	const aiAllowed = await isAdmin()
@@ -384,7 +394,12 @@ export async function POST(request: Request) {
 			const [elements, named] = await Promise.all([
 				selectors.length > 0
 					? fetchOverpassElements(
-							buildOverpassQuery(selectors, lat, lng, radiusKm * 1000)
+							buildOverpassQuery(
+								selectors,
+								lat,
+								lng,
+								radiusKm * 1000
+							)
 						)
 					: Promise.resolve<TOverpassElement[]>([]),
 				nominatimSpots(query, lat, lng, radiusKm)
@@ -406,7 +421,10 @@ export async function POST(request: Request) {
 				if (!merged.has(spot.id)) merged.set(spot.id, spot)
 			}
 
-			send({ type: 'spots', spots: [...merged.values()].slice(0, MAX_RESULTS) })
+			send({
+				type: 'spots',
+				spots: [...merged.values()].slice(0, MAX_RESULTS)
+			})
 			controller.close()
 		}
 	})

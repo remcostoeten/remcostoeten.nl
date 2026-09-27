@@ -5,11 +5,7 @@ import { noop } from '@/shared/lib/noop'
 import { useLocalStorage } from '../../hooks/use-local-storage'
 import { useMediaSession } from '../../hooks/use-media-session'
 import { useTrimState } from '../../hooks/use-trim-state'
-import type {
-	TMediaOutput,
-	TMediaStatus,
-	TTrimRange
-} from '../../types/media'
+import type { TMediaOutput, TMediaStatus, TTrimRange } from '../../types/media'
 import {
 	deleteQuiet,
 	execWithLogs,
