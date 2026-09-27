@@ -20,7 +20,7 @@ export function PostHogAnalytics() {
 			ui_host: uiHost,
 			defaults: '2025-05-24',
 			person_profiles: 'identified_only',
-			capture_pageview: false,
+			capture_pageview: 'history_change',
 			disable_session_recording: true,
 			disable_surveys: true
 		})
