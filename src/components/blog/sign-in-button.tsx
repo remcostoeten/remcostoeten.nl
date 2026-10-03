@@ -78,8 +78,8 @@ export function SignInButton() {
 			<button
 				onClick={() => handleSignIn('github')}
 				disabled={isLoading !== null}
-				className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white 
-                    rounded-none transition-colors flex items-center gap-2
+				className="interactive press px-4 py-2 bg-zinc-800 hover:bg-zinc-700 focus-visible:bg-zinc-700 active:bg-zinc-700 text-white 
+                    border border-transparent focus-visible:border-zinc-500 rounded-none flex items-center gap-2
                     disabled:opacity-50 disabled:cursor-not-allowed"
 			>
 				<Github className="w-4 h-4" />
@@ -95,8 +95,8 @@ export function SignInButton() {
 			<button
 				onClick={() => handleSignIn('google')}
 				disabled={isLoading !== null}
-				className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white 
-                    rounded-none transition-colors flex items-center gap-2
+				className="interactive press px-4 py-2 bg-zinc-800 hover:bg-zinc-700 focus-visible:bg-zinc-700 active:bg-zinc-700 text-white 
+                    border border-transparent focus-visible:border-zinc-500 rounded-none flex items-center gap-2
                     disabled:opacity-50 disabled:cursor-not-allowed"
 			>
 				<svg

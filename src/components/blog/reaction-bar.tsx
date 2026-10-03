@@ -95,11 +95,11 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 						whileTap={{ scale: 0.95 }}
 						className={`
                             inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
-                            border transition-all duration-200
+                            border outline-none transition-[color,background-color,border-color] duration-150 ease-out-strong
                             ${
 								reactions[emoji].hasReacted
-									? 'bg-zinc-800 border-zinc-600 text-white'
-									: 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
+									? 'bg-zinc-800 border-zinc-600 text-white focus-visible:border-zinc-400'
+									: 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300 focus-visible:border-zinc-500 focus-visible:text-zinc-200 active:border-zinc-500 active:text-zinc-200'
 							}
                             disabled:opacity-50 disabled:cursor-not-allowed
                         `}

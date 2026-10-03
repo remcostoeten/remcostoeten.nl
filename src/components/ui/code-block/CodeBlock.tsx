@@ -208,7 +208,7 @@ export function CodeBlock({
 						{!disableCopy && (
 							<button
 								onClick={copyToClipboard}
-								className="text-muted-foreground/60 hover:text-[hsl(var(--sh-text))] transition-all duration-200 p-1.5 rounded-md hover:bg-[hsl(var(--sh-text))]/5"
+								className="interactive press text-muted-foreground/60 hover:text-[hsl(var(--sh-text))] focus-visible:text-[hsl(var(--sh-text))] active:text-[hsl(var(--sh-text))] p-1.5 rounded-md hover:bg-[hsl(var(--sh-text))]/5 focus-visible:bg-[hsl(var(--sh-text))]/10"
 								title="Copy code"
 							>
 								<AnimatePresence mode="wait" initial={false}>

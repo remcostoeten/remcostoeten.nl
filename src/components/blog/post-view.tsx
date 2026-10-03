@@ -63,9 +63,9 @@ export function BlogPostClient({
 			<div className="mb-3">
 				<button
 					onClick={() => router.back()}
-					className="inline-flex items-center gap-2 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
+					className="interactive group inline-flex items-center gap-2 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground focus-visible:text-foreground active:text-foreground"
 				>
-					<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
+					<ArrowLeft className="interactive w-3 h-3 group-hover:-translate-x-0.5 group-focus-visible:-translate-x-0.5" />
 					back
 				</button>
 			</div>
@@ -127,14 +127,17 @@ export function BlogPostClient({
 					{topic && (
 						<Link
 							href={`/blog/topics/${slugifyTopic(topic)}`}
-							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
+							className="interactive press inline-flex items-center px-3 py-1.5 text-xs font-medium
                 bg-neutral-50 dark:bg-neutral-900/60
                 text-neutral-600 dark:text-neutral-400
                 border border-neutral-200 dark:border-neutral-800
                 hover:bg-neutral-100 dark:hover:bg-neutral-800/60
                 hover:border-neutral-300 dark:hover:border-neutral-700
                 hover:text-neutral-900 dark:hover:text-neutral-200
-                rounded-md transition-all duration-200"
+                focus-visible:border-neutral-400 dark:focus-visible:border-neutral-600
+                focus-visible:text-neutral-900 dark:focus-visible:text-neutral-100
+                active:bg-neutral-100 dark:active:bg-neutral-800/60
+                rounded-md"
 						>
 							{topic}
 						</Link>
@@ -149,7 +152,7 @@ export function BlogPostClient({
                 hover:bg-neutral-100 dark:hover:bg-neutral-800/60
                 hover:border-neutral-300 dark:hover:border-neutral-700
                 hover:text-neutral-900 dark:hover:text-neutral-200
-                rounded-md transition-all duration-200"
+                rounded-md transition-[color,background-color,border-color] duration-150 ease-out-strong"
 						>
 							{tag}
 						</span>
@@ -184,13 +187,16 @@ export function PostNavigation({
               border border-neutral-200 dark:border-neutral-800
               hover:border-neutral-300 dark:hover:border-neutral-700
               hover:bg-neutral-100 dark:hover:bg-neutral-800/50
-              transition-all duration-200"
+              focus-visible:border-neutral-400 dark:focus-visible:border-neutral-600
+              focus-visible:bg-neutral-100 dark:focus-visible:bg-neutral-800/50
+              active:bg-neutral-100 dark:active:bg-neutral-800/50
+              interactive"
 					>
 						<span className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
-							<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
+							<ArrowLeft className="interactive w-3 h-3 group-hover:-translate-x-0.5 group-focus-visible:-translate-x-0.5" />
 							Previous
 						</span>
-						<span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
+						<span className="interactive font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-focus-visible:text-emerald-600 dark:group-focus-visible:text-emerald-400 line-clamp-2">
 							{prevPost.metadata.title}
 						</span>
 					</Link>
@@ -206,13 +212,16 @@ export function PostNavigation({
               border border-neutral-200 dark:border-neutral-800
               hover:border-neutral-300 dark:hover:border-neutral-700
               hover:bg-neutral-100 dark:hover:bg-neutral-800/50
-              transition-all duration-200"
+              focus-visible:border-neutral-400 dark:focus-visible:border-neutral-600
+              focus-visible:bg-neutral-100 dark:focus-visible:bg-neutral-800/50
+              active:bg-neutral-100 dark:active:bg-neutral-800/50
+              interactive"
 					>
 						<span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground mb-2">
 							Next
-							<ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
+							<ArrowRight className="interactive w-3 h-3 group-hover:translate-x-0.5 group-focus-visible:translate-x-0.5" />
 						</span>
-						<span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
+						<span className="interactive font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-focus-visible:text-emerald-600 dark:group-focus-visible:text-emerald-400 line-clamp-2">
 							{nextPost.metadata.title}
 						</span>
 					</Link>

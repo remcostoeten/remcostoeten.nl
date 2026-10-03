@@ -83,7 +83,7 @@ export async function BlogPostView({
 			)}
 			<TableOfContents />
 
-			<section className="bg-pattern relative">
+			<section className="blog-post bg-pattern relative">
 				<BlogPostClient
 					publishedAt={post.metadata.publishedAt}
 					topic={post.metadata.topic}

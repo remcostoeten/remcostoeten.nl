@@ -101,7 +101,7 @@ export function UseShortcutDemo() {
 				<input
 					ref={searchRef}
 					placeholder="Type here and press mod+k"
-					className="mt-2 w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none focus:border-foreground/30"
+					className="mt-2 w-full rounded-lg border border-border/60 bg-background px-3 py-2 text-sm outline-none transition-[border-color] duration-150 ease-out-strong hover:border-foreground/20 focus:border-foreground/40"
 				/>
 			</label>
 

@@ -275,10 +275,10 @@ function InputField({
 					value={value}
 					onChange={e => onChange(e.target.value)}
 					placeholder={placeholder}
-					className={`w-full bg-zinc-950 border rounded-xl px-4 py-3 text-sm font-mono placeholder:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-all ${
+					className={`w-full bg-zinc-950 border rounded-xl px-4 py-3 text-sm font-mono placeholder:text-zinc-700 outline-none transition-[border-color] duration-150 ease-out-strong ${
 						showValidation && !isValid
-							? 'border-red-500/50'
-							: 'border-zinc-800'
+							? 'border-red-500/50 focus:border-red-500/80'
+							: 'border-zinc-800 hover:border-zinc-700 focus:border-zinc-500'
 					}`}
 				/>
 				{showValidation && (

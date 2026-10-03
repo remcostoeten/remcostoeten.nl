@@ -39,6 +39,38 @@
 	--radius-lg: var(--radius);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-sm: calc(var(--radius) - 4px);
+	--ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@utility interactive {
+	outline: none;
+	-webkit-tap-highlight-color: transparent;
+	transition-property:
+		color, background-color, border-color, text-decoration-color, fill,
+		stroke, opacity, transform, translate, scale, rotate;
+	transition-duration: 160ms;
+	transition-timing-function: var(--ease-out-strong);
+
+	@media (prefers-reduced-motion: reduce) {
+		transition-property:
+			color, background-color, border-color, text-decoration-color, fill,
+			stroke, opacity;
+	}
+
+	@media (forced-colors: active) {
+		&:focus-visible {
+			outline: 2px solid CanvasText;
+			outline-offset: 2px;
+		}
+	}
+}
+
+@utility press {
+	@media (prefers-reduced-motion: no-preference) {
+		&:active:not(:disabled) {
+			transform: scale(0.97);
+		}
+	}
 }
 
 @layer base {
@@ -157,6 +189,51 @@
 	code {
 		overflow-x: auto;
 		white-space: pre;
+	}
+
+	.blog-post
+		:where(
+			a,
+			button,
+			input,
+			textarea,
+			select,
+			summary,
+			[role='button'],
+			[tabindex]
+		) {
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.blog-post
+		:where(
+			a,
+			button,
+			input,
+			textarea,
+			select,
+			summary,
+			[role='button'],
+			[tabindex]
+		):focus-visible {
+		outline: none;
+	}
+
+	@media (forced-colors: active) {
+		.blog-post
+			:where(
+				a,
+				button,
+				input,
+				textarea,
+				select,
+				summary,
+				[role='button'],
+				[tabindex]
+			):focus-visible {
+			outline: 2px solid CanvasText;
+			outline-offset: 2px;
+		}
 	}
 }
 
@@ -965,6 +1042,26 @@
 	margin: 1.5rem 0;
 	font-style: italic;
 	color: hsl(var(--muted-foreground));
+}
+
+.blog-post .prose :where(a:not(.anchor, .not-prose a)) {
+	text-decoration-color: hsl(var(--foreground) / 0.25);
+	text-underline-offset: 3px;
+	transition-property: color, text-decoration-color;
+	transition-duration: 160ms;
+	transition-timing-function: var(--ease-out-strong);
+}
+
+.blog-post .prose :where(a:not(.anchor, .not-prose a)):focus-visible,
+.blog-post .prose :where(a:not(.anchor, .not-prose a)):active {
+	color: hsl(var(--foreground));
+	text-decoration-color: hsl(var(--foreground));
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.blog-post .prose :where(a:not(.anchor, .not-prose a)):hover {
+		text-decoration-color: hsl(var(--foreground) / 0.7);
+	}
 }
 
 /* Full-width header resets margin for h2 since it's wrapped in a div */

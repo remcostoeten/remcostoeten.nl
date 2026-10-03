@@ -167,7 +167,7 @@ export function SpotifyApiExplorer() {
 							value={accessToken}
 							onChange={e => setAccessToken(e.target.value)}
 							placeholder="Paste your access token (from /dev/spotify)"
-							className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm font-mono placeholder:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-orange-500/20 transition-all"
+							className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-sm font-mono placeholder:text-zinc-700 outline-none hover:border-zinc-700 focus:border-zinc-500 transition-[border-color] duration-150 ease-out-strong"
 						/>
 					</div>
 					<p className="text-[10px] text-zinc-500 mt-1.5 ml-1">

@@ -119,8 +119,8 @@ export function CommentSection({ slug }: Props) {
 								maxLength={2000}
 								className="w-full px-4 py-3 bg-background border border-border rounded-lg
                                     text-foreground placeholder:text-muted-foreground resize-none
-                                    focus:outline-none focus:border-ring focus:ring-1 focus:ring-ring
-                                    transition-colors"
+                                    outline-none hover:border-foreground/20 focus:border-foreground/40
+                                    transition-[border-color] duration-150 ease-out-strong"
 							/>
 							{error && (
 								<p className="mt-2 text-sm text-destructive">
@@ -134,8 +134,8 @@ export function CommentSection({ slug }: Props) {
 								<button
 									type="submit"
 									disabled={!newComment.trim() || isPending}
-									className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground 
-                                        font-medium rounded-lg transition-colors
+									className="interactive press px-4 py-2 bg-primary hover:bg-primary/90 focus-visible:bg-primary/80 active:bg-primary/80 text-primary-foreground 
+                                        font-medium rounded-lg
                                         disabled:opacity-50 disabled:cursor-not-allowed
                                         flex items-center gap-2"
 								>
@@ -220,8 +220,8 @@ export function CommentSection({ slug }: Props) {
 												handleDelete(comment.id)
 											}
 											disabled={isPending}
-											className="mt-2 text-xs text-muted-foreground hover:text-destructive 
-                                                transition-colors flex items-center gap-1
+											className="interactive mt-2 text-xs text-muted-foreground hover:text-destructive focus-visible:text-destructive active:text-destructive
+                                                flex items-center gap-1
                                                 disabled:opacity-50"
 										>
 											<Trash2 className="w-3 h-3" />

@@ -27,13 +27,13 @@ export function CollapsibleMedia({
 		<div className="my-8 border border-zinc-800 rounded-none overflow-hidden bg-zinc-900/30">
 			<button
 				onClick={() => setIsOpen(!isOpen)}
-				className="w-full flex items-center justify-between p-4 hover:bg-zinc-800/50 transition-colors text-left group"
+				className="interactive group w-full flex items-center justify-between p-4 hover:bg-zinc-800/50 focus-visible:bg-zinc-800/50 active:bg-zinc-800/70 text-left"
 			>
 				<div className="flex items-center gap-3">
-					<div className="p-2 rounded-md bg-zinc-800 text-zinc-400 group-hover:text-zinc-200 transition-colors">
+					<div className="interactive p-2 rounded-md bg-zinc-800 text-zinc-400 group-hover:text-zinc-200 group-focus-visible:text-zinc-200">
 						<ImageIcon className="w-5 h-5" />
 					</div>
-					<span className="font-medium text-zinc-300 group-hover:text-white transition-colors">
+					<span className="interactive font-medium text-zinc-300 group-hover:text-white group-focus-visible:text-white">
 						{title}
 					</span>
 				</div>
