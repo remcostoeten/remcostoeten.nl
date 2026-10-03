@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import type { Route } from 'next'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 import { useSession } from '@/features/auth/client'
 import { useRouter } from 'next/navigation'
 import { generateRoutes } from '@/utils/generate-routes'
@@ -210,7 +211,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 	return (
 		<div className="relative">
 			{/* Mobile Trigger Button */}
-			<motion.button
+			<m.button
 				onClick={() => {
 					setIsVisible(true)
 					setInput(':')
@@ -222,11 +223,11 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 				animate={{ opacity: 1, scale: 1 }}
 			>
 				<Terminal className="w-5 h-5" />
-			</motion.button>
+			</m.button>
 
 			<AnimatePresence>
 				{isVisible && (
-					<motion.div
+					<m.div
 						initial={{ y: 20, opacity: 0 }}
 						animate={{ y: 0, opacity: 1 }}
 						exit={{ y: 20, opacity: 0 }}
@@ -296,7 +297,7 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 								</div>
 							</div>
 						)}
-					</motion.div>
+					</m.div>
 				)}
 			</AnimatePresence>
 		</div>

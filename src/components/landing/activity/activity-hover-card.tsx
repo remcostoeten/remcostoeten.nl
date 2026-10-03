@@ -2,7 +2,8 @@
 
 import { useState, useRef, ReactNode, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 import Image from 'next/image'
 import type { Route } from 'next'
 import Link from 'next/link'
@@ -149,7 +150,7 @@ export function ActivityHoverCard({
 				createPortal(
 					<AnimatePresence>
 						{isOpen && (
-							<motion.div
+							<m.div
 								ref={cardRef}
 								initial={{
 									opacity: 0,
@@ -178,7 +179,7 @@ export function ActivityHoverCard({
 								<div className="rounded-none border border-border/50 bg-background/95 backdrop-blur-md shadow-xl p-3 min-w-[280px] max-w-[320px]">
 									{children}
 								</div>
-							</motion.div>
+							</m.div>
 						)}
 					</AnimatePresence>,
 					document.body

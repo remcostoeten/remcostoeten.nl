@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 import { X } from 'lucide-react'
 import { signInWithPopup } from '@/features/auth/client'
 
@@ -88,7 +89,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 		<AnimatePresence>
 			{isOpen && (
 				<>
-					<motion.div
+					<m.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
@@ -97,7 +98,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 						aria-hidden="true"
 					/>
 
-					<motion.div
+					<m.div
 						ref={modalRef}
 						role="dialog"
 						aria-modal="true"
@@ -209,7 +210,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 								</p>
 							</div>
 						</div>
-					</motion.div>
+					</m.div>
 				</>
 			)}
 		</AnimatePresence>

@@ -1,6 +1,7 @@
 'use client'
 
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence, useReducedMotion } from 'motion/react'
 import { Send, Check, Loader2 } from 'lucide-react'
 import { cn } from '@/shared/lib/cn'
 
@@ -34,7 +35,7 @@ export function SendButton({ status, className }: Props) {
 		: { opacity: 0, y: -8, filter: 'blur(4px)' }
 
 	return (
-		<motion.button
+		<m.button
 			type="submit"
 			disabled={isBusy}
 			aria-live="polite"
@@ -58,7 +59,7 @@ export function SendButton({ status, className }: Props) {
 			)}
 		>
 			<AnimatePresence mode="wait" initial={false}>
-				<motion.span
+				<m.span
 					key={status}
 					initial={enter}
 					animate={center}
@@ -71,7 +72,7 @@ export function SendButton({ status, className }: Props) {
 						<Loader2 className="h-4 w-4 animate-spin" />
 					)}
 					{status === 'success' && (
-						<motion.span
+						<m.span
 							initial={
 								shouldReduceMotion
 									? undefined
@@ -86,11 +87,11 @@ export function SendButton({ status, className }: Props) {
 							className="inline-flex"
 						>
 							<Check className="h-4 w-4" />
-						</motion.span>
+						</m.span>
 					)}
 					{LABELS[status]}
-				</motion.span>
+				</m.span>
 			</AnimatePresence>
-		</motion.button>
+		</m.button>
 	)
 }

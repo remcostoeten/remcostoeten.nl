@@ -1,7 +1,8 @@
 'use client'
 
 import { cn } from '@/shared/lib/cn'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 import {
 	BriefcaseBusinessIcon,
 	ChevronsDownUpIcon,
@@ -349,7 +350,7 @@ export function ExperiencePositionItem({
 
 				<AnimatePresence initial={false}>
 					{(isOpen || !canCollapse) && (
-						<motion.div
+						<m.div
 							id={contentId}
 							initial={{ height: 0, opacity: 0 }}
 							animate={{ height: 'auto', opacity: 1 }}
@@ -367,7 +368,7 @@ export function ExperiencePositionItem({
 								position.skills.length > 0 && (
 									<SkillsList skills={position.skills} />
 								)}
-						</motion.div>
+						</m.div>
 					)}
 				</AnimatePresence>
 			</div>

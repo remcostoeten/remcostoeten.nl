@@ -6,7 +6,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import React from 'react'
 import { PrismAsync as SyntaxHighlighter } from 'react-syntax-highlighter'
 import type { CSSProperties } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 
 import { cn } from '@/shared/lib/cn'
 
@@ -213,7 +214,7 @@ export function CodeBlock({
 							>
 								<AnimatePresence mode="wait" initial={false}>
 									{isCopied ? (
-										<motion.span
+										<m.span
 											key="check"
 											initial={{ scale: 0, opacity: 0 }}
 											animate={{ scale: 1, opacity: 1 }}
@@ -224,9 +225,9 @@ export function CodeBlock({
 												size={14}
 												className="text-emerald-500"
 											/>
-										</motion.span>
+										</m.span>
 									) : (
-										<motion.span
+										<m.span
 											key="copy"
 											initial={{ scale: 0, opacity: 0 }}
 											animate={{ scale: 1, opacity: 1 }}
@@ -234,7 +235,7 @@ export function CodeBlock({
 											transition={{ duration: 0.2 }}
 										>
 											<Copy size={14} />
-										</motion.span>
+										</m.span>
 									)}
 								</AnimatePresence>
 							</button>

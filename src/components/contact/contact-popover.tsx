@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 import { X, Mail, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { submitContactForm } from '@/server/actions/contact/submission'
@@ -199,7 +200,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 
 			<AnimatePresence>
 				{isOpen && (
-					<motion.div
+					<m.div
 						ref={popoverRef}
 						id="contact-popover-content"
 						role="dialog"
@@ -408,7 +409,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 								</div>
 							</form>
 						</div>
-					</motion.div>
+					</m.div>
 				)}
 			</AnimatePresence>
 		</div>

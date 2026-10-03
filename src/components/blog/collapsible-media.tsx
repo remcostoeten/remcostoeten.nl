@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 import { ChevronDown, Image as ImageIcon } from 'lucide-react'
 import Image from 'next/image'
 
@@ -46,7 +47,7 @@ export function CollapsibleMedia({
 
 			<AnimatePresence>
 				{isOpen && (
-					<motion.div
+					<m.div
 						initial={{ height: 0, opacity: 0 }}
 						animate={{ height: 'auto', opacity: 1 }}
 						exit={{ height: 0, opacity: 0 }}
@@ -78,7 +79,7 @@ export function CollapsibleMedia({
 								)}
 							</div>
 						</div>
-					</motion.div>
+					</m.div>
 				)}
 			</AnimatePresence>
 		</div>

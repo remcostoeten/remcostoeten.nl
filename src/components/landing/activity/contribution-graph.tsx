@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { motion } from 'motion/react'
+import * as m from 'motion/react-m'
 import {
 	COMBINED_ACTIVITY_LIMIT,
 	COMBINED_TRACKS_LIMIT,
@@ -628,7 +628,7 @@ export function ActivityContributionGraph({
 			</div>
 
 			{showLegend && (
-				<motion.div
+				<m.div
 					className="flex items-center justify-between text-[10px] text-muted-foreground px-0"
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
@@ -648,11 +648,11 @@ export function ActivityContributionGraph({
 						{totalContributions.toLocaleString()} contributions (
 						{rangeLabel})
 					</span>
-				</motion.div>
+				</m.div>
 			)}
 
 			{selectedDay && (
-				<motion.div
+				<m.div
 					className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4"
 					onClick={closeSelectedDay}
 					initial={{ opacity: 0 }}
@@ -662,7 +662,7 @@ export function ActivityContributionGraph({
 					aria-labelledby="activity-dialog-title"
 					aria-describedby="activity-dialog-description"
 				>
-					<motion.div
+					<m.div
 						ref={dialogRef}
 						className="bg-card border border-border rounded-none w-full max-w-md sm:max-w-lg max-h-[85vh] flex flex-col"
 						onClick={e => e.stopPropagation()}
@@ -960,8 +960,8 @@ export function ActivityContributionGraph({
 									</div>
 								)}
 						</div>
-					</motion.div>
-				</motion.div>
+					</m.div>
+				</m.div>
 			)}
 
 			{/* Custom Tooltip */}

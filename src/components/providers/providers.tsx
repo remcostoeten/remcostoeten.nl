@@ -1,6 +1,7 @@
 'use client'
 
 import nextDynamic from 'next/dynamic'
+import { LazyMotion } from 'motion/react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
 
@@ -14,6 +15,10 @@ const AppChrome = nextDynamic(
 		})),
 	{ ssr: false }
 )
+
+function loadMotionFeatures() {
+	return import('motion/react').then(module => module.domMax)
+}
 
 type TProps = {
 	children: ReactNode
@@ -46,19 +51,21 @@ export function AppProviders({ children }: TProps) {
 	const shouldLoadAppChrome = useIdleAppChrome()
 
 	return (
-		<CustomQueryClientProvider>
-			<BlogFilterProvider>
-				<StaggerProvider
-					config={{
-						baseDelay: 80,
-						initialDelay: 0,
-						strategy: 'mount-order'
-					}}
-				>
-					{children}
-					{shouldLoadAppChrome && <AppChrome />}
-				</StaggerProvider>
-			</BlogFilterProvider>
-		</CustomQueryClientProvider>
+		<LazyMotion features={loadMotionFeatures}>
+			<CustomQueryClientProvider>
+				<BlogFilterProvider>
+					<StaggerProvider
+						config={{
+							baseDelay: 80,
+							initialDelay: 0,
+							strategy: 'mount-order'
+						}}
+					>
+						{children}
+						{shouldLoadAppChrome && <AppChrome />}
+					</StaggerProvider>
+				</BlogFilterProvider>
+			</CustomQueryClientProvider>
+		</LazyMotion>
 	)
 }
