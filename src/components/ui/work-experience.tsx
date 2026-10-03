@@ -96,7 +96,7 @@ export function WorkExperience({
 						'relative transition-[max-height] duration-700 ease-in-out',
 						showAll
 							? 'max-h-[2000px]'
-							: 'max-h-[200px] overflow-hidden'
+							: 'max-h-[200px] overflow-clip'
 					)}
 				>
 					{previewJob && (
@@ -108,6 +108,7 @@ export function WorkExperience({
 					)}
 
 					<div
+						inert={!showAll}
 						className={cn(
 							'space-y-4 transition-[opacity,transform] duration-700',
 							showAll
