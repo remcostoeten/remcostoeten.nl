@@ -27,8 +27,8 @@ async function fetchWithRetry(year: number, maxRetries = 3) {
 }
 
 export async function GET(request: Request) {
+	const { searchParams } = new URL(request.url)
 	try {
-		const { searchParams } = new URL(request.url)
 		const yearParam = searchParams.get('year')
 		const currentYear = new Date().getFullYear()
 		const year = parseYearParam(yearParam, {

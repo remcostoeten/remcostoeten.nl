@@ -17,20 +17,22 @@ async function getResolvedBlogPosts() {
 		isDraft: boolean
 	}> = []
 
-	try {
-		dbPosts = await db
-			.select({
-				slug: blogPosts.slug,
-				views: blogPosts.totalViews,
-				uniqueViews: blogPosts.uniqueViews,
-				isDraft: blogPosts.isDraft
-			})
-			.from(blogPosts)
-	} catch (error) {
-		console.warn(
-			'Blog post analytics unavailable, falling back to file metadata only.',
-			error
-		)
+	if (process.env.BUILD_WITHOUT_DATABASE !== 'true') {
+		try {
+			dbPosts = await db
+				.select({
+					slug: blogPosts.slug,
+					views: blogPosts.totalViews,
+					uniqueViews: blogPosts.uniqueViews,
+					isDraft: blogPosts.isDraft
+				})
+				.from(blogPosts)
+		} catch (error) {
+			console.warn(
+				'Blog post analytics unavailable, falling back to file metadata only.',
+				error
+			)
+		}
 	}
 
 	const dbMap = new Map(

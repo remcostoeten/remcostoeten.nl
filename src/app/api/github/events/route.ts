@@ -3,8 +3,8 @@ import { githubService } from '@/server/github'
 import { parseStrictIsoDateParam } from '@/shared/lib/request-params'
 
 export async function GET(request: Request) {
+	const { searchParams } = new URL(request.url)
 	try {
-		const { searchParams } = new URL(request.url)
 		const date = parseStrictIsoDateParam(searchParams.get('date'))
 
 		if (!date) {

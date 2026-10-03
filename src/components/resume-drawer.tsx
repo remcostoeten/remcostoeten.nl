@@ -14,7 +14,7 @@ export function ResumeDrawer({ initialOpen = false }: Props) {
 	return (
 		<Drawer.Root shouldScaleBackground defaultOpen={initialOpen}>
 			<Drawer.Trigger asChild>
-				<button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+				<button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground">
 					<FileUser className="w-4 h-4" />
 					<span>Resume</span>
 				</button>
@@ -39,7 +39,7 @@ export function ResumeDrawer({ initialOpen = false }: Props) {
 						<div className="flex items-center gap-2 mt-4">
 							<button
 								onClick={() => setIsFullscreen(!isFullscreen)}
-								className="p-2 hover:bg-muted rounded-full transition-colors hidden md:block"
+								className="p-2 hover:bg-muted rounded-full transition-colors hidden md:block focus-visible:outline-none focus-visible:bg-muted"
 								title={
 									isFullscreen
 										? 'Exit Fullscreen'
@@ -60,14 +60,14 @@ export function ResumeDrawer({ initialOpen = false }: Props) {
 							<a
 								href="/remco-stoeten-frontend-engineer-resume.pdf"
 								download
-								className="p-2 hover:bg-muted rounded-full transition-colors"
+								className="p-2 hover:bg-muted rounded-full transition-colors focus-visible:outline-none focus-visible:bg-muted"
 								title="Download PDF"
 							>
 								<Download className="w-4 h-4" />
 							</a>
 							<Drawer.Close asChild>
 								<button
-									className="p-2 hover:bg-muted rounded-full transition-colors"
+									className="p-2 hover:bg-muted rounded-full transition-colors focus-visible:outline-none focus-visible:bg-muted"
 									aria-label="Close resume drawer"
 								>
 									<X className="w-4 h-4" />

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { Suspense } from 'react'
 import {
 	calculateReadTime,
 	getAdjacentBlogPosts,
@@ -26,17 +27,51 @@ export async function getBlogPostStaticParams() {
 		}))
 }
 
-export async function BlogPostView({
-	params,
-	includeDrafts = false,
-	linkBasePath = '/blog',
-	showStructuredData = true
-}: {
+type BlogPostViewProps = {
 	params: Promise<{ slug: string | string[] }>
 	includeDrafts?: boolean
 	linkBasePath?: string
 	showStructuredData?: boolean
-}) {
+}
+
+export function BlogPostView(props: BlogPostViewProps) {
+	return (
+		<Suspense fallback={<BlogPostFallback />}>
+			<BlogPostContent {...props} />
+		</Suspense>
+	)
+}
+
+function BlogPostFallback() {
+	return (
+		<section
+			className="bg-pattern relative"
+			aria-busy="true"
+			aria-label="Loading post"
+		>
+			<div className="max-w-3xl space-y-4 py-8">
+				<div className="h-4 w-32 animate-pulse rounded-sm bg-muted/60" />
+				<div className="h-8 w-3/4 animate-pulse rounded-sm bg-muted" />
+				<div className="h-4 w-full animate-pulse rounded-sm bg-muted/60" />
+				<div className="h-4 w-5/6 animate-pulse rounded-sm bg-muted/50" />
+			</div>
+			<div className="screen-border mb-12" />
+			<div className="max-w-3xl space-y-3">
+				<div className="h-4 w-full animate-pulse rounded-sm bg-muted/50" />
+				<div className="h-4 w-11/12 animate-pulse rounded-sm bg-muted/50" />
+				<div className="h-4 w-4/5 animate-pulse rounded-sm bg-muted/40" />
+				<div className="h-40 w-full animate-pulse rounded-sm bg-muted/30" />
+			</div>
+		</section>
+	)
+}
+
+async function BlogPostContent({
+	params,
+	includeDrafts = false,
+	linkBasePath = '/blog',
+	showStructuredData = true
+}: BlogPostViewProps) {
 	const userIsAdmin = includeDrafts
 	const resolvedParams = await params
 	let slug = Array.isArray(resolvedParams.slug)

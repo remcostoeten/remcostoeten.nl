@@ -13,14 +13,13 @@ import { parseBoundedIntParam } from '@/shared/lib/request-params'
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1'
 
 export async function GET(request: Request) {
+	const { searchParams } = new URL(request.url)
+	const limit = parseBoundedIntParam(searchParams.get('limit'), {
+		defaultValue: 10,
+		min: 1,
+		max: 50
+	})
 	try {
-		const { searchParams } = new URL(request.url)
-		const limit = parseBoundedIntParam(searchParams.get('limit'), {
-			defaultValue: 10,
-			min: 1,
-			max: 50
-		})
-
 		if (!hasSpotifyCredentials()) {
 			return fallbackRecentTracks(limit)
 		}
@@ -79,16 +78,7 @@ export async function GET(request: Request) {
 		return formatResponse(recentData)
 	} catch (error) {
 		console.error('Error in Spotify recent tracks API:', error)
-		return fallbackRecentTracks(
-			parseBoundedIntParam(
-				new URL(request.url).searchParams.get('limit'),
-				{
-					defaultValue: 10,
-					min: 1,
-					max: 50
-				}
-			)
-		)
+		return fallbackRecentTracks(limit)
 	}
 }
 

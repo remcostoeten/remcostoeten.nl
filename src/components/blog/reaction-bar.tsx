@@ -52,8 +52,6 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 	const handleReaction = async (emoji: EmojiType) => {
 		setLoadingEmoji(emoji)
 
-		const wasReacted = reactions[emoji].hasReacted
-
 		setReactions(prev => ({
 			...prev,
 			[emoji]: {

@@ -74,7 +74,7 @@ export const ProjectPreviewRenderer = memo(function ProjectPreviewRenderer({
 								setIsLoading(true)
 								setIsIframeActive(true)
 							}}
-							className="inline-flex items-center gap-2 rounded border border-border bg-background px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+							className="inline-flex items-center gap-2 rounded border border-border bg-background px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:bg-muted focus-visible:border-foreground/30"
 						>
 							<Play className="h-3 w-3" />
 							Load live preview
@@ -84,7 +84,7 @@ export const ProjectPreviewRenderer = memo(function ProjectPreviewRenderer({
 								href={iframeSrc}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="inline-flex items-center gap-2 rounded border border-border/60 px-3 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
+								className="inline-flex items-center gap-2 rounded border border-border/60 px-3 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-border"
 							>
 								<ExternalLink className="h-3 w-3" />
 								Open app

@@ -50,9 +50,10 @@ export function SendButton({ status, className }: Props) {
 			}}
 			className={cn(
 				'relative inline-flex h-9 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-primary-foreground shadow',
-				'transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+				'transition-colors focus-visible:outline-none',
 				'disabled:pointer-events-none',
-				status === 'idle' && 'hover:bg-primary/90',
+				status === 'idle' &&
+					'hover:bg-primary/90 focus-visible:bg-primary/80!',
 				className
 			)}
 		>

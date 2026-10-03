@@ -20,11 +20,12 @@ const CHECK = '✓'
 const CROSS = '✕'
 const DOT = '·'
 const ANSI_PATTERN = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'gu')
-const PACKAGE_RUNNER = { command: 'npm', args: ['run', '--silent'] }
+const PACKAGE_RUNNER = { command: 'bun', args: ['run', '--silent'] }
 const BUILD_ENV = {
 	DATABASE_URL: 'postgresql://ci:ci@localhost:5432/ci',
 	BETTER_AUTH_URL: 'http://localhost:3000',
 	BETTER_AUTH_SECRET: 'ci-build-secret-ci-build-secret-ci-build-secret',
+	BUILD_WITHOUT_DATABASE: process.env.DATABASE_URL ? undefined : 'true',
 	FORCE_COLOR: '1'
 }
 
@@ -209,7 +210,8 @@ function runStep(step, index, total) {
 			{
 				env: {
 					...BUILD_ENV,
-					...process.env
+					...process.env,
+					NO_COLOR: undefined
 				},
 				stdio: ['inherit', 'pipe', 'pipe'],
 				shell: process.platform === 'win32'

@@ -1,6 +1,6 @@
 ---
 title: 'JavaScript biggest secret'
-publishedAt: '11-02-2026'
+publishedAt: '10-31-2026'
 updatedAt: '30-06-2026'
 summary: 'Only ELITE engineers know this secret.'
 tags: ['Engineering', 'Personal']

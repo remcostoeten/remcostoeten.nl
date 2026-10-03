@@ -22,7 +22,7 @@ function Trigger({
 			onPointerEnter={onLoad}
 			onFocus={onLoad}
 			onClick={onOpen}
-			className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+			className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 		>
 			<FileUser className="w-4 h-4" />
 			<span>Resume</span>

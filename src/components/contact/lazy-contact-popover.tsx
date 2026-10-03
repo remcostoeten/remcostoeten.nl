@@ -24,7 +24,7 @@ function Trigger({
 				onPointerEnter={onLoad}
 				onFocus={onLoad}
 				onClick={onOpen}
-				className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+				className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 			>
 				Contact
 			</button>

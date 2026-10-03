@@ -178,7 +178,7 @@ export const ProjectCard = memo(function ProjectCard({
 									setHighlightPreview(false)
 								}}
 								className={cn(
-									'relative min-h-9 min-w-9 inline-flex items-center justify-center p-2 transition-all duration-300',
+									'relative min-h-9 min-w-9 inline-flex items-center justify-center p-2 transition-all duration-300 focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground',
 									isPreviewVisible
 										? 'text-foreground'
 										: 'text-muted-foreground hover:text-foreground',
@@ -204,7 +204,7 @@ export const ProjectCard = memo(function ProjectCard({
 							href={project.github}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-all duration-300 hover:text-foreground"
+							className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-all duration-300 hover:text-foreground focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 							style={{ transitionTimingFunction: EASE_OUT_EXPO }}
 							aria-label={`${project.name} on GitHub`}
 						>
@@ -215,7 +215,7 @@ export const ProjectCard = memo(function ProjectCard({
 								href={externalUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-all duration-300 hover:text-foreground"
+								className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-all duration-300 hover:text-foreground focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 								style={{
 									transitionTimingFunction: EASE_OUT_EXPO
 								}}

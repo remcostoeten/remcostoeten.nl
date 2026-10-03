@@ -82,7 +82,7 @@
 		"leaflet": "^1.9.4",
 		"lucide-react": "^0.562.0",
 		"motion": "^12.40.0",
-		"next": "^16.3.0-canary.83",
+		"next": "16.4.0-canary.58",
 		"next-mdx-remote": "^6.0.0",
 		"postcss": "^8.4.35",
 		"posthog-js": "^1.396.6",
@@ -117,5 +117,8 @@
 		"oxfmt": "^0.33.0",
 		"oxlint": "^1.43.0",
 		"vitest": "^4.1.2"
+	},
+	"patchedDependencies": {
+		"@ffmpeg/ffmpeg@0.12.15": "patches/@ffmpeg%2Fffmpeg@0.12.15.patch"
 	}
 }

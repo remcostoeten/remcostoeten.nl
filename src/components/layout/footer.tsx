@@ -65,14 +65,14 @@ export function Footer() {
 						<div className="flex flex-col gap-2">
 							<Link
 								href="/"
-								className="text-lg font-semibold tracking-tight hover:opacity-70 transition-opacity"
+								className="rounded-sm text-lg font-semibold tracking-tight transition-[opacity,background-color] hover:opacity-70 focus-visible:outline-none focus-visible:bg-muted"
 							>
 								remcostoeten
 								<span className="text-primary">.</span>nl
 							</Link>
 							<button
 								onClick={copyEmail}
-								className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+								className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 							>
 								{copied ? (
 									<>
@@ -92,7 +92,7 @@ export function Footer() {
 								href={latestCommit.url}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="group inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+								className="group inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 							>
 								<GitCommit className="w-3 h-3" />
 								<span>
@@ -105,7 +105,7 @@ export function Footer() {
 									/>{' '}
 									{relativeTimeInfo.unit} ago
 								</span>
-								<span className="text-muted-foreground/80 group-hover:text-foreground transition-colors truncate max-w-[180px]">
+								<span className="text-muted-foreground/80 group-hover:text-foreground group-focus-visible:text-foreground transition-colors truncate max-w-[180px]">
 									· {latestCommit.message}
 								</span>
 							</a>
@@ -128,7 +128,7 @@ export function Footer() {
 									href={social.href}
 									target="_blank"
 									rel="me noopener noreferrer"
-									className="text-muted-foreground hover:text-foreground transition-colors"
+									className="text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 									aria-label={social.name}
 								>
 									<social.icon className="w-4 h-4" />
@@ -145,25 +145,25 @@ export function Footer() {
 					<div className="flex items-center gap-4">
 						<Link
 							href="/about"
-							className="hover:text-foreground transition-colors"
+							className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 						>
 							About
 						</Link>
 						<Link
 							href="/tools"
-							className="hover:text-foreground transition-colors"
+							className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 						>
 							Tools
 						</Link>
 						<Link
 							href="/privacy"
-							className="hover:text-foreground transition-colors"
+							className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 						>
 							Privacy
 						</Link>
 						<Link
 							href="/terms"
-							className="hover:text-foreground transition-colors"
+							className="hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 						>
 							Terms
 						</Link>

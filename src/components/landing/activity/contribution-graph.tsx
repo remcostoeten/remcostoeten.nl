@@ -596,13 +596,11 @@ export function ActivityContributionGraph({
 													? 'dialog'
 													: undefined
 											}
-											className={`cell-pop-in w-full aspect-square rounded-[2px] transition-[background-color,border-color,box-shadow] duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-1 focus-visible:ring-offset-background ${
+											className={`cell-pop-in w-full aspect-square rounded-[2px] transition-[background-color,border-color,box-shadow] duration-300 ease-out border focus-visible:outline-none focus-visible:border-foreground ${
 												hasData ? 'cursor-pointer' : ''
 											} ${
 												hasData
-													? getColorForLevel(
-															day.level
-														)
+													? `${getColorForLevel(day.level)} border-transparent`
 													: 'bg-secondary/40 border border-border/20'
 											} ${!hasData ? 'opacity-0' : ''} ${
 												isToday
@@ -713,7 +711,7 @@ export function ActivityContributionGraph({
 								ref={closeButtonRef}
 								type="button"
 								onClick={closeSelectedDay}
-								className="text-muted-foreground hover:text-foreground p-1 hover:bg-muted/50 rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+								className="text-muted-foreground hover:text-foreground p-1 hover:bg-muted/50 rounded transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 								aria-label="Close selected day"
 							>
 								<svg
@@ -831,7 +829,7 @@ export function ActivityContributionGraph({
 																href={`https://github.com/${projectName}`}
 																target="_blank"
 																rel="noopener noreferrer"
-																className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
+																className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors focus-visible:outline-none focus-visible:bg-primary/20"
 															>
 																<svg
 																	className="w-3 h-3"
@@ -889,7 +887,7 @@ export function ActivityContributionGraph({
 																				}
 																				target="_blank"
 																				rel="noopener noreferrer"
-																				className="text-xs text-foreground/80 hover:text-primary leading-relaxed wrap-break-word transition-colors block"
+																				className="text-xs text-foreground/80 hover:text-primary leading-relaxed wrap-break-word transition-colors block rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-primary"
 																			>
 																				{
 																					commit.message
@@ -939,7 +937,7 @@ export function ActivityContributionGraph({
 														href={track.url}
 														target="_blank"
 														rel="noopener noreferrer"
-														className="flex items-center gap-2 text-xs text-foreground/70 hover:text-brand-500 transition-colors"
+														className="flex items-center gap-2 text-xs text-foreground/70 hover:text-brand-500 transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-brand-500"
 													>
 														<span className="truncate">
 															{track.name}

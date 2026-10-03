@@ -1,0 +1,23 @@
+diff --git a/dist/esm/classes.js b/dist/esm/classes.js
+index fae47533aa26ba897030686e25b08527f2688a6b..b6d5814966bac9484cc8ca1cde630220f03215b6 100644
+--- a/dist/esm/classes.js
++++ b/dist/esm/classes.js
+@@ -101,15 +101,9 @@ export class FFmpeg {
+      */
+     load = ({ classWorkerURL, ...config } = {}, { signal } = {}) => {
+         if (!this.#worker) {
+-            this.#worker = classWorkerURL ?
+-                new Worker(new URL(classWorkerURL, import.meta.url), {
+-                    type: "module",
+-                }) :
+-                // We need to duplicated the code here to enable webpack
+-                // to bundle worekr.js here.
+-                new Worker(new URL("./worker.js", import.meta.url), {
+-                    type: "module",
+-                });
++            this.#worker = new Worker(new URL("./worker.js", import.meta.url), {
++                type: "module",
++            });
+             this.#registerHandlers();
+         }
+         return this.#send({

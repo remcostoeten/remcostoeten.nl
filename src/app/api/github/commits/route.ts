@@ -18,8 +18,8 @@ interface GitHubCommit {
 }
 
 export async function GET(request: NextRequest) {
+	const { searchParams } = new URL(request.url)
 	try {
-		const { searchParams } = new URL(request.url)
 		const owner = searchParams.get('owner')
 		const repo = searchParams.get('repo')
 

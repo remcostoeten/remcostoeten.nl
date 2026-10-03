@@ -136,7 +136,7 @@ export function WorkExperience({
 									onClick={() => setShowAll(true)}
 									aria-expanded={showAll}
 									aria-controls="experience-history"
-									className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
+									className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-foreground/30"
 								>
 									<ChevronsUpDownIcon className="size-4" />
 									<span>
@@ -156,7 +156,7 @@ export function WorkExperience({
 							onClick={() => setShowAll(false)}
 							aria-expanded={showAll}
 							aria-controls="experience-history"
-							className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
+							className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-foreground/30"
 						>
 							<ChevronsDownUpIcon className="size-4 rotate-180" />
 							<span>Show Less</span>
@@ -178,7 +178,7 @@ export function WorkExperience({
 								type="button"
 								onClick={() => setShowEducation(true)}
 								aria-expanded={showEducation}
-								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
+								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-foreground/30"
 							>
 								<ChevronsUpDownIcon className="size-4" />
 								<span>View All ({educationCount})</span>
@@ -191,7 +191,7 @@ export function WorkExperience({
 								type="button"
 								onClick={() => setShowEducation(false)}
 								aria-expanded={showEducation}
-								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors"
+								className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground border border-border rounded-none hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-foreground/30"
 							>
 								<ChevronsDownUpIcon className="size-4 rotate-180" />
 								<span>Show Less</span>
@@ -310,7 +310,7 @@ export function ExperiencePositionItem({
 					<button
 						type="button"
 						className={cn(
-							'flex w-full items-start justify-between select-none text-left rounded-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+							'flex w-full items-start justify-between select-none text-left rounded-sm transition-colors focus-visible:outline-none focus-visible:bg-muted/60',
 							'group/header cursor-pointer'
 						)}
 						aria-expanded={isOpen}
@@ -395,7 +395,7 @@ function SkillsList({ skills }: { skills: string[] }) {
 							e.stopPropagation()
 							setShowAll(!showAll)
 						}}
-						className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+						className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 rounded-sm transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-border/50"
 						aria-expanded={showAll}
 						aria-controls={listId}
 					>

@@ -765,7 +765,7 @@ export function ActivityFeed({
 												href={currentActivity.url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary border border-primary/20 rounded-[4px] transition-colors cursor-pointer group shrink-0"
+												className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary border border-primary/20 rounded-[4px] transition-colors cursor-pointer group shrink-0 focus-visible:outline-none focus-visible:bg-primary/15 focus-visible:border-primary/50"
 											>
 												<GitBranch className="size-3 opacity-70 shrink-0" />
 												<span className="font-medium text-[12px] truncate">
@@ -814,7 +814,7 @@ export function ActivityFeed({
 								<div className="absolute right-0 top-0 sm:relative sm:right-auto sm:top-auto flex items-center gap-1 text-muted-foreground/40 shrink-0 ml-auto">
 									<button
 										onClick={goToPrevSlide}
-										className="p-1 hover:text-foreground transition-colors"
+										className="p-1 rounded-sm hover:text-foreground transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 										aria-label="Previous slide"
 									>
 										<svg
@@ -837,7 +837,7 @@ export function ActivityFeed({
 									</span>
 									<button
 										onClick={goToNextSlide}
-										className="p-1 hover:text-foreground transition-colors"
+										className="p-1 rounded-sm hover:text-foreground transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 										aria-label="Next slide"
 									>
 										<svg
@@ -878,10 +878,10 @@ export function ActivityFeed({
 												href={displayTrack.url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] transition-colors cursor-pointer min-w-0 shrink ${
+												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] transition-colors cursor-pointer min-w-0 shrink focus-visible:outline-none ${
 													isCurrentTrackLive
-														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20'
-														: 'bg-muted/40 text-foreground/80 border border-border/40'
+														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20 focus-visible:bg-brand-500/15 focus-visible:border-brand-500/50'
+														: 'bg-muted/40 text-foreground/80 border border-border/40 focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-border'
 												}`}
 											>
 												{isCurrentTrackLive && (
@@ -957,7 +957,7 @@ export function ActivityFeed({
 											onPointerDownCapture={
 												stopDragPropagation
 											}
-											className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary font-medium border border-primary/20 rounded-[4px] text-[12px] shrink-0"
+											className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-primary/5 text-primary font-medium border border-primary/20 rounded-[4px] text-[12px] shrink-0 transition-colors focus-visible:outline-none focus-visible:bg-primary/15 focus-visible:border-primary/50"
 										>
 											<Globe className="size-3 shrink-0" />
 											<span className="truncate">
@@ -1015,10 +1015,10 @@ export function ActivityFeed({
 												onPointerDownCapture={
 													stopDragPropagation
 												}
-												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] min-w-0 shrink ${
+												className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] font-medium text-[12px] transition-colors min-w-0 shrink focus-visible:outline-none ${
 													isCurrentTrackLive
-														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20'
-														: 'bg-muted/40 text-foreground/80 border border-border/40'
+														? 'bg-brand-500/5 text-brand-500 border border-brand-500/20 focus-visible:bg-brand-500/15 focus-visible:border-brand-500/50'
+														: 'bg-muted/40 text-foreground/80 border border-border/40 focus-visible:bg-muted focus-visible:text-foreground focus-visible:border-border'
 												}`}
 											>
 												{isCurrentTrackLive && (

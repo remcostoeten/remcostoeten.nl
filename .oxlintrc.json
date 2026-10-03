@@ -14,7 +14,17 @@
 		"nursery": "off"
 	},
 	"rules": {
-		"eslint/no-unused-vars": "warn"
+		"eslint/no-unused-vars": "warn",
+		"eslint/no-underscore-dangle": [
+			"warn",
+			{ "allow": ["_gotcha", "__STAGGER_DEBUG__"] }
+		]
 	},
-	"ignorePatterns": [".next/**", "node_modules/**", "out/**", "build/**"]
+	"ignorePatterns": [
+		".next/**",
+		"node_modules/**",
+		"out/**",
+		"build/**",
+		".kuizer/**"
+	]
 }

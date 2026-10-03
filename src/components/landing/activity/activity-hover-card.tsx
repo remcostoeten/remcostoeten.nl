@@ -223,7 +223,7 @@ export function GitHubProjectCard({
 						href={url}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="font-medium text-foreground hover:text-primary transition-colors"
+						className="font-medium text-foreground hover:text-primary transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-primary"
 					>
 						{repoName}
 					</a>
@@ -366,7 +366,7 @@ export function GitHubActivityCard({
 				href={url}
 				target="_blank"
 				rel="noopener noreferrer"
-				className="block font-medium text-foreground hover:text-primary transition-colors"
+				className="block font-medium text-foreground hover:text-primary transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-primary"
 			>
 				{title}
 			</a>
@@ -509,7 +509,7 @@ export function SpotifyCard({
 					href={url as Route}
 					target="_blank"
 					rel="noopener noreferrer"
-					className="block font-medium text-foreground hover:text-green-500 transition-colors truncate"
+					className="block font-medium text-foreground hover:text-green-500 transition-colors truncate rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-green-500"
 				>
 					{name}
 				</Link>

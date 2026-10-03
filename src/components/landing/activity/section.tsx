@@ -23,23 +23,31 @@ export function ActivitySection() {
 				<p className="px-4 md:px-5 text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
 					Besides my professional work, I also build a lot of open
 					source. Primarily I've been working on{' '}
-					<Link href="https://skriuw.vercel.app" target="_blank">
+					<Link
+						href="https://skriuw.vercel.app"
+						target="_blank"
+						className="group rounded-sm transition-colors focus-visible:outline-none focus-visible:bg-muted"
+					>
 						<ProjectHoverWrapper
 							repository="remcostoeten/skriuw"
 							isPrivate={false}
 						>
-							<span className="text-foreground/80 underline decoration-dotted underline-offset-4">
+							<span className="text-foreground/80 underline decoration-dotted underline-offset-4 transition-colors group-focus-visible:text-foreground">
 								Skriuw
 							</span>
 						</ProjectHoverWrapper>
 					</Link>
 					, a Notion-like desktop application, and{' '}
-					<Link href="https://doradb.vercel.app" target="_blank">
+					<Link
+						href="https://doradb.vercel.app"
+						target="_blank"
+						className="group rounded-sm transition-colors focus-visible:outline-none focus-visible:bg-muted"
+					>
 						<ProjectHoverWrapper
 							repository="remcostoeten/doradb"
 							isPrivate={false}
 						>
-							<span className="text-foreground/80 underline decoration-dotted underline-offset-4">
+							<span className="text-foreground/80 underline decoration-dotted underline-offset-4 transition-colors group-focus-visible:text-foreground">
 								DoraDB
 							</span>
 						</ProjectHoverWrapper>
@@ -49,7 +57,7 @@ export function ActivitySection() {
 
 				<a
 					href="#activity-feed"
-					className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:rounded focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-background"
+					className="sr-only focus:not-sr-only focus:absolute focus:z-10 focus:rounded focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:text-foreground focus-visible:outline-none focus-visible:bg-muted"
 				>
 					Skip activity calendar
 				</a>

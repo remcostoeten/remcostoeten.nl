@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import { connection } from 'next/server'
 import type { IProject, TPreview } from '../types'
 import type { Project } from '@/server/db/project-schema'
 import { getProjects } from '../server/queries'
@@ -88,6 +89,7 @@ async function ProjectShowcaseAsync({
 }: {
 	visibleRowCount: number
 }) {
+	await connection()
 	const dbProjects = await getProjects()
 
 	const allProjects = dbProjects.map(mapDbProjectToIProject)

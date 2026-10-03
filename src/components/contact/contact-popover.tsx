@@ -190,7 +190,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 				aria-expanded={isOpen}
 				aria-controls={isOpen ? 'contact-popover-content' : undefined}
 				className={cn(
-					'text-muted-foreground hover:text-foreground transition-colors text-sm font-medium',
+					'text-muted-foreground hover:text-foreground transition-colors text-sm font-medium rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground',
 					isOpen && 'text-foreground'
 				)}
 			>
@@ -224,7 +224,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 									type="button"
 									onClick={() => setIsOpen(false)}
 									aria-label="Close contact form"
-									className="text-muted-foreground hover:text-foreground rounded-full p-1 hover:bg-accent transition-colors"
+									className="text-muted-foreground hover:text-foreground rounded-full p-1 hover:bg-accent transition-colors focus-visible:outline-none focus-visible:bg-accent focus-visible:text-foreground"
 								>
 									<X className="w-4 h-4" />
 								</button>
@@ -256,9 +256,9 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 													: undefined
 											}
 											className={cn(
-												'flex h-9 w-full rounded-md border-0 bg-transparent pl-9 pr-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+												'flex h-9 w-full rounded-md border-0 bg-transparent pl-9 pr-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:bg-muted/60',
 												errors.name &&
-													'focus-visible:ring-destructive'
+													'focus-visible:bg-destructive/10'
 											)}
 											placeholder="Your name"
 										/>
@@ -298,7 +298,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 											className={cn(
 												'pl-9',
 												errors.email &&
-													'focus-visible:ring-destructive'
+													'focus-visible:bg-destructive/10'
 											)}
 											placeholder="name@example.com"
 										/>
@@ -338,7 +338,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 												? 'contact-subject-error'
 												: undefined
 										}
-										className="flex h-9 w-full rounded-md border-0 bg-transparent px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+										className="flex h-9 w-full rounded-md border-0 bg-transparent px-3 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:bg-muted/60"
 										placeholder="Project inquiry"
 									/>
 								</div>
@@ -378,9 +378,9 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 													: undefined
 											}
 											className={cn(
-												'flex w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring resize-none',
+												'flex w-full rounded-md border-0 bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:bg-muted/60 resize-none',
 												errors.message &&
-													'focus-visible:ring-destructive'
+													'focus-visible:bg-destructive/10'
 											)}
 											placeholder="How can I help you?"
 										/>

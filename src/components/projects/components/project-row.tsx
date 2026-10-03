@@ -73,7 +73,7 @@ export const ProjectRow = memo(function ProjectRow({
 							<button
 								onClick={onToggle}
 								className={cn(
-									'min-h-9 min-w-9 inline-flex items-center justify-center p-2 transition-colors',
+									'min-h-9 min-w-9 inline-flex items-center justify-center p-2 transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground',
 									isOpen
 										? 'text-foreground'
 										: 'text-muted-foreground hover:text-foreground'
@@ -100,7 +100,7 @@ export const ProjectRow = memo(function ProjectRow({
 							href={project.github}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-colors hover:text-foreground"
+							className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 							aria-label={`View ${project.name} on GitHub`}
 						>
 							<Github className="h-3 w-3" />
@@ -110,7 +110,7 @@ export const ProjectRow = memo(function ProjectRow({
 								href={externalUrl}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-colors hover:text-foreground"
+								className="min-h-9 min-w-9 inline-flex items-center justify-center p-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 								aria-label={`View ${project.name} demo`}
 							>
 								<ExternalLink className="h-3 w-3" />

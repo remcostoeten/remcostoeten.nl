@@ -21,7 +21,9 @@ describe('spotify now-playing route', () => {
 		authMocks.hasSpotifyCredentials.mockReturnValue(false)
 
 		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET()
+		const response = await GET(
+			new Request('http://localhost:3000/api/spotify/now-playing')
+		)
 		const data = await response.json()
 
 		expect(response.status).toBe(200)
@@ -63,7 +65,9 @@ describe('spotify now-playing route', () => {
 		)
 
 		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET()
+		const response = await GET(
+			new Request('http://localhost:3000/api/spotify/now-playing')
+		)
 		const data = await response.json()
 
 		expect(response.status).toBe(200)
@@ -88,7 +92,9 @@ describe('spotify now-playing route', () => {
 		)
 
 		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET()
+		const response = await GET(
+			new Request('http://localhost:3000/api/spotify/now-playing')
+		)
 		const data = await response.json()
 
 		expect(response.status).toBe(200)
@@ -110,7 +116,9 @@ describe('spotify now-playing route', () => {
 		)
 
 		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET()
+		const response = await GET(
+			new Request('http://localhost:3000/api/spotify/now-playing')
+		)
 		const data = await response.json()
 
 		expect(authMocks.invalidateSpotifyTokenCache).toHaveBeenCalledTimes(1)

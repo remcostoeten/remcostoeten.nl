@@ -18,7 +18,7 @@ export async function PackagesSection() {
 			headerAction={
 				<Link
 					href={'/packages' as Route}
-					className="group flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+					className="group flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 				>
 					View all
 					<ArrowRight

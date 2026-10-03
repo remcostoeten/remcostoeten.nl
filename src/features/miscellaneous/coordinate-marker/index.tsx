@@ -17,10 +17,7 @@ import type * as L from 'leaflet'
 import { SendToTool } from '../components/send-to-tool'
 import { CoordinateMarkerSkeleton } from '../components/tool-skeletons'
 import { geolocationErrorMessage, locate } from '../utils/geolocation'
-import {
-	consumeLocations,
-	type TLocationPoint
-} from '../utils/location-handoff'
+import { consumeLocations } from '../utils/location-handoff'
 import {
 	SAVED_LOCATIONS_KEY,
 	loadSavedLocations,

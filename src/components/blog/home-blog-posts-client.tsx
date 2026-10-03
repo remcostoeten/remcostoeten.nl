@@ -43,13 +43,13 @@ export function HomeBlogPostsClient({ posts }: Props) {
 							key={post.slug}
 							href={`/blog/${post.slug}`}
 							prefetch
-							className="group -mx-4 flex items-start justify-between gap-4 border-b border-border/40 px-4 py-5 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary last:border-b-0 md:-mx-5 md:px-5"
+							className="group -mx-4 flex items-start justify-between gap-4 border-b border-border/40 px-4 py-5 transition-colors hover:bg-muted/10 focus:outline-none focus-visible:bg-muted/40 last:border-b-0 md:-mx-5 md:px-5"
 						>
 							<div className="min-w-0 flex-1">
 								<div className="flex min-w-0 flex-col gap-2">
 									<div className="flex min-w-0 items-start gap-2">
 										<div className="min-w-0 flex-1">
-											<span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary sm:text-[15px]">
+											<span className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary sm:text-[15px]">
 												{post.metadata.title}
 											</span>
 											{post.metadata.summary && (
@@ -97,7 +97,7 @@ export function HomeBlogPostsClient({ posts }: Props) {
 							</div>
 
 							<div className="pt-1">
-								<ArrowUpRight className="h-3 w-3 shrink-0 text-muted-foreground/30 transition-transform transition-colors duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground group-focus-visible:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:text-foreground motion-reduce:transform-none" />
+								<ArrowUpRight className="h-3 w-3 shrink-0 text-muted-foreground/30 transition-transform transition-colors duration-200 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground group-focus-visible:text-foreground motion-reduce:transform-none" />
 							</div>
 						</Link>
 					)
@@ -109,7 +109,7 @@ export function HomeBlogPostsClient({ posts }: Props) {
 					<button
 						type="button"
 						onClick={() => setShowAllInline(current => !current)}
-						className="flex w-full items-center justify-center py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+						className="flex w-full items-center justify-center py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:bg-muted/40 focus-visible:text-foreground"
 					>
 						{showAllInline
 							? 'Show less'
@@ -118,7 +118,7 @@ export function HomeBlogPostsClient({ posts }: Props) {
 				) : (
 					<Link
 						href="/blog"
-						className="flex w-full items-center justify-center py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+						className="flex w-full items-center justify-center py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:bg-muted/40 focus-visible:text-foreground"
 					>
 						View all ({posts.length})
 					</Link>

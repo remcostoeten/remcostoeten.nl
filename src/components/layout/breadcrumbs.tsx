@@ -4,7 +4,6 @@ import type { Route } from 'next'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Fragment, useEffect, useState } from 'react'
-import { Home } from 'lucide-react'
 
 interface BreadcrumbItem {
 	label: string
@@ -83,10 +82,9 @@ export function Breadcrumbs({ params }: BreadcrumbProps) {
 				<li>
 					<Link
 						href={buildHref('/', params) as Route}
-						className="hover:text-foreground transition-colors flex items-center"
-						title="Home"
+						className="rounded-sm hover:text-foreground transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 					>
-						<Home className="w-3.5 h-3.5" />
+						home
 					</Link>
 				</li>
 
@@ -104,7 +102,7 @@ export function Breadcrumbs({ params }: BreadcrumbProps) {
 							) : (
 								<Link
 									href={`${crumb.href}${linkParams}` as Route}
-									className="hover:text-foreground transition-colors"
+									className="rounded-sm hover:text-foreground transition-colors focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 								>
 									{crumb.label.toLowerCase()}
 								</Link>

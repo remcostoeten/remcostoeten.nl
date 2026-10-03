@@ -179,6 +179,7 @@ export function PostNavigation({
 				{prevPost ? (
 					<Link
 						href={`${basePath}/${prevPost.slug}` as Route}
+						prefetch
 						className="group flex flex-col p-4 rounded-xl 
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800
@@ -201,6 +202,7 @@ export function PostNavigation({
 				{nextPost ? (
 					<Link
 						href={`${basePath}/${nextPost.slug}` as Route}
+						prefetch
 						className="group flex flex-col p-4 rounded-xl text-right
               bg-neutral-50 dark:bg-neutral-900/50 
               border border-neutral-200 dark:border-neutral-800

@@ -10,7 +10,8 @@ import {
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1'
 
-export async function GET() {
+export async function GET(request: Request) {
+	const requestUrl = request.url
 	try {
 		if (!hasSpotifyCredentials()) {
 			return NextResponse.json({
@@ -62,7 +63,10 @@ export async function GET() {
 
 		return handleNowPlayingResponse(nowPlayingResponse)
 	} catch (error) {
-		console.error('Error in Spotify now playing API:', error)
+		console.error(
+			`Error in Spotify now playing API (${requestUrl}):`,
+			error
+		)
 		return NextResponse.json(
 			{ error: 'Failed to fetch now playing' },
 			{ status: 500 }
