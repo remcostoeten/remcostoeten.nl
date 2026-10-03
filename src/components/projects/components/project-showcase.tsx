@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { connection } from 'next/server'
+import { cacheLife, cacheTag } from 'next/cache'
 import type { IProject, TPreview } from '../types'
 import type { Project } from '@/server/db/project-schema'
 import { getProjects } from '../server/queries'
@@ -84,14 +84,11 @@ function ShowcaseSkeleton({
 	)
 }
 
-async function ProjectShowcaseAsync({
-	visibleRowCount
-}: {
-	visibleRowCount: number
-}) {
-	await connection()
-	const dbProjects = await getProjects()
+async function getShowcaseProjects() {
+	'use cache'
+	cacheTag('projects', 'github-metrics')
 
+	const dbProjects = await getProjects()
 	const allProjects = dbProjects.map(mapDbProjectToIProject)
 	let enrichedProjects = allProjects
 
@@ -104,14 +101,30 @@ async function ProjectShowcaseAsync({
 		)
 	}
 
-	const enrichedFeatured = enrichedProjects.filter(p => p.spotlight)
-	const enrichedOther = enrichedProjects.filter(p => !p.spotlight)
+	const hasGitData = enrichedProjects.some(project => project.git)
+	// The build skips GitHub enrichment, so refresh soon instead of keeping bare data for hours.
+	if (enrichedProjects.length > 0 && !hasGitData) {
+		cacheLife('minutes')
+	}
+
+	return {
+		featured: enrichedProjects.filter(p => p.spotlight),
+		other: enrichedProjects.filter(p => !p.spotlight)
+	}
+}
+
+async function ProjectShowcaseAsync({
+	visibleRowCount
+}: {
+	visibleRowCount: number
+}) {
+	const { featured, other } = await getShowcaseProjects()
 
 	return (
 		<ProjectShowcaseClient
 			visibleRowCount={visibleRowCount}
-			featured={enrichedFeatured}
-			other={enrichedOther}
+			featured={featured}
+			other={other}
 		/>
 	)
 }

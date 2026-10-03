@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react'
 import { Copy, Check, Github, Linkedin, Twitter, GitCommit } from 'lucide-react'
-import { toast } from 'sonner'
 import Link from 'next/link'
 import { useLatestCommit } from '@/hooks/use-github'
 import { AnimatedNumber } from '../ui/effects/animated-number'
@@ -39,6 +38,7 @@ export function Footer() {
 	const copyEmail = async () => {
 		await navigator.clipboard.writeText(email)
 		setCopied(true)
+		const { toast } = await import('sonner')
 		toast.success('Email copied')
 		setTimeout(() => setCopied(false), 2000)
 	}

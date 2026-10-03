@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { motion } from 'motion/react'
+import * as m from 'motion/react-m'
 import { toggleReaction } from '@/server/actions/blog/reactions'
 import type { EmojiType } from '@/server/db/schema'
 
@@ -85,7 +85,7 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 			<div className="flex items-center gap-2 flex-wrap">
 				<span className="text-sm text-zinc-500 mr-2">React:</span>
 				{(Object.keys(EMOJI_CONFIG) as EmojiType[]).map(emoji => (
-					<motion.button
+					<m.button
 						key={emoji}
 						onClick={() => handleReaction(emoji)}
 						disabled={isPending && loadingEmoji === emoji}
@@ -111,7 +111,7 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 								{reactions[emoji].count}
 							</span>
 						)}
-					</motion.button>
+					</m.button>
 				))}
 			</div>
 		</div>

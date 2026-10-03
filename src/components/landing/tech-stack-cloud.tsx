@@ -2,8 +2,8 @@
 
 import { cn } from '@/shared/lib/cn'
 import { Plus } from 'lucide-react'
+import * as m from 'motion/react-m'
 import {
-	motion,
 	useScroll,
 	useTransform,
 	useSpring,
@@ -210,7 +210,7 @@ function TechCard({ logo, className, children, ...props }: TechCardProps) {
 		>
 			<div className="relative flex flex-col items-center gap-2 h-16 justify-end">
 				<div className="rounded-sm p-1 -m-1 relative h-10 w-10 flex items-center justify-center mb-1">
-					<motion.div
+					<m.div
 						style={{
 							rotateX: rotationX,
 							transformStyle: 'preserve-3d'
@@ -230,7 +230,7 @@ function TechCard({ logo, className, children, ...props }: TechCardProps) {
 								aria-hidden="true"
 							/>
 						</div>
-					</motion.div>
+					</m.div>
 				</div>
 
 				<div className="text-[10px] font-medium text-muted-foreground whitespace-nowrap text-center h-4">

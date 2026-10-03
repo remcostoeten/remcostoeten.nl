@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence } from 'motion/react'
 import { Trash2, MessageSquare, Loader2 } from 'lucide-react'
 import { useSession } from '@/features/auth/client'
 import Image from 'next/image'
@@ -171,7 +172,7 @@ export function CommentSection({ slug }: Props) {
 				<div className="space-y-6">
 					<AnimatePresence>
 						{comments.map(comment => (
-							<motion.div
+							<m.div
 								key={comment.id}
 								initial={{ opacity: 0, y: 10 }}
 								animate={{ opacity: 1, y: 0 }}
@@ -229,7 +230,7 @@ export function CommentSection({ slug }: Props) {
 										</button>
 									)}
 								</div>
-							</motion.div>
+							</m.div>
 						))}
 					</AnimatePresence>
 				</div>

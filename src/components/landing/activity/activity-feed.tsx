@@ -5,7 +5,8 @@ import {
 	useCallback,
 	type PointerEvent
 } from 'react'
-import { motion, AnimatePresence, PanInfo } from 'motion/react'
+import * as m from 'motion/react-m'
+import { AnimatePresence, PanInfo } from 'motion/react'
 import {
 	Music,
 	GitCommit,
@@ -385,7 +386,7 @@ interface LiveGlowProps {
 
 function LiveGlow({ progress, currentMs, durationMs }: LiveGlowProps) {
 	return (
-		<motion.div
+		<m.div
 			className="absolute bottom-0 left-0 right-0 pointer-events-none"
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
@@ -394,12 +395,12 @@ function LiveGlow({ progress, currentMs, durationMs }: LiveGlowProps) {
 			<div className="relative">
 				<div className="relative h-[2px]">
 					<div className="absolute inset-0 bg-white/5 w-full" />
-					<motion.div
+					<m.div
 						className="absolute inset-y-0 left-0 bg-brand-500/80 shadow-[0_0_8px_hsl(var(--brand-500)/0.4)]"
 						style={{ width: `${progress}%` }}
 						layout
 					/>
-					<motion.div
+					<m.div
 						className="absolute inset-y-0 bg-brand-400 blur-[2px]"
 						animate={{
 							opacity: [0.4, 1, 0.4],
@@ -418,7 +419,7 @@ function LiveGlow({ progress, currentMs, durationMs }: LiveGlowProps) {
 							left: { duration: 0.1 }
 						}}
 					/>
-					<motion.div
+					<m.div
 						className="absolute -top-5 flex flex-col items-center"
 						style={{
 							left: `${progress}%`,
@@ -428,7 +429,7 @@ function LiveGlow({ progress, currentMs, durationMs }: LiveGlowProps) {
 						<span className="text-[10px] font-mono text-brand-400 tabular-nums select-none whitespace-nowrap">
 							{formatTrackTime(currentMs)}
 						</span>
-					</motion.div>
+					</m.div>
 				</div>
 				<div className="absolute -top-5 left-0 right-0 flex justify-between px-0">
 					<span className="text-[10px] font-mono text-muted-foreground/80 tabular-nums select-none">
@@ -439,7 +440,7 @@ function LiveGlow({ progress, currentMs, durationMs }: LiveGlowProps) {
 					</span>
 				</div>
 			</div>
-		</motion.div>
+		</m.div>
 	)
 }
 
@@ -696,7 +697,7 @@ export function ActivityFeed({
 	const isPrivate = currentActivity.isPrivate
 
 	return (
-		<motion.div
+		<m.div
 			onMouseEnter={() => setIsPaused(true)}
 			onMouseLeave={() => setIsPaused(false)}
 			onFocus={() => setIsPaused(true)}
@@ -708,7 +709,7 @@ export function ActivityFeed({
 			<div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
 
 			<div className="absolute top-0 left-0 w-full h-[2px] bg-border/10">
-				<motion.div
+				<m.div
 					className="h-full bg-gradient-to-r from-primary/40 to-primary/20"
 					animate={{
 						width: `${(elapsedTime / rotationInterval) * 100}%`
@@ -728,7 +729,7 @@ export function ActivityFeed({
 					initial={false}
 				>
 					{transitionType === 'auto' ? (
-						<motion.div
+						<m.div
 							key={`${currentIndex}-${currentActivity.id}`}
 							variants={sentenceVariants}
 							initial="initial"
@@ -738,14 +739,14 @@ export function ActivityFeed({
 						>
 							{/* GITHUB ROW - Single line, no wrapping */}
 							<div className="relative flex items-center gap-1.5 min-w-0 pr-24">
-								<motion.span
+								<m.span
 									variants={wordVariants}
 									className="text-muted-foreground/70 shrink-0"
 								>
 									{grammar.prefix}
-								</motion.span>
+								</m.span>
 
-								<motion.span
+								<m.span
 									variants={highlightVariants}
 									className="shrink-0"
 								>
@@ -774,20 +775,20 @@ export function ActivityFeed({
 											</a>
 										)}
 									</ProjectHoverWrapper>
-								</motion.span>
+								</m.span>
 
 								{grammar.repoToEventConnector &&
 									grammar.showEventBadge && (
-										<motion.span
+										<m.span
 											variants={wordVariants}
 											className="text-muted-foreground/50 shrink-0"
 										>
 											{grammar.repoToEventConnector}
-										</motion.span>
+										</m.span>
 									)}
 
 								{grammar.showEventBadge && (
-									<motion.span
+									<m.span
 										variants={highlightVariants}
 										className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-muted/40 border border-border/40 rounded-[4px] min-w-0 shrink"
 									>
@@ -797,10 +798,10 @@ export function ActivityFeed({
 										<span className="font-medium text-[12px] text-foreground/80 truncate">
 											{currentActivity.title}
 										</span>
-									</motion.span>
+									</m.span>
 								)}
 
-								<motion.span
+								<m.span
 									variants={wordVariants}
 									className="text-muted-foreground/40 text-[11px] shrink-0"
 								>
@@ -808,7 +809,7 @@ export function ActivityFeed({
 									{formatRelativeTime(
 										currentActivity.timestamp
 									)}
-								</motion.span>
+								</m.span>
 
 								{/* NAVIGATION ARROWS - Positioned absolutely for desktop, inline for mobile */}
 								<div className="absolute right-0 top-0 sm:relative sm:right-auto sm:top-auto flex items-center gap-1 text-muted-foreground/40 shrink-0 ml-auto">
@@ -859,13 +860,13 @@ export function ActivityFeed({
 
 							{/* SPOTIFY ROW - Single line, no wrapping */}
 							<div className="flex items-center gap-1.5 min-w-0 border-t border-border/30 pt-2">
-								<motion.span
+								<m.span
 									variants={wordVariants}
 									className="flex items-center gap-1 text-muted-foreground/60 text-[12px] shrink-0 whitespace-nowrap"
 								>
 									<Music className="size-4 shrink-0" />
 									Whilst listening to
-								</motion.span>
+								</m.span>
 
 								{displayTrack ? (
 									<>
@@ -873,7 +874,7 @@ export function ActivityFeed({
 											track={displayTrack}
 											isPlaying={isCurrentTrackLive}
 										>
-											<motion.a
+											<m.a
 												variants={highlightVariants}
 												href={displayTrack.url}
 												target="_blank"
@@ -890,36 +891,36 @@ export function ActivityFeed({
 												<span className="font-semibold truncate">
 													{displayTrack.name}
 												</span>
-											</motion.a>
+											</m.a>
 										</SpotifyHoverWrapper>
 
-										<motion.span
+										<m.span
 											variants={wordVariants}
 											className="text-muted-foreground/50 shrink-0 whitespace-nowrap"
 										>
 											by
-										</motion.span>
+										</m.span>
 
-										<motion.span
+										<m.span
 											variants={highlightVariants}
 											className="text-foreground/70 font-medium text-[12px] truncate min-w-0"
 										>
 											{displayTrack.artist}
-										</motion.span>
+										</m.span>
 									</>
 								) : (
-									<motion.span
+									<m.span
 										variants={wordVariants}
 										className="text-muted-foreground/50 italic text-[12px]"
 									>
 										Coding in silence
-									</motion.span>
+									</m.span>
 								)}
 							</div>
-						</motion.div>
+						</m.div>
 					) : (
 						// MANUAL SLIDE VARIANT (Simplified for brevity as structure mirrors above, but usually kept in sync)
-						<motion.div
+						<m.div
 							key={`${currentIndex}-${currentActivity.id}`}
 							custom={direction}
 							variants={slideVariants}
@@ -1050,7 +1051,7 @@ export function ActivityFeed({
 									</span>
 								)}
 							</div>
-						</motion.div>
+						</m.div>
 					)}
 				</AnimatePresence>
 			</div>
@@ -1064,6 +1065,6 @@ export function ActivityFeed({
 					/>
 				)}
 			</AnimatePresence>
-		</motion.div>
+		</m.div>
 	)
 }
