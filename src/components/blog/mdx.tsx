@@ -9,6 +9,7 @@ import React from 'react'
 import remarkGfm from 'remark-gfm'
 import remarkDirective from 'remark-directive'
 import remarkCalloutDirectives from '@microflash/remark-callout-directives'
+import { GitHubRepo } from '@/features/github/components/github-repo'
 import { CodeBlock } from '../ui/code-block'
 import {
 	Notice,
@@ -316,6 +317,7 @@ let components = {
 	SpotifyApiExplorer,
 	UseShortcutDemo,
 	UseShortcutSyntaxLab,
+	GitHubRepo,
 	code: ({ children, ...props }) => {
 		// Check if this is inline code (not inside a pre block)
 		const isInline = !props.className?.includes('language-')
