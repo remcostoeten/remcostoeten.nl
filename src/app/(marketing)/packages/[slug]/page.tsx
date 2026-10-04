@@ -4,6 +4,7 @@ import { ArrowUpRight, Github, Package } from 'lucide-react'
 import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import { Suspense } from 'react'
 import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
+import { EmptyStatesDemo } from '@/components/packages/empty-states-demo'
 import { NotifierDemo } from '@/components/packages/notifier-demo'
 import { PackageCode } from '@/components/packages/package-code'
 import { PackageStructuredData, packageMetadata } from '../package-seo'
@@ -157,6 +158,11 @@ async function PackagePageContent({ params }: Props) {
 				{pkg.slug === 'notifier' && (
 					<div className="mt-6">
 						<NotifierDemo />
+					</div>
+				)}
+				{pkg.slug === 'empty-states' && (
+					<div className="mt-6">
+						<EmptyStatesDemo />
 					</div>
 				)}
 			</PackageWhy>
