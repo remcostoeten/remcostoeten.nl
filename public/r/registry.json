@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "remcostoeten",
+  "homepage": "https://www.remcostoeten.nl",
+  "items": [
+    {
+      "name": "empty-state",
+      "type": "registry:component",
+      "title": "Empty State",
+      "description": "One React EmptyState component with illustrations, actions, guides, entrance and loop motion, and pointer tilt or parallax. Styled with Tailwind v4.",
+      "files": [
+        {
+          "path": "registry/empty-state/empty-state.tsx",
+          "type": "registry:component",
+          "target": "@components/empty-state/empty-state.tsx"
+        },
+        {
+          "path": "registry/empty-state/illustrations.tsx",
+          "type": "registry:component",
+          "target": "@components/empty-state/illustrations.tsx"
+        }
+      ]
+    }
+  ]
+}

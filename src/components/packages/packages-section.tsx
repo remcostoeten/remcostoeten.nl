@@ -7,7 +7,9 @@ import type { Route } from 'next'
 
 export async function PackagesSection() {
 	const registryData = await Promise.all(
-		developerPackages.map(pkg => getNpmPackage(pkg.packageName))
+		developerPackages.map(pkg =>
+			pkg.npmUrl ? getNpmPackage(pkg.packageName) : null
+		)
 	)
 
 	return (

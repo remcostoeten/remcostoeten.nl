@@ -4,6 +4,7 @@ import { ArrowUpRight, Check, Github, Package } from 'lucide-react'
 import { Suspense } from 'react'
 import { BreadcrumbStructuredData } from '@/components/seo/structured-data'
 import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
+import { EmptyStatesDemo } from '@/components/packages/empty-states-demo'
 import { NotifierDemo } from '@/components/packages/notifier-demo'
 import { PackageCode } from '@/components/packages/package-code'
 import { baseUrl } from '@/core/config/site'
@@ -97,7 +98,7 @@ async function PackagePageContent({ params }: Props) {
 	const pkg = getDeveloperPackage((await params).slug)
 	if (!pkg) notFound()
 
-	const npmData = await getNpmPackage(pkg.packageName)
+	const npmData = pkg.npmUrl ? await getNpmPackage(pkg.packageName) : null
 	const version = npmData?.version
 	const pageUrl = `${baseUrl}/packages/${pkg.slug}`
 	const jsonLd = {
@@ -113,7 +114,7 @@ async function PackagePageContent({ params }: Props) {
 				softwareVersion: version,
 				license: npmData?.license,
 				url: pageUrl,
-				downloadUrl: pkg.npmUrl,
+				downloadUrl: pkg.npmUrl ?? pkg.registryUrl,
 				author: {
 					'@type': 'Person',
 					name: 'Remco Stoeten',
@@ -175,7 +176,16 @@ async function PackagePageContent({ params }: Props) {
 							Documentation
 						</ExternalLink>
 					)}
-					<ExternalLink href={pkg.npmUrl}>npm package</ExternalLink>
+					{pkg.npmUrl && (
+						<ExternalLink href={pkg.npmUrl}>
+							npm package
+						</ExternalLink>
+					)}
+					{pkg.registryUrl && (
+						<ExternalLink href={pkg.registryUrl}>
+							Registry item
+						</ExternalLink>
+					)}
 					{pkg.sourceUrl && (
 						<ExternalLink
 							href={pkg.sourceUrl}
@@ -231,6 +241,11 @@ async function PackagePageContent({ params }: Props) {
 				{pkg.slug === 'notifier' && (
 					<div className="mt-6">
 						<NotifierDemo />
+					</div>
+				)}
+				{pkg.slug === 'empty-states' && (
+					<div className="mt-6">
+						<EmptyStatesDemo />
 					</div>
 				)}
 			</section>
