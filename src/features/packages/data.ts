@@ -15,7 +15,8 @@ export type DeveloperPackage = {
     arguments: { name: string; description: string }[]
   }[]
   keywords: string[]
-  npmUrl: string
+  npmUrl?: string
+  registryUrl?: string
   docsUrl?: string
   sourceUrl?: string
   install: string
@@ -452,6 +453,75 @@ export function SaveButton() {
   success: 'Settings saved',
   error: 'Could not save settings'
 })`
+      }
+    ]
+  },
+  {
+    slug: 'empty-states',
+    name: 'Empty States',
+    packageName: 'remcostoeten.nl/r/empty-state.json',
+    tagline: 'Empty states with copy, actions and motion.',
+    description:
+      'One React EmptyState component and a set of illustrations for empty lists, searches, inboxes, uploads and offline screens. Styled with Tailwind v4 and themed through CSS variables.',
+    whyHeading: 'Every list, search and inbox needs a first-run screen.',
+    keywords: [
+      'React empty state',
+      'empty state component',
+      'Tailwind v4',
+      'TypeScript'
+    ],
+    registryUrl: 'https://www.remcostoeten.nl/r/empty-state.json',
+    install:
+      'npx shadcn@latest add https://www.remcostoeten.nl/r/empty-state.json',
+    quickStartFile: 'components/records-empty.tsx',
+    quickStart: `import { EmptyState } from '@/components/empty-state/empty-state'
+import { RecordIllustration } from '@/components/empty-state/illustrations'
+
+export function RecordsEmpty() {
+  return (
+    <EmptyState
+      title="Your record space is empty"
+      description="Connect a source or upload a CSV."
+      illustration={<RecordIllustration />}
+      animated="rise"
+      pointer="tilt"
+      actions={[{ id: 'connect', label: 'Connect source', onClick: connect }]}
+    />
+  )
+}`,
+    whenToUse:
+      'Use it for any screen that can have nothing to show yet: a new workspace, a search without results, a cleared inbox, a failed connection. Every state takes the same props, so they look and behave alike across the app.',
+    highlights: [
+      'One component for every empty state, with title, description, illustration, actions, a help link and guide cards.',
+      'Optional entrance motion, looping illustrations and a tilt or parallax effect that follows the mouse, all off under reduced motion.',
+      'Installed as source through the shadcn CLI, so the files are yours to edit. Light and dark come from CSS variables or a theme prop, with no stylesheet to maintain.'
+    ],
+    api: [
+      {
+        name: '<EmptyState />',
+        description: 'Renders illustration, copy, actions, link and guides.'
+      },
+      {
+        name: 'Illustrations',
+        description: 'Animated SVGs for records, search, inbox and more.'
+      },
+      {
+        name: 'pointer',
+        description: 'Tilts or shifts the illustration toward the mouse.'
+      }
+    ],
+    apiExamples: [
+      {
+        title: 'Follow the mouse',
+        description:
+          'Add motion to the illustration without extra components.',
+        fileName: 'components/search-empty.tsx',
+        code: `<EmptyState
+  title="No results found"
+  illustration={<SearchIllustration />}
+  loop
+  pointer="parallax"
+/>`
       }
     ]
   }
