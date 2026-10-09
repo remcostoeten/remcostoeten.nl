@@ -635,7 +635,7 @@ export function ActivityFeed({
 					aria-hidden="true"
 				/>
 				<div
-					className="absolute top-0 left-0 w-full h-[2px] bg-border/10"
+					className="absolute top-0 left-0 w-full h-px bg-border/10"
 					aria-hidden="true"
 				/>
 				<div
@@ -708,9 +708,9 @@ export function ActivityFeed({
 		>
 			<div className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none" />
 
-			<div className="absolute top-0 left-0 w-full h-[2px] bg-border/10">
+			<div className="absolute top-0 left-0 w-full h-px bg-border/10">
 				<m.div
-					className="h-full bg-gradient-to-r from-primary/40 to-primary/20"
+					className="h-full bg-foreground/20"
 					animate={{
 						width: `${(elapsedTime / rotationInterval) * 100}%`
 					}}

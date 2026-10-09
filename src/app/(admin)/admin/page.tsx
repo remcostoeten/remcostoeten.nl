@@ -1,44 +1,42 @@
+import Link from 'next/link'
+import { ArrowUpRight, Eye, Mail, MessageSquare, Users } from 'lucide-react'
 import { getAdminMetrics } from '@/server/queries/admin'
 import { getAllBlogPosts } from '@/features/blog'
-import { BlogTable } from '@/components/admin/blogs/blog-table'
-import { UserMetrics } from '@/components/admin/metrics/user-metrics'
-import { ContactOverview } from '@/components/admin/contact/contact-overview'
 import { getAllCommentsAdmin } from '@/server/queries/blog/comments'
+import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { BlogTable } from '@/components/admin/blogs/blog-table'
+import { ContactOverview } from '@/components/admin/contact/contact-overview'
 import { ActivityFeed } from '@/components/admin/activity/activity-feed'
-import { Eye, Users, MessageSquare, Mail, TrendingUp } from 'lucide-react'
+import {
+	CountryTraffic,
+	VisitorLog
+} from '@/components/admin/metrics/user-metrics'
 
-function GlassStatCard({
+function MetricCell({
 	icon: Icon,
 	label,
 	value,
-	trend
+	hint
 }: {
 	icon: typeof Eye
 	label: string
 	value: number
-	trend?: string
+	hint: string
 }) {
 	return (
-		<div className="admin-glass-card p-4 flex items-center gap-4 group">
-			<div className="p-2.5 bg-[hsl(var(--brand-500)/0.1)] border border-[hsl(var(--brand-400)/0.15)] transition-colors group-hover:border-[hsl(var(--brand-400)/0.3)]">
-				<Icon className="w-4 h-4 text-[hsl(var(--brand-400))]" />
+		<div className="flex flex-col gap-3 bg-card p-5">
+			<div className="flex items-center justify-between text-[13px] text-muted-foreground">
+				<span>{label}</span>
+				<Icon className="size-4" />
 			</div>
-			<div className="flex-1 min-w-0">
-				<p className="text-xs text-muted-foreground">{label}</p>
-				<div className="flex items-baseline gap-2 mt-0.5">
-					<span className="text-2xl font-bold tracking-tight">
-						{value.toLocaleString()}
-					</span>
-					{trend && (
-						<span className="text-[10px] text-emerald-400 flex items-center gap-0.5 font-medium">
-							<TrendingUp className="w-3 h-3" />
-							{trend}
-						</span>
-					)}
-				</div>
-			</div>
+			<span className="admin-metric-value">{value.toLocaleString()}</span>
+			<span className="text-[11px] text-muted-foreground">{hint}</span>
 		</div>
 	)
+}
+
+function pluralize(count: number, singular: string, plural = `${singular}s`) {
+	return `${count} ${count === 1 ? singular : plural}`
 }
 
 export default async function AdminPage() {
@@ -69,56 +67,63 @@ export default async function AdminPage() {
 	).length
 
 	return (
-		<div className="space-y-6">
-			<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-				<GlassStatCard
+		<div className="space-y-8">
+			<AdminPageHeader
+				title="Overview"
+				description="Welcome back, Remco. Here's what's happening with your site."
+				actions={
+					<Link
+						href="/blog"
+						className="admin-btn"
+						data-variant="primary"
+					>
+						View posts
+						<ArrowUpRight className="size-4" />
+					</Link>
+				}
+			/>
+
+			<div className="admin-panel grid grid-cols-2 gap-px bg-border lg:grid-cols-4">
+				<MetricCell
 					icon={Eye}
-					label="Total Views"
+					label="Total views"
 					value={metrics.totalViews}
+					hint={`+${pluralize(metrics.viewsToday, 'view')} today`}
 				/>
-				<GlassStatCard
+				<MetricCell
 					icon={Users}
-					label="Unique Visitors"
+					label="Unique visitors"
 					value={metrics.uniqueVisitors}
+					hint={`Across ${pluralize(metrics.countryCount, 'country', 'countries')}`}
 				/>
-				<GlassStatCard
+				<MetricCell
 					icon={MessageSquare}
 					label="Comments"
 					value={comments.length}
-					trend={recentCount > 0 ? `+${recentCount} new` : undefined}
+					hint={
+						recentCount > 0
+							? `+${recentCount} in the last 24h`
+							: 'On your published posts'
+					}
 				/>
-				<GlassStatCard
+				<MetricCell
 					icon={Mail}
 					label="Messages"
 					value={metrics.contactStats.length}
-					trend={
+					hint={
 						recentSubmissionsCount > 0
-							? `+${recentSubmissionsCount} new`
-							: undefined
+							? pluralize(recentSubmissionsCount, 'new message')
+							: 'No new messages'
 					}
 				/>
 			</div>
 
-			<div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-				<div className="space-y-6" id="blogs">
+			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+				<div id="blogs" className="min-w-0 scroll-mt-20">
 					<BlogTable posts={postsWithStats} />
-
-					<div id="messages">
-						<ContactOverview
-							data={{
-								submissions: metrics.contactStats,
-								interactions: metrics.interactions,
-								abandonments: metrics.abandonments
-							}}
-						/>
-					</div>
-
-					<div id="analytics">
-						<UserMetrics data={metrics} />
-					</div>
 				</div>
 
-				<aside className="space-y-4">
+				<aside className="space-y-6">
 					<ActivityFeed
 						comments={comments.map(comment => ({
 							...comment,
@@ -126,7 +131,26 @@ export default async function AdminPage() {
 						}))}
 						submissions={metrics.contactStats}
 					/>
+					<div id="analytics" className="scroll-mt-20">
+						<CountryTraffic
+							viewsByCountry={metrics.viewsByCountry}
+							totalViews={metrics.totalViews}
+						/>
+					</div>
 				</aside>
+			</div>
+
+			<div className="grid gap-6 lg:grid-cols-2">
+				<div id="messages" className="scroll-mt-20">
+					<ContactOverview
+						data={{
+							submissions: metrics.contactStats,
+							interactions: metrics.interactions,
+							abandonments: metrics.abandonments
+						}}
+					/>
+				</div>
+				<VisitorLog recentViews={metrics.recentViews} />
 			</div>
 		</div>
 	)

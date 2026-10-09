@@ -1,86 +1,278 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Route } from 'next'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-	LayoutDashboard,
-	FileText,
-	Mail,
+	ArrowUpRight,
 	BarChart3,
+	BriefcaseBusiness,
+	FileText,
 	FolderKanban,
-	PanelLeftClose,
-	PanelLeft,
-	House,
-	Settings
+	LayoutDashboard,
+	Mail,
+	Menu,
+	Settings,
+	UserRound,
+	X,
+	type LucideIcon
 } from 'lucide-react'
+import { AdminSessionStatus } from '@/components/admin/admin-session-status'
 
-const navItems = [
-	{ href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
-	{ href: '/admin#blogs', label: 'Blog Posts', icon: FileText },
-	{ href: '/admin#messages', label: 'Messages', icon: Mail },
-	{ href: '/admin#analytics', label: 'Analytics', icon: BarChart3 },
-	{ href: '/admin/projects', label: 'Projects', icon: FolderKanban },
-	{ href: '/admin/settings', label: 'Settings', icon: Settings },
-	{ href: '/', label: 'Back to home', icon: House, exact: true }
+type NavItem = {
+	href: string
+	label: string
+	icon: LucideIcon
+	exact?: boolean
+	badge?: 'messages'
+}
+
+type NavSection = {
+	label: string
+	items: NavItem[]
+}
+
+const navSections: NavSection[] = [
+	{
+		label: 'Workspace',
+		items: [
+			{
+				href: '/admin',
+				label: 'Overview',
+				icon: LayoutDashboard,
+				exact: true
+			},
+			{ href: '/admin#blogs', label: 'Blog posts', icon: FileText },
+			{
+				href: '/admin#messages',
+				label: 'Messages',
+				icon: Mail,
+				badge: 'messages'
+			},
+			{ href: '/admin#analytics', label: 'Analytics', icon: BarChart3 }
+		]
+	},
+	{
+		label: 'Content',
+		items: [
+			{ href: '/admin/intro', label: 'Intro', icon: UserRound },
+			{
+				href: '/admin/experience',
+				label: 'Experience',
+				icon: BriefcaseBusiness
+			},
+			{ href: '/admin/projects', label: 'Projects', icon: FolderKanban }
+		]
+	},
+	{
+		label: 'Manage',
+		items: [{ href: '/admin/settings', label: 'Settings', icon: Settings }]
+	}
 ]
 
-export function AdminSidebar() {
-	const pathname = usePathname()
-	const [collapsed, setCollapsed] = useState(false)
+const pageTitles: Record<string, string> = {
+	'/admin': 'Overview',
+	'/admin/intro': 'Intro',
+	'/admin/experience': 'Experience',
+	'/admin/projects': 'Projects',
+	'/admin/settings': 'Settings'
+}
 
-	function isActive(item: (typeof navItems)[0]) {
-		if (item.exact) return pathname === item.href
-		if (item.href.includes('#')) return pathname === '/admin'
-		return pathname.startsWith(item.href)
-	}
+function isActive(item: NavItem, pathname: string) {
+	if (item.href.includes('#')) return false
+	if (item.exact) return pathname === item.href
+	return pathname.startsWith(item.href)
+}
+
+function getPageTitle(pathname: string) {
+	if (pathname.startsWith('/admin/blog/')) return 'Post preview'
+	return pageTitles[pathname] ?? 'Admin'
+}
+
+function AdminNav({
+	unreadMessages,
+	onNavigate
+}: {
+	unreadMessages: number
+	onNavigate?: () => void
+}) {
+	const pathname = usePathname()
 
 	return (
-		<>
-			<aside
-				className={`admin-sidebar hidden md:flex flex-col border-r border-border/50 bg-background/80 backdrop-blur-sm transition-all duration-300 ${
-					collapsed ? 'w-16' : 'w-56'
-				}`}
-			>
-				<div className="flex items-center justify-end p-3 border-b border-border/30">
-					<button
-						onClick={() => setCollapsed(!collapsed)}
-						className="p-1.5 rounded-sm hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-					>
-						{collapsed ? (
-							<PanelLeft className="w-4 h-4" />
-						) : (
-							<PanelLeftClose className="w-4 h-4" />
-						)}
-					</button>
-				</div>
-
-				<nav className="flex-1 py-3 space-y-0.5 px-2">
-					{navItems.map(item => {
-						const active = isActive(item)
-						return (
+		<nav className="flex flex-col gap-6">
+			{navSections.map(section => (
+				<div key={section.label}>
+					<p className="admin-section-label">{section.label}</p>
+					<div className="flex flex-col gap-0.5">
+						{section.items.map(item => (
 							<Link
 								key={item.href}
 								href={item.href as Route}
-								className={`admin-nav-item flex items-center gap-3 px-3 py-2.5 text-sm transition-all relative ${
-									active
-										? 'text-[hsl(var(--brand-400))] bg-[hsl(var(--brand-500)/0.08)]'
-										: 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-								} ${collapsed ? 'justify-center px-0' : ''}`}
+								onClick={onNavigate}
+								data-active={isActive(item, pathname)}
+								className="admin-nav-item"
 							>
-								{active && (
-									<span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-5 bg-[hsl(var(--brand-400))] rounded-r" />
-								)}
-								<item.icon
-									className={`shrink-0 ${collapsed ? 'w-5 h-5' : 'w-4 h-4'}`}
-								/>
-								{!collapsed && <span>{item.label}</span>}
+								<item.icon className="size-4 shrink-0" />
+								<span className="flex-1">{item.label}</span>
+								{item.badge === 'messages' &&
+									unreadMessages > 0 && (
+										<span className="rounded-full bg-secondary px-1.5 text-[10px] tabular-nums text-foreground">
+											{unreadMessages}
+										</span>
+									)}
 							</Link>
-						)
-					})}
-				</nav>
-			</aside>
+						))}
+					</div>
+				</div>
+			))}
+			<div>
+				<p className="admin-section-label">Site</p>
+				<Link href="/" onClick={onNavigate} className="admin-nav-item">
+					<ArrowUpRight className="size-4 shrink-0" />
+					<span>View site</span>
+				</Link>
+			</div>
+		</nav>
+	)
+}
+
+function Brand() {
+	return (
+		<Link href="/admin" className="flex items-center gap-2 px-3">
+			<span
+				aria-hidden="true"
+				className="size-0 border-x-[7px] border-b-[12px] border-x-transparent border-b-foreground"
+			/>
+			<span className="admin-display text-[15px] font-medium">remco</span>
+			<span className="text-xs text-muted-foreground">/ admin</span>
+		</Link>
+	)
+}
+
+function SidebarBody({
+	unreadMessages,
+	onNavigate
+}: {
+	unreadMessages: number
+	onNavigate?: () => void
+}) {
+	return (
+		<div className="flex h-full flex-col gap-8">
+			<Brand />
+			<div className="flex-1 overflow-y-auto">
+				<AdminNav
+					unreadMessages={unreadMessages}
+					onNavigate={onNavigate}
+				/>
+			</div>
+			<AdminSessionStatus />
+		</div>
+	)
+}
+
+export function AdminSidebar({ unreadMessages }: { unreadMessages: number }) {
+	return (
+		<aside className="admin-sidebar hidden md:block">
+			<SidebarBody unreadMessages={unreadMessages} />
+		</aside>
+	)
+}
+
+export function AdminTopbar({ unreadMessages }: { unreadMessages: number }) {
+	const pathname = usePathname()
+	const [open, setOpen] = useState(false)
+	const isProduction = process.env.NODE_ENV === 'production'
+
+	useEffect(() => {
+		if (!open) return
+		function handleKey(event: KeyboardEvent) {
+			if (event.key === 'Escape') setOpen(false)
+		}
+		window.addEventListener('keydown', handleKey)
+		return () => window.removeEventListener('keydown', handleKey)
+	}, [open])
+
+	return (
+		<>
+			<header className="admin-topbar">
+				<div className="flex min-w-0 items-center gap-3">
+					<button
+						type="button"
+						onClick={() => setOpen(true)}
+						className="admin-icon-btn md:hidden"
+						aria-label="Open navigation"
+					>
+						<Menu className="size-4" />
+					</button>
+					<nav
+						aria-label="Breadcrumb"
+						className="flex min-w-0 items-center gap-2 text-[13px]"
+					>
+						<Link
+							href="/admin"
+							className="hidden text-muted-foreground transition-colors hover:text-foreground sm:inline"
+						>
+							Remco&rsquo;s workspace
+						</Link>
+						<span
+							aria-hidden="true"
+							className="hidden text-muted-foreground/50 sm:inline"
+						>
+							/
+						</span>
+						<span className="truncate font-medium">
+							{getPageTitle(pathname)}
+						</span>
+					</nav>
+				</div>
+				<div className="flex items-center gap-2">
+					<span className="admin-pill" data-tone="plain">
+						<span
+							className="size-1.5 rounded-full"
+							style={{
+								background: isProduction
+									? 'var(--admin-success)'
+									: 'var(--admin-warning)'
+							}}
+						/>
+						{isProduction ? 'Production' : 'Development'}
+					</span>
+					<Link
+						href="/"
+						className="admin-icon-btn"
+						aria-label="View site"
+						title="View site"
+					>
+						<ArrowUpRight className="size-4" />
+					</Link>
+				</div>
+			</header>
+
+			{open && (
+				<div className="fixed inset-0 z-50 md:hidden">
+					<button
+						type="button"
+						aria-label="Close navigation"
+						onClick={() => setOpen(false)}
+						className="absolute inset-0 bg-black/60"
+					/>
+					<div className="admin-sidebar absolute inset-y-0 left-0 !block">
+						<button
+							type="button"
+							onClick={() => setOpen(false)}
+							className="admin-icon-btn absolute right-3 top-5"
+							aria-label="Close navigation"
+						>
+							<X className="size-4" />
+						</button>
+						<SidebarBody
+							unreadMessages={unreadMessages}
+							onNavigate={() => setOpen(false)}
+						/>
+					</div>
+				</div>
+			)}
 		</>
 	)
 }

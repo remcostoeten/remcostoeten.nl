@@ -4,6 +4,7 @@ import { ArrowUpRight, Check, Github, Package } from 'lucide-react'
 import { Suspense } from 'react'
 import { BreadcrumbStructuredData } from '@/components/seo/structured-data'
 import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
+import { EmptyStatesShowcase } from '@/components/packages/empty-states/showcase'
 import { NotifierDemo } from '@/components/packages/notifier-demo'
 import { PackageCode } from '@/components/packages/package-code'
 import { baseUrl } from '@/core/config/site'
@@ -97,7 +98,7 @@ async function PackagePageContent({ params }: Props) {
 	const pkg = getDeveloperPackage((await params).slug)
 	if (!pkg) notFound()
 
-	const npmData = await getNpmPackage(pkg.packageName)
+	const npmData = pkg.npmUrl ? await getNpmPackage(pkg.packageName) : null
 	const version = npmData?.version
 	const pageUrl = `${baseUrl}/packages/${pkg.slug}`
 	const jsonLd = {
@@ -113,7 +114,7 @@ async function PackagePageContent({ params }: Props) {
 				softwareVersion: version,
 				license: npmData?.license,
 				url: pageUrl,
-				downloadUrl: pkg.npmUrl,
+				downloadUrl: pkg.npmUrl ?? pkg.registryUrl,
 				author: {
 					'@type': 'Person',
 					name: 'Remco Stoeten',
@@ -124,8 +125,8 @@ async function PackagePageContent({ params }: Props) {
 		]
 	}
 
-	return (
-		<article>
+	const structuredData = (
+		<>
 			<script
 				type="application/ld+json"
 				dangerouslySetInnerHTML={{
@@ -138,6 +139,20 @@ async function PackagePageContent({ params }: Props) {
 					{ name: pkg.name, url: `/packages/${pkg.slug}` }
 				]}
 			/>
+		</>
+	)
+
+	if (pkg.slug === 'empty-states')
+		return (
+			<article>
+				{structuredData}
+				<EmptyStatesShowcase />
+			</article>
+		)
+
+	return (
+		<article>
+			{structuredData}
 
 			<header className="border-b border-border/60 px-4 pb-7 md:px-5">
 				<div className="flex items-start gap-3">
@@ -175,7 +190,16 @@ async function PackagePageContent({ params }: Props) {
 							Documentation
 						</ExternalLink>
 					)}
-					<ExternalLink href={pkg.npmUrl}>npm package</ExternalLink>
+					{pkg.npmUrl && (
+						<ExternalLink href={pkg.npmUrl}>
+							npm package
+						</ExternalLink>
+					)}
+					{pkg.registryUrl && (
+						<ExternalLink href={pkg.registryUrl}>
+							Registry item
+						</ExternalLink>
+					)}
 					{pkg.sourceUrl && (
 						<ExternalLink
 							href={pkg.sourceUrl}

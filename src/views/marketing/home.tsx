@@ -1,4 +1,6 @@
-import { Intro } from '@/components/home/hero'
+import { Suspense } from 'react'
+import { Intro, IntroView } from '@/components/home/hero'
+import { DEFAULT_INTRO } from '@/components/home/intro-queries'
 import { Section } from '@/components/ui/section'
 import nextDynamic from 'next/dynamic'
 import { HomeBlogPosts } from '@/components/blog/home-blog-posts'
@@ -40,7 +42,9 @@ export function HomeView() {
 	return (
 		<>
 			<div className="space-y-6">
-				<Intro />
+				<Suspense fallback={<IntroView intro={DEFAULT_INTRO} />}>
+					<Intro />
+				</Suspense>
 
 				<div className="space-y-4">
 					<Section

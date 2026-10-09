@@ -1,14 +1,18 @@
 import Link from 'next/link'
-import { ArrowUpRight, Box } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
+import { BoxGlyph } from '@/components/ui/link-glyphs'
 import type { DeveloperPackage } from '@/features/packages/data'
 import type { Route } from 'next'
+
+const downloadFormat = new Intl.NumberFormat('en', { notation: 'compact' })
 
 type Props = {
 	pkg: DeveloperPackage
 	version: string | null
+	downloads: number | null
 }
 
-export function PackageCard({ pkg, version }: Props) {
+export function PackageCard({ pkg, version, downloads }: Props) {
 	const [manager, action, ...packageParts] = pkg.install.split(' ')
 	const packageName = packageParts.join(' ')
 
@@ -17,14 +21,11 @@ export function PackageCard({ pkg, version }: Props) {
 			<Link
 				href={`/packages/${pkg.slug}` as Route}
 				prefetch
-				className="block px-4 py-5 md:px-5 transition-colors duration-150 ease-out hover:bg-muted/30 focus-visible:outline-none focus-visible:bg-muted/40 active:bg-muted/50"
+				className="group/glyph block px-4 py-5 md:px-5 transition-colors duration-150 ease-out hover:bg-muted/30 focus-visible:outline-none focus-visible:bg-muted/40 active:bg-muted/50"
 			>
 				<div className="flex items-start gap-3">
 					<div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md border border-border/70 bg-background shadow-sm">
-						<Box
-							className="size-3.5 text-muted-foreground"
-							aria-hidden="true"
-						/>
+						<BoxGlyph className="text-muted-foreground" />
 					</div>
 					<div className="min-w-0 flex-1">
 						<div className="flex items-center justify-between gap-3">
@@ -32,6 +33,14 @@ export function PackageCard({ pkg, version }: Props) {
 								{pkg.name}
 							</h3>
 							<div className="flex h-5 shrink-0 items-center gap-2">
+								{downloads !== null && (
+									<span
+										className="font-mono text-[10px] tabular-nums text-muted-foreground"
+										aria-label={`${downloads} downloads per week`}
+									>
+										{downloadFormat.format(downloads)}/wk
+									</span>
+								)}
 								{version && (
 									<span
 										className="font-mono text-[10px] tabular-nums text-muted-foreground"

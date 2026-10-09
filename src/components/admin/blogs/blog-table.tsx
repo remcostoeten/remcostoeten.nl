@@ -1,21 +1,17 @@
 'use client'
 
 import { useState, useMemo, useTransition } from 'react'
-import { Switch } from '@/components/ui/switch'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import type { Route } from 'next'
 import Link from 'next/link'
 import {
-	Clock,
-	Calendar,
-	ExternalLink,
-	Search,
-	ArrowUpDown,
-	ArrowUp,
 	ArrowDown,
-	FileText,
-	Loader2
+	ArrowUp,
+	ChevronLeft,
+	ChevronRight,
+	Clock,
+	ExternalLink,
+	Loader2,
+	Search
 } from 'lucide-react'
 import { toggleBlogDraft } from '@/server/actions/admin'
 
@@ -33,6 +29,15 @@ type BlogPost = {
 
 type SortField = 'title' | 'date' | 'views'
 type SortDirection = 'asc' | 'desc'
+type StatusFilter = 'all' | 'published' | 'drafts'
+
+const PAGE_SIZE = 8
+
+const filters: Array<{ id: StatusFilter; label: string }> = [
+	{ id: 'all', label: 'All posts' },
+	{ id: 'published', label: 'Published' },
+	{ id: 'drafts', label: 'Drafts' }
+]
 
 function getPostHref(post: BlogPost) {
 	return post.metadata.draft
@@ -58,23 +63,17 @@ function StatusCell({ post }: { post: BlogPost }) {
 	}
 
 	return (
-		<div className="flex items-center gap-2">
-			<Switch
-				checked={!isDraft}
-				onCheckedChange={handleToggleDraft}
-				disabled={isPending}
-				className="scale-75 data-[state=checked]:bg-emerald-500"
-			/>
-			{isPending ? (
-				<Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
-			) : (
-				<span
-					className={`text-xs ${isDraft ? 'text-amber-400/80' : 'text-emerald-400/80'}`}
-				>
-					{isDraft ? 'Draft' : 'Live'}
-				</span>
-			)}
-		</div>
+		<button
+			type="button"
+			onClick={handleToggleDraft}
+			disabled={isPending}
+			className="admin-pill transition-opacity hover:opacity-80 disabled:opacity-60"
+			data-tone={isDraft ? undefined : 'success'}
+			title={isDraft ? 'Publish this post' : 'Move back to drafts'}
+		>
+			{isPending && <Loader2 className="size-3 animate-spin" />}
+			{isDraft ? 'Draft' : 'Published'}
+		</button>
 	)
 }
 
@@ -92,54 +91,49 @@ function SortableHeader({
 	children: React.ReactNode
 }) {
 	const isActive = field === currentField
+	const Icon = direction === 'asc' ? ArrowUp : ArrowDown
 	return (
 		<button
+			type="button"
 			onClick={() => onSort(field)}
-			className={`flex items-center gap-1 text-xs font-medium uppercase tracking-wider transition-colors ${
-				isActive
-					? 'text-[hsl(var(--brand-400))]'
-					: 'text-muted-foreground hover:text-foreground'
+			className={`inline-flex items-center gap-1 transition-colors hover:text-foreground ${
+				isActive ? 'text-foreground' : ''
 			}`}
 		>
 			{children}
-			{isActive ? (
-				direction === 'asc' ? (
-					<ArrowUp className="w-3 h-3" />
-				) : (
-					<ArrowDown className="w-3 h-3" />
-				)
-			) : (
-				<ArrowUpDown className="w-3 h-3 opacity-40" />
-			)}
+			{isActive && <Icon className="size-3" />}
 		</button>
 	)
 }
 
 export function BlogTable({ posts }: { posts: BlogPost[] }) {
 	const [search, setSearch] = useState('')
+	const [filter, setFilter] = useState<StatusFilter>('all')
+	const [page, setPage] = useState(0)
 	const [sortField, setSortField] = useState<SortField>('views')
 	const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
-	const handleSort = (field: SortField) => {
+	function handleSort(field: SortField) {
 		if (field === sortField) {
 			setSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'))
 		} else {
 			setSortField(field)
 			setSortDirection('desc')
 		}
+		setPage(0)
 	}
 
 	const filteredAndSortedPosts = useMemo(() => {
-		let result = [...posts]
-
-		if (search) {
-			const searchLower = search.toLowerCase()
-			result = result.filter(
-				post =>
-					post.metadata.title.toLowerCase().includes(searchLower) ||
-					post.slug.toLowerCase().includes(searchLower)
+		const searchLower = search.toLowerCase()
+		const result = posts.filter(post => {
+			if (filter === 'published' && post.metadata.draft) return false
+			if (filter === 'drafts' && !post.metadata.draft) return false
+			if (!searchLower) return true
+			return (
+				post.metadata.title.toLowerCase().includes(searchLower) ||
+				post.slug.toLowerCase().includes(searchLower)
 			)
-		}
+		})
 
 		result.sort((a, b) => {
 			let comparison = 0
@@ -162,50 +156,75 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 		})
 
 		return result
-	}, [posts, search, sortField, sortDirection])
+	}, [posts, search, filter, sortField, sortDirection])
 
-	const totalViews = posts.reduce((sum, p) => sum + p.totalViews, 0)
-	const publishedCount = posts.filter(p => !p.metadata.draft).length
-	const draftCount = posts.filter(p => p.metadata.draft).length
+	const pageCount = Math.max(
+		1,
+		Math.ceil(filteredAndSortedPosts.length / PAGE_SIZE)
+	)
+	const currentPage = Math.min(page, pageCount - 1)
+	const pageStart = currentPage * PAGE_SIZE
+	const visiblePosts = filteredAndSortedPosts.slice(
+		pageStart,
+		pageStart + PAGE_SIZE
+	)
 
 	return (
-		<div className="admin-glass-card">
-			<div className="p-4 border-b border-border/30">
-				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-					<div className="flex items-center gap-3">
-						<FileText className="w-4 h-4 text-muted-foreground" />
-						<div>
-							<h3 className="text-sm font-semibold tracking-tight">
-								Blog Posts
-							</h3>
-							<p className="text-[10px] text-muted-foreground mt-0.5">
-								{publishedCount} published · {draftCount} drafts
-								· {totalViews.toLocaleString()} views
-							</p>
-						</div>
-					</div>
-					<div className="relative">
-						<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-						<Input
-							placeholder="Search posts..."
-							value={search}
-							onChange={e => setSearch(e.target.value)}
-							className="pl-8 h-8 w-full sm:w-[200px] bg-background/50 border-border/40 text-sm"
-						/>
-					</div>
+		<section className="admin-panel">
+			<div className="admin-panel-header pb-4">
+				<div>
+					<h2 className="admin-panel-title">
+						Blog posts
+						<span className="ml-2 text-[13px] font-normal text-muted-foreground">
+							{posts.length}
+						</span>
+					</h2>
+					<p className="mt-1 text-[12px] text-muted-foreground">
+						Your ideas, published and in progress.
+					</p>
 				</div>
 			</div>
 
+			<div className="flex flex-col gap-3 px-5 pb-4 sm:flex-row sm:items-center sm:justify-between">
+				<div className="admin-segment" role="tablist">
+					{filters.map(item => (
+						<button
+							key={item.id}
+							type="button"
+							role="tab"
+							aria-selected={filter === item.id}
+							data-active={filter === item.id}
+							onClick={() => {
+								setFilter(item.id)
+								setPage(0)
+							}}
+							className="admin-segment-item"
+						>
+							{item.label}
+						</button>
+					))}
+				</div>
+				<label className="relative block">
+					<span className="sr-only">Search posts</span>
+					<Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+					<input
+						type="search"
+						placeholder="Search posts…"
+						value={search}
+						onChange={event => {
+							setSearch(event.target.value)
+							setPage(0)
+						}}
+						className="admin-field h-8 py-0 pl-8 sm:w-56"
+					/>
+				</label>
+			</div>
+
 			<div className="overflow-x-auto">
-				<table className="w-full">
+				<table className="admin-table">
 					<thead>
-						<tr className="border-b border-border/20">
-							<th className="text-left px-4 py-3 w-24">
-								<span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-									Status
-								</span>
-							</th>
-							<th className="text-left px-4 py-3">
+						<tr>
+							<th>
 								<SortableHeader
 									field="title"
 									currentField={sortField}
@@ -215,7 +234,8 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 									Title
 								</SortableHeader>
 							</th>
-							<th className="text-left px-4 py-3 hidden md:table-cell">
+							<th className="w-28">Status</th>
+							<th className="hidden w-32 md:table-cell">
 								<SortableHeader
 									field="date"
 									currentField={sortField}
@@ -225,12 +245,7 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 									Date
 								</SortableHeader>
 							</th>
-							<th className="text-left px-4 py-3 hidden lg:table-cell">
-								<span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-									Read Time
-								</span>
-							</th>
-							<th className="text-right px-4 py-3">
+							<th className="w-24 !text-right">
 								<SortableHeader
 									field="views"
 									currentField={sortField}
@@ -240,98 +255,95 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 									Views
 								</SortableHeader>
 							</th>
-							<th className="text-right px-4 py-3 w-12" />
+							<th className="w-12" />
 						</tr>
 					</thead>
 					<tbody>
-						{filteredAndSortedPosts.length === 0 ? (
+						{visiblePosts.length === 0 ? (
 							<tr>
 								<td
-									colSpan={6}
-									className="text-center py-12 text-muted-foreground text-sm"
+									colSpan={5}
+									className="py-12 text-center text-muted-foreground"
 								>
 									{search
 										? `No posts matching "${search}"`
-										: 'No posts yet'}
+										: 'No posts here yet'}
 								</td>
 							</tr>
 						) : (
-							filteredAndSortedPosts.map(post => {
-								const isNew =
-									new Date(post.metadata.publishedAt) >
-									new Date(
-										Date.now() - 7 * 24 * 60 * 60 * 1000
-									)
-								return (
-									<tr
-										key={post.slug}
-										className="admin-table-row border-b border-border/10 last:border-0"
+							visiblePosts.map(post => (
+								<tr key={post.slug} className="group">
+									<td>
+										<p className="max-w-[380px] truncate text-[13px] font-medium">
+											{post.metadata.title}
+										</p>
+										<p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+											<Clock className="size-3" />
+											{post.metadata.readTime || 'N/A'}
+										</p>
+									</td>
+									<td>
+										<StatusCell post={post} />
+									</td>
+									<td className="hidden whitespace-nowrap text-muted-foreground md:table-cell">
+										{new Date(
+											post.metadata.publishedAt
+										).toLocaleDateString('en-US', {
+											month: 'short',
+											day: 'numeric',
+											year: 'numeric'
+										})}
+									</td>
+									<td
+										className="text-right tabular-nums"
+										title={`${post.uniqueViews.toLocaleString()} unique`}
 									>
-										<td className="px-4 py-3">
-											<StatusCell post={post} />
-										</td>
-										<td className="px-4 py-3">
-											<div className="flex items-center gap-2">
-												<span className="text-sm font-medium truncate max-w-[300px]">
-													{post.metadata.title}
-												</span>
-												{isNew &&
-													!post.metadata.draft && (
-														<Badge
-															variant="outline"
-															className="text-[10px] border-emerald-500/30 text-emerald-400 px-1.5 py-0"
-														>
-															New
-														</Badge>
-													)}
-											</div>
-										</td>
-										<td className="px-4 py-3 hidden md:table-cell">
-											<span className="text-xs text-muted-foreground flex items-center gap-1">
-												<Calendar className="w-3 h-3" />
-												{new Date(
-													post.metadata.publishedAt
-												).toLocaleDateString('en-US', {
-													month: 'short',
-													day: 'numeric',
-													year: 'numeric'
-												})}
-											</span>
-										</td>
-										<td className="px-4 py-3 hidden lg:table-cell">
-											<span className="text-xs text-muted-foreground flex items-center gap-1">
-												<Clock className="w-3 h-3" />
-												{post.metadata.readTime ||
-													'N/A'}
-											</span>
-										</td>
-										<td className="px-4 py-3 text-right">
-											<div className="text-sm font-semibold tabular-nums">
-												{post.totalViews.toLocaleString()}
-											</div>
-											<div className="text-[10px] text-muted-foreground">
-												{post.uniqueViews.toLocaleString()}{' '}
-												unique
-											</div>
-										</td>
-										<td className="px-4 py-3 text-right">
-											<Link
-												href={
-													getPostHref(post) as Route
-												}
-												target="_blank"
-												className="p-1.5 rounded-sm hover:bg-muted/50 transition-colors opacity-0 group-hover:opacity-100 inline-flex"
-											>
-												<ExternalLink className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
-											</Link>
-										</td>
-									</tr>
-								)
-							})
+										{post.totalViews.toLocaleString()}
+									</td>
+									<td className="text-right">
+										<Link
+											href={getPostHref(post) as Route}
+											target="_blank"
+											aria-label={`Open ${post.metadata.title}`}
+											className="admin-icon-btn size-7 opacity-0 transition-opacity focus-visible:opacity-100 group-hover:opacity-100"
+										>
+											<ExternalLink className="size-3.5" />
+										</Link>
+									</td>
+								</tr>
+							))
 						)}
 					</tbody>
 				</table>
 			</div>
-		</div>
+
+			<div className="flex items-center justify-between border-t border-border px-5 py-3 text-[11px] text-muted-foreground">
+				<span>
+					{filteredAndSortedPosts.length === 0
+						? '0 posts'
+						: `${pageStart + 1}–${pageStart + visiblePosts.length} of ${filteredAndSortedPosts.length} posts`}
+				</span>
+				<div className="flex items-center gap-1">
+					<button
+						type="button"
+						onClick={() => setPage(currentPage - 1)}
+						disabled={currentPage === 0}
+						className="admin-icon-btn size-7 disabled:pointer-events-none disabled:opacity-40"
+						aria-label="Previous page"
+					>
+						<ChevronLeft className="size-3.5" />
+					</button>
+					<button
+						type="button"
+						onClick={() => setPage(currentPage + 1)}
+						disabled={currentPage >= pageCount - 1}
+						className="admin-icon-btn size-7 disabled:pointer-events-none disabled:opacity-40"
+						aria-label="Next page"
+					>
+						<ChevronRight className="size-3.5" />
+					</button>
+				</div>
+			</div>
+		</section>
 	)
 }

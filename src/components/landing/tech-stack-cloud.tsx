@@ -4,10 +4,10 @@ import { cn } from '@/shared/lib/cn'
 import { Plus } from 'lucide-react'
 import * as m from 'motion/react-m'
 import {
+	useMotionValueEvent,
 	useScroll,
-	useTransform,
 	useSpring,
-	useMotionValueEvent
+	useTransform
 } from 'motion/react'
 import { useState, useRef } from 'react'
 import {
@@ -56,11 +56,7 @@ const CARD_STYLES = [
 		className:
 			'relative border-r border-b bg-secondary dark:bg-secondary/30',
 		decorators: (
-			<Plus
-				className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50"
-				strokeWidth={1}
-				aria-hidden="true"
-			/>
+			<GridPlus className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50" />
 		)
 	},
 	{
@@ -72,16 +68,8 @@ const CARD_STYLES = [
 			'relative border-r border-b md:bg-secondary dark:md:bg-secondary/30',
 		decorators: (
 			<>
-				<Plus
-					className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50"
-					strokeWidth={1}
-					aria-hidden="true"
-				/>
-				<Plus
-					className="-bottom-[12.5px] -left-[12.5px] absolute z-10 hidden size-6 md:block text-muted-foreground/50"
-					strokeWidth={1}
-					aria-hidden="true"
-				/>
+				<GridPlus className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50" />
+				<GridPlus className="-bottom-[12.5px] -left-[12.5px] absolute z-10 hidden size-6 md:block text-muted-foreground/50" />
 			</>
 		)
 	},
@@ -94,11 +82,7 @@ const CARD_STYLES = [
 		className:
 			'relative border-r border-b bg-secondary md:border-b-0 md:bg-background dark:bg-secondary/30 md:dark:bg-background',
 		decorators: (
-			<Plus
-				className="-right-[12.5px] -bottom-[12.5px] md:-left-[12.5px] absolute z-10 size-6 md:hidden text-muted-foreground/50"
-				strokeWidth={1}
-				aria-hidden="true"
-			/>
+			<GridPlus className="-right-[12.5px] -bottom-[12.5px] md:-left-[12.5px] absolute z-10 size-6 md:hidden text-muted-foreground/50" />
 		)
 	},
 	{
@@ -115,6 +99,53 @@ const CARD_STYLES = [
 		decorators: null
 	}
 ]
+
+function GridPlus({ className }: { className: string }) {
+	return (
+		<span
+			className={cn(
+				'z-10 flex items-center justify-center text-muted-foreground/50',
+				className
+			)}
+			aria-hidden="true"
+		>
+			<Plus className="size-full" strokeWidth={1} />
+		</span>
+	)
+}
+
+const BRACKET_CORNERS = [
+	'left-3 top-3',
+	'right-3 top-3 rotate-90',
+	'bottom-3 right-3 rotate-180',
+	'bottom-3 left-3 -rotate-90'
+]
+
+function HoverBrackets() {
+	return (
+		<>
+			{BRACKET_CORNERS.map(corner => (
+				<svg
+					key={corner}
+					className={cn(
+						'pointer-events-none absolute size-2.5 overflow-visible',
+						corner
+					)}
+					viewBox="0 0 10 10"
+					fill="none"
+					aria-hidden="true"
+				>
+					<path
+						d="M0.5 10 V0.5 H10"
+						pathLength={1}
+						className="stroke-foreground/30 [stroke-dasharray:1] [stroke-dashoffset:1] transition-[stroke-dashoffset] duration-300 ease-out group-hover:[stroke-dashoffset:0] motion-reduce:transition-none"
+						strokeWidth={1}
+					/>
+				</svg>
+			))}
+		</>
+	)
+}
 
 type TechStackCloudProps = React.ComponentProps<'div'>
 
@@ -202,14 +233,16 @@ function TechCard({ logo, className, children, ...props }: TechCardProps) {
 		<div
 			ref={containerRef}
 			className={cn(
-				'flex items-center justify-center bg-background px-4 py-8 md:p-8 relative overflow-hidden group min-h-[120px]',
+				'flex items-center justify-center bg-background px-4 py-8 md:p-8 relative group min-h-[120px]',
 				className
 			)}
-			style={{ perspective: '1000px' }}
 			{...props}
 		>
 			<div className="relative flex flex-col items-center gap-2 h-16 justify-end">
-				<div className="rounded-sm p-1 -m-1 relative h-10 w-10 flex items-center justify-center mb-1">
+				<div
+					className="rounded-sm p-1 -m-1 relative h-10 w-10 flex items-center justify-center mb-1"
+					style={{ perspective: '1000px' }}
+				>
 					<m.div
 						style={{
 							rotateX: rotationX,
@@ -238,6 +271,7 @@ function TechCard({ logo, className, children, ...props }: TechCardProps) {
 				</div>
 			</div>
 
+			<HoverBrackets />
 			{children}
 		</div>
 	)

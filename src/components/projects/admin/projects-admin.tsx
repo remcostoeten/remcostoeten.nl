@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Eye, EyeOff, FolderKanban, type LucideIcon, Star } from 'lucide-react'
+import {
+	Eye,
+	EyeOff,
+	FolderKanban,
+	type LucideIcon,
+	Plus,
+	Star
+} from 'lucide-react'
+import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type {
 	Project,
 	ProjectSettings
@@ -97,59 +105,41 @@ export function ProjectsAdmin({ initialProjects, initialSettings }: Props) {
 	}
 
 	return (
-		<div className="space-y-6">
-			<section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5 md:p-6">
-				<div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-					<div className="space-y-3">
-						<div className="flex items-center gap-3">
-							<div className="flex h-11 w-11 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-200">
-								<FolderKanban className="h-5 w-5" />
-							</div>
-							<div>
-								<h1 className="text-2xl font-semibold tracking-tight text-zinc-50">
-									Projects
-								</h1>
-								<p className="text-sm text-zinc-400">
-									Manage visibility, ordering, and project
-									metadata from one workspace.
-								</p>
-							</div>
-						</div>
+		<div className="space-y-8">
+			<AdminPageHeader
+				title="Projects"
+				description="Manage visibility, ordering and project metadata. New projects are added at the end of the list."
+				actions={
+					<button
+						type="button"
+						onClick={handleCreate}
+						disabled={isPending}
+						className="admin-btn"
+						data-variant="primary"
+					>
+						<Plus className="size-4" />
+						{isPending ? 'Creating…' : 'Add project'}
+					</button>
+				}
+			/>
 
-						<div className="grid gap-3 sm:grid-cols-3">
-							<StatCard
-								label="Total projects"
-								value={projects.length}
-								icon={FolderKanban}
-							/>
-							<StatCard
-								label="Visible now"
-								value={visibleProjects.length}
-								icon={Eye}
-							/>
-							<StatCard
-								label="Featured"
-								value={featuredProjects.length}
-								icon={Star}
-							/>
-						</div>
-					</div>
-
-					<div className="flex flex-col items-stretch gap-3 lg:w-[18rem]">
-						<button
-							onClick={handleCreate}
-							disabled={isPending}
-							className="inline-flex h-11 items-center justify-center rounded-xl bg-zinc-100 px-5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
-						>
-							{isPending ? 'Creating...' : 'Add Project'}
-						</button>
-						<p className="text-xs leading-5 text-zinc-500">
-							New projects are created at the end of the list and
-							opened directly in the editor.
-						</p>
-					</div>
-				</div>
-			</section>
+			<div className="admin-panel grid grid-cols-3 gap-px bg-border">
+				<StatCell
+					label="Total projects"
+					value={projects.length}
+					icon={FolderKanban}
+				/>
+				<StatCell
+					label="Visible now"
+					value={visibleProjects.length}
+					icon={Eye}
+				/>
+				<StatCell
+					label="Featured"
+					value={featuredProjects.length}
+					icon={Star}
+				/>
+			</div>
 
 			<div
 				className="sr-only"
@@ -216,7 +206,7 @@ export function ProjectsAdmin({ initialProjects, initialSettings }: Props) {
 	)
 }
 
-function StatCard({
+function StatCell({
 	label,
 	value,
 	icon: Icon
@@ -226,20 +216,12 @@ function StatCard({
 	icon: LucideIcon
 }) {
 	return (
-		<div className="rounded-xl border border-zinc-800 bg-zinc-900/70 p-4">
-			<div className="flex items-center justify-between gap-3">
-				<div>
-					<p className="text-xs uppercase tracking-[0.18em] text-zinc-500">
-						{label}
-					</p>
-					<p className="mt-2 text-2xl font-semibold text-zinc-50">
-						{value}
-					</p>
-				</div>
-				<div className="flex h-10 w-10 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-950 text-zinc-300">
-					<Icon className="h-4 w-4" />
-				</div>
+		<div className="flex flex-col gap-3 bg-card p-5">
+			<div className="flex items-center justify-between text-[13px] text-muted-foreground">
+				<span>{label}</span>
+				<Icon className="size-4" />
 			</div>
+			<span className="admin-metric-value">{value}</span>
 		</div>
 	)
 }

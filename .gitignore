@@ -52,3 +52,6 @@ scripts/ytmusic/headers.json
 scripts/ytmusic/oauth.json
 dev-menu.config.ts
 .env*
+
+# local agent configs
+.codex/

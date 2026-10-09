@@ -7,6 +7,13 @@ export async function proxy(request: NextRequest) {
 		return NextResponse.next()
 	}
 
+	if (
+		process.env.NODE_ENV !== 'production' &&
+		process.env.DEV_OPEN_ADMIN === 'true'
+	) {
+		return NextResponse.next()
+	}
+
 	const sessionCookie = getSessionCookie(request)
 
 	if (!sessionCookie) {

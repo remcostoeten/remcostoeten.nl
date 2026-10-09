@@ -3,8 +3,7 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight, Eye } from 'lucide-react'
-import { AnimatedNumber } from '../ui/effects/animated-number'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/server/actions/blog/analytics'
 import { getDateParts, readMinutes } from '@/features/blog/lib/format'
@@ -32,24 +31,27 @@ type Props = {
 	totalViews?: number
 }
 
+function formatViews(count: number) {
+	return new Intl.NumberFormat('en-US', { notation: 'compact' }).format(count)
+}
+
 export function BlogPostClient({
 	publishedAt,
 	topic,
 	tags,
 	title,
-	summary: _summary,
+	summary,
 	readTime,
 	slug,
 	uniqueViews = 0,
 	totalViews = 0
 }: Props) {
 	const router = useRouter()
-
 	const dateParts = getDateParts(publishedAt)
 	const readTimeMinutes = readMinutes(readTime)
-	const dateDuration = 500
-
-	const allTags = tags || []
+	const visibleTags = (tags || []).filter(
+		tag => tag.toLowerCase() !== topic?.toLowerCase()
+	)
 
 	useEffect(() => {
 		if (slug) {
@@ -58,109 +60,66 @@ export function BlogPostClient({
 	}, [slug])
 
 	return (
-		<header>
-			{/* Navigation Row */}
-			<div className="mb-3">
-				<button
-					onClick={() => router.back()}
-					className="inline-flex items-center gap-2 py-1 text-xs font-mono text-muted-foreground/50 hover:text-foreground transition-colors group"
-				>
-					<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
-					back
-				</button>
-			</div>
+		<header className="space-y-5">
+			<button
+				onClick={() => router.back()}
+				className="group inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground/60 transition-colors hover:text-foreground"
+			>
+				<ArrowLeft className="h-3 w-3 transition-transform group-hover:-translate-x-0.5" />
+				back
+			</button>
 
-			{/* Title */}
-			<h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground leading-snug mb-3 text-balance">
-				{title}
-			</h1>
-
-			{/* Metadata Row */}
-			<div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-500 dark:text-neutral-400 mb-4">
-				<time className="flex items-center gap-1 tabular-nums">
-					<AnimatedNumber
-						value={dateParts.day}
-						duration={dateDuration}
-						initialProgress={0}
-					/>
-					<span>{dateParts.month}</span>
-					<AnimatedNumber
-						value={dateParts.year}
-						duration={dateDuration}
-						initialProgress={0}
-					/>
-				</time>
-
-				<span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
-
-				<span className="flex items-center gap-1">
-					<AnimatedNumber
-						value={readTimeMinutes}
-						duration={dateDuration}
-						initialProgress={0}
-					/>
-					<span>min read</span>
-				</span>
-
-				{uniqueViews > 0 && (
-					<>
-						<span className="w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700" />
-						<span
-							className="flex items-center gap-1.5"
-							title={`${totalViews} total views`}
-						>
-							<Eye className="w-3.5 h-3.5" />
-							<AnimatedNumber
-								value={uniqueViews}
-								duration={500}
-								initialProgress={0}
-							/>
-							<span>views</span>
-						</span>
-					</>
+			<div className="space-y-3">
+				{topic && (
+					<Link
+						href={`/blog/topics/${slugifyTopic(topic)}`}
+						className="inline-block font-mono text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
+					>
+						{topic}
+					</Link>
+				)}
+				<h1 className="text-balance text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-3xl">
+					{title}
+				</h1>
+				{summary && (
+					<p className="text-pretty text-base leading-relaxed text-muted-foreground">
+						{summary}
+					</p>
 				)}
 			</div>
 
-			{/* Tags */}
-			{(topic || allTags.length > 0) && (
-				<div className="flex flex-wrap gap-2">
-					{topic && (
-						<Link
-							href={`/blog/topics/${slugifyTopic(topic)}`}
-							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
-                bg-neutral-50 dark:bg-neutral-900/60
-                text-neutral-600 dark:text-neutral-400
-                border border-neutral-200 dark:border-neutral-800
-                hover:bg-neutral-100 dark:hover:bg-neutral-800/60
-                hover:border-neutral-300 dark:hover:border-neutral-700
-                hover:text-neutral-900 dark:hover:text-neutral-200
-                rounded-md transition-all duration-200"
-						>
-							{topic}
-						</Link>
+			<div className="space-y-1.5 font-mono text-xs text-muted-foreground/70">
+				<div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+					<time dateTime={publishedAt} className="tabular-nums">
+						{dateParts.day} {dateParts.month} {dateParts.year}
+					</time>
+					<span aria-hidden="true">·</span>
+					<span>{readTimeMinutes} min read</span>
+					{uniqueViews > 0 && (
+						<>
+							<span aria-hidden="true">·</span>
+							<span
+								className="tabular-nums"
+								title={`${totalViews} total views`}
+							>
+								{formatViews(uniqueViews)} views
+							</span>
+						</>
 					)}
-					{allTags.map(tag => (
-						<span
-							key={tag}
-							className="inline-flex items-center px-3 py-1.5 text-xs font-medium
-                bg-neutral-50 dark:bg-neutral-900/60
-                text-neutral-600 dark:text-neutral-400
-                border border-neutral-200 dark:border-neutral-800
-                hover:bg-neutral-100 dark:hover:bg-neutral-800/60
-                hover:border-neutral-300 dark:hover:border-neutral-700
-                hover:text-neutral-900 dark:hover:text-neutral-200
-                rounded-md transition-all duration-200"
-						>
-							{tag}
-						</span>
-					))}
 				</div>
-			)}
+				{visibleTags.length > 0 && (
+					<div className="flex flex-wrap gap-x-2 gap-y-1">
+						{visibleTags.map(tag => (
+							<span key={tag}>#{tag.toLowerCase()}</span>
+						))}
+					</div>
+				)}
+			</div>
 		</header>
 	)
 }
 
-interface PostNavigationProps {
+type PostNavigationProps = {
 	prevPost: BlogPost | null
 	nextPost: BlogPost | null
 	basePath?: string
@@ -174,54 +133,45 @@ export function PostNavigation({
 	if (!prevPost && !nextPost) return null
 
 	return (
-		<nav className="mt-16 pt-8 border-t border-neutral-200 dark:border-neutral-800">
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-				{prevPost ? (
-					<Link
-						href={`${basePath}/${prevPost.slug}` as Route}
-						prefetch
-						className="group flex flex-col p-4 rounded-xl 
-              bg-neutral-50 dark:bg-neutral-900/50 
-              border border-neutral-200 dark:border-neutral-800
-              hover:border-neutral-300 dark:hover:border-neutral-700
-              hover:bg-neutral-100 dark:hover:bg-neutral-800/50
-              transition-all duration-200"
-					>
-						<span className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
-							<ArrowLeft className="w-3 h-3 transition-transform group-hover:-translate-x-0.5" />
-							Previous
-						</span>
-						<span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
-							{prevPost.metadata.title}
-						</span>
-					</Link>
-				) : (
-					<div />
-				)}
+		<nav
+			aria-label="Adjacent posts"
+			className="mt-16 grid grid-cols-1 gap-3 border-t border-border/60 pt-8 sm:grid-cols-2"
+		>
+			{prevPost ? (
+				<Link
+					href={`${basePath}/${prevPost.slug}` as Route}
+					prefetch
+					className="group flex flex-col gap-1.5 rounded-md border border-border/60 p-4 transition-colors hover:border-border hover:bg-muted/40"
+				>
+					<span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground/70">
+						<ArrowLeft className="h-3 w-3 transition-transform group-hover:-translate-x-0.5" />
+						Previous
+					</span>
+					<span className="line-clamp-2 text-sm font-medium text-foreground">
+						{prevPost.metadata.title}
+					</span>
+				</Link>
+			) : (
+				<div />
+			)}
 
-				{nextPost ? (
-					<Link
-						href={`${basePath}/${nextPost.slug}` as Route}
-						prefetch
-						className="group flex flex-col p-4 rounded-xl text-right
-              bg-neutral-50 dark:bg-neutral-900/50 
-              border border-neutral-200 dark:border-neutral-800
-              hover:border-neutral-300 dark:hover:border-neutral-700
-              hover:bg-neutral-100 dark:hover:bg-neutral-800/50
-              transition-all duration-200"
-					>
-						<span className="flex items-center justify-end gap-1.5 text-xs text-muted-foreground mb-2">
-							Next
-							<ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
-						</span>
-						<span className="font-medium text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-2">
-							{nextPost.metadata.title}
-						</span>
-					</Link>
-				) : (
-					<div />
-				)}
-			</div>
+			{nextPost ? (
+				<Link
+					href={`${basePath}/${nextPost.slug}` as Route}
+					prefetch
+					className="group flex flex-col gap-1.5 rounded-md border border-border/60 p-4 text-right transition-colors hover:border-border hover:bg-muted/40"
+				>
+					<span className="inline-flex items-center justify-end gap-1.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground/70">
+						Next
+						<ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+					</span>
+					<span className="line-clamp-2 text-sm font-medium text-foreground">
+						{nextPost.metadata.title}
+					</span>
+				</Link>
+			) : (
+				<div />
+			)}
 		</nav>
 	)
 }

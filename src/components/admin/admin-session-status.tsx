@@ -5,13 +5,22 @@ import { useRouter } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { signOut, useSession } from '@/features/auth/client'
 
+function getInitials(label: string) {
+	return label
+		.split(/[\s@.]+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map(part => part[0]?.toUpperCase())
+		.join('')
+}
+
 export function AdminSessionStatus() {
 	const router = useRouter()
 	const { data: session, isPending } = useSession()
 	const [isSigningOut, setIsSigningOut] = useState(false)
 
-	const userLabel =
-		session?.user?.email || session?.user?.name || 'Unknown user'
+	const name = session?.user?.name || 'Admin'
+	const email = session?.user?.email || ''
 
 	async function handleSignOut() {
 		setIsSigningOut(true)
@@ -25,35 +34,30 @@ export function AdminSessionStatus() {
 	}
 
 	return (
-		<div className="flex items-center gap-2">
-			<div
-				className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground"
-				aria-live="polite"
-			>
-				<span
-					className={`size-1.5 rounded-full ${isPending ? 'bg-amber-500' : 'bg-emerald-500'}`}
-					aria-hidden="true"
-				/>
-				<span className="hidden md:inline">
-					{isPending
-						? 'Checking session...'
-						: `Signed in as ${userLabel}`}
-				</span>
-				<span className="md:hidden">
-					{isPending ? 'Checking...' : 'Signed in'}
-				</span>
+		<div
+			className="flex items-center gap-3 border-t border-border px-1 pt-4"
+			aria-live="polite"
+		>
+			<span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-medium">
+				{isPending ? '' : getInitials(name)}
+			</span>
+			<div className="min-w-0 flex-1">
+				<p className="truncate text-[13px] font-medium">
+					{isPending ? 'Checking session…' : name}
+				</p>
+				<p className="truncate text-[11px] text-muted-foreground">
+					{isPending ? '' : email}
+				</p>
 			</div>
-
 			<button
 				type="button"
 				onClick={handleSignOut}
 				disabled={isPending || isSigningOut}
-				className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm hover:bg-muted transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+				className="admin-icon-btn disabled:opacity-50"
+				aria-label="Sign out"
+				title={isSigningOut ? 'Signing out…' : 'Sign out'}
 			>
-				<LogOut className="w-3.5 h-3.5" />
-				<span className="hidden md:inline">
-					{isSigningOut ? 'Signing out...' : 'Sign out'}
-				</span>
+				<LogOut className="size-3.5" />
 			</button>
 		</div>
 	)

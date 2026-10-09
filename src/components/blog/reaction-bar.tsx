@@ -81,39 +81,31 @@ export function ReactionBar({ slug }: ReactionBarProps) {
 	}
 
 	return (
-		<div className="mt-12 mb-8">
-			<div className="flex items-center gap-2 flex-wrap">
-				<span className="text-sm text-zinc-500 mr-2">React:</span>
-				{(Object.keys(EMOJI_CONFIG) as EmojiType[]).map(emoji => (
-					<m.button
-						key={emoji}
-						onClick={() => handleReaction(emoji)}
-						disabled={isPending && loadingEmoji === emoji}
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.95 }}
-						className={`
-                            inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
-                            border transition-all duration-200
-                            ${
-								reactions[emoji].hasReacted
-									? 'bg-zinc-800 border-zinc-600 text-white'
-									: 'bg-transparent border-zinc-700 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300'
-							}
-                            disabled:opacity-50 disabled:cursor-not-allowed
-                        `}
-						title={EMOJI_CONFIG[emoji].label}
-					>
-						<span className="text-base">
-							{EMOJI_CONFIG[emoji].emoji}
+		<div className="mt-14 flex flex-wrap items-center gap-2 border-t border-border/60 pt-8">
+			{(Object.keys(EMOJI_CONFIG) as EmojiType[]).map(emoji => (
+				<m.button
+					key={emoji}
+					onClick={() => handleReaction(emoji)}
+					disabled={isPending && loadingEmoji === emoji}
+					whileTap={{ scale: 0.95 }}
+					aria-pressed={reactions[emoji].hasReacted}
+					className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+						reactions[emoji].hasReacted
+							? 'border-foreground/30 bg-muted text-foreground'
+							: 'border-border/60 text-muted-foreground hover:border-border hover:bg-muted/40 hover:text-foreground'
+					}`}
+					title={EMOJI_CONFIG[emoji].label}
+				>
+					<span className="text-base leading-none">
+						{EMOJI_CONFIG[emoji].emoji}
+					</span>
+					{reactions[emoji].count > 0 && (
+						<span className="font-mono text-xs tabular-nums">
+							{reactions[emoji].count}
 						</span>
-						{reactions[emoji].count > 0 && (
-							<span className="text-xs font-medium">
-								{reactions[emoji].count}
-							</span>
-						)}
-					</m.button>
-				))}
-			</div>
+					)}
+				</m.button>
+			))}
 		</div>
 	)
 }

@@ -19,8 +19,8 @@ export function ActivitySection() {
 					<CurrentYear className="text-xs text-muted-foreground/60 inline-flex items-baseline" />
 				}
 			/>
-			<div className="space-y-4 pt-3">
-				<p className="px-4 md:px-5 text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
+			<div className="space-y-5 pt-4">
+				<p className="px-4 text-sm leading-relaxed text-muted-foreground md:px-5">
 					Besides my professional work, I also build a lot of open
 					source. Primarily I've been working on{' '}
 					<Link
@@ -62,7 +62,7 @@ export function ActivitySection() {
 					Skip activity calendar
 				</a>
 
-				<div>
+				<div className="px-4 md:px-5">
 					<ActivityContributionGraph showLegend={true} />
 				</div>
 

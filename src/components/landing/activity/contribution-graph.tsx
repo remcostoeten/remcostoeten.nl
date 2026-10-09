@@ -29,6 +29,34 @@ interface ActivityContributionGraphProps {
 	className?: string
 }
 
+type LevelThresholds = [number, number, number]
+
+function quantile(sorted: number[], fraction: number): number {
+	if (sorted.length === 0) return 0
+	const index = Math.min(
+		sorted.length - 1,
+		Math.max(0, Math.round((sorted.length - 1) * fraction))
+	)
+	return sorted[index]
+}
+
+function quantileThresholds(counts: number[]): LevelThresholds {
+	const sorted = [...counts].sort((a, b) => a - b)
+	return [
+		quantile(sorted, 0.25),
+		quantile(sorted, 0.5),
+		quantile(sorted, 0.75)
+	]
+}
+
+function levelForCount(count: number, thresholds: LevelThresholds): number {
+	if (count === 0) return 0
+	if (count <= thresholds[0]) return 1
+	if (count <= thresholds[1]) return 2
+	if (count <= thresholds[2]) return 3
+	return 4
+}
+
 export function ActivityContributionGraph({
 	year,
 	showLegend = true,
@@ -283,12 +311,14 @@ export function ActivityContributionGraph({
 			}
 		})
 
+		const thresholds = quantileThresholds(
+			Array.from(activityMap.values())
+				.map(day => day.githubCount)
+				.filter(count => count > 0)
+		)
+
 		activityMap.forEach(day => {
-			if (day.githubCount === 0) day.level = 0
-			else if (day.githubCount <= 3) day.level = 1
-			else if (day.githubCount <= 6) day.level = 2
-			else if (day.githubCount <= 9) day.level = 3
-			else day.level = 4
+			day.level = levelForCount(day.githubCount, thresholds)
 		})
 
 		return Array.from(activityMap.values())
@@ -302,23 +332,17 @@ export function ActivityContributionGraph({
 	])
 
 	const getColorForLevel = (level: number) => {
-		// Level 0 (empty)
-		if (level === 0) {
-			return 'bg-neutral-200 dark:bg-neutral-900/70'
-		}
-
-		// Levels 1-4
 		switch (level) {
 			case 1:
-				return 'bg-brand-500/30'
+				return 'bg-brand-500/25'
 			case 2:
-				return 'bg-brand-500/50'
+				return 'bg-brand-500/45'
 			case 3:
-				return 'bg-brand-500/75'
+				return 'bg-brand-500/70'
 			case 4:
 				return 'bg-brand-500'
 			default:
-				return 'bg-neutral-100 dark:bg-neutral-900/70'
+				return 'bg-foreground/[0.05]'
 		}
 	}
 
@@ -536,7 +560,7 @@ export function ActivityContributionGraph({
 									className="relative overflow-visible z-20"
 								>
 									{label && (
-										<span className="whitespace-nowrap absolute text-[10px] text-muted-foreground">
+										<span className="absolute whitespace-nowrap font-mono text-[10px] text-muted-foreground/70">
 											{label.month}
 										</span>
 									)}
@@ -596,15 +620,13 @@ export function ActivityContributionGraph({
 													? 'dialog'
 													: undefined
 											}
-											className={`cell-pop-in w-full aspect-square rounded-[2px] transition-[background-color,border-color,box-shadow] duration-300 ease-out border focus-visible:outline-none focus-visible:border-foreground ${
-												hasData ? 'cursor-pointer' : ''
-											} ${
+											className={`cell-pop-in w-full aspect-square rounded-[2px] border border-transparent transition-[background-color,border-color,box-shadow] duration-300 ease-out focus-visible:outline-none focus-visible:border-foreground ${
 												hasData
-													? `${getColorForLevel(day.level)} border-transparent`
-													: 'bg-secondary/40 border border-border/20'
-											} ${!hasData ? 'opacity-0' : ''} ${
+													? `cursor-pointer ${getColorForLevel(day.level)}`
+													: 'opacity-0'
+											} ${
 												isToday
-													? 'ring-2 ring-brand-500 ring-offset-1 ring-offset-background'
+													? 'ring-1 ring-foreground/70 ring-offset-1 ring-offset-background'
 													: ''
 											}`}
 											style={{
@@ -629,25 +651,30 @@ export function ActivityContributionGraph({
 
 			{showLegend && (
 				<m.div
-					className="flex items-center justify-between text-[10px] text-muted-foreground px-0"
+					className="flex items-center justify-between pt-1 font-mono text-[11px] text-muted-foreground/70"
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					transition={{ delay: 0 }}
 				>
-					<div className="flex items-center gap-2">
-						<div className="flex gap-[2px]">
+					<span className="tabular-nums">
+						{totalContributions.toLocaleString()} contributions
+						<span className="hidden sm:inline">
+							{' '}
+							· {rangeLabel}
+						</span>
+					</span>
+					<div className="flex items-center gap-1.5">
+						<span>Less</span>
+						<div className="flex gap-[3px]">
 							{[0, 1, 2, 3, 4].map(level => (
 								<div
 									key={level}
-									className={`w-[10px] h-[10px] rounded-sm ${getColorForLevel(level)}`}
+									className={`h-[10px] w-[10px] rounded-[2px] ${getColorForLevel(level)}`}
 								/>
 							))}
 						</div>
+						<span>More</span>
 					</div>
-					<span className="text-muted-foreground/80 pr-1">
-						{totalContributions.toLocaleString()} contributions (
-						{rangeLabel})
-					</span>
 				</m.div>
 			)}
 

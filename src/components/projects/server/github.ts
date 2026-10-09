@@ -29,6 +29,14 @@ interface IGitHubRepo {
 	pushed_at: string
 }
 
+interface IGitHubRelease {
+	assets: { download_count: number }[]
+}
+
+interface IGitHubParticipation {
+	all?: number[]
+}
+
 function extractOwnerRepo(
 	githubUrl?: string
 ): { owner: string; repo: string } | null {
@@ -44,6 +52,53 @@ function getRateLimitCooldown(response: Response): number {
 
 	const resetAt = Number(resetHeader) * 1000
 	return Number.isFinite(resetAt) ? resetAt : Date.now() + FAILURE_TTL_MS
+}
+
+async function fetchWeeklyActivity(
+	owner: string,
+	repo: string,
+	headers: HeadersInit
+): Promise<number[]> {
+	const res = await safeFetch(
+		`${GITHUB_API}/repos/${owner}/${repo}/stats/participation`,
+		headers
+	)
+	// GitHub answers 202 with an empty body while it computes repository stats.
+	if (!res || res.status === 202) return []
+
+	try {
+		const data: IGitHubParticipation = await res.json()
+		return Array.isArray(data.all) ? data.all : []
+	} catch {
+		return []
+	}
+}
+
+async function fetchReleaseDownloads(
+	owner: string,
+	repo: string,
+	headers: HeadersInit
+): Promise<number> {
+	const res = await safeFetch(
+		`${GITHUB_API}/repos/${owner}/${repo}/releases?per_page=100`,
+		headers
+	)
+	if (!res) return 0
+
+	try {
+		const releases: IGitHubRelease[] = await res.json()
+		return releases.reduce(
+			(total, release) =>
+				total +
+				release.assets.reduce(
+					(sum, asset) => sum + asset.download_count,
+					0
+				),
+			0
+		)
+	} catch {
+		return 0
+	}
 }
 
 async function safeFetch(
@@ -124,14 +179,24 @@ export async function fetchGitMetrics(
 				totalCommits = Number.parseInt(lastPageMatch[1], 10)
 		}
 
-		cacheLife('hours')
+		const [weeklyActivity, releaseDownloads] = await Promise.all([
+			fetchWeeklyActivity(owner, repo, headers),
+			fetchReleaseDownloads(owner, repo, headers)
+		])
+
+		if (weeklyActivity.length > 0) {
+			cacheLife('hours')
+		} else {
+			cacheLife('minutes')
+		}
 		const metrics = {
 			lastUpdated: repoData.pushed_at,
 			lastCommitMessage:
 				latestCommit?.commit.message.split('\n')[0] || 'No commits',
 			totalCommits,
 			firstCommitDate: repoData.pushed_at,
-			weeklyActivity: []
+			weeklyActivity,
+			releaseDownloads
 		}
 		return metrics
 	} catch (error) {

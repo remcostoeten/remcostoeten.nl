@@ -1,8 +1,7 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { CheckCircle2, Mail } from 'lucide-react'
+import { useState } from 'react'
+import { Mail } from 'lucide-react'
 
 type ContactStats = {
 	submissions: ContactSubmission[]
@@ -21,114 +20,130 @@ type ContactSubmission = ContactTimelineEntry & {
 	createdAt: string | Date
 }
 
-function StatBox({
+const DAY_MS = 24 * 60 * 60 * 1000
+const INITIAL_COUNT = 1
+
+function StatCell({
 	value,
 	label,
-	color
+	tone
 }: {
 	value: number
 	label: string
-	color: 'green' | 'yellow' | 'blue'
+	tone?: 'success'
 }) {
-	const colors = {
-		green: 'text-green-600 bg-green-50 dark:bg-green-950/30',
-		yellow: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-950/30',
-		blue: 'text-blue-600 bg-blue-50 dark:bg-blue-950/30'
-	}
-
 	return (
-		<div className={`rounded-lg p-3 text-center ${colors[color]}`}>
-			<div className="text-2xl font-bold">{value}</div>
-			<div className="text-xs opacity-80">{label}</div>
+		<div className="space-y-1.5">
+			<span className="admin-metric-value block text-[24px]">
+				{value}
+			</span>
+			<span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+				{tone === 'success' && (
+					<span className="size-1.5 rounded-full bg-[color:var(--admin-success)]" />
+				)}
+				{label}
+			</span>
 		</div>
 	)
 }
 
 export function ContactOverview({ data }: { data: ContactStats }) {
-	const recentSubmissions = data.submissions.filter(
-		s => new Date(s.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-	)
+	const [showAll, setShowAll] = useState(false)
+	const visible = showAll
+		? data.submissions.slice(0, 10)
+		: data.submissions.slice(0, INITIAL_COUNT)
 
 	return (
-		<Card>
-			<CardHeader className="pb-3">
-				<div className="flex items-center justify-between">
-					<CardTitle className="flex items-center gap-2 text-base">
-						<Mail className="w-4 h-4" />
-						Contact Activity
-					</CardTitle>
-					{recentSubmissions.length > 0 && (
-						<Badge variant="default" className="text-xs">
-							{recentSubmissions.length} new
-						</Badge>
+		<section className="admin-panel h-full">
+			<div className="admin-panel-header items-center">
+				<h2 className="admin-panel-title">Contact activity</h2>
+				<Mail className="size-4 text-muted-foreground" />
+			</div>
+
+			<div className="grid grid-cols-3 gap-4 px-5 pb-5">
+				<StatCell
+					value={data.submissions.length}
+					label="Submitted"
+					tone="success"
+				/>
+				<StatCell value={data.abandonments.length} label="Abandoned" />
+				<StatCell
+					value={data.interactions.length}
+					label="Form clicks"
+				/>
+			</div>
+
+			<div className="border-t border-border px-5 py-4">
+				<div className="mb-3 flex items-center justify-between">
+					<p className="text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/70">
+						{showAll ? 'Latest messages' : 'Latest message'}
+					</p>
+					{data.submissions.length > INITIAL_COUNT && (
+						<button
+							type="button"
+							onClick={() => setShowAll(!showAll)}
+							className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+						>
+							{showAll ? 'Show less' : 'Show more'}
+						</button>
 					)}
 				</div>
-			</CardHeader>
-			<CardContent className="pt-0">
-				<div className="grid grid-cols-3 gap-2 mb-4">
-					<StatBox
-						value={data.submissions.length}
-						label="Sent"
-						color="green"
-					/>
-					<StatBox
-						value={data.abandonments.length}
-						label="Abandoned"
-						color="yellow"
-					/>
-					<StatBox
-						value={data.interactions.length}
-						label="Clicks"
-						color="blue"
-					/>
-				</div>
 
-				{/* Recent List */}
-				<div className="space-y-4">
-					<h4 className="text-sm font-medium text-muted-foreground">
-						Recent Submissions
-					</h4>
-					{data.submissions.slice(0, 5).map(sub => (
-						<div
-							key={sub.id}
-							className="flex items-start gap-3 p-3 rounded-none border bg-muted/50"
-						>
-							<div className="shrink-0 mt-0.5">
-								<CheckCircle2 className="w-4 h-4 text-green-500" />
-							</div>
-							<div className="flex-1 min-w-0">
+				{data.submissions.length === 0 && (
+					<p className="py-6 text-center text-[13px] text-muted-foreground">
+						No messages yet
+					</p>
+				)}
+
+				<div className="space-y-2">
+					{visible.map(sub => {
+						const createdAt = new Date(sub.createdAt)
+						const isNew = Date.now() - createdAt.getTime() < DAY_MS
+						return (
+							<article
+								key={sub.id}
+								className="rounded-md border border-border bg-background p-4"
+							>
 								<div className="flex items-center justify-between gap-2">
-									<p className="text-sm font-medium truncate">
-										{sub.name}
-									</p>
-									<span className="text-xs text-muted-foreground whitespace-nowrap">
-										{new Date(
-											sub.createdAt
-										).toLocaleDateString('en-US', {
+									<div className="flex min-w-0 items-center gap-2">
+										<p className="truncate text-[13px] font-medium">
+											{sub.name}
+										</p>
+										{isNew && (
+											<span
+												className="admin-pill h-5"
+												data-tone="success"
+											>
+												New
+											</span>
+										)}
+									</div>
+									<time
+										dateTime={createdAt.toISOString()}
+										className="shrink-0 text-[11px] text-muted-foreground"
+									>
+										{createdAt.toLocaleDateString('en-US', {
 											month: 'short',
 											day: 'numeric',
 											hour: '2-digit',
 											minute: '2-digit'
 										})}
-									</span>
+									</time>
 								</div>
-								<p className="text-xs text-muted-foreground truncate">
+								<a
+									href={`mailto:${sub.email}`}
+									className="mt-0.5 block truncate text-[11px] text-muted-foreground hover:text-foreground"
+								>
 									{sub.email}
-								</p>
-								<p className="text-sm mt-1 line-clamp-2">
+								</a>
+								<p className="mt-2 line-clamp-3 text-[12px] leading-relaxed text-foreground/80">
 									{sub.message}
 								</p>
-							</div>
-						</div>
-					))}
-
-					{data.submissions.length === 0 && (
-						<div className="text-center py-8 text-muted-foreground text-sm">
-							No messages yet
-						</div>
-					)}
+							</article>
+						)
+					})}
 				</div>
-			</CardContent>
-		</Card>
+			</div>
+		</section>
 	)
 }

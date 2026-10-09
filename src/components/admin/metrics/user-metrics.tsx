@@ -1,32 +1,20 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Badge } from '@/components/ui/badge'
 import { useState } from 'react'
-import {
-	Globe,
-	Activity,
-	TrendingUp,
-	Users,
-	Eye,
-	ChevronDown,
-	ChevronUp,
-	MapPin
-} from 'lucide-react'
+import { ChevronDown, Globe } from 'lucide-react'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
-type MetricsProps = {
-	totalViews: number
-	uniqueVisitors: number
-	viewsByCountry: Array<{ country: string | null; count: number }>
-	recentViews: Array<{
-		ipAddress: string | null
-		geoCountry: string | null
-		geoCity: string | null
-		viewedAt: Date
-		slug: string
-	}>
+type CountryCount = { country: string | null; count: number }
+
+type RecentView = {
+	ipAddress: string | null
+	geoCountry: string | null
+	geoCity: string | null
+	viewedAt: Date
+	slug: string
 }
+
+const INITIAL_COUNTRIES = 5
 
 const countryFlags: Record<string, string> = {
 	Netherlands: '🇳🇱',
@@ -52,283 +40,175 @@ const countryFlags: Record<string, string> = {
 	Local: '🏠'
 }
 
+const regionNames = new Intl.DisplayNames(['en'], { type: 'region' })
+
+function isCountryCode(country: string) {
+	return /^[A-Z]{2}$/.test(country)
+}
+
 function getCountryFlag(country: string | null): string {
-	if (!country) return '❓'
-	if (country.startsWith('Unknown')) return '❓'
+	if (!country || country.startsWith('Unknown')) return '❓'
+	if (isCountryCode(country)) {
+		// Shifts A-Z onto the Unicode regional indicator symbols that form flag emoji
+		return String.fromCodePoint(
+			...[...country].map(char => 0x1f1a5 + char.charCodeAt(0))
+		)
+	}
 	return countryFlags[country] || '🌍'
 }
 
 function getCountryLabel(country: string | null): string {
 	if (!country) return 'Unknown'
-	if (country === 'Local') return 'Local (Dev)'
-	if (country.startsWith('Unknown')) return country
+	if (country === 'Local') return 'Local (dev)'
+	if (isCountryCode(country)) return regionNames.of(country) ?? country
 	return country
 }
 
-function StatCard({
-	icon: Icon,
-	label,
-	value,
-	trend
-}: {
-	icon: typeof Eye
-	label: string
-	value: number
-	trend?: number
-}) {
-	return (
-		<Card className="relative overflow-hidden">
-			<CardContent className="p-4">
-				<div className="flex items-center justify-between">
-					<div className="flex items-center gap-2">
-						<div className="p-2 rounded-lg bg-primary/10">
-							<Icon className="w-4 h-4 text-primary" />
-						</div>
-						<span className="text-sm text-muted-foreground">
-							{label}
-						</span>
-					</div>
-					{trend !== undefined && trend > 0 && (
-						<Badge
-							variant="secondary"
-							className="text-xs text-green-600 bg-green-50"
-						>
-							<TrendingUp className="w-3 h-3 mr-1" />+{trend}%
-						</Badge>
-					)}
-				</div>
-				<div className="mt-3 text-3xl font-bold tracking-tight">
-					{value.toLocaleString()}
-				</div>
-			</CardContent>
-		</Card>
-	)
+function getLocationLabel(view: RecentView) {
+	const country = getCountryLabel(view.geoCountry)
+	if (!view.geoCity || view.geoCity === 'Development') return country
+	return `${country} · ${view.geoCity}`
 }
 
-function CountryBar({
-	country,
-	count,
-	total,
-	rank: _rank
+export function CountryTraffic({
+	viewsByCountry,
+	totalViews
 }: {
-	country: string | null
-	count: number
-	total: number
-	rank: number
+	viewsByCountry: CountryCount[]
+	totalViews: number
 }) {
-	const percentage = Math.round((count / total) * 100)
+	const [showAll, setShowAll] = useState(false)
+	const visible = showAll
+		? viewsByCountry
+		: viewsByCountry.slice(0, INITIAL_COUNTRIES)
 
 	return (
-		<div className="flex items-center gap-3 py-2">
-			<span className="text-lg shrink-0">{getCountryFlag(country)}</span>
-			<div className="flex-1 min-w-0">
-				<div className="flex items-center justify-between mb-1">
-					<span className="text-sm font-medium truncate">
-						{getCountryLabel(country)}
-					</span>
-					<span className="text-xs text-muted-foreground ml-2">
-						{count} ({percentage}%)
-					</span>
-				</div>
-				<div className="h-2 bg-secondary rounded-full overflow-hidden">
-					<div
-						className="h-full bg-gradient-to-r from-primary to-primary/70 transition-all duration-500"
-						style={{ width: `${percentage}%` }}
-					/>
-				</div>
-			</div>
-		</div>
-	)
-}
-
-export function UserMetrics({ data }: { data: MetricsProps }) {
-	const [showAllCountries, setShowAllCountries] = useState(false)
-	const [visitorLogExpanded, setVisitorLogExpanded] = useState(true)
-
-	const visibleCountries = showAllCountries
-		? data.viewsByCountry
-		: data.viewsByCountry.slice(0, 5)
-
-	const todayViews = data.recentViews.filter(view => {
-		const viewDate = new Date(view.viewedAt)
-		const today = new Date()
-		return viewDate.toDateString() === today.toDateString()
-	})
-
-	return (
-		<div className="space-y-4">
-			<div className="grid grid-cols-2 gap-3">
-				<StatCard
-					icon={Eye}
-					label="Total Views"
-					value={data.totalViews}
-				/>
-				<StatCard
-					icon={Users}
-					label="Unique Visitors"
-					value={data.uniqueVisitors}
-				/>
+		<section className="admin-panel">
+			<div className="admin-panel-header items-center">
+				<h2 className="admin-panel-title">Traffic by country</h2>
+				<Globe className="size-4 text-muted-foreground" />
 			</div>
 
-			{todayViews.length > 0 && (
-				<Card className="border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20">
-					<CardContent className="p-4">
-						<div className="flex items-center gap-2">
-							<div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-							<span className="text-sm font-medium text-green-700 dark:text-green-400">
-								{todayViews.length} views today
-							</span>
-						</div>
-					</CardContent>
-				</Card>
+			{visible.length === 0 && (
+				<p className="px-5 pb-6 text-center text-[13px] text-muted-foreground">
+					No views recorded yet
+				</p>
 			)}
 
-			<Card>
-				<CardHeader className="pb-2">
-					<CardTitle className="flex items-center gap-2 text-base">
-						<Globe className="w-4 h-4" />
-						Traffic by Country
-					</CardTitle>
-				</CardHeader>
-				<CardContent className="pt-2">
-					<div className="space-y-1">
-						{visibleCountries.map((item, i) => (
-							<CountryBar
-								key={item.country || 'unknown'}
-								country={item.country}
-								count={item.count}
-								total={data.totalViews}
-								rank={i + 1}
-							/>
-						))}
-					</div>
-					{data.viewsByCountry.length > 5 && (
-						<button
-							onClick={() =>
-								setShowAllCountries(!showAllCountries)
-							}
-							className="mt-3 w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1"
+			<ul className="space-y-4 px-5 pb-5">
+				{visible.map(item => {
+					const percentage =
+						totalViews > 0
+							? Math.round((item.count / totalViews) * 100)
+							: 0
+					return (
+						<li
+							key={item.country || 'unknown'}
+							className="flex items-center gap-3"
 						>
-							{showAllCountries ? (
-								<>
-									Show less <ChevronUp className="w-3 h-3" />
-								</>
-							) : (
-								<>
-									Show all {data.viewsByCountry.length}{' '}
-									countries{' '}
-									<ChevronDown className="w-3 h-3" />
-								</>
-							)}
-						</button>
-					)}
-				</CardContent>
-			</Card>
-
-			<Card>
-				<CardHeader className="pb-2">
-					<button
-						onClick={() =>
-							setVisitorLogExpanded(!visitorLogExpanded)
-						}
-						className="w-full flex items-center justify-between"
-					>
-						<CardTitle className="flex items-center gap-2 text-base">
-							<Activity className="w-4 h-4" />
-							Live Visitor Log
-						</CardTitle>
-						{visitorLogExpanded ? (
-							<ChevronUp className="w-4 h-4 text-muted-foreground" />
-						) : (
-							<ChevronDown className="w-4 h-4 text-muted-foreground" />
-						)}
-					</button>
-				</CardHeader>
-				{visitorLogExpanded && (
-					<CardContent className="pt-0">
-						<ScrollArea className="h-[300px] md:h-[400px]">
-							<div className="space-y-3">
-								{data.recentViews.map((view, i) => {
-									const isToday =
-										new Date(
-											view.viewedAt
-										).toDateString() ===
-										new Date().toDateString()
-									return (
-										<div
-											key={i}
-											className={`p-3 rounded-lg border transition-colors ${
-												isToday
-													? 'bg-primary/5 border-primary/20'
-													: 'bg-muted/30'
-											}`}
-										>
-											<div className="flex items-start justify-between gap-2">
-												<div className="flex-1 min-w-0">
-													<p className="text-sm font-medium truncate">
-														{view.slug.replace(
-															'/blog/',
-															''
-														)}
-													</p>
-													<div className="flex items-center gap-2 mt-1 flex-wrap">
-														<span className="text-lg">
-															{getCountryFlag(
-																view.geoCountry
-															)}
-														</span>
-														<Badge
-															variant="outline"
-															className="text-[10px] py-0 h-5"
-														>
-															{getCountryLabel(
-																view.geoCountry
-															)}
-														</Badge>
-														{view.geoCity &&
-															view.geoCity !==
-																'Development' && (
-																<span className="text-xs text-muted-foreground flex items-center gap-1">
-																	<MapPin className="w-3 h-3" />
-																	{
-																		view.geoCity
-																	}
-																</span>
-															)}
-													</div>
-												</div>
-												<div className="text-right shrink-0">
-													<span className="text-xs text-muted-foreground">
-														{new Date(
-															view.viewedAt
-														).toLocaleTimeString(
-															[],
-															{
-																hour: '2-digit',
-																minute: '2-digit'
-															}
-														)}
-													</span>
-													{isToday && (
-														<div className="mt-1">
-															<Badge
-																variant="secondary"
-																className="text-[10px] bg-green-100 text-green-700"
-															>
-																Today
-															</Badge>
-														</div>
-													)}
-												</div>
-											</div>
-										</div>
-									)
-								})}
+							<span className="w-5 shrink-0 text-center text-base">
+								{getCountryFlag(item.country)}
+							</span>
+							<div className="min-w-0 flex-1 space-y-1.5">
+								<div className="flex items-center justify-between gap-2 text-[12px]">
+									<span className="truncate">
+										{getCountryLabel(item.country)}
+									</span>
+									<span className="tabular-nums">
+										{item.count}
+									</span>
+								</div>
+								<div className="flex items-center gap-3">
+									<div className="admin-bar flex-1">
+										<span
+											style={{ width: `${percentage}%` }}
+										/>
+									</div>
+									<span className="w-8 text-right text-[10px] tabular-nums text-muted-foreground">
+										{percentage}%
+									</span>
+								</div>
 							</div>
-						</ScrollArea>
-					</CardContent>
-				)}
-			</Card>
-		</div>
+						</li>
+					)
+				})}
+			</ul>
+
+			{viewsByCountry.length > INITIAL_COUNTRIES && (
+				<button
+					type="button"
+					onClick={() => setShowAll(!showAll)}
+					className="flex w-full items-center justify-center gap-1 border-t border-border py-3 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+				>
+					{showAll ? 'Show fewer countries' : 'View all countries'}
+					<ChevronDown
+						className={`size-3 transition-transform ${showAll ? 'rotate-180' : ''}`}
+					/>
+				</button>
+			)}
+		</section>
+	)
+}
+
+export function VisitorLog({ recentViews }: { recentViews: RecentView[] }) {
+	return (
+		<section className="admin-panel h-full">
+			<div className="admin-panel-header items-center">
+				<h2 className="admin-panel-title">Live visitor log</h2>
+				<span className="flex items-center gap-2 text-[11px] text-muted-foreground">
+					<span className="admin-live-dot" aria-hidden="true" />
+					Live
+				</span>
+			</div>
+
+			{recentViews.length === 0 && (
+				<p className="px-5 pb-6 text-center text-[13px] text-muted-foreground">
+					No visitors yet
+				</p>
+			)}
+
+			<ScrollArea className="h-[360px]">
+				<ul>
+					{recentViews.map((view, i) => {
+						const viewedAt = new Date(view.viewedAt)
+						const isToday =
+							viewedAt.toDateString() ===
+							new Date().toDateString()
+						return (
+							<li
+								key={`${view.slug}-${i}`}
+								className="flex items-center gap-3 border-t border-border/60 px-5 py-3"
+							>
+								<span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-secondary text-sm">
+									{getCountryFlag(view.geoCountry)}
+								</span>
+								<div className="min-w-0 flex-1">
+									<p className="truncate text-[12px] font-medium">
+										{view.slug.replace('/blog/', '')}
+									</p>
+									<p className="truncate text-[11px] text-muted-foreground">
+										{getLocationLabel(view)}
+									</p>
+								</div>
+								<time
+									dateTime={viewedAt.toISOString()}
+									className="shrink-0 text-[11px] tabular-nums text-muted-foreground"
+								>
+									{isToday
+										? viewedAt.toLocaleTimeString([], {
+												hour: '2-digit',
+												minute: '2-digit'
+											})
+										: viewedAt.toLocaleDateString('en-US', {
+												month: 'short',
+												day: 'numeric'
+											})}
+								</time>
+							</li>
+						)
+					})}
+				</ul>
+			</ScrollArea>
+		</section>
 	)
 }

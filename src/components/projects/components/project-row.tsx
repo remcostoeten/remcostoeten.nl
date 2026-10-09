@@ -15,6 +15,7 @@ const ProjectPreviewRenderer = lazy(() =>
 
 type Props = {
 	project: IProject
+	index: number
 	isOpen: boolean
 	onToggle: () => void
 }
@@ -28,6 +29,7 @@ function getExternalUrl(preview?: TPreview) {
 
 export const ProjectRow = memo(function ProjectRow({
 	project,
+	index,
 	isOpen,
 	onToggle
 }: Props) {
@@ -39,34 +41,36 @@ export const ProjectRow = memo(function ProjectRow({
 
 	return (
 		<div className="flex flex-col border-b border-border">
-			<div className="group flex items-center justify-between bg-card px-2 sm:px-3 py-2">
-				<div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
+			<div className="group flex items-center justify-between bg-card px-2 sm:px-3 py-2 transition-colors duration-200 ease-out hover:bg-muted/40">
+				<div className="flex min-w-0 flex-1 items-baseline gap-2 sm:gap-3">
+					<span
+						className="hidden shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground/50 transition-colors duration-200 ease-out group-hover:text-foreground sm:inline"
+						aria-hidden="true"
+					>
+						{String(index + 1).padStart(2, '0')}
+					</span>
 					<span className="min-w-0 flex-1 text-sm font-medium text-foreground truncate md:flex-none md:max-w-[40%] md:transition-[max-width] md:duration-300 md:ease-out md:group-hover:max-w-[55%] lg:max-w-[32%] lg:group-hover:max-w-[45%]">
 						{project.name}
 					</span>
 					<span className="hidden min-w-0 flex-1 text-sm text-muted-foreground md:inline truncate">
-						— {project.description}
+						{project.description}
 					</span>
 				</div>
 
-				<div className="ml-2 flex shrink-0 items-center gap-1 sm:gap-2">
-					{project.git?.lastUpdated && (
-						<span className="hidden text-xs text-muted-foreground lg:inline">
-							{formatShortDate(project.git.lastUpdated)}
+				<div className="ml-3 flex shrink-0 items-center gap-1 sm:gap-3">
+					{primaryTech && (
+						<span
+							className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70 md:inline"
+							title={techSummary}
+							aria-label={`Tech stack: ${techSummary}`}
+						>
+							{primaryTech}
 						</span>
 					)}
-					{primaryTech && (
-						<div
-							className="hidden items-center overflow-hidden md:flex"
-							title={techSummary}
-						>
-							<span
-								className="bg-secondary px-1.5 py-0.5 text-xs text-muted-foreground whitespace-nowrap shrink-0"
-								aria-label={`Tech stack: ${techSummary}`}
-							>
-								{primaryTech}
-							</span>
-						</div>
+					{project.git?.lastUpdated && (
+						<span className="hidden w-12 text-right font-mono text-[10px] tabular-nums text-muted-foreground lg:inline">
+							{formatShortDate(project.git.lastUpdated)}
+						</span>
 					)}
 					<div className="flex items-center">
 						{(hasPreview || hasDesc) && (

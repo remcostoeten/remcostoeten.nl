@@ -125,7 +125,7 @@ export function ActivitySectionSkeleton() {
 				</div>
 			</div>
 
-			<div className="space-y-4 pt-3">
+			<div className="space-y-5 pt-4">
 				{/* Paragraph */}
 				<div className="px-4 md:px-5">
 					<Skeleton className="h-4 w-full max-w-xl" />
@@ -348,7 +348,7 @@ export function ContributionGraphSkeleton() {
 }
 
 // Static arrays for WorkExperience skeleton
-const EXPERIENCE_ITEMS = Array.from({ length: 5 }, (_, i) => i)
+const EXPERIENCE_ITEMS = Array.from({ length: 6 }, (_, i) => i)
 
 export function BlogPostsSkeleton() {
 	return (
@@ -409,29 +409,16 @@ export function WorkExperienceSkeleton() {
 				</div>
 			</div>
 
-			{/* Experience Items */}
-			<div className="px-4 md:px-5 pt-3 space-y-4">
+			<div className="space-y-5 px-4 md:px-5">
 				{EXPERIENCE_ITEMS.map(i => (
-					<div
-						key={i}
-						className="flex gap-4 py-3 border-b border-border/30 last:border-0"
-					>
-						{/* Icon placeholder */}
-						<div className="w-10 h-10 rounded-lg bg-muted/20 shrink-0" />
-
-						{/* Content */}
-						<div className="flex-1 space-y-2">
-							<div className="flex items-center justify-between">
-								<Skeleton className="h-4 w-40" />
-								<Skeleton className="h-3 w-24" />
-							</div>
-							<Skeleton className="h-3 w-32" />
-							{/* Skills row */}
-							<div className="flex gap-2 pt-1">
-								<Skeleton className="h-5 w-16 rounded-full" />
-								<Skeleton className="h-5 w-20 rounded-full" />
-								<Skeleton className="h-5 w-14 rounded-full" />
-							</div>
+					<div key={i}>
+						<div className="flex items-center gap-3">
+							<div className="size-6 shrink-0 rounded-md bg-muted/20" />
+							<Skeleton className="h-3.5 w-36" />
+						</div>
+						<div className="space-y-1.5 pl-9 pt-2.5">
+							<Skeleton className="h-3.5 w-40" />
+							<Skeleton className="h-3 w-52" />
 						</div>
 					</div>
 				))}

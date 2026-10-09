@@ -8,6 +8,13 @@ import {
 import { AppProviders } from '@/components/providers/providers'
 import { ThemeInitializer } from '@/components/theme-initializer'
 import { baseUrl } from '@/core/config/site'
+import { FontSwitcher } from '@/components/dev/font-switcher/font-switcher'
+import {
+	DEFAULT_FONT_PAIR_ID,
+	FONT_PAIRS,
+	defaultFontVariables,
+	previewFontVariables
+} from '@/components/dev/font-switcher/fonts'
 import './global.css'
 
 export const metadata: Metadata = {
@@ -96,6 +103,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			suppressHydrationWarning
 			className={cn(
 				'bg-white text-black antialiased dark:bg-black dark:text-white',
+				defaultFontVariables,
+				previewFontVariables,
 				'font-sans'
 			)}
 		>
@@ -128,6 +137,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				suppressHydrationWarning
 			>
 				<AppProviders>{children}</AppProviders>
+				<FontSwitcher
+					pairs={FONT_PAIRS}
+					defaultId={DEFAULT_FONT_PAIR_ID}
+				/>
 			</body>
 		</html>
 	)

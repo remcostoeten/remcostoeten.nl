@@ -60,57 +60,14 @@ export function Footer() {
 	return (
 		<footer className="border-t border-border/50 bg-background">
 			<div className="py-8 md:py-12 max-w-2xl mx-auto w-full border-x border-border/50 px-4 md:px-5">
-				<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
-					<div className="flex flex-col gap-2">
-						<div className="flex flex-col gap-2">
-							<Link
-								href="/"
-								className="rounded-sm text-lg font-semibold tracking-tight transition-[opacity,background-color] hover:opacity-70 focus-visible:outline-none focus-visible:bg-muted"
-							>
-								remcostoeten
-								<span className="text-primary">.</span>nl
-							</Link>
-							<button
-								onClick={copyEmail}
-								className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
-							>
-								{copied ? (
-									<>
-										<Check className="w-3.5 h-3.5 text-green-500" />
-										<span>Copied</span>
-									</>
-								) : (
-									<>
-										<Copy className="w-3.5 h-3.5" />
-										<span>{displayEmail}</span>
-									</>
-								)}
-							</button>
-						</div>
-						{latestCommit && relativeTimeInfo && (
-							<a
-								href={latestCommit.url}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="group inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
-							>
-								<GitCommit className="w-3 h-3" />
-								<span>
-									Updated{' '}
-									<AnimatedNumber
-										value={relativeTimeInfo.value}
-										duration={600}
-										initialProgress={0}
-										className="text-foreground"
-									/>{' '}
-									{relativeTimeInfo.unit} ago
-								</span>
-								<span className="text-muted-foreground/80 group-hover:text-foreground group-focus-visible:text-foreground transition-colors truncate max-w-[180px]">
-									· {latestCommit.message}
-								</span>
-							</a>
-						)}
-					</div>
+				<div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+					<Link
+						href="/"
+						className="rounded-sm text-lg font-semibold tracking-tight transition-[opacity,background-color] hover:opacity-70 focus-visible:outline-none focus-visible:bg-muted"
+					>
+						remcostoeten
+						<span className="text-primary">.</span>nl
+					</Link>
 
 					<div className="flex items-center gap-4">
 						<LazyContactPopover />
@@ -136,6 +93,48 @@ export function Footer() {
 							))}
 						</div>
 					</div>
+				</div>
+
+				<div className="mt-4 mb-6 flex flex-col items-start gap-2">
+					<button
+						onClick={copyEmail}
+						className="inline-flex items-center gap-2 text-left text-sm text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
+					>
+						{copied ? (
+							<>
+								<Check className="w-3.5 h-3.5 shrink-0 text-green-500" />
+								<span>Copied</span>
+							</>
+						) : (
+							<>
+								<Copy className="w-3.5 h-3.5 shrink-0" />
+								<span>{displayEmail}</span>
+							</>
+						)}
+					</button>
+					{latestCommit && relativeTimeInfo && (
+						<a
+							href={latestCommit.url}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="group flex max-w-full items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
+						>
+							<GitCommit className="w-3 h-3 shrink-0" />
+							<span className="shrink-0 whitespace-nowrap">
+								Updated{' '}
+								<AnimatedNumber
+									value={relativeTimeInfo.value}
+									duration={600}
+									initialProgress={0}
+									className="text-foreground"
+								/>{' '}
+								{relativeTimeInfo.unit} ago
+							</span>
+							<span className="min-w-0 truncate text-muted-foreground/80 group-hover:text-foreground group-focus-visible:text-foreground transition-colors">
+								· {latestCommit.message}
+							</span>
+						</a>
+					)}
 				</div>
 
 				<div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">

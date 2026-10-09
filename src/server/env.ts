@@ -16,6 +16,7 @@ export const env = createEnv({
 		GOOGLE_CLIENT_SECRET: z.string().optional(),
 
 		ADMIN_EMAIL: z.string().email().optional(),
+		DEV_OPEN_ADMIN: z.enum(['true', 'false']).optional(),
 		ALLOWED_GITHUB_USERNAME: z.string().optional(),
 		CRON_SECRET: z.string().min(1).optional(),
 		YTM_COOKIE: z.string().optional(),
@@ -37,6 +38,7 @@ export const env = createEnv({
 		GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 
 		ADMIN_EMAIL: process.env.ADMIN_EMAIL,
+		DEV_OPEN_ADMIN: process.env.DEV_OPEN_ADMIN,
 		ALLOWED_GITHUB_USERNAME: process.env.ALLOWED_GITHUB_USERNAME,
 		CRON_SECRET: process.env.CRON_SECRET,
 		YTM_COOKIE: process.env.YTM_COOKIE,

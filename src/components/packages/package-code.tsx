@@ -13,7 +13,7 @@ function tokenClass(token: string) {
 	return 'text-[hsl(var(--sh-keyword))]'
 }
 
-function HighlightedLine({ line }: { line: string }) {
+export function HighlightedLine({ line }: { line: string }) {
 	const nodes: React.ReactNode[] = []
 	let cursor = 0
 

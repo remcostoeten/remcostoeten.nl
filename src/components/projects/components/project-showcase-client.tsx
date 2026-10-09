@@ -1,16 +1,9 @@
 'use client'
 
-import {
-	useState,
-	memo,
-	useMemo,
-	lazy,
-	Suspense,
-	useRef,
-	useEffect
-} from 'react'
+import { useState, memo, useMemo, lazy, Suspense } from 'react'
 import type { IProject } from '../types'
-import { ProjectCard } from './project-card'
+import { FeaturedProject } from './featured-project'
+import { ToggleGlyph } from '@/components/ui/micro-glyphs'
 
 const ProjectRow = lazy(() =>
 	import('./project-row').then(m => ({ default: m.ProjectRow }))
@@ -32,31 +25,6 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 }: Props) {
 	const [showAll, setShowAll] = useState(false)
 	const [openRowName, setOpenRowName] = useState<string | null>(null)
-	const [activeFeaturedIndex, setActiveFeaturedIndex] = useState(0)
-	const [hasSwitched, setHasSwitched] = useState(false)
-	const firstCardRef = useRef<HTMLDivElement>(null)
-
-	useEffect(() => {
-		if (hasSwitched || !firstCardRef.current) return
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				// Trigger when scrolling down and element is 60% past the top
-				if (
-					entry.intersectionRatio < 0.4 &&
-					entry.boundingClientRect.top < 0
-				) {
-					setActiveFeaturedIndex(1)
-					setHasSwitched(true)
-				}
-			},
-			{ threshold: [0.4] }
-		)
-
-		observer.observe(firstCardRef.current)
-		return () => observer.disconnect()
-	}, [hasSwitched])
-
 	const collapsedHeight = useMemo(
 		() => visibleRowCount * ROW_HEIGHT,
 		[visibleRowCount]
@@ -72,17 +40,13 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 
 	return (
 		<section className="w-full max-w-3xl px-3 sm:px-0">
-			<div className="flex flex-col border-t border-border">
-				{featured.map((project, index) => (
+			<div className="grid border-t border-border sm:grid-cols-2">
+				{featured.map(project => (
 					<div
 						key={project.name}
-						className="border-b border-border"
-						ref={index === 0 ? firstCardRef : null}
+						className="border-b border-border sm:odd:border-r"
 					>
-						<ProjectCard
-							project={project}
-							forceShowPreview={index === activeFeaturedIndex}
-						/>
+						<FeaturedProject project={project} />
 					</div>
 				))}
 			</div>
@@ -98,10 +62,11 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 					}}
 				>
 					<Suspense fallback={null}>
-						{other.map(project => (
+						{other.map((project, index) => (
 							<ProjectRow
 								key={project.name}
 								project={project}
+								index={featured.length + index}
 								isOpen={openRowName === project.name}
 								onToggle={() =>
 									setOpenRowName(current =>
@@ -127,9 +92,10 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 			<div>
 				<button
 					onClick={() => setShowAll(!showAll)}
-					className="flex w-full px-2 py-2 text-xs text-muted-foreground transition-all duration-300 hover:text-foreground sm:px-3 focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
+					className="flex w-full items-center gap-2 px-2 py-2 text-xs text-muted-foreground transition-all duration-300 hover:text-foreground sm:px-3 focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
 					style={{ transitionTimingFunction: EASE_OUT_EXPO }}
 				>
+					<ToggleGlyph isOpen={showAll} />
 					{showAll ? 'Show less' : `View all (${totalCount})`}
 				</button>
 			</div>

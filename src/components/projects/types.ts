@@ -8,6 +8,7 @@ export interface IIframePreview {
 	type: 'iframe'
 	url: string
 	embedUrl?: string
+	poster?: string
 	scale?: number
 }
 
@@ -39,6 +40,7 @@ export interface IGitMetrics {
 	totalCommits: number
 	firstCommitDate: string
 	weeklyActivity: number[]
+	releaseDownloads: number
 }
 
 export interface IProject {

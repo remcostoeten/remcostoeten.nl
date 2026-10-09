@@ -1,16 +1,15 @@
 import { checkAdminStatus } from '@/server/queries/auth'
+import { getRecentMessageCount } from '@/server/queries/admin'
 import { redirect } from 'next/navigation'
 import { ReactNode, Suspense } from 'react'
-import { RefreshCw, Home } from 'lucide-react'
-import Link from 'next/link'
-import { AdminSessionStatus } from '@/components/admin/admin-session-status'
-import { AdminSidebar } from '@/components/admin/admin-sidebar'
+import { AdminSidebar, AdminTopbar } from '@/components/admin/admin-sidebar'
+import './admin.css'
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
 	return (
 		<Suspense
 			fallback={
-				<div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
+				<div className="admin-shell flex items-center justify-center text-sm text-muted-foreground">
 					Loading admin…
 				</div>
 			}
@@ -27,57 +26,16 @@ async function AdminShell({ children }: { children: ReactNode }) {
 		redirect('/')
 	}
 
-	const lastUpdated = new Date().toLocaleTimeString('en-US', {
-		hour: '2-digit',
-		minute: '2-digit'
-	})
+	const unreadMessages = await getRecentMessageCount()
 
 	return (
-		<div className="min-h-screen flex">
-			<AdminSidebar />
+		<div className="admin-shell flex">
+			<AdminSidebar unreadMessages={unreadMessages} />
 
-			<div className="flex-1 flex flex-col min-w-0">
-				<header className="sticky z-30 border-b border-border/40 bg-background/90 backdrop-blur-md">
-					<div className="flex items-center justify-between px-4 md:px-8 h-14">
-						<div>
-							<h1 className="text-lg font-semibold tracking-tight">
-								Admin Dashboard
-							</h1>
-							<p className="text-xs text-muted-foreground -mt-0.5 hidden md:block">
-								Welcome back, Remco
-							</p>
-						</div>
-						<div className="flex items-center gap-2">
-							<AdminSessionStatus />
-							<span className="text-[10px] text-muted-foreground/60 hidden lg:block border-l border-border/30 pl-2 ml-1">
-								{lastUpdated}
-							</span>
-							<div className="flex items-center gap-1 border-l border-border/30 pl-2 ml-1">
-								<Link
-									href="/admin"
-									className="admin-header-btn"
-									aria-label="Refresh admin dashboard"
-									title="Refresh admin dashboard"
-								>
-									<RefreshCw className="w-3.5 h-3.5" />
-								</Link>
-								<Link
-									href="/"
-									className="admin-header-btn gap-1.5 px-2.5"
-									aria-label="Back to home"
-									title="Back to home"
-								>
-									<Home className="w-3.5 h-3.5" />
-									<span className="hidden sm:inline text-xs font-medium">
-										Home
-									</span>
-								</Link>
-							</div>
-						</div>
-					</div>
-				</header>
+			<div className="flex min-w-0 flex-1 flex-col">
+				<AdminTopbar unreadMessages={unreadMessages} />
 
-				<main className="flex-1 p-4 md:p-8 max-w-[1400px] w-full">
+				<main className="w-full max-w-[1400px] flex-1 px-4 py-8 md:px-9 md:py-10">
 					{children}
 				</main>
 			</div>

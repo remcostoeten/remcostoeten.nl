@@ -84,11 +84,16 @@ export function CommentSection({ slug }: Props) {
 	}
 
 	return (
-		<div className="mt-16 border-t border-border pt-12">
-			<div className="flex items-center gap-2 mb-8">
-				<MessageSquare className="w-5 h-5 text-muted-foreground" />
-				<h2 className="text-xl font-semibold text-foreground">
-					Comments {comments.length > 0 && `(${comments.length})`}
+		<div className="mt-12 border-t border-border/60 pt-8">
+			<div className="mb-6 flex items-center gap-2">
+				<MessageSquare className="h-4 w-4 text-muted-foreground" />
+				<h2 className="text-base font-medium text-foreground">
+					Comments
+					{comments.length > 0 && (
+						<span className="ml-1.5 font-mono text-xs text-muted-foreground">
+							{comments.length}
+						</span>
+					)}
 				</h2>
 			</div>
 
@@ -150,8 +155,8 @@ export function CommentSection({ slug }: Props) {
 					</div>
 				</form>
 			) : (
-				<div className="mb-8 p-6 bg-muted/50 border border-border rounded-lg text-center">
-					<p className="text-muted-foreground mb-4">
+				<div className="mb-8 rounded-md border border-border/60 p-5 text-center">
+					<p className="mb-4 text-sm text-muted-foreground">
 						Sign in to join the conversation
 					</p>
 					<SignInButton />
@@ -163,11 +168,9 @@ export function CommentSection({ slug }: Props) {
 					<Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
 				</div>
 			) : comments.length === 0 ? (
-				<div className="text-center py-8">
-					<p className="text-muted-foreground">
-						No comments yet. Be the first to share your thoughts!
-					</p>
-				</div>
+				<p className="py-4 text-sm text-muted-foreground">
+					No comments yet.
+				</p>
 			) : (
 				<div className="space-y-6">
 					<AnimatePresence>

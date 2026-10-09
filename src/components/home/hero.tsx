@@ -1,10 +1,31 @@
 import Image from 'next/image'
+import Link from 'next/link'
+import { isAdmin } from '@/features/auth/guard'
+import { Fragment } from 'react'
+import { AvatarOrbit } from './avatar-orbit'
+import { getIntro, type IntroContent } from './intro-queries'
 
-export function Intro() {
+function renderBio(bio: string) {
+	return bio.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, index) => {
+		if (part.startsWith('**') && part.endsWith('**') && part.length > 4)
+			return <strong key={index}>{part.slice(2, -2)}</strong>
+		if (part.startsWith('*') && part.endsWith('*') && part.length > 2)
+			return <em key={index}>{part.slice(1, -1)}</em>
+		return <Fragment key={index}>{part}</Fragment>
+	})
+}
+
+export function IntroView({
+	intro,
+	canEdit = false
+}: {
+	intro: IntroContent
+	canEdit?: boolean
+}) {
 	return (
 		<header className="px-4 md:px-5">
 			<div className="flex items-start gap-4 mb-4">
-				<div suppressHydrationWarning className="shrink-0">
+				<div suppressHydrationWarning className="relative shrink-0">
 					<Image
 						src="/images/remco-stoeten.webp"
 						alt="Remco Stoeten - Frontend Engineer"
@@ -15,15 +36,24 @@ export function Intro() {
 						quality={85}
 						className="w-14 h-14 rounded-full border-2 border-border/50 shadow-sm"
 					/>
+					<AvatarOrbit />
 				</div>
 				<div className="min-w-0">
 					<h1 className="text-xl font-semibold tracking-tight text-foreground">
-						Remco Stoeten
+						{intro.name}
 					</h1>
 					<p className="text-sm text-muted-foreground mt-0.5">
-						Frontend Engineer
+						{intro.role}
 					</p>
 				</div>
+				{canEdit && (
+					<Link
+						href="/admin/intro"
+						className="ml-auto text-xs text-muted-foreground hover:text-foreground"
+					>
+						Edit intro
+					</Link>
+				)}
 			</div>
 
 			{/*
@@ -34,12 +64,14 @@ export function Intro() {
 
 			<div className="max-w-none">
 				<p className="text-sm text-muted-foreground/80 leading-relaxed font-mono tracking-tight">
-					Dutch software engineer focused on front-end development
-					with a degree in <em>graphic design</em>.{' '}
-					<strong>8 years</strong> of experience across e-commerce,{' '}
-					SaaS, government, and e-learning projects.
+					{renderBio(intro.bio)}
 				</p>
 			</div>
 		</header>
 	)
+}
+
+export async function Intro() {
+	const [intro, canEdit] = await Promise.all([getIntro(), isAdmin()])
+	return <IntroView intro={intro} canEdit={canEdit} />
 }

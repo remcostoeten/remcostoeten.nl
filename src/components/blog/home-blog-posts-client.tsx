@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { ArrowUpRight } from 'lucide-react'
+import { DrawArrow, ToggleGlyph } from '@/components/ui/micro-glyphs'
 import type { BlogPost } from '@/features/blog/lib/types'
 import { getDateParts, readMinutes } from '@/features/blog/lib/format'
 
@@ -109,8 +110,9 @@ export function HomeBlogPostsClient({ posts }: Props) {
 					<button
 						type="button"
 						onClick={() => setShowAllInline(current => !current)}
-						className="flex w-full items-center justify-center py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:bg-muted/40 focus-visible:text-foreground"
+						className="flex w-full items-center justify-center gap-2 py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:bg-muted/40 focus-visible:text-foreground"
 					>
+						<ToggleGlyph isOpen={showAllInline} />
 						{showAllInline
 							? 'Show less'
 							: `View all (${posts.length})`}
@@ -118,9 +120,10 @@ export function HomeBlogPostsClient({ posts }: Props) {
 				) : (
 					<Link
 						href="/blog"
-						className="flex w-full items-center justify-center py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:bg-muted/40 focus-visible:text-foreground"
+						className="group flex w-full items-center justify-center gap-2 py-4 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground focus:outline-none focus-visible:bg-muted/40 focus-visible:text-foreground"
 					>
 						View all ({posts.length})
+						<DrawArrow />
 					</Link>
 				)}
 			</div>

@@ -8,6 +8,12 @@ const FALLBACK_ADMIN_EMAILS = [
 	'remcostoeten@hotmail.com'
 ]
 
+function isDevOpenAdmin(): boolean {
+	return (
+		process.env.NODE_ENV !== 'production' && env.DEV_OPEN_ADMIN === 'true'
+	)
+}
+
 function getAdminEmails() {
 	const configured = (env.ADMIN_EMAIL || '')
 		.split(',')
@@ -28,6 +34,8 @@ function isAdminEmail(email?: string | null): boolean {
  * Can be used in Server Components and Server Actions
  */
 export async function isAdmin(): Promise<boolean> {
+	if (isDevOpenAdmin()) return true
+
 	try {
 		const session = await getServerSession()
 

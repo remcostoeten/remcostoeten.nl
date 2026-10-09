@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import { Footer } from '@/components/layout/footer'
+import { MarketingMain } from '@/components/layout/marketing-main'
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
 	return (
@@ -11,16 +12,12 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
 			>
 				Skip to content
 			</a>
-			<main
-				id="main-content"
-				tabIndex={-1}
-				className="py-6 max-w-2xl mx-auto w-full grow border-x border-border/50"
-			>
+			<MarketingMain>
 				<div className="px-4 md:px-5 pb-4">
 					<Breadcrumbs />
 				</div>
 				{children}
-			</main>
+			</MarketingMain>
 			<Footer />
 		</div>
 	)

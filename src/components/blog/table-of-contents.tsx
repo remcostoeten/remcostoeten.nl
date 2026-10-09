@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createPortal } from 'react-dom'
-import { ChevronDown, ChevronUp, List } from 'lucide-react'
+import { ChevronDown, List } from 'lucide-react'
 
 interface Heading {
 	id: string
@@ -15,7 +15,6 @@ export function TableOfContents() {
 	const [headings, setHeadings] = useState<Heading[]>([])
 	const [activeId, setActiveId] = useState<string>('')
 	const [mounted, setMounted] = useState(false)
-	const [isMobileOpen, setIsMobileOpen] = useState(false)
 
 	useEffect(() => {
 		setMounted(true)
@@ -69,64 +68,34 @@ export function TableOfContents() {
 	}
 
 	const MobileToC = () => (
-		<div className="2xl:hidden mb-8">
-			<button
-				onClick={() => setIsMobileOpen(!isMobileOpen)}
-				className="w-full flex items-center justify-between p-4 bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800/60 transition-colors"
-				aria-expanded={isMobileOpen}
-			>
-				<span className="flex items-center gap-2.5 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-					<List className="w-4 h-4" />
-					Table of Contents
-					<span className="text-neutral-400 dark:text-neutral-500 font-normal">
-						({headings.length})
-					</span>
+		<details className="group mb-8 rounded-md border border-border/60 2xl:hidden">
+			<summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 font-mono text-xs uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
+				<span className="inline-flex items-center gap-2">
+					<List className="h-3.5 w-3.5" />
+					On this page
 				</span>
-				{isMobileOpen ? (
-					<ChevronUp className="w-4 h-4 text-neutral-500" />
-				) : (
-					<ChevronDown className="w-4 h-4 text-neutral-500" />
-				)}
-			</button>
-
-			{isMobileOpen && (
-				<div className="mt-2 p-4 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 rounded-lg">
-					<ul className="space-y-1">
-						{headings.map(heading => (
-							<li
-								key={heading.id}
-								className="relative"
-								style={{
-									paddingLeft: `${(heading.level - 2) * 16}px`
-								}}
-							>
-								{heading.level > 2 && (
-									<span
-										className="absolute left-[calc((var(--level)-2)*16px-8px)] top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700"
-										style={
-											{
-												'--level': heading.level
-											} as React.CSSProperties
-										}
-									/>
-								)}
-								<Link
-									href={`#${heading.id}`}
-									onClick={() => setIsMobileOpen(false)}
-									className={`block py-2 px-3 text-sm rounded-md transition-all duration-200 ${
-										activeId === heading.id
-											? 'text-neutral-900 dark:text-neutral-100 font-medium bg-neutral-100 dark:bg-neutral-800/60'
-											: 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800/40'
-									}`}
-								>
-									{heading.text}
-								</Link>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
-		</div>
+				<ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+			</summary>
+			<ul className="space-y-0.5 border-t border-border/60 px-2 py-2">
+				{headings.map(heading => (
+					<li
+						key={heading.id}
+						style={{ paddingLeft: `${(heading.level - 2) * 12}px` }}
+					>
+						<Link
+							href={`#${heading.id}`}
+							className={`block rounded-sm px-2 py-1.5 text-sm transition-colors ${
+								activeId === heading.id
+									? 'text-foreground'
+									: 'text-muted-foreground hover:text-foreground'
+							}`}
+						>
+							{heading.text}
+						</Link>
+					</li>
+				))}
+			</ul>
+		</details>
 	)
 
 	const DesktopToC = () =>

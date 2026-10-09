@@ -5,35 +5,25 @@ import type { Project } from '@/server/db/project-schema'
 import { getProjects } from '../server/queries'
 import { enrichProjectsWithGitData } from '../server/github'
 import { ProjectShowcaseClient } from './project-showcase-client'
-import { ProjectCardSkeleton } from './project-card-skeleton'
+import { FeaturedCardSkeleton } from '@/components/showcase/featured-card-skeleton'
 import { ProjectRowSkeleton } from './project-row-skeleton'
 
 type Props = {
 	visibleRowCount?: number
 }
 
-function withQueryParam(url: string, key: string, value: string) {
-	try {
-		const parsed = new URL(url)
-		parsed.searchParams.set(key, value)
-		return parsed.toString()
-	} catch {
-		return url
-	}
+const projectPosters: Record<string, string> = {
+	Skriuw: '/projects/skriuw.webp',
+	Dora: '/projects/dora.webp'
 }
 
 function mapDbProjectToIProject(dbProject: Project): IProject {
-	const embedUrl = dbProject.demoBox ?? undefined
-	const themedEmbedUrl =
-		dbProject.title === 'Dora' && embedUrl
-			? withQueryParam(embedUrl, 'theme', 'claude-dark')
-			: embedUrl
-
 	const preview: TPreview = dbProject.demoUrl
 		? {
 				type: 'iframe',
 				url: dbProject.demoUrl,
-				embedUrl: themedEmbedUrl
+				embedUrl: dbProject.demoBox ?? undefined,
+				poster: projectPosters[dbProject.title]
 			}
 		: { type: 'none' }
 
@@ -61,10 +51,13 @@ function ShowcaseSkeleton({
 }) {
 	return (
 		<section className="w-full max-w-3xl px-3 sm:px-0">
-			<div className="flex flex-col border-l border-r border-t border-border">
+			<div className="grid border-l border-r border-t border-border sm:grid-cols-2">
 				{Array.from({ length: featuredCount }).map((_, i) => (
-					<div key={i} className="border-b border-border">
-						<ProjectCardSkeleton />
+					<div
+						key={i}
+						className="border-b border-border sm:odd:border-r"
+					>
+						<FeaturedCardSkeleton />
 					</div>
 				))}
 			</div>

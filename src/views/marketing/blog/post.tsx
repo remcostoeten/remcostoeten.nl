@@ -45,18 +45,18 @@ export function BlogPostView(props: BlogPostViewProps) {
 function BlogPostFallback() {
 	return (
 		<section
-			className="bg-pattern relative"
+			className="space-y-10"
 			aria-busy="true"
 			aria-label="Loading post"
 		>
-			<div className="max-w-3xl space-y-4 py-8">
-				<div className="h-4 w-32 animate-pulse rounded-sm bg-muted/60" />
+			<div className="space-y-4">
+				<div className="h-3 w-12 animate-pulse rounded-sm bg-muted/60" />
 				<div className="h-8 w-3/4 animate-pulse rounded-sm bg-muted" />
 				<div className="h-4 w-full animate-pulse rounded-sm bg-muted/60" />
-				<div className="h-4 w-5/6 animate-pulse rounded-sm bg-muted/50" />
+				<div className="h-3 w-48 animate-pulse rounded-sm bg-muted/50" />
 			</div>
-			<div className="screen-border mb-12" />
-			<div className="max-w-3xl space-y-3">
+			<div className="h-px w-full bg-border/60" />
+			<div className="space-y-3">
 				<div className="h-4 w-full animate-pulse rounded-sm bg-muted/50" />
 				<div className="h-4 w-11/12 animate-pulse rounded-sm bg-muted/50" />
 				<div className="h-4 w-4/5 animate-pulse rounded-sm bg-muted/40" />
@@ -118,7 +118,7 @@ async function BlogPostContent({
 			)}
 			<TableOfContents />
 
-			<section className="bg-pattern relative">
+			<section className="px-1 sm:px-2">
 				<BlogPostClient
 					publishedAt={post.metadata.publishedAt}
 					topic={post.metadata.topic}
@@ -131,16 +131,14 @@ async function BlogPostContent({
 					totalViews={post.views}
 				/>
 
-				<div className="screen-border mb-12" />
+				<hr className="my-10 border-border/60" />
 
-				<article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-3xl prose-code:before:content-none prose-code:after:content-none">
+				<article className="prose prose-quoteless prose-neutral dark:prose-invert max-w-none prose-headings:scroll-mt-24 prose-a:text-foreground prose-a:underline prose-a:decoration-border prose-a:underline-offset-4 hover:prose-a:decoration-foreground prose-img:rounded-md prose-code:before:content-none prose-code:after:content-none">
 					<CustomMDX source={post.content} />
 				</article>
 
-				<div className="max-w-3xl">
-					<ReactionBar slug={post.slug} />
-					<CommentSection slug={post.slug} />
-				</div>
+				<ReactionBar slug={post.slug} />
+				<CommentSection slug={post.slug} />
 
 				<PostNavigation
 					prevPost={prevPost}
