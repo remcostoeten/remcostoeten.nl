@@ -7,6 +7,7 @@ import {
 } from '@/components/seo/structured-data'
 import { AppProviders } from '@/components/providers/providers'
 import { ThemeInitializer } from '@/components/theme-initializer'
+import { IconHoverInstaller } from '@/components/animated-icons/icon-hover-installer'
 import { baseUrl } from '@/core/config/site'
 import { FontSwitcher } from '@/components/dev/font-switcher/font-switcher'
 import {
@@ -137,6 +138,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				suppressHydrationWarning
 			>
 				<AppProviders>{children}</AppProviders>
+				<IconHoverInstaller />
 				<FontSwitcher
 					pairs={FONT_PAIRS}
 					defaultId={DEFAULT_FONT_PAIR_ID}

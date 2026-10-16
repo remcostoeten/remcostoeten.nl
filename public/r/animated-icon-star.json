@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-star",
+  "type": "registry:component",
+  "title": "Star Icon",
+  "description": "Animated star icon. Rocks and swells, fill springs in.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-star/icons/star.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/star.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./star.css\";\n\nconst starPath =\n  \"m13.728 3.444l1.76 3.549c.24.494.88.968 1.42 1.058l3.189.535c2.04.343 2.52 1.835 1.05 3.307l-2.48 2.5c-.42.423-.65 1.24-.52 1.825l.71 3.095c.56 2.45-.73 3.397-2.88 2.117l-2.99-1.785c-.54-.322-1.43-.322-1.98 0L8.019 21.43c-2.14 1.28-3.44.322-2.88-2.117l.71-3.095c.13-.585-.1-1.402-.52-1.825l-2.48-2.5C1.39 10.42 1.86 8.929 3.899 8.586l3.19-.535c.53-.09 1.17-.564 1.41-1.058l1.76-3.549c.96-1.925 2.52-1.925 3.47 0\";\n\ntype Props = AnimatedIconProps & {\n  filled?: boolean;\n};\n\nexport function AnimatedStarIcon({ filled = false, ...props }: Props) {\n  return (\n    <AnimatedIconFrame name=\"star\" data-filled={filled ? \"\" : undefined} {...props}>\n      <g data-part=\"star\">\n        <path data-part=\"fill\" d={starPath} />\n        <path d={starPath} />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-star/icons/star.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/star.css",
+      "content": ".animated-icon[data-icon=\"star\"] [data-part=\"fill\"] {\n  fill: currentColor;\n  stroke: none;\n  opacity: 0;\n  transform: scale(0);\n  transition:\n    transform 180ms var(--ease-icon),\n    opacity 120ms linear;\n}\n\n.animated-icon[data-icon=\"star\"][data-filled] [data-part=\"fill\"] {\n  opacity: 1;\n  transform: none;\n  transition:\n    transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1),\n    opacity 120ms linear;\n}\n\n.animated-icon[data-icon=\"star\"] :is([data-part=\"star\"], [data-part=\"fill\"]) {\n  transform-origin: 12px 12.4px;\n}\n\n:is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"star\"] [data-part=\"star\"] {\n    animation-name: icon-star-rock;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n\n@keyframes icon-star-rock {\n  18% {\n    transform: rotate(-14deg) scale(0.9);\n  }\n  46% {\n    transform: rotate(9deg) scale(1.12);\n  }\n  72% {\n    transform: rotate(-3deg) scale(0.98);\n  }\n}\n"
+    }
+  ]
+}

@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { AlertTriangle, FileText, Github, Shield } from 'lucide-react'
+import { FileText, Github } from 'lucide-react'
+import { AnimatedAlertIcon } from '@/components/animated-icons/icons/alert'
+import { AnimatedShieldIcon } from '@/components/animated-icons/icons/shield'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
 import { LegalHeader } from '../legal/legal-header'
 import { LegalLanguage } from '../legal/legal-language'
@@ -433,8 +435,8 @@ export default function TermsContent() {
 										index === 0
 											? Github
 											: index === 1
-												? AlertTriangle
-												: Shield
+												? AnimatedAlertIcon
+												: AnimatedShieldIcon
 									}
 									indicator="✗"
 								>
@@ -507,14 +509,17 @@ export default function TermsContent() {
 					<div className="space-y-4 px-4 md:px-5">
 						<SubSection
 							title={copy.accuracyTitle}
-							icon={AlertTriangle}
+							icon={AnimatedAlertIcon}
 						>
 							<div className="text-sm text-muted-foreground">
 								<p>{copy.accuracy}</p>
 							</div>
 						</SubSection>
 
-						<SubSection title={copy.adviceTitle} icon={Shield}>
+						<SubSection
+							title={copy.adviceTitle}
+							icon={AnimatedShieldIcon}
+						>
 							<div className="text-sm text-muted-foreground">
 								<p>{copy.advice}</p>
 							</div>

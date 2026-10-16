@@ -20,6 +20,1023 @@
           "target": "@components/empty-state/illustrations.tsx"
         }
       ]
+    },
+    {
+      "name": "animated-icon-base",
+      "type": "registry:component",
+      "title": "Animated Icon Base",
+      "description": "The frame, shared keyframes, hover wiring and playIcon() that every animated icon builds on. Installed with any icon.",
+      "files": [
+        {
+          "path": "registry/animated-icon-base/icon-frame.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icon-frame.tsx"
+        },
+        {
+          "path": "registry/animated-icon-base/animated-icons.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/animated-icons.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-alert",
+      "type": "registry:component",
+      "title": "Warning Icon",
+      "description": "Animated warning icon. Triangle wobbles.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-alert/icons/alert.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/alert.tsx"
+        },
+        {
+          "path": "registry/animated-icon-alert/icons/alert.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/alert.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-alert-circle",
+      "type": "registry:component",
+      "title": "Error Icon",
+      "description": "Animated error icon. Ring presses, bar slams, dot pops.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-alert-circle/icons/alert-circle.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/alert-circle.tsx"
+        },
+        {
+          "path": "registry/animated-icon-alert-circle/icons/alert-circle.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/alert-circle.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-archive",
+      "type": "registry:component",
+      "title": "Archive Icon",
+      "description": "Animated archive icon. Trays settle into the box.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-archive/icons/archive.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/archive.tsx"
+        },
+        {
+          "path": "registry/animated-icon-archive/icons/archive.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/archive.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-arrow-right",
+      "type": "registry:component",
+      "title": "Arrow right Icon",
+      "description": "Animated arrow right icon. Head pushes, shaft stretches.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-arrow-right/icons/arrow-right.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/arrow-right.tsx"
+        },
+        {
+          "path": "registry/animated-icon-arrow-right/icons/arrow-right.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/arrow-right.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-attachment",
+      "type": "registry:component",
+      "title": "Attachment Icon",
+      "description": "Animated attachment icon. Clip dangles from its top bend.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-attachment/icons/attachment.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/attachment.tsx"
+        },
+        {
+          "path": "registry/animated-icon-attachment/icons/attachment.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/attachment.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-bell",
+      "type": "registry:component",
+      "title": "Bell Icon",
+      "description": "Animated bell icon. Body rings, clapper lags.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-bell/icons/bell.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/bell.tsx"
+        },
+        {
+          "path": "registry/animated-icon-bell/icons/bell.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/bell.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-board",
+      "type": "registry:component",
+      "title": "Board Icon",
+      "description": "Animated board icon. Columns lift in turn.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-board/icons/board.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/board.tsx"
+        },
+        {
+          "path": "registry/animated-icon-board/icons/board.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/board.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-calendar",
+      "type": "registry:component",
+      "title": "Calendar Icon",
+      "description": "Animated calendar icon. Rings hop, days pop in.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-calendar/icons/calendar.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/calendar.tsx"
+        },
+        {
+          "path": "registry/animated-icon-calendar/icons/calendar.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/calendar.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-check",
+      "type": "registry:component",
+      "title": "Check Icon",
+      "description": "Animated check icon. Tick nods.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-check/icons/check.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/check.tsx"
+        },
+        {
+          "path": "registry/animated-icon-check/icons/check.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/check.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-check-circle",
+      "type": "registry:component",
+      "title": "Check circle Icon",
+      "description": "Animated check circle icon. Mark redraws from 60%.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-check-circle/icons/check-circle.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/check-circle.tsx"
+        },
+        {
+          "path": "registry/animated-icon-check-circle/icons/check-circle.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/check-circle.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-clock",
+      "type": "registry:component",
+      "title": "Clock Icon",
+      "description": "Animated clock icon. Hands sweep.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-clock/icons/clock.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/clock.tsx"
+        },
+        {
+          "path": "registry/animated-icon-clock/icons/clock.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/clock.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-close",
+      "type": "registry:component",
+      "title": "Close Icon",
+      "description": "Animated close icon. Cross turns a quarter.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-close/icons/close.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/close.tsx"
+        },
+        {
+          "path": "registry/animated-icon-close/icons/close.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/close.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-comment",
+      "type": "registry:component",
+      "title": "Comment Icon",
+      "description": "Animated comment icon. Bubble pops, dots type.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-comment/icons/comment.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/comment.tsx"
+        },
+        {
+          "path": "registry/animated-icon-comment/icons/comment.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/comment.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-contrast",
+      "type": "registry:component",
+      "title": "Contrast Icon",
+      "description": "Animated contrast icon. Dark half turns over.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-contrast/icons/contrast.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/contrast.tsx"
+        },
+        {
+          "path": "registry/animated-icon-contrast/icons/contrast.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/contrast.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-copy",
+      "type": "registry:component",
+      "title": "Copy Icon",
+      "description": "Animated copy icon. Sheets fan apart.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-copy/icons/copy.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/copy.tsx"
+        },
+        {
+          "path": "registry/animated-icon-copy/icons/copy.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/copy.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-dashboard",
+      "type": "registry:component",
+      "title": "Dashboard Icon",
+      "description": "Animated dashboard icon. Tiles lift in turn.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-dashboard/icons/dashboard.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/dashboard.tsx"
+        },
+        {
+          "path": "registry/animated-icon-dashboard/icons/dashboard.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/dashboard.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-detail-panel",
+      "type": "registry:component",
+      "title": "Detail panel Icon",
+      "description": "Animated detail panel icon. Rail slides out and back.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-detail-panel/icons/detail-panel.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/detail-panel.tsx"
+        },
+        {
+          "path": "registry/animated-icon-detail-panel/icons/detail-panel.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/detail-panel.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-download",
+      "type": "registry:component",
+      "title": "Download Icon",
+      "description": "Animated download icon. Arrow drops into the tray.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-download/icons/download.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/download.tsx"
+        },
+        {
+          "path": "registry/animated-icon-download/icons/download.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/download.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-edit",
+      "type": "registry:component",
+      "title": "Edit Icon",
+      "description": "Animated edit icon. Pencil scribbles.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-edit/icons/edit.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/edit.tsx"
+        },
+        {
+          "path": "registry/animated-icon-edit/icons/edit.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/edit.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-filter",
+      "type": "registry:component",
+      "title": "Filter Icon",
+      "description": "Animated filter icon. Knobs slide along tracks.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-filter/icons/filter.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/filter.tsx"
+        },
+        {
+          "path": "registry/animated-icon-filter/icons/filter.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/filter.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-flag",
+      "type": "registry:component",
+      "title": "Flag Icon",
+      "description": "Animated flag icon. Cloth waves from the pole.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-flag/icons/flag.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/flag.tsx"
+        },
+        {
+          "path": "registry/animated-icon-flag/icons/flag.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/flag.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-heart",
+      "type": "registry:component",
+      "title": "Heart Icon",
+      "description": "Animated heart icon. Tilts and beats, fill springs in.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-heart/icons/heart.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/heart.tsx"
+        },
+        {
+          "path": "registry/animated-icon-heart/icons/heart.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/heart.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-inbox",
+      "type": "registry:component",
+      "title": "Inbox Icon",
+      "description": "Animated inbox icon. Tray dips, box gives.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-inbox/icons/inbox.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/inbox.tsx"
+        },
+        {
+          "path": "registry/animated-icon-inbox/icons/inbox.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/inbox.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-info",
+      "type": "registry:component",
+      "title": "Info Icon",
+      "description": "Animated info icon. Bar stretches, dot hops after.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-info/icons/info.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/info.tsx"
+        },
+        {
+          "path": "registry/animated-icon-info/icons/info.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/info.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-key",
+      "type": "registry:component",
+      "title": "Key Icon",
+      "description": "Animated key icon. Turns in the lock.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-key/icons/key.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/key.tsx"
+        },
+        {
+          "path": "registry/animated-icon-key/icons/key.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/key.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-layers",
+      "type": "registry:component",
+      "title": "Layers Icon",
+      "description": "Animated layers icon. Layers lift in turn.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-layers/icons/layers.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/layers.tsx"
+        },
+        {
+          "path": "registry/animated-icon-layers/icons/layers.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/layers.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-link",
+      "type": "registry:component",
+      "title": "Link Icon",
+      "description": "Animated link icon. Links pull apart and snap back.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-link/icons/link.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/link.tsx"
+        },
+        {
+          "path": "registry/animated-icon-link/icons/link.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/link.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-list",
+      "type": "registry:component",
+      "title": "List Icon",
+      "description": "Animated list icon. Rows step right in turn.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-list/icons/list.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/list.tsx"
+        },
+        {
+          "path": "registry/animated-icon-list/icons/list.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/list.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-loading",
+      "type": "registry:component",
+      "title": "Loading Icon",
+      "description": "Animated loading icon. Always ticks round.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-loading/icons/loading.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/loading.tsx"
+        },
+        {
+          "path": "registry/animated-icon-loading/icons/loading.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/loading.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-lock",
+      "type": "registry:component",
+      "title": "Lock Icon",
+      "description": "Animated lock icon. Shackle lifts, keyhole blinks.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-lock/icons/lock.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/lock.tsx"
+        },
+        {
+          "path": "registry/animated-icon-lock/icons/lock.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/lock.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-mail",
+      "type": "registry:component",
+      "title": "Mail Icon",
+      "description": "Animated mail icon. Flap flips open, then shuts.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-mail/icons/mail.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/mail.tsx"
+        },
+        {
+          "path": "registry/animated-icon-mail/icons/mail.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/mail.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-monitor",
+      "type": "registry:component",
+      "title": "Monitor Icon",
+      "description": "Animated monitor icon. Screen breathes, stand dips.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-monitor/icons/monitor.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/monitor.tsx"
+        },
+        {
+          "path": "registry/animated-icon-monitor/icons/monitor.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/monitor.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-more",
+      "type": "registry:component",
+      "title": "More Icon",
+      "description": "Animated more icon. Dots wave.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-more/icons/more.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/more.tsx"
+        },
+        {
+          "path": "registry/animated-icon-more/icons/more.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/more.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-plus",
+      "type": "registry:component",
+      "title": "Plus Icon",
+      "description": "Animated plus icon. Cross turns into place.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-plus/icons/plus.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/plus.tsx"
+        },
+        {
+          "path": "registry/animated-icon-plus/icons/plus.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/plus.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-project",
+      "type": "registry:component",
+      "title": "Project Icon",
+      "description": "Animated project icon. Flap swings open.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-project/icons/project.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/project.tsx"
+        },
+        {
+          "path": "registry/animated-icon-project/icons/project.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/project.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-refresh",
+      "type": "registry:component",
+      "title": "Refresh Icon",
+      "description": "Animated refresh icon. Loop half-turns.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-refresh/icons/refresh.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/refresh.tsx"
+        },
+        {
+          "path": "registry/animated-icon-refresh/icons/refresh.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/refresh.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-roadmap",
+      "type": "registry:component",
+      "title": "Roadmap Icon",
+      "description": "Animated roadmap icon. Bars slide along the axis.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-roadmap/icons/roadmap.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/roadmap.tsx"
+        },
+        {
+          "path": "registry/animated-icon-roadmap/icons/roadmap.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/roadmap.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-search",
+      "type": "registry:component",
+      "title": "Search Icon",
+      "description": "Animated search icon. Lens scans, handle redraws.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-search/icons/search.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/search.tsx"
+        },
+        {
+          "path": "registry/animated-icon-search/icons/search.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/search.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-settings",
+      "type": "registry:component",
+      "title": "Settings Icon",
+      "description": "Animated settings icon. Knobs slide past each other.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-settings/icons/settings.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/settings.tsx"
+        },
+        {
+          "path": "registry/animated-icon-settings/icons/settings.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/settings.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-shield",
+      "type": "registry:component",
+      "title": "Shield Icon",
+      "description": "Animated shield icon. Shield gives, mark redraws.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-shield/icons/shield.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/shield.tsx"
+        },
+        {
+          "path": "registry/animated-icon-shield/icons/shield.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/shield.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-sidebar",
+      "type": "registry:component",
+      "title": "Sidebar Icon",
+      "description": "Animated sidebar icon. Rail slides out and back.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-sidebar/icons/sidebar.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/sidebar.tsx"
+        },
+        {
+          "path": "registry/animated-icon-sidebar/icons/sidebar.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/sidebar.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-star",
+      "type": "registry:component",
+      "title": "Star Icon",
+      "description": "Animated star icon. Rocks and swells, fill springs in.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-star/icons/star.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/star.tsx"
+        },
+        {
+          "path": "registry/animated-icon-star/icons/star.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/star.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-tag",
+      "type": "registry:component",
+      "title": "Tag Icon",
+      "description": "Animated tag icon. Swings on its hole.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-tag/icons/tag.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/tag.tsx"
+        },
+        {
+          "path": "registry/animated-icon-tag/icons/tag.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/tag.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-trash",
+      "type": "registry:component",
+      "title": "Trash Icon",
+      "description": "Animated trash icon. Lid lifts, slots redraw.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-trash/icons/trash.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/trash.tsx"
+        },
+        {
+          "path": "registry/animated-icon-trash/icons/trash.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/trash.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icon-user",
+      "type": "registry:component",
+      "title": "User Icon",
+      "description": "Animated user icon. Leans over to look.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-base.json"
+      ],
+      "files": [
+        {
+          "path": "registry/animated-icon-user/icons/user.tsx",
+          "type": "registry:component",
+          "target": "@components/animated-icons/icons/user.tsx"
+        },
+        {
+          "path": "registry/animated-icon-user/icons/user.css",
+          "type": "registry:file",
+          "target": "@components/animated-icons/icons/user.css"
+        }
+      ]
+    },
+    {
+      "name": "animated-icons",
+      "type": "registry:component",
+      "title": "Animated Icons",
+      "description": "Every animated icon at once: React stroke icons whose parts animate with CSS keyframes on hover, focus, a loop or a playIcon() call. No runtime dependencies.",
+      "registryDependencies": [
+        "https://www.remcostoeten.nl/r/animated-icon-alert.json",
+        "https://www.remcostoeten.nl/r/animated-icon-alert-circle.json",
+        "https://www.remcostoeten.nl/r/animated-icon-archive.json",
+        "https://www.remcostoeten.nl/r/animated-icon-arrow-right.json",
+        "https://www.remcostoeten.nl/r/animated-icon-attachment.json",
+        "https://www.remcostoeten.nl/r/animated-icon-bell.json",
+        "https://www.remcostoeten.nl/r/animated-icon-board.json",
+        "https://www.remcostoeten.nl/r/animated-icon-calendar.json",
+        "https://www.remcostoeten.nl/r/animated-icon-check.json",
+        "https://www.remcostoeten.nl/r/animated-icon-check-circle.json",
+        "https://www.remcostoeten.nl/r/animated-icon-clock.json",
+        "https://www.remcostoeten.nl/r/animated-icon-close.json",
+        "https://www.remcostoeten.nl/r/animated-icon-comment.json",
+        "https://www.remcostoeten.nl/r/animated-icon-contrast.json",
+        "https://www.remcostoeten.nl/r/animated-icon-copy.json",
+        "https://www.remcostoeten.nl/r/animated-icon-dashboard.json",
+        "https://www.remcostoeten.nl/r/animated-icon-detail-panel.json",
+        "https://www.remcostoeten.nl/r/animated-icon-download.json",
+        "https://www.remcostoeten.nl/r/animated-icon-edit.json",
+        "https://www.remcostoeten.nl/r/animated-icon-filter.json",
+        "https://www.remcostoeten.nl/r/animated-icon-flag.json",
+        "https://www.remcostoeten.nl/r/animated-icon-heart.json",
+        "https://www.remcostoeten.nl/r/animated-icon-inbox.json",
+        "https://www.remcostoeten.nl/r/animated-icon-info.json",
+        "https://www.remcostoeten.nl/r/animated-icon-key.json",
+        "https://www.remcostoeten.nl/r/animated-icon-layers.json",
+        "https://www.remcostoeten.nl/r/animated-icon-link.json",
+        "https://www.remcostoeten.nl/r/animated-icon-list.json",
+        "https://www.remcostoeten.nl/r/animated-icon-loading.json",
+        "https://www.remcostoeten.nl/r/animated-icon-lock.json",
+        "https://www.remcostoeten.nl/r/animated-icon-mail.json",
+        "https://www.remcostoeten.nl/r/animated-icon-monitor.json",
+        "https://www.remcostoeten.nl/r/animated-icon-more.json",
+        "https://www.remcostoeten.nl/r/animated-icon-plus.json",
+        "https://www.remcostoeten.nl/r/animated-icon-project.json",
+        "https://www.remcostoeten.nl/r/animated-icon-refresh.json",
+        "https://www.remcostoeten.nl/r/animated-icon-roadmap.json",
+        "https://www.remcostoeten.nl/r/animated-icon-search.json",
+        "https://www.remcostoeten.nl/r/animated-icon-settings.json",
+        "https://www.remcostoeten.nl/r/animated-icon-shield.json",
+        "https://www.remcostoeten.nl/r/animated-icon-sidebar.json",
+        "https://www.remcostoeten.nl/r/animated-icon-star.json",
+        "https://www.remcostoeten.nl/r/animated-icon-tag.json",
+        "https://www.remcostoeten.nl/r/animated-icon-trash.json",
+        "https://www.remcostoeten.nl/r/animated-icon-user.json"
+      ],
+      "files": []
     }
   ]
 }

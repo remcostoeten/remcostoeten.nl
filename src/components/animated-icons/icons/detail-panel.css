@@ -1,0 +1,10 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='detail-panel'] [data-part='rail'] {
+		--icon-x: 2px;
+		animation-name: icon-nudge;
+	}
+}

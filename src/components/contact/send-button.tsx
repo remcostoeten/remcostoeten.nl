@@ -2,7 +2,8 @@
 
 import * as m from 'motion/react-m'
 import { AnimatePresence, useReducedMotion } from 'motion/react'
-import { Send, Check, Loader2 } from 'lucide-react'
+import { Send, Loader2 } from 'lucide-react'
+import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import { cn } from '@/shared/lib/cn'
 
 export type TSendStatus = 'idle' | 'sending' | 'success'
@@ -86,7 +87,7 @@ export function SendButton({ status, className }: Props) {
 							}}
 							className="inline-flex"
 						>
-							<Check className="h-4 w-4" />
+							<AnimatedCheckIcon className="h-4 w-4" />
 						</m.span>
 					)}
 					{LABELS[status]}

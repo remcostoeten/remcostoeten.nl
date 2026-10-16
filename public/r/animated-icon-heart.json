@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-heart",
+  "type": "registry:component",
+  "title": "Heart Icon",
+  "description": "Animated heart icon. Tilts and beats, fill springs in.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-heart/icons/heart.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/heart.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./heart.css\";\n\nconst heartPath =\n  \"M19.463 3.994c-2.682-1.645-5.023-.982-6.429.074c-.576.433-.864.65-1.034.65s-.458-.217-1.034-.65C9.56 3.012 7.219 2.349 4.537 3.994C1.018 6.153.222 13.274 8.34 19.284C9.886 20.427 10.659 21 12 21s2.114-.572 3.66-1.717c8.118-6.008 7.322-13.13 3.803-15.289\";\n\ntype Props = AnimatedIconProps & {\n  filled?: boolean;\n};\n\nexport function AnimatedHeartIcon({ filled = false, ...props }: Props) {\n  return (\n    <AnimatedIconFrame name=\"heart\" data-filled={filled ? \"\" : undefined} {...props}>\n      <g data-part=\"heart\">\n        <path data-part=\"fill\" d={heartPath} />\n        <path d={heartPath} />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-heart/icons/heart.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/heart.css",
+      "content": ".animated-icon[data-icon=\"heart\"] [data-part=\"fill\"] {\n  fill: currentColor;\n  stroke: none;\n  opacity: 0;\n  transform: scale(0);\n  transition:\n    transform 180ms var(--ease-icon),\n    opacity 120ms linear;\n}\n\n.animated-icon[data-icon=\"heart\"][data-filled] [data-part=\"fill\"] {\n  opacity: 1;\n  transform: none;\n  transition:\n    transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1),\n    opacity 120ms linear;\n}\n\n.animated-icon[data-icon=\"heart\"] :is([data-part=\"heart\"], [data-part=\"fill\"]) {\n  transform-origin: 12px 13px;\n}\n\n:is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"heart\"] [data-part=\"heart\"] {\n    animation-name: icon-heart-beat;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n\n@keyframes icon-heart-beat {\n  18% {\n    transform: rotate(-8deg) scale(0.9);\n  }\n  46% {\n    transform: rotate(6deg) scale(1.16);\n  }\n  72% {\n    transform: rotate(-2deg) scale(0.98);\n  }\n}\n"
+    }
+  ]
+}

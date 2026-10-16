@@ -1,0 +1,19 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='shield'] {
+		& [data-part='shield'] {
+			--icon-pulse: scale(0.92);
+			animation-name: icon-pulse;
+		}
+
+		& [data-part='mark'] {
+			--icon-delay: 150ms;
+			animation-name: icon-draw;
+			animation-duration: var(--icon-duration-short);
+			animation-timing-function: var(--ease-icon);
+		}
+	}
+}

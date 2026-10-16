@@ -41,15 +41,15 @@ export const ProjectRow = memo(function ProjectRow({
 
 	return (
 		<div className="flex flex-col border-b border-border">
-			<div className="group flex items-center justify-between bg-card px-2 sm:px-3 py-2 transition-colors duration-200 ease-out hover:bg-muted/40">
+			<div className="group flex items-center justify-between bg-card px-2 sm:px-3 py-2">
 				<div className="flex min-w-0 flex-1 items-baseline gap-2 sm:gap-3">
 					<span
-						className="hidden shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground/50 transition-colors duration-200 ease-out group-hover:text-foreground sm:inline"
+						className="hidden shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground/50 sm:inline"
 						aria-hidden="true"
 					>
 						{String(index + 1).padStart(2, '0')}
 					</span>
-					<span className="min-w-0 flex-1 text-sm font-medium text-foreground truncate md:flex-none md:max-w-[40%] md:transition-[max-width] md:duration-300 md:ease-out md:group-hover:max-w-[55%] lg:max-w-[32%] lg:group-hover:max-w-[45%]">
+					<span className="min-w-0 flex-1 text-sm font-medium text-foreground truncate md:flex-none md:max-w-[40%] lg:max-w-[32%]">
 						{project.name}
 					</span>
 					<span className="hidden min-w-0 flex-1 text-sm text-muted-foreground md:inline truncate">

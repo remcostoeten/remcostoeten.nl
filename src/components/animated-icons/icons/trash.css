@@ -1,0 +1,28 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='trash'] {
+		& [data-part='lid'] {
+			transform-origin: 3px 5.5px;
+			animation-name: icon-trash-lid;
+		}
+
+		& [data-part='slot'] {
+			--icon-delay: 200ms;
+			animation-name: icon-draw;
+			animation-duration: var(--icon-duration-short);
+			animation-timing-function: var(--ease-icon);
+		}
+	}
+}
+
+@keyframes icon-trash-lid {
+	35% {
+		transform: translateY(-2.5px) rotate(-14deg);
+	}
+	70% {
+		transform: translateY(0.4px) rotate(1deg);
+	}
+}

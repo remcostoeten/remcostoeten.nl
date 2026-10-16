@@ -1,0 +1,13 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='close'] [data-part='cross'] {
+		--icon-turn: -90deg;
+		--icon-scale: 0.8;
+		animation-name: icon-turn;
+		animation-duration: var(--icon-duration-short);
+		animation-timing-function: var(--ease-icon);
+	}
+}

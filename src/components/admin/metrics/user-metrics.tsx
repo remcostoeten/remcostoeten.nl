@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import { ChevronDown, Globe } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { EmptyState } from '@/components/home/empty-state/empty-state'
+import {
+	ActivityIllustration,
+	ChartIllustration
+} from '@/components/home/empty-state/illustrations'
 
 type CountryCount = { country: string | null; count: number }
 
@@ -90,9 +95,12 @@ export function CountryTraffic({
 			</div>
 
 			{visible.length === 0 && (
-				<p className="px-5 pb-6 text-center text-[13px] text-muted-foreground">
-					No views recorded yet
-				</p>
+				<EmptyState
+					title="No views recorded yet"
+					description="Traffic by country shows up here once visitors arrive."
+					illustration={<ChartIllustration />}
+					headingLevel="h3"
+				/>
 			)}
 
 			<ul className="space-y-4 px-5 pb-5">
@@ -162,9 +170,12 @@ export function VisitorLog({ recentViews }: { recentViews: RecentView[] }) {
 			</div>
 
 			{recentViews.length === 0 && (
-				<p className="px-5 pb-6 text-center text-[13px] text-muted-foreground">
-					No visitors yet
-				</p>
+				<EmptyState
+					title="No visitors yet"
+					description="Recent visits appear here as people open the site."
+					illustration={<ActivityIllustration />}
+					headingLevel="h3"
+				/>
 			)}
 
 			<ScrollArea className="h-[360px]">

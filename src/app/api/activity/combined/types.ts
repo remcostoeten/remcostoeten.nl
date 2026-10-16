@@ -1,3 +1,6 @@
+import type { GitHubEventDetail } from '@/features/github/types'
+import type { SpotifyTrack } from '@/features/spotify/types'
+
 export type GitHubContributionDay = {
 	date: string
 	contributionCount: number
@@ -17,7 +20,7 @@ export type GitHubContributionData = {
 export type CombinedActivityResponse = {
 	contributions: Array<{ date: string; contributionCount: number }>
 	totalContributions: number
-	recentActivity: unknown[]
-	spotifyTracks: unknown[]
+	recentActivity: GitHubEventDetail[]
+	spotifyTracks: SpotifyTrack[]
 	fetchedAt: number
 }

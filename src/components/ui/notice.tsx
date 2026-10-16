@@ -1,11 +1,8 @@
 import React from 'react'
-import {
-	AlertTriangle,
-	Info,
-	CheckCircle,
-	XCircle,
-	HelpCircle
-} from 'lucide-react'
+import { XCircle, HelpCircle } from 'lucide-react'
+import { AnimatedAlertIcon } from '@/components/animated-icons/icons/alert'
+import { AnimatedInfoIcon } from '@/components/animated-icons/icons/info'
+import { AnimatedCheckCircleIcon } from '@/components/animated-icons/icons/check-circle'
 
 type NoticeType =
 	| 'notice'
@@ -28,7 +25,7 @@ const noticeConfig = {
 		borderColor: 'border-blue-500/30',
 		textColor: 'text-blue-400',
 		titleColor: 'text-blue-300',
-		icon: Info,
+		icon: AnimatedInfoIcon,
 		iconColor: 'text-blue-400',
 		bgOpacity: 'bg-blue-500/20'
 	},
@@ -37,7 +34,7 @@ const noticeConfig = {
 		borderColor: 'border-gray-500/30',
 		textColor: 'text-gray-400',
 		titleColor: 'text-gray-300',
-		icon: Info,
+		icon: AnimatedInfoIcon,
 		iconColor: 'text-gray-400',
 		bgOpacity: 'bg-gray-500/20'
 	},
@@ -55,7 +52,7 @@ const noticeConfig = {
 		borderColor: 'border-amber-500/30',
 		textColor: 'text-amber-400',
 		titleColor: 'text-amber-300',
-		icon: AlertTriangle,
+		icon: AnimatedAlertIcon,
 		iconColor: 'text-amber-400',
 		bgOpacity: 'bg-amber-500/20'
 	},
@@ -73,7 +70,7 @@ const noticeConfig = {
 		borderColor: 'border-green-500/30',
 		textColor: 'text-green-400',
 		titleColor: 'text-green-300',
-		icon: CheckCircle,
+		icon: AnimatedCheckCircleIcon,
 		iconColor: 'text-green-400',
 		bgOpacity: 'bg-green-500/20'
 	}

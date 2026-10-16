@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, Copy } from 'lucide-react'
+import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
+import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
 import { HighlightedLine } from '@/components/packages/package-code'
 import { PeekFrame } from './peek-frame'
 
@@ -35,9 +36,15 @@ export function PackageSnippet({ label, install, code }: Props) {
 						aria-label={copied ? 'Copied' : 'Copy install command'}
 					>
 						{copied ? (
-							<Check className="size-3" aria-hidden="true" />
+							<AnimatedCheckIcon
+								className="size-3"
+								aria-hidden="true"
+							/>
 						) : (
-							<Copy className="size-3" aria-hidden="true" />
+							<AnimatedCopyIcon
+								className="size-3"
+								aria-hidden="true"
+							/>
 						)}
 					</button>
 					<code className="min-w-0 flex-1 truncate font-mono text-[10px] text-[hsl(var(--sh-text))]">

@@ -1,0 +1,21 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='clock'] {
+		& [data-part^='hand'] {
+			animation-name: icon-turn;
+			animation-duration: var(--icon-duration-long);
+			animation-timing-function: var(--ease-icon);
+		}
+
+		& [data-part='hand-long'] {
+			--icon-turn: -360deg;
+		}
+
+		& [data-part='hand-short'] {
+			--icon-turn: -90deg;
+		}
+	}
+}

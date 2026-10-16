@@ -1,3 +1,5 @@
+'use client'
+
 import {
 	useState,
 	useEffect,
@@ -11,22 +13,20 @@ import {
 	Music,
 	GitCommit,
 	GitPullRequest,
-	Star,
-	AlertCircle,
 	Eye,
 	Box,
-	Copy,
-	Plus,
 	GitBranch,
-	Lock,
 	Globe
 } from 'lucide-react'
+import { AnimatedStarIcon } from '@/components/animated-icons/icons/star'
+import { AnimatedAlertCircleIcon } from '@/components/animated-icons/icons/alert-circle'
+import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
+import { AnimatedPlusIcon } from '@/components/animated-icons/icons/plus'
+import { AnimatedLockIcon } from '@/components/animated-icons/icons/lock'
 import type { GitHubEventDetail } from '@/hooks/use-github'
-import {
-	COMBINED_ACTIVITY_LIMIT,
-	COMBINED_TRACKS_LIMIT,
-	useCombinedActivity
-} from '@/hooks/use-combined-activity'
+import type { ActivityData } from '@/features/activity/types'
+import { EmptyState } from '@/components/home/empty-state/empty-state'
+import { ActivityIllustration } from '@/components/home/empty-state/illustrations'
 import { ProjectHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers'
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback'
 import type { SpotifyTrack } from '@/features/spotify/client'
@@ -140,17 +140,17 @@ function getEventIcon(type: GitHubEventDetail['type']) {
 		case 'pr':
 			return <GitPullRequest className="size-3" />
 		case 'issue':
-			return <AlertCircle className="size-3" />
+			return <AnimatedAlertCircleIcon className="size-3" />
 		case 'review':
 			return <Eye className="size-3" />
 		case 'release':
 			return <Box className="size-3" />
 		case 'fork':
-			return <Copy className="size-3" />
+			return <AnimatedCopyIcon className="size-3" />
 		case 'star':
-			return <Star className="size-3" />
+			return <AnimatedStarIcon className="size-3" />
 		case 'create':
-			return <Plus className="size-3" />
+			return <AnimatedPlusIcon className="size-3" />
 		case 'delete':
 			return <GitBranch className="size-3 opacity-70" />
 		default:
@@ -387,69 +387,127 @@ interface LiveGlowProps {
 function LiveGlow({ progress, currentMs, durationMs }: LiveGlowProps) {
 	return (
 		<m.div
-			className="absolute bottom-0 left-0 right-0 pointer-events-none"
+			className="pt-3 pointer-events-none"
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0 }}
 		>
-			<div className="relative">
-				<div className="relative h-[2px]">
-					<div className="absolute inset-0 bg-white/5 w-full" />
-					<m.div
-						className="absolute inset-y-0 left-0 bg-brand-500/80 shadow-[0_0_8px_hsl(var(--brand-500)/0.4)]"
-						style={{ width: `${progress}%` }}
-						layout
-					/>
-					<m.div
-						className="absolute inset-y-0 bg-brand-400 blur-[2px]"
-						animate={{
-							opacity: [0.4, 1, 0.4],
-							left: `${progress}%`
-						}}
-						style={{
-							width: '4px',
-							marginLeft: '-2px'
-						}}
-						transition={{
-							opacity: {
-								duration: 1.5,
-								repeat: Infinity,
-								ease: 'easeInOut'
-							},
-							left: { duration: 0.1 }
-						}}
-					/>
-					<m.div
-						className="absolute -top-5 flex flex-col items-center"
-						style={{
-							left: `${progress}%`,
-							transform: 'translateX(-50%)'
-						}}
-					>
-						<span className="text-[10px] font-mono text-brand-400 tabular-nums select-none whitespace-nowrap">
-							{formatTrackTime(currentMs)}
-						</span>
-					</m.div>
-				</div>
-				<div className="absolute -top-5 left-0 right-0 flex justify-between px-0">
-					<span className="text-[10px] font-mono text-muted-foreground/80 tabular-nums select-none">
-						0:00
-					</span>
-					<span className="text-[10px] font-mono text-muted-foreground/80 tabular-nums select-none">
-						{formatTrackTime(durationMs)}
-					</span>
-				</div>
+			<div className="relative flex justify-between h-4 text-[10px] font-mono tabular-nums select-none">
+				<span className="text-muted-foreground/80">0:00</span>
+				<m.div
+					className="absolute top-0 -translate-x-1/2 text-brand-400 whitespace-nowrap"
+					style={{ left: `${progress}%` }}
+				>
+					{formatTrackTime(currentMs)}
+				</m.div>
+				<span className="text-muted-foreground/80">
+					{formatTrackTime(durationMs)}
+				</span>
+			</div>
+			<div className="relative h-[2px]">
+				<div className="absolute inset-0 bg-white/5 w-full" />
+				<m.div
+					className="absolute inset-y-0 left-0 bg-brand-500/80 shadow-[0_0_8px_hsl(var(--brand-500)/0.4)]"
+					style={{ width: `${progress}%` }}
+					layout
+				/>
+				<m.div
+					className="absolute inset-y-0 bg-brand-400 blur-[2px]"
+					animate={{
+						opacity: [0.4, 1, 0.4],
+						left: `${progress}%`
+					}}
+					style={{
+						width: '4px',
+						marginLeft: '-2px'
+					}}
+					transition={{
+						opacity: {
+							duration: 1.5,
+							repeat: Infinity,
+							ease: 'easeInOut'
+						},
+						left: { duration: 0.1 }
+					}}
+				/>
 			</div>
 		</m.div>
 	)
 }
 
 interface ActivityFeedProps {
+	data: ActivityData
 	activityCount?: number
 	rotationInterval?: number
 }
 
+const placeholder =
+	'animate-pulse rounded-[4px] bg-foreground/[0.06] text-transparent select-none'
+const pillPlaceholder = `inline-flex items-center gap-1.5 px-2 py-0.5 border border-transparent shrink-0 ${placeholder}`
+
+export function ActivityFeedSkeleton() {
+	return (
+		<div
+			className="relative overflow-hidden rounded-none border border-b-0 border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm"
+			aria-hidden="true"
+		>
+			<div className="absolute top-0 left-0 w-full h-px bg-border/10" />
+
+			<div className="relative z-10 px-4 pt-4 pb-3 md:px-6">
+				<div className="text-[13px] leading-relaxed space-y-2">
+					<div className="relative flex items-center gap-1.5 min-w-0 pr-24">
+						<span className={`shrink-0 ${placeholder}`}>
+							Pushed to
+						</span>
+						<span className={pillPlaceholder}>
+							<span className="size-3 shrink-0" />
+							<span className="font-medium text-[12px]">
+								repository
+							</span>
+						</span>
+						<span
+							className={`min-w-0 shrink truncate ${pillPlaceholder}`}
+						>
+							<span className="size-3 shrink-0" />
+							<span className="font-medium text-[12px] truncate">
+								Recent commit message
+							</span>
+						</span>
+						<span className={`text-[11px] shrink-0 ${placeholder}`}>
+							· 2h ago
+						</span>
+						<div className="absolute right-0 top-0 sm:relative sm:right-auto sm:top-auto flex items-center gap-1 text-muted-foreground/20 shrink-0 ml-auto">
+							<span className="p-1">
+								<span className="block size-3" />
+							</span>
+							<span className="text-[10px] font-mono tabular-nums">
+								1 / 5
+							</span>
+							<span className="p-1">
+								<span className="block size-3" />
+							</span>
+						</div>
+					</div>
+
+					<div className="flex items-center gap-1.5 min-w-0 border-t border-border/30 pt-2">
+						<span className="flex items-center gap-1 text-muted-foreground/60 text-[12px] shrink-0 whitespace-nowrap">
+							<Music className="size-4 shrink-0" />
+							Whilst listening to
+						</span>
+						<span className={`gap-1 ${pillPlaceholder}`}>
+							<span className="font-semibold text-[12px]">
+								Track name by artist
+							</span>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
+
 export function ActivityFeed({
+	data,
 	activityCount = 5,
 	rotationInterval = 6000
 }: ActivityFeedProps) {
@@ -462,15 +520,9 @@ export function ActivityFeed({
 		'auto'
 	)
 
-	// *** PERFORMANCE OPTIMIZATION: Uses shared combined hook ***
-	// This reuses the same cached data as contribution-graph instead of making another 2 API calls
-	const { data: combinedData, isLoading: dataLoading } = useCombinedActivity(
-		Math.max(activityCount, COMBINED_ACTIVITY_LIMIT),
-		COMBINED_TRACKS_LIMIT
-	)
-	const activities = combinedData?.recentActivity || []
+	const activities = data.recentActivity
 	const [cachedTracks, setCachedTracks] = useState<SpotifyTrack[]>([])
-	const liveTracks = combinedData?.spotifyTracks || []
+	const liveTracks = data.spotifyTracks
 	const tracks = liveTracks.length > 0 ? liveTracks : cachedTracks
 
 	const playbackState = useSpotifyPlayback()
@@ -498,12 +550,6 @@ export function ActivityFeed({
 			JSON.stringify(liveTracks)
 		)
 	}, [liveTracks])
-
-	// Motion values for drag and velocity
-	// Removed velocity-based blur for performance - was causing heavy per-frame calculations
-
-	// No longer need separate Spotify fetch - it comes from combined data
-	const isLoading = dataLoading
 
 	const isRealTimePlaying = useMemo(
 		() => playbackState.isPlaying && playbackState.track,
@@ -622,68 +668,19 @@ export function ActivityFeed({
 		[displayTrack, playbackState.track, isRealTimePlaying]
 	)
 
-	if (isLoading) {
-		return (
-			<div
-				role="progressbar"
-				aria-busy="true"
-				aria-label="Loading activity feed"
-				className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm"
-			>
-				<div
-					className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none"
-					aria-hidden="true"
-				/>
-				<div
-					className="absolute top-0 left-0 w-full h-px bg-border/10"
-					aria-hidden="true"
-				/>
-				<div
-					className="absolute right-4 top-3 md:right-5 flex items-center gap-0.5 pointer-events-none"
-					aria-hidden="true"
-				>
-					<div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm will-change-opacity" />
-					<div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm will-change-opacity" />
-				</div>
-				<div
-					className="relative px-4 pt-3 pb-1 md:px-5"
-					aria-hidden="true"
-				>
-					<div className="space-y-2">
-						<div className="flex flex-wrap items-center gap-1.5">
-							<div className="h-3.5 w-28 bg-muted/20 animate-pulse will-change-opacity" />
-							<div className="h-5 w-16 bg-muted/30 animate-pulse will-change-opacity" />
-							<div className="h-3.5 w-14 bg-muted/20 animate-pulse will-change-opacity" />
-							<div className="h-5 w-32 bg-muted/30 animate-pulse will-change-opacity" />
-							<div className="h-3 w-12 bg-muted/15 animate-pulse will-change-opacity" />
-						</div>
-						<div className="flex flex-wrap items-center gap-1.5">
-							<div className="h-5 w-20 bg-muted/30 animate-pulse will-change-opacity" />
-							<div className="h-3.5 w-8 bg-muted/20 animate-pulse will-change-opacity" />
-							<div className="h-3.5 w-20 bg-muted/20 animate-pulse will-change-opacity" />
-						</div>
-					</div>
-				</div>
-
-				{/* Bottom metric bar skeleton */}
-				<div
-					className="h-6 flex items-center px-0 pb-1"
-					aria-hidden="true"
-				>
-					<div className="w-full h-[1px] bg-muted/20 animate-pulse will-change-opacity" />
-				</div>
-			</div>
-		)
-	}
-
 	if (!currentActivity) {
 		return (
 			<div className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm">
-				<div className="relative p-4 md:p-6">
-					<span className="text-muted-foreground/60 text-sm">
-						No recent activity
-					</span>
-				</div>
+				<EmptyState
+					title="No recent activity"
+					description="Commits and listening history show up here once they come in."
+					illustration={<ActivityIllustration loop />}
+					headingLevel="h3"
+					link={{
+						label: 'Empty state from my UI resources',
+						href: '/packages/empty-states?component=activity#component'
+					}}
+				/>
 			</div>
 		)
 	}
@@ -702,7 +699,7 @@ export function ActivityFeed({
 			onMouseLeave={() => setIsPaused(false)}
 			onFocus={() => setIsPaused(true)}
 			onBlur={() => setIsPaused(false)}
-			className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm cursor-grab active:cursor-grabbing touch-pan-y"
+			className="relative overflow-hidden rounded-none border border-b-0 border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm cursor-grab active:cursor-grabbing touch-pan-y"
 			role="region"
 			aria-label="Recent activity feed showing GitHub contributions and Spotify listening history"
 		>
@@ -719,7 +716,7 @@ export function ActivityFeed({
 			</div>
 
 			<div
-				className="relative z-10 px-4 pt-4 pb-2 md:px-6"
+				className="relative z-10 px-4 pt-4 pb-3 md:px-6"
 				aria-live="polite"
 				aria-atomic="true"
 			>
@@ -756,7 +753,7 @@ export function ActivityFeed({
 									>
 										{isPrivate ? (
 											<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/5 text-amber-500 border border-amber-500/20 rounded-[4px] cursor-pointer transition-colors group shrink-0">
-												<Lock className="size-3 opacity-70 shrink-0" />
+												<AnimatedLockIcon className="size-3 opacity-70 shrink-0" />
 												<span className="font-medium text-[12px] truncate">
 													{repoName}
 												</span>
@@ -945,7 +942,7 @@ export function ActivityFeed({
 								>
 									{isPrivate ? (
 										<span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-amber-500/5 text-amber-500 font-medium border border-amber-500/20 rounded-[4px] text-[12px] shrink-0">
-											<Lock className="size-3 shrink-0" />
+											<AnimatedLockIcon className="size-3 shrink-0" />
 											<span className="truncate">
 												{repoName}
 											</span>
@@ -1054,17 +1051,17 @@ export function ActivityFeed({
 						</m.div>
 					)}
 				</AnimatePresence>
-			</div>
 
-			<AnimatePresence>
-				{isCurrentTrackLive && (
-					<LiveGlow
-						progress={playbackState.percentage}
-						currentMs={playbackState.progress}
-						durationMs={playbackState.duration}
-					/>
-				)}
-			</AnimatePresence>
+				<AnimatePresence>
+					{isCurrentTrackLive && (
+						<LiveGlow
+							progress={playbackState.percentage}
+							currentMs={playbackState.progress}
+							durationMs={playbackState.duration}
+						/>
+					)}
+				</AnimatePresence>
+			</div>
 		</m.div>
 	)
 }

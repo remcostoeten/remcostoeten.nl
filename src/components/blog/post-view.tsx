@@ -3,7 +3,8 @@
 import type { Route } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
+import { AnimatedArrowRightIcon } from '@/components/animated-icons/icons/arrow-right'
 import { useEffect } from 'react'
 import { trackBlogView } from '@/server/actions/blog/analytics'
 import { getDateParts, readMinutes } from '@/features/blog/lib/format'
@@ -163,7 +164,7 @@ export function PostNavigation({
 				>
 					<span className="inline-flex items-center justify-end gap-1.5 font-mono text-[11px] uppercase tracking-wider text-muted-foreground/70">
 						Next
-						<ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+						<AnimatedArrowRightIcon className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
 					</span>
 					<span className="line-clamp-2 text-sm font-medium text-foreground">
 						{nextPost.metadata.title}

@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react'
-import type { LucideIcon } from 'lucide-react'
+import type { ComponentType } from 'react'
+import type { AnimatedIconProps } from '@/components/animated-icons/icon-frame'
 
 interface SectionProps {
 	children: ReactNode
 	title?: string
-	icon?: LucideIcon
+	icon?: ComponentType<AnimatedIconProps>
 	className?: string
 
 	headerAction?: ReactNode
@@ -69,7 +70,7 @@ export function SubSection({
 }: {
 	children: ReactNode
 	title?: string
-	icon?: LucideIcon
+	icon?: ComponentType<AnimatedIconProps>
 	className?: string
 }) {
 	return (
@@ -102,7 +103,7 @@ export function TimelineItem({
 	className = ''
 }: {
 	children: ReactNode
-	icon?: LucideIcon
+	icon?: ComponentType<AnimatedIconProps>
 	title: string
 	indicator?: ReactNode
 	className?: string

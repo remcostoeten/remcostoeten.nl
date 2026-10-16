@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-clock",
+  "type": "registry:component",
+  "title": "Clock Icon",
+  "description": "Animated clock icon. Hands sweep.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-clock/icons/clock.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/clock.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./clock.css\";\n\nexport function AnimatedClockIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"clock\" {...props}>\n      <circle cx=\"12\" cy=\"12\" r=\"10\" />\n      <path data-part=\"hand-long\" d=\"M12 8v4\" />\n      <path data-part=\"hand-short\" d=\"M12 12l2 2\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-clock/icons/clock.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/clock.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"clock\"] {\n    & [data-part^=\"hand\"] {\n      animation-name: icon-turn;\n      animation-duration: var(--icon-duration-long);\n      animation-timing-function: var(--ease-icon);\n    }\n\n    & [data-part=\"hand-long\"] {\n      --icon-turn: -360deg;\n    }\n\n    & [data-part=\"hand-short\"] {\n      --icon-turn: -90deg;\n    }\n  }\n}\n"
+    }
+  ]
+}

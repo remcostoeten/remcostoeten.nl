@@ -1,9 +1,16 @@
 'use client'
 
 import { useId, useMemo, useState, useTransition } from 'react'
-import { ChevronDown, ChevronUp, Eye, EyeOff, Search, Star } from 'lucide-react'
+import { ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react'
+import { AnimatedSearchIcon } from '@/components/animated-icons/icons/search'
+import { AnimatedStarIcon } from '@/components/animated-icons/icons/star'
 import type { Project } from '../../../server/db/project-schema'
 import { moveProject } from '../server/mutations'
+import { EmptyState } from '@/components/home/empty-state/empty-state'
+import {
+	ProjectIllustration,
+	SearchIllustration
+} from '@/components/home/empty-state/illustrations'
 
 type Props = {
 	projects: Project[]
@@ -94,7 +101,7 @@ export function ProjectList({
 								Search
 							</label>
 							<div className="relative">
-								<Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+								<AnimatedSearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
 								<input
 									id={searchId}
 									type="search"
@@ -175,7 +182,7 @@ export function ProjectList({
 												</span>
 												{project.featured && (
 													<span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-300">
-														<Star className="h-3 w-3" />
+														<AnimatedStarIcon className="h-3 w-3" />
 														Featured
 													</span>
 												)}
@@ -267,21 +274,21 @@ export function ProjectList({
 			)}
 
 			{projects.length === 0 && (
-				<div
-					role="status"
-					className="px-4 py-14 text-center text-sm text-zinc-500"
-				>
-					No projects yet. Use “Add Project” to create the first one.
-				</div>
+				<EmptyState
+					title="No projects yet"
+					description="Use “Add Project” to create the first one."
+					illustration={<ProjectIllustration />}
+					headingLevel="h3"
+				/>
 			)}
 
 			{projects.length > 0 && filteredProjects.length === 0 && (
-				<div
-					role="status"
-					className="px-4 py-14 text-center text-sm text-zinc-500"
-				>
-					No projects match the current filters.
-				</div>
+				<EmptyState
+					title="No projects match the current filters"
+					description="Change or clear the filters to see more projects."
+					illustration={<SearchIllustration />}
+					headingLevel="h3"
+				/>
 			)}
 		</section>
 	)

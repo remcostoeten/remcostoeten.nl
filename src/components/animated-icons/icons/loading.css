@@ -1,0 +1,9 @@
+.animated-icon[data-icon='loading'] [data-part='spokes'] {
+	animation: icon-spin 1120ms steps(8) infinite;
+}
+
+@keyframes icon-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}

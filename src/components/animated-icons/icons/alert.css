@@ -1,0 +1,18 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='alert'] {
+		& [data-part='triangle'] {
+			--icon-swing: -7deg;
+			transform-origin: 12px 21px;
+			animation-name: icon-swing;
+		}
+
+		& [data-part='mark'] {
+			--icon-y: -1.5px;
+			animation-name: icon-nudge;
+		}
+	}
+}

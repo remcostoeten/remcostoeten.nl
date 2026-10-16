@@ -3,12 +3,8 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import * as m from 'motion/react-m'
-import {
-	COMBINED_ACTIVITY_LIMIT,
-	COMBINED_TRACKS_LIMIT,
-	useCombinedActivity
-} from '@/hooks/use-combined-activity'
 import type { GitHubEventDetail } from '@/hooks/use-github'
+import type { ActivityData } from '@/features/activity/types'
 import { useCurrentYear } from '@/hooks/use-current-year'
 
 interface ActivityDay {
@@ -24,12 +20,25 @@ interface ActivityDay {
 }
 
 interface ActivityContributionGraphProps {
+	data: ActivityData
 	year?: number
 	showLegend?: boolean
+	loading?: boolean
 	className?: string
 }
 
 type LevelThresholds = [number, number, number]
+
+const DAY_LABEL_FORMAT = new Intl.DateTimeFormat('en-US', {
+	weekday: 'long',
+	month: 'long',
+	day: 'numeric',
+	year: 'numeric'
+})
+
+function toDateKey(date: Date) {
+	return date.toISOString().split('T')[0]
+}
 
 function quantile(sorted: number[], fraction: number): number {
 	if (sorted.length === 0) return 0
@@ -58,8 +67,10 @@ function levelForCount(count: number, thresholds: LevelThresholds): number {
 }
 
 export function ActivityContributionGraph({
+	data,
 	year,
 	showLegend = true,
+	loading = false,
 	className = ''
 }: ActivityContributionGraphProps) {
 	const currentYear = useCurrentYear()
@@ -95,9 +106,9 @@ export function ActivityContributionGraph({
 			setLoadingDetails(true)
 			fetch(`/api/github/events?date=${selectedDay.date}`)
 				.then(res => res.json())
-				.then(data => {
-					if (data.events && Array.isArray(data.events)) {
-						const newCommits = data.events.map((event: any) => ({
+				.then(payload => {
+					if (payload.events && Array.isArray(payload.events)) {
+						const newCommits = payload.events.map((event: any) => ({
 							message: event.title,
 							url: event.url,
 							projectName: event.repository
@@ -177,49 +188,37 @@ export function ActivityContributionGraph({
 	}, [selectedDay])
 
 	// Rolling 12-month view: start exactly one year ago from today, end today
+	const now = useMemo(() => new Date(data.fetchedAt), [data.fetchedAt])
+
 	const startDate = useMemo(() => {
-		const d = new Date()
+		const d = new Date(now)
 		d.setFullYear(d.getFullYear() - 1)
 		d.setHours(0, 0, 0, 0)
 		return d
-	}, [])
+	}, [now])
 
 	const rangeLabel = useMemo(() => {
 		const format = (d: Date) =>
 			d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-		return `${format(startDate)} - ${format(new Date())}`
-	}, [startDate])
+		return `${format(startDate)} - ${format(now)}`
+	}, [startDate, now])
 
-	// *** PERFORMANCE OPTIMIZATION: Single combined API call instead of 4+ separate ones ***
-	// Increased limit from 5 to 20 for initial feed, though on-demand fetch handles the rest
-	const { data: combinedData, isLoading: loading } = useCombinedActivity(
-		COMBINED_ACTIVITY_LIMIT,
-		COMBINED_TRACKS_LIMIT
-	)
-
-	// Process contributions into a Map for lookup
 	const githubContributions = useMemo(() => {
 		const map = new Map<
 			string,
 			{ date: string; contributionCount: number }
 		>()
-		if (combinedData?.contributions) {
-			for (const item of combinedData.contributions) {
-				map.set(item.date, item)
-			}
+		for (const item of data.contributions) {
+			map.set(item.date, item)
 		}
 		return map
-	}, [combinedData?.contributions])
+	}, [data.contributions])
 
-	// Get tracks from combined data
-	const tracks = combinedData?.spotifyTracks || []
+	const tracks = data.spotifyTracks
 
-	// Get detailed events from recentActivity (limited to what we have from combined)
 	const detailedEvents = useMemo(() => {
-		if (!combinedData?.recentActivity) return []
-		// Group by date for the calendar view
 		const byDate = new Map<string, GitHubEventDetail[]>()
-		for (const event of combinedData.recentActivity) {
+		for (const event of data.recentActivity) {
 			const dateStr = new Date(event.timestamp)
 				.toISOString()
 				.split('T')[0]
@@ -231,7 +230,7 @@ export function ActivityContributionGraph({
 			date,
 			events
 		}))
-	}, [combinedData?.recentActivity])
+	}, [data.recentActivity])
 
 	const graphRef = useRef<HTMLDivElement>(null)
 
@@ -244,8 +243,6 @@ export function ActivityContributionGraph({
 	}, [])
 
 	const activityData = useMemo(() => {
-		const now = new Date()
-
 		// Rolling 12-month view: start exactly one year ago, end at current date
 		const end = now
 		const start = startDate
@@ -326,10 +323,12 @@ export function ActivityContributionGraph({
 		githubContributions,
 		tracks,
 		resolvedYear,
-		loading,
 		detailedEvents,
-		startDate
+		startDate,
+		now
 	])
+
+	const todayKey = useMemo(() => toDateKey(now), [now])
 
 	const getColorForLevel = (level: number) => {
 		switch (level) {
@@ -373,15 +372,14 @@ export function ActivityContributionGraph({
 	]
 
 	const totalWeeks = useMemo(() => {
-		const now = new Date()
 		const diffMs = now.getTime() - startDate.getTime()
 		const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
 		return Math.ceil(diffDays / 7) + 1
-	}, [startDate])
+	}, [startDate, now])
 
-	// Data weeks - for rendering actual data, starting from Feb of previous year
 	const weeks = useMemo(() => {
 		const weeksArray: ActivityDay[][] = []
+		const byDate = new Map(activityData.map(day => [day.date, day]))
 		const start = startDate
 
 		let currentDate = new Date(start)
@@ -391,8 +389,8 @@ export function ActivityContributionGraph({
 		for (let i = 0; i < totalWeeks; i++) {
 			const week: ActivityDay[] = []
 			for (let j = 0; j < 7; j++) {
-				const dateStr = currentDate.toISOString().split('T')[0]
-				const day = activityData.find(d => d.date === dateStr)
+				const dateStr = toDateKey(currentDate)
+				const day = byDate.get(dateStr)
 				week.push(
 					day || {
 						date: dateStr,
@@ -409,14 +407,6 @@ export function ActivityContributionGraph({
 
 		return weeksArray
 	}, [activityData, startDate, totalWeeks])
-
-	const cellDelays = useMemo(() => {
-		const total = totalWeeks * 7
-		return Array.from({ length: total }, (_, i) => {
-			const hash = Math.sin(i * 12.9898) * 43758.5453
-			return (hash - Math.floor(hash)) * 600
-		})
-	}, [totalWeeks])
 
 	// STATIC month labels - calculate for rolling 12-month view
 	const monthLabels = useMemo(() => {
@@ -452,15 +442,14 @@ export function ActivityContributionGraph({
 	)
 
 	const todayCellIndex = useMemo(() => {
-		const todayStr = new Date().toISOString().split('T')[0]
 		for (let weekIndex = 0; weekIndex < weeks.length; weekIndex++) {
 			const dayIndex = weeks[weekIndex].findIndex(
-				day => day.date === todayStr
+				day => day.date === todayKey
 			)
 			if (dayIndex !== -1) return weekIndex * 7 + dayIndex
 		}
 		return 0
-	}, [weeks])
+	}, [weeks, todayKey])
 
 	const activeCellIndex = focusedCellIndex ?? todayCellIndex
 
@@ -510,12 +499,7 @@ export function ActivityContributionGraph({
 	}
 
 	const formatDayLabel = (day: ActivityDay) => {
-		const dateLabel = new Date(day.date).toLocaleDateString('en-US', {
-			weekday: 'long',
-			month: 'long',
-			day: 'numeric',
-			year: 'numeric'
-		})
+		const dateLabel = DAY_LABEL_FORMAT.format(new Date(day.date))
 
 		if (day.totalActivity === 0) {
 			return `No activity on ${dateLabel}`
@@ -539,8 +523,9 @@ export function ActivityContributionGraph({
 				aria-labelledby="activity-graph-title"
 			>
 				<h2 id="activity-graph-title" className="sr-only">
-					GitHub contribution graph from {rangeLabel}, showing{' '}
-					{totalContributions} total contributions
+					{loading
+						? 'Loading GitHub contribution graph'
+						: `GitHub contribution graph from ${rangeLabel}, showing ${totalContributions} total contributions`}
 				</h2>
 				<div className="flex flex-col w-full relative">
 					{/* Month labels row - Using Grid to match columns exactly */}
@@ -559,7 +544,7 @@ export function ActivityContributionGraph({
 									key={weekIndex}
 									className="relative overflow-visible z-20"
 								>
-									{label && (
+									{label && !loading && (
 										<span className="absolute whitespace-nowrap font-mono text-[10px] text-muted-foreground/70">
 											{label.month}
 										</span>
@@ -569,12 +554,13 @@ export function ActivityContributionGraph({
 						})}
 					</div>
 
-					{/* Data Grid - column-based grid for rolling 12-month view */}
 					<div
-						className="grid w-full gap-[3px]"
+						className={`grid w-full gap-[3px] ${loading ? 'animate-pulse' : 'graph-reveal'}`}
 						style={{
 							gridTemplateColumns: `repeat(${totalWeeks}, 1fr)`
 						}}
+						aria-hidden={loading || undefined}
+						inert={loading}
 						onKeyDown={handleGridKeyDown}
 					>
 						{weeks.map((week, weekIndex) => (
@@ -585,10 +571,8 @@ export function ActivityContributionGraph({
 								{week.map((day, dayIndex) => {
 									const hasData = !!day.date
 									const flatIndex = weekIndex * 7 + dayIndex
-									const delayMs = cellDelays[flatIndex] ?? 0
 									const isToday =
-										day.date ===
-										new Date().toISOString().split('T')[0]
+										!loading && day.date === todayKey
 
 									return (
 										<button
@@ -620,7 +604,7 @@ export function ActivityContributionGraph({
 													? 'dialog'
 													: undefined
 											}
-											className={`cell-pop-in w-full aspect-square rounded-[2px] border border-transparent transition-[background-color,border-color,box-shadow] duration-300 ease-out focus-visible:outline-none focus-visible:border-foreground ${
+											className={`w-full aspect-square rounded-[2px] border border-transparent transition-[background-color,border-color,box-shadow] duration-300 ease-out focus-visible:outline-none focus-visible:border-foreground ${
 												hasData
 													? `cursor-pointer ${getColorForLevel(day.level)}`
 													: 'opacity-0'
@@ -629,9 +613,6 @@ export function ActivityContributionGraph({
 													? 'ring-1 ring-foreground/70 ring-offset-1 ring-offset-background'
 													: ''
 											}`}
-											style={{
-												animationDelay: `${delayMs}ms`
-											}}
 											onMouseEnter={e =>
 												hasData &&
 												handleMouseEnter(e, day)
@@ -656,7 +637,10 @@ export function ActivityContributionGraph({
 					animate={{ opacity: 1 }}
 					transition={{ delay: 0 }}
 				>
-					<span className="tabular-nums">
+					<span
+						className={`tabular-nums ${loading ? 'animate-pulse rounded-[2px] bg-foreground/[0.06] text-transparent' : ''}`}
+						aria-hidden={loading || undefined}
+					>
 						{totalContributions.toLocaleString()} contributions
 						<span className="hidden sm:inline">
 							{' '}

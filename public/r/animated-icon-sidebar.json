@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-sidebar",
+  "type": "registry:component",
+  "title": "Sidebar Icon",
+  "description": "Animated sidebar icon. Rail slides out and back.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-sidebar/icons/sidebar.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/sidebar.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./sidebar.css\";\n\nexport function AnimatedSidebarIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"sidebar\" {...props}>\n      <path d=\"M2.5 12c0-4.243 0-6.364 1.318-7.682S7.257 3 11.5 3h1c4.243 0 6.364 0 7.682 1.318S21.5 7.757 21.5 12s0 6.364-1.318 7.682S16.743 21 12.5 21h-1c-4.243 0-6.364 0-7.682-1.318S2.5 16.243 2.5 12\" />\n      <path data-part=\"rail\" d=\"M9 3v18\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-sidebar/icons/sidebar.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/sidebar.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"sidebar\"] [data-part=\"rail\"] {\n    --icon-x: -2px;\n    animation-name: icon-nudge;\n  }\n}\n"
+    }
+  ]
+}

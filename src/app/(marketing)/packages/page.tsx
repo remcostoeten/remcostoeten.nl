@@ -1,18 +1,20 @@
 import type { Metadata } from 'next'
 import { PackagesSection } from '@/components/packages/packages-section'
-import { createPageMetadata } from '@/core/metadata/base'
+import { baseUrl, createPageMetadata } from '@/core/metadata/base'
 
 export const metadata: Metadata = createPageMetadata({
 	title: 'Open-source React packages',
 	description:
-		'React and TypeScript packages by Remco Stoeten, including Auth Drawer, use-shortcut, and Notifier.',
+		'Open-source React and TypeScript packages by Remco Stoeten: Spoar analytics, Auth Drawer, use-shortcut, Notifier, empty states and animated icons.',
 	keywords: [
 		'React packages',
 		'TypeScript libraries',
 		'npm packages',
 		'open source',
+		'shadcn registry',
 		'Remco Stoeten'
 	],
+	image: `${baseUrl}/og?title=${encodeURIComponent('Open-source React packages')}`,
 	canonical: '/packages'
 })
 

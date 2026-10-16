@@ -1,14 +1,11 @@
 'use client'
 
 import React, { useState, useCallback } from 'react'
-import {
-	CheckCircle,
-	XCircle,
-	Copy,
-	Check,
-	AlertTriangle,
-	ExternalLink
-} from 'lucide-react'
+import { XCircle, ExternalLink } from 'lucide-react'
+import { AnimatedCheckCircleIcon } from '@/components/animated-icons/icons/check-circle'
+import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
+import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
+import { AnimatedAlertIcon } from '@/components/animated-icons/icons/alert'
 
 interface SpotifyEnvGeneratorProps {
 	showGuide?: boolean
@@ -144,9 +141,9 @@ SPOTIFY_REFRESH_TOKEN="${refreshToken || 'your_refresh_token'}"`
 							}`}
 						>
 							{copied ? (
-								<Check className="w-3 h-3" />
+								<AnimatedCheckIcon className="w-3 h-3" />
 							) : (
-								<Copy className="w-3 h-3" />
+								<AnimatedCopyIcon className="w-3 h-3" />
 							)}
 							{copied ? 'Copied!' : 'Copy'}
 						</button>
@@ -284,7 +281,7 @@ function InputField({
 				{showValidation && (
 					<div className="absolute right-3 top-1/2 -translate-y-1/2">
 						{isValid ? (
-							<CheckCircle className="w-4 h-4 text-green-500" />
+							<AnimatedCheckCircleIcon className="w-4 h-4 text-green-500" />
 						) : (
 							<XCircle className="w-4 h-4 text-red-500" />
 						)}
@@ -316,9 +313,9 @@ function ValidationSummary({
 		>
 			<div className="flex items-center gap-2 mb-3">
 				{allRequiredValid ? (
-					<CheckCircle className="w-4 h-4 text-green-500" />
+					<AnimatedCheckCircleIcon className="w-4 h-4 text-green-500" />
 				) : (
-					<AlertTriangle className="w-4 h-4 text-amber-500" />
+					<AnimatedAlertIcon className="w-4 h-4 text-amber-500" />
 				)}
 				<span
 					className={`text-xs font-semibold ${allRequiredValid ? 'text-green-400' : 'text-amber-400'}`}
@@ -341,7 +338,7 @@ function ValidationSummary({
 						}`}
 					>
 						{item.valid ? (
-							<Check className="w-3 h-3" />
+							<AnimatedCheckIcon className="w-3 h-3" />
 						) : (
 							<XCircle className="w-3 h-3" />
 						)}

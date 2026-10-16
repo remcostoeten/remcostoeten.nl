@@ -1,14 +1,11 @@
 'use client'
+import type { ComponentType } from 'react'
+import type { AnimatedIconProps } from '@/components/animated-icons/icon-frame'
 
 import { useState, useTransition } from 'react'
-import {
-	Eye,
-	EyeOff,
-	FolderKanban,
-	type LucideIcon,
-	Plus,
-	Star
-} from 'lucide-react'
+import { Eye, EyeOff, FolderKanban } from 'lucide-react'
+import { AnimatedPlusIcon } from '@/components/animated-icons/icons/plus'
+import { AnimatedStarIcon } from '@/components/animated-icons/icons/star'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type {
 	Project,
@@ -117,7 +114,7 @@ export function ProjectsAdmin({ initialProjects, initialSettings }: Props) {
 						className="admin-btn"
 						data-variant="primary"
 					>
-						<Plus className="size-4" />
+						<AnimatedPlusIcon className="size-4" />
 						{isPending ? 'Creating…' : 'Add project'}
 					</button>
 				}
@@ -137,7 +134,7 @@ export function ProjectsAdmin({ initialProjects, initialSettings }: Props) {
 				<StatCell
 					label="Featured"
 					value={featuredProjects.length}
-					icon={Star}
+					icon={AnimatedStarIcon}
 				/>
 			</div>
 
@@ -213,7 +210,7 @@ function StatCell({
 }: {
 	label: string
 	value: number
-	icon: LucideIcon
+	icon: ComponentType<AnimatedIconProps>
 }) {
 	return (
 		<div className="flex flex-col gap-3 bg-card p-5">

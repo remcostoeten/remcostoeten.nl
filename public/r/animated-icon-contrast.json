@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-contrast",
+  "type": "registry:component",
+  "title": "Contrast Icon",
+  "description": "Animated contrast icon. Dark half turns over.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-contrast/icons/contrast.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/contrast.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./contrast.css\";\n\nexport function AnimatedContrastIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"contrast\" {...props}>\n      <circle data-part=\"ring\" cx=\"12\" cy=\"12\" r=\"9\" />\n      <path data-part=\"half\" d=\"M12 3a9 9 0 0 1 0 18z\" fill=\"currentColor\" stroke=\"none\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-contrast/icons/contrast.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/contrast.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"contrast\"] [data-part=\"half\"] {\n    --icon-turn: -180deg;\n    animation-name: icon-turn;\n    animation-duration: var(--icon-duration-long);\n    animation-timing-function: var(--ease-icon);\n  }\n}\n"
+    }
+  ]
+}

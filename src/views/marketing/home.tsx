@@ -3,14 +3,16 @@ import { Intro, IntroView } from '@/components/home/hero'
 import { DEFAULT_INTRO } from '@/components/home/intro-queries'
 import { Section } from '@/components/ui/section'
 import nextDynamic from 'next/dynamic'
-import { HomeBlogPosts } from '@/components/blog/home-blog-posts'
 import {
-	ActivitySectionSkeleton,
 	TechStackSkeleton,
 	WorkExperienceSkeleton
 } from '@/components/ui/skeletons/section-skeletons'
 import { ProjectsView } from '../projects'
-import { PackagesSection } from '@/components/packages/packages-section'
+import {
+	ActivitySection,
+	ActivitySectionSkeleton
+} from '@/components/landing/activity/section'
+import { ResourcesSection } from '@/components/packages/resources-section'
 
 const TechStackCloud = nextDynamic(
 	() =>
@@ -26,16 +28,6 @@ const WorkExperienceSection = nextDynamic(
 			default: m.WorkExperienceSection
 		})),
 	{ loading: () => <WorkExperienceSkeleton /> }
-)
-
-const ActivitySectionClient = nextDynamic(
-	() =>
-		import('@/components/landing/activity/activity-section-client').then(
-			m => ({
-				default: m.ActivitySectionClient
-			})
-		),
-	{ loading: () => <ActivitySectionSkeleton /> }
 )
 
 export function HomeView() {
@@ -66,10 +58,10 @@ export function HomeView() {
 
 					<WorkExperienceSection />
 					<ProjectsView />
-					<ActivitySectionClient />
-					<PackagesSection />
-
-					<HomeBlogPosts />
+					<ResourcesSection />
+					<Suspense fallback={<ActivitySectionSkeleton />}>
+						<ActivitySection />
+					</Suspense>
 				</div>
 			</div>
 		</>

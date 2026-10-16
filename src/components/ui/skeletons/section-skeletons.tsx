@@ -1,6 +1,11 @@
+import type { ReactNode } from 'react'
 import { Skeleton } from './skeleton'
+import { Section } from '@/components/ui/section'
+import { Prose, Skill } from '@/components/ui/work-experience'
+import type { ExperiencePositionItemType } from '@/components/ui/work-experience'
+import { WORK_EXPERIENCE } from '@/components/home/work-experience-section'
 
-import { Plus } from 'lucide-react'
+import { AnimatedPlusIcon } from '@/components/animated-icons/icons/plus'
 
 export function TechStackSkeleton() {
 	const CARD_STYLES = [
@@ -45,7 +50,7 @@ export function TechStackSkeleton() {
 	]
 
 	return (
-		<div className="relative grid grid-cols-2 border-x md:grid-cols-4">
+		<div className="relative grid grid-cols-2 md:grid-cols-4">
 			<div className="-translate-x-1/2 -top-px pointer-events-none absolute left-1/2 w-dvw border-t" />
 			{Array.from({ length: 8 }).map((_, i) => {
 				const style = CARD_STYLES[i] || {
@@ -55,28 +60,33 @@ export function TechStackSkeleton() {
 				return (
 					<div
 						key={i}
-						className={`flex items-center justify-center bg-background px-4 py-8 md:p-8 relative overflow-hidden group min-h-[120px] ${style.className}`}
+						className={`flex items-center justify-center bg-background px-4 py-8 md:p-8 relative group min-h-[120px] ${style.className}`}
 					>
-						<div className="relative flex flex-col items-center gap-2">
-							<div className="w-8 h-8 md:w-10 md:h-10 bg-muted/20 rounded-sm animate-pulse will-change-opacity" />
+						<div className="relative flex flex-col items-center gap-2 h-16 justify-end">
+							<div className="relative h-10 w-10 flex items-center justify-center mb-1">
+								<div className="w-8 h-8 md:w-10 md:h-10 bg-muted/20 rounded-sm animate-pulse will-change-opacity" />
+							</div>
+							<div className="h-4 flex items-center">
+								<div className="h-2 w-14 bg-muted/20 rounded-sm animate-pulse will-change-opacity" />
+							</div>
 						</div>
 
 						{style.hasDecorator && (
-							<Plus
+							<AnimatedPlusIcon
 								className="-right-[12.5px] -bottom-[12.5px] absolute z-10 size-6 text-muted-foreground/50"
 								strokeWidth={1}
 								aria-hidden="true"
 							/>
 						)}
 						{i === 2 && (
-							<Plus
+							<AnimatedPlusIcon
 								className="-bottom-[12.5px] -left-[12.5px] absolute z-10 hidden size-6 md:block text-muted-foreground/50"
 								strokeWidth={1}
 								aria-hidden="true"
 							/>
 						)}
 						{i === 4 && (
-							<Plus
+							<AnimatedPlusIcon
 								className="-right-[12.5px] -bottom-[12.5px] md:-left-[12.5px] absolute z-10 size-6 md:hidden text-muted-foreground/50"
 								strokeWidth={1}
 								aria-hidden="true"
@@ -108,139 +118,6 @@ const MONTHS = [
 const WEEKS = Array.from({ length: 53 }, (_, i) => i)
 const DAYS = Array.from({ length: 7 }, (_, i) => i)
 const LEGEND_OPACITIES = [0.2, 0.3, 0.5, 0.75, 1] as const
-
-export function ActivitySectionSkeleton() {
-	// Must match structure of Section -> noPadding={true} contentPadding={true}
-	// Uses exact same layout as ContributionGraphSkeleton for ZERO CLS
-	return (
-		<section
-			className="relative"
-			aria-busy="true"
-			aria-label="Loading activity section"
-		>
-			<div className="full-width-header">
-				<div className="header-content-container flex items-center justify-between header-content-container--with-padding">
-					<Skeleton className="h-5 w-48" />
-					<Skeleton className="h-5 w-16" />
-				</div>
-			</div>
-
-			<div className="space-y-5 pt-4">
-				{/* Paragraph */}
-				<div className="px-4 md:px-5">
-					<Skeleton className="h-4 w-full max-w-xl" />
-				</div>
-
-				{/* Contribution Graph Skeleton - Uses exact CSS Grid layout to match ActivityContributionGraph */}
-				<div className="px-4 md:px-5">
-					<div
-						className="space-y-2 w-full"
-						role="img"
-						aria-label="Loading contribution graph"
-						aria-hidden="true"
-					>
-						{/* Month labels Skeleton */}
-						<div
-							className="grid w-full mb-1 relative h-[15px] gap-[3px]"
-							style={{ gridTemplateColumns: 'repeat(53, 1fr)' }}
-						>
-							{MONTHS.map(month => (
-								<div
-									key={month}
-									className="relative overflow-visible z-20"
-								>
-									<span className="whitespace-nowrap absolute text-[10px] text-muted-foreground">
-										{month}
-									</span>
-								</div>
-							))}
-						</div>
-
-						{/* Grid Skeleton - 53 cols x 1 row (column-based grid) */}
-						<div
-							className="grid w-full gap-[3px]"
-							style={{ gridTemplateColumns: 'repeat(53, 1fr)' }}
-						>
-							{WEEKS.map(weekIndex => (
-								<div
-									key={weekIndex}
-									className="flex flex-col gap-[3px]"
-								>
-									{DAYS.map(dayIndex => (
-										<div
-											key={dayIndex}
-											className="w-full aspect-square rounded-[2px] bg-neutral-800/10 dark:bg-white/5"
-										/>
-									))}
-								</div>
-							))}
-						</div>
-
-						{/* Legend row Skeleton */}
-						<div className="flex items-center justify-between text-[10px] text-muted-foreground/50">
-							<div className="flex items-center gap-[2px]">
-								{LEGEND_OPACITIES.map((opacity, i) => (
-									<div
-										key={i}
-										className="w-[10px] h-[10px] rounded-sm bg-brand-500"
-										style={{ opacity }}
-									/>
-								))}
-							</div>
-							<Skeleton className="h-3 w-32" />
-						</div>
-					</div>
-				</div>
-
-				{/* Activity Feed Skeleton - Matches ActivityFeed component exactly */}
-				<div className="px-4 md:px-5">
-					<div className="relative overflow-hidden rounded-none border border-border/30 bg-gradient-to-br from-background/80 via-background/50 to-background/80 backdrop-blur-sm">
-						<div
-							className="absolute inset-0 bg-gradient-to-r from-primary/[0.02] via-transparent to-primary/[0.02] pointer-events-none"
-							aria-hidden="true"
-						/>
-						<div
-							className="absolute top-0 left-0 w-full h-[2px] bg-border/10"
-							aria-hidden="true"
-						/>
-						<div
-							className="absolute right-4 top-3 md:right-5 flex items-center gap-0.5 pointer-events-none"
-							aria-hidden="true"
-						>
-							<div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm will-change-opacity" />
-							<div className="h-3 w-4 bg-muted/20 animate-pulse rounded-sm will-change-opacity" />
-						</div>
-						<div
-							className="relative px-4 pt-3 pb-1 md:px-5"
-							aria-hidden="true"
-						>
-							<div className="space-y-2">
-								<div className="flex flex-wrap items-center gap-1.5">
-									<div className="h-3.5 w-28 bg-muted/20 animate-pulse will-change-opacity" />
-									<div className="h-5 w-16 bg-muted/30 animate-pulse will-change-opacity" />
-									<div className="h-3.5 w-14 bg-muted/20 animate-pulse will-change-opacity" />
-									<div className="h-5 w-32 bg-muted/30 animate-pulse will-change-opacity" />
-									<div className="h-3 w-12 bg-muted/15 animate-pulse will-change-opacity" />
-								</div>
-								<div className="flex flex-wrap items-center gap-1.5">
-									<div className="h-5 w-20 bg-muted/30 animate-pulse will-change-opacity" />
-									<div className="h-3.5 w-8 bg-muted/20 animate-pulse will-change-opacity" />
-									<div className="h-3.5 w-20 bg-muted/20 animate-pulse will-change-opacity" />
-								</div>
-							</div>
-						</div>
-						<div
-							className="h-6 flex items-center px-0 pb-1"
-							aria-hidden="true"
-						>
-							<div className="w-full h-[1px] bg-muted/20 animate-pulse will-change-opacity" />
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-	)
-}
 
 // LanguageStats skeleton matching actual structure
 export function LanguageStatsSkeleton() {
@@ -347,9 +224,6 @@ export function ContributionGraphSkeleton() {
 	)
 }
 
-// Static arrays for WorkExperience skeleton
-const EXPERIENCE_ITEMS = Array.from({ length: 6 }, (_, i) => i)
-
 export function BlogPostsSkeleton() {
 	return (
 		<section
@@ -394,35 +268,141 @@ export function BlogPostsSkeleton() {
 	)
 }
 
-// WorkExperience skeleton matching the actual structure
+const RAIL_DASHES =
+	'absolute left-3 w-px bg-[linear-gradient(to_bottom,currentColor_50%,transparent_50%)] bg-size-[1px_8px] text-border'
+
+function TextBar({ children }: { children: ReactNode }) {
+	return (
+		<span className="animate-pulse rounded-sm bg-muted/30 text-transparent box-decoration-clone">
+			{children}
+		</span>
+	)
+}
+
+function PositionSkeleton({
+	position
+}: {
+	position: ExperiencePositionItemType
+}) {
+	const meta = [
+		position.employmentPeriod,
+		position.location,
+		position.employmentType
+	].filter(Boolean)
+	const lines = (position.description ?? '')
+		.split('\n')
+		.map(line => line.trim())
+		.filter(Boolean)
+	const bullets = lines.filter(line => line.startsWith('- '))
+	const paragraphs = lines.filter(line => !line.startsWith('- '))
+
+	return (
+		<li className="relative pl-9 pt-2.5">
+			<div className="block w-full px-3 py-1.5">
+				<span className="flex items-start justify-between gap-3">
+					<div className="min-w-0">
+						<h4 className="text-sm">
+							<TextBar>{position.title}</TextBar>
+						</h4>
+						<p className="mt-0.5 font-mono text-[11px] tracking-tight">
+							<TextBar>{meta.join(' · ')}</TextBar>
+						</p>
+					</div>
+					<span className="mt-0.5 size-3.5 shrink-0" />
+				</span>
+				{position.isExpanded && (
+					<div className="pb-1 pt-3">
+						{position.description && (
+							<Prose className="prose-li:before:text-muted-foreground/20">
+								{paragraphs.map(paragraph => (
+									<p key={paragraph}>
+										<TextBar>{paragraph}</TextBar>
+									</p>
+								))}
+								{bullets.length > 0 && (
+									<ul>
+										{bullets.map(bullet => (
+											<li key={bullet}>
+												<TextBar>
+													{bullet.slice(2)}
+												</TextBar>
+											</li>
+										))}
+									</ul>
+								)}
+							</Prose>
+						)}
+						{position.skills && position.skills.length > 0 && (
+							<div className="flex flex-wrap gap-1.5 pt-2">
+								{position.skills.map(skill => (
+									<Skill
+										key={skill}
+										className="animate-pulse border-transparent bg-muted/30 text-transparent hover:border-transparent hover:text-transparent"
+									>
+										{skill}
+									</Skill>
+								))}
+							</div>
+						)}
+					</div>
+				)}
+			</div>
+		</li>
+	)
+}
+
 export function WorkExperienceSkeleton() {
 	return (
-		<section
-			className="relative"
-			aria-busy="true"
-			aria-label="Loading work experience"
-		>
-			{/* Section Header */}
-			<div className="full-width-header">
-				<div className="header-content-container flex items-center justify-between header-content-container--with-padding">
-					<Skeleton className="h-5 w-32" />
-				</div>
-			</div>
+		<Section animatedStripes title="Professional Experience">
+			<div
+				className="relative space-y-5 px-4 md:px-5 select-none"
+				aria-busy="true"
+				aria-label="Loading work experience"
+			>
+				{WORK_EXPERIENCE.map((experience, order) => {
+					const hasNext = order < WORK_EXPERIENCE.length - 1
 
-			<div className="space-y-5 px-4 md:px-5">
-				{EXPERIENCE_ITEMS.map(i => (
-					<div key={i}>
-						<div className="flex items-center gap-3">
-							<div className="size-6 shrink-0 rounded-md bg-muted/20" />
-							<Skeleton className="h-3.5 w-36" />
+					return (
+						<div
+							key={experience.id}
+							className="relative"
+							aria-hidden="true"
+						>
+							{hasNext && (
+								<span
+									className={`${RAIL_DASHES} -bottom-5 top-6`}
+								/>
+							)}
+							<div className="flex items-center gap-3">
+								<div className="size-6 shrink-0 rounded-md border border-border bg-muted/20" />
+								<h3 className="text-sm font-medium tracking-tight">
+									<TextBar>{experience.companyName}</TextBar>
+								</h3>
+							</div>
+							{experience.tagline && (
+								<div className="relative pl-9 pt-0.5">
+									{!hasNext && (
+										<span
+											className={`${RAIL_DASHES} bottom-0 top-0`}
+										/>
+									)}
+									<p className="font-mono text-[11px] tracking-tight">
+										<TextBar>{experience.tagline}</TextBar>
+									</p>
+								</div>
+							)}
+							<ul>
+								{experience.positions.map(position => (
+									<PositionSkeleton
+										key={position.id}
+										position={position}
+									/>
+								))}
+							</ul>
 						</div>
-						<div className="space-y-1.5 pl-9 pt-2.5">
-							<Skeleton className="h-3.5 w-40" />
-							<Skeleton className="h-3 w-52" />
-						</div>
-					</div>
-				))}
+					)
+				})}
 			</div>
-		</section>
+		</Section>
 	)
 }

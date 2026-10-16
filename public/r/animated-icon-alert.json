@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-alert",
+  "type": "registry:component",
+  "title": "Warning Icon",
+  "description": "Animated warning icon. Triangle wobbles.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-alert/icons/alert.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/alert.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps, dotPath } from \"../icon-frame\";\nimport \"./alert.css\";\n\nexport function AnimatedAlertIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"alert\" {...props}>\n      <path\n        data-part=\"triangle\"\n        d=\"M13.925 21h-3.85c-4.63 0-6.945 0-7.799-1.506c-.853-1.506.331-3.503 2.7-7.496l1.925-3.245C9.176 4.918 10.313 3 12 3s2.824 1.918 5.1 5.753l1.924 3.245c2.369 3.993 3.553 5.99 2.7 7.496C20.87 21 18.555 21 13.925 21Z\"\n      />\n      <g data-part=\"mark\">\n        <path d=\"M12 9v4\" />\n        <path d={dotPath(12, 16.75)} />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-alert/icons/alert.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/alert.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"alert\"] {\n    & [data-part=\"triangle\"] {\n      --icon-swing: -7deg;\n      transform-origin: 12px 21px;\n      animation-name: icon-swing;\n    }\n\n    & [data-part=\"mark\"] {\n      --icon-y: -1.5px;\n      animation-name: icon-nudge;\n    }\n  }\n}\n"
+    }
+  ]
+}

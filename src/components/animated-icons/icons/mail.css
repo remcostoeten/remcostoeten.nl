@@ -1,0 +1,29 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='mail'] {
+		& [data-part='body'] {
+			--icon-pulse: scale(1.03, 0.96);
+			transform-origin: 12px 19.5px;
+			animation-name: icon-pulse;
+		}
+
+		& [data-part='flap'] {
+			transform-origin: 12px 7px;
+			animation-name: icon-mail-flap;
+			animation-duration: var(--icon-duration-long);
+		}
+	}
+}
+
+@keyframes icon-mail-flap {
+	40%,
+	62% {
+		transform: scaleY(-0.85);
+	}
+	88% {
+		transform: scaleY(1.08);
+	}
+}

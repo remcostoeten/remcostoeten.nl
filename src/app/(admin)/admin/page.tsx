@@ -1,5 +1,7 @@
 import Link from 'next/link'
-import { ArrowUpRight, Eye, Mail, MessageSquare, Users } from 'lucide-react'
+import { ArrowUpRight, Eye, Users } from 'lucide-react'
+import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
+import { AnimatedCommentIcon } from '@/components/animated-icons/icons/comment'
 import { getAdminMetrics } from '@/server/queries/admin'
 import { getAllBlogPosts } from '@/features/blog'
 import { getAllCommentsAdmin } from '@/server/queries/blog/comments'
@@ -11,6 +13,8 @@ import {
 	CountryTraffic,
 	VisitorLog
 } from '@/components/admin/metrics/user-metrics'
+import type { ComponentType } from 'react'
+import type { AnimatedIconProps } from '@/components/animated-icons/icon-frame'
 
 function MetricCell({
 	icon: Icon,
@@ -18,7 +22,7 @@ function MetricCell({
 	value,
 	hint
 }: {
-	icon: typeof Eye
+	icon: ComponentType<AnimatedIconProps>
 	label: string
 	value: number
 	hint: string
@@ -97,7 +101,7 @@ export default async function AdminPage() {
 					hint={`Across ${pluralize(metrics.countryCount, 'country', 'countries')}`}
 				/>
 				<MetricCell
-					icon={MessageSquare}
+					icon={AnimatedCommentIcon}
 					label="Comments"
 					value={comments.length}
 					hint={
@@ -107,7 +111,7 @@ export default async function AdminPage() {
 					}
 				/>
 				<MetricCell
-					icon={Mail}
+					icon={AnimatedMailIcon}
 					label="Messages"
 					value={metrics.contactStats.length}
 					hint={

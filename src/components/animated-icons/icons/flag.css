@@ -1,0 +1,23 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='flag'] [data-part='cloth'] {
+		transform-origin: 4px 9px;
+		animation-name: icon-flag-wave;
+		animation-duration: var(--icon-duration-long);
+	}
+}
+
+@keyframes icon-flag-wave {
+	20% {
+		transform: skewY(-7deg) scaleX(0.94);
+	}
+	45% {
+		transform: skewY(5deg) scaleX(0.97);
+	}
+	70% {
+		transform: skewY(-2deg);
+	}
+}

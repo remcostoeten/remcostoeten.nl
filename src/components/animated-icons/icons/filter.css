@@ -1,0 +1,34 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='filter'] {
+		& [data-part] {
+			animation-duration: var(--icon-duration-long);
+		}
+
+		& [data-part^='knob'] {
+			animation-name: icon-pulse;
+		}
+
+		& [data-part^='track'] {
+			animation-name: icon-dash;
+		}
+
+		& [data-part='knob-top'] {
+			--icon-pulse: translateX(4px);
+		}
+		& [data-part='knob-bottom'] {
+			--icon-pulse: translateX(-4px);
+		}
+		& [data-part='track-top-start'],
+		& [data-part='track-bottom-end'] {
+			--icon-dash: 7 18;
+		}
+		& [data-part='track-top-end'],
+		& [data-part='track-bottom-start'] {
+			--icon-dash: 2 18;
+		}
+	}
+}

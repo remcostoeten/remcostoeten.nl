@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, Type, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Type } from 'lucide-react'
+import { AnimatedCloseIcon } from '@/components/animated-icons/icons/close'
 import { cn } from '@/shared/lib/cn'
 import type { FontPair } from './types'
 
@@ -127,7 +128,7 @@ export function FontSwitcher({ pairs, defaultId }: Props) {
 								onClick={() => setOpen(false)}
 								className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
 							>
-								<X className="size-3.5" />
+								<AnimatedCloseIcon className="size-3.5" />
 							</button>
 						</div>
 					</div>

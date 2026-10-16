@@ -6,6 +6,8 @@ export type DeveloperPackage = {
 	packageName: string
 	tagline: string
 	description: string
+	seoTitle?: string
+	seoDescription?: string
 	whyHeading: string
 	demoUrl?: string
 	apiIntro?: string
@@ -145,6 +147,8 @@ export async function POST(request: Request) {
 		name: 'Auth Drawer',
 		packageName: '@remcostoeten/auth-drawer',
 		tagline: 'Authentication UI, ready to adapt.',
+		seoDescription:
+			'A configurable React authentication drawer and modal. Bring your own auth backend and keep OAuth flows, forms and states in one UI.',
 		description:
 			'A configurable React authentication drawer and modal. Bring your own auth backend; keep the OAuth flows, forms, states, and polished presentation in one reusable UI primitive.',
 		whyHeading: 'The auth UI is usually the part every app rebuilds.',
@@ -579,6 +583,9 @@ export function SaveButton() {
 		name: 'Empty States',
 		packageName: 'remcostoeten.nl/r/empty-state.json',
 		tagline: 'Empty states with copy, actions and motion.',
+		seoTitle: 'React Empty State Component',
+		seoDescription:
+			'A copyable React empty state component with animated illustrations for empty lists, searches, inboxes and uploads. Tailwind v4, installed with shadcn.',
 		description:
 			'One React EmptyState component and a set of illustrations for empty lists, searches, inboxes, uploads and offline screens. Styled with Tailwind v4 and themed through CSS variables.',
 		whyHeading: 'Every list, search and inbox needs a first-run screen.',
@@ -592,8 +599,8 @@ export function SaveButton() {
 		install:
 			'npx shadcn@latest add https://www.remcostoeten.nl/r/empty-state.json',
 		quickStartFile: 'components/records-empty.tsx',
-		quickStart: `import { EmptyState } from '@/components/empty-state/empty-state'
-import { RecordIllustration } from '@/components/empty-state/illustrations'
+		quickStart: `import { EmptyState } from '@/components/home/empty-state/empty-state'
+import { RecordIllustration } from '@/components/home/empty-state/illustrations'
 
 export function RecordsEmpty() {
   return (
@@ -645,10 +652,69 @@ export function RecordsEmpty() {
 />`
 			}
 		]
+	},
+	{
+		slug: 'animated-icons',
+		name: 'Animated Icons',
+		packageName: 'remcostoeten.nl/r/animated-icons.json',
+		tagline: 'Stroke icons whose parts move on hover.',
+		seoTitle: 'Animated SVG Icons for React',
+		seoDescription:
+			'45 animated React SVG icons whose parts move on hover, focus or state change. Plain CSS keyframes, no animation library, installed with shadcn.',
+		description:
+			'45 React stroke icons where each part has its own CSS keyframes. They play on hover or focus of a trigger, on a loop, or from code when state changes. No animation library.',
+		whyHeading: 'Small motion that confirms what just happened.',
+		keywords: [
+			'React animated icons',
+			'animated SVG icons',
+			'CSS keyframes',
+			'TypeScript'
+		],
+		registryUrl: 'https://www.remcostoeten.nl/r/animated-icons.json',
+		install:
+			'npx shadcn@latest add https://www.remcostoeten.nl/r/animated-icons.json',
+		quickStartFile: 'components/search-button.tsx',
+		quickStart: `import { useEffect } from 'react'
+import { AnimatedSearchIcon } from '@/components/animated-icons/icons/search'
+import { installIconHover } from '@/components/animated-icons/icon-frame'
+
+export function SearchButton() {
+  useEffect(() => installIconHover(), [])
+
+  return (
+    <button type="button" data-icon-trigger>
+      <AnimatedSearchIcon size={20} />
+      Search
+    </button>
+  )
+}`,
+		whenToUse:
+			'Use them in navigation, buttons and rows where a hover or a completed action deserves a small response. Call playIcon() from a click handler for feedback on state changes.',
+		highlights: [
+			'Each icon is split into parts that animate on their own, such as a lid that lifts or a bell that rings while the clapper lags.',
+			'Plays on hover or focus of any [data-icon-trigger] ancestor, with a short delay on the first icon in a chain.',
+			'Plain CSS keyframes and no runtime dependency. Animations stop under reduced motion, except the loading spinner.',
+			'Every icon is its own registry item with its own CSS, so animated-icon-search.json installs just the search icon and the shared base.'
+		],
+		api: [
+			{
+				name: '<Animated*Icon />',
+				description: 'An SVG icon with size and stroke props.'
+			},
+			{
+				name: 'installIconHover()',
+				description: 'Plays icons on hover and focus of a trigger.'
+			},
+			{
+				name: 'playIcon(svg)',
+				description: 'Plays an icon from code, for state changes.'
+			}
+		],
+		apiExamples: []
 	}
 ]
 
-type NpmPackage = {
+export type NpmPackage = {
 	version: string
 	description?: string
 	license?: string

@@ -2,7 +2,7 @@ import type {
 	EmptyStateEntrance,
 	EmptyStateLoop,
 	EmptyStatePointer
-} from '@/components/empty-state/empty-state'
+} from '@/components/home/empty-state/empty-state'
 import type { DemoEntry, DemoValues } from './entries'
 
 export const entranceOptions = ['off', 'rise', 'fade', 'blur'] as const

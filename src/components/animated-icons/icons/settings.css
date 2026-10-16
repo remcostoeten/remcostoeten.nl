@@ -1,0 +1,24 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='settings'] {
+		& [data-part^='knob'] {
+			animation-name: icon-nudge;
+		}
+
+		& [data-part^='track'] {
+			--icon-dash: 2 20;
+			animation-name: icon-dash;
+		}
+
+		& [data-part='knob-left'] {
+			--icon-y: -5px;
+		}
+
+		& [data-part='knob-right'] {
+			--icon-y: 5px;
+		}
+	}
+}

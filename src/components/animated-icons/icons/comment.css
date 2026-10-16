@@ -1,0 +1,16 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='comment'] [data-part='dots'] > path {
+		--icon-y: -2px;
+		animation-name: icon-nudge;
+	}
+
+	&[data-icon='comment'] [data-part='bubble'] {
+		--icon-pulse: scale(1.04);
+		transform-origin: 3px 20px;
+		animation-name: icon-pulse;
+	}
+}

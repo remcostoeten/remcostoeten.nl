@@ -1,0 +1,20 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='copy'] {
+		& [data-part='back'] {
+			--icon-x: -1.5px;
+			--icon-y: -1.5px;
+			animation-name: icon-nudge;
+		}
+
+		& [data-part='front'] {
+			--icon-x: 1.75px;
+			--icon-y: 1.75px;
+			--icon-delay: 70ms;
+			animation-name: icon-nudge;
+		}
+	}
+}

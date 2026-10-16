@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react'
-import Link from 'next/link'
-import { DrawArrow } from '@/components/ui/micro-glyphs'
 import { BookGlyph, BoxGlyph, GithubGlyph } from '@/components/ui/link-glyphs'
 import { Section } from '@/components/ui/section'
 import {
@@ -26,6 +24,10 @@ const featuredPreviews: Record<string, ReactNode> = {
 
 const downloadFormat = new Intl.NumberFormat('en', { notation: 'compact' })
 
+type Props = {
+	onlyNpm?: boolean
+}
+
 function getPackageLinks(pkg: DeveloperPackage) {
 	const links: FeaturedLink[] = []
 	if (pkg.docsUrl) {
@@ -40,16 +42,19 @@ function getPackageLinks(pkg: DeveloperPackage) {
 	return links
 }
 
-export async function PackagesSection() {
-	const [featured, ...rest] = developerPackages
+export async function PackagesSection({ onlyNpm = false }: Props) {
+	const packages = onlyNpm
+		? developerPackages.filter(pkg => pkg.npmUrl)
+		: developerPackages
+	const [featured, ...rest] = packages
 	const [registryData, downloads] = await Promise.all([
 		Promise.all(
-			developerPackages.map(pkg =>
+			packages.map(pkg =>
 				pkg.npmUrl ? getNpmPackage(pkg.packageName) : null
 			)
 		),
 		Promise.all(
-			developerPackages.map(pkg =>
+			packages.map(pkg =>
 				pkg.npmUrl ? getWeeklyDownloads(pkg.packageName) : null
 			)
 		)
@@ -58,20 +63,7 @@ export async function PackagesSection() {
 	const featuredDownloads = downloads[0]
 
 	return (
-		<Section
-			title="Developer packages"
-			noHeaderMargin
-			contentPadding={false}
-			headerAction={
-				<Link
-					href={'/packages' as Route}
-					className="group flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground rounded-sm focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
-				>
-					View all
-					<DrawArrow />
-				</Link>
-			}
-		>
+		<Section title="All packages" noHeaderMargin contentPadding={false}>
 			<div className="border-b border-border/50">
 				<div className="border-b border-border/60">
 					<FeaturedCard

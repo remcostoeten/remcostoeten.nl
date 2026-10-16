@@ -1,12 +1,13 @@
 import type { CSSProperties, ReactNode } from 'react'
-import type { LucideIcon } from 'lucide-react'
+import type { ComponentType } from 'react'
+import type { AnimatedIconProps } from '@/components/animated-icons/icon-frame'
 
 type BackgroundDirection = 'default' | 'horizontal' | 'vertical' | 'diagonal'
 type ColorPattern = 'light' | 'dark'
 
 interface HeadingProps {
 	title: string
-	icon?: LucideIcon
+	icon?: ComponentType<AnimatedIconProps>
 	headerAction?: ReactNode
 	className?: string
 	/** Remove margin-bottom from the header */

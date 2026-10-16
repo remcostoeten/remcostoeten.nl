@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-calendar",
+  "type": "registry:component",
+  "title": "Calendar Icon",
+  "description": "Animated calendar icon. Rings hop, days pop in.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-calendar/icons/calendar.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/calendar.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps, dotPath } from \"../icon-frame\";\nimport \"./calendar.css\";\n\nexport function AnimatedCalendarIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"calendar\" {...props}>\n      <path d=\"M13 4h-2C7.229 4 5.343 4 4.172 5.172S3 8.229 3 12v2c0 3.771 0 5.657 1.172 6.828S7.229 22 11 22h2c3.771 0 5.657 0 6.828-1.172S21 17.771 21 14v-2c0-3.771 0-5.657-1.172-6.828S16.771 4 13 4M3 10h18\" />\n      <g data-stagger=\"\">\n        <path data-part=\"ring\" d=\"M8 2v4\" />\n        <path data-part=\"ring\" d=\"M16 2v4\" />\n      </g>\n      <g data-part=\"days\" data-stagger=\"\">\n        <path d={dotPath(7.5, 14)} />\n        <path d={dotPath(12, 14)} />\n        <path d={dotPath(16.5, 14)} />\n        <path d={dotPath(7.5, 18)} />\n        <path d={dotPath(12, 18)} />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-calendar/icons/calendar.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/calendar.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"calendar\"] {\n    & [data-part=\"ring\"] {\n      --icon-y: -1.75px;\n      animation-name: icon-nudge;\n      animation-duration: var(--icon-duration-short);\n    }\n\n    & [data-part=\"days\"] > path {\n      --icon-delay: 110ms;\n      --icon-scale: 0.45;\n      --icon-overshoot: 1;\n      transform-box: fill-box;\n      transform-origin: center;\n      animation-name: icon-pop;\n      animation-duration: var(--icon-duration-short);\n    }\n  }\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='attachment'] [data-part='clip'] {
+		--icon-swing: -18deg;
+		transform-origin: 7px 7px;
+		animation-name: icon-swing;
+		animation-duration: var(--icon-duration-long);
+	}
+}

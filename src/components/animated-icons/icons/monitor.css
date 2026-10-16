@@ -1,0 +1,19 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='monitor'] {
+		& [data-part='screen'] {
+			--icon-pulse: scale(0.94);
+			transform-origin: 12px 10.25px;
+			animation-name: icon-pulse;
+		}
+
+		& [data-part='stand'] {
+			--icon-y: 1px;
+			--icon-delay: 80ms;
+			animation-name: icon-nudge;
+		}
+	}
+}

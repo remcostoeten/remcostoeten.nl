@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-flag",
+  "type": "registry:component",
+  "title": "Flag Icon",
+  "description": "Animated flag icon. Cloth waves from the pole.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-flag/icons/flag.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/flag.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./flag.css\";\n\nexport function AnimatedFlagIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"flag\" {...props}>\n      <path d=\"M4 7v14\" />\n      <path\n        data-part=\"cloth\"\n        d=\"M11.758 3.909c-3.306-1.684-5.907-.698-7.204.31c-.234.182-.35.273-.452.48C4 4.909 4 5.102 4 5.49v9.243c.97-1.098 3.879-2.8 7.758-.823c3.466 1.765 6.416 1.033 7.812.27c.193-.105.29-.158.36-.276s.07-.246.07-.502V5.874c0-.829 0-1.243-.197-1.393c-.198-.15-.66-.022-1.583.234c-1.58.438-3.878.51-6.462-.806\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-flag/icons/flag.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/flag.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"flag\"] [data-part=\"cloth\"] {\n    transform-origin: 4px 9px;\n    animation-name: icon-flag-wave;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n\n@keyframes icon-flag-wave {\n  20% {\n    transform: skewY(-7deg) scaleX(0.94);\n  }\n  45% {\n    transform: skewY(5deg) scaleX(0.97);\n  }\n  70% {\n    transform: skewY(-2deg);\n  }\n}\n"
+    }
+  ]
+}

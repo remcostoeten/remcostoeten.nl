@@ -51,7 +51,7 @@ function ShowcaseSkeleton({
 }) {
 	return (
 		<section className="w-full max-w-3xl px-3 sm:px-0">
-			<div className="grid border-l border-r border-t border-border sm:grid-cols-2">
+			<div className="grid border-t border-border sm:grid-cols-2">
 				{Array.from({ length: featuredCount }).map((_, i) => (
 					<div
 						key={i}
@@ -61,10 +61,10 @@ function ShowcaseSkeleton({
 					</div>
 				))}
 			</div>
-			<div className="relative border-l border-r border-border">
+			<div className="relative">
 				<div
 					className="flex flex-col bg-card overflow-hidden"
-					style={{ maxHeight: `${rowCount * 40}px` }}
+					style={{ height: `${rowCount * 40}px` }}
 				>
 					{Array.from({ length: rowCount }).map((_, i) => (
 						<ProjectRowSkeleton key={i} />
@@ -72,7 +72,12 @@ function ShowcaseSkeleton({
 				</div>
 				<div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 sm:h-20 bg-gradient-to-t from-background to-transparent" />
 			</div>
-			<div className="mt-2 h-4 w-20 bg-muted/40 rounded animate-pulse" />
+			<div className="flex items-center gap-2 px-2 py-2 text-xs sm:px-3">
+				<div className="size-2.5 shrink-0 rounded-sm bg-muted/40" />
+				<div className="flex h-[1lh] items-center">
+					<div className="h-2.5 w-20 rounded bg-muted/40 animate-pulse" />
+				</div>
+			</div>
 		</section>
 	)
 }

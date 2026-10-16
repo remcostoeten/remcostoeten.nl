@@ -3,7 +3,6 @@
 import { Analytics } from '@spoar/sdk/next'
 import { AnalyticsProvider } from '@spoar/sdk/react'
 import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
-import { PostHogAnalytics } from './posthog'
 import { analytics } from './spoar'
 
 export { VercelSpeedInsights }
@@ -13,7 +12,6 @@ export function UnifiedAnalytics() {
 
 	return (
 		<>
-			<PostHogAnalytics />
 			{analytics ? (
 				<AnalyticsProvider client={analytics}>
 					<Analytics />

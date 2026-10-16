@@ -1,15 +1,10 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import {
-	Play,
-	Copy,
-	Check,
-	ChevronDown,
-	ExternalLink,
-	Loader2,
-	AlertCircle
-} from 'lucide-react'
+import { Play, ChevronDown, ExternalLink, Loader2 } from 'lucide-react'
+import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
+import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
+import { AnimatedAlertCircleIcon } from '@/components/animated-icons/icons/alert-circle'
 
 interface Endpoint {
 	name: string
@@ -286,7 +281,7 @@ export function SpotifyApiExplorer() {
 				{/* Error Display */}
 				{error && (
 					<div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3">
-						<AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+						<AnimatedAlertCircleIcon className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
 						<div>
 							<p className="text-sm font-semibold text-red-400">
 								Request Failed
@@ -309,9 +304,9 @@ export function SpotifyApiExplorer() {
 								}`}
 							>
 								{copied ? (
-									<Check className="w-3 h-3" />
+									<AnimatedCheckIcon className="w-3 h-3" />
 								) : (
-									<Copy className="w-3 h-3" />
+									<AnimatedCopyIcon className="w-3 h-3" />
 								)}
 								{copied ? 'Copied!' : 'Copy'}
 							</button>

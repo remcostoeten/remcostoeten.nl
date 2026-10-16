@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import * as m from 'motion/react-m'
 import { AnimatePresence } from 'motion/react'
-import { X } from 'lucide-react'
+import { AnimatedCloseIcon } from '@/components/animated-icons/icons/close'
 import { signInWithPopup } from '@/features/auth/client'
 
 interface OAuthModalProps {
@@ -126,7 +126,7 @@ export function OAuthModal({ isOpen, onClose, provider }: OAuthModalProps) {
 									aria-label="Close modal"
 									className="text-zinc-400 hover:text-white transition-colors disabled:opacity-50"
 								>
-									<X className="w-5 h-5" />
+									<AnimatedCloseIcon className="w-5 h-5" />
 								</button>
 							</div>
 

@@ -1,0 +1,19 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='download'] {
+		& [data-part='arrow'] {
+			--icon-y: 2px;
+			animation-name: icon-nudge;
+		}
+
+		& [data-part='tray'] {
+			--icon-pulse: scaleX(1.06);
+			--icon-delay: 140ms;
+			transform-origin: 12px 20px;
+			animation-name: icon-pulse;
+		}
+	}
+}

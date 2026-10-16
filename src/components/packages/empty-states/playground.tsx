@@ -2,16 +2,17 @@
 
 import { useId, useState } from 'react'
 import { RotateCcw } from 'lucide-react'
-import { EmptyState } from '@/components/empty-state/empty-state'
+import { EmptyState } from '@/components/home/empty-state/empty-state'
 import {
 	caps,
 	ruleBottom,
 	ruleTop,
 	sectionClass,
 	textButton
-} from './class-names'
+} from '@/components/resources/class-names'
 import type { DemoEntry, DemoValues } from './entries'
-import { SourcePanel } from './source-panel'
+import { SourcePanel } from '@/components/resources/source-panel'
+import type { InstallMode, ResourceConfig } from '@/components/resources/types'
 import {
 	actionLabel,
 	buildUsage,
@@ -46,6 +47,7 @@ type Toggle = {
 }
 
 type PlaygroundProps = {
+	config: ResourceConfig
 	entry: DemoEntry
 	notify: (message: string) => void
 }
@@ -129,7 +131,15 @@ function togglesFor(entry: DemoEntry): Toggle[] {
 	]
 }
 
-export function Playground({ entry, notify }: PlaygroundProps) {
+function importsFor(mode: InstallMode, names: readonly string[]) {
+	const base = mode === 'copy' ? '.' : '@/components/home/empty-state'
+	return [
+		`import { EmptyState } from "${base}/empty-state";`,
+		`import { ${names.join(', ')} } from "${base}/illustrations";`
+	].join('\n')
+}
+
+export function Playground({ config, entry, notify }: PlaygroundProps) {
 	const [values, setValues] = useState(entry.defaults)
 	const [replay, setReplay] = useState(0)
 	const fieldId = useId()
@@ -355,7 +365,8 @@ export function Playground({ entry, notify }: PlaygroundProps) {
 				</div>
 			</section>
 			<SourcePanel
-				imports={entry.imports}
+				config={config}
+				importsFor={mode => importsFor(mode, entry.imports)}
 				usage={buildUsage(entry, values)}
 				defaultUsage={buildUsage(entry, entry.defaults)}
 				notify={notify}
@@ -368,11 +379,12 @@ function Preview({
 	entry,
 	values,
 	notify
-}: PlaygroundProps & { values: DemoValues }) {
+}: Omit<PlaygroundProps, 'config'> & { values: DemoValues }) {
 	return (
 		<EmptyState
 			title={values.title}
 			description={values.description}
+			headingLevel="h3"
 			illustration={entry.illustration(values.variant)}
 			size={entry.size}
 			animated={parseEntrance(values.animated)}

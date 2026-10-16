@@ -1,0 +1,163 @@
+.animated-icon {
+	--ease-icon: cubic-bezier(0.32, 0, 0.12, 1);
+	--ease-icon-swing: cubic-bezier(0.37, 0, 0.63, 1);
+	--icon-duration-short: 600ms;
+	--icon-duration: 750ms;
+	--icon-duration-long: 1000ms;
+	--icon-stagger: 70ms;
+
+	flex: none;
+	overflow: visible;
+
+	/* WORKAROUND: naming the SVG tags keeps these selectors out of the universal bucket on full style recalcs. */
+	& path,
+	& g,
+	& circle,
+	& rect,
+	& line,
+	& polyline,
+	& polygon,
+	& ellipse {
+		transform-box: view-box;
+		transform-origin: 12px 12px;
+	}
+
+	& [data-stagger] > path:nth-child(2),
+	& [data-stagger] > g:nth-child(2),
+	& [data-stagger] > rect:nth-child(2) {
+		--icon-index: 1;
+	}
+	& [data-stagger] > path:nth-child(3),
+	& [data-stagger] > g:nth-child(3),
+	& [data-stagger] > rect:nth-child(3) {
+		--icon-index: 2;
+	}
+	& [data-stagger] > path:nth-child(4),
+	& [data-stagger] > g:nth-child(4),
+	& [data-stagger] > rect:nth-child(4) {
+		--icon-index: 3;
+	}
+	& [data-stagger] > path:nth-child(5),
+	& [data-stagger] > g:nth-child(5),
+	& [data-stagger] > rect:nth-child(5) {
+		--icon-index: 4;
+	}
+}
+
+.animated-icon[data-restart]
+	:is(path, g, circle, rect, line, polyline, polygon, ellipse) {
+	animation: none !important;
+}
+
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	& path,
+	& g,
+	& circle,
+	& rect,
+	& line,
+	& polyline,
+	& polygon,
+	& ellipse {
+		animation-duration: var(--icon-duration);
+		animation-timing-function: var(--ease-icon-swing);
+		animation-delay: calc(
+			var(--icon-delay, 0ms) + var(--icon-index, 0) * var(--icon-stagger)
+		);
+		animation-fill-mode: backwards;
+	}
+}
+
+@keyframes icon-draw {
+	from {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 0.4;
+	}
+	to {
+		stroke-dasharray: 1;
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes icon-turn {
+	from {
+		transform: rotate(var(--icon-turn)) scale(var(--icon-scale, 1));
+	}
+}
+
+@keyframes icon-pop {
+	from {
+		transform: rotate(var(--icon-turn, 0deg)) scale(var(--icon-scale));
+	}
+	62% {
+		transform: rotate(calc(var(--icon-turn, 0deg) * -0.12))
+			scale(
+				calc(1 + (1 - var(--icon-scale)) * var(--icon-overshoot, 0.25))
+			);
+	}
+}
+
+@keyframes icon-nudge {
+	35% {
+		transform: translate(var(--icon-x, 0px), var(--icon-y, 0px));
+	}
+	70% {
+		transform: translate(
+			calc(var(--icon-x, 0px) * -0.2),
+			calc(var(--icon-y, 0px) * -0.2)
+		);
+	}
+}
+
+@keyframes icon-pulse {
+	40% {
+		transform: var(--icon-pulse);
+	}
+}
+
+@keyframes icon-dash {
+	40% {
+		stroke-dasharray: var(--icon-dash);
+	}
+}
+
+@keyframes icon-swing {
+	20% {
+		transform: rotate(var(--icon-swing));
+	}
+	45% {
+		transform: rotate(calc(var(--icon-swing) * -0.65));
+	}
+	70% {
+		transform: rotate(calc(var(--icon-swing) * 0.25));
+	}
+}
+
+@keyframes icon-shake {
+	20% {
+		transform: translateX(-1.5px);
+	}
+	40% {
+		transform: translateX(1.25px);
+	}
+	60% {
+		transform: translateX(-0.75px);
+	}
+	80% {
+		transform: translateX(0.4px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.animated-icon:not([data-icon='loading'])
+		:is(path, g, circle, rect, line, polyline, polygon, ellipse) {
+		animation: none !important;
+	}
+
+	.animated-icon [data-part='fill'] {
+		transition: none !important;
+	}
+}

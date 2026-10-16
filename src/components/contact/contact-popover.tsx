@@ -3,7 +3,9 @@
 import { useState, useRef, useEffect } from 'react'
 import * as m from 'motion/react-m'
 import { AnimatePresence } from 'motion/react'
-import { X, Mail, User } from 'lucide-react'
+import { AnimatedCloseIcon } from '@/components/animated-icons/icons/close'
+import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
+import { AnimatedUserIcon } from '@/components/animated-icons/icons/user'
 import { toast } from 'sonner'
 import { submitContactForm } from '@/server/actions/contact/submission'
 import { EmailAutocomplete } from './email-autocomplete'
@@ -218,7 +220,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 									id="contact-form-title"
 									className="font-semibold text-lg flex items-center gap-2"
 								>
-									<Mail className="w-5 h-5 text-primary" />
+									<AnimatedMailIcon className="w-5 h-5 text-primary" />
 									Get in touch
 								</h3>
 								<button
@@ -227,7 +229,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 									aria-label="Close contact form"
 									className="text-muted-foreground hover:text-foreground rounded-full p-1 hover:bg-accent transition-colors focus-visible:outline-none focus-visible:bg-accent focus-visible:text-foreground"
 								>
-									<X className="w-4 h-4" />
+									<AnimatedCloseIcon className="w-4 h-4" />
 								</button>
 							</div>
 
@@ -240,7 +242,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 										Name
 									</label>
 									<div className="relative">
-										<User className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+										<AnimatedUserIcon className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
 										<input
 											id="name"
 											name="name"
@@ -282,7 +284,7 @@ export function ContactPopover({ initialOpen = false }: TContactPopoverProps) {
 										Email
 									</label>
 									<div className="relative">
-										<Mail className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground z-10" />
+										<AnimatedMailIcon className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground z-10" />
 										<EmailAutocomplete
 											id="email"
 											name="email"

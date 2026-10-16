@@ -1,0 +1,12 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='key'] [data-part='key'] {
+		--icon-swing: -14deg;
+		transform-origin: 7.5px 12px;
+		animation-name: icon-swing;
+		animation-duration: var(--icon-duration-long);
+	}
+}

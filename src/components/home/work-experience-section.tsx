@@ -20,8 +20,14 @@ export const WORK_EXPERIENCE: ExperienceItemType[] = [
 					'React',
 					'GraphQL/REST',
 					'PHP/Symfony',
-					'Elixir'
+					'Elixir',
+					'Infrastructure/Ops'
 				],
+				highlightedSkills: {
+					'PHP/Symfony': 'Learning',
+					Elixir: 'Learning',
+					'Infrastructure/Ops': 'Learning'
+				},
 				isExpanded: true
 			}
 		],

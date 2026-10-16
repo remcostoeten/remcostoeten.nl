@@ -3,10 +3,14 @@
 import { useState, useEffect, useTransition } from 'react'
 import * as m from 'motion/react-m'
 import { AnimatePresence } from 'motion/react'
-import { Trash2, MessageSquare, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import { AnimatedTrashIcon } from '@/components/animated-icons/icons/trash'
+import { AnimatedCommentIcon } from '@/components/animated-icons/icons/comment'
 import { useSession } from '@/features/auth/client'
 import Image from 'next/image'
 import { addComment, deleteComment } from '@/server/actions/blog/comments'
+import { EmptyState } from '@/components/home/empty-state/empty-state'
+import { CommentsIllustration } from '@/components/home/empty-state/illustrations'
 import { SignInButton } from './sign-in-button'
 
 type Comment = {
@@ -86,7 +90,7 @@ export function CommentSection({ slug }: Props) {
 	return (
 		<div className="mt-12 border-t border-border/60 pt-8">
 			<div className="mb-6 flex items-center gap-2">
-				<MessageSquare className="h-4 w-4 text-muted-foreground" />
+				<AnimatedCommentIcon className="h-4 w-4 text-muted-foreground" />
 				<h2 className="text-base font-medium text-foreground">
 					Comments
 					{comments.length > 0 && (
@@ -140,7 +144,7 @@ export function CommentSection({ slug }: Props) {
 								<button
 									type="submit"
 									disabled={!newComment.trim() || isPending}
-									className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground 
+									className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground
                                         font-medium rounded-lg transition-colors
                                         disabled:opacity-50 disabled:cursor-not-allowed
                                         flex items-center gap-2"
@@ -168,9 +172,12 @@ export function CommentSection({ slug }: Props) {
 					<Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
 				</div>
 			) : comments.length === 0 ? (
-				<p className="py-4 text-sm text-muted-foreground">
-					No comments yet.
-				</p>
+				<EmptyState
+					title="No comments yet"
+					description="Start the conversation with the first comment."
+					illustration={<CommentsIllustration />}
+					headingLevel="h3"
+				/>
 			) : (
 				<div className="space-y-6">
 					<AnimatePresence>
@@ -224,11 +231,11 @@ export function CommentSection({ slug }: Props) {
 												handleDelete(comment.id)
 											}
 											disabled={isPending}
-											className="mt-2 text-xs text-muted-foreground hover:text-destructive 
+											className="mt-2 text-xs text-muted-foreground hover:text-destructive
                                                 transition-colors flex items-center gap-1
                                                 disabled:opacity-50"
 										>
-											<Trash2 className="w-3 h-3" />
+											<AnimatedTrashIcon className="w-3 h-3" />
 											Delete
 										</button>
 									)}

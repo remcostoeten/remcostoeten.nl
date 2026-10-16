@@ -1,0 +1,17 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='arrow-right'] {
+		& [data-part='head'] {
+			--icon-pulse: translateX(3px);
+			animation-name: icon-pulse;
+		}
+
+		& [data-part='shaft'] {
+			--icon-dash: 16.5 20;
+			animation-name: icon-dash;
+		}
+	}
+}

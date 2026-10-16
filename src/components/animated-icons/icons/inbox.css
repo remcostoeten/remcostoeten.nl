@@ -1,0 +1,18 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='inbox'] {
+		& [data-part='tray'] {
+			--icon-y: 2.25px;
+			animation-name: icon-nudge;
+		}
+
+		& [data-part='box'] {
+			--icon-pulse: scale(1.04, 0.96);
+			transform-origin: 12px 21.5px;
+			animation-name: icon-pulse;
+		}
+	}
+}

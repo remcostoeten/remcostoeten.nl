@@ -1,0 +1,21 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='link'] {
+		& [data-part^='link'] {
+			animation-name: icon-nudge;
+		}
+
+		& [data-part='link-start'] {
+			--icon-x: -1.5px;
+			--icon-y: 1.5px;
+		}
+
+		& [data-part='link-end'] {
+			--icon-x: 1.5px;
+			--icon-y: -1.5px;
+		}
+	}
+}

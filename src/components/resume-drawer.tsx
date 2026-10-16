@@ -1,7 +1,9 @@
 'use client'
 
 import { Drawer } from 'vaul'
-import { FileUser, Download, X, Maximize2, Minimize2 } from 'lucide-react'
+import { FileUser, Maximize2, Minimize2 } from 'lucide-react'
+import { AnimatedDownloadIcon } from '@/components/animated-icons/icons/download'
+import { AnimatedCloseIcon } from '@/components/animated-icons/icons/close'
 import { useState } from 'react'
 
 type Props = {
@@ -63,14 +65,14 @@ export function ResumeDrawer({ initialOpen = false }: Props) {
 								className="p-2 hover:bg-muted rounded-full transition-colors focus-visible:outline-none focus-visible:bg-muted"
 								title="Download PDF"
 							>
-								<Download className="w-4 h-4" />
+								<AnimatedDownloadIcon className="w-4 h-4" />
 							</a>
 							<Drawer.Close asChild>
 								<button
 									className="p-2 hover:bg-muted rounded-full transition-colors focus-visible:outline-none focus-visible:bg-muted"
 									aria-label="Close resume drawer"
 								>
-									<X className="w-4 h-4" />
+									<AnimatedCloseIcon className="w-4 h-4" />
 								</button>
 							</Drawer.Close>
 						</div>

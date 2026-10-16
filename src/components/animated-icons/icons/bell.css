@@ -1,0 +1,68 @@
+.animated-icon[data-icon='bell'] [data-part='dot'] {
+	fill: var(--icon-badge, currentColor);
+	stroke: var(--icon-badge-ring, transparent);
+	stroke-width: 2;
+	paint-order: stroke;
+}
+
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='bell'] {
+		& [data-part='body'],
+		& [data-part='clapper'] {
+			transform-origin: 12px 2.5px;
+			animation-duration: var(--icon-duration-long);
+		}
+
+		& [data-part='body'] {
+			animation-name: icon-bell-body;
+		}
+
+		& [data-part='clapper'] {
+			--icon-delay: 60ms;
+			animation-name: icon-bell-clapper;
+		}
+
+		& [data-part='dot'] {
+			--icon-scale: 0.6;
+			--icon-overshoot: 0.8;
+			--icon-delay: 120ms;
+			transform-origin: 18.5px 5.5px;
+			animation-name: icon-pop;
+			animation-duration: var(--icon-duration-short);
+		}
+	}
+}
+
+@keyframes icon-bell-body {
+	15% {
+		transform: rotate(14deg);
+	}
+	35% {
+		transform: rotate(-11deg);
+	}
+	55% {
+		transform: rotate(7deg);
+	}
+	75% {
+		transform: rotate(-3deg);
+	}
+}
+
+@keyframes icon-bell-clapper {
+	18% {
+		transform: rotate(8deg) translateX(-2px);
+	}
+	38% {
+		transform: rotate(-7deg) translateX(2.5px);
+	}
+	58% {
+		transform: rotate(4deg) translateX(-1.5px);
+	}
+	78% {
+		transform: rotate(-2deg) translateX(0.6px);
+	}
+}

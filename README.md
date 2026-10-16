@@ -1,105 +1,54 @@
-# remcostoeten.nl
+<p align="center">
+  <img src="public/icon-192.png" width="88" alt="remcostoeten.nl logo" />
+</p>
 
-Source for [remcostoeten.nl](https://remcostoeten.nl), a personal website built with Next.js.  
-It combines a portfolio-style marketing site, an MDX blog, a protected admin area, and a small activity system that pulls GitHub and Spotify data into Postgres.
+<h1 align="center">remcostoeten.nl</h1>
 
-![Preview of remcostoeten.nl](./public/images/readme/site-preview.png)
+<p align="center">Source for <a href="https://remcostoeten.nl">remcostoeten.nl</a>, the personal website, blog and toolbox of Remco Stoeten.</p>
 
-## What this project includes
+<p align="center">
+  <img src="https://shieldcn.dev/github/remcostoeten/remcostoeten.nl/ci.svg?font=jetbrains-mono" alt="CI" />
+  <img src="https://shieldcn.dev/badge/framework-Next.js%2016-black.svg?font=jetbrains-mono&logo=nextdotjs" alt="framework: Next.js 16" />
+  <img src="https://shieldcn.dev/badge/runtime-Bun-black.svg?font=jetbrains-mono&logo=bun" alt="runtime: Bun" />
+  <img src="https://shieldcn.dev/badge/database-Postgres-black.svg?font=jetbrains-mono&logo=postgresql" alt="database: Postgres" />
+  <img src="https://shieldcn.dev/badge/deploy-Vercel-black.svg?font=jetbrains-mono&logo=vercel" alt="deploy: Vercel" />
+</p>
 
-- A homepage with work experience, featured projects, and personal profile content
-- A filesystem-based MDX blog with topics, RSS, syntax highlighting, and draft support
-- An admin area for managing project visibility and internal content workflows
-- GitHub and Spotify integrations for recent activity and listening data
-- A contact flow backed by server actions and database persistence
-- Optional analytics and email integrations for production deployments
+<p align="center">
+  <img src="public/images/readme/demo.webp" width="100%" alt="Scrolling the homepage from the intro and tech stack through experience, projects and UI resources, then opening the blog and tools pages" />
+</p>
+<p align="center">
+  <sub>Recorded on a local dev server of this branch at 1440×900.</sub>
+</p>
 
-## Stack
+The site is a Next.js App Router application. Public pages are prerendered, activity data such as GitHub commits and Spotify playback is read from Postgres and refreshed by a daily cron, and a signed-in admin area edits the content behind the public pages.
 
-- Next.js 16, React 19 and TypeScript
-- Tailwind v4
-- Drizzle ORM + Postgres cloud (neon.tech)
-- GitHub OAuth (better-auth)
-- oxlint/oxfmt
+- **Blog** written as markdown files in the repo, with topics, drafts, RSS, callouts, syntax highlighting, reactions and comments.
+- **Activity feed** showing recent GitHub commits and current Spotify listening on the homepage.
+- **Browser tools** at `/tools`: diff checker, JSON formatter, SVG and HEIC converters, link extractor, find and replace, and a few map utilities.
+- **Package pages** at `/packages` documenting the open-source React packages published under `@remcostoeten`.
+- **Admin area** behind GitHub or Google sign-in for the intro, experience, projects, blog, contact submissions and analytics.
+- **Contact form** backed by server actions and stored in Postgres.
+- **SEO** handled per route: generated Open Graph images, sitemap, robots, manifest and canonical URLs.
 
-- PostHog, Vercel Analytics, GitHub API, Spotify API
+## Development
 
-## Requirements
-
-- Node.js `24.x`
-- Bun
-- A Postgres database
-
-## Quick Start
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/remcostoeten/remcostoeten.nl.git
-cd remcostoeten.nl
-```
-
-2. Install dependencies
+Node 24 and Bun 1.3 are required, plus a Postgres connection string. Neon works out of the box.
 
 ```bash
-bun install
+bun install                 # install dependencies
+cp .env.example .env.local  # then fill in DATABASE_URL, BETTER_AUTH_URL and BETTER_AUTH_SECRET
+bun run db:push             # push the Drizzle schema to the database
+bun run dev                 # start the dev server on http://localhost:3000
+bun run check               # oxlint, tsgo typecheck and vitest
 ```
 
-3. Create your local environment file
+Every other variable in `.env.example` enables one integration (GitHub, Google, Spotify, YouTube Music, PostHog, ipinfo). A missing one disables its feature instead of breaking the build. The GitHub and Google OAuth apps can be created with [oauth-app-automator](https://github.com/remcostoeten/oauth-app-automator).
 
-```bash
-cp .env.example .env.local
-```
+Server code lives under `src/server`, route handlers stay thin and delegate to it, and blog posts are read from `src/app/(marketing)/blog/posts` and enriched with topic and reading time at build.
 
-4. Fill in the minimum required variables in `.env.local`
+<br/>
 
-```bash
-DATABASE_URL="<https://neon.tech>"
-BETTER_AUTH_URL="http://localhost:3000"
-BETTER_AUTH_SECRET="<random string>"
-```
-
-5. Push the schema to your database
-
-```bash
-bun drizzle-kit push
-```
-
-6. Start the development server
-
-```bash
-bun run dev
-```
-
-Open `http://localhost:3000`.
-
-## Environment Variables
-
-Required for a basic local setup:
-
-- `DATABASE_URL`
-- `BETTER_AUTH_URL`
-- `BETTER_AUTH_SECRET`
-
-Optional, depending on which features you want enabled:
-
-- `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` for GitHub OAuth
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for Google OAuth
-    - `GITHUB_TOKEN` for server-side GitHub API access
-- `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `SPOTIFY_REDIRECT_URI` for Spotify data
-- `IP_INFO_TOKEN` for IP geolocation https://ipinfo.io/
-- `CRON_SECRET` for protected sync endpoints
-  <small>💡 For automated GitHub (and Google) OAuth creation view <a target="_blank" href="https://github.com/remcostoeten/oauth-app-automator">OAuth App Automator</a></small>
-
-If an optional integration is missing, the related feature will be limited or disabled rather than preventing the whole app from running.
-
-## Architecture Notes
-
-- Server code stays under `src/server` to keep runtime boundaries explicit.
-- API routes are intentionally thin and delegate work to server domains or actions.
-- Blog posts are read from the filesystem, parsed from frontmatter, and enriched with derived metadata like topic and reading time.
-- Draft visibility is enforced in the blog layer so unpublished posts stay private to authorized users.
-
-## License
-
-[MIT](./LICENSE)
+xxx,<br/>
+[Remco Stoeten](https://remcostoeten.com)<br/>
+<small>MIT</small>

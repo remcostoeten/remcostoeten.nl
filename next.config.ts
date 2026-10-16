@@ -1,14 +1,5 @@
 import type { NextConfig } from 'next'
 
-const posthogHost = (
-	process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com'
-).replace(/\/+$/, '')
-
-const posthogAssetsHost = posthogHost.replace(
-	'.i.posthog.com',
-	'-assets.i.posthog.com'
-)
-
 const nextConfig: NextConfig = {
 	outputFileTracingRoot: process.cwd(),
 	reactCompiler: true,
@@ -93,31 +84,6 @@ const nextConfig: NextConfig = {
 	compress: true,
 	productionBrowserSourceMaps: false,
 	skipTrailingSlashRedirect: true,
-	async headers() {
-		return [
-			{
-				source: '/ingest/static/:path*',
-				headers: [
-					{
-						key: 'Cache-Control',
-						value: 'public, max-age=31536000, immutable'
-					}
-				]
-			}
-		]
-	},
-	async rewrites() {
-		return [
-			{
-				source: '/ingest/static/:path*',
-				destination: `${posthogAssetsHost}/static/:path*`
-			},
-			{
-				source: '/ingest/:path*',
-				destination: `${posthogHost}/:path*`
-			}
-		]
-	},
 	experimental: {
 		inlineCss: true,
 		optimizePackageImports: [

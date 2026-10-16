@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-loading",
+  "type": "registry:component",
+  "title": "Loading Icon",
+  "description": "Animated loading icon. Always ticks round.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-loading/icons/loading.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/loading.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./loading.css\";\n\nexport function AnimatedLoadingIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"loading\" {...props}>\n      <g data-part=\"spokes\">\n        <path d=\"M12 3v3\" />\n        <path d=\"M18.364 5.637l-2.122 2.121\" strokeOpacity={0.22} />\n        <path d=\"M21 12h-3\" strokeOpacity={0.3} />\n        <path d=\"M18.364 18.364l-2.122-2.122\" strokeOpacity={0.4} />\n        <path d=\"M12 18v3\" strokeOpacity={0.52} />\n        <path d=\"M7.758 16.242l-2.121 2.122\" strokeOpacity={0.64} />\n        <path d=\"M6 12H3\" strokeOpacity={0.76} />\n        <path d=\"M7.758 7.758L5.637 5.637\" strokeOpacity={0.88} />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-loading/icons/loading.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/loading.css",
+      "content": ".animated-icon[data-icon=\"loading\"] [data-part=\"spokes\"] {\n  animation: icon-spin 1120ms steps(8) infinite;\n}\n\n@keyframes icon-spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-layers",
+  "type": "registry:component",
+  "title": "Layers Icon",
+  "description": "Animated layers icon. Layers lift in turn.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-layers/icons/layers.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/layers.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./layers.css\";\n\nexport function AnimatedLayersIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"layers\" {...props}>\n      <g data-part=\"layers\" data-stagger=\"\">\n        <path d=\"M12 3l9 4.5l-9 4.5l-9-4.5z\" />\n        <path d=\"M3 12l9 4.5l9-4.5\" />\n        <path d=\"M3 16.5L12 21l9-4.5\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-layers/icons/layers.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/layers.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"layers\"] [data-part=\"layers\"] > path {\n    --icon-y: -1.25px;\n    animation-name: icon-nudge;\n  }\n}\n"
+    }
+  ]
+}

@@ -2,7 +2,8 @@ import { getAllTopics, getTopicArchive } from '@/features/blog'
 import { formatDate } from '@/utils/client-utils'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Hash, Calendar, ArrowUpRight } from 'lucide-react'
+import { ArrowLeft, Hash, ArrowUpRight } from 'lucide-react'
+import { AnimatedCalendarIcon } from '@/components/animated-icons/icons/calendar'
 import { PageHeader } from '@/components/ui/page-header'
 import { cacheLife, cacheTag } from 'next/cache'
 
@@ -85,7 +86,7 @@ export default async function TopicPage({
 
 									<div className="flex items-center gap-4 text-xs text-neutral-500">
 										<div className="flex items-center gap-1.5">
-											<Calendar className="w-3.5 h-3.5" />
+											<AnimatedCalendarIcon className="w-3.5 h-3.5" />
 											<span>
 												{formatDate(
 													post.metadata.publishedAt

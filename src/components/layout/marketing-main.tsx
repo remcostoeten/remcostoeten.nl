@@ -4,7 +4,10 @@ import type { ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/shared/lib/cn'
 
-const wideRoutes = new Set(['/packages/empty-states'])
+const wideRoutes = new Set([
+	'/packages/empty-states',
+	'/packages/animated-icons'
+])
 
 export function MarketingMain({ children }: { children: ReactNode }) {
 	const wide = wideRoutes.has(usePathname())

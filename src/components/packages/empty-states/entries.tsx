@@ -27,7 +27,7 @@ import {
 	TrashIllustration,
 	UploadIllustration,
 	type KeyIllustrationVariant
-} from '@/components/empty-state/illustrations'
+} from '@/components/home/empty-state/illustrations'
 
 export type DemoAction = {
 	id: string
@@ -81,7 +81,7 @@ const baseValues = {
 	secondaryLabel: '',
 	linkTopic: '',
 	variant: '',
-	showActions: true,
+	showActions: false,
 	showGuides: false,
 	showLink: false,
 	animated: 'off',

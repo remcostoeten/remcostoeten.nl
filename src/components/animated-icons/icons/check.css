@@ -1,0 +1,19 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='check'] [data-part='tick'] {
+		transform-origin: 8.5px 17.5px;
+		animation-name: icon-check-nod;
+	}
+}
+
+@keyframes icon-check-nod {
+	35% {
+		transform: translateY(-1.5px) rotate(-5deg) scale(1.06);
+	}
+	70% {
+		transform: translateY(0.3px) rotate(1deg);
+	}
+}

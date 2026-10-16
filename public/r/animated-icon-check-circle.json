@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-check-circle",
+  "type": "registry:component",
+  "title": "Check circle Icon",
+  "description": "Animated check circle icon. Mark redraws from 60%.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-check-circle/icons/check-circle.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/check-circle.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./check-circle.css\";\n\nexport function AnimatedCheckCircleIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"check-circle\" {...props}>\n      <path\n        data-part=\"ring\"\n        d=\"M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10s10-4.477 10-10Z\"\n      />\n      <path data-part=\"mark\" pathLength={1} d=\"M8 12.5l2.5 2.5L16 9\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-check-circle/icons/check-circle.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/check-circle.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"check-circle\"] [data-part=\"mark\"] {\n    animation-name: icon-draw;\n    animation-duration: var(--icon-duration-short);\n    animation-timing-function: var(--ease-icon);\n  }\n}\n"
+    }
+  ]
+}

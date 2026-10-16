@@ -3,7 +3,10 @@
 import type React from 'react'
 
 import { useEffect, useId, useRef, useState, useTransition } from 'react'
-import { ExternalLink, Info, Save, Trash2, X } from 'lucide-react'
+import { ExternalLink, Save } from 'lucide-react'
+import { AnimatedInfoIcon } from '@/components/animated-icons/icons/info'
+import { AnimatedTrashIcon } from '@/components/animated-icons/icons/trash'
+import { AnimatedCloseIcon } from '@/components/animated-icons/icons/close'
 import type { Project } from '../../../server/db/project-schema'
 import { deleteProject, updateProject } from '../server/mutations'
 
@@ -131,7 +134,7 @@ export function ProjectEditor({ project, onUpdate, onDelete, onClose }: Props) {
 							className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-950 text-zinc-500 transition hover:text-zinc-300"
 							aria-label="Close editor"
 						>
-							<X className="h-5 w-5" />
+							<AnimatedCloseIcon className="h-5 w-5" />
 						</button>
 					</div>
 				</div>
@@ -150,7 +153,7 @@ export function ProjectEditor({ project, onUpdate, onDelete, onClose }: Props) {
 					<div className="flex-1 space-y-6 overflow-y-auto p-4 lg:max-h-[calc(100vh-16rem)]">
 						<section className="space-y-4">
 							<div className="flex items-start gap-3 rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 text-sm text-zinc-400">
-								<Info className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300" />
+								<AnimatedInfoIcon className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300" />
 								<p className="leading-6">
 									Changes stay local to this editor until you
 									save. Hidden projects remain editable but
@@ -372,7 +375,7 @@ export function ProjectEditor({ project, onUpdate, onDelete, onClose }: Props) {
 							disabled={isPending}
 							className="inline-flex h-11 items-center gap-2 rounded-xl px-4 text-sm text-red-400 transition-colors hover:bg-red-500/10 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
 						>
-							<Trash2 className="h-4 w-4" />
+							<AnimatedTrashIcon className="h-4 w-4" />
 							Delete
 						</button>
 

@@ -1,0 +1,10 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='list'] [data-part='rows'] > path {
+		--icon-x: 1.5px;
+		animation-name: icon-nudge;
+	}
+}

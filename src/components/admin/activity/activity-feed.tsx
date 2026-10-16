@@ -3,7 +3,9 @@
 import { useState, useMemo } from 'react'
 import type { Route } from 'next'
 import Link from 'next/link'
-import { ChevronDown, Mail, MessageSquare } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
+import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
+import { AnimatedCommentIcon } from '@/components/animated-icons/icons/comment'
 
 type ActivityComment = {
 	id: string
@@ -106,7 +108,10 @@ export function ActivityFeed({
 			<ul>
 				{visibleItems.map(item => {
 					const isNew = Date.now() - item.timestamp.getTime() < DAY_MS
-					const Icon = item.type === 'comment' ? MessageSquare : Mail
+					const Icon =
+						item.type === 'comment'
+							? AnimatedCommentIcon
+							: AnimatedMailIcon
 					return (
 						<li
 							key={item.id}

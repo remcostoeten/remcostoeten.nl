@@ -1,0 +1,10 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='dashboard'] [data-part='tiles'] > rect {
+		--icon-y: -1.5px;
+		animation-name: icon-nudge;
+	}
+}

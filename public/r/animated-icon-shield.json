@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-shield",
+  "type": "registry:component",
+  "title": "Shield Icon",
+  "description": "Animated shield icon. Shield gives, mark redraws.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-shield/icons/shield.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/shield.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./shield.css\";\n\nexport function AnimatedShieldIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"shield\" {...props}>\n      <path data-part=\"shield\" d=\"M12 3l7 2.8v5.7c0 4.3-3 8.3-7 9.5c-4-1.2-7-5.2-7-9.5V5.8z\" />\n      <path data-part=\"mark\" pathLength={1} d=\"M9 12l2 2l4-4\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-shield/icons/shield.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/shield.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"shield\"] {\n    & [data-part=\"shield\"] {\n      --icon-pulse: scale(0.92);\n      animation-name: icon-pulse;\n    }\n\n    & [data-part=\"mark\"] {\n      --icon-delay: 150ms;\n      animation-name: icon-draw;\n      animation-duration: var(--icon-duration-short);\n      animation-timing-function: var(--ease-icon);\n    }\n  }\n}\n"
+    }
+  ]
+}

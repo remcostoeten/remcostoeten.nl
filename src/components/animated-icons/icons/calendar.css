@@ -1,0 +1,23 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='calendar'] {
+		& [data-part='ring'] {
+			--icon-y: -1.75px;
+			animation-name: icon-nudge;
+			animation-duration: var(--icon-duration-short);
+		}
+
+		& [data-part='days'] > path {
+			--icon-delay: 110ms;
+			--icon-scale: 0.45;
+			--icon-overshoot: 1;
+			transform-box: fill-box;
+			transform-origin: center;
+			animation-name: icon-pop;
+			animation-duration: var(--icon-duration-short);
+		}
+	}
+}

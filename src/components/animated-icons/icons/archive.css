@@ -1,0 +1,36 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='archive'] {
+		& [data-part='tray-top'] {
+			--icon-y: -2px;
+			animation-name: icon-settle;
+		}
+
+		& [data-part='tray-middle'] {
+			--icon-y: -1.25px;
+			--icon-delay: 60ms;
+			animation-name: icon-settle;
+		}
+
+		& [data-part='handle'] {
+			--icon-pulse: translateY(1px);
+			--icon-delay: 110ms;
+			animation-name: icon-pulse;
+		}
+	}
+}
+
+@keyframes icon-settle {
+	from {
+		transform: translate(var(--icon-x, 0px), var(--icon-y, 0px));
+	}
+	60% {
+		transform: translate(
+			calc(var(--icon-x, 0px) * -0.2),
+			calc(var(--icon-y, 0px) * -0.2)
+		);
+	}
+}

@@ -1,0 +1,12 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='plus'] [data-part='cross'] {
+		--icon-turn: -90deg;
+		--icon-scale: 0.7;
+		animation-name: icon-pop;
+		animation-duration: var(--icon-duration-short);
+	}
+}

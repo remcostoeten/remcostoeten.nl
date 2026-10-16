@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-trash",
+  "type": "registry:component",
+  "title": "Trash Icon",
+  "description": "Animated trash icon. Lid lifts, slots redraw.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-trash/icons/trash.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/trash.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./trash.css\";\n\nexport function AnimatedTrashIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"trash\" strokeLinejoin=\"miter\" {...props}>\n      <g data-part=\"bin\">\n        <path d=\"m19.5 5.5l-.62 10.025c-.158 2.561-.237 3.842-.88 4.763a4 4 0 0 1-1.2 1.128c-.957.584-2.24.584-4.806.584c-2.57 0-3.855 0-4.814-.585a4 4 0 0 1-1.2-1.13c-.642-.922-.72-2.205-.874-4.77L4.5 5.5\" />\n        <g data-stagger=\"\">\n          <path data-part=\"slot\" pathLength={1} d=\"M9.5 16.5v-6\" />\n          <path data-part=\"slot\" pathLength={1} d=\"M14.5 16.5v-6\" />\n        </g>\n      </g>\n      <g data-part=\"lid\">\n        <path d=\"M3 5.5h18\" />\n        <path d=\"M16.056 5.5l-.683-1.408c-.453-.936-.68-1.403-1.071-1.695a2 2 0 0 0-.275-.172C13.594 2 13.074 2 12.035 2c-1.066 0-1.599 0-2.04.234a2 2 0 0 0-.278.18c-.395.303-.616.788-1.058 1.757L8.053 5.5\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-trash/icons/trash.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/trash.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"trash\"] {\n    & [data-part=\"lid\"] {\n      transform-origin: 3px 5.5px;\n      animation-name: icon-trash-lid;\n    }\n\n    & [data-part=\"slot\"] {\n      --icon-delay: 200ms;\n      animation-name: icon-draw;\n      animation-duration: var(--icon-duration-short);\n      animation-timing-function: var(--ease-icon);\n    }\n  }\n}\n\n@keyframes icon-trash-lid {\n  35% {\n    transform: translateY(-2.5px) rotate(-14deg);\n  }\n  70% {\n    transform: translateY(0.4px) rotate(1deg);\n  }\n}\n"
+    }
+  ]
+}

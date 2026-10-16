@@ -1,7 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Copy, Check, Github, Linkedin, Twitter, GitCommit } from 'lucide-react'
+import { Github, Linkedin, Twitter, GitCommit } from 'lucide-react'
+import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
+import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import Link from 'next/link'
 import { useLatestCommit } from '@/hooks/use-github'
 import { AnimatedNumber } from '../ui/effects/animated-number'
@@ -102,12 +104,12 @@ export function Footer() {
 					>
 						{copied ? (
 							<>
-								<Check className="w-3.5 h-3.5 shrink-0 text-green-500" />
+								<AnimatedCheckIcon className="w-3.5 h-3.5 shrink-0 text-green-500" />
 								<span>Copied</span>
 							</>
 						) : (
 							<>
-								<Copy className="w-3.5 h-3.5 shrink-0" />
+								<AnimatedCopyIcon className="w-3.5 h-3.5 shrink-0" />
 								<span>{displayEmail}</span>
 							</>
 						)}

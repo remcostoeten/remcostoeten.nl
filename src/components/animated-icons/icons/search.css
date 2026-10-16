@@ -1,0 +1,31 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='search'] {
+		& [data-part='glass'] {
+			animation-name: icon-search-scan;
+			animation-duration: var(--icon-duration-long);
+		}
+
+		& [data-part='handle'] {
+			--icon-delay: 170ms;
+			animation-name: icon-draw;
+			animation-duration: var(--icon-duration-short);
+			animation-timing-function: var(--ease-icon);
+		}
+	}
+}
+
+@keyframes icon-search-scan {
+	25% {
+		transform: translate(-1.5px, -0.5px);
+	}
+	50% {
+		transform: translate(0, -2px);
+	}
+	75% {
+		transform: translate(1.5px, -0.5px);
+	}
+}

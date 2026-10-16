@@ -1,63 +1,37 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { ArrowUpRight, Check, Github, Package } from 'lucide-react'
+import { ArrowUpRight, Github, Package } from 'lucide-react'
+import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import { Suspense } from 'react'
-import { BreadcrumbStructuredData } from '@/components/seo/structured-data'
 import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
-import { EmptyStatesShowcase } from '@/components/packages/empty-states/showcase'
 import { NotifierDemo } from '@/components/packages/notifier-demo'
 import { PackageCode } from '@/components/packages/package-code'
-import { baseUrl } from '@/core/config/site'
+import { PackageStructuredData, packageMetadata } from '../package-seo'
+import { PackageApiList, PackageWhy } from '../package-sections'
 import {
 	developerPackages,
 	getDeveloperPackage,
-	getNpmPackage
+	getNpmPackage,
+	type DeveloperPackage
 } from '@/features/packages/data'
 
 type Props = { params: Promise<{ slug: string }> }
 
+const staticRoutes = new Set(['empty-states', 'animated-icons'])
+
 export const instant = true
 
 export function generateStaticParams() {
-	return developerPackages.map(pkg => ({ slug: pkg.slug }))
+	return developerPackages
+		.filter(pkg => !staticRoutes.has(pkg.slug))
+		.map(pkg => ({ slug: pkg.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const pkg = getDeveloperPackage((await params).slug)
 	if (!pkg) return {}
 
-	const title = `${pkg.name}: ${pkg.tagline}`
-	return {
-		title,
-		description: pkg.description,
-		keywords: [
-			pkg.packageName,
-			...pkg.keywords,
-			'open source npm package',
-			'Remco Stoeten'
-		],
-		alternates: { canonical: `${baseUrl}/packages/${pkg.slug}` },
-		openGraph: {
-			title,
-			description: pkg.description,
-			url: `${baseUrl}/packages/${pkg.slug}`,
-			type: 'website',
-			images: [
-				{
-					url: `/og?title=${encodeURIComponent(pkg.name)}`,
-					width: 1200,
-					height: 630,
-					alt: `${pkg.name} by Remco Stoeten`
-				}
-			]
-		},
-		twitter: {
-			card: 'summary_large_image',
-			title,
-			description: pkg.description,
-			images: [`/og?title=${encodeURIComponent(pkg.name)}`]
-		}
-	}
+	return packageMetadata(pkg)
 }
 
 function PackagePageFallback() {
@@ -100,62 +74,15 @@ async function PackagePageContent({ params }: Props) {
 
 	const npmData = pkg.npmUrl ? await getNpmPackage(pkg.packageName) : null
 	const version = npmData?.version
-	const pageUrl = `${baseUrl}/packages/${pkg.slug}`
-	const jsonLd = {
-		'@context': 'https://schema.org',
-		'@graph': [
-			{
-				'@type': 'SoftwareApplication',
-				'@id': `${pageUrl}#software`,
-				name: pkg.name,
-				description: npmData?.description ?? pkg.description,
-				applicationCategory: 'DeveloperApplication',
-				operatingSystem: 'Web',
-				softwareVersion: version,
-				license: npmData?.license,
-				url: pageUrl,
-				downloadUrl: pkg.npmUrl ?? pkg.registryUrl,
-				author: {
-					'@type': 'Person',
-					name: 'Remco Stoeten',
-					url: baseUrl
-				},
-				keywords: pkg.keywords.join(', ')
-			}
-		]
-	}
-
-	const structuredData = (
-		<>
-			<script
-				type="application/ld+json"
-				dangerouslySetInnerHTML={{
-					__html: JSON.stringify(jsonLd).replace(/</g, '\\u003c')
-				}}
-			/>
-			<BreadcrumbStructuredData
-				items={[
-					{ name: 'Packages', url: '/packages' },
-					{ name: pkg.name, url: `/packages/${pkg.slug}` }
-				]}
-			/>
-		</>
-	)
-
-	if (pkg.slug === 'empty-states')
-		return (
-			<article>
-				{structuredData}
-				<EmptyStatesShowcase />
-			</article>
-		)
+	const hideSectionLabels = pkg.slug === 'use-shortcut'
+	const structuredData = <PackageStructuredData pkg={pkg} npmData={npmData} />
 
 	return (
 		<article>
 			{structuredData}
 
 			<header className="border-b border-border/60 px-4 pb-7 md:px-5">
-				<div className="flex items-start gap-3">
+				<div className="grid grid-cols-[2.5rem_minmax(0,1fr)] items-start gap-x-3">
 					<div className="flex size-10 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 shadow-sm">
 						<Package
 							className="size-4 text-muted-foreground"
@@ -176,77 +103,52 @@ async function PackagePageContent({ params }: Props) {
 						<p className="mt-1 font-mono text-xs text-muted-foreground">
 							{pkg.packageName}
 						</p>
+						<p className="mt-5 max-w-xl text-base leading-relaxed text-foreground/90">
+							{pkg.tagline}
+						</p>
+						<p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+							{pkg.description}
+						</p>
+						<div className="mt-5 flex flex-wrap gap-2">
+							{pkg.docsUrl && (
+								<ExternalLink href={pkg.docsUrl}>
+									Documentation
+								</ExternalLink>
+							)}
+							{pkg.npmUrl && (
+								<ExternalLink href={pkg.npmUrl}>
+									npm package
+								</ExternalLink>
+							)}
+							{pkg.registryUrl && (
+								<ExternalLink href={pkg.registryUrl}>
+									Registry item
+								</ExternalLink>
+							)}
+							{pkg.sourceUrl && (
+								<ExternalLink
+									href={pkg.sourceUrl}
+									icon={<Github className="size-3.5" />}
+								>
+									Source
+								</ExternalLink>
+							)}
+							{pkg.demoUrl && (
+								<ExternalLink href={pkg.demoUrl}>
+									Try the live drawer
+								</ExternalLink>
+							)}
+						</div>
 					</div>
 				</div>
-				<p className="mt-5 max-w-xl text-base leading-relaxed text-foreground/90">
-					{pkg.tagline}
-				</p>
-				<p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-					{pkg.description}
-				</p>
-				<div className="mt-5 flex flex-wrap gap-2">
-					{pkg.docsUrl && (
-						<ExternalLink href={pkg.docsUrl}>
-							Documentation
-						</ExternalLink>
-					)}
-					{pkg.npmUrl && (
-						<ExternalLink href={pkg.npmUrl}>
-							npm package
-						</ExternalLink>
-					)}
-					{pkg.registryUrl && (
-						<ExternalLink href={pkg.registryUrl}>
-							Registry item
-						</ExternalLink>
-					)}
-					{pkg.sourceUrl && (
-						<ExternalLink
-							href={pkg.sourceUrl}
-							icon={<Github className="size-3.5" />}
-						>
-							Source
-						</ExternalLink>
-					)}
-					{pkg.demoUrl && (
-						<ExternalLink href={pkg.demoUrl}>
-							Try the live drawer
-						</ExternalLink>
-					)}
-				</div>
 			</header>
-			<section
-				id="why"
-				aria-labelledby="why-heading"
-				className="border-b border-border/60 px-4 py-7 md:px-5"
-			>
-				<SectionLabel>What it replaces</SectionLabel>
-				<h2
-					id="why-heading"
-					className="mt-2 text-lg font-semibold tracking-tight"
-				>
-					{pkg.whyHeading}
-				</h2>
-				<p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-					{pkg.whenToUse}
-				</p>
-				<ul
-					className="mt-5 space-y-3"
-					aria-label={`${pkg.name} highlights`}
-				>
-					{pkg.highlights.map(highlight => (
-						<li
-							key={highlight}
-							className="flex gap-2.5 text-sm leading-relaxed text-muted-foreground"
-						>
-							<Check
-								className="mt-0.5 size-3.5 shrink-0 text-brand-400"
-								aria-hidden="true"
-							/>
-							{highlight}
-						</li>
-					))}
-				</ul>
+			{pkg.slug === 'use-shortcut' && (
+				<PackageQuickStart
+					pkg={pkg}
+					hideSectionLabels={hideSectionLabels}
+				/>
+			)}
+			<PackageWhy pkg={pkg} hideLabel={hideSectionLabels}>
 				{pkg.slug === 'auth-drawer' && (
 					<div className="mt-6">
 						<AuthDrawerDemo />
@@ -257,42 +159,23 @@ async function PackagePageContent({ params }: Props) {
 						<NotifierDemo />
 					</div>
 				)}
-			</section>
+			</PackageWhy>
 
-			<section
-				id="quick-start"
-				aria-labelledby="quick-start-heading"
-				className="border-b border-border/60 px-4 py-7 md:px-5"
-			>
-				<SectionLabel>Quick start</SectionLabel>
-				<h2
-					id="quick-start-heading"
-					className="mt-2 text-lg font-semibold tracking-tight"
-				>
-					Start with one small integration.
-				</h2>
-				<div className="mt-5 border border-border bg-muted/20 px-4 py-3 font-mono text-xs text-foreground">
-					<span className="select-none text-muted-foreground">
-						${' '}
-					</span>
-					{pkg.install}
-				</div>
-				<PackageCode
-					code={pkg.quickStart}
-					fileName={pkg.quickStartFile}
-					className="mt-4"
+			{pkg.slug !== 'use-shortcut' && (
+				<PackageQuickStart
+					pkg={pkg}
+					hideSectionLabels={hideSectionLabels}
 				/>
-			</section>
+			)}
 
 			<section
 				id="api"
 				aria-labelledby="api-heading"
 				className="border-b border-border/60 px-4 py-7 md:px-5"
 			>
-				<SectionLabel>API examples</SectionLabel>
 				<h2
 					id="api-heading"
-					className="mt-2 text-lg font-semibold tracking-tight"
+					className={`${hideSectionLabels ? '' : 'mt-2 '}text-lg font-semibold tracking-tight`}
 				>
 					Start with one call. Add the pieces when you need them.
 				</h2>
@@ -318,21 +201,7 @@ async function PackagePageContent({ params }: Props) {
 						</div>
 					))}
 				</div>
-				<dl className="mt-5 divide-y divide-border border-y border-border">
-					{pkg.api.map(item => (
-						<div
-							key={item.name}
-							className="grid gap-1 py-3.5 sm:grid-cols-[10rem_1fr] sm:gap-5"
-						>
-							<dt className="font-mono text-xs text-foreground">
-								{item.name}
-							</dt>
-							<dd className="text-sm leading-relaxed text-muted-foreground">
-								{item.description}
-							</dd>
-						</div>
-					))}
-				</dl>
+				<PackageApiList pkg={pkg} />
 				{pkg.apiDetails && (
 					<div className="mt-7 space-y-6">
 						{pkg.apiDetails.map(item => (
@@ -367,11 +236,32 @@ async function PackagePageContent({ params }: Props) {
 	)
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
+type PackageQuickStartProps = {
+	pkg: DeveloperPackage
+	hideSectionLabels: boolean
+}
+
+function PackageQuickStart({ pkg, hideSectionLabels }: PackageQuickStartProps) {
 	return (
-		<p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-			{children}
-		</p>
+		<section
+			id="quick-start"
+			aria-labelledby="quick-start-heading"
+			className={`${hideSectionLabels ? 'py-5' : 'py-7'} border-b border-border/60 px-4 md:px-5`}
+		>
+			{!hideSectionLabels && (
+				<div className="mt-5 border border-border bg-muted/20 px-4 py-3 font-mono text-xs text-foreground">
+					<span className="select-none text-muted-foreground">
+						${' '}
+					</span>
+					{pkg.install}
+				</div>
+			)}
+			<PackageCode
+				code={pkg.quickStart}
+				fileName={pkg.quickStartFile}
+				className={hideSectionLabels ? 'mt-3' : 'mt-4'}
+			/>
+		</section>
 	)
 }
 

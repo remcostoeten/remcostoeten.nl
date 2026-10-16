@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Mail } from 'lucide-react'
+import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
+import { EmptyState } from '@/components/home/empty-state/empty-state'
+import { InboxIllustration } from '@/components/home/empty-state/illustrations'
 
 type ContactStats = {
 	submissions: ContactSubmission[]
@@ -57,7 +59,7 @@ export function ContactOverview({ data }: { data: ContactStats }) {
 		<section className="admin-panel h-full">
 			<div className="admin-panel-header items-center">
 				<h2 className="admin-panel-title">Contact activity</h2>
-				<Mail className="size-4 text-muted-foreground" />
+				<AnimatedMailIcon className="size-4 text-muted-foreground" />
 			</div>
 
 			<div className="grid grid-cols-3 gap-4 px-5 pb-5">
@@ -90,9 +92,12 @@ export function ContactOverview({ data }: { data: ContactStats }) {
 				</div>
 
 				{data.submissions.length === 0 && (
-					<p className="py-6 text-center text-[13px] text-muted-foreground">
-						No messages yet
-					</p>
+					<EmptyState
+						title="No messages yet"
+						description="Contact form submissions appear here."
+						illustration={<InboxIllustration />}
+						headingLevel="h3"
+					/>
 				)}
 
 				<div className="space-y-2">

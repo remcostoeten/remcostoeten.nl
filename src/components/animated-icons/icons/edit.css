@@ -1,0 +1,23 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='edit'] [data-part='pencil'] {
+		transform-origin: 8px 16px;
+		animation-name: icon-edit-scribble;
+		animation-duration: var(--icon-duration-long);
+	}
+}
+
+@keyframes icon-edit-scribble {
+	20% {
+		transform: translate(-1px, 1px) rotate(-6deg);
+	}
+	45% {
+		transform: translate(1.25px, -0.5px) rotate(3deg);
+	}
+	70% {
+		transform: translate(-0.5px, 0.5px) rotate(-2deg);
+	}
+}

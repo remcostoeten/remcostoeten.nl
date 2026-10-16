@@ -1,0 +1,28 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='project'] {
+		& [data-part='back'] {
+			--icon-y: -1px;
+			--icon-delay: 80ms;
+			animation-name: icon-nudge;
+		}
+
+		& [data-part='flap'] {
+			transform-origin: 3px 21px;
+			animation-name: icon-folder-open;
+			animation-duration: var(--icon-duration-long);
+		}
+	}
+}
+
+@keyframes icon-folder-open {
+	40% {
+		transform: translateY(-0.5px) rotate(-8deg);
+	}
+	72% {
+		transform: rotate(1.5deg);
+	}
+}

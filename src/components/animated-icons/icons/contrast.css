@@ -1,0 +1,12 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='contrast'] [data-part='half'] {
+		--icon-turn: -180deg;
+		animation-name: icon-turn;
+		animation-duration: var(--icon-duration-long);
+		animation-timing-function: var(--ease-icon);
+	}
+}

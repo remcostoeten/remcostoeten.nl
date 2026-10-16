@@ -1,5 +1,6 @@
 {
 	"bunVersion": "1.x",
+	"buildCommand": "next build",
 	"crons": [
 		{
 			"path": "/api/sync",

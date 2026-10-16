@@ -1,0 +1,11 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='check-circle'] [data-part='mark'] {
+		animation-name: icon-draw;
+		animation-duration: var(--icon-duration-short);
+		animation-timing-function: var(--ease-icon);
+	}
+}

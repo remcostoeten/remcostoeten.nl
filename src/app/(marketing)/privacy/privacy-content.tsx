@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Cookie, Database, Eye, Mail, Shield, Users } from 'lucide-react'
+import { Cookie, Database, Eye, Users } from 'lucide-react'
+import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
+import { AnimatedShieldIcon } from '@/components/animated-icons/icons/shield'
 import { Section, SubSection, TimelineItem } from '@/components/ui/section'
 import { LegalHeader } from '../legal/legal-header'
 import { LegalLanguage } from '../legal/legal-language'
@@ -149,7 +151,7 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 			{
 				title: 'Analytics Cookies',
 				items: [
-					'PostHog cookies for anonymous usage tracking.',
+					'Cookies for anonymous usage tracking.',
 					'You can opt out by disabling cookies in your browser or using the privacy settings.'
 				]
 			}
@@ -167,7 +169,6 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 		partnersIntro: 'This site uses the following third-party services:',
 		partnersItems: [
 			'GitHub: OAuth authentication.',
-			'PostHog: Analytics and user behavior tracking.',
 			'Vercel: Website hosting and performance monitoring.',
 			'Neon: Database hosting for user data.'
 		],
@@ -265,7 +266,7 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 			{
 				title: 'Analytics-cookies',
 				items: [
-					'PostHog-cookies voor anonieme gebruiksstatistieken.',
+					'Cookies voor anonieme gebruiksstatistieken.',
 					'Je kunt dit uitschakelen via je browserinstellingen of privacy-instellingen.'
 				]
 			}
@@ -282,7 +283,6 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 		partnersIntro: 'Deze site gebruikt de volgende diensten van derden:',
 		partnersItems: [
 			'GitHub: OAuth-authenticatie.',
-			'PostHog: Analytics en gebruiksanalyse.',
 			'Vercel: Websitehosting en prestatiemonitoring.',
 			'Neon: Databasehosting voor gebruikersdata.'
 		],
@@ -487,13 +487,13 @@ export default function PrivacyContent() {
 function mapInfoIcon(title: string) {
 	if (title.toLowerCase().includes('analytics')) return Eye
 	if (title.toLowerCase().includes('auth')) return Users
-	if (title.toLowerCase().includes('contact')) return Mail
+	if (title.toLowerCase().includes('contact')) return AnimatedMailIcon
 	return Database
 }
 
 function mapUsageIcon(index: number) {
 	if (index === 0) return Eye
 	if (index === 1) return Users
-	if (index === 2) return Mail
-	return Shield
+	if (index === 2) return AnimatedMailIcon
+	return AnimatedShieldIcon
 }

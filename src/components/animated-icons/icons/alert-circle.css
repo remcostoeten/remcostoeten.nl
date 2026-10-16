@@ -1,0 +1,41 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='alert-circle'] {
+		& [data-part='ring'] {
+			--icon-pulse: scale(0.93);
+			animation-name: icon-pulse;
+			animation-duration: var(--icon-duration-short);
+		}
+
+		& [data-part='bar'] {
+			transform-origin: 12px 12px;
+			animation-name: icon-alert-bar;
+			animation-duration: var(--icon-duration-short);
+		}
+
+		& [data-part='dot'] {
+			--icon-scale: 0.6;
+			--icon-overshoot: 0.6;
+			--icon-delay: 120ms;
+			transform-box: fill-box;
+			transform-origin: center;
+			animation-name: icon-pop;
+			animation-duration: var(--icon-duration-short);
+		}
+	}
+}
+
+@keyframes icon-alert-bar {
+	from {
+		transform: scaleY(0.5);
+	}
+	58% {
+		transform: scaleY(1.14);
+	}
+	80% {
+		transform: scaleY(0.97);
+	}
+}

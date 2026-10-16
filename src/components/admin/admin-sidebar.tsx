@@ -1,4 +1,6 @@
 'use client'
+import type { ComponentType } from 'react'
+import type { AnimatedIconProps } from '@/components/animated-icons/icon-frame'
 
 import { useEffect, useState } from 'react'
 import type { Route } from 'next'
@@ -10,20 +12,19 @@ import {
 	BriefcaseBusiness,
 	FileText,
 	FolderKanban,
-	LayoutDashboard,
-	Mail,
 	Menu,
-	Settings,
-	UserRound,
-	X,
-	type LucideIcon
+	UserRound
 } from 'lucide-react'
+import { AnimatedDashboardIcon } from '@/components/animated-icons/icons/dashboard'
+import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
+import { AnimatedSettingsIcon } from '@/components/animated-icons/icons/settings'
+import { AnimatedCloseIcon } from '@/components/animated-icons/icons/close'
 import { AdminSessionStatus } from '@/components/admin/admin-session-status'
 
 type NavItem = {
 	href: string
 	label: string
-	icon: LucideIcon
+	icon: ComponentType<AnimatedIconProps>
 	exact?: boolean
 	badge?: 'messages'
 }
@@ -40,14 +41,14 @@ const navSections: NavSection[] = [
 			{
 				href: '/admin',
 				label: 'Overview',
-				icon: LayoutDashboard,
+				icon: AnimatedDashboardIcon,
 				exact: true
 			},
 			{ href: '/admin#blogs', label: 'Blog posts', icon: FileText },
 			{
 				href: '/admin#messages',
 				label: 'Messages',
-				icon: Mail,
+				icon: AnimatedMailIcon,
 				badge: 'messages'
 			},
 			{ href: '/admin#analytics', label: 'Analytics', icon: BarChart3 }
@@ -67,7 +68,13 @@ const navSections: NavSection[] = [
 	},
 	{
 		label: 'Manage',
-		items: [{ href: '/admin/settings', label: 'Settings', icon: Settings }]
+		items: [
+			{
+				href: '/admin/settings',
+				label: 'Settings',
+				icon: AnimatedSettingsIcon
+			}
+		]
 	}
 ]
 
@@ -264,7 +271,7 @@ export function AdminTopbar({ unreadMessages }: { unreadMessages: number }) {
 							className="admin-icon-btn absolute right-3 top-5"
 							aria-label="Close navigation"
 						>
-							<X className="size-4" />
+							<AnimatedCloseIcon className="size-4" />
 						</button>
 						<SidebarBody
 							unreadMessages={unreadMessages}

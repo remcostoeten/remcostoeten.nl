@@ -8,12 +8,17 @@ import {
 	ArrowUp,
 	ChevronLeft,
 	ChevronRight,
-	Clock,
 	ExternalLink,
-	Loader2,
-	Search
+	Loader2
 } from 'lucide-react'
+import { AnimatedClockIcon } from '@/components/animated-icons/icons/clock'
+import { AnimatedSearchIcon } from '@/components/animated-icons/icons/search'
 import { toggleBlogDraft } from '@/server/actions/admin'
+import { EmptyState } from '@/components/home/empty-state/empty-state'
+import {
+	RecordIllustration,
+	SearchIllustration
+} from '@/components/home/empty-state/illustrations'
 
 type BlogPost = {
 	slug: string
@@ -206,7 +211,7 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 				</div>
 				<label className="relative block">
 					<span className="sr-only">Search posts</span>
-					<Search className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+					<AnimatedSearchIcon className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
 					<input
 						type="search"
 						placeholder="Search posts…"
@@ -258,16 +263,29 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 							<th className="w-12" />
 						</tr>
 					</thead>
-					<tbody>
+			dwiadwa		<tbody>
 						{visiblePosts.length === 0 ? (
 							<tr>
-								<td
-									colSpan={5}
-									className="py-12 text-center text-muted-foreground"
-								>
-									{search
-										? `No posts matching "${search}"`
-										: 'No posts here yet'}
+								<td colSpan={5}>
+									{search ? (
+										<EmptyState
+											title="No posts found"
+											description={`No posts match "${search}".`}
+											illustration={
+												<SearchIllustration />
+											}
+											headingLevel="h3"
+										/>
+									) : (
+										<EmptyState
+											title="No posts here yet"
+											description="Posts you write appear in this table."
+											illustration={
+												<RecordIllustration />
+											}
+											headingLevel="h3"
+										/>
+									)}
 								</td>
 							</tr>
 						) : (
@@ -278,7 +296,7 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 											{post.metadata.title}
 										</p>
 										<p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
-											<Clock className="size-3" />
+											<AnimatedClockIcon className="size-3" />
 											{post.metadata.readTime || 'N/A'}
 										</p>
 									</td>

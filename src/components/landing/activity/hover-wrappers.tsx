@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertCircle } from 'lucide-react'
+import { AnimatedAlertCircleIcon } from '@/components/animated-icons/icons/alert-circle'
 import {
 	ActivityHoverCard,
 	GitHubProjectCard,
@@ -71,7 +71,7 @@ export function ProjectHoverWrapper({
 				</div>
 			) : isError ? (
 				<div className="flex items-start gap-2 text-sm text-muted-foreground">
-					<AlertCircle className="size-4 shrink-0 mt-0.5 text-amber-500" />
+					<AnimatedAlertCircleIcon className="size-4 shrink-0 mt-0.5 text-amber-500" />
 					<span>{getRepoDetailsErrorMessage(error)}</span>
 				</div>
 			) : (

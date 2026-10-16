@@ -7,10 +7,14 @@ export function FeaturedCardSkeleton() {
 					<div className="flex h-6 items-center">
 						<div className="h-3.5 w-24 bg-muted" />
 					</div>
-				</div>
-				<div className="space-y-1.5">
-					<div className="h-2.5 w-full rounded bg-muted/60" />
-					<div className="h-2.5 w-3/4 rounded bg-muted/60" />
+					<div className="min-h-[2lh] text-xs leading-relaxed">
+						<div className="flex h-[1lh] items-center">
+							<div className="h-2.5 w-full rounded bg-muted/60" />
+						</div>
+						<div className="flex h-[1lh] items-center">
+							<div className="h-2.5 w-3/4 rounded bg-muted/60" />
+						</div>
+					</div>
 				</div>
 				<div className="mt-auto flex items-center justify-between border-t border-dashed border-border pt-3">
 					<div className="h-2.5 w-20 rounded bg-muted/40" />

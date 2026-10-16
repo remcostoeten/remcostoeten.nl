@@ -1,6 +1,7 @@
 'use client'
 
-import { Copy, Check } from 'lucide-react'
+import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
+import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import { getLanguageIcon } from './language-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import React from 'react'
@@ -221,7 +222,7 @@ export function CodeBlock({
 											exit={{ scale: 0, opacity: 0 }}
 											transition={{ duration: 0.2 }}
 										>
-											<Check
+											<AnimatedCheckIcon
 												size={14}
 												className="text-emerald-500"
 											/>
@@ -234,7 +235,7 @@ export function CodeBlock({
 											exit={{ scale: 0, opacity: 0 }}
 											transition={{ duration: 0.2 }}
 										>
-											<Copy size={14} />
+											<AnimatedCopyIcon size={14} />
 										</m.span>
 									)}
 								</AnimatePresence>

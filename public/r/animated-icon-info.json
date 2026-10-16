@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "animated-icon-info",
+  "type": "registry:component",
+  "title": "Info Icon",
+  "description": "Animated info icon. Bar stretches, dot hops after.",
+  "registryDependencies": [
+    "https://www.remcostoeten.nl/r/animated-icon-base.json"
+  ],
+  "files": [
+    {
+      "path": "registry/animated-icon-info/icons/info.tsx",
+      "type": "registry:component",
+      "target": "@components/animated-icons/icons/info.tsx",
+      "content": "import { AnimatedIconFrame, type AnimatedIconProps, dotPath } from \"../icon-frame\";\nimport \"./info.css\";\n\nexport function AnimatedInfoIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"info\" {...props}>\n      <circle cx=\"12\" cy=\"12\" r=\"10\" />\n      <path data-part=\"bar\" d=\"M12 16v-4\" />\n      <path data-part=\"dot\" d={dotPath(12, 8.25)} />\n    </AnimatedIconFrame>\n  );\n}\n"
+    },
+    {
+      "path": "registry/animated-icon-info/icons/info.css",
+      "type": "registry:file",
+      "target": "@components/animated-icons/icons/info.css",
+      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"info\"] {\n    & [data-part=\"bar\"] {\n      transform-origin: 12px 16px;\n      animation-name: icon-info-bar;\n    }\n\n    & [data-part=\"dot\"] {\n      --icon-y: -2.5px;\n      --icon-delay: 90ms;\n      animation-name: icon-nudge;\n    }\n  }\n}\n\n@keyframes icon-info-bar {\n  35% {\n    transform: scaleY(1.22);\n  }\n  70% {\n    transform: scaleY(0.96);\n  }\n}\n"
+    }
+  ]
+}

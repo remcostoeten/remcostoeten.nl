@@ -1,0 +1,10 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='layers'] [data-part='layers'] > path {
+		--icon-y: -1.25px;
+		animation-name: icon-nudge;
+	}
+}

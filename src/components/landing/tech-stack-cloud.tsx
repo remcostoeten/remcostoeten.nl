@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/shared/lib/cn'
-import { Plus } from 'lucide-react'
+import { AnimatedPlusIcon } from '@/components/animated-icons/icons/plus'
 import * as m from 'motion/react-m'
 import {
 	useMotionValueEvent,
@@ -109,7 +109,7 @@ function GridPlus({ className }: { className: string }) {
 			)}
 			aria-hidden="true"
 		>
-			<Plus className="size-full" strokeWidth={1} />
+			<AnimatedPlusIcon className="size-full" strokeWidth={1} />
 		</span>
 	)
 }
@@ -244,16 +244,12 @@ function TechCard({ logo, className, children, ...props }: TechCardProps) {
 					style={{ perspective: '1000px' }}
 				>
 					<m.div
-						style={{
-							rotateX: rotationX,
-							transformStyle: 'preserve-3d'
-						}}
+						style={{ rotateX: rotationX }}
 						className="w-full h-full flex items-center justify-center"
 					>
 						<div
 							className="w-full h-full relative"
 							style={{
-								backfaceVisibility: 'hidden',
 								transform:
 									index % 2 === 1 ? 'rotateX(180deg)' : 'none'
 							}}

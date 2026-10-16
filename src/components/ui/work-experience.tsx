@@ -9,7 +9,9 @@ import {
 	useMotionValueEvent,
 	useScroll,
 	useSpring,
-	useTransform
+	useTime,
+	useTransform,
+	useVelocity
 } from 'motion/react'
 import { ChevronDownIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -23,6 +25,7 @@ export type ExperiencePositionItemType = {
 	location?: string
 	description?: string
 	skills?: string[]
+	highlightedSkills?: Record<string, string>
 	isExpanded?: boolean
 }
 
@@ -325,7 +328,7 @@ function useActivePosition(ref: React.RefObject<HTMLElement | null>) {
 	function update() {
 		const container = ref.current
 		if (!container) return
-		const line = window.innerHeight * READING_LINE
+		const line = readingLine(container)
 		const items =
 			container.querySelectorAll<HTMLElement>('[data-position-id]')
 		let next: string | null = null
@@ -394,33 +397,79 @@ function CompanyAvatar({ experience }: { experience: ExperienceItemType }) {
 const RAIL_DASHES =
 	'absolute inset-0 bg-[linear-gradient(to_bottom,currentColor_50%,transparent_50%)] bg-size-[1px_8px]'
 const DASH_PERIOD = 8
-const DASH_SPEED = 0.15
-const DASH_SPRING = { stiffness: 40, damping: 18, mass: 0.6 }
+const DASH_SPEED = 0.004
+const DASH_IDLE_SPEED = 0.004
+const DASH_SPRING = { stiffness: 25, damping: 20, mass: 0.8 }
 
 function useDashFlow() {
 	const { scrollY } = useScroll()
-	const distance = useSpring(
+	const time = useTime()
+	const scrolled = useSpring(
 		useTransform(scrollY, value => value * DASH_SPEED),
 		DASH_SPRING
 	)
 
-	return useTransform(distance, value => value % DASH_PERIOD)
+	return useTransform(
+		[scrolled, time],
+		([distance, elapsed]: number[]) =>
+			(distance + elapsed * DASH_IDLE_SPEED) % DASH_PERIOD
+	)
 }
 
 const READING_LINE = 0.7
+const READING_LINE_INSET = 12
+
+function readingLine(container: HTMLElement) {
+	const first = container.querySelector('[data-position-id]') ?? container
+	const start =
+		first.getBoundingClientRect().top +
+		window.scrollY * 2 +
+		READING_LINE_INSET
+
+	return Math.min(window.innerHeight * READING_LINE, start)
+}
+
 const GLOW_RADIUS = 48
+const GLOW_SCROLL_SPREAD = 72
+const GLOW_REST_OPACITY = 0.35
+const SCROLL_ACTIVITY_VELOCITY = 1200
+const SCROLL_ACTIVITY_SPRING = { stiffness: 60, damping: 20, mass: 0.5 }
+
+function useScrollActivity() {
+	const { scrollY } = useScroll()
+	const velocity = useVelocity(scrollY)
+
+	return useSpring(
+		useTransform(velocity, value =>
+			Math.min(Math.abs(value) / SCROLL_ACTIVITY_VELOCITY, 1)
+		),
+		SCROLL_ACTIVITY_SPRING
+	)
+}
 
 function useReadingGlow(ref: React.RefObject<Element | null>) {
 	const { scrollY } = useScroll()
+	const activity = useScrollActivity()
+	const opacity = useTransform(
+		activity,
+		value => GLOW_REST_OPACITY + (1 - GLOW_REST_OPACITY) * value
+	)
+	const maskImage = useTransform(
+		[scrollY, activity],
+		([, active]: number[]) => {
+			const element = ref.current
+			const container = element?.closest<HTMLElement>('#work-experience')
+			if (!element || !container)
+				return 'linear-gradient(transparent, transparent)'
+			const line =
+				readingLine(container) - element.getBoundingClientRect().top
+			const radius = GLOW_RADIUS + GLOW_SCROLL_SPREAD * active
 
-	return useTransform(scrollY, () => {
-		const top = ref.current?.getBoundingClientRect().top
-		if (top === undefined)
-			return 'linear-gradient(transparent, transparent)'
-		const line = window.innerHeight * READING_LINE - top
+			return `linear-gradient(to bottom, transparent ${line - radius}px, black ${line}px, transparent ${line + radius}px)`
+		}
+	)
 
-		return `linear-gradient(to bottom, transparent ${line - GLOW_RADIUS}px, black ${line}px, transparent ${line + GLOW_RADIUS}px)`
-	})
+	return { maskImage, opacity }
 }
 
 function useDrawProgress(
@@ -447,7 +496,7 @@ function Rail({ className }: { className: string }) {
 	const tipTop = useTransform(progress, value => `${value * 100}%`)
 	const dashFlow = useDashFlow()
 	const backgroundPositionY = useTransform(dashFlow, value => `${value}px`)
-	const maskImage = useReadingGlow(ref)
+	const { maskImage, opacity } = useReadingGlow(ref)
 
 	return (
 		<span
@@ -463,7 +512,7 @@ function Rail({ className }: { className: string }) {
 				<>
 					<m.span
 						className={cn(RAIL_DASHES, 'text-foreground/70')}
-						style={{ backgroundPositionY, maskImage }}
+						style={{ backgroundPositionY, maskImage, opacity }}
 					/>
 					<m.span
 						className="absolute -left-px size-[3px] -translate-y-1/2 rounded-full bg-foreground/70"
@@ -551,7 +600,7 @@ function Connector({
 	const tipDistance = useTransform(progress, value => `${value * 100}%`)
 	const dashFlow = useDashFlow()
 	const strokeDashoffset = useTransform(dashFlow, value => -value)
-	const maskImage = useReadingGlow(ref)
+	const { maskImage, opacity } = useReadingGlow(ref)
 
 	return (
 		<>
@@ -603,7 +652,7 @@ function Connector({
 						className="absolute inset-0 size-full overflow-visible"
 						viewBox="0 0 28 26"
 						fill="none"
-						style={{ maskImage }}
+						style={{ maskImage, opacity }}
 					>
 						<m.path
 							d={ELBOW_PATH}
@@ -718,6 +767,9 @@ export function ExperiencePositionItem({
 										position.skills.length > 0 && (
 											<SkillsList
 												skills={position.skills}
+												highlighted={
+													position.highlightedSkills
+												}
 											/>
 										)}
 								</div>
@@ -732,12 +784,28 @@ export function ExperiencePositionItem({
 	)
 }
 
-function SkillsList({ skills }: { skills: string[] }) {
+function SkillsList({
+	skills,
+	highlighted = {}
+}: {
+	skills: string[]
+	highlighted?: Record<string, string>
+}) {
 	return (
 		<div className="flex flex-wrap gap-1.5 pt-2">
-			{skills.map(skill => (
-				<Skill key={skill}>{skill}</Skill>
-			))}
+			{skills.map(skill =>
+				skill in highlighted ? (
+					<Skill
+						key={skill}
+						variant="highlight"
+						tooltip={highlighted[skill] || undefined}
+					>
+						{skill}
+					</Skill>
+				) : (
+					<Skill key={skill}>{skill}</Skill>
+				)
+			)}
 		</div>
 	)
 }
@@ -766,7 +834,11 @@ function Description({ text }: { text: string }) {
 	)
 }
 
-function Prose({ className, children, ...props }: React.ComponentProps<'div'>) {
+export function Prose({
+	className,
+	children,
+	...props
+}: React.ComponentProps<'div'>) {
 	return (
 		<div
 			className={cn(
@@ -784,17 +856,52 @@ function Prose({ className, children, ...props }: React.ComponentProps<'div'>) {
 	)
 }
 
-function Skill({ className, ...props }: React.ComponentProps<'span'>) {
+const SKILL_STRIPES = {
+	default: 'hsl(var(--foreground) / 0.05)',
+	highlight: 'hsl(var(--brand-500) / 0.22)'
+}
+
+export function Skill({
+	className,
+	variant = 'default',
+	tooltip,
+	children,
+	...props
+}: React.ComponentProps<'span'> & {
+	variant?: keyof typeof SKILL_STRIPES
+	tooltip?: string
+}) {
+	const tooltipId = React.useId()
+	const stripe = SKILL_STRIPES[variant]
+
 	return (
 		<span
+			tabIndex={tooltip ? 0 : undefined}
+			aria-describedby={tooltip ? tooltipId : undefined}
 			className={cn(
-				'inline-flex items-center border border-foreground/10 px-2 py-0.5 text-[11px] text-foreground/80 transition-colors hover:border-foreground/20 hover:text-foreground',
+				'group/skill relative inline-flex items-center border px-2 py-0.5 text-[11px] outline-none transition-colors',
+				variant === 'highlight'
+					? 'skill-stripes-animated border-brand-500/40 text-brand-400 hover:border-brand-500/70 focus-visible:border-brand-500/70'
+					: 'border-foreground/10 text-foreground/80 hover:border-foreground/20 hover:text-foreground',
+				tooltip && 'cursor-help',
 				className
 			)}
 			style={{
-				backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 2px, hsl(var(--foreground) / 0.05) 2px, hsl(var(--foreground) / 0.05) 3px)`
+				backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 2px, ${stripe} 2px, ${stripe} 3px)`
 			}}
+			onClick={tooltip ? event => event.stopPropagation() : undefined}
 			{...props}
-		/>
+		>
+			{children}
+			{tooltip && (
+				<span
+					id={tooltipId}
+					role="tooltip"
+					className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 w-max max-w-64 -translate-x-1/2 translate-y-0.5 rounded-sm border border-border bg-popover px-2 py-1 font-sans text-xs text-popover-foreground opacity-0 shadow-sm transition-[opacity,translate] duration-150 ease-out group-hover/skill:translate-y-0 group-hover/skill:opacity-100 group-focus-visible/skill:translate-y-0 group-focus-visible/skill:opacity-100"
+				>
+					{tooltip}
+				</span>
+			)}
+		</span>
 	)
 }

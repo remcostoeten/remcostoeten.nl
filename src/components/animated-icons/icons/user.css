@@ -1,0 +1,22 @@
+:is(
+	[data-icon-hover] .animated-icon,
+	.animated-icon[data-icon-hover],
+	.animated-icon[data-play]
+) {
+	&[data-icon='user'] {
+		& [data-part='head'] {
+			--icon-swing: -12deg;
+			transform-origin: 12px 21px;
+			animation-name: icon-swing;
+			animation-duration: var(--icon-duration-long);
+		}
+
+		& [data-part='body'] {
+			--icon-swing: -5deg;
+			--icon-delay: 70ms;
+			transform-origin: 12px 21px;
+			animation-name: icon-swing;
+			animation-duration: var(--icon-duration-long);
+		}
+	}
+}

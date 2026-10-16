@@ -46,6 +46,60 @@ function newId(prefix: string) {
 	return `${prefix}-${Math.random().toString(36).slice(2, 7)}`
 }
 
+function HighlightEditor({
+	skills,
+	value,
+	onChange
+}: {
+	skills: string[]
+	value: Record<string, string>
+	onChange: (next: Record<string, string>) => void
+}) {
+	function toggle(skill: string, isOn: boolean) {
+		const next = { ...value }
+		if (isOn) next[skill] = ''
+		else delete next[skill]
+		onChange(next)
+	}
+
+	return (
+		<div className="space-y-1.5">
+			<span className="text-xs font-medium text-muted-foreground">
+				Highlighted skills (striped, optional tooltip)
+			</span>
+			{skills.map(skill => {
+				const isOn = skill in value
+				return (
+					<div key={skill} className="flex items-center gap-2">
+						<label className="flex w-40 shrink-0 items-center gap-2 text-sm">
+							<input
+								type="checkbox"
+								checked={isOn}
+								onChange={event =>
+									toggle(skill, event.target.checked)
+								}
+							/>
+							<span className="truncate">{skill}</span>
+						</label>
+						{isOn && (
+							<Input
+								placeholder="Tooltip (optional)"
+								value={value[skill]}
+								onChange={event =>
+									onChange({
+										...value,
+										[skill]: event.target.value
+									})
+								}
+							/>
+						)}
+					</div>
+				)
+			})}
+		</div>
+	)
+}
+
 function PositionEditor({
 	position,
 	onChange,
@@ -137,6 +191,13 @@ function PositionEditor({
 					}
 				/>
 			</Field>
+			{(position.skills ?? []).some(Boolean) && (
+				<HighlightEditor
+					skills={(position.skills ?? []).filter(Boolean)}
+					value={position.highlightedSkills ?? {}}
+					onChange={next => set('highlightedSkills', next)}
+				/>
+			)}
 			<label className="flex items-center gap-2 text-sm">
 				<input
 					type="checkbox"
