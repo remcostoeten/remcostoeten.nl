@@ -1,7 +1,10 @@
 'use client'
 
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light'
+import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx'
+import oneDark from 'react-syntax-highlighter/dist/esm/styles/prism/one-dark'
+
+SyntaxHighlighter.registerLanguage('tsx', tsx)
 
 export function LazyCode({ code }: { code: string }) {
 	return (

@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import * as m from 'motion/react-m'
-import type { GitHubEventDetail } from '@/hooks/use-github'
+import type { GitHubEventDetail } from '@/features/github/types'
 import type { ActivityData } from '@/features/activity/types'
 import { useCurrentYear } from '@/hooks/use-current-year'
 

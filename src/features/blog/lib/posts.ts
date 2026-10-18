@@ -1,18 +1,8 @@
-import fs from 'fs'
-import path from 'path'
+import { readPostSources } from '@/features/blog/lib/posts-source'
 import { parseFrontmatter } from './frontmatter'
 import { calculateReadTime } from './read-time'
 import { BLOG_TOPICS, type BlogPost, type BlogPostMetadata } from './types'
 import { getTopicBySlug, slugifyTopic } from './topic-slug'
-
-const BLOG_POSTS_DIR = path.join(
-	process.cwd(),
-	'src',
-	'app',
-	'(marketing)',
-	'blog',
-	'posts'
-)
 
 const GUIDE_TAGS = new Set([
 	'guide',
@@ -34,7 +24,7 @@ function inferBlogTopic(file: string, metadata: Partial<BlogPostMetadata>) {
 
 	const normalizedTags = (metadata.tags || []).map(tag => tag.toLowerCase())
 	const isPersonalFolder = file
-		.split(path.sep)
+		.split('/')
 		.some(segment => segment.toLowerCase() === 'yappin')
 	const isGuide = normalizedTags.some(tag => GUIDE_TAGS.has(tag))
 
@@ -49,43 +39,12 @@ function inferBlogTopic(file: string, metadata: Partial<BlogPostMetadata>) {
 	return 'Engineering'
 }
 
-function getMarkdownFiles(dir: string) {
-	const files: string[] = []
-
-	function scanDirectory(currentDir: string) {
-		const items = fs.readdirSync(currentDir)
-
-		for (const item of items) {
-			const fullPath = path.join(currentDir, item)
-			const stat = fs.statSync(fullPath)
-
-			if (stat.isDirectory()) {
-				scanDirectory(fullPath)
-			} else if (
-				path.extname(item) === '.mdx' ||
-				path.extname(item) === '.md'
-			) {
-				files.push(path.relative(dir, fullPath))
-			}
-		}
-	}
-
-	scanDirectory(dir)
-
-	return files
-}
-
-function readMarkdownFile(filePath: string) {
-	const rawContent = fs.readFileSync(filePath, 'utf-8')
-	return parseFrontmatter(rawContent)
-}
-
-function getBlogPostData(dir: string): Array<BlogPost | null> {
-	return getMarkdownFiles(dir).map(file => {
+function getBlogPostData(): Array<BlogPost | null> {
+	return readPostSources().map(({ file, raw }) => {
 		try {
-			const { metadata, content } = readMarkdownFile(path.join(dir, file))
+			const { metadata, content } = parseFrontmatter(raw)
 			const isInDraftDirectory = file
-				.split(path.sep)
+				.split('/')
 				.some(segment => segment.toLowerCase() === 'drafts')
 			const slug = metadata.slug || file.replace(/\.(mdx|md)$/, '')
 
@@ -107,9 +66,8 @@ function getBlogPostData(dir: string): Array<BlogPost | null> {
 }
 
 export function getAllBlogPosts() {
-	const posts = getBlogPostData(BLOG_POSTS_DIR).filter(
-		(post): post is BlogPost =>
-			Boolean(post && post.slug && post.metadata && post.metadata.title)
+	const posts = getBlogPostData().filter((post): post is BlogPost =>
+		Boolean(post && post.slug && post.metadata && post.metadata.title)
 	)
 
 	return Array.from(new Map(posts.map(post => [post.slug, post])).values())

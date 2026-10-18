@@ -2,22 +2,14 @@
 
 import { Analytics } from '@spoar/sdk/next'
 import { AnalyticsProvider } from '@spoar/sdk/react'
-import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
 import { analytics } from './spoar'
 
-export { VercelSpeedInsights }
-
 export function UnifiedAnalytics() {
-	const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
+	if (!analytics) return null
 
 	return (
-		<>
-			{analytics ? (
-				<AnalyticsProvider client={analytics}>
-					<Analytics />
-				</AnalyticsProvider>
-			) : null}
-			{isProduction ? <VercelSpeedInsights /> : null}
-		</>
+		<AnalyticsProvider client={analytics}>
+			<Analytics />
+		</AnalyticsProvider>
 	)
 }

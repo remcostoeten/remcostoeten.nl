@@ -1,0 +1,1 @@
+ALTER TABLE "projects" ADD COLUMN "pet_project" boolean DEFAULT false NOT NULL;

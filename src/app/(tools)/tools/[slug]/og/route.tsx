@@ -7,7 +7,7 @@ type Context = {
 export async function GET(request: Request, { params }: Context) {
 	const response = await renderToolOpenGraphImage({
 		params,
-		backgroundUrl: new URL('/images/tools-og-backdrop.png', request.url)
+		backgroundUrl: new URL('/images/tools-og-backdrop.jpg', request.url)
 			.href
 	})
 	response.headers.set(

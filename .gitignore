@@ -55,3 +55,8 @@ dev-menu.config.ts
 
 # local agent configs
 .codex/
+/dist/
+.vinext/
+.cloudflare/
+
+.dev.vars

@@ -3,8 +3,6 @@
 import nextDynamic from 'next/dynamic'
 import { LazyMotion } from 'motion/react'
 import { useEffect, useState, type ReactNode } from 'react'
-import { CustomQueryClientProvider } from '@/components/providers/query-client-provider'
-
 import { StaggerProvider } from '@/components/ui/stagger-system'
 import { BlogFilterProvider } from '@/hooks/use-blog-filter'
 
@@ -52,20 +50,18 @@ export function AppProviders({ children }: TProps) {
 
 	return (
 		<LazyMotion features={loadMotionFeatures}>
-			<CustomQueryClientProvider>
-				<BlogFilterProvider>
-					<StaggerProvider
-						config={{
-							baseDelay: 80,
-							initialDelay: 0,
-							strategy: 'mount-order'
-						}}
-					>
-						{children}
-						{shouldLoadAppChrome && <AppChrome />}
-					</StaggerProvider>
-				</BlogFilterProvider>
-			</CustomQueryClientProvider>
+			<BlogFilterProvider>
+				<StaggerProvider
+					config={{
+						baseDelay: 80,
+						initialDelay: 0,
+						strategy: 'mount-order'
+					}}
+				>
+					{children}
+					{shouldLoadAppChrome && <AppChrome />}
+				</StaggerProvider>
+			</BlogFilterProvider>
 		</LazyMotion>
 	)
 }

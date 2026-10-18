@@ -5,6 +5,7 @@ import {
 	useEffect,
 	useMemo,
 	useCallback,
+	useRef,
 	type PointerEvent
 } from 'react'
 import * as m from 'motion/react-m'
@@ -23,11 +24,12 @@ import { AnimatedAlertCircleIcon } from '@/components/animated-icons/icons/alert
 import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
 import { AnimatedPlusIcon } from '@/components/animated-icons/icons/plus'
 import { AnimatedLockIcon } from '@/components/animated-icons/icons/lock'
-import type { GitHubEventDetail } from '@/hooks/use-github'
+import type { GitHubEventDetail } from '@/features/github/types'
 import type { ActivityData } from '@/features/activity/types'
 import { EmptyState } from '@/components/home/empty-state/empty-state'
 import { ActivityIllustration } from '@/components/home/empty-state/illustrations'
 import { ProjectHoverWrapper, SpotifyHoverWrapper } from './hover-wrappers'
+import { useInView } from '@/hooks/use-in-view'
 import { useSpotifyPlayback } from '@/hooks/use-spotify-playback'
 import type { SpotifyTrack } from '@/features/spotify/client'
 
@@ -525,7 +527,9 @@ export function ActivityFeed({
 	const liveTracks = data.spotifyTracks
 	const tracks = liveTracks.length > 0 ? liveTracks : cachedTracks
 
-	const playbackState = useSpotifyPlayback()
+	const rootRef = useRef<HTMLDivElement>(null)
+	const inView = useInView(rootRef, '200px')
+	const playbackState = useSpotifyPlayback(inView)
 
 	useEffect(() => {
 		try {
@@ -622,7 +626,7 @@ export function ActivityFeed({
 	}
 
 	useEffect(() => {
-		if (pairedContent.length === 0) return
+		if (pairedContent.length === 0 || !inView) return
 
 		const interval = setInterval(() => {
 			if (!isPaused) {
@@ -638,7 +642,13 @@ export function ActivityFeed({
 		}, 100)
 
 		return () => clearInterval(interval)
-	}, [pairedContent.length, isPaused, rotationInterval, rotateActivity])
+	}, [
+		pairedContent.length,
+		inView,
+		isPaused,
+		rotationInterval,
+		rotateActivity
+	])
 
 	useEffect(() => {
 		setElapsedTime(0)
@@ -695,6 +705,7 @@ export function ActivityFeed({
 
 	return (
 		<m.div
+			ref={rootRef}
 			onMouseEnter={() => setIsPaused(true)}
 			onMouseLeave={() => setIsPaused(false)}
 			onFocus={() => setIsPaused(true)}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 
 type Props = {
 	name: string
@@ -38,7 +38,7 @@ export class RepoDetailsError extends Error {
  * Distinguishes the rate-limit case (the most common trigger when no
  * GITHUB_TOKEN is set) from not-found / auth / generic failures.
  */
-export function getRepoDetailsErrorMessage(error: unknown): string {
+export function getRepoDetailsErrorMessage(error: Error | null): string {
 	const status = error instanceof RepoDetailsError ? error.status : 0
 
 	switch (status) {
@@ -53,38 +53,71 @@ export function getRepoDetailsErrorMessage(error: unknown): string {
 	}
 }
 
+const CACHE_TTL_MS = 5 * 60 * 1000
+
+type CacheEntry = {
+	request: Promise<Props>
+	expiresAt: number
+}
+
+const requestCache = new Map<string, CacheEntry>()
+
+async function requestRepoDetails(owner: string, repo: string) {
+	const response = await fetch(`/api/github/repo?owner=${owner}&repo=${repo}`)
+	if (!response.ok) {
+		let message = 'Failed to fetch repo details'
+		try {
+			const body = await response.json()
+			if (body?.error) message = body.error
+		} catch {
+			// response had no JSON body; keep the default message
+		}
+		throw new RepoDetailsError(response.status, message)
+	}
+	return response.json() as Promise<Props>
+}
+
+function loadRepoDetails(owner: string, repo: string) {
+	const key = `${owner}/${repo}`
+	const cached = requestCache.get(key)
+	if (cached && cached.expiresAt > Date.now()) return cached.request
+
+	const request = requestRepoDetails(owner, repo)
+	requestCache.set(key, { request, expiresAt: Date.now() + CACHE_TTL_MS })
+	request.catch(() => requestCache.delete(key))
+	return request
+}
+
 /**
  * Fetch detailed repository info for hover cards
  * Uses lazy loading - only fetches when enabled is true
  */
 export function useRepoDetails(owner: string, repo: string, enabled = false) {
-	return useQuery({
-		queryKey: ['github', 'repo-details', owner, repo],
-		queryFn: async () => {
-			const response = await fetch(
-				`/api/github/repo?owner=${owner}&repo=${repo}`
-			)
-			if (!response.ok) {
-				let message = 'Failed to fetch repo details'
-				try {
-					const body = await response.json()
-					if (body?.error) message = body.error
-				} catch {
-					// response had no JSON body; keep the default message
-				}
-				throw new RepoDetailsError(response.status, message)
-			}
-			return response.json() as Promise<Props>
-		},
-		enabled: enabled && !!owner && !!repo,
-		staleTime: 5 * 60 * 1000,
-		gcTime: 30 * 60 * 1000,
-		// Don't retry client errors (rate limit, 404, auth) — retrying just burns
-		// more of the already-exhausted unauthenticated request budget.
-		retry: (failureCount, error) => {
-			const status = error instanceof RepoDetailsError ? error.status : 0
-			if (status >= 400 && status < 500) return false
-			return failureCount < 2
+	const [data, setData] = useState<Props>()
+	const [error, setError] = useState<Error | null>(null)
+
+	useEffect(() => {
+		if (!enabled || !owner || !repo) return
+
+		let cancelled = false
+		setError(null)
+		loadRepoDetails(owner, repo)
+			.then(details => {
+				if (!cancelled) setData(details)
+			})
+			.catch((reason: Error) => {
+				if (!cancelled) setError(reason)
+			})
+
+		return () => {
+			cancelled = true
 		}
-	})
+	}, [enabled, owner, repo])
+
+	return {
+		data,
+		error,
+		isError: error !== null,
+		isLoading: enabled && data === undefined && error === null
+	}
 }

@@ -3,7 +3,7 @@
 import { isAdmin } from '@/features/auth/guard'
 import { db } from '@/server/db/connection'
 import { siteIntro } from '@/server/db/schema'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 import type { IntroContent } from './intro-queries'
 
 type MutationResult = { success: true } | { success: false; error: string }
@@ -22,6 +22,7 @@ export async function saveIntro(input: IntroContent): Promise<MutationResult> {
 		.values({ id: 1, name, role, bio })
 		.onConflictDoUpdate({ target: siteIntro.id, set: { name, role, bio } })
 
+	updateTag('intro')
 	revalidatePath('/')
 	revalidatePath('/admin/intro')
 	return { success: true }

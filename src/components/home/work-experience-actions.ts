@@ -3,7 +3,7 @@
 import { isAdmin } from '@/features/auth/guard'
 import { db } from '@/server/db/connection'
 import { workExperiences } from '@/server/db/schema'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, updateTag } from 'next/cache'
 
 type MutationResult = { success: true } | { success: false; error: string }
 
@@ -42,6 +42,7 @@ export async function saveWorkExperiences(
 			.values(experiences.map((data, idx) => ({ idx, data })))
 	}
 
+	updateTag('work-experience')
 	revalidatePath('/')
 	revalidatePath('/admin/experience')
 	return { success: true }

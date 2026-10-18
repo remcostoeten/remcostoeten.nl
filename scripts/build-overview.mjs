@@ -42,7 +42,7 @@ const steps = [
 	{ label: 'Lint', script: 'lint' },
 	{ label: 'Typecheck', script: 'typecheck' },
 	{ label: 'Tests', script: 'test' },
-	{ label: 'Build', script: 'build:next' }
+	{ label: 'Build', script: 'build:vinext' }
 ]
 
 const results = []

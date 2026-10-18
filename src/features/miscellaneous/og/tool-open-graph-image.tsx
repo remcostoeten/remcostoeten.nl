@@ -1,5 +1,3 @@
-import { readFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { ImageResponse } from 'next/og'
 import { notFound } from 'next/navigation'
 import {
@@ -12,7 +10,7 @@ export const size = { width: 1200, height: 630 }
 
 type Props = {
 	params: Promise<{ slug: string }>
-	backgroundUrl?: string
+	backgroundUrl: string
 }
 
 const ACCENTS = {
@@ -21,19 +19,22 @@ const ACCENTS = {
 	media: '#4f7cff'
 } as const
 
+async function loadBackdropDataUrl(url: string) {
+	const response = await fetch(url)
+	if (!response.ok) {
+		throw new Error(`Failed to load OG backdrop: ${response.status}`)
+	}
+	const bytes = Buffer.from(await response.arrayBuffer())
+	return `data:image/jpeg;base64,${bytes.toString('base64')}`
+}
+
 export default async function Image({ params, backgroundUrl }: Props) {
 	const { slug } = await params
 	const tool = getToolBySlug(slug)
 	if (!tool || tool.status !== 'available') notFound()
 
 	const seo = getToolSeoContent(slug)
-	const backgroundDataUrl = backgroundUrl
-		? backgroundUrl
-		: `data:image/png;base64,${(
-				await readFile(
-					join(process.cwd(), 'public/images/tools-og-backdrop.png')
-				)
-			).toString('base64')}`
+	const backgroundDataUrl = await loadBackdropDataUrl(backgroundUrl)
 	const accent = ACCENTS[tool.category]
 
 	return new ImageResponse(

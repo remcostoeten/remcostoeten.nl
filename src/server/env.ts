@@ -18,7 +18,6 @@ export const env = createEnv({
 		ADMIN_EMAIL: z.string().email().optional(),
 		DEV_OPEN_ADMIN: z.enum(['true', 'false']).optional(),
 		ALLOWED_GITHUB_USERNAME: z.string().optional(),
-		CRON_SECRET: z.string().min(1).optional(),
 		YTM_COOKIE: z.string().optional(),
 		YTM_AUTH_USER: z.string().optional(),
 
@@ -40,7 +39,6 @@ export const env = createEnv({
 		ADMIN_EMAIL: process.env.ADMIN_EMAIL,
 		DEV_OPEN_ADMIN: process.env.DEV_OPEN_ADMIN,
 		ALLOWED_GITHUB_USERNAME: process.env.ALLOWED_GITHUB_USERNAME,
-		CRON_SECRET: process.env.CRON_SECRET,
 		YTM_COOKIE: process.env.YTM_COOKIE,
 		YTM_AUTH_USER: process.env.YTM_AUTH_USER,
 

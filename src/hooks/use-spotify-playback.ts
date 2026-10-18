@@ -49,7 +49,7 @@ const DRIFT_THRESHOLD = 2000 // Hard reset if drift > 2 seconds
  * - Adaptive polling interval based on connection quality
  * - Uses cached token (via API) to avoid redundant auth
  */
-export function useSpotifyPlayback(): SpotifyPlaybackState {
+export function useSpotifyPlayback(enabled: boolean): SpotifyPlaybackState {
 	const [state, setState] = useState<SpotifyPlaybackState>({
 		track: null,
 		progress: 0,
@@ -200,6 +200,8 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
 	}, [])
 
 	useEffect(() => {
+		if (!enabled) return
+
 		// Handle visibility change - pause polling when hidden
 		const handleVisibilityChange = () => {
 			isVisibleRef.current = document.visibilityState === 'visible'
@@ -214,11 +216,14 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
 		}
 
 		// Delay initial polling by 3 seconds to avoid blocking hydration (TBT optimization)
-		const startupDelay = setTimeout(() => {
-			if (document.visibilityState === 'visible') {
-				startPolling()
-			}
-		}, 3000)
+		const startupDelay = setTimeout(
+			() => {
+				if (document.visibilityState === 'visible') {
+					startPolling()
+				}
+			},
+			Math.max(0, 3000 - performance.now())
+		)
 
 		// Listen for visibility changes
 		document.addEventListener('visibilitychange', handleVisibilityChange)
@@ -231,7 +236,7 @@ export function useSpotifyPlayback(): SpotifyPlaybackState {
 				handleVisibilityChange
 			)
 		}
-	}, [startPolling, stopPolling])
+	}, [enabled, startPolling, stopPolling])
 
 	return state
 }

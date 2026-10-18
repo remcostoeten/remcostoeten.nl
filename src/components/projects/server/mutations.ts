@@ -25,6 +25,7 @@ export async function createProject(data: {
 	demoBox?: string
 	showLive?: boolean
 	native?: boolean
+	petProject?: boolean
 	labels?: string[]
 	showUpd?: boolean
 	showCommits?: boolean
@@ -74,6 +75,7 @@ export async function updateProject(
 		demoBox: string | null
 		showLive: boolean
 		native: boolean
+		petProject: boolean
 		labels: string[]
 		showUpd: boolean
 		showCommits: boolean
