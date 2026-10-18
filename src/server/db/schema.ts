@@ -1,7 +1,6 @@
 export * from './auth-schema'
 export * from './blog-schema'
 export * from './contact-schema'
-export * from './github-schema'
 export * from './project-schema'
 export * from './spotify-schema'
 export * from './ytmusic-schema'
