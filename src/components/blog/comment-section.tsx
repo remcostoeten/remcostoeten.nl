@@ -6,7 +6,8 @@ import { AnimatePresence } from 'motion/react'
 import { Loader2 } from 'lucide-react'
 import { AnimatedTrashIcon } from '@/components/animated-icons/icons/trash'
 import { AnimatedCommentIcon } from '@/components/animated-icons/icons/comment'
-import { useSession } from '@/features/auth/client'
+import type { SessionUser } from '@/features/auth/client'
+import { OptionalSession } from '@/features/auth/optional-session'
 import Image from 'next/image'
 import { addComment, deleteComment } from '@/server/actions/blog/comments'
 import { EmptyState } from '@/components/home/empty-state/empty-state'
@@ -28,8 +29,19 @@ type Props = {
 	slug: string
 }
 
+type ContentProps = Props & {
+	user: SessionUser | null
+}
+
 export function CommentSection({ slug }: Props) {
-	const { data: session } = useSession()
+	return (
+		<OptionalSession>
+			{({ user }) => <CommentSectionContent slug={slug} user={user} />}
+		</OptionalSession>
+	)
+}
+
+function CommentSectionContent({ slug, user }: ContentProps) {
 	const [comments, setComments] = useState<Comment[]>([])
 	const [newComment, setNewComment] = useState('')
 	const [isLoading, setIsLoading] = useState(true)
@@ -52,7 +64,7 @@ export function CommentSection({ slug }: Props) {
 
 	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault()
-		if (!newComment.trim() || !session?.user) return
+		if (!newComment.trim() || !user) return
 
 		setError(null)
 
@@ -101,13 +113,13 @@ export function CommentSection({ slug }: Props) {
 				</h2>
 			</div>
 
-			{session?.user ? (
+			{user ? (
 				<form onSubmit={handleSubmit} className="mb-8">
 					<div className="flex gap-3">
-						{session.user.image ? (
+						{user.image ? (
 							<Image
-								src={session.user.image}
-								alt={session.user.name || 'User'}
+								src={user.image}
+								alt={user.name || 'User'}
 								width={40}
 								height={40}
 								className="w-10 h-10 rounded-full shrink-0"
@@ -115,8 +127,7 @@ export function CommentSection({ slug }: Props) {
 						) : (
 							<div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center shrink-0">
 								<span className="text-sm font-medium text-muted-foreground">
-									{session.user.name?.[0]?.toUpperCase() ||
-										'?'}
+									{user.name?.[0]?.toUpperCase() || '?'}
 								</span>
 							</div>
 						)}
@@ -225,7 +236,7 @@ export function CommentSection({ slug }: Props) {
 										{comment.content}
 									</p>
 
-									{session?.user?.id === comment.userId && (
+									{user?.id === comment.userId && (
 										<button
 											onClick={() =>
 												handleDelete(comment.id)

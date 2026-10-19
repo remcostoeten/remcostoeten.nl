@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import type { Route } from 'next'
 import * as m from 'motion/react-m'
 import { AnimatePresence } from 'motion/react'
-import { useSession } from '@/features/auth/client'
+import type { SessionUser } from '@/features/auth/client'
 import { useRouter } from 'next/navigation'
 import { generateRoutes } from '@/utils/generate-routes'
 import { Terminal } from 'lucide-react'
@@ -32,13 +32,13 @@ const COMMANDS = [
 
 interface VimStatusBarProps {
 	onCommand?: (command: string) => void
+	user: SessionUser | null
 }
 
-export function VimStatusBar({ onCommand }: VimStatusBarProps) {
+export function VimStatusBar({ onCommand, user }: VimStatusBarProps) {
 	const [isVisible, setIsVisible] = useState(false)
 	const [input, setInput] = useState('')
 	const [selectedIndex, setSelectedIndex] = useState(0)
-	const { data: session } = useSession()
 	const router = useRouter()
 	const inputRef = useRef<HTMLInputElement>(null)
 
@@ -202,8 +202,8 @@ export function VimStatusBar({ onCommand }: VimStatusBarProps) {
 	}, [isVisible])
 
 	const getStatusText = () => {
-		if (session?.user) {
-			return `-- AUTHENTICATED -- ${session.user.name || session.user.email}`
+		if (user) {
+			return `-- AUTHENTICATED -- ${user.name || user.email}`
 		}
 		return '-- NORMAL --'
 	}

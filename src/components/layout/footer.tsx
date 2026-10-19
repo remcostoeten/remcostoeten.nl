@@ -1,31 +1,32 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Github, Linkedin, Twitter, GitCommit } from 'lucide-react'
 import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
 import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import Link from 'next/link'
-import { useLatestCommit } from '@/hooks/use-github'
+import type { LatestCommit } from '@/features/github/types'
 import { AnimatedNumber } from '../ui/effects/animated-number'
 import { LazyContactPopover } from '@/components/contact/lazy-contact-popover'
 import { LazyResumeDrawer } from '../lazy-resume-drawer'
 import { CurrentYear } from '@/components/ui/current-year'
 
-export function Footer() {
+type Props = {
+	latestCommit?: LatestCommit | null
+}
+
+export function Footer({ latestCommit }: Props) {
 	const [copied, setCopied] = useState(false)
+	const [now, setNow] = useState<number | null>(null)
 	const email = 'stoetenremco.rs@gmail.com'
 	const displayEmail = 'stoetenremco [dot] rs [at] gmail [dot] com'
 
-	const { data: latestCommit } = useLatestCommit(
-		'remcostoeten',
-		'remcostoeten.nl'
-	)
+	useEffect(() => setNow(Date.now()), [])
 
 	const relativeTimeInfo = useMemo(() => {
-		if (!latestCommit?.date) return null
-		const now = new Date()
+		if (!latestCommit?.date || now === null) return null
 		const date = new Date(latestCommit.date)
-		const diffMs = now.getTime() - date.getTime()
+		const diffMs = now - date.getTime()
 		const diffMins = Math.floor(diffMs / (1000 * 60))
 		const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
 		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
@@ -35,7 +36,7 @@ export function Footer() {
 		if (diffHours < 24)
 			return { value: diffHours, unit: diffHours === 1 ? 'hr' : 'hrs' }
 		return { value: diffDays, unit: diffDays === 1 ? 'day' : 'days' }
-	}, [latestCommit?.date])
+	}, [latestCommit?.date, now])
 
 	const copyEmail = async () => {
 		await navigator.clipboard.writeText(email)

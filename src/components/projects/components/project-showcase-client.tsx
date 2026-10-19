@@ -15,14 +15,40 @@ type Props = {
 	other: IProject[]
 }
 
+type TFilter = 'all' | 'work' | 'pet'
+
+const FILTERS: { value: TFilter; label: string }[] = [
+	{ value: 'all', label: 'All' },
+	{ value: 'work', label: 'Work' },
+	{ value: 'pet', label: 'Side projects' }
+]
+
+function matchesFilter(project: IProject, filter: TFilter) {
+	if (filter === 'all') return true
+	return filter === 'pet' ? !!project.petProject : !project.petProject
+}
+
 const EASE_OUT_EXPO = 'cubic-bezier(0.16, 1, 0.3, 1)'
 const ROW_HEIGHT = 40
 
 export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 	visibleRowCount,
-	featured,
-	other
+	featured: allFeatured,
+	other: allOther
 }: Props) {
+	const [filter, setFilter] = useState<TFilter>('all')
+	const hasBothKinds = useMemo(() => {
+		const all = [...allFeatured, ...allOther]
+		return all.some(p => p.petProject) && all.some(p => !p.petProject)
+	}, [allFeatured, allOther])
+	const featured = useMemo(
+		() => allFeatured.filter(p => matchesFilter(p, filter)),
+		[allFeatured, filter]
+	)
+	const other = useMemo(
+		() => allOther.filter(p => matchesFilter(p, filter)),
+		[allOther, filter]
+	)
 	const [showAll, setShowAll] = useState(false)
 	const [openRowName, setOpenRowName] = useState<string | null>(null)
 	const collapsedHeight = useMemo(
@@ -40,6 +66,29 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 
 	return (
 		<section className="w-full max-w-3xl px-3 sm:px-0">
+			{hasBothKinds && (
+				<div
+					role="tablist"
+					aria-label="Filter projects"
+					className="flex gap-1 border-t border-border px-2 py-2 sm:px-3"
+				>
+					{FILTERS.map(option => (
+						<button
+							key={option.value}
+							type="button"
+							role="tab"
+							aria-selected={filter === option.value}
+							onClick={() => {
+								setFilter(option.value)
+								setOpenRowName(null)
+							}}
+							className="rounded-sm px-2 py-1 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground aria-selected:bg-muted aria-selected:text-foreground focus-visible:outline-none focus-visible:bg-muted focus-visible:text-foreground"
+						>
+							{option.label}
+						</button>
+					))}
+				</div>
+			)}
 			<div className="grid border-t border-border sm:grid-cols-2">
 				{featured.map(project => (
 					<div
@@ -62,11 +111,10 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 					}}
 				>
 					<Suspense fallback={null}>
-						{other.map((project, index) => (
+						{other.map(project => (
 							<ProjectRow
 								key={project.name}
 								project={project}
-								index={featured.length + index}
 								isOpen={openRowName === project.name}
 								onToggle={() =>
 									setOpenRowName(current =>

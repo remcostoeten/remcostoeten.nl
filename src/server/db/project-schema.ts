@@ -16,6 +16,7 @@ export const projects = pgTable(
 		gitUrl: text('git_url'),
 		demoUrl: text('demo_url'),
 		native: boolean('native').default(false).notNull(),
+		petProject: boolean('pet_project').default(false).notNull(),
 		labels: text('labels').array().default([]).notNull(),
 		showCommits: boolean('show_commits').default(false).notNull(),
 		showFirst: boolean('show_first').default(false).notNull(),

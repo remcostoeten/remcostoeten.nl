@@ -132,7 +132,7 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 		storageTitle: 'Data Storage and Security',
 		storageLead: 'Your data is stored securely on:',
 		storageItems: [
-			'Vercel: Analytics and site hosting (EU/US data centers).',
+			'Cloudflare: Site hosting and content delivery (global edge network).',
 			'Neon: User data and blog interactions (EU data centers).',
 			'GitHub: OAuth authentication data.'
 		],
@@ -169,7 +169,7 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 		partnersIntro: 'This site uses the following third-party services:',
 		partnersItems: [
 			'GitHub: OAuth authentication.',
-			'Vercel: Website hosting and performance monitoring.',
+			'Cloudflare: Website hosting and content delivery.',
 			'Neon: Database hosting for user data.'
 		],
 		contactTitle: 'Contact',
@@ -247,7 +247,7 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 		storageTitle: 'Dataopslag en beveiliging',
 		storageLead: 'Je data wordt veilig opgeslagen bij:',
 		storageItems: [
-			'Vercel: Analytics en hosting (EU/VS datacenters).',
+			'Cloudflare: Websitehosting en contentlevering (wereldwijd edge-netwerk).',
 			'Neon: Gebruikersdata en bloginteracties (EU datacenters).',
 			'GitHub: OAuth-authenticatiegegevens.'
 		],
@@ -283,7 +283,7 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 		partnersIntro: 'Deze site gebruikt de volgende diensten van derden:',
 		partnersItems: [
 			'GitHub: OAuth-authenticatie.',
-			'Vercel: Websitehosting en prestatiemonitoring.',
+			'Cloudflare: Websitehosting en contentlevering.',
 			'Neon: Databasehosting voor gebruikersdata.'
 		],
 		contactTitle: 'Contact',

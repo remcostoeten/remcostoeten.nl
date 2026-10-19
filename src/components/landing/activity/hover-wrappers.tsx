@@ -13,7 +13,7 @@ import {
 	useRepoDetails,
 	getRepoDetailsErrorMessage
 } from '@/hooks/use-repo-details'
-import { GitHubEventDetail } from '@/hooks/use-github'
+import type { GitHubEventDetail } from '@/features/github/types'
 import { SpotifyTrack } from '@/features/spotify/client'
 import React from 'react'
 

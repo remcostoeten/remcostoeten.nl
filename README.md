@@ -12,16 +12,17 @@
   <img src="https://shieldcn.dev/badge/runtime-Bun-black.svg?font=jetbrains-mono&logo=bun" alt="runtime: Bun" />
   <img src="https://shieldcn.dev/badge/database-Postgres-black.svg?font=jetbrains-mono&logo=postgresql" alt="database: Postgres" />
   <img src="https://shieldcn.dev/badge/deploy-Vercel-black.svg?font=jetbrains-mono&logo=vercel" alt="deploy: Vercel" />
+  <img src="https://shieldcn.dev/badge/deploy-Cloudflare%20Workers-black.svg?font=jetbrains-mono&logo=cloudflare" alt="deploy: Cloudflare Workers" />
 </p>
 
 <p align="center">
-  <img src="public/images/readme/demo.webp" width="100%" alt="Scrolling the homepage from the intro and tech stack through experience, projects and UI resources, then opening the blog and tools pages" />
+  <img src=".github/assets/demo.webp" width="100%" alt="Scrolling the homepage from the intro and tech stack through experience, projects and UI resources, then opening the blog and tools pages" />
 </p>
 <p align="center">
   <sub>Recorded on a local dev server of this branch at 1440×900.</sub>
 </p>
 
-The site is a Next.js App Router application. Public pages are prerendered, activity data such as GitHub commits and Spotify playback is read from Postgres and refreshed by a daily cron, and a signed-in admin area edits the content behind the public pages.
+The site is a Next.js App Router application that deploys to Vercel or Cloudflare Workers. Activity data such as GitHub commits and Spotify playback is fetched from the GitHub and Spotify APIs, and a signed-in admin area edits the content behind the public pages.
 
 - **Blog** written as markdown files in the repo, with topics, drafts, RSS, callouts, syntax highlighting, reactions and comments.
 - **Activity feed** showing recent GitHub commits and current Spotify listening on the homepage.
@@ -46,6 +47,23 @@ bun run check               # oxlint, tsgo typecheck and vitest
 Every other variable in `.env.example` enables one integration (GitHub, Google, Spotify, YouTube Music, PostHog, ipinfo). A missing one disables its feature instead of breaking the build. The GitHub and Google OAuth apps can be created with [oauth-app-automator](https://github.com/remcostoeten/oauth-app-automator).
 
 Server code lives under `src/server`, route handlers stay thin and delegate to it, and blog posts are read from `src/app/(marketing)/blog/posts` and enriched with topic and reading time at build.
+
+## Deployment
+
+The same code deploys to either host.
+
+**Vercel** is the default. `vercel.json` pins the framework and runs `next build`; push to the connected branch.
+
+**Cloudflare Workers** runs through [vinext](https://github.com/cloudflare/vinext), which builds the Next.js app with Vite. `cloudflare.config.ts` declares the Worker, a KV namespace for the data cache and the secrets the app reads.
+
+```bash
+cp .env .dev.vars                                         # secrets for the local Worker
+bun run build:vinext                                      # build into .cloudflare/output
+bun run start:vinext                                      # run the built Worker on http://localhost:4173
+bunx cf deploy --prebuilt --secrets-file .env.production  # upload the build and its secrets
+```
+
+`NEXT_PUBLIC_*` variables are inlined at build time, so set them in the environment of `bun run build:vinext`. `bun run dev` and `bun run build` use the plain Next.js toolchain; set `BUILD_TARGET=vinext` to make `bun run build` finish with the Vite build instead.
 
 <br/>
 

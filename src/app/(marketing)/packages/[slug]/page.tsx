@@ -149,23 +149,25 @@ async function PackagePageContent({ params }: Props) {
 					hideSectionLabels={hideSectionLabels}
 				/>
 			)}
-			<PackageWhy pkg={pkg} hideLabel={hideSectionLabels}>
-				{pkg.slug === 'auth-drawer' && (
-					<div className="mt-6">
-						<AuthDrawerDemo />
-					</div>
-				)}
-				{pkg.slug === 'notifier' && (
-					<div className="mt-6">
-						<NotifierDemo />
-					</div>
-				)}
-				{pkg.slug === 'empty-states' && (
-					<div className="mt-6">
-						<EmptyStatesDemo />
-					</div>
-				)}
-			</PackageWhy>
+			{pkg.slug !== 'animated-icons' && (
+				<PackageWhy pkg={pkg} hideLabel={hideSectionLabels}>
+					{pkg.slug === 'auth-drawer' && (
+						<div className="mt-6">
+							<AuthDrawerDemo />
+						</div>
+					)}
+					{pkg.slug === 'notifier' && (
+						<div className="mt-6">
+							<NotifierDemo />
+						</div>
+					)}
+					{pkg.slug === 'empty-states' && (
+						<div className="mt-6">
+							<EmptyStatesDemo />
+						</div>
+					)}
+				</PackageWhy>
+			)}
 
 			{pkg.slug !== 'use-shortcut' && (
 				<PackageQuickStart

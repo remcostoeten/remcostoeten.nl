@@ -5,10 +5,9 @@ import { AnalyticsProvider } from '@spoar/sdk/react'
 import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
 import { analytics } from './spoar'
 
-export { VercelSpeedInsights }
-
 export function UnifiedAnalytics() {
-	const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
+	const isVercelProduction =
+		process.env.NEXT_PUBLIC_VERCEL_ENV === 'production'
 
 	return (
 		<>
@@ -17,7 +16,7 @@ export function UnifiedAnalytics() {
 					<Analytics />
 				</AnalyticsProvider>
 			) : null}
-			{isProduction ? <VercelSpeedInsights /> : null}
+			{isVercelProduction ? <VercelSpeedInsights /> : null}
 		</>
 	)
 }

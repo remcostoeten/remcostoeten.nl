@@ -14,7 +14,7 @@ import {
 	DEFAULT_FONT_PAIR_ID,
 	FONT_PAIRS,
 	defaultFontVariables,
-	previewFontVariables
+	loadPreviewFontVariables
 } from '@/components/dev/font-switcher/fonts'
 import './global.css'
 
@@ -91,13 +91,16 @@ export const metadata: Metadata = {
 		shortcut: '/favicon.ico',
 		apple: '/apple-icon.png'
 	},
-	manifest: '/manifest.webmanifest',
-	other: {
-		'dns-prefetch': ['//api.github.com', '//api.spotify.com']
-	}
+	manifest: '/manifest.webmanifest'
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+	children
+}: {
+	children: ReactNode
+}) {
+	const previewFontVariables = await loadPreviewFontVariables()
+
 	return (
 		<html
 			lang="en"
@@ -115,20 +118,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 						__html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||!t){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`
 					}}
 				/>
-				<link rel="dns-prefetch" href="//api.github.com" />
-				<link rel="dns-prefetch" href="//api.spotify.com" />
-				<link
-					rel="dns-prefetch"
-					href="//avatars.githubusercontent.com"
-				/>
-				<link rel="dns-prefetch" href="//i.scdn.co" />
-				<link rel="dns-prefetch" href="//yt3.googleusercontent.com" />
-				<link
-					rel="preconnect"
-					href="https://avatars.githubusercontent.com"
-				/>
-				<link rel="preconnect" href="https://i.scdn.co" />
-
 				<ThemeInitializer />
 				<WebsiteStructuredData />
 				<PersonStructuredData />
@@ -139,10 +128,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 			>
 				<AppProviders>{children}</AppProviders>
 				<IconHoverInstaller />
-				<FontSwitcher
-					pairs={FONT_PAIRS}
-					defaultId={DEFAULT_FONT_PAIR_ID}
-				/>
+				{process.env.NODE_ENV !== 'production' && (
+					<FontSwitcher
+						pairs={FONT_PAIRS}
+						defaultId={DEFAULT_FONT_PAIR_ID}
+					/>
+				)}
 			</body>
 		</html>
 	)

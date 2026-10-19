@@ -48,6 +48,12 @@ export function ResourcesSection() {
 				</Link>
 			}
 		>
+			<p className="px-4 pt-4 pb-4 font-mono text-sm leading-relaxed tracking-tight text-muted-foreground/80 md:px-5">
+				Components I built for my own projects, published as a shadcn
+				registry. One command copies the source into your codebase, so
+				you can edit it like any other file. Nothing lands in
+				node_modules.
+			</p>
 			{resources.map(resource => {
 				const href = `/packages/${resource.slug}`
 				const preview = previews[resource.slug]

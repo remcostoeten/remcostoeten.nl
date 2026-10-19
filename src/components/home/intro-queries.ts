@@ -1,3 +1,4 @@
+import { cacheLife, cacheTag } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { db } from '@/server/db/connection'
 import { siteIntro } from '@/server/db/schema'
@@ -15,15 +16,20 @@ export const DEFAULT_INTRO: IntroContent = {
 }
 
 export async function getIntro(): Promise<IntroContent> {
+	'use cache'
+	cacheTag('intro')
+
 	try {
 		const [row] = await db
 			.select()
 			.from(siteIntro)
 			.where(eq(siteIntro.id, 1))
+		cacheLife('hours')
 		if (!row) return DEFAULT_INTRO
 		return { name: row.name, role: row.role, bio: row.bio }
 	} catch (error) {
 		console.error('[getIntro] Database error:', error)
+		cacheLife('minutes')
 		return DEFAULT_INTRO
 	}
 }

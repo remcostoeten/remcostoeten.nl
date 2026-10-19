@@ -309,6 +309,14 @@ export function ProjectEditor({ project, onUpdate, onDelete, onClose }: Props) {
 									}
 								/>
 								<Toggle
+									label="Pet Project"
+									description="List under side projects instead of real work."
+									checked={form.petProject}
+									onChange={value =>
+										handleChange('petProject', value)
+									}
+								/>
+								<Toggle
 									label="Show Live"
 									description="Display the live/demo link on the public project card."
 									checked={form.showLive}

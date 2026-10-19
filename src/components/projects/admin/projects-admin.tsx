@@ -60,6 +60,7 @@ export function ProjectsAdmin({ initialProjects, initialSettings }: Props) {
 					gitUrl: null,
 					demoUrl: null,
 					native: false,
+					petProject: false,
 					labels: [],
 					showCommits: false,
 					showFirst: false,

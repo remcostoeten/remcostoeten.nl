@@ -7,24 +7,27 @@ import {
 	installIconHover,
 	playIcon
 } from '@/components/animated-icons/icon-frame'
-import { iconEntries } from './entries'
+import { AnimatedBellIcon } from '@/components/animated-icons/icons/bell'
+import { AnimatedCalendarIcon } from '@/components/animated-icons/icons/calendar'
+import { AnimatedDownloadIcon } from '@/components/animated-icons/icons/download'
+import { AnimatedLockIcon } from '@/components/animated-icons/icons/lock'
+import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
+import { AnimatedSearchIcon } from '@/components/animated-icons/icons/search'
+import { AnimatedSettingsIcon } from '@/components/animated-icons/icons/settings'
+import { AnimatedTrashIcon } from '@/components/animated-icons/icons/trash'
 
-const tickerIds = [
-	'search',
-	'bell',
-	'trash',
-	'settings',
-	'calendar',
-	'mail',
-	'lock',
-	'download'
-]
 const tickInterval = 900
 
-const tickerEntries = tickerIds.flatMap(id => {
-	const entry = iconEntries.find(item => item.id === id)
-	return entry ? [entry] : []
-})
+const tickerEntries = [
+	{ id: 'search', name: 'Search', Icon: AnimatedSearchIcon },
+	{ id: 'bell', name: 'Bell', Icon: AnimatedBellIcon },
+	{ id: 'trash', name: 'Trash', Icon: AnimatedTrashIcon },
+	{ id: 'settings', name: 'Settings', Icon: AnimatedSettingsIcon },
+	{ id: 'calendar', name: 'Calendar', Icon: AnimatedCalendarIcon },
+	{ id: 'mail', name: 'Mail', Icon: AnimatedMailIcon },
+	{ id: 'lock', name: 'Lock', Icon: AnimatedLockIcon },
+	{ id: 'download', name: 'Download', Icon: AnimatedDownloadIcon }
+] as const
 
 type Props = {
 	href: string

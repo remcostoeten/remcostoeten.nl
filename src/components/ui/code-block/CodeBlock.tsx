@@ -5,7 +5,7 @@ import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import { getLanguageIcon } from './language-icons'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import React from 'react'
-import { PrismAsync as SyntaxHighlighter } from 'react-syntax-highlighter'
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-async-light'
 import type { CSSProperties } from 'react'
 import * as m from 'motion/react-m'
 import { AnimatePresence } from 'motion/react'
@@ -103,6 +103,27 @@ export type TCodeBlockProps = {
 }
 
 const DEFAULT_ICON_SIZE = 16
+
+const LANGUAGE_ALIASES: Record<string, string> = {
+	ts: 'typescript',
+	js: 'javascript',
+	md: 'markdown',
+	yml: 'yaml',
+	sh: 'bash',
+	shell: 'bash',
+	zsh: 'bash',
+	dockerfile: 'docker',
+	html: 'markup',
+	xml: 'markup',
+	svg: 'markup',
+	py: 'python',
+	rs: 'rust'
+}
+
+function resolveHighlightLanguage(language: string) {
+	const lowered = language.toLowerCase()
+	return LANGUAGE_ALIASES[lowered] ?? lowered
+}
 
 function normalizeCodeSegment(value?: string) {
 	if (!value) return ''
@@ -252,7 +273,7 @@ export function CodeBlock({
 					<div className="relative py-4">
 						{isMounted ? (
 							React.createElement(SyntaxHighlighter as any, {
-								language: language.toLowerCase(),
+								language: resolveHighlightLanguage(language),
 								style: customTheme,
 								customStyle: {
 									margin: 0,

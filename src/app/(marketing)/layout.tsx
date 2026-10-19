@@ -1,6 +1,7 @@
-import { ReactNode } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import { Footer } from '@/components/layout/footer'
+import { FooterWithCommit } from '@/components/layout/footer-with-commit'
 import { MarketingMain } from '@/components/layout/marketing-main'
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
@@ -18,7 +19,9 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
 				</div>
 				{children}
 			</MarketingMain>
-			<Footer />
+			<Suspense fallback={<Footer />}>
+				<FooterWithCommit />
+			</Suspense>
 		</div>
 	)
 }

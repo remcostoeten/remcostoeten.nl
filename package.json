@@ -40,7 +40,11 @@
 		"lint:fix": "oxlint --fix",
 		"typecheck": "node scripts/repair-typescript.mjs && tsgo --noEmit",
 		"format": "oxfmt --check",
-		"format:fix": "oxfmt"
+		"format:fix": "oxfmt",
+		"dev:vinext": "vite dev --port 3001",
+		"build:vinext": "vite build",
+		"start:vinext": "vite preview",
+		"deploy": "vinext-cloudflare deploy"
 	},
 	"engines": {
 		"node": "24.x"
@@ -69,10 +73,10 @@
 		"@t3-oss/env-nextjs": "^0.13.10",
 		"@tailwindcss/postcss": "^4.1.18",
 		"@tailwindcss/typography": "^0.5.19",
-		"@tanstack/react-query": "^5.90.12",
 		"@types/leaflet": "^1.9.21",
 		"@types/node": "20.11.17",
 		"@vercel/speed-insights": "^2.0.0",
+		"@vinext/cloudflare": "^1.1.1",
 		"better-auth": "^1.4.7",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
@@ -86,9 +90,10 @@
 		"next": "16.4.0-canary.58",
 		"next-mdx-remote": "^6.0.0",
 		"postcss": "^8.4.35",
-		"react": "19",
-		"react-dom": "19",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1",
 		"react-icons": "^5.5.0",
+		"react-server-dom-webpack": "^19.3.1",
 		"react-syntax-highlighter": "^16.1.0",
 		"rehype-mdx-code-props": "^3.0.1",
 		"rehype-raw": "^7.0.0",
@@ -102,22 +107,30 @@
 		"unist-util-visit": "^5.0.0",
 		"uuid": "^13.0.0",
 		"vaul": "^1.1.2",
+		"vinext": "^1.2.1",
 		"zod": "^4.2.1"
 	},
 	"devDependencies": {
+		"@cloudflare/vite-plugin": "^2.0.0-beta.v.1",
 		"@types/react": "19",
 		"@types/react-dom": "19",
 		"@types/react-syntax-highlighter": "^15.5.13",
 		"@typescript/native-preview": "^7.0.0-dev.20260707.2",
+		"@vitejs/plugin-react": "^6.1.2",
+		"@vitejs/plugin-rsc": "^0.5.38",
 		"@vitest/coverage-v8": "^4.1.2",
 		"babel-plugin-react-compiler": "^1.0.0",
+		"cf": "^1.0.0-beta.18",
 		"drizzle-kit": "^0.31.8",
 		"jsdom": "^29.0.1",
+		"oxc-transform-react": "^0.154.0",
 		"oxfmt": "^0.33.0",
 		"oxlint": "^1.43.0",
+		"vite": "8.3.0",
 		"vitest": "^4.1.2"
 	},
 	"patchedDependencies": {
 		"@ffmpeg/ffmpeg@0.12.15": "patches/@ffmpeg%2Fffmpeg@0.12.15.patch"
-	}
+	},
+	"type": "module"
 }

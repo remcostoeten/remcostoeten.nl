@@ -1,6 +1,7 @@
-import { ReactNode } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { Breadcrumbs } from '@/components/layout/breadcrumbs'
 import { Footer } from '@/components/layout/footer'
+import { FooterWithCommit } from '@/components/layout/footer-with-commit'
 
 export default function ToolsLayout({ children }: { children: ReactNode }) {
 	return (
@@ -21,7 +22,9 @@ export default function ToolsLayout({ children }: { children: ReactNode }) {
 				</div>
 				{children}
 			</main>
-			<Footer />
+			<Suspense fallback={<Footer />}>
+				<FooterWithCommit />
+			</Suspense>
 		</div>
 	)
 }

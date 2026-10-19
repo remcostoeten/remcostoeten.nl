@@ -22,3 +22,9 @@ export interface GitHubEventDetail {
 	icon?: string
 	payload?: unknown
 }
+
+export interface LatestCommit {
+	message: string
+	date: string
+	url: string
+}

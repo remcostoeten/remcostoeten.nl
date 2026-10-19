@@ -3,7 +3,6 @@
 import { memo, lazy, Suspense } from 'react'
 import { Github, ExternalLink, Eye, ChevronDown } from 'lucide-react'
 import { cn } from '@/shared/lib/cn'
-import { formatShortDate } from '@/shared/lib/date'
 import type { IProject, TPreview } from '../types'
 import { ProjectPreviewSkeleton } from './project-preview-skeleton'
 
@@ -15,7 +14,6 @@ const ProjectPreviewRenderer = lazy(() =>
 
 type Props = {
 	project: IProject
-	index: number
 	isOpen: boolean
 	onToggle: () => void
 }
@@ -29,26 +27,17 @@ function getExternalUrl(preview?: TPreview) {
 
 export const ProjectRow = memo(function ProjectRow({
 	project,
-	index,
 	isOpen,
 	onToggle
 }: Props) {
 	const externalUrl = getExternalUrl(project.preview)
 	const hasPreview = project.preview?.type === 'iframe'
 	const hasDesc = !!project.additionalDescription
-	const primaryTech = project.tech[0]
-	const techSummary = project.tech.join(', ')
 
 	return (
 		<div className="flex flex-col border-b border-border">
 			<div className="group flex items-center justify-between bg-card px-2 sm:px-3 py-2">
 				<div className="flex min-w-0 flex-1 items-baseline gap-2 sm:gap-3">
-					<span
-						className="hidden shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground/50 sm:inline"
-						aria-hidden="true"
-					>
-						{String(index + 1).padStart(2, '0')}
-					</span>
 					<span className="min-w-0 flex-1 text-sm font-medium text-foreground truncate md:flex-none md:max-w-[40%] lg:max-w-[32%]">
 						{project.name}
 					</span>
@@ -58,20 +47,6 @@ export const ProjectRow = memo(function ProjectRow({
 				</div>
 
 				<div className="ml-3 flex shrink-0 items-center gap-1 sm:gap-3">
-					{primaryTech && (
-						<span
-							className="hidden shrink-0 whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70 md:inline"
-							title={techSummary}
-							aria-label={`Tech stack: ${techSummary}`}
-						>
-							{primaryTech}
-						</span>
-					)}
-					{project.git?.lastUpdated && (
-						<span className="hidden w-12 text-right font-mono text-[10px] tabular-nums text-muted-foreground lg:inline">
-							{formatShortDate(project.git.lastUpdated)}
-						</span>
-					)}
 					<div className="flex items-center">
 						{(hasPreview || hasDesc) && (
 							<button
