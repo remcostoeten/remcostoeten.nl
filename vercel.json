@@ -1,0 +1,53 @@
+{
+	"$schema": "https://openapi.vercel.sh/vercel.json",
+	"bunVersion": "1.x",
+	"framework": "nextjs",
+	"buildCommand": "next build",
+	"headers": [
+		{
+			"source": "/images/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/projects/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/logos/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/icons/(.*)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=86400, stale-while-revalidate=604800"
+				}
+			]
+		},
+		{
+			"source": "/(.*)\\.(mp4|webm)",
+			"headers": [
+				{
+					"key": "Cache-Control",
+					"value": "public, max-age=604800, stale-while-revalidate=2592000"
+				}
+			]
+		}
+	]
+}

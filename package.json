@@ -75,6 +75,7 @@
 		"@tailwindcss/typography": "^0.5.19",
 		"@types/leaflet": "^1.9.21",
 		"@types/node": "20.11.17",
+		"@vercel/speed-insights": "^2.0.0",
 		"@vinext/cloudflare": "^1.1.1",
 		"better-auth": "^1.4.7",
 		"class-variance-authority": "^0.7.1",

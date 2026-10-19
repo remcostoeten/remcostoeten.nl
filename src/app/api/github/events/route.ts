@@ -21,7 +21,15 @@ export async function GET(request: Request) {
 		// The service returns an array of days (GitHubDayActivity[]), we want the events for the first (and only) day
 		const events = dayActivity.length > 0 ? dayActivity[0].events : []
 
-		return NextResponse.json({ events })
+		return NextResponse.json(
+			{ events },
+			{
+				headers: {
+					'Cache-Control':
+						'public, s-maxage=300, stale-while-revalidate=600'
+				}
+			}
+		)
 	} catch (error) {
 		console.error('Error fetching detailed events:', error)
 		return NextResponse.json(

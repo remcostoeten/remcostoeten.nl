@@ -42,7 +42,13 @@ const steps = [
 	{ label: 'Lint', script: 'lint' },
 	{ label: 'Typecheck', script: 'typecheck' },
 	{ label: 'Tests', script: 'test' },
-	{ label: 'Build', script: 'build:vinext' }
+	{
+		label: 'Build',
+		script:
+			process.env.BUILD_TARGET === 'vinext'
+				? 'build:vinext'
+				: 'build:next'
+	}
 ]
 
 const results = []

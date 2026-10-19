@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Github } from 'lucide-react'
-import { signIn } from '@/features/auth/client'
+import { signInWithProvider } from '@/features/auth/client'
 
 type Provider = 'github' | 'google'
 
@@ -57,18 +57,13 @@ export function SignInButton() {
 		setAuthError(null)
 		setIsLoading(provider)
 
-		signIn
-			.social({
-				provider,
-				callbackURL: window.location.href
-			})
-			.catch(error => {
-				console.error('Sign in error:', error)
-				setIsLoading(null)
-				setAuthError(
-					'Sign-in failed. Please check your OAuth configuration or try another provider.'
-				)
-			})
+		signInWithProvider(provider, window.location.href).catch(error => {
+			console.error('Sign in error:', error)
+			setIsLoading(null)
+			setAuthError(
+				'Sign-in failed. Please check your OAuth configuration or try another provider.'
+			)
+		})
 	}
 
 	function renderGithubButton() {

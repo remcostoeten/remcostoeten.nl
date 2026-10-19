@@ -95,21 +95,29 @@ export async function GET(request: NextRequest) {
 			.sort((a, b) => b.percentage - a.percentage)
 			.slice(0, 5)
 
-		return NextResponse.json({
-			name: repoData.name,
-			fullName: repoData.full_name,
-			description: repoData.description,
-			url: repoData.html_url,
-			topics: repoData.topics || [],
-			languages,
-			stars: repoData.stargazers_count,
-			forks: repoData.forks_count,
-			isPrivate: repoData.private,
-			owner: {
-				login: repoData.owner?.login,
-				avatarUrl: repoData.owner?.avatar_url
+		return NextResponse.json(
+			{
+				name: repoData.name,
+				fullName: repoData.full_name,
+				description: repoData.description,
+				url: repoData.html_url,
+				topics: repoData.topics || [],
+				languages,
+				stars: repoData.stargazers_count,
+				forks: repoData.forks_count,
+				isPrivate: repoData.private,
+				owner: {
+					login: repoData.owner?.login,
+					avatarUrl: repoData.owner?.avatar_url
+				}
+			},
+			{
+				headers: {
+					'Cache-Control':
+						'public, s-maxage=300, stale-while-revalidate=600'
+				}
 			}
-		})
+		)
 	} catch (error) {
 		console.error('Error fetching repo data:', error)
 		return NextResponse.json(
