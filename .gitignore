@@ -48,8 +48,6 @@ www.remcostoeten.nl-*.json
 .env.local.bk
 env.bk.ocal
 auth_session/
-scripts/ytmusic/headers.json
-scripts/ytmusic/oauth.json
 dev-menu.config.ts
 .env*
 

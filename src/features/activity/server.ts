@@ -1,5 +1,5 @@
 import { cacheLife, cacheTag } from 'next/cache'
-import { getCombinedActivity } from '@/app/api/activity/combined/combine'
+import { getCombinedActivity } from './combine'
 import { ACTIVITY_LIMIT, TRACKS_LIMIT, type ActivityData } from './types'
 
 /**

@@ -39,8 +39,7 @@ export default defineConfig({
 			SPOTIFY_CLIENT_SECRET: bindings.secret(),
 			SPOTIFY_REDIRECT_URI: bindings.secret(),
 			SPOTIFY_REFRESH_TOKEN: bindings.secret(),
-			YTM_AUTH_USER: bindings.secret(),
-			YTM_COOKIE: bindings.secret(),
+			CRON_SECRET: bindings.secret(),
 			RA_SECRET: bindings.secret()
 		}
 	})

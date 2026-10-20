@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { ArrowUpRight, Github, Package } from 'lucide-react'
-import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import { Suspense } from 'react'
 import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
 import { EmptyStatesDemo } from '@/components/packages/empty-states-demo'

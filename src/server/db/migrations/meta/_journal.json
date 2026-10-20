@@ -85,6 +85,34 @@
       "when": 1792158647496,
       "tag": "0011_pink_reptil",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792519472620,
+      "tag": "0012_drop_ytmusic_cache",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792520320469,
+      "tag": "0013_drop_sync_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792525493072,
+      "tag": "0014_spotify_catalog",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1792525504687,
+      "tag": "0015_drop_listen_track_columns",
+      "breakpoints": true
     }
   ]
 }
