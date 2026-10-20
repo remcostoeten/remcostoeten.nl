@@ -113,6 +113,13 @@
       "when": 1792525504687,
       "tag": "0015_drop_listen_track_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1792529638888,
+      "tag": "0016_delete_seed_listens",
+      "breakpoints": true
     }
   ]
 }

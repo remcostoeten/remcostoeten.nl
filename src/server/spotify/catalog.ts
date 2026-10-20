@@ -1,7 +1,7 @@
 import { inArray, isNull, sql } from 'drizzle-orm'
 import { db, schema } from '@/server/db/connection'
 import { fetchArtists, fetchTracks } from './api'
-import { toCatalogRows } from './mappers'
+import { isSpotifyId, toCatalogRows } from './mappers'
 
 const SPOTIFY_BATCH_SIZE = 50
 
@@ -54,9 +54,20 @@ async function enrichTracks(enrichedAt: Date) {
 		.limit(SPOTIFY_BATCH_SIZE)
 	if (pending.length === 0) return 0
 
-	const ids = pending.map(track => track.id)
+	const ids = pending.map(track => track.id).filter(isSpotifyId)
+	const invalid = pending
+		.map(track => track.id)
+		.filter(id => !isSpotifyId(id))
+	if (invalid.length > 0) {
+		await db
+			.update(schema.spotifyTracks)
+			.set({ enrichedAt })
+			.where(inArray(schema.spotifyTracks.id, invalid))
+	}
+	if (ids.length === 0) return pending.length
+
 	const tracks = await fetchTracks(ids)
-	if (!tracks) return 0
+	if (!tracks) return invalid.length
 
 	const found = tracks.filter(track => track !== null)
 	await saveSpotifyCatalog(toCatalogRows(found, enrichedAt))
@@ -81,9 +92,20 @@ async function enrichArtists(enrichedAt: Date) {
 		.limit(SPOTIFY_BATCH_SIZE)
 	if (pending.length === 0) return 0
 
-	const ids = pending.map(artist => artist.id)
+	const ids = pending.map(artist => artist.id).filter(isSpotifyId)
+	const invalid = pending
+		.map(artist => artist.id)
+		.filter(id => !isSpotifyId(id))
+	if (invalid.length > 0) {
+		await db
+			.update(schema.spotifyArtists)
+			.set({ enrichedAt })
+			.where(inArray(schema.spotifyArtists.id, invalid))
+	}
+	if (ids.length === 0) return pending.length
+
 	const artists = await fetchArtists(ids)
-	if (!artists) return 0
+	if (!artists) return invalid.length
 
 	const found = artists.filter(artist => artist !== null)
 	if (found.length > 0) {
