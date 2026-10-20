@@ -17,10 +17,14 @@ export function NotifierDemo() {
 		if (isSaving) return
 
 		setIsSaving(true)
-		const notice = notify.loading('Saving profile…')
-
-		await wait(SAVE_DELAY_MS)
-		notice.success('Profile saved')
+		await notify.promise(wait(SAVE_DELAY_MS), {
+			loading: 'Saving profile…',
+			success: {
+				title: 'Profile saved',
+				description: 'Your display name is live.'
+			},
+			error: 'Could not save profile'
+		})
 		setIsSaving(false)
 	}
 
@@ -55,13 +59,7 @@ export function NotifierDemo() {
 				</button>
 			</form>
 
-			<Notifier
-				position="bottom-right"
-				colorMode="auto"
-				radius="rounded"
-				maxVisible={3}
-				border={{ enabled: true }}
-			/>
+			<Notifier position="bottom-right" tone="auto" maxVisible={3} />
 		</div>
 	)
 }

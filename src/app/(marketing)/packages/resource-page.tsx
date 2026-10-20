@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react'
 import { getDeveloperPackage } from '@/features/packages/data'
 import { PackageStructuredData, packageMetadata } from './package-seo'
-import { PackageApiList, PackageWhy } from './package-sections'
 
 /**
  * @name resourcePage
@@ -28,19 +27,6 @@ export function resourcePage(
 			<article className={className}>
 				<PackageStructuredData pkg={pkg} />
 				<Showcase />
-				<PackageWhy pkg={pkg} />
-				<section
-					aria-labelledby="api-heading"
-					className="border-b border-border/60 px-4 py-7 md:px-5"
-				>
-					<h2
-						id="api-heading"
-						className="text-lg font-semibold tracking-tight"
-					>
-						API
-					</h2>
-					<PackageApiList pkg={pkg} />
-				</section>
 			</article>
 		)
 	}

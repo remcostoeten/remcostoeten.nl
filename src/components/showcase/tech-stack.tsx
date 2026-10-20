@@ -1,5 +1,6 @@
 import type { IconType } from 'react-icons'
 import {
+	SiBun,
 	SiExpo,
 	SiFramer,
 	SiGnubash,
@@ -42,7 +43,9 @@ const techIcons: Record<string, TechIcon> = {
 	webassembly: { icon: SiWebassembly, color: '#654FF0' },
 	wasm: { icon: SiWebassembly, color: '#654FF0' },
 	expo: { icon: SiExpo, color: 'currentColor' },
-	elysia: { icon: ElysiaIcon, color: 'currentColor' }
+	elysia: { icon: ElysiaIcon, color: 'currentColor' },
+	elysiajs: { icon: ElysiaIcon, color: 'currentColor' },
+	bun: { icon: SiBun, color: 'currentColor' }
 }
 
 type Props = {

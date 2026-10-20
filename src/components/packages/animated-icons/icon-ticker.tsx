@@ -10,8 +10,8 @@ import {
 import { AnimatedBellIcon } from '@/components/animated-icons/icons/bell'
 import { AnimatedCalendarIcon } from '@/components/animated-icons/icons/calendar'
 import { AnimatedDownloadIcon } from '@/components/animated-icons/icons/download'
+import { AnimatedFlagIcon } from '@/components/animated-icons/icons/flag'
 import { AnimatedLockIcon } from '@/components/animated-icons/icons/lock'
-import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
 import { AnimatedSearchIcon } from '@/components/animated-icons/icons/search'
 import { AnimatedSettingsIcon } from '@/components/animated-icons/icons/settings'
 import { AnimatedTrashIcon } from '@/components/animated-icons/icons/trash'
@@ -24,7 +24,7 @@ const tickerEntries = [
 	{ id: 'trash', name: 'Trash', Icon: AnimatedTrashIcon },
 	{ id: 'settings', name: 'Settings', Icon: AnimatedSettingsIcon },
 	{ id: 'calendar', name: 'Calendar', Icon: AnimatedCalendarIcon },
-	{ id: 'mail', name: 'Mail', Icon: AnimatedMailIcon },
+	{ id: 'flag', name: 'Flag', Icon: AnimatedFlagIcon },
 	{ id: 'lock', name: 'Lock', Icon: AnimatedLockIcon },
 	{ id: 'download', name: 'Download', Icon: AnimatedDownloadIcon }
 ] as const

@@ -2,15 +2,18 @@ import {
 	FeaturedCard,
 	type FeaturedLink
 } from '@/components/showcase/featured-card'
-import { GithubGlyph, GlobeGlyph } from '@/components/ui/link-glyphs'
+import { GithubGlyph, GlobeGlyph, NpmGlyph } from '@/components/ui/link-glyphs'
 import { ActivityGraph } from '@/components/showcase/activity-graph'
 import { LivePreview } from '@/components/showcase/live-preview'
 import type { IProject } from '../types'
 
 const downloadFormat = new Intl.NumberFormat('en', { notation: 'compact' })
 
+const roleLabels = new Set(['sdk', 'api', 'ingestion api', 'cli'])
+
 type Props = {
 	project: IProject
+	isWide?: boolean
 }
 
 function getLinks(project: IProject) {
@@ -25,23 +28,33 @@ function getLinks(project: IProject) {
 	if (project.github) {
 		links.push({ label: 'GitHub', href: project.github, icon: GithubGlyph })
 	}
+	if (project.npm) {
+		links.push({ label: 'npm', href: project.npm.url, icon: NpmGlyph })
+	}
 	return links
 }
 
-export function FeaturedProject({ project }: Props) {
+function isRole(label: string) {
+	return roleLabels.has(label.toLowerCase())
+}
+
+export function FeaturedProject({ project, isWide = false }: Props) {
 	const { preview } = project
 
 	return (
 		<FeaturedCard
 			title={project.name}
 			description={project.description}
-			tech={project.tech}
+			tags={project.tech.filter(isRole)}
+			tech={project.tech.filter(label => !isRole(label))}
 			links={getLinks(project)}
 			mediaSide="top"
+			isWide={isWide}
 			backdrop={
 				project.git?.weeklyActivity && (
 					<ActivityGraph
 						data={project.git.weeklyActivity}
+						isWide={isWide}
 						className="size-full"
 					/>
 				)
@@ -69,6 +82,22 @@ export function FeaturedProject({ project }: Props) {
 								downloads
 							</>
 						)}
+						{!!project.npm?.weeklyDownloads && (
+							<>
+								<span
+									className="text-muted-foreground/40"
+									aria-hidden="true"
+								>
+									/
+								</span>
+								<span className="text-foreground/80">
+									{downloadFormat.format(
+										project.npm.weeklyDownloads
+									)}
+								</span>
+								weekly downloads
+							</>
+						)}
 					</p>
 				)
 			}
@@ -79,6 +108,7 @@ export function FeaturedProject({ project }: Props) {
 						src={preview.embedUrl ?? preview.url}
 						href={preview.url}
 						title={project.name}
+						isWide={isWide}
 					/>
 				) : null
 			}

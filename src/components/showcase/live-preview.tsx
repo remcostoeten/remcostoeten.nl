@@ -10,6 +10,7 @@ type Props = {
 	src: string
 	href: string
 	title: string
+	isWide?: boolean
 }
 
 function getHost(href: string) {
@@ -20,7 +21,13 @@ function getHost(href: string) {
 	}
 }
 
-export function LivePreview({ poster, src, href, title }: Props) {
+export function LivePreview({
+	poster,
+	src,
+	href,
+	title,
+	isWide = false
+}: Props) {
 	const [isMounted, setIsMounted] = useState(!poster)
 	const [isLoaded, setIsLoaded] = useState(false)
 
@@ -44,7 +51,11 @@ export function LivePreview({ poster, src, href, title }: Props) {
 						src={poster}
 						alt=""
 						fill
-						sizes="(min-width: 640px) 420px, 100vw"
+						sizes={
+							isWide
+								? '(min-width: 640px) 768px, 100vw'
+								: '(min-width: 640px) 420px, 100vw'
+						}
 						className="object-cover object-left-top"
 					/>
 				)}
@@ -59,6 +70,7 @@ export function LivePreview({ poster, src, href, title }: Props) {
 						onLoad={() => setIsLoaded(true)}
 						className={cn(
 							'pointer-events-none absolute left-0 top-0 h-[400%] w-[400%] origin-top-left scale-25 border-0 transition-opacity duration-300 ease-out',
+							isWide && 'sm:h-[200%] sm:w-[200%] sm:scale-50',
 							isLoaded ? 'opacity-100' : 'opacity-0'
 						)}
 					/>

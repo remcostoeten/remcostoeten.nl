@@ -119,6 +119,27 @@ function parseKeyVariant(value: string): KeyIllustrationVariant {
 }
 
 export const demoEntries: readonly DemoEntry[] = [
+	{
+		id: 'organizations',
+		name: 'Organizations',
+		summary: 'A feature to enable',
+		imports: ['IconStack', 'BuildingIcon'],
+		illustration: () => <IconStack icon={<BuildingIcon />} />,
+		illustrationCode: () => '<IconStack icon={<BuildingIcon />} />',
+		loopKind: 'variant',
+		actions: [{ id: 'enable', call: 'enableOrganizations' }],
+		link: { href: '/docs/organizations' },
+		defaults: {
+			...baseValues,
+			title: 'Enable organizations',
+			description:
+				'Let users create organizations, manage members and control access with roles.',
+			primaryLabel: 'Enable organizations',
+			linkTopic: 'Organizations',
+			showLink: true,
+			loop: 'float'
+		}
+	},
 	simple(
 		'activity',
 		'Activity log',
@@ -240,27 +261,6 @@ export const demoEntries: readonly DemoEntry[] = [
 			primaryLabel: 'Try again'
 		}
 	),
-	{
-		id: 'organizations',
-		name: 'Organizations',
-		summary: 'A feature to enable',
-		imports: ['IconStack', 'BuildingIcon'],
-		illustration: () => <IconStack icon={<BuildingIcon />} />,
-		illustrationCode: () => '<IconStack icon={<BuildingIcon />} />',
-		loopKind: 'variant',
-		actions: [{ id: 'enable', call: 'enableOrganizations' }],
-		link: { href: '/docs/organizations' },
-		defaults: {
-			...baseValues,
-			title: 'Enable organizations',
-			description:
-				'Let users create organizations, manage members and control access with roles.',
-			primaryLabel: 'Enable organizations',
-			linkTopic: 'Organizations',
-			showLink: true,
-			loop: 'float'
-		}
-	},
 	{
 		id: 'projects',
 		name: 'Projects',

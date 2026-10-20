@@ -10,7 +10,6 @@ type Props<Entry extends ResourceEntry> = {
 	config: ResourceConfig
 	entries: readonly Entry[]
 	renderIcon?: (entry: Entry) => ReactNode
-	sidebarFooter?: ReactNode
 	gridNav?: boolean
 	children: (entry: Entry, notify: (message: string) => void) => ReactNode
 }
@@ -21,7 +20,6 @@ export function ResourceShowcase<Entry extends ResourceEntry>({
 	config,
 	entries,
 	renderIcon,
-	sidebarFooter,
 	gridNav,
 	children
 }: Props<Entry>) {
@@ -70,15 +68,6 @@ export function ResourceShowcase<Entry extends ResourceEntry>({
 					title={config.title}
 					description={config.description}
 				/>
-				<div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-muted-foreground/70">
-					<span>{config.stack}. MIT.</span>
-					<a
-						href="#implementation"
-						className="inline-flex items-center gap-1 text-foreground/80 transition-colors hover:text-foreground"
-					>
-						Get the code
-					</a>
-				</div>
 			</div>
 			<Section
 				title="Components"
@@ -102,7 +91,6 @@ export function ResourceShowcase<Entry extends ResourceEntry>({
 						selectedId={entry.id}
 						onSelect={select}
 						renderIcon={renderIcon}
-						footer={sidebarFooter}
 						grid={gridNav}
 					/>
 					<div className="w-full min-w-0" id="top">

@@ -13,7 +13,6 @@ type SidebarProps<Entry extends ResourceEntry> = {
 	selectedId: string
 	onSelect: (id: string) => void
 	renderIcon?: (entry: Entry) => ReactNode
-	footer?: ReactNode
 	grid?: boolean
 }
 
@@ -209,7 +208,6 @@ export function Sidebar<Entry extends ResourceEntry>(
 				</div>
 			</details>
 			<div className="mx-2.5 mt-auto mb-0 pt-10 max-[900px]:hidden">
-				{props.footer}
 				<div className={`flex justify-between pt-[15px] ${ruleTop}`}>
 					<span className={`text-[8px] ${caps}`}>
 						{props.config.stack}

@@ -4,6 +4,7 @@ import { useState, memo, useMemo, lazy, Suspense } from 'react'
 import type { IProject } from '../types'
 import { FeaturedProject } from './featured-project'
 import { ToggleGlyph } from '@/components/ui/micro-glyphs'
+import { cn } from '@/shared/lib/cn'
 
 const ProjectRow = lazy(() =>
 	import('./project-row').then(m => ({ default: m.ProjectRow }))
@@ -90,14 +91,26 @@ export const ProjectShowcaseClient = memo(function ProjectShowcaseClient({
 				</div>
 			)}
 			<div className="grid border-t border-border sm:grid-cols-2">
-				{featured.map(project => (
-					<div
-						key={project.name}
-						className="border-b border-border sm:odd:border-r"
-					>
-						<FeaturedProject project={project} />
-					</div>
-				))}
+				{featured.map((project, index) => {
+					const isWide =
+						featured.length % 2 === 1 &&
+						index === featured.length - 1
+
+					return (
+						<div
+							key={project.name}
+							className={cn(
+								'border-b border-border',
+								isWide ? 'sm:col-span-2' : 'sm:odd:border-r'
+							)}
+						>
+							<FeaturedProject
+								project={project}
+								isWide={isWide}
+							/>
+						</div>
+					)
+				})}
 			</div>
 
 			<div className="relative">
