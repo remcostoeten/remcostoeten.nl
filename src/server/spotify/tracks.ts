@@ -1,30 +1,38 @@
 import { unstable_cache } from 'next/cache'
 import { desc } from 'drizzle-orm'
 import { db, schema } from '@/server/db/connection'
-import {
-	getSpotifyAccessToken,
-	hasSpotifyCredentials
-} from '@/server/spotify/auth'
+import { fetchRecentlyPlayed, type SpotifyPlayHistoryItem } from './api'
 import type { SpotifyTrack } from './types'
 
-const SPOTIFY_API_BASE = 'https://api.spotify.com/v1'
+function toSpotifyTrack(item: SpotifyPlayHistoryItem): SpotifyTrack {
+	return {
+		id: item.track.id,
+		name: item.track.name,
+		artist: item.track.artists.map(artist => artist.name).join(', '),
+		album: item.track.album.name,
+		url: item.track.external_urls.spotify,
+		image: item.track.album.images[0]?.url || '',
+		played_at: item.played_at
+	}
+}
 
 export const getStoredSpotifyTracks = unstable_cache(
 	async (limit: number): Promise<SpotifyTrack[]> => {
 		try {
-			const storedTracks = await db.query.spotifyListens.findMany({
+			const listens = await db.query.spotifyListens.findMany({
 				orderBy: desc(schema.spotifyListens.playedAt),
-				limit
+				limit,
+				with: { track: true }
 			})
 
-			return storedTracks.map(track => ({
-				id: track.trackId,
-				name: track.trackName,
-				artist: track.artistName,
-				album: track.albumName || '',
-				url: track.trackUrl,
-				image: track.albumImage || '',
-				played_at: track.playedAt.toISOString()
+			return listens.map(listen => ({
+				id: listen.track.id,
+				name: listen.track.name,
+				artist: listen.track.artistName,
+				album: listen.track.albumName || '',
+				url: listen.track.url,
+				image: listen.track.albumImage || '',
+				played_at: listen.playedAt.toISOString()
 			}))
 		} catch (error) {
 			console.error('Error fetching stored Spotify tracks:', error)
@@ -35,54 +43,13 @@ export const getStoredSpotifyTracks = unstable_cache(
 	{ revalidate: 300, tags: ['spotify'] }
 )
 
-/**
- * @name fetchRecentSpotifyTracks
- * @description Fetches the most recently played tracks from the Spotify API,
- * newest first. Returns null when credentials are missing, the token refresh
- * fails or Spotify responds with an error.
- *
- * @example
- * const tracks = await fetchRecentSpotifyTracks(50)
- * if (tracks) console.log(tracks[0]?.name)
- */
-export async function fetchRecentSpotifyTracks(
-	limit: number
-): Promise<SpotifyTrack[] | null> {
-	if (!hasSpotifyCredentials()) return null
-
-	const accessToken = await getSpotifyAccessToken()
-	if (!accessToken) return null
-
-	const response = await fetch(
-		`${SPOTIFY_API_BASE}/me/player/recently-played?limit=${limit}`,
-		{
-			headers: { Authorization: `Bearer ${accessToken}` }
-		}
-	)
-
-	if (!response.ok) return null
-
-	const data = await response.json()
-	return (
-		data.items?.map((item: any) => ({
-			id: item.track.id,
-			name: item.track.name,
-			artist: item.track.artists.map((a: any) => a.name).join(', '),
-			album: item.track.album.name,
-			url: item.track.external_urls.spotify,
-			image: item.track.album.images[0]?.url || '',
-			played_at: item.played_at
-		})) || []
-	)
-}
-
 export const getSpotifyTracks = unstable_cache(
 	async (limit: number): Promise<SpotifyTrack[]> => {
 		try {
-			const recentTracks = await fetchRecentSpotifyTracks(limit)
+			const items = await fetchRecentlyPlayed(limit)
 
-			return recentTracks && recentTracks.length > 0
-				? recentTracks
+			return items && items.length > 0
+				? items.map(toSpotifyTrack)
 				: getStoredSpotifyTracks(limit)
 		} catch (error) {
 			console.error('Error fetching Spotify tracks:', error)

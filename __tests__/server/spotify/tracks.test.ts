@@ -43,13 +43,15 @@ describe('spotify track retrieval', () => {
 		authMocks.hasSpotifyCredentials.mockReturnValue(false)
 		dbMocks.findMany.mockResolvedValue([
 			{
-				trackId: 'stored-1',
-				trackName: 'Stored track',
-				artistName: 'Stored artist',
-				albumName: 'Stored album',
-				trackUrl: 'https://open.spotify.com/track/stored-1',
-				albumImage: 'https://i.scdn.co/image/stored-1',
-				playedAt: new Date('2026-03-30T06:00:00.000Z')
+				playedAt: new Date('2026-03-30T06:00:00.000Z'),
+				track: {
+					id: 'stored-1',
+					name: 'Stored track',
+					artistName: 'Stored artist',
+					albumName: 'Stored album',
+					url: 'https://open.spotify.com/track/stored-1',
+					albumImage: 'https://i.scdn.co/image/stored-1'
+				}
 			}
 		])
 
@@ -68,6 +70,9 @@ describe('spotify track retrieval', () => {
 			}
 		])
 		expect(authMocks.getSpotifyAccessToken).not.toHaveBeenCalled()
+		expect(dbMocks.findMany).toHaveBeenCalledWith(
+			expect.objectContaining({ limit: 5, with: { track: true } })
+		)
 	})
 
 	it('falls back to stored tracks when token retrieval fails', async () => {
@@ -90,13 +95,15 @@ describe('spotify track retrieval', () => {
 		authMocks.getSpotifyAccessToken.mockResolvedValue('token-123')
 		dbMocks.findMany.mockResolvedValue([
 			{
-				trackId: 'stored-2',
-				trackName: 'Backup listen',
-				artistName: 'Backup artist',
-				albumName: null,
-				trackUrl: 'https://open.spotify.com/track/stored-2',
-				albumImage: null,
-				playedAt: new Date('2026-03-29T06:00:00.000Z')
+				playedAt: new Date('2026-03-29T06:00:00.000Z'),
+				track: {
+					id: 'stored-2',
+					name: 'Backup listen',
+					artistName: 'Backup artist',
+					albumName: null,
+					url: 'https://open.spotify.com/track/stored-2',
+					albumImage: null
+				}
 			}
 		])
 
@@ -183,13 +190,15 @@ describe('spotify track retrieval', () => {
 		authMocks.getSpotifyAccessToken.mockResolvedValue('token-123')
 		dbMocks.findMany.mockResolvedValue([
 			{
-				trackId: 'stored-3',
-				trackName: 'Cached listen',
-				artistName: 'Stored artist',
-				albumName: 'Stored album',
-				trackUrl: 'https://open.spotify.com/track/stored-3',
-				albumImage: 'https://i.scdn.co/image/stored-3',
-				playedAt: new Date('2026-03-28T06:00:00.000Z')
+				playedAt: new Date('2026-03-28T06:00:00.000Z'),
+				track: {
+					id: 'stored-3',
+					name: 'Cached listen',
+					artistName: 'Stored artist',
+					albumName: 'Stored album',
+					url: 'https://open.spotify.com/track/stored-3',
+					albumImage: 'https://i.scdn.co/image/stored-3'
+				}
 			}
 		])
 
