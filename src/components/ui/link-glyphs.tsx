@@ -60,6 +60,21 @@ export function BoxGlyph({ className }: GlyphProps) {
 	)
 }
 
+export function NpmGlyph({ className }: GlyphProps) {
+	return (
+		<Glyph className={className}>
+			<rect x="1.75" y="1.75" width="12.5" height="12.5" rx="1.5" />
+			<path
+				d="M5.5 11V5h5v6"
+				className={cn(
+					'transition-transform group-hover/glyph:-translate-y-[1.25px] group-focus-visible/glyph:-translate-y-[1.25px] motion-reduce:transition-none',
+					EASE
+				)}
+			/>
+		</Glyph>
+	)
+}
+
 export function GithubGlyph({ className }: GlyphProps) {
 	return (
 		<Glyph className={className} viewBox="0 0 24 24">

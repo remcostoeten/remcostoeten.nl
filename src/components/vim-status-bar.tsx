@@ -8,6 +8,7 @@ import type { SessionUser } from '@/features/auth/client'
 import { useRouter } from 'next/navigation'
 import { generateRoutes } from '@/utils/generate-routes'
 import { Terminal } from 'lucide-react'
+import { useVimScroll } from '@/hooks/use-vim-scroll'
 
 const COMMANDS = [
 	{ cmd: 'signin', alias: ['login'], desc: 'Authenticate with GitHub' },
@@ -44,6 +45,8 @@ export function VimStatusBar({ onCommand, user }: VimStatusBarProps) {
 
 	const currentInput = input.slice(1).toLowerCase()
 	const isNavigation = input.startsWith('/')
+
+	useVimScroll()
 
 	// Focus input when visible
 	useEffect(() => {
@@ -146,13 +149,13 @@ export function VimStatusBar({ onCommand, user }: VimStatusBarProps) {
 			return
 		}
 
-		if (e.key === 'ArrowUp') {
+		if (e.key === 'ArrowUp' || (e.ctrlKey && e.key === 'k')) {
 			e.preventDefault()
 			setSelectedIndex(prev => Math.max(0, prev - 1))
 			return
 		}
 
-		if (e.key === 'ArrowDown') {
+		if (e.key === 'ArrowDown' || (e.ctrlKey && e.key === 'j')) {
 			e.preventDefault()
 			setSelectedIndex(prev => Math.min(suggestions.length - 1, prev + 1))
 			return

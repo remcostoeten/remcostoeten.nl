@@ -4,6 +4,7 @@ import type { IProject, TPreview } from '../types'
 import type { Project } from '@/server/db/project-schema'
 import { getProjects } from '../server/queries'
 import { enrichProjectsWithGitData } from '../server/github'
+import { developerPackages, getWeeklyDownloads } from '@/features/packages/data'
 import { ProjectShowcaseClient } from './project-showcase-client'
 import { FeaturedCardSkeleton } from '@/components/showcase/featured-card-skeleton'
 import { ProjectRowSkeleton } from './project-row-skeleton'
@@ -41,6 +42,34 @@ function mapDbProjectToIProject(dbProject: Project): IProject {
 		defaultOpen: dbProject.defaultOpen,
 		showIndicatorOnScroll: dbProject.showIndicator
 	}
+}
+
+function normalizeRepoUrl(url: string) {
+	return url.toLowerCase().replace(/\/+$/, '')
+}
+
+function withNpmPackages(projects: IProject[]) {
+	return Promise.all(
+		projects.map(async project => {
+			const pkg = developerPackages.find(
+				candidate =>
+					candidate.npmUrl &&
+					candidate.sourceUrl &&
+					project.github &&
+					normalizeRepoUrl(candidate.sourceUrl) ===
+						normalizeRepoUrl(project.github)
+			)
+			if (!pkg?.npmUrl) return project
+
+			return {
+				...project,
+				npm: {
+					url: pkg.npmUrl,
+					weeklyDownloads: await getWeeklyDownloads(pkg.packageName)
+				}
+			}
+		})
+	)
 }
 
 function ShowcaseSkeleton({
@@ -99,6 +128,8 @@ async function getShowcaseProjects() {
 			error
 		)
 	}
+
+	enrichedProjects = await withNpmPackages(enrichedProjects)
 
 	const hasGitData = enrichedProjects.some(project => project.git)
 	// The build skips GitHub enrichment, so refresh soon instead of keeping bare data for hours.

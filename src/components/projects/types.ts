@@ -43,6 +43,11 @@ export interface IGitMetrics {
 	releaseDownloads: number
 }
 
+export interface INpmPackage {
+	url: string
+	weeklyDownloads: number | null
+}
+
 export interface IProject {
 	name: string
 	description: string
@@ -57,5 +62,6 @@ export interface IProject {
 	defaultOpen?: boolean
 	showIndicatorOnScroll?: boolean
 	git?: IGitMetrics
+	npm?: INpmPackage
 	platforms?: TPlatform[]
 }

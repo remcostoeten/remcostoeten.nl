@@ -3,7 +3,10 @@
 import { useState } from 'react'
 import { AnimatedCheckIcon } from '@/components/animated-icons/icons/check'
 import { AnimatedCopyIcon } from '@/components/animated-icons/icons/copy'
-import { HighlightedLine } from '@/components/packages/package-code'
+import {
+	HighlightedCommand,
+	HighlightedLine
+} from '@/components/packages/package-code'
 import { PeekFrame } from './peek-frame'
 
 type Props = {
@@ -51,7 +54,7 @@ export function PackageSnippet({ label, install, code }: Props) {
 						<span className="select-none text-muted-foreground/50">
 							${' '}
 						</span>
-						{install}
+						<HighlightedCommand command={install} />
 					</code>
 				</div>
 				<div className="relative min-h-0 flex-1 overflow-hidden">

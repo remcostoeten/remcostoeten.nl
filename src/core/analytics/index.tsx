@@ -13,7 +13,7 @@ export function UnifiedAnalytics() {
 		<>
 			{analytics ? (
 				<AnalyticsProvider client={analytics}>
-					<Analytics />
+					<Analytics debugConsole />
 				</AnalyticsProvider>
 			) : null}
 			{isVercelProduction ? <VercelSpeedInsights /> : null}

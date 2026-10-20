@@ -417,7 +417,12 @@ function useDashFlow() {
 }
 
 const READING_LINE = 0.7
+const READING_LINE_DELAY = 100
 const READING_LINE_INSET = 12
+
+function viewportLine(fraction: number) {
+	return window.innerHeight * fraction - READING_LINE_DELAY
+}
 
 function readingLine(container: HTMLElement) {
 	const first = container.querySelector('[data-position-id]') ?? container
@@ -426,12 +431,12 @@ function readingLine(container: HTMLElement) {
 		window.scrollY * 2 +
 		READING_LINE_INSET
 
-	return Math.min(window.innerHeight * READING_LINE, start)
+	return Math.min(viewportLine(READING_LINE), start)
 }
 
-const GLOW_RADIUS = 48
-const GLOW_SCROLL_SPREAD = 72
-const GLOW_REST_OPACITY = 0.35
+const GLOW_RADIUS = 72
+const GLOW_SCROLL_SPREAD = 24
+const GLOW_REST_OPACITY = 0.4
 const SCROLL_ACTIVITY_VELOCITY = 1200
 const SCROLL_ACTIVITY_SPRING = { stiffness: 60, damping: 20, mass: 0.5 }
 
@@ -474,19 +479,21 @@ function useReadingGlow(ref: React.RefObject<Element | null>) {
 
 function useDrawProgress(
 	ref: React.RefObject<HTMLElement | null>,
-	end: `end ${number}%` = 'end 70%'
+	endLine = READING_LINE
 ) {
-	const { scrollYProgress } = useScroll({
-		target: ref,
-		offset: ['start 70%', end]
-	})
-	const tipOpacity = useTransform(
-		scrollYProgress,
-		[0, 0.05, 0.9, 1],
-		[0, 1, 1, 0]
-	)
+	const { scrollY } = useScroll()
+	const progress = useTransform(scrollY, () => {
+		const element = ref.current
+		if (!element) return 0
+		const { top, height } = element.getBoundingClientRect()
+		const start = viewportLine(READING_LINE)
+		const end = viewportLine(endLine)
 
-	return { progress: scrollYProgress, tipOpacity }
+		return Math.min(Math.max((start - top) / (height + start - end), 0), 1)
+	})
+	const tipOpacity = useTransform(progress, [0, 0.05, 0.9, 1], [0, 1, 1, 0])
+
+	return { progress, tipOpacity }
 }
 
 function Rail({ className }: { className: string }) {
@@ -511,11 +518,11 @@ function Rail({ className }: { className: string }) {
 			{!shouldReduceMotion && (
 				<>
 					<m.span
-						className={cn(RAIL_DASHES, 'text-foreground/70')}
+						className={cn(RAIL_DASHES, 'text-foreground/85')}
 						style={{ backgroundPositionY, maskImage, opacity }}
 					/>
 					<m.span
-						className="absolute -left-px size-[3px] -translate-y-1/2 rounded-full bg-foreground/70"
+						className="absolute -left-px size-[3px] -translate-y-1/2 rounded-full bg-foreground/80 shadow-[0_0_3px] shadow-foreground/30"
 						style={{ top: tipTop, opacity: tipOpacity }}
 					/>
 				</>
@@ -596,7 +603,7 @@ function Connector({
 }) {
 	const ref = React.useRef<HTMLSpanElement>(null)
 	const shouldReduceMotion = useReducedMotion()
-	const { progress, tipOpacity } = useDrawProgress(ref, 'end 60%')
+	const { progress, tipOpacity } = useDrawProgress(ref, 0.6)
 	const tipDistance = useTransform(progress, value => `${value * 100}%`)
 	const dashFlow = useDashFlow()
 	const strokeDashoffset = useTransform(dashFlow, value => -value)

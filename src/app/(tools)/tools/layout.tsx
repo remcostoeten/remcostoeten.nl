@@ -15,7 +15,7 @@ export default function ToolsLayout({ children }: { children: ReactNode }) {
 			<main
 				id="main-content"
 				tabIndex={-1}
-				className="py-6 max-w-5xl mx-auto w-full grow border-x border-border/50"
+				className="py-6 max-w-5xl mx-auto w-full grow border-x border-border/50 outline-none"
 			>
 				<div className="px-4 md:px-5 pb-4">
 					<Breadcrumbs />

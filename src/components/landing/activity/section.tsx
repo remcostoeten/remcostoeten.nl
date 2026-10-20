@@ -81,7 +81,7 @@ function ActivitySectionLayout({ graph, feed, loading = false }: LayoutProps) {
 
 				<div className="px-4 md:px-5">{graph}</div>
 
-				<div id="activity-feed" tabIndex={-1}>
+				<div id="activity-feed" tabIndex={-1} className="outline-none">
 					{feed}
 				</div>
 			</div>

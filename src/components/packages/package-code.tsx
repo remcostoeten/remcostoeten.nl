@@ -1,16 +1,34 @@
 import { cn } from '@/shared/lib/cn'
 
 const tokenPattern =
-	/(\/\/.*$|'.*?'|".*?"|`.*?`|\b(?:import|from|export|function|return|const|let|if|else|await|async|new|true|false)\b|\b\d+\b|<\/?[A-Z][A-Za-z0-9.]*(?:\s[^>]*)?\/?>)/gm
+	/(\/\/.*$)|('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"|`(?:\\.|[^`\\])*`)|((?<=<\/?)[A-Za-z][\w.]*)|(\b[a-zA-Z][\w-]*(?==[^=>]))|(\b(?:import|from|export|default|function|return|const|let|if|else|await|async|new|type|as)\b)|(\b(?:\d+(?:\.\d+)?|true|false|null|undefined)\b)|(\b[A-Za-z_]\w*(?=(?:<[^<>()]*>)?\())|(\b[A-Z]\w*\b)/gm
 
-function tokenClass(token: string) {
-	if (token.startsWith('//')) return 'text-[hsl(var(--sh-comment))] italic'
-	if (token.startsWith("'") || token.startsWith('"') || token.startsWith('`'))
-		return 'text-[hsl(var(--sh-string))]'
-	if (token.startsWith('<')) return 'text-[hsl(var(--sh-tag))]'
-	if (/^\d+$/.test(token) || token === 'true' || token === 'false')
-		return 'text-[hsl(var(--sh-number))]'
-	return 'text-[hsl(var(--sh-keyword))]'
+const tokenKinds = [
+	'comment',
+	'string',
+	'tag',
+	'attribute',
+	'keyword',
+	'number',
+	'call',
+	'type'
+] as const
+
+const tokenClasses: Record<(typeof tokenKinds)[number], string> = {
+	comment: 'text-[hsl(var(--sh-comment))] italic',
+	string: 'text-[hsl(var(--sh-string))]',
+	tag: 'text-[hsl(var(--sh-tag))]',
+	attribute: 'text-[hsl(var(--sh-function))]',
+	keyword: 'text-[hsl(var(--sh-keyword))]',
+	number: 'text-[hsl(var(--sh-number))]',
+	call: 'text-[hsl(var(--sh-function))]',
+	type: 'text-[hsl(var(--sh-tag))]'
+}
+
+function tokenClass(match: RegExpMatchArray) {
+	const kind =
+		tokenKinds[match.slice(1).findIndex(group => group !== undefined)]
+	return kind ? tokenClasses[kind] : undefined
 }
 
 export function HighlightedLine({ line }: { line: string }) {
@@ -21,7 +39,7 @@ export function HighlightedLine({ line }: { line: string }) {
 		const index = match.index ?? 0
 		if (index > cursor) nodes.push(line.slice(cursor, index))
 		nodes.push(
-			<span key={`${index}-${match[0]}`} className={tokenClass(match[0])}>
+			<span key={`${index}-${match[0]}`} className={tokenClass(match)}>
 				{match[0]}
 			</span>
 		)
@@ -30,6 +48,30 @@ export function HighlightedLine({ line }: { line: string }) {
 
 	if (cursor < line.length) nodes.push(line.slice(cursor))
 	return <>{nodes}</>
+}
+
+function commandTokenClass(token: string, index: number) {
+	if (index === 0) return 'text-[hsl(var(--sh-keyword))]'
+	if (/^https?:\/\//.test(token)) return 'text-[hsl(var(--sh-string))]'
+	if (token.startsWith('-')) return 'text-[hsl(var(--sh-number))]'
+	if (index === 1) return 'text-[hsl(var(--sh-function))]'
+	return undefined
+}
+
+export function HighlightedCommand({ command }: { command: string }) {
+	return (
+		<>
+			{command.split(' ').map((token, index) => (
+				<span
+					key={`${index}-${token}`}
+					className={commandTokenClass(token, index)}
+				>
+					{index > 0 && ' '}
+					{token}
+				</span>
+			))}
+		</>
+	)
 }
 
 export function PackageCode({

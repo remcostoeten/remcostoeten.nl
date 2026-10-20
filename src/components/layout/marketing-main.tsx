@@ -17,7 +17,7 @@ export function MarketingMain({ children }: { children: ReactNode }) {
 			id="main-content"
 			tabIndex={-1}
 			className={cn(
-				'py-6 mx-auto w-full grow border-x border-border/50',
+				'py-6 mx-auto w-full grow border-x border-border/50 outline-none',
 				wide ? 'max-w-[1400px]' : 'max-w-2xl'
 			)}
 		>

@@ -61,6 +61,7 @@
 		"@ffmpeg/util": "^0.12.2",
 		"@microflash/remark-callout-directives": "^5.0.0",
 		"@neondatabase/serverless": "^1.0.2",
+		"@number-flow/react": "0.6.2",
 		"@radix-ui/react-collapsible": "^1.1.12",
 		"@radix-ui/react-scroll-area": "^1.2.10",
 		"@radix-ui/react-separator": "^1.1.8",
@@ -68,9 +69,9 @@
 		"@radix-ui/react-switch": "^1.2.6",
 		"@radix-ui/react-tabs": "^1.1.13",
 		"@remcostoeten/auth-drawer": "^0.3.2",
-		"@remcostoeten/notifier": "^1.1.0",
+		"@remcostoeten/notifier": "^3.0.0",
 		"@remcostoeten/use-shortcut": "^2.3.0",
-		"@spoar/sdk": "^2.0.0-next.2",
+		"@spoar/sdk": "^2.2.0",
 		"@t3-oss/env-core": "^0.13.11",
 		"@tailwindcss/postcss": "^4.1.18",
 		"@tailwindcss/typography": "^0.5.19",
@@ -126,6 +127,9 @@
 		"oxlint": "^1.43.0",
 		"vite": "8.3.0",
 		"vitest": "^4.1.2"
+	},
+	"overrides": {
+		"@spoar/debugtools": "0.2.0"
 	},
 	"patchedDependencies": {
 		"@ffmpeg/ffmpeg@0.12.15": "patches/@ffmpeg%2Fffmpeg@0.12.15.patch"

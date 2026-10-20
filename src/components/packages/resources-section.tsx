@@ -9,6 +9,7 @@ import { EmptyStateTiles } from './empty-states/tiles'
 import { demoEntries } from './empty-states/entries'
 import { IconTicker } from './animated-icons/icon-ticker'
 import { iconEntries } from './animated-icons/entries'
+import { InstallCommand } from './install-command'
 
 type ResourcePreview = {
 	count: string
@@ -51,8 +52,11 @@ export function ResourcesSection() {
 			<p className="px-4 pt-4 pb-4 font-mono text-sm leading-relaxed tracking-tight text-muted-foreground/80 md:px-5">
 				Components I built for my own projects, published as a shadcn
 				registry. One command copies the source into your codebase, so
-				you can edit it like any other file. Nothing lands in
-				node_modules.
+				you can edit it like any other file. Nothing lands in{' '}
+				<code className="rounded-sm border border-border/60 bg-muted/40 px-1 py-px text-[0.85em] text-foreground/80">
+					node_modules
+				</code>
+				.
 			</p>
 			{resources.map(resource => {
 				const href = `/packages/${resource.slug}`
@@ -96,9 +100,7 @@ export function ResourcesSection() {
 									</p>
 								</Link>
 							</div>
-							<code className="truncate font-mono text-[10px] text-muted-foreground/80">
-								{resource.install}
-							</code>
+							<InstallCommand command={resource.install} />
 						</div>
 						{preview?.render(href)}
 					</article>

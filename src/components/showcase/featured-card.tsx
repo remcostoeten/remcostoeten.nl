@@ -15,6 +15,7 @@ type Props = {
 	titleHref?: Route
 	description: string
 	status?: string
+	tags?: string[]
 	meta?: ReactNode
 	tech: string[]
 	links: FeaturedLink[]
@@ -22,20 +23,26 @@ type Props = {
 	backdrop?: ReactNode
 	mediaSide?: 'left' | 'right' | 'top'
 	seamless?: boolean
+	isWide?: boolean
 }
+
+const chip =
+	'bg-foreground/10 px-1 py-px font-mono text-[10px] text-muted-foreground'
 
 export function FeaturedCard({
 	title,
 	titleHref,
 	description,
 	status,
+	tags = [],
 	meta,
 	tech,
 	links,
 	media,
 	backdrop,
 	mediaSide = 'left',
-	seamless = false
+	seamless = false,
+	isWide = false
 }: Props) {
 	const isTop = mediaSide === 'top'
 
@@ -53,6 +60,7 @@ export function FeaturedCard({
 			<div
 				className={cn(
 					'relative aspect-[16/10] overflow-hidden',
+					isTop && isWide && 'sm:aspect-[16/5]',
 					!isTop &&
 						!seamless &&
 						'border-b border-border/50 bg-background',
@@ -77,7 +85,12 @@ export function FeaturedCard({
 				)}
 			>
 				{backdrop && (
-					<div className="absolute inset-x-0 bottom-0 -z-10 h-14">
+					<div
+						className={cn(
+							'absolute inset-x-0 bottom-0 -z-10 h-14',
+							isTop && isWide && 'sm:h-20'
+						)}
+					>
 						{backdrop}
 					</div>
 				)}
@@ -101,11 +114,12 @@ export function FeaturedCard({
 								title
 							)}
 						</h3>
-						{status && (
-							<span className="bg-foreground/10 px-1 py-px font-mono text-[10px] text-muted-foreground">
-								{status}
+						{status && <span className={chip}>{status}</span>}
+						{tags.map(tag => (
+							<span key={tag} className={chip}>
+								{tag}
 							</span>
-						)}
+						))}
 						{isTop && links.length > 0 && (
 							<div className="-my-1 -mr-1.5 ml-auto flex items-center opacity-0 transition-opacity duration-150 ease-out focus-within:opacity-100 group-hover:opacity-100 motion-reduce:transition-none [@media(hover:none)]:opacity-100">
 								{links.map(link => (

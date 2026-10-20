@@ -3,11 +3,14 @@ import { notFound } from 'next/navigation'
 import { ArrowUpRight, Github, Package } from 'lucide-react'
 import { Suspense } from 'react'
 import { AuthDrawerDemo } from '@/components/packages/auth-drawer-demo'
-import { EmptyStatesDemo } from '@/components/packages/empty-states-demo'
 import { NotifierDemo } from '@/components/packages/notifier-demo'
-import { PackageCode } from '@/components/packages/package-code'
+import {
+	HighlightedCommand,
+	HighlightedLine,
+	PackageCode
+} from '@/components/packages/package-code'
 import { PackageStructuredData, packageMetadata } from '../package-seo'
-import { PackageApiList, PackageWhy } from '../package-sections'
+import { PackageApiList } from '../package-sections'
 import {
 	developerPackages,
 	getDeveloperPackage,
@@ -76,6 +79,7 @@ async function PackagePageContent({ params }: Props) {
 	const version = npmData?.version
 	const hideSectionLabels = pkg.slug === 'use-shortcut'
 	const structuredData = <PackageStructuredData pkg={pkg} npmData={npmData} />
+	const demo = getPackageDemo(pkg.slug)
 
 	return (
 		<article>
@@ -148,24 +152,13 @@ async function PackagePageContent({ params }: Props) {
 					hideSectionLabels={hideSectionLabels}
 				/>
 			)}
-			{pkg.slug !== 'animated-icons' && (
-				<PackageWhy pkg={pkg} hideLabel={hideSectionLabels}>
-					{pkg.slug === 'auth-drawer' && (
-						<div className="mt-6">
-							<AuthDrawerDemo />
-						</div>
-					)}
-					{pkg.slug === 'notifier' && (
-						<div className="mt-6">
-							<NotifierDemo />
-						</div>
-					)}
-					{pkg.slug === 'empty-states' && (
-						<div className="mt-6">
-							<EmptyStatesDemo />
-						</div>
-					)}
-				</PackageWhy>
+			{demo && (
+				<section
+					aria-label={`${pkg.name} demo`}
+					className="border-b border-border/60 px-4 py-7 md:px-5"
+				>
+					{demo}
+				</section>
 			)}
 
 			{pkg.slug !== 'use-shortcut' && (
@@ -217,7 +210,7 @@ async function PackagePageContent({ params }: Props) {
 									{item.name}
 								</h3>
 								<code className="mt-2 block overflow-x-auto border border-border bg-muted/20 px-3 py-2 font-mono text-xs text-foreground">
-									{item.signature}
+									<HighlightedLine line={item.signature} />
 								</code>
 								<ul className="mt-2 divide-y divide-border border-y border-border">
 									{item.arguments.map(argument => (
@@ -243,6 +236,12 @@ async function PackagePageContent({ params }: Props) {
 	)
 }
 
+function getPackageDemo(slug: string) {
+	if (slug === 'auth-drawer') return <AuthDrawerDemo />
+	if (slug === 'notifier') return <NotifierDemo />
+	return null
+}
+
 type PackageQuickStartProps = {
 	pkg: DeveloperPackage
 	hideSectionLabels: boolean
@@ -260,7 +259,7 @@ function PackageQuickStart({ pkg, hideSectionLabels }: PackageQuickStartProps) {
 					<span className="select-none text-muted-foreground">
 						${' '}
 					</span>
-					{pkg.install}
+					<HighlightedCommand command={pkg.install} />
 				</div>
 			)}
 			<PackageCode
