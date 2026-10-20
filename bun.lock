@@ -18,7 +18,6 @@
         "@remcostoeten/auth-drawer": "^0.3.2",
         "@remcostoeten/notifier": "^1.1.0",
         "@remcostoeten/use-shortcut": "^2.3.0",
-        "@spoar/debugtools": "^0.1.0",
         "@spoar/sdk": "^2.0.0-next.2",
         "@t3-oss/env-nextjs": "^0.13.10",
         "@tailwindcss/postcss": "^4.1.18",
@@ -558,8 +557,6 @@
     "@sindresorhus/is": ["@sindresorhus/is@7.2.0", "", {}, "sha512-P1Cz1dWaFfR4IR+U13mqqiGsLFf1KbayybWwdd2vfctdV6hDpUkgCY0nKOLLTMSoRd/jJNjtbqzf13K8DCCXQw=="],
 
     "@speed-highlight/core": ["@speed-highlight/core@1.2.24", "", {}, "sha512-qeW2e1l78afw8VhRPfPQ1Gjj+KU5XFQ/OFV5ti6eTa9bruO7mJyZtA4vw0ofqmA3tKCkROE9xLk3VZoeRc98nw=="],
-
-    "@spoar/debugtools": ["@spoar/debugtools@0.1.0", "", { "peerDependencies": { "next": ">=15", "react": ">=19", "react-dom": ">=19" }, "optionalPeers": ["next", "react", "react-dom"] }, "sha512-uxUcdH+r4ZtLdq56n/VmRI1wedsHMAWYN5KeldHOdQA/idZ5sTVATDaXC4vjYqYKYWHVPIQZ5sp90JxPVfF5Zw=="],
 
     "@spoar/sdk": ["@spoar/sdk@2.0.0", "", { "dependencies": { "web-vitals": "6.2.2" }, "peerDependencies": { "@types/react": ">=19", "next": ">=15", "react": ">=19" }, "optionalPeers": ["@types/react", "next", "react"] }, "sha512-u3Y7O2iyUfsuOG6nALn3Z051o30Hhw3zwwRVrCHpT0puYkrHppqu85tx/COiCnMCk3kzlRvmVi63qgZXszptzg=="],
 
