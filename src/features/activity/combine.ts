@@ -3,13 +3,22 @@ import {
 	getCachedGitHubContributions
 } from '@/server/github'
 import { getSpotifyTracks } from '@/server/spotify'
-import { getYTMusicTracks } from '@/server/ytmusic'
-import type { CombinedActivityResponse } from './types'
+import type { ActivityData } from './types'
 
+/**
+ * @name getCombinedActivity
+ * @description Fetches this and last year's GitHub contributions, recent
+ * GitHub events and recent Spotify tracks, and merges the contribution days
+ * into one list.
+ *
+ * @example
+ * const data = await getCombinedActivity(20, 10)
+ * const total = data.totalContributions
+ */
 export async function getCombinedActivity(
 	activityLimit: number,
 	tracksLimit: number
-): Promise<CombinedActivityResponse> {
+): Promise<ActivityData> {
 	const currentYear = new Date().getFullYear()
 	const previousYear = currentYear - 1
 
@@ -24,11 +33,6 @@ export async function getCombinedActivity(
 		getCachedGitHubActivity(activityLimit),
 		getSpotifyTracks(tracksLimit)
 	])
-	const tracks =
-		spotifyTracks.length > 0
-			? spotifyTracks
-			: await getYTMusicTracks(tracksLimit)
-
 	const contributionsMap: Record<
 		string,
 		{ date: string; contributionCount: number }
@@ -53,7 +57,7 @@ export async function getCombinedActivity(
 			(currentYearContributions?.totalContributions || 0) +
 			(previousYearContributions?.totalContributions || 0),
 		recentActivity,
-		spotifyTracks: tracks,
+		spotifyTracks,
 		fetchedAt: Date.now()
 	}
 }

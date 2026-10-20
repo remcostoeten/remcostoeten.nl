@@ -1,0 +1,1 @@
+DROP TABLE "ytmusic_cache" CASCADE;
