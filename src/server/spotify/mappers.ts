@@ -1,6 +1,8 @@
 import type { SpotifyApiTrack, SpotifyPlayHistoryItem } from './api'
 
 const TRACK_URI_PREFIX = 'spotify:track:'
+// Spotify track, artist and album IDs are 22 base62 characters.
+const SPOTIFY_ID = /^[0-9A-Za-z]{22}$/
 
 export type StreamingHistoryEntry = {
 	ts: string
@@ -9,6 +11,19 @@ export type StreamingHistoryEntry = {
 	master_metadata_track_name: string | null
 	master_metadata_album_artist_name: string | null
 	master_metadata_album_album_name: string | null
+}
+
+/**
+ * @name isSpotifyId
+ * @description Checks whether a string has the shape of a Spotify track,
+ * artist or album ID. Spotify rejects a whole batch request when one ID is
+ * malformed, so IDs are checked before they are sent.
+ *
+ * @example
+ * const ids = pending.map(track => track.id).filter(isSpotifyId)
+ */
+export function isSpotifyId(id: string) {
+	return SPOTIFY_ID.test(id)
 }
 
 /**

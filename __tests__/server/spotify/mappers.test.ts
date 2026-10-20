@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+	isSpotifyId,
 	parseStreamingHistory,
 	toApiListenRows,
 	toCatalogRows
@@ -159,5 +160,17 @@ describe('streaming history export', () => {
 
 		expect(tracks).toEqual([])
 		expect(listens).toEqual([])
+	})
+})
+
+describe('spotify ids', () => {
+	it('accepts 22 character base62 ids', () => {
+		expect(isSpotifyId('0CfQ8hT96TCe8htXMwptJo')).toBe(true)
+	})
+
+	it('rejects seed ids, short ids and ids with other characters', () => {
+		expect(isSpotifyId('seed-07c42751-10')).toBe(false)
+		expect(isSpotifyId('0CfQ8hT96TCe8htXMwpt')).toBe(false)
+		expect(isSpotifyId('0CfQ8hT96TCe8htXMwpt-o')).toBe(false)
 	})
 })
