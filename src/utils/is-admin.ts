@@ -30,6 +30,33 @@ function isAdminEmail(email?: string | null): boolean {
 }
 
 /**
+ * @name getAdminSessionUser
+ * @description Returns the signed-in admin from a real Better Auth session, or
+ * null. Unlike isAdmin it ignores DEV_OPEN_ADMIN, so it is the gate for
+ * operations with external side effects such as sending email.
+ *
+ * @example
+ * const adminUser = await getAdminSessionUser()
+ */
+export async function getAdminSessionUser() {
+	try {
+		const session = await getServerSession()
+		const sessionUser = session?.user
+
+		if (!sessionUser) return null
+		if (sessionUser.banned) return null
+
+		const isEmailMatch = isAdminEmail(sessionUser.email)
+		const isRoleAdmin = sessionUser.role === 'admin'
+
+		return isRoleAdmin || isEmailMatch ? sessionUser : null
+	} catch (e) {
+		console.error('[getAdminSessionUser] Error checking admin status:', e)
+		return null
+	}
+}
+
+/**
  * Server-side utility to check if the current user is admin
  * Can be used in Server Components and Server Actions
  */

@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-search",
-  "type": "registry:component",
-  "title": "Search Icon",
-  "description": "Animated search icon. Lens scans, handle redraws.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-search/icons/search.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/search.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./search.css\";\n\nexport function AnimatedSearchIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"search\" {...props}>\n      <g data-part=\"glass\">\n        <path data-part=\"handle\" pathLength={1} d=\"M17 17l4 4\" />\n        <path d=\"M19 11a8 8 0 1 0-16 0a8 8 0 0 0 16 0\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-search/icons/search.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/search.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"search\"] {\n    & [data-part=\"glass\"] {\n      animation-name: icon-search-scan;\n      animation-duration: var(--icon-duration-long);\n    }\n\n    & [data-part=\"handle\"] {\n      --icon-delay: 170ms;\n      animation-name: icon-draw;\n      animation-duration: var(--icon-duration-short);\n      animation-timing-function: var(--ease-icon);\n    }\n  }\n}\n\n@keyframes icon-search-scan {\n  25% {\n    transform: translate(-1.5px, -0.5px);\n  }\n  50% {\n    transform: translate(0, -2px);\n  }\n  75% {\n    transform: translate(1.5px, -0.5px);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-search",
+	"type": "registry:component",
+	"title": "Search Icon",
+	"description": "Animated search icon. Lens scans, handle redraws.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-search/icons/search.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/search.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./search.css\";\n\nexport function AnimatedSearchIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"search\" {...props}>\n      <g data-part=\"glass\">\n        <path data-part=\"handle\" pathLength={1} d=\"M17 17l4 4\" />\n        <path d=\"M19 11a8 8 0 1 0-16 0a8 8 0 0 0 16 0\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-search/icons/search.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/search.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"search\"] {\n    & [data-part=\"glass\"] {\n      animation-name: icon-search-scan;\n      animation-duration: var(--icon-duration-long);\n    }\n\n    & [data-part=\"handle\"] {\n      --icon-delay: 170ms;\n      animation-name: icon-draw;\n      animation-duration: var(--icon-duration-short);\n      animation-timing-function: var(--ease-icon);\n    }\n  }\n}\n\n@keyframes icon-search-scan {\n  25% {\n    transform: translate(-1.5px, -0.5px);\n  }\n  50% {\n    transform: translate(0, -2px);\n  }\n  75% {\n    transform: translate(1.5px, -0.5px);\n  }\n}\n"
+		}
+	]
 }

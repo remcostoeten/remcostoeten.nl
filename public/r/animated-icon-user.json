@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-user",
-  "type": "registry:component",
-  "title": "User Icon",
-  "description": "Animated user icon. Leans over to look.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-user/icons/user.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/user.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./user.css\";\n\nexport function AnimatedUserIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"user\" {...props}>\n      <path\n        data-part=\"body\"\n        d=\"M20 21a7.53 7.53 0 0 0-7.005-6.934L12 14q-.531.015-1 .038c-3.7.181-6.716 3.268-7 6.962\"\n      />\n      <circle data-part=\"head\" cx=\"12\" cy=\"7\" r=\"4\" />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-user/icons/user.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/user.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"user\"] {\n    & [data-part=\"head\"] {\n      --icon-swing: -12deg;\n      transform-origin: 12px 21px;\n      animation-name: icon-swing;\n      animation-duration: var(--icon-duration-long);\n    }\n\n    & [data-part=\"body\"] {\n      --icon-swing: -5deg;\n      --icon-delay: 70ms;\n      transform-origin: 12px 21px;\n      animation-name: icon-swing;\n      animation-duration: var(--icon-duration-long);\n    }\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-user",
+	"type": "registry:component",
+	"title": "User Icon",
+	"description": "Animated user icon. Leans over to look.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-user/icons/user.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/user.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./user.css\";\n\nexport function AnimatedUserIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"user\" {...props}>\n      <path\n        data-part=\"body\"\n        d=\"M20 21a7.53 7.53 0 0 0-7.005-6.934L12 14q-.531.015-1 .038c-3.7.181-6.716 3.268-7 6.962\"\n      />\n      <circle data-part=\"head\" cx=\"12\" cy=\"7\" r=\"4\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-user/icons/user.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/user.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"user\"] {\n    & [data-part=\"head\"] {\n      --icon-swing: -12deg;\n      transform-origin: 12px 21px;\n      animation-name: icon-swing;\n      animation-duration: var(--icon-duration-long);\n    }\n\n    & [data-part=\"body\"] {\n      --icon-swing: -5deg;\n      --icon-delay: 70ms;\n      transform-origin: 12px 21px;\n      animation-name: icon-swing;\n      animation-duration: var(--icon-duration-long);\n    }\n  }\n}\n"
+		}
+	]
 }

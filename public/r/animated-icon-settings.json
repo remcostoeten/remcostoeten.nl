@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-settings",
-  "type": "registry:component",
-  "title": "Settings Icon",
-  "description": "Animated settings icon. Knobs slide past each other.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-settings/icons/settings.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/settings.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./settings.css\";\n\nexport function AnimatedSettingsIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"settings\" {...props}>\n      <path d=\"M2.5 12c0-4.478 0-6.718 1.391-8.109S7.521 2.5 12 2.5c4.478 0 6.718 0 8.109 1.391S21.5 7.521 21.5 12c0 4.478 0 6.718-1.391 8.109S16.479 21.5 12 21.5c-4.478 0-6.718 0-8.109-1.391S2.5 16.479 2.5 12Z\" />\n      <path data-part=\"track-left\" strokeDasharray=\"7 20\" d=\"M8.5 7v7\" />\n      <path data-part=\"track-right\" strokeDasharray=\"7 20\" d=\"M15.5 17v-7\" />\n      <circle data-part=\"knob-left\" cx=\"8.5\" cy=\"15.5\" r=\"1.5\" />\n      <circle data-part=\"knob-right\" cx=\"15.5\" cy=\"8.5\" r=\"1.5\" />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-settings/icons/settings.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/settings.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"settings\"] {\n    & [data-part^=\"knob\"] {\n      animation-name: icon-nudge;\n    }\n\n    & [data-part^=\"track\"] {\n      --icon-dash: 2 20;\n      animation-name: icon-dash;\n    }\n\n    & [data-part=\"knob-left\"] {\n      --icon-y: -5px;\n    }\n\n    & [data-part=\"knob-right\"] {\n      --icon-y: 5px;\n    }\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-settings",
+	"type": "registry:component",
+	"title": "Settings Icon",
+	"description": "Animated settings icon. Knobs slide past each other.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-settings/icons/settings.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/settings.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./settings.css\";\n\nexport function AnimatedSettingsIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"settings\" {...props}>\n      <path d=\"M2.5 12c0-4.478 0-6.718 1.391-8.109S7.521 2.5 12 2.5c4.478 0 6.718 0 8.109 1.391S21.5 7.521 21.5 12c0 4.478 0 6.718-1.391 8.109S16.479 21.5 12 21.5c-4.478 0-6.718 0-8.109-1.391S2.5 16.479 2.5 12Z\" />\n      <path data-part=\"track-left\" strokeDasharray=\"7 20\" d=\"M8.5 7v7\" />\n      <path data-part=\"track-right\" strokeDasharray=\"7 20\" d=\"M15.5 17v-7\" />\n      <circle data-part=\"knob-left\" cx=\"8.5\" cy=\"15.5\" r=\"1.5\" />\n      <circle data-part=\"knob-right\" cx=\"15.5\" cy=\"8.5\" r=\"1.5\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-settings/icons/settings.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/settings.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"settings\"] {\n    & [data-part^=\"knob\"] {\n      animation-name: icon-nudge;\n    }\n\n    & [data-part^=\"track\"] {\n      --icon-dash: 2 20;\n      animation-name: icon-dash;\n    }\n\n    & [data-part=\"knob-left\"] {\n      --icon-y: -5px;\n    }\n\n    & [data-part=\"knob-right\"] {\n      --icon-y: 5px;\n    }\n  }\n}\n"
+		}
+	]
 }

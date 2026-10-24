@@ -100,7 +100,7 @@ export function ActivityFeed({
 			</div>
 
 			{visibleItems.length === 0 && (
-				<p className="px-5 pb-6 text-center text-[13px] text-muted-foreground">
+				<p className="px-5 pb-6 text-center admin-text-sm text-muted-foreground">
 					No recent activity
 				</p>
 			)}
@@ -121,17 +121,17 @@ export function ActivityFeed({
 								<Icon className="size-3.5" />
 							</span>
 							<div className="min-w-0 flex-1">
-								<p className="flex items-center gap-2 text-[13px] font-medium">
+								<p className="flex items-center gap-2 admin-text-sm font-medium">
 									{item.type === 'comment'
 										? 'New comment'
 										: 'New message'}
 									{isNew && (
-										<span className="text-[10px] font-medium uppercase tracking-wide text-[color:var(--admin-success)]">
+										<span className="text-[10px] font-medium uppercase tracking-wide admin-text-success">
 											New
 										</span>
 									)}
 								</p>
-								<p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+								<p className="mt-1 admin-text-xs leading-relaxed text-muted-foreground">
 									{item.actor}
 									{item.type === 'comment' ? (
 										<>
@@ -151,12 +151,12 @@ export function ActivityFeed({
 									)}
 								</p>
 								<p
-									className="mt-1 line-clamp-1 text-[12px] text-muted-foreground/70"
+									className="mt-1 line-clamp-1 admin-text-xs text-muted-foreground/70"
 									title={item.preview}
 								>
 									{item.preview}
 								</p>
-								<p className="mt-1.5 text-[11px] text-muted-foreground/60">
+								<p className="mt-1.5 admin-text-xs text-muted-foreground/60">
 									{formatRelativeTime(item.timestamp)}
 								</p>
 							</div>
@@ -169,7 +169,7 @@ export function ActivityFeed({
 				<button
 					type="button"
 					onClick={() => setShowAll(!showAll)}
-					className="flex w-full items-center justify-center gap-1 border-t border-border py-3 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+					className="flex w-full items-center justify-center gap-1 border-t border-border py-3 admin-text-xs text-muted-foreground transition-colors hover:text-foreground"
 				>
 					{showAll ? 'Show less' : 'View all activity'}
 					<ChevronDown

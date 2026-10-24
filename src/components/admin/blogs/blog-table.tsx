@@ -180,11 +180,11 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 				<div>
 					<h2 className="admin-panel-title">
 						Blog posts
-						<span className="ml-2 text-[13px] font-normal text-muted-foreground">
+						<span className="ml-2 admin-text-sm font-normal text-muted-foreground">
 							{posts.length}
 						</span>
 					</h2>
-					<p className="mt-1 text-[12px] text-muted-foreground">
+					<p className="mt-1 admin-text-xs text-muted-foreground">
 						Your ideas, published and in progress.
 					</p>
 				</div>
@@ -263,7 +263,7 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 							<th className="w-12" />
 						</tr>
 					</thead>
-			dwiadwa		<tbody>
+					<tbody>
 						{visiblePosts.length === 0 ? (
 							<tr>
 								<td colSpan={5}>
@@ -292,10 +292,10 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 							visiblePosts.map(post => (
 								<tr key={post.slug} className="group">
 									<td>
-										<p className="max-w-[380px] truncate text-[13px] font-medium">
+										<p className="max-w-[380px] truncate admin-text-sm font-medium">
 											{post.metadata.title}
 										</p>
-										<p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+										<p className="mt-1 flex items-center gap-1 admin-text-xs text-muted-foreground">
 											<AnimatedClockIcon className="size-3" />
 											{post.metadata.readTime || 'N/A'}
 										</p>
@@ -335,7 +335,7 @@ export function BlogTable({ posts }: { posts: BlogPost[] }) {
 				</table>
 			</div>
 
-			<div className="flex items-center justify-between border-t border-border px-5 py-3 text-[11px] text-muted-foreground">
+			<div className="flex items-center justify-between border-t border-border px-5 py-3 admin-text-xs text-muted-foreground">
 				<span>
 					{filteredAndSortedPosts.length === 0
 						? '0 posts'

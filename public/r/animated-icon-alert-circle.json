@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-alert-circle",
-  "type": "registry:component",
-  "title": "Error Icon",
-  "description": "Animated error icon. Ring presses, bar slams, dot pops.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-alert-circle/icons/alert-circle.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/alert-circle.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps, dotPath } from \"../icon-frame\";\nimport \"./alert-circle.css\";\n\nexport function AnimatedAlertCircleIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"alert-circle\" {...props}>\n      <circle data-part=\"ring\" cx=\"12\" cy=\"12\" r=\"10\" />\n      <path data-part=\"bar\" d=\"M12 8v4\" />\n      <path data-part=\"dot\" d={dotPath(12, 15.75)} />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-alert-circle/icons/alert-circle.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/alert-circle.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"alert-circle\"] {\n    & [data-part=\"ring\"] {\n      --icon-pulse: scale(0.93);\n      animation-name: icon-pulse;\n      animation-duration: var(--icon-duration-short);\n    }\n\n    & [data-part=\"bar\"] {\n      transform-origin: 12px 12px;\n      animation-name: icon-alert-bar;\n      animation-duration: var(--icon-duration-short);\n    }\n\n    & [data-part=\"dot\"] {\n      --icon-scale: 0.6;\n      --icon-overshoot: 0.6;\n      --icon-delay: 120ms;\n      transform-box: fill-box;\n      transform-origin: center;\n      animation-name: icon-pop;\n      animation-duration: var(--icon-duration-short);\n    }\n  }\n}\n\n@keyframes icon-alert-bar {\n  from {\n    transform: scaleY(0.5);\n  }\n  58% {\n    transform: scaleY(1.14);\n  }\n  80% {\n    transform: scaleY(0.97);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-alert-circle",
+	"type": "registry:component",
+	"title": "Error Icon",
+	"description": "Animated error icon. Ring presses, bar slams, dot pops.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-alert-circle/icons/alert-circle.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/alert-circle.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps, dotPath } from \"../icon-frame\";\nimport \"./alert-circle.css\";\n\nexport function AnimatedAlertCircleIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"alert-circle\" {...props}>\n      <circle data-part=\"ring\" cx=\"12\" cy=\"12\" r=\"10\" />\n      <path data-part=\"bar\" d=\"M12 8v4\" />\n      <path data-part=\"dot\" d={dotPath(12, 15.75)} />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-alert-circle/icons/alert-circle.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/alert-circle.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"alert-circle\"] {\n    & [data-part=\"ring\"] {\n      --icon-pulse: scale(0.93);\n      animation-name: icon-pulse;\n      animation-duration: var(--icon-duration-short);\n    }\n\n    & [data-part=\"bar\"] {\n      transform-origin: 12px 12px;\n      animation-name: icon-alert-bar;\n      animation-duration: var(--icon-duration-short);\n    }\n\n    & [data-part=\"dot\"] {\n      --icon-scale: 0.6;\n      --icon-overshoot: 0.6;\n      --icon-delay: 120ms;\n      transform-box: fill-box;\n      transform-origin: center;\n      animation-name: icon-pop;\n      animation-duration: var(--icon-duration-short);\n    }\n  }\n}\n\n@keyframes icon-alert-bar {\n  from {\n    transform: scaleY(0.5);\n  }\n  58% {\n    transform: scaleY(1.14);\n  }\n  80% {\n    transform: scaleY(0.97);\n  }\n}\n"
+		}
+	]
 }

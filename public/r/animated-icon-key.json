@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-key",
-  "type": "registry:component",
-  "title": "Key Icon",
-  "description": "Animated key icon. Turns in the lock.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-key/icons/key.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/key.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./key.css\";\n\nexport function AnimatedKeyIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"key\" {...props}>\n      <g data-part=\"key\">\n        <circle cx=\"7.5\" cy=\"12\" r=\"3.75\" />\n        <path d=\"M11.25 12H21M18 12v3M14.75 12v2.5\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-key/icons/key.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/key.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"key\"] [data-part=\"key\"] {\n    --icon-swing: -14deg;\n    transform-origin: 7.5px 12px;\n    animation-name: icon-swing;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-key",
+	"type": "registry:component",
+	"title": "Key Icon",
+	"description": "Animated key icon. Turns in the lock.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-key/icons/key.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/key.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./key.css\";\n\nexport function AnimatedKeyIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"key\" {...props}>\n      <g data-part=\"key\">\n        <circle cx=\"7.5\" cy=\"12\" r=\"3.75\" />\n        <path d=\"M11.25 12H21M18 12v3M14.75 12v2.5\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-key/icons/key.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/key.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"key\"] [data-part=\"key\"] {\n    --icon-swing: -14deg;\n    transform-origin: 7.5px 12px;\n    animation-name: icon-swing;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n"
+		}
+	]
 }

@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-bell",
-  "type": "registry:component",
-  "title": "Bell Icon",
-  "description": "Animated bell icon. Body rings, clapper lags.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-bell/icons/bell.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/bell.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./bell.css\";\n\ntype Props = AnimatedIconProps & {\n  hasNotification?: boolean;\n};\n\nexport function AnimatedBellIcon({ hasNotification = false, ...props }: Props) {\n  return (\n    <AnimatedIconFrame name=\"bell\" data-notification={hasNotification ? \"\" : undefined} {...props}>\n      <path\n        data-part=\"body\"\n        d=\"M19.231 18H4.77a1.769 1.769 0 0 1-1.25-3.02l.602-.603A3 3 0 0 0 5 12.256V9.5a7 7 0 0 1 14 0v2.756a3 3 0 0 0 .879 2.121l.603.603a1.77 1.77 0 0 1-1.25 3.02\"\n      />\n      <path data-part=\"clapper\" d=\"M15.5 18a3.5 3.5 0 1 1-7 0\" />\n      {hasNotification ? <circle data-part=\"dot\" cx=\"18.5\" cy=\"5.5\" r=\"3\" /> : null}\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-bell/icons/bell.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/bell.css",
-      "content": ".animated-icon[data-icon=\"bell\"] [data-part=\"dot\"] {\n  fill: var(--icon-badge, currentColor);\n  stroke: var(--icon-badge-ring, transparent);\n  stroke-width: 2;\n  paint-order: stroke;\n}\n\n:is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"bell\"] {\n    & [data-part=\"body\"],\n    & [data-part=\"clapper\"] {\n      transform-origin: 12px 2.5px;\n      animation-duration: var(--icon-duration-long);\n    }\n\n    & [data-part=\"body\"] {\n      animation-name: icon-bell-body;\n    }\n\n    & [data-part=\"clapper\"] {\n      --icon-delay: 60ms;\n      animation-name: icon-bell-clapper;\n    }\n\n    & [data-part=\"dot\"] {\n      --icon-scale: 0.6;\n      --icon-overshoot: 0.8;\n      --icon-delay: 120ms;\n      transform-origin: 18.5px 5.5px;\n      animation-name: icon-pop;\n      animation-duration: var(--icon-duration-short);\n    }\n  }\n}\n\n@keyframes icon-bell-body {\n  15% {\n    transform: rotate(14deg);\n  }\n  35% {\n    transform: rotate(-11deg);\n  }\n  55% {\n    transform: rotate(7deg);\n  }\n  75% {\n    transform: rotate(-3deg);\n  }\n}\n\n@keyframes icon-bell-clapper {\n  18% {\n    transform: rotate(8deg) translateX(-2px);\n  }\n  38% {\n    transform: rotate(-7deg) translateX(2.5px);\n  }\n  58% {\n    transform: rotate(4deg) translateX(-1.5px);\n  }\n  78% {\n    transform: rotate(-2deg) translateX(0.6px);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-bell",
+	"type": "registry:component",
+	"title": "Bell Icon",
+	"description": "Animated bell icon. Body rings, clapper lags.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-bell/icons/bell.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/bell.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./bell.css\";\n\ntype Props = AnimatedIconProps & {\n  hasNotification?: boolean;\n};\n\nexport function AnimatedBellIcon({ hasNotification = false, ...props }: Props) {\n  return (\n    <AnimatedIconFrame name=\"bell\" data-notification={hasNotification ? \"\" : undefined} {...props}>\n      <path\n        data-part=\"body\"\n        d=\"M19.231 18H4.77a1.769 1.769 0 0 1-1.25-3.02l.602-.603A3 3 0 0 0 5 12.256V9.5a7 7 0 0 1 14 0v2.756a3 3 0 0 0 .879 2.121l.603.603a1.77 1.77 0 0 1-1.25 3.02\"\n      />\n      <path data-part=\"clapper\" d=\"M15.5 18a3.5 3.5 0 1 1-7 0\" />\n      {hasNotification ? <circle data-part=\"dot\" cx=\"18.5\" cy=\"5.5\" r=\"3\" /> : null}\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-bell/icons/bell.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/bell.css",
+			"content": ".animated-icon[data-icon=\"bell\"] [data-part=\"dot\"] {\n  fill: var(--icon-badge, currentColor);\n  stroke: var(--icon-badge-ring, transparent);\n  stroke-width: 2;\n  paint-order: stroke;\n}\n\n:is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"bell\"] {\n    & [data-part=\"body\"],\n    & [data-part=\"clapper\"] {\n      transform-origin: 12px 2.5px;\n      animation-duration: var(--icon-duration-long);\n    }\n\n    & [data-part=\"body\"] {\n      animation-name: icon-bell-body;\n    }\n\n    & [data-part=\"clapper\"] {\n      --icon-delay: 60ms;\n      animation-name: icon-bell-clapper;\n    }\n\n    & [data-part=\"dot\"] {\n      --icon-scale: 0.6;\n      --icon-overshoot: 0.8;\n      --icon-delay: 120ms;\n      transform-origin: 18.5px 5.5px;\n      animation-name: icon-pop;\n      animation-duration: var(--icon-duration-short);\n    }\n  }\n}\n\n@keyframes icon-bell-body {\n  15% {\n    transform: rotate(14deg);\n  }\n  35% {\n    transform: rotate(-11deg);\n  }\n  55% {\n    transform: rotate(7deg);\n  }\n  75% {\n    transform: rotate(-3deg);\n  }\n}\n\n@keyframes icon-bell-clapper {\n  18% {\n    transform: rotate(8deg) translateX(-2px);\n  }\n  38% {\n    transform: rotate(-7deg) translateX(2.5px);\n  }\n  58% {\n    transform: rotate(4deg) translateX(-1.5px);\n  }\n  78% {\n    transform: rotate(-2deg) translateX(0.6px);\n  }\n}\n"
+		}
+	]
 }

@@ -1,125 +1,139 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1766197615131,
-      "tag": "0000_jazzy_meggan",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1766199403542,
-      "tag": "0001_famous_shockwave",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1766280078986,
-      "tag": "0002_fair_invaders",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1766282520135,
-      "tag": "0003_productive_overlord",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1766289353042,
-      "tag": "0004_stale_bullseye",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1768430280138,
-      "tag": "0005_bitter_squirrel_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1768714459292,
-      "tag": "0006_late_mother_askani",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1780840451380,
-      "tag": "0007_ytmusic_cache",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1791260000000,
-      "tag": "0008_work_experiences",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1791270000000,
-      "tag": "0009_site_intro",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1791312928245,
-      "tag": "0010_curly_shinobi_shaw",
-      "breakpoints": true
-    },
-    {
-      "idx": 11,
-      "version": "7",
-      "when": 1792158647496,
-      "tag": "0011_pink_reptil",
-      "breakpoints": true
-    },
-    {
-      "idx": 12,
-      "version": "7",
-      "when": 1792519472620,
-      "tag": "0012_drop_ytmusic_cache",
-      "breakpoints": true
-    },
-    {
-      "idx": 13,
-      "version": "7",
-      "when": 1792520320469,
-      "tag": "0013_drop_sync_tables",
-      "breakpoints": true
-    },
-    {
-      "idx": 14,
-      "version": "7",
-      "when": 1792525493072,
-      "tag": "0014_spotify_catalog",
-      "breakpoints": true
-    },
-    {
-      "idx": 15,
-      "version": "7",
-      "when": 1792525504687,
-      "tag": "0015_drop_listen_track_columns",
-      "breakpoints": true
-    },
-    {
-      "idx": 16,
-      "version": "7",
-      "when": 1792529638888,
-      "tag": "0016_delete_seed_listens",
-      "breakpoints": true
-    }
-  ]
+	"version": "7",
+	"dialect": "postgresql",
+	"entries": [
+		{
+			"idx": 0,
+			"version": "7",
+			"when": 1766197615131,
+			"tag": "0000_jazzy_meggan",
+			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1766199403542,
+			"tag": "0001_famous_shockwave",
+			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1766280078986,
+			"tag": "0002_fair_invaders",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1766282520135,
+			"tag": "0003_productive_overlord",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1766289353042,
+			"tag": "0004_stale_bullseye",
+			"breakpoints": true
+		},
+		{
+			"idx": 5,
+			"version": "7",
+			"when": 1768430280138,
+			"tag": "0005_bitter_squirrel_girl",
+			"breakpoints": true
+		},
+		{
+			"idx": 6,
+			"version": "7",
+			"when": 1768714459292,
+			"tag": "0006_late_mother_askani",
+			"breakpoints": true
+		},
+		{
+			"idx": 7,
+			"version": "7",
+			"when": 1780840451380,
+			"tag": "0007_ytmusic_cache",
+			"breakpoints": true
+		},
+		{
+			"idx": 8,
+			"version": "7",
+			"when": 1791260000000,
+			"tag": "0008_work_experiences",
+			"breakpoints": true
+		},
+		{
+			"idx": 9,
+			"version": "7",
+			"when": 1791270000000,
+			"tag": "0009_site_intro",
+			"breakpoints": true
+		},
+		{
+			"idx": 10,
+			"version": "7",
+			"when": 1791312928245,
+			"tag": "0010_curly_shinobi_shaw",
+			"breakpoints": true
+		},
+		{
+			"idx": 11,
+			"version": "7",
+			"when": 1792158647496,
+			"tag": "0011_pink_reptil",
+			"breakpoints": true
+		},
+		{
+			"idx": 12,
+			"version": "7",
+			"when": 1792519472620,
+			"tag": "0012_drop_ytmusic_cache",
+			"breakpoints": true
+		},
+		{
+			"idx": 13,
+			"version": "7",
+			"when": 1792520320469,
+			"tag": "0013_drop_sync_tables",
+			"breakpoints": true
+		},
+		{
+			"idx": 14,
+			"version": "7",
+			"when": 1792525493072,
+			"tag": "0014_spotify_catalog",
+			"breakpoints": true
+		},
+		{
+			"idx": 15,
+			"version": "7",
+			"when": 1792525504687,
+			"tag": "0015_drop_listen_track_columns",
+			"breakpoints": true
+		},
+		{
+			"idx": 16,
+			"version": "7",
+			"when": 1792529638888,
+			"tag": "0016_delete_seed_listens",
+			"breakpoints": true
+		},
+		{
+			"idx": 17,
+			"version": "7",
+			"when": 1792866000000,
+			"tag": "0017_contact_inbox_and_replies",
+			"breakpoints": true
+		},
+		{
+			"idx": 18,
+			"version": "7",
+			"when": 1792875965150,
+			"tag": "0018_reply_snippets",
+			"breakpoints": true
+		}
+	]
 }

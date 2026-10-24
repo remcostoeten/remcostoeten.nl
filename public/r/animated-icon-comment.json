@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-comment",
-  "type": "registry:component",
-  "title": "Comment Icon",
-  "description": "Animated comment icon. Bubble pops, dots type.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-comment/icons/comment.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/comment.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps, dotPath } from \"../icon-frame\";\nimport \"./comment.css\";\n\nexport function AnimatedCommentIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"comment\" {...props}>\n      <path\n        data-part=\"bubble\"\n        d=\"M21.5 12a9.5 9.5 0 0 1-9.5 9.5c-1.628 0-3.16-.41-4.5-1.131c-1.868-1.007-3.125-.071-4.234.097a.53.53 0 0 1-.456-.156a.64.64 0 0 1-.117-.703c.436-1.025.835-2.969.29-4.607a9.5 9.5 0 0 1-.483-3a9.5 9.5 0 1 1 19 0\"\n      />\n      <g data-part=\"dots\" data-stagger=\"\">\n        <path d={dotPath(8, 12)} />\n        <path d={dotPath(12, 12)} />\n        <path d={dotPath(16, 12)} />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-comment/icons/comment.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/comment.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"comment\"] [data-part=\"dots\"] > path {\n    --icon-y: -2px;\n    animation-name: icon-nudge;\n  }\n\n  &[data-icon=\"comment\"] [data-part=\"bubble\"] {\n    --icon-pulse: scale(1.04);\n    transform-origin: 3px 20px;\n    animation-name: icon-pulse;\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-comment",
+	"type": "registry:component",
+	"title": "Comment Icon",
+	"description": "Animated comment icon. Bubble pops, dots type.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-comment/icons/comment.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/comment.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps, dotPath } from \"../icon-frame\";\nimport \"./comment.css\";\n\nexport function AnimatedCommentIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"comment\" {...props}>\n      <path\n        data-part=\"bubble\"\n        d=\"M21.5 12a9.5 9.5 0 0 1-9.5 9.5c-1.628 0-3.16-.41-4.5-1.131c-1.868-1.007-3.125-.071-4.234.097a.53.53 0 0 1-.456-.156a.64.64 0 0 1-.117-.703c.436-1.025.835-2.969.29-4.607a9.5 9.5 0 0 1-.483-3a9.5 9.5 0 1 1 19 0\"\n      />\n      <g data-part=\"dots\" data-stagger=\"\">\n        <path d={dotPath(8, 12)} />\n        <path d={dotPath(12, 12)} />\n        <path d={dotPath(16, 12)} />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-comment/icons/comment.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/comment.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"comment\"] [data-part=\"dots\"] > path {\n    --icon-y: -2px;\n    animation-name: icon-nudge;\n  }\n\n  &[data-icon=\"comment\"] [data-part=\"bubble\"] {\n    --icon-pulse: scale(1.04);\n    transform-origin: 3px 20px;\n    animation-name: icon-pulse;\n  }\n}\n"
+		}
+	]
 }

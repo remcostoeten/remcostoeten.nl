@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-inbox",
-  "type": "registry:component",
-  "title": "Inbox Icon",
-  "description": "Animated inbox icon. Tray dips, box gives.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-inbox/icons/inbox.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/inbox.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./inbox.css\";\n\nexport function AnimatedInboxIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"inbox\" {...props}>\n      <path\n        data-part=\"box\"\n        d=\"M2.5 12c0-4.478 0-6.718 1.391-8.109S7.521 2.5 12 2.5c4.478 0 6.718 0 8.109 1.391S21.5 7.521 21.5 12c0 4.478 0 6.718-1.391 8.109S16.479 21.5 12 21.5c-4.478 0-6.718 0-8.109-1.391S2.5 16.479 2.5 12\"\n      />\n      <path\n        data-part=\"tray\"\n        strokeLinecap=\"butt\"\n        d=\"M21.5 13.5h-4.926c-.842 0-1.503.704-1.875 1.447c-.403.808-1.21 1.553-2.699 1.553s-2.296-.745-2.7-1.553c-.37-.743-1.032-1.447-1.874-1.447H2.5\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-inbox/icons/inbox.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/inbox.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"inbox\"] {\n    & [data-part=\"tray\"] {\n      --icon-y: 2.25px;\n      animation-name: icon-nudge;\n    }\n\n    & [data-part=\"box\"] {\n      --icon-pulse: scale(1.04, 0.96);\n      transform-origin: 12px 21.5px;\n      animation-name: icon-pulse;\n    }\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-inbox",
+	"type": "registry:component",
+	"title": "Inbox Icon",
+	"description": "Animated inbox icon. Tray dips, box gives.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-inbox/icons/inbox.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/inbox.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./inbox.css\";\n\nexport function AnimatedInboxIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"inbox\" {...props}>\n      <path\n        data-part=\"box\"\n        d=\"M2.5 12c0-4.478 0-6.718 1.391-8.109S7.521 2.5 12 2.5c4.478 0 6.718 0 8.109 1.391S21.5 7.521 21.5 12c0 4.478 0 6.718-1.391 8.109S16.479 21.5 12 21.5c-4.478 0-6.718 0-8.109-1.391S2.5 16.479 2.5 12\"\n      />\n      <path\n        data-part=\"tray\"\n        strokeLinecap=\"butt\"\n        d=\"M21.5 13.5h-4.926c-.842 0-1.503.704-1.875 1.447c-.403.808-1.21 1.553-2.699 1.553s-2.296-.745-2.7-1.553c-.37-.743-1.032-1.447-1.874-1.447H2.5\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-inbox/icons/inbox.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/inbox.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"inbox\"] {\n    & [data-part=\"tray\"] {\n      --icon-y: 2.25px;\n      animation-name: icon-nudge;\n    }\n\n    & [data-part=\"box\"] {\n      --icon-pulse: scale(1.04, 0.96);\n      transform-origin: 12px 21.5px;\n      animation-name: icon-pulse;\n    }\n  }\n}\n"
+		}
+	]
 }

@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-more",
-  "type": "registry:component",
-  "title": "More Icon",
-  "description": "Animated more icon. Dots wave.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-more/icons/more.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/more.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./more.css\";\n\nexport function AnimatedMoreIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"more\" {...props}>\n      <g data-part=\"dots\" data-stagger=\"\">\n        <path d=\"M6.004 12.5V12M7.004 12.5a1 1 0 1 0-2 0a1 1 0 0 0 2 0\" />\n        <path d=\"M12.004 12.5V12M13.004 12.5a1 1 0 1 0-2 0a1 1 0 0 0 2 0\" />\n        <path d=\"M18.004 12.5V12M19.004 12.5a1 1 0 1 0-2 0a1 1 0 0 0 2 0\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-more/icons/more.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/more.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"more\"] [data-part=\"dots\"] > path {\n    --icon-y: -2px;\n    animation-name: icon-nudge;\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-more",
+	"type": "registry:component",
+	"title": "More Icon",
+	"description": "Animated more icon. Dots wave.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-more/icons/more.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/more.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./more.css\";\n\nexport function AnimatedMoreIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"more\" {...props}>\n      <g data-part=\"dots\" data-stagger=\"\">\n        <path d=\"M6.004 12.5V12M7.004 12.5a1 1 0 1 0-2 0a1 1 0 0 0 2 0\" />\n        <path d=\"M12.004 12.5V12M13.004 12.5a1 1 0 1 0-2 0a1 1 0 0 0 2 0\" />\n        <path d=\"M18.004 12.5V12M19.004 12.5a1 1 0 1 0-2 0a1 1 0 0 0 2 0\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-more/icons/more.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/more.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"more\"] [data-part=\"dots\"] > path {\n    --icon-y: -2px;\n    animation-name: icon-nudge;\n  }\n}\n"
+		}
+	]
 }

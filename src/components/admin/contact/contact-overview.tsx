@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import type { Route } from 'next'
+import Link from 'next/link'
 import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
 import { EmptyState } from '@/components/home/empty-state/empty-state'
 import { InboxIllustration } from '@/components/home/empty-state/illustrations'
@@ -20,9 +22,9 @@ type ContactSubmission = ContactTimelineEntry & {
 	email: string
 	message: string
 	createdAt: string | Date
+	readAt: Date | null
 }
 
-const DAY_MS = 24 * 60 * 60 * 1000
 const INITIAL_COUNT = 1
 
 function StatCell({
@@ -39,7 +41,7 @@ function StatCell({
 			<span className="admin-metric-value block text-[24px]">
 				{value}
 			</span>
-			<span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+			<span className="flex items-center gap-1.5 admin-text-xs text-muted-foreground">
 				{tone === 'success' && (
 					<span className="size-1.5 rounded-full bg-[color:var(--admin-success)]" />
 				)}
@@ -80,15 +82,23 @@ export function ContactOverview({ data }: { data: ContactStats }) {
 					<p className="text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/70">
 						{showAll ? 'Latest messages' : 'Latest message'}
 					</p>
-					{data.submissions.length > INITIAL_COUNT && (
-						<button
-							type="button"
-							onClick={() => setShowAll(!showAll)}
-							className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+					<div className="flex items-center gap-3">
+						{data.submissions.length > INITIAL_COUNT && (
+							<button
+								type="button"
+								onClick={() => setShowAll(!showAll)}
+								className="admin-text-xs text-muted-foreground transition-colors hover:text-foreground"
+							>
+								{showAll ? 'Show less' : 'Show more'}
+							</button>
+						)}
+						<Link
+							href="/admin/messages"
+							className="admin-text-xs text-foreground transition-colors hover:text-muted-foreground"
 						>
-							{showAll ? 'Show less' : 'Show more'}
-						</button>
-					)}
+							Open inbox
+						</Link>
+					</div>
 				</div>
 
 				{data.submissions.length === 0 && (
@@ -103,15 +113,16 @@ export function ContactOverview({ data }: { data: ContactStats }) {
 				<div className="space-y-2">
 					{visible.map(sub => {
 						const createdAt = new Date(sub.createdAt)
-						const isNew = Date.now() - createdAt.getTime() < DAY_MS
+						const isNew = sub.readAt === null
 						return (
-							<article
+							<Link
 								key={sub.id}
-								className="rounded-md border border-border bg-background p-4"
+								href={`/admin/messages?id=${sub.id}` as Route}
+								className="block rounded-md border border-border bg-background p-4 transition-colors hover:bg-secondary/40"
 							>
 								<div className="flex items-center justify-between gap-2">
 									<div className="flex min-w-0 items-center gap-2">
-										<p className="truncate text-[13px] font-medium">
+										<p className="truncate admin-text-sm font-medium">
 											{sub.name}
 										</p>
 										{isNew && (
@@ -125,7 +136,7 @@ export function ContactOverview({ data }: { data: ContactStats }) {
 									</div>
 									<time
 										dateTime={createdAt.toISOString()}
-										className="shrink-0 text-[11px] text-muted-foreground"
+										className="shrink-0 admin-text-xs text-muted-foreground"
 									>
 										{createdAt.toLocaleDateString('en-US', {
 											month: 'short',
@@ -135,16 +146,13 @@ export function ContactOverview({ data }: { data: ContactStats }) {
 										})}
 									</time>
 								</div>
-								<a
-									href={`mailto:${sub.email}`}
-									className="mt-0.5 block truncate text-[11px] text-muted-foreground hover:text-foreground"
-								>
+								<p className="mt-0.5 truncate admin-text-xs text-muted-foreground">
 									{sub.email}
-								</a>
-								<p className="mt-2 line-clamp-3 text-[12px] leading-relaxed text-foreground/80">
+								</p>
+								<p className="mt-2 line-clamp-3 admin-text-xs leading-relaxed text-foreground/80">
 									{sub.message}
 								</p>
-							</article>
+							</Link>
 						)
 					})}
 				</div>

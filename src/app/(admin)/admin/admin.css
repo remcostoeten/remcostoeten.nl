@@ -331,10 +331,100 @@
 		border-color: hsl(var(--ring));
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.admin-shell *,
-		.admin-shell *::before {
-			transition: none !important;
-		}
+	.admin-shell
+		:where(
+			a,
+			button,
+			input,
+			textarea,
+			select,
+			summary,
+			[tabindex]
+		):focus-visible {
+		outline: 2px solid hsl(var(--ring));
+		outline-offset: 2px;
+	}
+
+	.admin-text-xs {
+		font-size: 12px;
+		line-height: 1.5;
+	}
+
+	.admin-text-sm {
+		font-size: 13px;
+		line-height: 1.5;
+	}
+
+	.admin-text-base {
+		font-size: 14px;
+		line-height: 1.6;
+	}
+
+	.admin-text-muted {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.admin-text-success {
+		color: var(--admin-success);
+	}
+
+	.admin-text-warning {
+		color: var(--admin-warning);
+	}
+
+	.admin-text-danger {
+		color: var(--admin-danger);
+	}
+
+	.admin-btn[data-size='sm'] {
+		height: 28px;
+		padding: 0 10px;
+		font-size: 12px;
+	}
+
+	.admin-btn[data-variant='danger'] {
+		border-color: color-mix(in oklch, var(--admin-danger) 40%, transparent);
+		color: var(--admin-danger);
+	}
+
+	.admin-btn[data-variant='danger']:hover {
+		background: color-mix(in oklch, var(--admin-danger) 12%, transparent);
+	}
+
+	.admin-btn[data-variant='danger'][data-confirming='true'] {
+		border-color: transparent;
+		background: var(--admin-danger);
+		color: hsl(var(--background));
+	}
+
+	.admin-btn[aria-busy='true'] {
+		cursor: progress;
+	}
+
+	.admin-label {
+		display: block;
+		margin-bottom: 6px;
+		font-size: 12px;
+		font-weight: 500;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.admin-field[aria-invalid='true'] {
+		border-color: var(--admin-danger);
+	}
+
+	.admin-field[readonly] {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.admin-field::placeholder {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.admin-card {
+		border: 1px solid hsl(var(--border));
+		border-radius: 8px;
+		background: hsl(var(--background));
+		padding: 16px;
 	}
 }

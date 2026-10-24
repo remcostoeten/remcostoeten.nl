@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-check",
-  "type": "registry:component",
-  "title": "Check Icon",
-  "description": "Animated check icon. Tick nods.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-check/icons/check.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/check.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./check.css\";\n\nexport function AnimatedCheckIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"check\" {...props}>\n      <path data-part=\"tick\" d=\"m5 14l3.5 3.5L19 6.5\" />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-check/icons/check.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/check.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"check\"] [data-part=\"tick\"] {\n    transform-origin: 8.5px 17.5px;\n    animation-name: icon-check-nod;\n  }\n}\n\n@keyframes icon-check-nod {\n  35% {\n    transform: translateY(-1.5px) rotate(-5deg) scale(1.06);\n  }\n  70% {\n    transform: translateY(0.3px) rotate(1deg);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-check",
+	"type": "registry:component",
+	"title": "Check Icon",
+	"description": "Animated check icon. Tick nods.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-check/icons/check.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/check.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./check.css\";\n\nexport function AnimatedCheckIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"check\" {...props}>\n      <path data-part=\"tick\" d=\"m5 14l3.5 3.5L19 6.5\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-check/icons/check.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/check.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"check\"] [data-part=\"tick\"] {\n    transform-origin: 8.5px 17.5px;\n    animation-name: icon-check-nod;\n  }\n}\n\n@keyframes icon-check-nod {\n  35% {\n    transform: translateY(-1.5px) rotate(-5deg) scale(1.06);\n  }\n  70% {\n    transform: translateY(0.3px) rotate(1deg);\n  }\n}\n"
+		}
+	]
 }

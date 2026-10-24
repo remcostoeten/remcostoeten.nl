@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-monitor",
-  "type": "registry:component",
-  "title": "Monitor Icon",
-  "description": "Animated monitor icon. Screen breathes, stand dips.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-monitor/icons/monitor.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/monitor.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./monitor.css\";\n\nexport function AnimatedMonitorIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"monitor\" {...props}>\n      <rect data-part=\"screen\" x=\"3\" y=\"4\" width=\"18\" height=\"12.5\" rx=\"2.5\" />\n      <path data-part=\"stand\" d=\"M12 16.5V20M8.5 20h7\" />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-monitor/icons/monitor.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/monitor.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"monitor\"] {\n    & [data-part=\"screen\"] {\n      --icon-pulse: scale(0.94);\n      transform-origin: 12px 10.25px;\n      animation-name: icon-pulse;\n    }\n\n    & [data-part=\"stand\"] {\n      --icon-y: 1px;\n      --icon-delay: 80ms;\n      animation-name: icon-nudge;\n    }\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-monitor",
+	"type": "registry:component",
+	"title": "Monitor Icon",
+	"description": "Animated monitor icon. Screen breathes, stand dips.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-monitor/icons/monitor.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/monitor.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./monitor.css\";\n\nexport function AnimatedMonitorIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"monitor\" {...props}>\n      <rect data-part=\"screen\" x=\"3\" y=\"4\" width=\"18\" height=\"12.5\" rx=\"2.5\" />\n      <path data-part=\"stand\" d=\"M12 16.5V20M8.5 20h7\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-monitor/icons/monitor.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/monitor.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"monitor\"] {\n    & [data-part=\"screen\"] {\n      --icon-pulse: scale(0.94);\n      transform-origin: 12px 10.25px;\n      animation-name: icon-pulse;\n    }\n\n    & [data-part=\"stand\"] {\n      --icon-y: 1px;\n      --icon-delay: 80ms;\n      animation-name: icon-nudge;\n    }\n  }\n}\n"
+		}
+	]
 }

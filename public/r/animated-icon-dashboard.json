@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-dashboard",
-  "type": "registry:component",
-  "title": "Dashboard Icon",
-  "description": "Animated dashboard icon. Tiles lift in turn.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-dashboard/icons/dashboard.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/dashboard.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./dashboard.css\";\n\nexport function AnimatedDashboardIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"dashboard\" {...props}>\n      <g data-part=\"tiles\" data-stagger=\"\">\n        <rect x=\"3\" y=\"3\" width=\"8\" height=\"10\" rx=\"2\" />\n        <rect x=\"13\" y=\"3\" width=\"8\" height=\"6\" rx=\"2\" />\n        <rect x=\"3\" y=\"15\" width=\"8\" height=\"6\" rx=\"2\" />\n        <rect x=\"13\" y=\"11\" width=\"8\" height=\"10\" rx=\"2\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-dashboard/icons/dashboard.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/dashboard.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"dashboard\"] [data-part=\"tiles\"] > rect {\n    --icon-y: -1.5px;\n    animation-name: icon-nudge;\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-dashboard",
+	"type": "registry:component",
+	"title": "Dashboard Icon",
+	"description": "Animated dashboard icon. Tiles lift in turn.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-dashboard/icons/dashboard.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/dashboard.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./dashboard.css\";\n\nexport function AnimatedDashboardIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"dashboard\" {...props}>\n      <g data-part=\"tiles\" data-stagger=\"\">\n        <rect x=\"3\" y=\"3\" width=\"8\" height=\"10\" rx=\"2\" />\n        <rect x=\"13\" y=\"3\" width=\"8\" height=\"6\" rx=\"2\" />\n        <rect x=\"3\" y=\"15\" width=\"8\" height=\"6\" rx=\"2\" />\n        <rect x=\"13\" y=\"11\" width=\"8\" height=\"10\" rx=\"2\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-dashboard/icons/dashboard.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/dashboard.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"dashboard\"] [data-part=\"tiles\"] > rect {\n    --icon-y: -1.5px;\n    animation-name: icon-nudge;\n  }\n}\n"
+		}
+	]
 }

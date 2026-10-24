@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-plus",
-  "type": "registry:component",
-  "title": "Plus Icon",
-  "description": "Animated plus icon. Cross turns into place.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-plus/icons/plus.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/plus.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./plus.css\";\n\nexport function AnimatedPlusIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"plus\" {...props}>\n      <g data-part=\"cross\">\n        <path d=\"M12.001 5v14.002\" />\n        <path d=\"M19.002 12.002H5\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-plus/icons/plus.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/plus.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"plus\"] [data-part=\"cross\"] {\n    --icon-turn: -90deg;\n    --icon-scale: 0.7;\n    animation-name: icon-pop;\n    animation-duration: var(--icon-duration-short);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-plus",
+	"type": "registry:component",
+	"title": "Plus Icon",
+	"description": "Animated plus icon. Cross turns into place.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-plus/icons/plus.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/plus.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./plus.css\";\n\nexport function AnimatedPlusIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"plus\" {...props}>\n      <g data-part=\"cross\">\n        <path d=\"M12.001 5v14.002\" />\n        <path d=\"M19.002 12.002H5\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-plus/icons/plus.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/plus.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"plus\"] [data-part=\"cross\"] {\n    --icon-turn: -90deg;\n    --icon-scale: 0.7;\n    animation-name: icon-pop;\n    animation-duration: var(--icon-duration-short);\n  }\n}\n"
+		}
+	]
 }

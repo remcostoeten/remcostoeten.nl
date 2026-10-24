@@ -37,7 +37,7 @@ function PanelErrorFallback({
 				<h2 className="admin-panel-title">{title}</h2>
 			</div>
 			<div className="flex flex-col items-start gap-4 px-5 pb-5">
-				<p className="text-[13px] text-muted-foreground">
+				<p className="admin-text-sm text-muted-foreground">
 					{error.message || 'This panel failed to load.'}
 				</p>
 				<button

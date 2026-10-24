@@ -44,7 +44,7 @@ bun run dev                 # start the dev server on http://localhost:3000
 bun run check               # oxlint, tsgo typecheck and vitest
 ```
 
-Every other variable in `.env.example` enables one integration (GitHub, Google, Spotify, Spoar analytics, ipinfo). A missing one disables its feature instead of breaking the build. The GitHub and Google OAuth apps can be created with [oauth-app-automator](https://github.com/remcostoeten/oauth-app-automator).
+Every other variable in `.env.example` enables one integration (GitHub, Google, Spotify, Spoar analytics, ipinfo). A missing one disables its feature instead of breaking the build. The GitHub and Google OAuth apps can be created with [oauth-app-automator](https://github.com/remcostoeten/oauth-app-automator). Gmail replies from the admin inbox need the Gmail API enabled on the Google app, see [docs/gmail-replies.md](docs/gmail-replies.md).
 
 Server code lives under `src/server`, route handlers stay thin and delegate to it, and blog posts are read from `src/app/(marketing)/blog/posts` and enriched with topic and reading time at build.
 
