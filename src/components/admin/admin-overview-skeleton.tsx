@@ -81,7 +81,7 @@ function MetricCellSkeleton({
 	)
 }
 
-function BlogTableSkeleton() {
+export function BlogTableSkeleton() {
 	return (
 		<section className="admin-panel">
 			<div className="admin-panel-header pb-4">
@@ -191,7 +191,7 @@ function PanelFooterSkeleton({ label }: { label: string }) {
 	)
 }
 
-function ActivityFeedSkeleton() {
+export function ActivityFeedSkeleton() {
 	return (
 		<section className="admin-panel">
 			<div className="admin-panel-header items-center">
@@ -232,7 +232,7 @@ function ActivityFeedSkeleton() {
 	)
 }
 
-function CountryTrafficSkeleton() {
+export function CountryTrafficSkeleton() {
 	return (
 		<section className="admin-panel">
 			<div className="admin-panel-header items-center">
@@ -289,7 +289,7 @@ function StatCellSkeleton({
 	)
 }
 
-function ContactOverviewSkeleton() {
+export function ContactOverviewSkeleton() {
 	return (
 		<section className="admin-panel h-full">
 			<div className="admin-panel-header items-center">
@@ -342,7 +342,7 @@ function ContactOverviewSkeleton() {
 	)
 }
 
-function VisitorLogSkeleton() {
+export function VisitorLogSkeleton() {
 	return (
 		<section className="admin-panel h-full">
 			<div className="admin-panel-header items-center">
@@ -380,6 +380,17 @@ function VisitorLogSkeleton() {
 	)
 }
 
+export function MetricsSkeleton() {
+	return (
+		<div className="admin-panel grid grid-cols-2 gap-px bg-border lg:grid-cols-4">
+			<MetricCellSkeleton icon={Eye} label="Total views" />
+			<MetricCellSkeleton icon={Users} label="Unique visitors" />
+			<MetricCellSkeleton icon={AnimatedCommentIcon} label="Comments" />
+			<MetricCellSkeleton icon={AnimatedMailIcon} label="Messages" />
+		</div>
+	)
+}
+
 export function AdminOverviewSkeleton() {
 	return (
 		<div
@@ -402,15 +413,7 @@ export function AdminOverviewSkeleton() {
 				}
 			/>
 
-			<div className="admin-panel grid grid-cols-2 gap-px bg-border lg:grid-cols-4">
-				<MetricCellSkeleton icon={Eye} label="Total views" />
-				<MetricCellSkeleton icon={Users} label="Unique visitors" />
-				<MetricCellSkeleton
-					icon={AnimatedCommentIcon}
-					label="Comments"
-				/>
-				<MetricCellSkeleton icon={AnimatedMailIcon} label="Messages" />
-			</div>
+			<MetricsSkeleton />
 
 			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
 				<div className="min-w-0">

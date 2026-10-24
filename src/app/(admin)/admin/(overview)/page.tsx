@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { cache, Suspense } from 'react'
 import { ArrowUpRight, Eye, Users } from 'lucide-react'
 import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
 import { AnimatedCommentIcon } from '@/components/animated-icons/icons/comment'
@@ -13,8 +14,20 @@ import {
 	CountryTraffic,
 	VisitorLog
 } from '@/components/admin/metrics/user-metrics'
-import type { ComponentType } from 'react'
+import { PanelErrorBoundary } from '@/components/admin/panel-error-boundary'
+import {
+	ActivityFeedSkeleton,
+	BlogTableSkeleton,
+	ContactOverviewSkeleton,
+	CountryTrafficSkeleton,
+	MetricsSkeleton,
+	VisitorLogSkeleton
+} from '@/components/admin/admin-overview-skeleton'
+import type { ComponentType, ReactNode } from 'react'
 import type { AnimatedIconProps } from '@/components/animated-icons/icon-frame'
+
+const loadMetrics = cache(getAdminMetrics)
+const loadComments = cache(getAllCommentsAdmin)
 
 function MetricCell({
 	icon: Icon,
@@ -43,11 +56,73 @@ function pluralize(count: number, singular: string, plural = `${singular}s`) {
 	return `${count} ${count === 1 ? singular : plural}`
 }
 
-export default async function AdminPage() {
-	const metrics = await getAdminMetrics()
-	const allPosts = getAllBlogPosts()
-	const { comments, recentCount } = await getAllCommentsAdmin()
+function Panel({
+	title,
+	fallback,
+	children
+}: {
+	title: string
+	fallback: ReactNode
+	children: ReactNode
+}) {
+	return (
+		<PanelErrorBoundary title={title}>
+			<Suspense fallback={fallback}>{children}</Suspense>
+		</PanelErrorBoundary>
+	)
+}
 
+async function MetricsPanel() {
+	const [metrics, { comments, recentCount }] = await Promise.all([
+		loadMetrics(),
+		loadComments()
+	])
+
+	const recentSubmissionsCount = metrics.contactStats.filter(
+		s => new Date(s.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+	).length
+
+	return (
+		<div className="admin-panel grid grid-cols-2 gap-px bg-border lg:grid-cols-4">
+			<MetricCell
+				icon={Eye}
+				label="Total views"
+				value={metrics.totalViews}
+				hint={`+${pluralize(metrics.viewsToday, 'view')} today`}
+			/>
+			<MetricCell
+				icon={Users}
+				label="Unique visitors"
+				value={metrics.uniqueVisitors}
+				hint={`Across ${pluralize(metrics.countryCount, 'country', 'countries')}`}
+			/>
+			<MetricCell
+				icon={AnimatedCommentIcon}
+				label="Comments"
+				value={comments.length}
+				hint={
+					recentCount > 0
+						? `+${recentCount} in the last 24h`
+						: 'On your published posts'
+				}
+			/>
+			<MetricCell
+				icon={AnimatedMailIcon}
+				label="Messages"
+				value={metrics.contactStats.length}
+				hint={
+					recentSubmissionsCount > 0
+						? pluralize(recentSubmissionsCount, 'new message')
+						: 'No new messages'
+				}
+			/>
+		</div>
+	)
+}
+
+async function BlogPostsPanel() {
+	const metrics = await loadMetrics()
+	const allPosts = getAllBlogPosts()
 	const statsMap = new Map(metrics.postStats.map(s => [s.slug, s]))
 
 	const postsWithStats = allPosts.map(post => {
@@ -66,10 +141,58 @@ export default async function AdminPage() {
 		}
 	})
 
-	const recentSubmissionsCount = metrics.contactStats.filter(
-		s => new Date(s.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-	).length
+	return <BlogTable posts={postsWithStats} />
+}
 
+async function ActivityPanel() {
+	const [metrics, { comments }] = await Promise.all([
+		loadMetrics(),
+		loadComments()
+	])
+
+	return (
+		<ActivityFeed
+			comments={comments.map(comment => ({
+				...comment,
+				createdAt: comment.createdAt.toISOString()
+			}))}
+			submissions={metrics.contactStats}
+		/>
+	)
+}
+
+async function CountryPanel() {
+	const metrics = await loadMetrics()
+
+	return (
+		<CountryTraffic
+			viewsByCountry={metrics.viewsByCountry}
+			totalViews={metrics.totalViews}
+		/>
+	)
+}
+
+async function ContactPanel() {
+	const metrics = await loadMetrics()
+
+	return (
+		<ContactOverview
+			data={{
+				submissions: metrics.contactStats,
+				interactions: metrics.interactions,
+				abandonments: metrics.abandonments
+			}}
+		/>
+	)
+}
+
+async function VisitorPanel() {
+	const metrics = await loadMetrics()
+
+	return <VisitorLog recentViews={metrics.recentViews} />
+}
+
+export default function AdminPage() {
 	return (
 		<div className="space-y-8">
 			<AdminPageHeader
@@ -87,74 +210,50 @@ export default async function AdminPage() {
 				}
 			/>
 
-			<div className="admin-panel grid grid-cols-2 gap-px bg-border lg:grid-cols-4">
-				<MetricCell
-					icon={Eye}
-					label="Total views"
-					value={metrics.totalViews}
-					hint={`+${pluralize(metrics.viewsToday, 'view')} today`}
-				/>
-				<MetricCell
-					icon={Users}
-					label="Unique visitors"
-					value={metrics.uniqueVisitors}
-					hint={`Across ${pluralize(metrics.countryCount, 'country', 'countries')}`}
-				/>
-				<MetricCell
-					icon={AnimatedCommentIcon}
-					label="Comments"
-					value={comments.length}
-					hint={
-						recentCount > 0
-							? `+${recentCount} in the last 24h`
-							: 'On your published posts'
-					}
-				/>
-				<MetricCell
-					icon={AnimatedMailIcon}
-					label="Messages"
-					value={metrics.contactStats.length}
-					hint={
-						recentSubmissionsCount > 0
-							? pluralize(recentSubmissionsCount, 'new message')
-							: 'No new messages'
-					}
-				/>
-			</div>
+			<Panel title="Metrics" fallback={<MetricsSkeleton />}>
+				<MetricsPanel />
+			</Panel>
 
 			<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
 				<div id="blogs" className="min-w-0 scroll-mt-20">
-					<BlogTable posts={postsWithStats} />
+					<Panel title="Blog posts" fallback={<BlogTableSkeleton />}>
+						<BlogPostsPanel />
+					</Panel>
 				</div>
 
 				<aside className="space-y-6">
-					<ActivityFeed
-						comments={comments.map(comment => ({
-							...comment,
-							createdAt: comment.createdAt.toISOString()
-						}))}
-						submissions={metrics.contactStats}
-					/>
+					<Panel
+						title="Recent activity"
+						fallback={<ActivityFeedSkeleton />}
+					>
+						<ActivityPanel />
+					</Panel>
 					<div id="analytics" className="scroll-mt-20">
-						<CountryTraffic
-							viewsByCountry={metrics.viewsByCountry}
-							totalViews={metrics.totalViews}
-						/>
+						<Panel
+							title="Traffic by country"
+							fallback={<CountryTrafficSkeleton />}
+						>
+							<CountryPanel />
+						</Panel>
 					</div>
 				</aside>
 			</div>
 
 			<div className="grid gap-6 lg:grid-cols-2">
 				<div id="messages" className="scroll-mt-20">
-					<ContactOverview
-						data={{
-							submissions: metrics.contactStats,
-							interactions: metrics.interactions,
-							abandonments: metrics.abandonments
-						}}
-					/>
+					<Panel
+						title="Contact activity"
+						fallback={<ContactOverviewSkeleton />}
+					>
+						<ContactPanel />
+					</Panel>
 				</div>
-				<VisitorLog recentViews={metrics.recentViews} />
+				<Panel
+					title="Live visitor log"
+					fallback={<VisitorLogSkeleton />}
+				>
+					<VisitorPanel />
+				</Panel>
 			</div>
 		</div>
 	)

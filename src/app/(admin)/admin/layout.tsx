@@ -23,10 +23,16 @@ function Shell({
 }: Props & { unreadMessages: number }) {
 	return (
 		<div className="admin-shell flex">
-			<AdminSidebar unreadMessages={unreadMessages} />
+			<Suspense
+				fallback={<aside className="admin-sidebar hidden md:block" />}
+			>
+				<AdminSidebar unreadMessages={unreadMessages} />
+			</Suspense>
 
 			<div className="flex min-w-0 flex-1 flex-col">
-				<AdminTopbar unreadMessages={unreadMessages} />
+				<Suspense fallback={<header className="admin-topbar" />}>
+					<AdminTopbar unreadMessages={unreadMessages} />
+				</Suspense>
 
 				<main className="w-full max-w-[1400px] flex-1 px-4 py-8 md:px-9 md:py-10">
 					{children}
