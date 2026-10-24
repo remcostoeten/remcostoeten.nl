@@ -5,29 +5,22 @@ import { ReactNode, Suspense } from 'react'
 import { AdminSidebar, AdminTopbar } from '@/components/admin/admin-sidebar'
 import './admin.css'
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+type Props = {
+	children: ReactNode
+}
+
+export default function AdminLayout({ children }: Props) {
 	return (
-		<Suspense
-			fallback={
-				<div className="admin-shell flex items-center justify-center text-sm text-muted-foreground">
-					Loading admin…
-				</div>
-			}
-		>
+		<Suspense fallback={<Shell unreadMessages={0}>{null}</Shell>}>
 			<AdminShell>{children}</AdminShell>
 		</Suspense>
 	)
 }
 
-async function AdminShell({ children }: { children: ReactNode }) {
-	const isAdmin = await checkAdminStatus()
-
-	if (!isAdmin) {
-		redirect('/')
-	}
-
-	const unreadMessages = await getRecentMessageCount()
-
+function Shell({
+	unreadMessages,
+	children
+}: Props & { unreadMessages: number }) {
 	return (
 		<div className="admin-shell flex">
 			<AdminSidebar unreadMessages={unreadMessages} />
@@ -41,4 +34,16 @@ async function AdminShell({ children }: { children: ReactNode }) {
 			</div>
 		</div>
 	)
+}
+
+async function AdminShell({ children }: Props) {
+	const isAdmin = await checkAdminStatus()
+
+	if (!isAdmin) {
+		redirect('/')
+	}
+
+	const unreadMessages = await getRecentMessageCount()
+
+	return <Shell unreadMessages={unreadMessages}>{children}</Shell>
 }
