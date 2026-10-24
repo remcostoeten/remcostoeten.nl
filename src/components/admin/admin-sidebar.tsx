@@ -46,7 +46,7 @@ const navSections: NavSection[] = [
 			},
 			{ href: '/admin#blogs', label: 'Blog posts', icon: FileText },
 			{
-				href: '/admin#messages',
+				href: '/admin/messages',
 				label: 'Messages',
 				icon: AnimatedMailIcon,
 				badge: 'messages'
@@ -83,6 +83,7 @@ const pageTitles: Record<string, string> = {
 	'/admin/intro': 'Intro',
 	'/admin/experience': 'Experience',
 	'/admin/projects': 'Projects',
+	'/admin/messages': 'Messages',
 	'/admin/settings': 'Settings'
 }
 
@@ -214,7 +215,7 @@ export function AdminTopbar({ unreadMessages }: { unreadMessages: number }) {
 					</button>
 					<nav
 						aria-label="Breadcrumb"
-						className="flex min-w-0 items-center gap-2 text-[13px]"
+						className="flex min-w-0 items-center gap-2 admin-text-sm"
 					>
 						<Link
 							href="/admin"

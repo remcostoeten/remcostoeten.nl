@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-attachment",
-  "type": "registry:component",
-  "title": "Attachment Icon",
-  "description": "Animated attachment icon. Clip dangles from its top bend.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-attachment/icons/attachment.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/attachment.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./attachment.css\";\n\nexport function AnimatedAttachmentIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"attachment\" {...props}>\n      <path\n        data-part=\"clip\"\n        d=\"M5.823 12L4.28 10.456a4.367 4.367 0 1 1 6.177-6.177l9.265 9.265a4.368 4.368 0 0 1-6.177 6.177l-3.474-3.475a2.73 2.73 0 0 1 3.86-3.86l1.93 1.93\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-attachment/icons/attachment.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/attachment.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"attachment\"] [data-part=\"clip\"] {\n    --icon-swing: -18deg;\n    transform-origin: 7px 7px;\n    animation-name: icon-swing;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-attachment",
+	"type": "registry:component",
+	"title": "Attachment Icon",
+	"description": "Animated attachment icon. Clip dangles from its top bend.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-attachment/icons/attachment.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/attachment.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./attachment.css\";\n\nexport function AnimatedAttachmentIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"attachment\" {...props}>\n      <path\n        data-part=\"clip\"\n        d=\"M5.823 12L4.28 10.456a4.367 4.367 0 1 1 6.177-6.177l9.265 9.265a4.368 4.368 0 0 1-6.177 6.177l-3.474-3.475a2.73 2.73 0 0 1 3.86-3.86l1.93 1.93\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-attachment/icons/attachment.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/attachment.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"attachment\"] [data-part=\"clip\"] {\n    --icon-swing: -18deg;\n    transform-origin: 7px 7px;\n    animation-name: icon-swing;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n"
+		}
+	]
 }

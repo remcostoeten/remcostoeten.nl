@@ -17,7 +17,7 @@ export default function AdminNotFound() {
 						404
 					</span>
 				</div>
-				<p className="px-5 pb-5 text-[13px] text-muted-foreground">
+				<p className="px-5 pb-5 admin-text-sm text-muted-foreground">
 					The post, message or page you opened does not exist or was
 					removed.
 				</p>

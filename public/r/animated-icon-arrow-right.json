@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-arrow-right",
-  "type": "registry:component",
-  "title": "Arrow right Icon",
-  "description": "Animated arrow right icon. Head pushes, shaft stretches.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-arrow-right/icons/arrow-right.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/arrow-right.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./arrow-right.css\";\n\nexport function AnimatedArrowRightIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"arrow-right\" {...props}>\n      <path data-part=\"shaft\" strokeDasharray=\"13.5 20\" d=\"M5 12H21.5\" />\n      <path data-part=\"head\" d=\"M13 18s6-4.419 6-6s-6-6-6-6\" />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-arrow-right/icons/arrow-right.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/arrow-right.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"arrow-right\"] {\n    & [data-part=\"head\"] {\n      --icon-pulse: translateX(3px);\n      animation-name: icon-pulse;\n    }\n\n    & [data-part=\"shaft\"] {\n      --icon-dash: 16.5 20;\n      animation-name: icon-dash;\n    }\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-arrow-right",
+	"type": "registry:component",
+	"title": "Arrow right Icon",
+	"description": "Animated arrow right icon. Head pushes, shaft stretches.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-arrow-right/icons/arrow-right.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/arrow-right.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./arrow-right.css\";\n\nexport function AnimatedArrowRightIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"arrow-right\" {...props}>\n      <path data-part=\"shaft\" strokeDasharray=\"13.5 20\" d=\"M5 12H21.5\" />\n      <path data-part=\"head\" d=\"M13 18s6-4.419 6-6s-6-6-6-6\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-arrow-right/icons/arrow-right.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/arrow-right.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"arrow-right\"] {\n    & [data-part=\"head\"] {\n      --icon-pulse: translateX(3px);\n      animation-name: icon-pulse;\n    }\n\n    & [data-part=\"shaft\"] {\n      --icon-dash: 16.5 20;\n      animation-name: icon-dash;\n    }\n  }\n}\n"
+		}
+	]
 }

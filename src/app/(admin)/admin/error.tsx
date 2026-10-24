@@ -31,7 +31,7 @@ export default function AdminError({ error, reset }: Props) {
 						</span>
 					)}
 				</div>
-				<p className="break-words px-5 pb-5 text-[13px] text-muted-foreground">
+				<p className="break-words px-5 pb-5 admin-text-sm text-muted-foreground">
 					{error.message}
 				</p>
 				<div className="flex items-center gap-2 border-t border-border px-5 py-4">

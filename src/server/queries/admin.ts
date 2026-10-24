@@ -6,7 +6,7 @@ import {
 	contactInteractions,
 	contactAbandonments
 } from '@/server/db/schema'
-import { desc, count, countDistinct, gte } from 'drizzle-orm'
+import { and, desc, count, countDistinct, gte, isNull } from 'drizzle-orm'
 import { requireAdmin } from '@/server/queries/auth'
 import { connection } from 'next/server'
 
@@ -90,22 +90,26 @@ function getStartOfToday() {
 }
 
 /**
- * @name getRecentMessageCount
- * @description Counts contact form submissions received in the last 24 hours,
- * used for the unread badge in the admin navigation.
+ * @name getUnreadMessageCount
+ * @description Counts contact form submissions that are neither read nor
+ * archived, used for the unread badge in the admin navigation.
  *
  * @example
- * const unread = await getRecentMessageCount()
+ * const unread = await getUnreadMessageCount()
  */
-export async function getRecentMessageCount() {
+export async function getUnreadMessageCount() {
 	await requireAdmin()
 	await connection()
 
-	const since = new Date(Date.now() - 24 * 60 * 60 * 1000)
 	const [row] = await db
 		.select({ count: count() })
 		.from(contactSubmissions)
-		.where(gte(contactSubmissions.createdAt, since))
+		.where(
+			and(
+				isNull(contactSubmissions.readAt),
+				isNull(contactSubmissions.archivedAt)
+			)
+		)
 
 	return row.count
 }

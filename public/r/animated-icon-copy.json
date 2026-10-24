@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-copy",
-  "type": "registry:component",
-  "title": "Copy Icon",
-  "description": "Animated copy icon. Sheets fan apart.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-copy/icons/copy.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/copy.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./copy.css\";\n\nexport function AnimatedCopyIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"copy\" {...props}>\n      <path\n        data-part=\"back\"\n        d=\"M7.5 16.5c-1.396 0-2.095 0-2.656-.196a3.5 3.5 0 0 1-2.148-2.148C2.5 13.595 2.5 12.896 2.5 11.5v-2c0-3.3 0-4.95 1.025-5.975S6.2 2.5 9.5 2.5h2c1.396 0 2.095 0 2.656.196a3.5 3.5 0 0 1 2.148 2.148c.196.561.196 1.26.196 2.656\"\n      />\n      <path\n        data-part=\"front\"\n        d=\"M7.5 14.5c0-3.3 0-4.95 1.025-5.975S11.2 7.5 14.5 7.5s4.95 0 5.975 1.025S21.5 11.2 21.5 14.5s0 4.95-1.025 5.975S17.8 21.5 14.5 21.5s-4.95 0-5.975-1.025S7.5 17.8 7.5 14.5\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-copy/icons/copy.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/copy.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"copy\"] {\n    & [data-part=\"back\"] {\n      --icon-x: -1.5px;\n      --icon-y: -1.5px;\n      animation-name: icon-nudge;\n    }\n\n    & [data-part=\"front\"] {\n      --icon-x: 1.75px;\n      --icon-y: 1.75px;\n      --icon-delay: 70ms;\n      animation-name: icon-nudge;\n    }\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-copy",
+	"type": "registry:component",
+	"title": "Copy Icon",
+	"description": "Animated copy icon. Sheets fan apart.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-copy/icons/copy.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/copy.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./copy.css\";\n\nexport function AnimatedCopyIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"copy\" {...props}>\n      <path\n        data-part=\"back\"\n        d=\"M7.5 16.5c-1.396 0-2.095 0-2.656-.196a3.5 3.5 0 0 1-2.148-2.148C2.5 13.595 2.5 12.896 2.5 11.5v-2c0-3.3 0-4.95 1.025-5.975S6.2 2.5 9.5 2.5h2c1.396 0 2.095 0 2.656.196a3.5 3.5 0 0 1 2.148 2.148c.196.561.196 1.26.196 2.656\"\n      />\n      <path\n        data-part=\"front\"\n        d=\"M7.5 14.5c0-3.3 0-4.95 1.025-5.975S11.2 7.5 14.5 7.5s4.95 0 5.975 1.025S21.5 11.2 21.5 14.5s0 4.95-1.025 5.975S17.8 21.5 14.5 21.5s-4.95 0-5.975-1.025S7.5 17.8 7.5 14.5\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-copy/icons/copy.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/copy.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"copy\"] {\n    & [data-part=\"back\"] {\n      --icon-x: -1.5px;\n      --icon-y: -1.5px;\n      animation-name: icon-nudge;\n    }\n\n    & [data-part=\"front\"] {\n      --icon-x: 1.75px;\n      --icon-y: 1.75px;\n      --icon-delay: 70ms;\n      animation-name: icon-nudge;\n    }\n  }\n}\n"
+		}
+	]
 }

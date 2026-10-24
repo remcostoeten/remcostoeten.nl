@@ -42,12 +42,12 @@ function MetricCell({
 }) {
 	return (
 		<div className="flex flex-col gap-3 bg-card p-5">
-			<div className="flex items-center justify-between text-[13px] text-muted-foreground">
+			<div className="flex items-center justify-between admin-text-sm text-muted-foreground">
 				<span>{label}</span>
 				<Icon className="size-4" />
 			</div>
 			<span className="admin-metric-value">{value.toLocaleString()}</span>
-			<span className="text-[11px] text-muted-foreground">{hint}</span>
+			<span className="admin-text-xs text-muted-foreground">{hint}</span>
 		</div>
 	)
 }
@@ -78,8 +78,8 @@ async function MetricsPanel() {
 		loadComments()
 	])
 
-	const recentSubmissionsCount = metrics.contactStats.filter(
-		s => new Date(s.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+	const unreadSubmissionsCount = metrics.contactStats.filter(
+		s => s.readAt === null && s.archivedAt === null
 	).length
 
 	return (
@@ -111,9 +111,9 @@ async function MetricsPanel() {
 				label="Messages"
 				value={metrics.contactStats.length}
 				hint={
-					recentSubmissionsCount > 0
-						? pluralize(recentSubmissionsCount, 'new message')
-						: 'No new messages'
+					unreadSubmissionsCount > 0
+						? `${unreadSubmissionsCount} unread`
+						: 'No unread messages'
 				}
 			/>
 		</div>

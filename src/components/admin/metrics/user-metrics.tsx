@@ -118,7 +118,7 @@ export function CountryTraffic({
 								{getCountryFlag(item.country)}
 							</span>
 							<div className="min-w-0 flex-1 space-y-1.5">
-								<div className="flex items-center justify-between gap-2 text-[12px]">
+								<div className="flex items-center justify-between gap-2 admin-text-xs">
 									<span className="truncate">
 										{getCountryLabel(item.country)}
 									</span>
@@ -132,7 +132,7 @@ export function CountryTraffic({
 											style={{ width: `${percentage}%` }}
 										/>
 									</div>
-									<span className="w-8 text-right text-[10px] tabular-nums text-muted-foreground">
+									<span className="w-8 text-right admin-text-xs tabular-nums text-muted-foreground">
 										{percentage}%
 									</span>
 								</div>
@@ -146,7 +146,7 @@ export function CountryTraffic({
 				<button
 					type="button"
 					onClick={() => setShowAll(!showAll)}
-					className="flex w-full items-center justify-center gap-1 border-t border-border py-3 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
+					className="flex w-full items-center justify-center gap-1 border-t border-border py-3 admin-text-xs text-muted-foreground transition-colors hover:text-foreground"
 				>
 					{showAll ? 'Show fewer countries' : 'View all countries'}
 					<ChevronDown
@@ -163,7 +163,7 @@ export function VisitorLog({ recentViews }: { recentViews: RecentView[] }) {
 		<section className="admin-panel h-full">
 			<div className="admin-panel-header items-center">
 				<h2 className="admin-panel-title">Live visitor log</h2>
-				<span className="flex items-center gap-2 text-[11px] text-muted-foreground">
+				<span className="flex items-center gap-2 admin-text-xs text-muted-foreground">
 					<span className="admin-live-dot" aria-hidden="true" />
 					Live
 				</span>
@@ -194,16 +194,16 @@ export function VisitorLog({ recentViews }: { recentViews: RecentView[] }) {
 									{getCountryFlag(view.geoCountry)}
 								</span>
 								<div className="min-w-0 flex-1">
-									<p className="truncate text-[12px] font-medium">
+									<p className="truncate admin-text-xs font-medium">
 										{view.slug.replace('/blog/', '')}
 									</p>
-									<p className="truncate text-[11px] text-muted-foreground">
+									<p className="truncate admin-text-xs text-muted-foreground">
 										{getLocationLabel(view)}
 									</p>
 								</div>
 								<time
 									dateTime={viewedAt.toISOString()}
-									className="shrink-0 text-[11px] tabular-nums text-muted-foreground"
+									className="shrink-0 admin-text-xs tabular-nums text-muted-foreground"
 								>
 									{isToday
 										? viewedAt.toLocaleTimeString([], {

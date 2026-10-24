@@ -18,7 +18,7 @@ import { cn } from '@/shared/lib/cn'
 import type { ComponentType } from 'react'
 import type { AnimatedIconProps } from '@/components/animated-icons/icon-frame'
 
-const PULSE = 'animate-pulse bg-foreground/10 motion-reduce:animate-none'
+const PULSE = 'animate-pulse bg-foreground/10'
 
 const TABLE_ROWS = 8
 const ACTIVITY_ROWS = 5
@@ -67,14 +67,14 @@ function MetricCellSkeleton({
 }) {
 	return (
 		<div className="flex flex-col gap-3 bg-card p-5">
-			<div className="flex items-center justify-between text-[13px] text-muted-foreground">
+			<div className="flex items-center justify-between admin-text-sm text-muted-foreground">
 				<span>{label}</span>
 				<Icon className="size-4" />
 			</div>
 			<span className="admin-metric-value">
 				<Line className="w-20" />
 			</span>
-			<span className="text-[11px] text-muted-foreground">
+			<span className="admin-text-xs text-muted-foreground">
 				<Line className="w-28" />
 			</span>
 		</div>
@@ -88,11 +88,11 @@ export function BlogTableSkeleton() {
 				<div>
 					<h2 className="admin-panel-title">
 						Blog posts
-						<span className="ml-2 text-[13px] font-normal text-muted-foreground">
+						<span className="ml-2 admin-text-sm font-normal text-muted-foreground">
 							<Line className="w-5" />
 						</span>
 					</h2>
-					<p className="mt-1 text-[12px] text-muted-foreground">
+					<p className="mt-1 admin-text-xs text-muted-foreground">
 						Your ideas, published and in progress.
 					</p>
 				</div>
@@ -141,10 +141,10 @@ export function BlogTableSkeleton() {
 							.map((width, index) => (
 								<tr key={index}>
 									<td>
-										<p className="max-w-[380px] text-[13px] font-medium">
+										<p className="max-w-[380px] admin-text-sm font-medium">
 											<Line className={width} />
 										</p>
-										<p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+										<p className="mt-1 flex items-center gap-1 admin-text-xs text-muted-foreground">
 											<AnimatedClockIcon className="size-3" />
 											<Line className="w-12" />
 										</p>
@@ -165,7 +165,7 @@ export function BlogTableSkeleton() {
 				</table>
 			</div>
 
-			<div className="flex items-center justify-between border-t border-border px-5 py-3 text-[11px] text-muted-foreground">
+			<div className="flex items-center justify-between border-t border-border px-5 py-3 admin-text-xs text-muted-foreground">
 				<span>
 					<Line className="w-24" />
 				</span>
@@ -184,7 +184,7 @@ export function BlogTableSkeleton() {
 
 function PanelFooterSkeleton({ label }: { label: string }) {
 	return (
-		<div className="flex w-full items-center justify-center gap-1 border-t border-border py-3 text-[12px] text-muted-foreground">
+		<div className="flex w-full items-center justify-center gap-1 border-t border-border py-3 admin-text-xs text-muted-foreground">
 			{label}
 			<ChevronDown className="size-3" />
 		</div>
@@ -209,17 +209,17 @@ export function ActivityFeedSkeleton() {
 							<Block className="size-3.5 rounded-sm" />
 						</span>
 						<div className="min-w-0 flex-1">
-							<p className="text-[13px] font-medium">
+							<p className="admin-text-sm font-medium">
 								<Line className="w-24" />
 							</p>
-							<p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+							<p className="mt-1 admin-text-xs leading-relaxed text-muted-foreground">
 								<Line className="w-full" />
 								<Line className="w-2/3" />
 							</p>
-							<p className="mt-1 text-[12px] text-muted-foreground/70">
+							<p className="mt-1 admin-text-xs text-muted-foreground/70">
 								<Line className="w-5/6" />
 							</p>
-							<p className="mt-1.5 text-[11px] text-muted-foreground/60">
+							<p className="mt-1.5 admin-text-xs text-muted-foreground/60">
 								<Line className="w-16" />
 							</p>
 						</div>
@@ -247,13 +247,13 @@ export function CountryTrafficSkeleton() {
 							<Block className="size-4 rounded-full" />
 						</span>
 						<div className="min-w-0 flex-1 space-y-1.5">
-							<div className="flex items-center justify-between gap-2 text-[12px]">
+							<div className="flex items-center justify-between gap-2 admin-text-xs">
 								<Line className="w-24" />
 								<Line className="w-8" />
 							</div>
 							<div className="flex items-center gap-3">
 								<div className="admin-bar flex-1" />
-								<span className="w-8 text-right text-[10px] text-muted-foreground">
+								<span className="w-8 text-right admin-text-xs text-muted-foreground">
 									<Line className="w-6" />
 								</span>
 							</div>
@@ -279,7 +279,7 @@ function StatCellSkeleton({
 			<span className="admin-metric-value block text-[24px]">
 				<Line className="w-10" />
 			</span>
-			<span className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+			<span className="flex items-center gap-1.5 admin-text-xs text-muted-foreground">
 				{tone === 'success' && (
 					<span className="size-1.5 rounded-full bg-[color:var(--admin-success)]" />
 				)}
@@ -308,7 +308,7 @@ export function ContactOverviewSkeleton() {
 					<p className="text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground/70">
 						Latest message
 					</p>
-					<div className="flex items-center gap-3 text-[11px]">
+					<div className="flex items-center gap-3 admin-text-xs">
 						<span className="text-muted-foreground">Show more</span>
 						<Link
 							href="/admin/messages"
@@ -321,17 +321,17 @@ export function ContactOverviewSkeleton() {
 
 				<div className="rounded-md border border-border bg-background p-4">
 					<div className="flex items-center justify-between gap-2">
-						<p className="text-[13px] font-medium">
+						<p className="admin-text-sm font-medium">
 							<Line className="w-32" />
 						</p>
-						<span className="text-[11px] text-muted-foreground">
+						<span className="admin-text-xs text-muted-foreground">
 							<Line className="w-20" />
 						</span>
 					</div>
-					<p className="mt-0.5 text-[11px] text-muted-foreground">
+					<p className="mt-0.5 admin-text-xs text-muted-foreground">
 						<Line className="w-40" />
 					</p>
-					<p className="mt-2 text-[12px] leading-relaxed">
+					<p className="mt-2 admin-text-xs leading-relaxed">
 						<Line className="w-full" />
 						<Line className="w-full" />
 						<Line className="w-3/4" />
@@ -347,7 +347,7 @@ export function VisitorLogSkeleton() {
 		<section className="admin-panel h-full">
 			<div className="admin-panel-header items-center">
 				<h2 className="admin-panel-title">Live visitor log</h2>
-				<span className="flex items-center gap-2 text-[11px] text-muted-foreground">
+				<span className="flex items-center gap-2 admin-text-xs text-muted-foreground">
 					<span className="admin-live-dot" aria-hidden="true" />
 					Live
 				</span>
@@ -362,14 +362,14 @@ export function VisitorLogSkeleton() {
 						>
 							<Block className="size-7 shrink-0 rounded-full" />
 							<div className="min-w-0 flex-1">
-								<p className="text-[12px] font-medium">
+								<p className="admin-text-xs font-medium">
 									<Line className="w-44" />
 								</p>
-								<p className="text-[11px] text-muted-foreground">
+								<p className="admin-text-xs text-muted-foreground">
 									<Line className="w-28" />
 								</p>
 							</div>
-							<span className="text-[11px] text-muted-foreground">
+							<span className="admin-text-xs text-muted-foreground">
 								<Line className="w-10" />
 							</span>
 						</li>

@@ -1,5 +1,5 @@
 import { checkAdminStatus } from '@/server/queries/auth'
-import { getRecentMessageCount } from '@/server/queries/admin'
+import { getUnreadMessageCount } from '@/server/queries/admin'
 import { redirect } from 'next/navigation'
 import { ReactNode, Suspense } from 'react'
 import { AdminSidebar, AdminTopbar } from '@/components/admin/admin-sidebar'
@@ -49,7 +49,7 @@ async function AdminShell({ children }: Props) {
 		redirect('/')
 	}
 
-	const unreadMessages = await getRecentMessageCount()
+	const unreadMessages = await getUnreadMessageCount()
 
 	return <Shell unreadMessages={unreadMessages}>{children}</Shell>
 }

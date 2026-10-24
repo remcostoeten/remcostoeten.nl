@@ -60,3 +60,24 @@ export async function signInWithPopup(
 ): Promise<void> {
 	await signInWithProvider(provider, '/admin')
 }
+
+const GMAIL_SEND_SCOPE = 'https://www.googleapis.com/auth/gmail.send'
+
+/**
+ * @name linkGmail
+ * @description Starts Google's consent screen for the Gmail send permission
+ * and links the chosen Google account to the signed-in admin. Requests
+ * offline access so the server can refresh tokens later.
+ *
+ * @example
+ * await linkGmail('/admin/settings')
+ */
+export async function linkGmail(returnPath: string): Promise<void> {
+	await authClient.linkSocial({
+		provider: 'google',
+		scopes: [GMAIL_SEND_SCOPE],
+		callbackURL: `${returnPath}?gmail=linked`,
+		errorCallbackURL: `${returnPath}?gmail=error`,
+		additionalParams: { access_type: 'offline', prompt: 'consent' }
+	})
+}

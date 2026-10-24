@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-mail",
-  "type": "registry:component",
-  "title": "Mail Icon",
-  "description": "Animated mail icon. Flap flips open, then shuts.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-mail/icons/mail.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/mail.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./mail.css\";\n\nexport function AnimatedMailIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"mail\" {...props}>\n      <rect data-part=\"body\" x=\"2.5\" y=\"4.5\" width=\"19\" height=\"15\" rx=\"3\" />\n      <path data-part=\"flap\" d=\"m3 7 7.47 5.13a2.7 2.7 0 0 0 3.06 0L21 7\" />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-mail/icons/mail.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/mail.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"mail\"] {\n    & [data-part=\"body\"] {\n      --icon-pulse: scale(1.03, 0.96);\n      transform-origin: 12px 19.5px;\n      animation-name: icon-pulse;\n    }\n\n    & [data-part=\"flap\"] {\n      transform-origin: 12px 7px;\n      animation-name: icon-mail-flap;\n      animation-duration: var(--icon-duration-long);\n    }\n  }\n}\n\n@keyframes icon-mail-flap {\n  40%,\n  62% {\n    transform: scaleY(-0.85);\n  }\n  88% {\n    transform: scaleY(1.08);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-mail",
+	"type": "registry:component",
+	"title": "Mail Icon",
+	"description": "Animated mail icon. Flap flips open, then shuts.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-mail/icons/mail.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/mail.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./mail.css\";\n\nexport function AnimatedMailIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"mail\" {...props}>\n      <rect data-part=\"body\" x=\"2.5\" y=\"4.5\" width=\"19\" height=\"15\" rx=\"3\" />\n      <path data-part=\"flap\" d=\"m3 7 7.47 5.13a2.7 2.7 0 0 0 3.06 0L21 7\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-mail/icons/mail.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/mail.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"mail\"] {\n    & [data-part=\"body\"] {\n      --icon-pulse: scale(1.03, 0.96);\n      transform-origin: 12px 19.5px;\n      animation-name: icon-pulse;\n    }\n\n    & [data-part=\"flap\"] {\n      transform-origin: 12px 7px;\n      animation-name: icon-mail-flap;\n      animation-duration: var(--icon-duration-long);\n    }\n  }\n}\n\n@keyframes icon-mail-flap {\n  40%,\n  62% {\n    transform: scaleY(-0.85);\n  }\n  88% {\n    transform: scaleY(1.08);\n  }\n}\n"
+		}
+	]
 }

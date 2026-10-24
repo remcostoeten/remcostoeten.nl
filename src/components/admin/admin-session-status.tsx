@@ -38,14 +38,14 @@ export function AdminSessionStatus() {
 			className="flex items-center gap-3 border-t border-border px-1 pt-4"
 			aria-live="polite"
 		>
-			<span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-medium">
+			<span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary admin-text-xs font-medium">
 				{isPending ? '' : getInitials(name)}
 			</span>
 			<div className="min-w-0 flex-1">
-				<p className="truncate text-[13px] font-medium">
+				<p className="admin-text-sm truncate font-medium">
 					{isPending ? 'Checking session…' : name}
 				</p>
-				<p className="truncate text-[11px] text-muted-foreground">
+				<p className="admin-text-xs admin-text-muted truncate">
 					{isPending ? '' : email}
 				</p>
 			</div>

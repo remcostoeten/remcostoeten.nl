@@ -57,6 +57,14 @@ export const auth = betterAuth({
 		expiresIn: 60 * 60 * 24 * 30,
 		updateAge: 60 * 60 * 24
 	},
+	account: {
+		encryptOAuthTokens: true,
+		accountLinking: {
+			enabled: true,
+			// The Gmail sender may differ from the address the admin signed in with.
+			allowDifferentEmails: true
+		}
+	},
 	socialProviders,
 	plugins: [admin()]
 })

@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-roadmap",
-  "type": "registry:component",
-  "title": "Roadmap Icon",
-  "description": "Animated roadmap icon. Bars slide along the axis.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-roadmap/icons/roadmap.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/roadmap.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./roadmap.css\";\n\nexport function AnimatedRoadmapIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"roadmap\" {...props}>\n      <path d=\"M3 3v18\" />\n      <g data-part=\"bars\" data-stagger=\"\">\n        <path d=\"M7 6.5h6\" />\n        <path d=\"M10 12h10\" />\n        <path d=\"M7 17.5h8\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-roadmap/icons/roadmap.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/roadmap.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"roadmap\"] [data-part=\"bars\"] > path {\n    --icon-x: 1.5px;\n    animation-name: icon-nudge;\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-roadmap",
+	"type": "registry:component",
+	"title": "Roadmap Icon",
+	"description": "Animated roadmap icon. Bars slide along the axis.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-roadmap/icons/roadmap.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/roadmap.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./roadmap.css\";\n\nexport function AnimatedRoadmapIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"roadmap\" {...props}>\n      <path d=\"M3 3v18\" />\n      <g data-part=\"bars\" data-stagger=\"\">\n        <path d=\"M7 6.5h6\" />\n        <path d=\"M10 12h10\" />\n        <path d=\"M7 17.5h8\" />\n      </g>\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-roadmap/icons/roadmap.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/roadmap.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"roadmap\"] [data-part=\"bars\"] > path {\n    --icon-x: 1.5px;\n    animation-name: icon-nudge;\n  }\n}\n"
+		}
+	]
 }

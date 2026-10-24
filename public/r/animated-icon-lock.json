@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-lock",
-  "type": "registry:component",
-  "title": "Lock Icon",
-  "description": "Animated lock icon. Shackle lifts, keyhole blinks.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-lock/icons/lock.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/lock.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./lock.css\";\n\nexport function AnimatedLockIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"lock\" {...props}>\n      <path data-part=\"shackle\" d=\"M8 10.5V7.75a4 4 0 0 1 8 0v2.75\" />\n      <rect data-part=\"body\" x=\"4.75\" y=\"10.5\" width=\"14.5\" height=\"10.5\" rx=\"2.5\" />\n      <path data-part=\"keyhole\" d=\"M12 14.75v2\" />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-lock/icons/lock.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/lock.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"lock\"] {\n    & [data-part=\"shackle\"] {\n      --icon-y: -1.5px;\n      animation-name: icon-nudge;\n    }\n\n    & [data-part=\"keyhole\"] {\n      --icon-pulse: scaleY(0.6);\n      --icon-delay: 120ms;\n      transform-origin: 12px 15.75px;\n      animation-name: icon-pulse;\n    }\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-lock",
+	"type": "registry:component",
+	"title": "Lock Icon",
+	"description": "Animated lock icon. Shackle lifts, keyhole blinks.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-lock/icons/lock.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/lock.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./lock.css\";\n\nexport function AnimatedLockIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"lock\" {...props}>\n      <path data-part=\"shackle\" d=\"M8 10.5V7.75a4 4 0 0 1 8 0v2.75\" />\n      <rect data-part=\"body\" x=\"4.75\" y=\"10.5\" width=\"14.5\" height=\"10.5\" rx=\"2.5\" />\n      <path data-part=\"keyhole\" d=\"M12 14.75v2\" />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-lock/icons/lock.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/lock.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"lock\"] {\n    & [data-part=\"shackle\"] {\n      --icon-y: -1.5px;\n      animation-name: icon-nudge;\n    }\n\n    & [data-part=\"keyhole\"] {\n      --icon-pulse: scaleY(0.6);\n      --icon-delay: 120ms;\n      transform-origin: 12px 15.75px;\n      animation-name: icon-pulse;\n    }\n  }\n}\n"
+		}
+	]
 }

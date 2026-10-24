@@ -1,24 +1,24 @@
 {
-  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
-  "name": "animated-icon-edit",
-  "type": "registry:component",
-  "title": "Edit Icon",
-  "description": "Animated edit icon. Pencil scribbles.",
-  "registryDependencies": [
-    "https://www.remcostoeten.nl/r/animated-icon-base.json"
-  ],
-  "files": [
-    {
-      "path": "registry/animated-icon-edit/icons/edit.tsx",
-      "type": "registry:component",
-      "target": "@components/animated-icons/icons/edit.tsx",
-      "content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./edit.css\";\n\nexport function AnimatedEditIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"edit\" {...props}>\n      <path d=\"M19 13.5c0 3.288 0 4.931-.908 6.038a4 4 0 0 1-.554.554C16.43 21 14.788 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172S3 16.771 3 13v-.5c0-3.287 0-4.931.908-6.038q.25-.304.554-.554C5.57 5 7.212 5 10.5 5\" />\n      <path\n        data-part=\"pencil\"\n        strokeLinecap=\"butt\"\n        d=\"m16.425 4.605l.99-.99a2.1 2.1 0 0 1 2.97 2.97l-.99.99m-2.97-2.97l-6.66 6.66a3.96 3.96 0 0 0-1.041 1.84L8 16l2.896-.724a3.96 3.96 0 0 0 1.84-1.042l6.659-6.659m-2.97-2.97l2.97 2.97\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
-    },
-    {
-      "path": "registry/animated-icon-edit/icons/edit.css",
-      "type": "registry:file",
-      "target": "@components/animated-icons/icons/edit.css",
-      "content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"edit\"] [data-part=\"pencil\"] {\n    transform-origin: 8px 16px;\n    animation-name: icon-edit-scribble;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n\n@keyframes icon-edit-scribble {\n  20% {\n    transform: translate(-1px, 1px) rotate(-6deg);\n  }\n  45% {\n    transform: translate(1.25px, -0.5px) rotate(3deg);\n  }\n  70% {\n    transform: translate(-0.5px, 0.5px) rotate(-2deg);\n  }\n}\n"
-    }
-  ]
+	"$schema": "https://ui.shadcn.com/schema/registry-item.json",
+	"name": "animated-icon-edit",
+	"type": "registry:component",
+	"title": "Edit Icon",
+	"description": "Animated edit icon. Pencil scribbles.",
+	"registryDependencies": [
+		"https://www.remcostoeten.nl/r/animated-icon-base.json"
+	],
+	"files": [
+		{
+			"path": "registry/animated-icon-edit/icons/edit.tsx",
+			"type": "registry:component",
+			"target": "@components/animated-icons/icons/edit.tsx",
+			"content": "import { AnimatedIconFrame, type AnimatedIconProps } from \"../icon-frame\";\nimport \"./edit.css\";\n\nexport function AnimatedEditIcon(props: AnimatedIconProps) {\n  return (\n    <AnimatedIconFrame name=\"edit\" {...props}>\n      <path d=\"M19 13.5c0 3.288 0 4.931-.908 6.038a4 4 0 0 1-.554.554C16.43 21 14.788 21 11.5 21H11c-3.771 0-5.657 0-6.828-1.172S3 16.771 3 13v-.5c0-3.287 0-4.931.908-6.038q.25-.304.554-.554C5.57 5 7.212 5 10.5 5\" />\n      <path\n        data-part=\"pencil\"\n        strokeLinecap=\"butt\"\n        d=\"m16.425 4.605l.99-.99a2.1 2.1 0 0 1 2.97 2.97l-.99.99m-2.97-2.97l-6.66 6.66a3.96 3.96 0 0 0-1.041 1.84L8 16l2.896-.724a3.96 3.96 0 0 0 1.84-1.042l6.659-6.659m-2.97-2.97l2.97 2.97\"\n      />\n    </AnimatedIconFrame>\n  );\n}\n"
+		},
+		{
+			"path": "registry/animated-icon-edit/icons/edit.css",
+			"type": "registry:file",
+			"target": "@components/animated-icons/icons/edit.css",
+			"content": ":is([data-icon-hover] .animated-icon, .animated-icon[data-icon-hover], .animated-icon[data-play]) {\n  &[data-icon=\"edit\"] [data-part=\"pencil\"] {\n    transform-origin: 8px 16px;\n    animation-name: icon-edit-scribble;\n    animation-duration: var(--icon-duration-long);\n  }\n}\n\n@keyframes icon-edit-scribble {\n  20% {\n    transform: translate(-1px, 1px) rotate(-6deg);\n  }\n  45% {\n    transform: translate(1.25px, -0.5px) rotate(3deg);\n  }\n  70% {\n    transform: translate(-0.5px, 0.5px) rotate(-2deg);\n  }\n}\n"
+		}
+	]
 }
