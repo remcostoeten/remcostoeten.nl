@@ -56,7 +56,7 @@ function ActivitySectionLayout({ graph, feed, loading = false }: LayoutProps) {
 					</Link>
 					, a Notion-like desktop application, and{' '}
 					<Link
-						href="https://doradb.com/app"
+						href="https://doradb.app/app"
 						target="_blank"
 						className="group rounded-sm transition-colors focus-visible:outline-none focus-visible:bg-muted"
 					>
