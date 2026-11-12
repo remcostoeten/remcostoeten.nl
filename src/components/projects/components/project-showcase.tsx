@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import { cacheLife, cacheTag } from 'next/cache'
+import { RETRY_CACHE_LIFE } from '@/shared/helpers/cache-life'
 import type { IProject, TPreview } from '../types'
 import type { Project } from '@/server/db/project-schema'
 import { getProjects } from '../server/queries'
@@ -134,7 +135,7 @@ async function getShowcaseProjects() {
 	const hasGitData = enrichedProjects.some(project => project.git)
 	// The build skips GitHub enrichment, so refresh soon instead of keeping bare data for hours.
 	if (enrichedProjects.length > 0 && !hasGitData) {
-		cacheLife('minutes')
+		cacheLife(RETRY_CACHE_LIFE)
 	}
 
 	return {

@@ -8,7 +8,7 @@ import { cacheLife, cacheTag } from 'next/cache'
 async function getResolvedBlogPosts() {
 	'use cache'
 	cacheTag('blog-posts')
-	cacheLife('hours')
+	cacheLife('days')
 	const filePosts = getAllBlogPosts()
 	let dbPosts: Array<{
 		slug: string

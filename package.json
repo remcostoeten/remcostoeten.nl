@@ -32,6 +32,7 @@
 		"build:next": "next build",
 		"registry": "node scripts/build-registry.mjs",
 		"spotify:import": "bun scripts/import-spotify-history.ts",
+		"cf:usage": "bun scripts/cloudflare-usage.ts",
 		"ogbuild": "next build",
 		"start": "next start",
 		"db:generate": "drizzle-kit generate",

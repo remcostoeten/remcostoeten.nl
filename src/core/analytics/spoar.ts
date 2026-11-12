@@ -2,6 +2,7 @@ import { createAnalytics } from '@spoar/sdk'
 import {
 	botSignals,
 	errors,
+	ignoreSelf,
 	outboundLinks,
 	speedInsights
 } from '@spoar/sdk/plugins'
@@ -16,6 +17,12 @@ export const analytics = config
 				endpoint: string
 			}),
 			pageviews: false,
-			plugins: [botSignals(), errors(), outboundLinks(), speedInsights()]
+			plugins: [
+				botSignals(),
+				ignoreSelf(),
+				errors(),
+				outboundLinks(),
+				speedInsights()
+			]
 		})
 	: null

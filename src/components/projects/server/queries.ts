@@ -1,4 +1,4 @@
-import { cacheTag } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import { db } from '@/server/db/connection'
 import { projects, projectSettings } from '@/server/db/schema'
 import { eq, asc } from 'drizzle-orm'
@@ -6,6 +6,7 @@ import { eq, asc } from 'drizzle-orm'
 export async function getProjects(includeHidden = false) {
 	'use cache'
 	cacheTag('projects')
+	cacheLife('days')
 
 	try {
 		const query = includeHidden

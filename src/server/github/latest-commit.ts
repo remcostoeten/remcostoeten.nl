@@ -1,4 +1,5 @@
 import { cacheLife, cacheTag } from 'next/cache'
+import { RETRY_CACHE_LIFE } from '@/shared/helpers/cache-life'
 import type { LatestCommit } from '@/features/github/types'
 import { isAllowedGitHubRepo } from './access'
 import { getGitHubToken } from './auth'
@@ -31,7 +32,7 @@ export async function getLatestCommit(
 	cacheTag('github', 'latest-commit')
 
 	if (!isAllowedGitHubRepo(owner, repo)) {
-		cacheLife('hours')
+		cacheLife('days')
 		return null
 	}
 
@@ -52,7 +53,7 @@ export async function getLatestCommit(
 			console.error(
 				`GitHub latest commit failed for ${owner}/${repo}: ${response.status}`
 			)
-			cacheLife('minutes')
+			cacheLife(RETRY_CACHE_LIFE)
 			return null
 		}
 
@@ -60,11 +61,11 @@ export async function getLatestCommit(
 		const latest = commits[0]
 
 		if (!latest) {
-			cacheLife('minutes')
+			cacheLife(RETRY_CACHE_LIFE)
 			return null
 		}
 
-		cacheLife('hours')
+		cacheLife('days')
 		return {
 			message: latest.commit.message.split('\n')[0],
 			date: latest.commit.author.date,
@@ -75,7 +76,7 @@ export async function getLatestCommit(
 			`GitHub latest commit failed for ${owner}/${repo}:`,
 			error
 		)
-		cacheLife('minutes')
+		cacheLife(RETRY_CACHE_LIFE)
 		return null
 	}
 }

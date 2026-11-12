@@ -40,7 +40,7 @@ export const getStoredSpotifyTracks = unstable_cache(
 		}
 	},
 	['spotify-stored-recent'],
-	{ revalidate: 300, tags: ['spotify'] }
+	{ revalidate: 1800, tags: ['spotify'] }
 )
 
 export const getSpotifyTracks = unstable_cache(
@@ -57,5 +57,5 @@ export const getSpotifyTracks = unstable_cache(
 		}
 	},
 	['spotify-recent'],
-	{ revalidate: 30, tags: ['spotify'] }
+	{ revalidate: 600, tags: ['spotify'] }
 )
