@@ -38,7 +38,7 @@ export default async function TopicPage({
 	params: Promise<{ topic: string }>
 }) {
 	'use cache'
-	cacheLife('hours')
+	cacheLife('days')
 	cacheTag('blog-posts')
 	const { topic } = await params
 	const archive = await getTopicArchive(decodeURIComponent(topic), false)

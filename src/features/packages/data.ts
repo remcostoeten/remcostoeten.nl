@@ -800,7 +800,7 @@ export async function getNpmPackage(
 	packageName: string
 ): Promise<NpmPackage | null> {
 	'use cache'
-	cacheLife('hours')
+	cacheLife('days')
 	cacheTag(`npm:${packageName}`)
 
 	try {
@@ -835,7 +835,7 @@ export async function getWeeklyDownloads(
 	packageName: string
 ): Promise<number | null> {
 	'use cache'
-	cacheLife('hours')
+	cacheLife('days')
 	cacheTag(`npm-downloads:${packageName}`)
 
 	try {

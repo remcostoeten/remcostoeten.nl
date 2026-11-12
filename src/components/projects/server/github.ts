@@ -1,6 +1,7 @@
 import type { IGitMetrics } from '../types'
 import { getGitHubToken } from '@/server/github'
 import { cacheLife, cacheTag } from 'next/cache'
+import { RETRY_CACHE_LIFE } from '@/shared/helpers/cache-life'
 
 const GITHUB_API = 'https://api.github.com'
 const FAILURE_TTL_MS = 5 * 60 * 1000
@@ -155,7 +156,7 @@ export async function fetchGitMetrics(
 			headers
 		)
 		if (!repoRes) {
-			cacheLife('minutes')
+			cacheLife(RETRY_CACHE_LIFE)
 			return null
 		}
 		const repoData: IGitHubRepo = await repoRes.json()
@@ -165,7 +166,7 @@ export async function fetchGitMetrics(
 			headers
 		)
 		if (!commitsRes) {
-			cacheLife('minutes')
+			cacheLife(RETRY_CACHE_LIFE)
 			return null
 		}
 		const commits: IGitHubCommit[] = await commitsRes.json()
@@ -187,7 +188,7 @@ export async function fetchGitMetrics(
 		if (weeklyActivity.length > 0) {
 			cacheLife('hours')
 		} else {
-			cacheLife('minutes')
+			cacheLife(RETRY_CACHE_LIFE)
 		}
 		const metrics = {
 			lastUpdated: repoData.pushed_at,
@@ -201,7 +202,7 @@ export async function fetchGitMetrics(
 		return metrics
 	} catch (error) {
 		console.error(`Failed to fetch git metrics for ${githubUrl}:`, error)
-		cacheLife('minutes')
+		cacheLife(RETRY_CACHE_LIFE)
 		return null
 	}
 }

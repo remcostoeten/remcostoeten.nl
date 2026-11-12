@@ -1,4 +1,5 @@
 import { cacheLife, cacheTag } from 'next/cache'
+import { RETRY_CACHE_LIFE } from '@/shared/helpers/cache-life'
 import { getCombinedActivity } from './combine'
 import { ACTIVITY_LIMIT, TRACKS_LIMIT, type ActivityData } from './types'
 
@@ -19,7 +20,7 @@ export async function getActivityData(): Promise<ActivityData> {
 
 	// The build skips GitHub fetches, so refresh soon instead of serving empty data for hours.
 	if (data.contributions.length === 0) {
-		cacheLife('minutes')
+		cacheLife(RETRY_CACHE_LIFE)
 	} else {
 		cacheLife('hours')
 	}
