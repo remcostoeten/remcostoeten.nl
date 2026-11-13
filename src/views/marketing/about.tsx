@@ -2,6 +2,7 @@ import Image from 'next/image'
 import type { Route } from 'next'
 import Link from 'next/link'
 import { Section } from '@/components/ui/section'
+import { contactEmail, yearsOfExperience } from '@/core/config/site'
 import {
 	BreadcrumbStructuredData,
 	PersonStructuredData
@@ -22,18 +23,21 @@ const skillGroups = [
 			'React',
 			'Next.js',
 			'TypeScript',
-			'JavaScript',
 			'Tailwind CSS',
 			'Framer Motion'
 		]
 	},
 	{
 		label: 'Data and APIs',
-		skills: ['Node.js', 'PostgreSQL', 'Drizzle ORM', 'GraphQL', 'REST APIs']
+		skills: ['Node.js', 'PostgreSQL', 'Drizzle ORM', 'GraphQL']
+	},
+	{
+		label: 'Desktop',
+		skills: ['Rust', 'Tauri', 'GTK4']
 	},
 	{
 		label: 'Workflow',
-		skills: ['Git', 'Docker', 'Vercel', 'Linux', 'Figma']
+		skills: ['Bun', 'Docker', 'Vercel', 'Linux', 'Figma']
 	}
 ]
 
@@ -41,20 +45,29 @@ const projects = [
 	{
 		name: 'Skriuw',
 		description: 'A Notion-like desktop app.',
-		beta: true
+		href: 'https://skriuw.com',
+		status: 'Beta'
 	},
 	{
 		name: 'DoraDB',
 		description: 'A cross-platform database manager.',
-		beta: true
+		href: 'https://doradb.app',
+		status: 'Beta'
+	},
+	{
+		name: 'Kiekje',
+		description: 'A screenshot tray app for KDE Plasma and Hyprland.',
+		href: 'https://github.com/remcostoeten/kiekje',
+		status: 'Alpha'
 	},
 	{
 		name: 'npm packages',
 		description:
-			'A handful of packages so I never have to build the same UI twice.',
-		beta: false
+			'use-shortcut, Auth Drawer and a few more, so I never have to build the same UI twice.',
+		href: '/packages',
+		status: null
 	}
-]
+] as const
 
 const socialLinks = [
 	{
@@ -69,7 +82,7 @@ const socialLinks = [
 	},
 	{
 		name: 'Email me',
-		href: 'mailto:remcostoeten@gmail.com',
+		href: `mailto:${contactEmail}`,
 		icon: MailIcon
 	}
 ]
@@ -137,7 +150,7 @@ export function AboutView() {
 							I'm a Dutch frontend engineer who started in graphic
 							design and ended up{' '}
 							<strong className="text-foreground">
-								8 years deep in React and TypeScript
+								{yearsOfExperience} years deep in frontend
 							</strong>
 							. I've shipped for e-commerce, SaaS, government, and
 							e-learning. Greenfield and legacy, so I've seen my
@@ -178,15 +191,20 @@ export function AboutView() {
 									>
 										<div className="flex items-center gap-2.5">
 											<h3 className="text-sm font-medium text-foreground">
-												{project.name}
+												<Link
+													href={project.href}
+													className={linkClassName}
+												>
+													{project.name}
+												</Link>
 											</h3>
-											{project.beta && (
+											{project.status && (
 												<span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground whitespace-nowrap">
 													<span
 														aria-hidden="true"
 														className="size-1 rounded-full bg-brand-500"
 													/>
-													Beta
+													{project.status}
 												</span>
 											)}
 										</div>
@@ -234,10 +252,10 @@ export function AboutView() {
 							</div>
 							<div>
 								<h3 className="text-sm font-medium text-foreground">
-									Graphic Design
+									Interactive Graphic Design
 								</h3>
 								<p className="text-xs text-muted-foreground/70 mt-0.5">
-									Bachelor's degree
+									ROC Friese Poort, 2012–2016
 								</p>
 								<p className="text-xs text-muted-foreground/50 mt-1.5">
 									The final two years were interactive web
@@ -253,7 +271,7 @@ export function AboutView() {
 					<Link href="/blog" className={linkClassName}>
 						my blog
 					</Link>
-					. For the overengineering,{' '}
+					, and the code on{' '}
 					<Link
 						href="https://github.com/remcostoeten"
 						className={linkClassName}

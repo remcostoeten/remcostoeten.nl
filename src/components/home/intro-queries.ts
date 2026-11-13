@@ -3,6 +3,7 @@ import { RETRY_CACHE_LIFE } from '@/shared/helpers/cache-life'
 import { eq } from 'drizzle-orm'
 import { db } from '@/server/db/connection'
 import { siteIntro } from '@/server/db/schema'
+import { yearsOfExperience } from '@/core/config/site'
 
 export type IntroContent = {
 	name: string
@@ -13,7 +14,7 @@ export type IntroContent = {
 export const DEFAULT_INTRO: IntroContent = {
 	name: 'Remco Stoeten',
 	role: 'Frontend Engineer',
-	bio: 'Dutch software engineer focused on front-end development with a degree in *graphic design*. **8 years** of experience across e-commerce, SaaS, government, and e-learning projects.'
+	bio: `Dutch software engineer focused on front-end development with a background in *graphic design*. **${yearsOfExperience} years** of experience across e-commerce, SaaS, government, and e-learning projects.`
 }
 
 export async function getIntro(): Promise<IntroContent> {

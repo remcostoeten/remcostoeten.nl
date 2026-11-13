@@ -10,6 +10,7 @@ import { AnimatedNumber } from '../ui/effects/animated-number'
 import { LazyContactPopover } from '@/components/contact/lazy-contact-popover'
 import { LazyResumeDrawer } from '../lazy-resume-drawer'
 import { CurrentYear } from '@/components/ui/current-year'
+import { contactEmail } from '@/core/config/site'
 
 type Props = {
 	latestCommit?: LatestCommit | null
@@ -18,7 +19,7 @@ type Props = {
 export function Footer({ latestCommit }: Props) {
 	const [copied, setCopied] = useState(false)
 	const [now, setNow] = useState<number | null>(null)
-	const email = 'stoetenremco.rs@gmail.com'
+	const email = contactEmail
 	const displayEmail = 'stoetenremco [dot] rs [at] gmail [dot] com'
 
 	useEffect(() => setNow(Date.now()), [])
