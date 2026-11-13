@@ -144,6 +144,7 @@ export async function fetchGitMetrics(
 	const token = getGitHubToken()
 	const headers: HeadersInit = {
 		Accept: 'application/vnd.github.v3+json',
+		'User-Agent': 'remcostoeten-portfolio-activity',
 		...(token && {
 			Authorization: `Bearer ${token}`
 		})
