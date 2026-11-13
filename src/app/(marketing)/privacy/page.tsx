@@ -2,9 +2,9 @@ import { createPageMetadata } from '@/core/metadata/base'
 import { PrivacyView } from '@/views/marketing/privacy'
 
 export const metadata = createPageMetadata({
-	title: 'Privacy Policy',
+	title: 'Privacy policy',
 	description:
-		'Privacy policy for remcostoeten.nl - How we collect, use, and protect your data.',
+		'How I collect, use, and protect your data on remcostoeten.nl.',
 	canonical: '/privacy'
 })
 

@@ -12,27 +12,48 @@ import {
 	MailIcon,
 	MapPinIcon,
 	BriefcaseIcon,
-	GraduationCapIcon,
-	CodeIcon
+	GraduationCapIcon
 } from 'lucide-react'
 
-const skills = [
-	'React',
-	'Next.js',
-	'TypeScript',
-	'JavaScript',
-	'Tailwind CSS',
-	'Node.js',
-	'PostgreSQL',
-	'Drizzle ORM',
-	'GraphQL',
-	'REST APIs',
-	'Git',
-	'Docker',
-	'Framer Motion',
-	'Figma',
-	'Vercel',
-	'Linux'
+const skillGroups = [
+	{
+		label: 'Frontend',
+		skills: [
+			'React',
+			'Next.js',
+			'TypeScript',
+			'JavaScript',
+			'Tailwind CSS',
+			'Framer Motion'
+		]
+	},
+	{
+		label: 'Data and APIs',
+		skills: ['Node.js', 'PostgreSQL', 'Drizzle ORM', 'GraphQL', 'REST APIs']
+	},
+	{
+		label: 'Workflow',
+		skills: ['Git', 'Docker', 'Vercel', 'Linux', 'Figma']
+	}
+]
+
+const projects = [
+	{
+		name: 'Skriuw',
+		description: 'A Notion-like desktop app.',
+		beta: true
+	},
+	{
+		name: 'DoraDB',
+		description: 'A cross-platform database manager.',
+		beta: true
+	},
+	{
+		name: 'npm packages',
+		description:
+			'A handful of packages so I never have to build the same UI twice.',
+		beta: false
+	}
 ]
 
 const socialLinks = [
@@ -46,8 +67,15 @@ const socialLinks = [
 		href: 'https://www.linkedin.com/in/remco-stoeten/',
 		icon: LinkedinIcon
 	},
-	{ name: 'Email', href: 'mailto:remcostoeten@gmail.com', icon: MailIcon }
+	{
+		name: 'Email me',
+		href: 'mailto:remcostoeten@gmail.com',
+		icon: MailIcon
+	}
 ]
+
+const linkClassName =
+	'text-foreground underline underline-offset-4 hover:text-primary transition-colors'
 
 export function AboutView() {
 	return (
@@ -87,7 +115,7 @@ export function AboutView() {
 						</div>
 					</div>
 
-					<div className="flex gap-3 mb-6">
+					<div className="flex flex-wrap gap-3 mb-6">
 						{socialLinks.map(link => (
 							<Link
 								key={link.name}
@@ -103,50 +131,103 @@ export function AboutView() {
 					</div>
 				</header>
 
-				<Section title="About Me" noHeaderMargin>
-					<div className="px-4 pt-4 pb-6 space-y-4">
-						<p className="text-sm text-muted-foreground/90 leading-relaxed">
-							I'm{' '}
+				<Section title="About" noHeaderMargin>
+					<div className="px-4 md:px-5 pt-4 pb-6 space-y-4 text-sm text-muted-foreground/90 leading-relaxed">
+						<p>
+							I'm a Dutch frontend engineer who started in graphic
+							design and ended up{' '}
 							<strong className="text-foreground">
-								Remco Stoeten
+								8 years deep in React and TypeScript
 							</strong>
-							, a Dutch frontend engineer who started out in
-							graphic design and ended up{' '}
-							<strong className="text-foreground">8 years</strong>{' '}
-							deep in React and TypeScript. Along the way I've
-							shipped for e-commerce, SaaS, government, and
-							e-learning, so I've seen my share of both greenfield
-							and legacy.
+							. I've shipped for e-commerce, SaaS, government, and
+							e-learning. Greenfield and legacy, so I've seen my
+							share of both.
 						</p>
-						<p className="text-sm text-muted-foreground/90 leading-relaxed">
+						<p>
 							Most of my work is React, TypeScript, and Next.js. I
-							care about interfaces that feel instant, type
-							systems that actually pull their weight, and I hold
+							care about interfaces that feel instant and type
+							systems that actually pull their weight. I hold
 							unreasonably strong opinions about small things,
 							like whether you should ever write an arrow
 							function.
 						</p>
-						<p className="text-sm text-muted-foreground/90 leading-relaxed">
-							By day I'm at{' '}
-							<strong className="text-foreground">
+					</div>
+				</Section>
+
+				<Section title="What I'm working on" noHeaderMargin>
+					<div className="px-4 md:px-5 pt-4 pb-6 text-sm text-muted-foreground/90 leading-relaxed">
+						<div>
+							<h3 className="text-sm font-medium text-foreground mb-1">
 								NextGen Automotive Group
-							</strong>
-							, building customer portals and internal tooling for
-							the automotive business. The rest of the time I
-							overengineer open source:{' '}
-							<strong className="text-foreground">Skriuw</strong>,
-							a Notion-like desktop app,{' '}
-							<strong className="text-foreground">DoraDB</strong>,
-							a cross-platform database manager, and a handful of
-							npm packages that exist so I never have to build the
-							same UI twice. The first two are in beta, and I'm in
-							no rush.
-						</p>
+							</h3>
+							<p>
+								By day, I build customer portals and internal
+								tooling for the automotive business.
+							</p>
+						</div>
+						<div className="mt-5 pt-4 border-t border-border/50">
+							<p>
+								The rest of the time I overengineer open source.
+								I'm in no rush.
+							</p>
+							<ul className="mt-3">
+								{projects.map(project => (
+									<li
+										key={project.name}
+										className="grid gap-1 min-[480px]:grid-cols-[8.5rem_minmax(0,1fr)] min-[480px]:gap-x-4 min-[480px]:items-baseline py-3 border-b border-border/50 last:border-b-0 last:pb-0"
+									>
+										<div className="flex items-center gap-2.5">
+											<h3 className="text-sm font-medium text-foreground">
+												{project.name}
+											</h3>
+											{project.beta && (
+												<span className="inline-flex items-center gap-1.5 text-[0.6875rem] text-muted-foreground whitespace-nowrap">
+													<span
+														aria-hidden="true"
+														className="size-1 rounded-full bg-brand-500"
+													/>
+													Beta
+												</span>
+											)}
+										</div>
+										<p>{project.description}</p>
+									</li>
+								))}
+							</ul>
+						</div>
+					</div>
+				</Section>
+
+				<Section title="Tools I use" noHeaderMargin>
+					<div className="px-4 md:px-5 pt-4 pb-6 grid gap-4">
+						{skillGroups.map(group => (
+							<div
+								key={group.label}
+								className="grid gap-2 min-[480px]:grid-cols-[5rem_minmax(0,1fr)] min-[480px]:gap-3 min-[480px]:items-start"
+							>
+								<h3 className="text-xs font-normal text-muted-foreground min-[480px]:pt-1">
+									{group.label}
+								</h3>
+								<ul
+									aria-label={`${group.label} skills`}
+									className="flex flex-wrap gap-2"
+								>
+									{group.skills.map(skill => (
+										<li
+											key={skill}
+											className="px-2.5 py-1 text-xs font-medium text-muted-foreground bg-secondary/30 border border-transparent hover:border-border/50 rounded-md transition-colors"
+										>
+											{skill}
+										</li>
+									))}
+								</ul>
+							</div>
+						))}
 					</div>
 				</Section>
 
 				<Section title="Education" noHeaderMargin>
-					<div className="px-4 pt-4 pb-6">
+					<div className="px-4 md:px-5 pt-4 pb-6">
 						<div className="flex items-start gap-3">
 							<div className="flex size-8 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary border border-primary/20 mt-0.5">
 								<GraduationCapIcon className="size-4" />
@@ -156,60 +237,31 @@ export function AboutView() {
 									Graphic Design
 								</h3>
 								<p className="text-xs text-muted-foreground/70 mt-0.5">
-									Bachelor's Degree
+									Bachelor's degree
 								</p>
-								<p className="text-xs text-muted-foreground/50 mt-0.5">
-									Final two years spent on interactive web
-									design, which is where the code took over
+								<p className="text-xs text-muted-foreground/50 mt-1.5">
+									The final two years were interactive web
+									design. That's where the code took over.
 								</p>
 							</div>
 						</div>
 					</div>
 				</Section>
 
-				<Section title="Skills & Technologies" noHeaderMargin>
-					<div className="px-4 pt-4 pb-6">
-						<div className="flex flex-wrap gap-2">
-							{skills.map(skill => (
-								<span
-									key={skill}
-									className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-muted-foreground bg-secondary/30 border border-transparent hover:border-border/50 rounded-md transition-colors"
-								>
-									<CodeIcon className="size-3" />
-									{skill}
-								</span>
-							))}
-						</div>
-					</div>
-				</Section>
-
-				<Section title="Get In Touch" noHeaderMargin>
-					<div className="px-4 pt-4 pb-6 space-y-3">
-						<p className="text-sm text-muted-foreground/90 leading-relaxed">
-							Interested in working together or just want to say
-							hi? Feel free to reach out through any of the
-							channels above, or check out my work on{' '}
-							<Link
-								href="https://github.com/remcostoeten"
-								className="text-foreground underline underline-offset-4 hover:text-primary transition-colors"
-							>
-								GitHub
-							</Link>
-							.
-						</p>
-						<p className="text-sm text-muted-foreground/90 leading-relaxed">
-							You can also explore my{' '}
-							<Link
-								href="/blog"
-								className="text-foreground underline underline-offset-4 hover:text-primary transition-colors"
-							>
-								blog
-							</Link>{' '}
-							where I write about frontend development, React,
-							TypeScript, and other tech topics.
-						</p>
-					</div>
-				</Section>
+				<p className="!mt-0 px-4 md:px-5 pt-4 pb-1 border-t border-border/50 text-sm text-muted-foreground/90 leading-relaxed">
+					More React and TypeScript on{' '}
+					<Link href="/blog" className={linkClassName}>
+						my blog
+					</Link>
+					. For the overengineering,{' '}
+					<Link
+						href="https://github.com/remcostoeten"
+						className={linkClassName}
+					>
+						GitHub
+					</Link>
+					.
+				</p>
 			</div>
 		</>
 	)

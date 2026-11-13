@@ -2,12 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Cookie, Database, Eye, Users } from 'lucide-react'
-import { AnimatedMailIcon } from '@/components/animated-icons/icons/mail'
-import { AnimatedShieldIcon } from '@/components/animated-icons/icons/shield'
-import { Section, SubSection, TimelineItem } from '@/components/ui/section'
+import { Section } from '@/components/ui/section'
 import { LegalHeader } from '../legal/legal-header'
-import { LegalLanguage } from '../legal/legal-language'
+import type { LegalLanguage } from '../legal/legal-language'
 import {
 	readLanguage,
 	readStoredLanguage,
@@ -28,7 +25,6 @@ interface CookieSection {
 interface UsageItem {
 	title: string
 	detail: string
-	indicator: string
 }
 
 interface PrivacyCopy {
@@ -57,6 +53,13 @@ interface PrivacyCopy {
 	contactNote: string
 }
 
+const sectionContentClassName =
+	'px-4 md:px-5 pt-4 pb-6 space-y-4 text-sm text-muted-foreground/90 leading-relaxed'
+const subsectionClassName =
+	'border-t border-border/50 pt-4 first:border-t-0 first:pt-0'
+const subheadingClassName = 'text-sm font-medium text-foreground mb-1'
+const listClassName = 'list-disc pl-5 space-y-1'
+
 const lastUpdatedByLanguage: Record<LegalLanguage, string> = {
 	en: 'April 7, 2026',
 	nl: '7 april 2026'
@@ -64,17 +67,17 @@ const lastUpdatedByLanguage: Record<LegalLanguage, string> = {
 
 const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 	en: {
-		title: 'Privacy Policy',
+		title: 'Privacy policy',
 		updatedLabel: 'Last updated',
-		introTitle: 'Introduction',
+		introTitle: 'About this policy',
 		intro: [
-			'This Privacy Policy explains how I collect, use, and protect your information when you visit remcostoeten.nl.',
-			'I believe in transparency and only collect data that is necessary to improve your experience on this site.'
+			'I collect, use, and protect your information as described here when you visit remcostoeten.nl.',
+			'I only collect the data I need to improve your experience on this site.'
 		],
-		infoTitle: 'Information I Collect',
+		infoTitle: 'What I collect',
 		infoSections: [
 			{
-				title: 'Analytics Data',
+				title: 'Analytics data',
 				details: [
 					'Pages you visit and how long you stay.',
 					'General location (country/city level, not precise).',
@@ -84,52 +87,48 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 				note: 'This data is anonymized and never linked to your personal identity.'
 			},
 			{
-				title: 'Authentication Data',
+				title: 'Sign-in data',
 				details: [
 					'Your GitHub username and profile picture.',
 					'Email address (from your GitHub profile).',
 					'Your blog reactions and comments.'
 				],
-				note: 'I only store what is necessary for authentication and personalization.'
+				note: 'I only store what I need to sign you in and personalize the site.'
 			},
 			{
-				title: 'Contact Form Data',
+				title: 'Contact form data',
 				details: [
 					'When you contact me through the contact form, I receive your email address and message.',
-					'This data is only used to respond to your inquiry.'
+					'I only use this data to reply to your message.'
 				]
 			},
 			{
-				title: 'Technical Data',
+				title: 'Technical data',
 				details: [
-					'Basic technical information like IP address, browser headers, and cookies are collected for security and site functionality.'
+					'I collect technical data such as your IP address, browser headers, and cookies to keep the site secure and working.'
 				]
 			}
 		],
-		usageTitle: 'How I Use Your Data',
+		usageTitle: 'How I use your data',
 		usageItems: [
 			{
 				title: 'Improve the website',
-				detail: 'Analytics help me understand what content is valuable and where to improve the user experience.',
-				indicator: 'Analytics'
+				detail: 'I use analytics to see which content is useful and where I can improve the site.'
 			},
 			{
 				title: 'Personalize your experience',
-				detail: 'GitHub authentication allows me to show your profile picture and remember your blog reactions.',
-				indicator: 'Identity'
+				detail: 'I use GitHub sign-in to show your profile picture and remember your blog reactions.'
 			},
 			{
-				title: 'Communicate with you',
-				detail: 'I only use your contact information to respond to your messages.',
-				indicator: 'Contact'
+				title: 'Reply to messages',
+				detail: 'I only use your contact information to respond to your messages.'
 			},
 			{
 				title: 'Security and maintenance',
-				detail: 'Basic data helps keep the site secure and running smoothly.',
-				indicator: 'Safety'
+				detail: 'I use basic data to keep the site secure and running.'
 			}
 		],
-		storageTitle: 'Data Storage and Security',
+		storageTitle: 'Storage and security',
 		storageLead: 'Your data is stored securely on:',
 		storageItems: [
 			'Cloudflare: Site hosting and content delivery (global edge network).',
@@ -137,11 +136,11 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 			'GitHub: OAuth authentication data.'
 		],
 		storageNote:
-			'I take reasonable security measures to protect your data, including encryption for data transmission and limited access to personal information.',
-		cookiesTitle: 'Cookies and Tracking',
+			'I take reasonable steps to protect your data. I encrypt data in transit and limit access to personal information.',
+		cookiesTitle: 'Cookies and tracking',
 		cookies: [
 			{
-				title: 'Essential Cookies',
+				title: 'Essential cookies',
 				items: [
 					'Authentication tokens (if logged in).',
 					'Theme preference (light/dark mode).',
@@ -149,14 +148,14 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 				]
 			},
 			{
-				title: 'Analytics Cookies',
+				title: 'Analytics cookies',
 				items: [
 					'Cookies for anonymous usage tracking.',
 					'You can opt out by disabling cookies in your browser or using the privacy settings.'
 				]
 			}
 		],
-		rightsTitle: 'Your Rights',
+		rightsTitle: 'Your rights',
 		rightsIntro:
 			'Under GDPR and other privacy laws, you have the right to:',
 		rightsItems: [
@@ -165,8 +164,8 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 			'Deletion: Request deletion of your personal data.',
 			'Portability: Request your data in a machine-readable format.'
 		],
-		partnersTitle: 'Third-Party Services',
-		partnersIntro: 'This site uses the following third-party services:',
+		partnersTitle: 'Services I use',
+		partnersIntro: 'I use these services from other providers:',
 		partnersItems: [
 			'GitHub: OAuth authentication.',
 			'Cloudflare: Website hosting and content delivery.',
@@ -174,85 +173,81 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 		],
 		contactTitle: 'Contact',
 		contactIntro:
-			'If you have questions about this Privacy Policy or how I handle your data:',
+			'For questions about this policy or how I handle your data, contact me by email.',
 		contactNote:
-			'You can reach out via mail. I will try to reply but cannot guarantee a response. Other channels are LinkedIn or GitHub.'
+			'You can email me. I try to reply, but I cannot guarantee a response. You can also contact me on LinkedIn or GitHub.'
 	},
 	nl: {
 		title: 'Privacyverklaring',
 		updatedLabel: 'Laatst bijgewerkt',
-		introTitle: 'Introductie',
+		introTitle: 'Over deze verklaring',
 		intro: [
-			'Deze privacyverklaring legt uit hoe ik gegevens verzamel, gebruik en bescherm wanneer je remcostoeten.nl bezoekt.',
-			'Ik geloof in transparantie en verzamel alleen data die nodig is om je ervaring op deze site te verbeteren.'
+			'Ik verzamel, gebruik en bescherm je gegevens zoals hier beschreven wanneer je remcostoeten.nl bezoekt.',
+			'Ik verzamel alleen de gegevens die ik nodig heb om je ervaring op deze site te verbeteren.'
 		],
-		infoTitle: 'Welke informatie ik verzamel',
+		infoTitle: 'Welke gegevens ik verzamel',
 		infoSections: [
 			{
-				title: 'Analytics-data',
+				title: 'Bezoekstatistieken',
 				details: [
-					'Pagina’s die je bezoekt en hoe lang je blijft.',
+					"Pagina's die je bezoekt en hoe lang je blijft.",
 					'Globale locatie (land/stad, niet exact).',
 					'Browsertype en schermgrootte.',
 					'Interacties met blogposts en functies.'
 				],
-				note: 'Deze data is geanonimiseerd en wordt nooit gekoppeld aan je identiteit.'
+				note: 'Deze gegevens zijn geanonimiseerd en worden nooit aan je identiteit gekoppeld.'
 			},
 			{
-				title: 'Authenticatiedata',
+				title: 'Inloggegevens',
 				details: [
 					'Je GitHub-gebruikersnaam en profielfoto.',
 					'E-mailadres (uit je GitHub-profiel).',
-					'Je blogreacties en comments.'
+					'Je reacties en opmerkingen bij blogposts.'
 				],
-				note: 'Ik bewaar alleen wat nodig is voor authenticatie en personalisatie.'
+				note: 'Ik bewaar alleen wat ik nodig heb om je te laten inloggen en de site voor je te personaliseren.'
 			},
 			{
-				title: 'Contactformulier-data',
+				title: 'Gegevens uit het contactformulier',
 				details: [
-					'Wanneer je via het contactformulier reageert, ontvang ik je e-mailadres en bericht.',
-					'Deze data wordt alleen gebruikt om op je bericht te reageren.'
+					'Als je het contactformulier gebruikt, ontvang ik je e-mailadres en bericht.',
+					'Ik gebruik deze gegevens alleen om op je bericht te reageren.'
 				]
 			},
 			{
-				title: 'Technische data',
+				title: 'Technische gegevens',
 				details: [
-					'Basisgegevens zoals IP-adres, browserheaders en cookies voor veiligheid en functionaliteit.'
+					'Ik verzamel basisgegevens zoals je IP-adres, browserheaders en cookies voor de beveiliging en werking van de site.'
 				]
 			}
 		],
-		usageTitle: 'Hoe ik je data gebruik',
+		usageTitle: 'Hoe ik je gegevens gebruik',
 		usageItems: [
 			{
 				title: 'De website verbeteren',
-				detail: 'Analytics laten zien welke content waardevol is en waar de ervaring beter kan.',
-				indicator: 'Analytics'
+				detail: 'Ik gebruik bezoekstatistieken om te zien welke inhoud nuttig is en waar ik de site kan verbeteren.'
 			},
 			{
 				title: 'Je ervaring personaliseren',
-				detail: 'GitHub-authenticatie toont je profielfoto en onthoudt je blogreacties.',
-				indicator: 'Identiteit'
+				detail: 'Ik gebruik GitHub om je te laten inloggen, je profielfoto te tonen en je blogreacties te onthouden.'
 			},
 			{
-				title: 'Met je communiceren',
-				detail: 'Ik gebruik je contactgegevens alleen om op je berichten te reageren.',
-				indicator: 'Contact'
+				title: 'Berichten beantwoorden',
+				detail: 'Ik gebruik je contactgegevens alleen om op je berichten te reageren.'
 			},
 			{
 				title: 'Beveiliging en onderhoud',
-				detail: 'Basisdata helpt de site veilig en stabiel te houden.',
-				indicator: 'Veiligheid'
+				detail: 'Ik gebruik basisgegevens om de site veilig en stabiel te houden.'
 			}
 		],
-		storageTitle: 'Dataopslag en beveiliging',
-		storageLead: 'Je data wordt veilig opgeslagen bij:',
+		storageTitle: 'Opslag en beveiliging',
+		storageLead: 'Je gegevens worden veilig opgeslagen bij:',
 		storageItems: [
 			'Cloudflare: Websitehosting en contentlevering (wereldwijd edge-netwerk).',
-			'Neon: Gebruikersdata en bloginteracties (EU datacenters).',
+			'Neon: Gebruikersgegevens en bloginteracties (EU-datacenters).',
 			'GitHub: OAuth-authenticatiegegevens.'
 		],
 		storageNote:
-			'Ik tref redelijke beveiligingsmaatregelen om je data te beschermen, waaronder versleuteling bij overdracht en beperkte toegang tot persoonsgegevens.',
+			'Ik neem redelijke maatregelen om je gegevens te beschermen. Ik versleutel gegevens bij overdracht en beperk de toegang tot persoonsgegevens.',
 		cookiesTitle: 'Cookies en tracking',
 		cookies: [
 			{
@@ -264,7 +259,7 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 				]
 			},
 			{
-				title: 'Analytics-cookies',
+				title: 'Cookies voor bezoekstatistieken',
 				items: [
 					'Cookies voor anonieme gebruiksstatistieken.',
 					'Je kunt dit uitschakelen via je browserinstellingen of privacy-instellingen.'
@@ -277,20 +272,20 @@ const privacyCopy: Record<LegalLanguage, PrivacyCopy> = {
 			'Inzage: vraag een kopie van je persoonsgegevens op.',
 			'Correctie: verzoek om onjuiste gegevens te corrigeren.',
 			'Verwijdering: verzoek om je persoonsgegevens te verwijderen.',
-			'Overdraagbaarheid: vraag je data op in een machinaal leesbaar formaat.'
+			'Overdraagbaarheid: vraag je gegevens op in een machinaal leesbaar formaat.'
 		],
-		partnersTitle: 'Diensten van derden',
-		partnersIntro: 'Deze site gebruikt de volgende diensten van derden:',
+		partnersTitle: 'Diensten die ik gebruik',
+		partnersIntro: 'Ik gebruik deze diensten van andere aanbieders:',
 		partnersItems: [
 			'GitHub: OAuth-authenticatie.',
 			'Cloudflare: Websitehosting en contentlevering.',
-			'Neon: Databasehosting voor gebruikersdata.'
+			'Neon: Databasehosting voor gebruikersgegevens.'
 		],
 		contactTitle: 'Contact',
 		contactIntro:
-			'Heb je vragen over deze privacyverklaring of hoe ik met data omga?',
+			'Voor vragen over deze verklaring of hoe ik met je gegevens omga, kun je me mailen.',
 		contactNote:
-			'Je kunt per mail contact opnemen. Ik probeer te antwoorden maar kan geen reactie garanderen. Andere kanalen zijn LinkedIn of GitHub.'
+			'Je kunt me mailen. Ik probeer te antwoorden, maar kan geen reactie garanderen. Je kunt ook contact opnemen via LinkedIn of GitHub.'
 	}
 }
 
@@ -299,201 +294,129 @@ export default function PrivacyContent() {
 	const [language, setLanguage] = useState<LegalLanguage>('en')
 
 	useEffect(() => {
-		const langParam = searchParams.get('lang')
-		if (langParam === 'nl') {
-			setLanguage('nl')
-		} else {
-			setLanguage('en')
-		}
+		const nextLanguage =
+			readLanguage(searchParams) ?? readStoredLanguage() ?? 'en'
+		setLanguage(nextLanguage)
+		storeLanguage(nextLanguage)
 	}, [searchParams])
-
-	const lastUpdated = lastUpdatedByLanguage[language]
 
 	const copy = privacyCopy[language]
 
-	useEffect(
-		function syncLanguageWithUrl() {
-			const paramLanguage = readLanguage(searchParams)
-			if (paramLanguage && paramLanguage !== language) {
-				setLanguage(paramLanguage)
-				storeLanguage(paramLanguage)
-				return
-			}
-
-			if (!paramLanguage) {
-				const storedLanguage = readStoredLanguage()
-				if (storedLanguage && storedLanguage !== language) {
-					setLanguage(storedLanguage)
-					storeLanguage(storedLanguage)
-				} else if (storedLanguage) {
-					storeLanguage(storedLanguage)
-				}
-			}
-		},
-		[searchParams, language]
-	)
-
 	return (
-		<div className="space-y-6">
-			<LegalHeader language={language} onLanguageChange={setLanguage} />
+		<div lang={language} className="space-y-6">
+			<LegalHeader
+				language={language}
+				onLanguageChange={setLanguage}
+				title={copy.title}
+				updatedLabel={copy.updatedLabel}
+				lastUpdated={lastUpdatedByLanguage[language]}
+			/>
 
-			<header className="px-4 pt-2 md:px-5">
-				<h1 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
-					{copy.title}
-				</h1>
-				<p className="text-sm text-muted-foreground">
-					{copy.updatedLabel}: {lastUpdated}
-				</p>
-			</header>
+			<Section title={copy.introTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					{copy.intro.map(paragraph => (
+						<p key={paragraph}>{paragraph}</p>
+					))}
+				</div>
+			</Section>
 
-			<div className="space-y-4">
-				<Section title={copy.introTitle}>
-					<div className="space-y-4 px-4 text-sm leading-relaxed text-muted-foreground md:px-5">
-						{copy.intro.map(function (paragraph) {
-							return <p key={paragraph}>{paragraph}</p>
-						})}
-					</div>
-				</Section>
+			<Section title={copy.infoTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					{copy.infoSections.map(info => (
+						<div key={info.title} className={subsectionClassName}>
+							<h3 className={subheadingClassName}>
+								{info.title}
+							</h3>
+							<ul className={listClassName}>
+								{info.details.map(detail => (
+									<li key={detail}>{detail}</li>
+								))}
+							</ul>
+							{info.note && <p className="mt-3">{info.note}</p>}
+						</div>
+					))}
+				</div>
+			</Section>
 
-				<Section title={copy.infoTitle}>
-					<div className="space-y-4 px-4 md:px-5">
-						{copy.infoSections.map(function (info) {
-							return (
-								<SubSection
-									key={info.title}
-									title={info.title}
-									icon={mapInfoIcon(info.title)}
-								>
-									<div className="space-y-2 text-sm text-muted-foreground">
-										<ul className="list-inside list-disc space-y-1 text-xs">
-											{info.details.map(
-												function (detail) {
-													return (
-														<li key={detail}>
-															{detail}
-														</li>
-													)
-												}
-											)}
-										</ul>
-										{info.note ? (
-											<p className="text-xs text-foreground">
-												{info.note}
-											</p>
-										) : null}
-									</div>
-								</SubSection>
-							)
-						})}
-					</div>
-				</Section>
+			<Section title={copy.usageTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					{copy.usageItems.map(item => (
+						<div key={item.title} className={subsectionClassName}>
+							<h3 className={subheadingClassName}>
+								{item.title}
+							</h3>
+							<p>{item.detail}</p>
+						</div>
+					))}
+				</div>
+			</Section>
 
-				<Section title={copy.usageTitle}>
-					<div className="space-y-3 px-4 md:px-5">
-						{copy.usageItems.map(function (item, index) {
-							return (
-								<TimelineItem
-									key={item.title}
-									title={item.title}
-									icon={mapUsageIcon(index)}
-									indicator={item.indicator}
-								>
-									{item.detail}
-								</TimelineItem>
-							)
-						})}
-					</div>
-				</Section>
+			<Section title={copy.storageTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					<p>{copy.storageLead}</p>
+					<ul className={listClassName}>
+						{copy.storageItems.map(item => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
+					<p>{copy.storageNote}</p>
+				</div>
+			</Section>
 
-				<Section title={copy.storageTitle}>
-					<div className="space-y-4 px-4 text-sm leading-relaxed text-muted-foreground md:px-5">
-						<p>{copy.storageLead}</p>
-						<ul className="list-inside list-disc space-y-1 text-xs">
-							{copy.storageItems.map(function (item) {
-								return <li key={item}>{item}</li>
-							})}
-						</ul>
-						<p>{copy.storageNote}</p>
-					</div>
-				</Section>
+			<Section title={copy.cookiesTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					{copy.cookies.map(cookieSection => (
+						<div
+							key={cookieSection.title}
+							className={subsectionClassName}
+						>
+							<h3 className={subheadingClassName}>
+								{cookieSection.title}
+							</h3>
+							<ul className={listClassName}>
+								{cookieSection.items.map(item => (
+									<li key={item}>{item}</li>
+								))}
+							</ul>
+						</div>
+					))}
+				</div>
+			</Section>
 
-				<Section title={copy.cookiesTitle}>
-					<div className="space-y-4 px-4 md:px-5">
-						{copy.cookies.map(function (cookieSection) {
-							return (
-								<SubSection
-									key={cookieSection.title}
-									title={cookieSection.title}
-									icon={Cookie}
-								>
-									<div className="text-sm text-muted-foreground">
-										<ul className="list-inside list-disc space-y-1 text-xs">
-											{cookieSection.items.map(
-												function (item) {
-													return (
-														<li key={item}>
-															{item}
-														</li>
-													)
-												}
-											)}
-										</ul>
-									</div>
-								</SubSection>
-							)
-						})}
-					</div>
-				</Section>
+			<Section title={copy.rightsTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					<p>{copy.rightsIntro}</p>
+					<ul className={listClassName}>
+						{copy.rightsItems.map(item => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
+					<p className="break-words">
+						stoetenremco [dot] rs [at] gmail [dot] com
+					</p>
+				</div>
+			</Section>
 
-				<Section title={copy.rightsTitle}>
-					<div className="space-y-4 px-4 text-sm leading-relaxed text-muted-foreground md:px-5">
-						<p>{copy.rightsIntro}</p>
-						<ul className="list-inside list-disc space-y-1 text-xs">
-							{copy.rightsItems.map(function (item) {
-								return <li key={item}>{item}</li>
-							})}
-						</ul>
-						<p className="font-mono text-xs">
-							stoetenremco [dot] rs [at] gmail [dot] com
-						</p>
-					</div>
-				</Section>
+			<Section title={copy.partnersTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					<p>{copy.partnersIntro}</p>
+					<ul className={listClassName}>
+						{copy.partnersItems.map(item => (
+							<li key={item}>{item}</li>
+						))}
+					</ul>
+				</div>
+			</Section>
 
-				<Section title={copy.partnersTitle}>
-					<div className="space-y-4 px-4 text-sm leading-relaxed text-muted-foreground md:px-5">
-						<p>{copy.partnersIntro}</p>
-						<ul className="list-inside list-disc space-y-1 text-xs">
-							{copy.partnersItems.map(function (item) {
-								return <li key={item}>{item}</li>
-							})}
-						</ul>
-					</div>
-				</Section>
-
-				<Section title={copy.contactTitle}>
-					<div className="space-y-4 px-4 text-sm leading-relaxed text-muted-foreground md:px-5">
-						<p>{copy.contactIntro}</p>
-						<p>{copy.contactNote}</p>
-						<p className="font-mono text-xs">
-							stoetenremco [dot] rs [at] gmail [dot] com
-						</p>
-					</div>
-				</Section>
-			</div>
+			<Section title={copy.contactTitle} noHeaderMargin>
+				<div className={sectionContentClassName}>
+					<p>{copy.contactIntro}</p>
+					<p>{copy.contactNote}</p>
+					<p className="break-words">
+						stoetenremco [dot] rs [at] gmail [dot] com
+					</p>
+				</div>
+			</Section>
 		</div>
 	)
-}
-
-function mapInfoIcon(title: string) {
-	if (title.toLowerCase().includes('analytics')) return Eye
-	if (title.toLowerCase().includes('auth')) return Users
-	if (title.toLowerCase().includes('contact')) return AnimatedMailIcon
-	return Database
-}
-
-function mapUsageIcon(index: number) {
-	if (index === 0) return Eye
-	if (index === 1) return Users
-	if (index === 2) return AnimatedMailIcon
-	return AnimatedShieldIcon
 }

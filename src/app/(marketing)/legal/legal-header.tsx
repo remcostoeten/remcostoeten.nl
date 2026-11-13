@@ -1,132 +1,16 @@
 'use client'
 
-import type { Route } from 'next'
 import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
-import { Breadcrumbs } from '@/components/layout/breadcrumbs'
-import { Button } from '@/components/ui/button'
-import { LegalLanguage } from './legal-language'
+import type { LegalLanguage } from './legal-language'
+import { buildLanguageHref, storeLanguage } from './language-utils'
 
 interface HeaderProps {
 	language: LegalLanguage
 	onLanguageChange: (language: LegalLanguage) => void
-}
-
-export function LegalHeader({ language, onLanguageChange }: HeaderProps) {
-	const [isHidden, setIsHidden] = useState(false)
-	const lastScroll = useRef(0)
-	const router = useRouter()
-	const pathname = usePathname()
-	const searchParams = useSearchParams()
-
-	useEffect(function handleScrollDirection() {
-		function handleScroll() {
-			const current = window.scrollY
-			const isMobile = window.innerWidth < 768
-			if (!isMobile) {
-				setIsHidden(false)
-				lastScroll.current = current
-				return
-			}
-
-			if (current > lastScroll.current && current > 32) {
-				setIsHidden(true)
-			} else {
-				setIsHidden(false)
-			}
-			lastScroll.current = current
-		}
-
-		window.addEventListener('scroll', handleScroll, { passive: true })
-		return function cleanup() {
-			window.removeEventListener('scroll', handleScroll)
-		}
-	}, [])
-
-	return (
-		<div
-			className={`sticky top-0 z-30 border-b border-border/60 bg-background/90 backdrop-blur transition-transform duration-200 ${
-				isHidden
-					? '-translate-y-full md:translate-y-0'
-					: 'translate-y-0'
-			}`}
-		>
-			<div className="flex items-center justify-between gap-4 px-4 py-3 md:px-5">
-				<div className="flex flex-wrap items-center gap-3">
-					{/* Navigation between legal pages */}
-
-					<Breadcrumbs />
-				</div>
-				<div className="flex items-center gap-2">
-					{/* Navigation between legal pages */}
-					{pathname === '/terms' && (
-						<Button
-							asChild
-							variant="ghost"
-							size="sm"
-							className="h-7 text-xs"
-						>
-							<Link
-								href={
-									`/privacy${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route
-								}
-							>
-								Privacy
-							</Link>
-						</Button>
-					)}
-					{pathname === '/privacy' && (
-						<Button
-							asChild
-							variant="ghost"
-							size="sm"
-							className="h-7 text-xs"
-						>
-							<Link
-								href={
-									`/terms${searchParams.toString() ? `?${searchParams.toString()}` : ''}` as Route
-								}
-							>
-								Terms
-							</Link>
-						</Button>
-					)}
-					<div className="w-px h-4 bg-border/50 mx-1" />
-					<LanguageToggle
-						label="EN"
-						isActive={language === 'en'}
-						onClick={handleEnglish}
-					/>
-					<LanguageToggle
-						label="NL"
-						isActive={language === 'nl'}
-						onClick={handleDutch}
-					/>
-				</div>
-			</div>
-		</div>
-	)
-
-	function handleEnglish() {
-		const params = new URLSearchParams(searchParams.toString())
-		if (language === 'nl') {
-			params.set('lang', 'en')
-		} else {
-			params.delete('lang')
-		}
-		const newUrl = `${window.location.pathname}?${params.toString()}`
-		router.replace(newUrl as Route, { scroll: false })
-		onLanguageChange('en')
-	}
-
-	function handleDutch() {
-		const params = new URLSearchParams(searchParams.toString())
-		params.set('lang', 'nl')
-		const newUrl = `${window.location.pathname}?${params.toString()}`
-		router.replace(newUrl as Route, { scroll: false })
-		onLanguageChange('nl')
-	}
+	title: string
+	updatedLabel: string
+	lastUpdated: string
 }
 
 interface ToggleProps {
@@ -135,16 +19,94 @@ interface ToggleProps {
 	onClick: () => void
 }
 
+export function LegalHeader({
+	language,
+	onLanguageChange,
+	title,
+	updatedLabel,
+	lastUpdated
+}: HeaderProps) {
+	const router = useRouter()
+	const pathname = usePathname()
+	const searchParams = useSearchParams()
+	const currentPage = pathname === '/terms' ? '/terms' : '/privacy'
+	const otherPage = currentPage === '/terms' ? '/privacy' : '/terms'
+	const otherPageLabel =
+		pathname === '/terms'
+			? language === 'nl'
+				? 'Privacyverklaring'
+				: 'Privacy policy'
+			: language === 'nl'
+				? 'Gebruiksvoorwaarden'
+				: 'Terms of service'
+	const linkParams = new URLSearchParams(searchParams.toString())
+	linkParams.set('lang', language)
+
+	function changeLanguage(nextLanguage: LegalLanguage) {
+		storeLanguage(nextLanguage)
+		onLanguageChange(nextLanguage)
+		router.replace(
+			buildLanguageHref(currentPage, searchParams, nextLanguage),
+			{ scroll: false }
+		)
+	}
+
+	return (
+		<header className="px-4 md:px-5">
+			<h1 className="text-2xl font-semibold tracking-tight text-foreground">
+				{title}
+			</h1>
+			<p className="mt-0.5 text-sm text-muted-foreground">
+				{updatedLabel}: {lastUpdated}
+			</p>
+			<nav
+				aria-label={
+					language === 'nl'
+						? "Juridische pagina's en taal"
+						: 'Legal pages and language'
+				}
+				className="mt-6 flex flex-wrap items-center gap-3"
+			>
+				<Link
+					href={{
+						pathname: otherPage,
+						search: `?${linkParams.toString()}`
+					}}
+					className="px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground border border-border/50 rounded-none hover:bg-muted/50 transition-colors"
+				>
+					{otherPageLabel}
+				</Link>
+				<div
+					role="group"
+					aria-label={language === 'nl' ? 'Taal' : 'Language'}
+					className="flex items-center gap-2"
+				>
+					<LanguageToggle
+						label="EN"
+						isActive={language === 'en'}
+						onClick={() => changeLanguage('en')}
+					/>
+					<LanguageToggle
+						label="NL"
+						isActive={language === 'nl'}
+						onClick={() => changeLanguage('nl')}
+					/>
+				</div>
+			</nav>
+		</header>
+	)
+}
+
 function LanguageToggle({ label, isActive, onClick }: ToggleProps) {
 	return (
 		<button
 			type="button"
 			onClick={onClick}
 			aria-pressed={isActive}
-			className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors ${
+			className={`rounded-none border px-3 py-1.5 text-xs font-medium transition-colors ${
 				isActive
-					? 'border-primary/70 bg-primary text-primary-foreground shadow-sm'
-					: 'border-border/70 bg-background hover:border-primary/50 hover:text-foreground'
+					? 'border-border bg-muted/50 text-foreground'
+					: 'border-border/50 text-muted-foreground hover:bg-muted/50 hover:text-foreground'
 			}`}
 		>
 			{label}
