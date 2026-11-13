@@ -1,4 +1,4 @@
-import { baseUrl } from '@/core/config/site'
+import { baseUrl, yearsOfExperience } from '@/core/config/site'
 
 function serializeStructuredData(value: object) {
 	return JSON.stringify(value).replace(/</g, '\\u003c')
@@ -204,7 +204,7 @@ export function PersonStructuredData() {
 		jobTitle: 'Frontend Engineer',
 		worksFor: {
 			'@type': 'Organization',
-			name: 'Brainstud'
+			name: 'NextGen Automotive Group'
 		},
 		knowsAbout: [
 			'Frontend Development',
@@ -219,8 +219,7 @@ export function PersonStructuredData() {
 			'@type': 'Country',
 			name: 'Netherlands'
 		},
-		description:
-			'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.'
+		description: `Dutch software engineer focused on front-end development with ${yearsOfExperience} years of experience across e-commerce, SaaS, government, and automotive projects.`
 	}
 
 	return (
