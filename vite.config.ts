@@ -2,7 +2,6 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import vinext from 'vinext'
 import { cloudflare } from '@cloudflare/vite-plugin'
-import { kvDataAdapter } from '@vinext/cloudflare/cache/kv-data-adapter'
 
 export default defineConfig({
 	resolve: {
@@ -23,8 +22,7 @@ export default defineConfig({
 	},
 	plugins: [
 		vinext({
-			react: { compiler: true },
-			cache: { data: kvDataAdapter() }
+			react: { compiler: true }
 		}),
 		cloudflare({
 			viteEnvironment: {
