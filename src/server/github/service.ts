@@ -117,7 +117,8 @@ class GitHubService {
 	private getHeaders(): Record<string, string> {
 		const headers: Record<string, string> = {
 			Accept: 'application/vnd.github.v3+json',
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			'User-Agent': 'remcostoeten-portfolio-activity'
 		}
 
 		if (this.token) {
