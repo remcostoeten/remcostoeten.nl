@@ -19,25 +19,19 @@ import {
 const skillGroups = [
 	{
 		label: 'Frontend',
-		skills: [
-			'React',
-			'Next.js',
-			'TypeScript',
-			'Tailwind CSS',
-			'Framer Motion'
-		]
+		skills: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Motion']
 	},
 	{
 		label: 'Data and APIs',
-		skills: ['Node.js', 'PostgreSQL', 'Drizzle ORM', 'GraphQL']
+		skills: ['Node.js', 'PostgreSQL', 'SQLite', 'Drizzle ORM', 'GraphQL']
 	},
 	{
-		label: 'Desktop',
-		skills: ['Rust', 'Tauri', 'GTK4']
+		label: 'Native',
+		skills: ['Rust', 'Tauri', 'GTK4', 'Go']
 	},
 	{
 		label: 'Workflow',
-		skills: ['Bun', 'Docker', 'Vercel', 'Linux', 'Figma']
+		skills: ['Bun', 'Docker', 'Cloudflare', 'Linux', 'Figma']
 	}
 ]
 
@@ -152,9 +146,9 @@ export function AboutView() {
 							<strong className="text-foreground">
 								{yearsOfExperience} years deep in frontend
 							</strong>
-							. I've shipped for e-commerce, SaaS, government, and
-							e-learning. Greenfield and legacy, so I've seen my
-							share of both.
+							. I've shipped for e-commerce, SaaS, government,
+							e-learning, film and TV, and automotive. Greenfield
+							and legacy, so I've seen my share of both.
 						</p>
 						<p>
 							Most of my work is React, TypeScript, and Next.js. I
@@ -174,8 +168,9 @@ export function AboutView() {
 								NextGen Automotive Group
 							</h3>
 							<p>
-								By day, I build customer portals and internal
-								tooling for the automotive business.
+								By day, I work full-stack on customer portals
+								and internal tooling for the automotive
+								business.
 							</p>
 						</div>
 						<div className="mt-5 pt-4 border-t border-border/50">
