@@ -9,6 +9,12 @@ export default defineConfig({
 		observability: {
 			enabled: true
 		},
+		domains: [
+			'remcostoeten.nl',
+			'www.remcostoeten.nl',
+			'remcostoeten.com',
+			'www.remcostoeten.com'
+		],
 		assets: {
 			htmlHandling: 'none',
 			notFoundHandling: 'none',
