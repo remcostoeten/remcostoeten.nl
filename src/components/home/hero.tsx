@@ -1,9 +1,8 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { siteTitle } from '@/core/config/site'
-import { isAdmin } from '@/features/auth/guard'
 import { Fragment } from 'react'
 import { AvatarOrbit } from './avatar-orbit'
+import { IntroEditLink } from './intro-edit-link'
 import { getIntro, type IntroContent } from './intro-queries'
 
 function renderBio(bio: string) {
@@ -16,13 +15,7 @@ function renderBio(bio: string) {
 	})
 }
 
-export function IntroView({
-	intro,
-	canEdit = false
-}: {
-	intro: IntroContent
-	canEdit?: boolean
-}) {
+export function IntroView({ intro }: { intro: IntroContent }) {
 	return (
 		<header className="px-4 md:px-5">
 			<div className="flex items-start gap-4 mb-4">
@@ -47,14 +40,7 @@ export function IntroView({
 						{intro.role}
 					</p>
 				</div>
-				{canEdit && (
-					<Link
-						href="/admin/intro"
-						className="ml-auto text-xs text-muted-foreground hover:text-foreground"
-					>
-						Edit intro
-					</Link>
-				)}
+				<IntroEditLink />
 			</div>
 
 			{/*
@@ -73,6 +59,6 @@ export function IntroView({
 }
 
 export async function Intro() {
-	const [intro, canEdit] = await Promise.all([getIntro(), isAdmin()])
-	return <IntroView intro={intro} canEdit={canEdit} />
+	const intro = await getIntro()
+	return <IntroView intro={intro} />
 }

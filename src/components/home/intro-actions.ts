@@ -8,6 +8,10 @@ import type { IntroContent } from './intro-queries'
 
 type MutationResult = { success: true } | { success: false; error: string }
 
+export async function canEditIntro(): Promise<boolean> {
+	return isAdmin()
+}
+
 export async function saveIntro(input: IntroContent): Promise<MutationResult> {
 	if (!(await isAdmin())) return { success: false, error: 'Unauthorized' }
 

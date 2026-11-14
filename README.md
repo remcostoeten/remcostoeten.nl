@@ -54,7 +54,7 @@ The same code deploys to either host.
 
 **Vercel** is the default. `vercel.json` pins the framework and runs `next build`; push to the connected branch.
 
-**Cloudflare Workers** runs through [vinext](https://github.com/cloudflare/vinext), which builds the Next.js app with Vite. `cloudflare.config.ts` declares the Worker, a KV namespace for the data cache and the secrets the app reads.
+**Cloudflare Workers** runs through [vinext](https://github.com/cloudflare/vinext), which builds the Next.js app with Vite. `cloudflare.config.ts` declares the Worker, the R2 bucket and Durable Object that hold cached pages and data, and the secrets the app reads.
 
 ```bash
 cp .env .dev.vars                                         # secrets for the local Worker

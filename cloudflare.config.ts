@@ -1,8 +1,17 @@
 import { bindings, defineConfig, defineWorker, triggers } from 'cf/config'
+import { createWorkersResponseStoreSelfContainedConfig } from '@vinext/cloudflare/cache/config'
+
+const WORKER_NAME = 'remcostoeten-nl'
+
+const responseStore = await createWorkersResponseStoreSelfContainedConfig({
+	worker: WORKER_NAME,
+	bucket: 'remcostoeten-nl-response-store'
+})
 
 export default defineConfig({
 	worker: defineWorker({
-		name: 'remcostoeten-nl',
+		name: WORKER_NAME,
+		...responseStore,
 		entrypoint: './worker/index.ts',
 		compatibilityDate: '2026-10-18',
 		compatibilityFlags: ['nodejs_compat'],
@@ -32,6 +41,7 @@ export default defineConfig({
 			]
 		},
 		env: {
+			...responseStore.env,
 			ASSETS: bindings.assets(),
 			DATABASE_URL: bindings.secret(),
 			BETTER_AUTH_URL: bindings.secret(),
