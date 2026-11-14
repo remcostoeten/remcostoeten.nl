@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import {
 	isSpotifyId,
 	parseStreamingHistory,
-	toApiListenRows,
 	toCatalogRows
 } from '@/server/spotify/mappers'
 
@@ -67,40 +66,6 @@ describe('spotify catalog rows', () => {
 		}
 
 		expect(toCatalogRows([local], new Date()).tracks).toEqual([])
-	})
-})
-
-describe('spotify api listen rows', () => {
-	it('keeps the context a play started from', () => {
-		const rows = toApiListenRows([
-			{
-				played_at: '2026-10-20T19:39:02.745Z',
-				track: createTrack('t1', [['a1', 'Artist']]),
-				context: { type: 'playlist', uri: 'spotify:playlist:p1' }
-			},
-			{
-				played_at: '2026-10-20T19:35:53.294Z',
-				track: createTrack('t2', [['a1', 'Artist']]),
-				context: null
-			}
-		])
-
-		expect(rows).toEqual([
-			{
-				trackId: 't1',
-				playedAt: new Date('2026-10-20T19:39:02.745Z'),
-				contextType: 'playlist',
-				contextUri: 'spotify:playlist:p1',
-				source: 'api'
-			},
-			{
-				trackId: 't2',
-				playedAt: new Date('2026-10-20T19:35:53.294Z'),
-				contextType: null,
-				contextUri: null,
-				source: 'api'
-			}
-		])
 	})
 })
 

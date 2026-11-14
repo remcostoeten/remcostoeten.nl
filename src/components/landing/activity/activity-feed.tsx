@@ -1064,7 +1064,7 @@ export function ActivityFeed({
 				</AnimatePresence>
 
 				<AnimatePresence>
-					{isCurrentTrackLive && (
+					{isCurrentTrackLive && playbackState.duration > 0 && (
 						<LiveGlow
 							progress={playbackState.percentage}
 							currentMs={playbackState.progress}

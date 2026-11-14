@@ -5,6 +5,12 @@ import { isSpotifyId, toCatalogRows } from './mappers'
 
 const SPOTIFY_BATCH_SIZE = 50
 
+export type CatalogRows = {
+	tracks: Array<typeof schema.spotifyTracks.$inferInsert>
+	artists: Array<typeof schema.spotifyArtists.$inferInsert>
+	trackArtists: Array<typeof schema.spotifyTrackArtists.$inferInsert>
+}
+
 /**
  * @name saveSpotifyCatalog
  * @description Upserts tracks, artists and their links. Tracks are overwritten
@@ -14,9 +20,7 @@ const SPOTIFY_BATCH_SIZE = 50
  * @example
  * await saveSpotifyCatalog(toCatalogRows(tracks, new Date()))
  */
-export async function saveSpotifyCatalog(
-	rows: ReturnType<typeof toCatalogRows>
-) {
+export async function saveSpotifyCatalog(rows: CatalogRows) {
 	if (rows.tracks.length === 0) return
 
 	await db

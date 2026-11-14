@@ -1,4 +1,4 @@
-import type { SpotifyApiTrack, SpotifyPlayHistoryItem } from './api'
+import type { SpotifyApiTrack } from './api'
 
 const TRACK_URI_PREFIX = 'spotify:track:'
 // Spotify track, artist and album IDs are 22 base62 characters.
@@ -75,27 +75,6 @@ export function toCatalogRows(tracks: SpotifyApiTrack[], enrichedAt: Date) {
 			}))
 		)
 	}
-}
-
-/**
- * @name toApiListenRows
- * @description Turns recently played history entries into spotify_listens
- * rows, keeping the playlist, album or artist the play started from. Local
- * files are skipped.
- *
- * @example
- * const listens = toApiListenRows(items)
- */
-export function toApiListenRows(items: SpotifyPlayHistoryItem[]) {
-	return items
-		.filter(item => !item.track.is_local && item.track.id)
-		.map(item => ({
-			trackId: item.track.id,
-			playedAt: new Date(item.played_at),
-			contextType: item.context?.type ?? null,
-			contextUri: item.context?.uri ?? null,
-			source: 'api' as const
-		}))
 }
 
 /**

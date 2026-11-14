@@ -58,6 +58,8 @@ export default defineConfig({
 			SPOTIFY_CLIENT_SECRET: bindings.secret(),
 			SPOTIFY_REDIRECT_URI: bindings.secret(),
 			SPOTIFY_REFRESH_TOKEN: bindings.secret(),
+			LASTFM_USERNAME: bindings.secret(),
+			LASTFM_API_KEY: bindings.secret(),
 			CRON_SECRET: bindings.secret(),
 			RA_SECRET: bindings.secret()
 		}

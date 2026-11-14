@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const syncMocks = vi.hoisted(() => ({
-	syncSpotifyListens: vi.fn()
+	syncLastfmListens: vi.fn()
 }))
 
-vi.mock('@/server/spotify/sync', () => syncMocks)
+vi.mock('@/server/lastfm/sync', () => syncMocks)
 
 function createRequest(authorization?: string) {
 	return new Request('https://www.remcostoeten.nl/api/spotify/sync', {
@@ -12,10 +12,10 @@ function createRequest(authorization?: string) {
 	})
 }
 
-describe('spotify sync route', () => {
+describe('listen sync route', () => {
 	beforeEach(() => {
 		vi.resetModules()
-		syncMocks.syncSpotifyListens.mockReset()
+		syncMocks.syncLastfmListens.mockReset()
 		vi.unstubAllEnvs()
 	})
 
@@ -26,7 +26,7 @@ describe('spotify sync route', () => {
 		const response = await GET(createRequest('Bearer '))
 
 		expect(response.status).toBe(401)
-		expect(syncMocks.syncSpotifyListens).not.toHaveBeenCalled()
+		expect(syncMocks.syncLastfmListens).not.toHaveBeenCalled()
 	})
 
 	it('rejects a wrong bearer token', async () => {
@@ -36,15 +36,14 @@ describe('spotify sync route', () => {
 		const response = await GET(createRequest('Bearer wrong'))
 
 		expect(response.status).toBe(401)
-		expect(syncMocks.syncSpotifyListens).not.toHaveBeenCalled()
+		expect(syncMocks.syncLastfmListens).not.toHaveBeenCalled()
 	})
 
 	it('returns the sync result for the cron secret', async () => {
 		vi.stubEnv('CRON_SECRET', 'secret-123')
-		syncMocks.syncSpotifyListens.mockResolvedValue({
+		syncMocks.syncLastfmListens.mockResolvedValue({
 			fetched: 50,
-			saved: 3,
-			possibleGap: false
+			saved: 3
 		})
 
 		const { GET } = await import('@/app/api/spotify/sync/route')
@@ -53,24 +52,23 @@ describe('spotify sync route', () => {
 		expect(response.status).toBe(200)
 		expect(await response.json()).toEqual({
 			fetched: 50,
-			saved: 3,
-			possibleGap: false
+			saved: 3
 		})
 	})
 
-	it('returns 502 when spotify cannot be reached', async () => {
+	it('returns 503 when last.fm is not configured', async () => {
 		vi.stubEnv('CRON_SECRET', 'secret-123')
-		syncMocks.syncSpotifyListens.mockResolvedValue(null)
+		syncMocks.syncLastfmListens.mockResolvedValue(null)
 
 		const { GET } = await import('@/app/api/spotify/sync/route')
 		const response = await GET(createRequest('Bearer secret-123'))
 
-		expect(response.status).toBe(502)
+		expect(response.status).toBe(503)
 	})
 
 	it('returns 500 when saving fails', async () => {
 		vi.stubEnv('CRON_SECRET', 'secret-123')
-		syncMocks.syncSpotifyListens.mockRejectedValue(new Error('db down'))
+		syncMocks.syncLastfmListens.mockRejectedValue(new Error('db down'))
 		const consoleError = vi
 			.spyOn(console, 'error')
 			.mockImplementation(() => {})
