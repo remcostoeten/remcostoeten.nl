@@ -1,11 +1,11 @@
 import { MetadataRoute } from 'next'
+import { siteDescription, siteTitle } from '@/core/config/site'
 
 export default function manifest(): MetadataRoute.Manifest {
 	return {
-		name: 'Remco Stoeten - Frontend Engineer',
+		name: siteTitle,
 		short_name: 'Remco Stoeten',
-		description:
-			'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.',
+		description: siteDescription,
 		start_url: '/',
 		display: 'standalone',
 		background_color: '#000000',

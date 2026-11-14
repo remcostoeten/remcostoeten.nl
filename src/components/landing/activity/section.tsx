@@ -41,7 +41,7 @@ function ActivitySectionLayout({ graph, feed, loading = false }: LayoutProps) {
 					Besides my professional work, I also build a lot of open
 					source. Primarily I've been working on{' '}
 					<Link
-						href="https://skriuw.vercel.app"
+						href="https://skriuw.com"
 						target="_blank"
 						className="group rounded-sm transition-colors focus-visible:outline-none focus-visible:bg-muted"
 					>

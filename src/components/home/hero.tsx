@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { siteTitle } from '@/core/config/site'
 import { isAdmin } from '@/features/auth/guard'
 import { Fragment } from 'react'
 import { AvatarOrbit } from './avatar-orbit'
@@ -28,7 +29,7 @@ export function IntroView({
 				<div suppressHydrationWarning className="relative shrink-0">
 					<Image
 						src="/images/remco-stoeten.webp"
-						alt="Remco Stoeten - Frontend Engineer"
+						alt={siteTitle}
 						width={224}
 						height={224}
 						sizes="56px"

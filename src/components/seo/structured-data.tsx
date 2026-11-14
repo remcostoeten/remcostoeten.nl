@@ -1,4 +1,9 @@
-import { baseUrl, yearsOfExperience } from '@/core/config/site'
+import {
+	baseUrl,
+	jobTitle,
+	siteDescription,
+	siteTitle
+} from '@/core/config/site'
 
 function serializeStructuredData(value: object) {
 	return JSON.stringify(value).replace(/</g, '\\u003c')
@@ -163,7 +168,7 @@ export function WebsiteStructuredData() {
 		'@context': 'https://schema.org',
 		'@type': 'WebSite',
 		'@id': WEBSITE_ID,
-		name: 'Remco Stoeten - Frontend Engineer',
+		name: siteTitle,
 		alternateName: ['Remco Stoeten', 'remcostoeten', 'remcostoeten.nl'],
 		url: baseUrl,
 		inLanguage: 'en',
@@ -201,7 +206,7 @@ export function PersonStructuredData() {
 			'https://www.linkedin.com/in/remco-stoeten/',
 			'https://x.com/remcostoeten'
 		],
-		jobTitle: 'Frontend Engineer',
+		jobTitle,
 		worksFor: {
 			'@type': 'Organization',
 			name: 'NextGen Automotive Group'
@@ -219,7 +224,7 @@ export function PersonStructuredData() {
 			'@type': 'Country',
 			name: 'Netherlands'
 		},
-		description: `Dutch software engineer focused on front-end development with ${yearsOfExperience} years of experience across e-commerce, SaaS, government, and automotive projects.`
+		description: siteDescription
 	}
 
 	return (

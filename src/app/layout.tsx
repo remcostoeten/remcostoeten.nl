@@ -8,7 +8,7 @@ import {
 import { AppProviders } from '@/components/providers/providers'
 import { ThemeInitializer } from '@/components/theme-initializer'
 import { IconHoverInstaller } from '@/components/animated-icons/icon-hover-installer'
-import { baseUrl } from '@/core/config/site'
+import { baseUrl, siteDescription, siteTitle } from '@/core/config/site'
 import { FontSwitcher } from '@/components/dev/font-switcher/font-switcher'
 import {
 	DEFAULT_FONT_PAIR_ID,
@@ -21,11 +21,10 @@ import './global.css'
 export const metadata: Metadata = {
 	metadataBase: new URL(baseUrl),
 	title: {
-		default: 'Remco Stoeten - Frontend Engineer',
+		default: siteTitle,
 		template: '%s | Remco Stoeten'
 	},
-	description:
-		'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.',
+	description: siteDescription,
 	keywords: [
 		'Remco Stoeten',
 		'Frontend Engineer',
@@ -46,9 +45,8 @@ export const metadata: Metadata = {
 		telephone: false
 	},
 	openGraph: {
-		title: 'Remco Stoeten - Frontend Engineer',
-		description:
-			'Dutch software engineer focused on front-end development with 10 years of experience across e-commerce, SaaS, government, and automotive projects.',
+		title: siteTitle,
+		description: siteDescription,
 		url: baseUrl,
 		siteName: 'Remco Stoeten',
 		locale: 'en_US',
@@ -58,13 +56,13 @@ export const metadata: Metadata = {
 				url: '/og',
 				width: 1200,
 				height: 630,
-				alt: 'Remco Stoeten - Frontend Engineer'
+				alt: siteTitle
 			}
 		]
 	},
 	twitter: {
 		card: 'summary_large_image',
-		title: 'Remco Stoeten - Frontend Engineer',
+		title: siteTitle,
 		description:
 			'Dutch software engineer focused on front-end development.',
 		creator: '@remcostoeten',

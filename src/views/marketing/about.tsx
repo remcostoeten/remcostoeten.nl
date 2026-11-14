@@ -2,7 +2,12 @@ import Image from 'next/image'
 import type { Route } from 'next'
 import Link from 'next/link'
 import { Section } from '@/components/ui/section'
-import { contactEmail, yearsOfExperience } from '@/core/config/site'
+import {
+	contactEmail,
+	jobTitle,
+	siteTitle,
+	yearsOfExperience
+} from '@/core/config/site'
 import {
 	BreadcrumbStructuredData,
 	PersonStructuredData
@@ -100,7 +105,7 @@ export function AboutView() {
 					<div className="flex items-start gap-4 mb-6">
 						<Image
 							src="/images/remco-stoeten.webp"
-							alt="Remco Stoeten - Frontend Engineer"
+							alt={siteTitle}
 							width={224}
 							height={224}
 							sizes="80px"
@@ -113,7 +118,7 @@ export function AboutView() {
 							</h1>
 							<p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5">
 								<BriefcaseIcon className="size-3.5" />
-								Frontend Engineer
+								{jobTitle}
 							</p>
 							<p className="text-sm text-muted-foreground/70 mt-0.5 flex items-center gap-1.5">
 								<MapPinIcon className="size-3.5" />
@@ -141,7 +146,7 @@ export function AboutView() {
 				<Section title="About" noHeaderMargin>
 					<div className="px-4 md:px-5 pt-4 pb-6 space-y-4 text-sm text-muted-foreground/90 leading-relaxed">
 						<p>
-							I'm a Dutch frontend engineer who started in graphic
+							I'm a Dutch software engineer who started in graphic
 							design and ended up{' '}
 							<strong className="text-foreground">
 								{yearsOfExperience} years deep in frontend
