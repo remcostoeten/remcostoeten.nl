@@ -1,9 +1,9 @@
-import { bindings, defineConfig, defineWorker } from 'cf/config'
+import { bindings, defineConfig, defineWorker, triggers } from 'cf/config'
 
 export default defineConfig({
 	worker: defineWorker({
 		name: 'remcostoeten-nl',
-		entrypoint: 'vinext/server/fetch-handler',
+		entrypoint: './worker/index.ts',
 		compatibilityDate: '2026-10-18',
 		compatibilityFlags: ['nodejs_compat'],
 		observability: {
@@ -15,6 +15,7 @@ export default defineConfig({
 			'remcostoeten.com',
 			'www.remcostoeten.com'
 		],
+		triggers: [triggers.scheduled({ schedule: '17 * * * *' })],
 		assets: {
 			htmlHandling: 'none',
 			notFoundHandling: 'none',
