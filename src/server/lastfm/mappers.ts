@@ -1,7 +1,8 @@
 import type { SpotifyTrack } from '@/features/spotify/types'
 import type { LastfmScrobble } from './api'
 
-const LASTFM_MUSIC_PATH = 'https://www.last.fm/music/'
+// Matches the Last.fm music path, including the `+noredirect/` segment some scrobble URLs carry.
+const LASTFM_MUSIC_PATH = /^https:\/\/www\.last\.fm\/music\/(\+noredirect\/)?/
 const LASTFM_ID_PREFIX = 'lastfm:'
 
 /**

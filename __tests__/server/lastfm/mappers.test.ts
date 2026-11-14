@@ -17,6 +17,14 @@ describe('last.fm mappers', () => {
 		expect(isSpotifyId(id)).toBe(false)
 	})
 
+	it('gives the same id to urls with and without noredirect', () => {
+		const scrobble = createScrobble(1, {
+			url: 'https://www.last.fm/music/+noredirect/Artist+1/_/Track+1'
+		})
+
+		expect(lastfmTrackId(scrobble)).toBe('lastfm:Artist+1/_/Track+1')
+	})
+
 	it('detects the track that is playing right now', () => {
 		expect(isNowPlaying(createNowPlaying(1))).toBe(true)
 		expect(isNowPlaying(createScrobble(1))).toBe(false)
