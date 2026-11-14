@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { syncSpotifyListens } from '@/server/spotify/sync'
+import { syncLastfmListens } from '@/server/lastfm/sync'
 
 export async function GET(request: Request) {
 	const cronSecret = process.env.CRON_SECRET
@@ -10,18 +10,23 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		const result = await syncSpotifyListens()
+		const result = await syncLastfmListens()
 
 		if (!result) {
 			return NextResponse.json(
-				{ error: 'Spotify is unavailable' },
-				{ status: 502 }
+				{ error: 'Last.fm is not configured' },
+				{ status: 503 }
 			)
 		}
 
 		return NextResponse.json(result)
 	} catch (error) {
-		console.error('Error syncing Spotify listens:', error)
-		return NextResponse.json({ error: 'Sync failed' }, { status: 500 })
+		console.error('Error syncing Last.fm listens:', error)
+		return NextResponse.json(
+			{
+				error: error instanceof Error ? error.message : 'Sync failed'
+			},
+			{ status: 500 }
+		)
 	}
 }

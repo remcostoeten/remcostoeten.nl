@@ -20,12 +20,6 @@ export type SpotifyApiTrack = {
 	album: { id: string; name: string; images: Array<{ url: string }> }
 }
 
-export type SpotifyPlayHistoryItem = {
-	played_at: string
-	track: SpotifyApiTrack
-	context: { type: string; uri: string } | null
-}
-
 async function spotifyGet<Body>(path: string): Promise<Body | null> {
 	if (!hasSpotifyCredentials()) return null
 
@@ -39,24 +33,6 @@ async function spotifyGet<Body>(path: string): Promise<Body | null> {
 	if (!response.ok) return null
 
 	return response.json()
-}
-
-/**
- * @name fetchRecentlyPlayed
- * @description Fetches up to 50 entries of the account's recently played
- * history, newest first. Returns null when credentials are missing, the token
- * refresh fails or Spotify responds with an error.
- *
- * @example
- * const items = await fetchRecentlyPlayed(50)
- * if (items) console.log(items[0]?.track.name)
- */
-export async function fetchRecentlyPlayed(limit: number) {
-	const body = await spotifyGet<{ items?: SpotifyPlayHistoryItem[] }>(
-		`/me/player/recently-played?limit=${limit}`
-	)
-
-	return body ? (body.items ?? []) : null
 }
 
 /**

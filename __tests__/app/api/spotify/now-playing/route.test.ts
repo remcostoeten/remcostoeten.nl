@@ -1,128 +1,44 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const authMocks = vi.hoisted(() => ({
-	getSpotifyAccessToken: vi.fn(),
-	hasSpotifyCredentials: vi.fn(),
-	invalidateSpotifyTokenCache: vi.fn()
+const nowPlayingMocks = vi.hoisted(() => ({
+	getLastfmNowPlaying: vi.fn()
 }))
 
-vi.mock('@/server/spotify/auth', () => authMocks)
+vi.mock('@/server/lastfm/now-playing', () => nowPlayingMocks)
 
-describe('spotify now-playing route', () => {
+describe('now-playing route', () => {
 	beforeEach(() => {
 		vi.resetModules()
-		authMocks.getSpotifyAccessToken.mockReset()
-		authMocks.hasSpotifyCredentials.mockReset()
-		authMocks.invalidateSpotifyTokenCache.mockReset()
-		vi.unstubAllGlobals()
+		nowPlayingMocks.getLastfmNowPlaying.mockReset()
 	})
 
-	it('returns a non-playing state when credentials are missing', async () => {
-		authMocks.hasSpotifyCredentials.mockReturnValue(false)
+	it('returns the last.fm now playing state', async () => {
+		nowPlayingMocks.getLastfmNowPlaying.mockResolvedValue({
+			isPlaying: true,
+			progress_ms: 1000,
+			duration_ms: 200000,
+			track: { id: 'lastfm:A/_/B', name: 'B' }
+		})
 
 		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET(
-			new Request('http://localhost:3000/api/spotify/now-playing')
-		)
-		const data = await response.json()
+		const response = await GET()
 
 		expect(response.status).toBe(200)
-		expect(data).toEqual({
-			isPlaying: false,
-			message: 'No refresh token configured'
+		expect(await response.json()).toEqual({
+			isPlaying: true,
+			progress_ms: 1000,
+			duration_ms: 200000,
+			track: { id: 'lastfm:A/_/B', name: 'B' }
 		})
 	})
 
-	it('returns a normalized live track payload on success', async () => {
-		authMocks.hasSpotifyCredentials.mockReturnValue(true)
-		authMocks.getSpotifyAccessToken.mockResolvedValue('token-123')
-		vi.stubGlobal(
-			'fetch',
-			vi.fn().mockResolvedValue({
-				ok: true,
-				status: 200,
-				json: vi.fn().mockResolvedValue({
-					is_playing: true,
-					progress_ms: 1234,
-					item: {
-						id: 'live-1',
-						name: 'Live song',
-						artists: [
-							{ name: 'Artist one' },
-							{ name: 'Artist two' }
-						],
-						album: {
-							name: 'Album one',
-							images: [{ url: 'https://i.scdn.co/image/live-1' }]
-						},
-						external_urls: {
-							spotify: 'https://open.spotify.com/track/live-1'
-						},
-						duration_ms: 200000
-					}
-				})
-			})
-		)
+	it('answers 500 when last.fm fails', async () => {
+		vi.spyOn(console, 'error').mockImplementation(() => {})
+		nowPlayingMocks.getLastfmNowPlaying.mockRejectedValue(new Error('down'))
 
 		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET(
-			new Request('http://localhost:3000/api/spotify/now-playing')
-		)
-		const data = await response.json()
+		const response = await GET()
 
-		expect(response.status).toBe(200)
-		expect(data.isPlaying).toBe(true)
-		expect(data.progress_ms).toBe(1234)
-		expect(data.duration_ms).toBe(200000)
-		expect(data.track.id).toBe('live-1')
-		expect(data.track.artist).toBe('Artist one, Artist two')
-	})
-
-	it('returns a non-playing state when spotify responds with a non-ok status', async () => {
-		authMocks.hasSpotifyCredentials.mockReturnValue(true)
-		authMocks.getSpotifyAccessToken.mockResolvedValue('token-123')
-		vi.stubGlobal(
-			'fetch',
-			vi.fn().mockResolvedValue({
-				ok: false,
-				status: 429,
-				statusText: 'Too Many Requests',
-				json: vi.fn()
-			})
-		)
-
-		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET(
-			new Request('http://localhost:3000/api/spotify/now-playing')
-		)
-		const data = await response.json()
-
-		expect(response.status).toBe(200)
-		expect(data).toEqual({ isPlaying: false })
-	})
-
-	it('retries once on 401 and returns a non-playing state when spotify stays unavailable', async () => {
-		authMocks.hasSpotifyCredentials.mockReturnValue(true)
-		authMocks.getSpotifyAccessToken
-			.mockResolvedValueOnce('token-1')
-			.mockResolvedValueOnce('token-2')
-
-		vi.stubGlobal(
-			'fetch',
-			vi
-				.fn()
-				.mockResolvedValueOnce({ status: 401 })
-				.mockResolvedValueOnce({ status: 204 })
-		)
-
-		const { GET } = await import('@/app/api/spotify/now-playing/route')
-		const response = await GET(
-			new Request('http://localhost:3000/api/spotify/now-playing')
-		)
-		const data = await response.json()
-
-		expect(authMocks.invalidateSpotifyTokenCache).toHaveBeenCalledTimes(1)
-		expect(response.status).toBe(200)
-		expect(data).toEqual({ isPlaying: false })
+		expect(response.status).toBe(500)
 	})
 })

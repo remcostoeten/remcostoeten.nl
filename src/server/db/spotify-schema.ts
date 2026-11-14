@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import { primaryId, createdTimestamp } from './helpers'
 
-export const SPOTIFY_LISTEN_SOURCES = ['api', 'export'] as const
+export const SPOTIFY_LISTEN_SOURCES = ['api', 'export', 'lastfm'] as const
 export type SpotifyListenSource = (typeof SPOTIFY_LISTEN_SOURCES)[number]
 
 export const spotifyArtists = pgTable('spotify_artists', {
