@@ -48,7 +48,7 @@ export function SendButton({ status, className }: Props) {
 				backgroundColor:
 					status === 'success'
 						? 'var(--color-emerald-600, #059669)'
-						: 'var(--primary)'
+						: 'var(--color-primary)'
 			}}
 			className={cn(
 				'relative inline-flex h-9 w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-primary-foreground shadow',
