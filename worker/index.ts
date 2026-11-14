@@ -11,10 +11,11 @@ type ScheduledEvent = {
 	scheduledTime: number
 }
 
-const SPOTIFY_SYNC_URL = 'https://www.remcostoeten.nl/api/spotify/sync'
+const SITE_ORIGIN = 'https://www.remcostoeten.nl'
+const WARM_PATHS = ['/']
 
 async function syncSpotifyListens(env: Env, context: Context) {
-	const request = new Request(SPOTIFY_SYNC_URL, {
+	const request = new Request(`${SITE_ORIGIN}/api/spotify/sync`, {
 		headers: { authorization: `Bearer ${process.env.CRON_SECRET}` }
 	})
 	const response: Response = await handler.fetch(request, env, context)
@@ -26,9 +27,33 @@ async function syncSpotifyListens(env: Env, context: Context) {
 	}
 }
 
+async function warmPage(path: string, env: Env, context: Context) {
+	const request = new Request(`${SITE_ORIGIN}${path}`)
+	const response: Response = await handler.fetch(request, env, context)
+	await response.arrayBuffer()
+
+	if (!response.ok) {
+		throw new Error(`Warming ${path} answered ${response.status}`)
+	}
+}
+
+async function runHourlyJobs(env: Env, context: Context) {
+	const results = await Promise.allSettled([
+		syncSpotifyListens(env, context),
+		...WARM_PATHS.map(path => warmPage(path, env, context))
+	])
+	const failures = results.flatMap(result =>
+		result.status === 'rejected' ? [String(result.reason)] : []
+	)
+
+	if (failures.length > 0) {
+		throw new Error(failures.join('; '))
+	}
+}
+
 export default {
 	...handler,
 	scheduled(_event: ScheduledEvent, env: Env, context: Context) {
-		return syncSpotifyListens(env, context)
+		return runHourlyJobs(env, context)
 	}
 }

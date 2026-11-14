@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import vinext from 'vinext'
 import { cloudflare } from '@cloudflare/vite-plugin'
+import { responseStoreAdapter } from '@vinext/cloudflare/cache/response-store-adapter'
 
 export default defineConfig({
 	resolve: {
@@ -22,7 +23,11 @@ export default defineConfig({
 	},
 	plugins: [
 		vinext({
-			react: { compiler: true }
+			react: { compiler: true },
+			cache: responseStoreAdapter({
+				mode: 'self-contained',
+				locationHint: 'weur'
+			})
 		}),
 		cloudflare({
 			viteEnvironment: {
