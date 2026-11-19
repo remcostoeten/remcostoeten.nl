@@ -11,3 +11,6 @@ export const siteUrl = (
 ).replace(/\/+$/, '')
 
 export const baseUrl = siteUrl
+
+export const nlOrigin = 'https://www.remcostoeten.nl'
+export const comOrigin = 'https://www.remcostoeten.com'

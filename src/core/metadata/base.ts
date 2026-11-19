@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { baseUrl as siteBaseUrl } from '@/core/config/site'
+import { createAlternates } from '@/core/metadata/alternates'
 
 export interface BaseMetadataConfig {
 	title: string
@@ -65,11 +66,7 @@ export function createPageMetadata(config: BaseMetadataConfig): Metadata {
 				'max-snippet': -1
 			}
 		},
-		...(canonical && {
-			alternates: {
-				canonical: `${siteBaseUrl}${canonical}`
-			}
-		})
+		...(canonical && { alternates: createAlternates(canonical) })
 	}
 }
 
@@ -124,9 +121,7 @@ export function createArticleMetadata(config: {
 			description,
 			images: [imageUrl]
 		},
-		alternates: {
-			canonical: canonical ? `${siteBaseUrl}${canonical}` : undefined
-		}
+		alternates: canonical ? createAlternates(canonical) : undefined
 	}
 }
 
