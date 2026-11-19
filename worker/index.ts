@@ -1,5 +1,6 @@
 import type appRouterEntry from 'vinext/server/app-router-entry'
 import handler from 'vinext/server/fetch-handler'
+import { localizeResponse } from './localize'
 
 export * from 'vinext/server/fetch-handler'
 
@@ -53,6 +54,10 @@ async function runHourlyJobs(env: Env, context: Context) {
 
 export default {
 	...handler,
+	async fetch(request: Request, env: Env, context: Context) {
+		const response: Response = await handler.fetch(request, env, context)
+		return localizeResponse(request, response)
+	},
 	scheduled(_event: ScheduledEvent, env: Env, context: Context) {
 		return runHourlyJobs(env, context)
 	}

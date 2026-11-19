@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { BreadcrumbStructuredData } from '@/components/seo/structured-data'
 import { baseUrl } from '@/core/config/site'
+import { createAlternates } from '@/core/metadata/alternates'
 import type { DeveloperPackage, NpmPackage } from '@/features/packages/data'
 
 export function packageMetadata(pkg: DeveloperPackage): Metadata {
@@ -18,7 +19,7 @@ export function packageMetadata(pkg: DeveloperPackage): Metadata {
 					'Remco Stoeten'
 				]
 			: [...pkg.keywords, 'shadcn registry', 'Remco Stoeten'],
-		alternates: { canonical: `${baseUrl}/packages/${pkg.slug}` },
+		alternates: createAlternates(`/packages/${pkg.slug}`),
 		openGraph: {
 			title,
 			description,
